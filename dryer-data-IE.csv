@@ -1,0 +1,32 @@
+# Supplementary data for WALS, Indo-European languages			
+#	Hittite		Tocharian A	Tocharian B
+iso_code		hit	xto	txb
+wals_code		xhit	xxto	xtxb
+DRYADJ	Order of Adjective and Noun	1	1	1
+DRYADP	Order of Adposition and Noun Phrase	1	1	1
+DRYCAS	Position of Case Affixes	1	1	1
+DRYCOQ	Position of Interrogative Phrases in Content Questions			
+DRYDEF	Definite Articles			
+DRYDEG	Order of Degree Word and Adjective			
+DRYDEM	Order of Demonstrative and Noun	1	1	1
+DRYGEN	Order of Genitive and Noun	1	1	1
+DRYIND	Indefinite Articles			
+DRYNEG	Negative Morphemes	3	3	3
+DRYNPL	Coding of Nominal Plurality		2	2
+DRYNUM	Order of Numeral and Noun	1	1	1
+DRYOBV	Order of Object and Verb	1	1	1
+DRYOSC	Order of Adverbial Subordinator and Clause			
+DRYPOQ	Polar Questions			
+DRYPOS	Position of Pronominal Possessive Affixes	2		
+DRYPQP	Position of Polar Question Particles			
+DRYPRE	Prefixing vs. Suffixing in Inflectional Morphology	2	2	2
+DRYPRO	Expression of Pronominal Subjects	5		
+DRYRAO	Relationship between Order of Object and Verb and Order of Adjective and Noun		1	1
+DRYREL	Order of Relative Clause and Noun			
+DRYRPO	Relationship between Order of Object and Verb and Order of Adposition and Noun Phrase		1	1
+DRYRRO	Relationship between Order of Object and Verb and Order of Relative Clause and Noun			
+DRYSBV	Order of Subject and Verb	1	1	1
+DRYSOV	Order of Subject, Object and Verb	1	1	1
+DRYTAA	Position of Tense/Aspect Affixes		2	2
+DRYXOV	Order of Object, Oblique, and Verb			
+# Notes: I’ll allow polymorphic characters since my recoding will create polymorphisms too			

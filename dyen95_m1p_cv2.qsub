@@ -1,0 +1,21 @@
+###### Change to the current working directory upon starting of the job
+#$ -cwd
+
+###### Send mail upon end of the job ...
+#$ -m be
+
+###### .. to the following address
+#$ -M micdunn@mpi.nl
+
+###### Use this name for the job (qstat)
+#$ -N dyen
+
+###### use 8 nodes
+#$ -pe mpich 8
+
+PROGRAM=/afs/rzg/bioinfo/biosoft/BayesPhylogenies/bin/BayesPhylogenies_mpi
+WORKDIR=/afs/ipp/home/m/micdunn/IE
+INPUTFILE=dyen95_m1p_cv2.nex
+
+cd $WORKDIR
+time /afs/rzg/@sys/bin/mpirun -np 8 $PROGRAM $INPUTFILE
