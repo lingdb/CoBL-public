@@ -1,0 +1,4 @@
+digraph g {
+node [shape=record];
+form [label="{ id | language_id | meaning_id | source_form | phon_form | notes }"];
+}
