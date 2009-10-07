@@ -1,4 +1,66 @@
 digraph g {
-node [shape=record];
-form [label="{ id | language_id | meaning_id | source_form | phon_form | notes }"];
+  ordering=out;
+  fontsize=10;
+  overlap=scale;
+  splines=true;
+  sep=0.2;
+  ratio=0.7;
+  label="Cognate dictionary database schema";
+  node [shape=Mrecord];
+  edge [arrowhead=dot];
+
+  lexeme [pos="2,3!",style=filled,
+	label="{LEXEME |<id> id |<lid> language_id |<mid> meaning_id | source_form | phon_form | notes }"];
+  source [pos="7,3!",style=filled,
+	label="{SOURCE |<id> id | description | citation }"];
+  meaning [pos="1,2!",style=filled,
+	label="{MEANING |<id> id | dyen_code | gloss }"];
+  language [pos="1,4!",style=filled,
+	label="{LANGUAGE |<id> id | ascii_name | utf8_name | dyen_name}"];
+  cogset [pos="4,4!",style=filled,
+	label="{COGNATE\nSET |<id> id | reconstruction}"];
+  judgement [pos="3,4.5!",
+	label="{Cognate\nJudgement |<id> id |<fid> lexeme_id |<cid> cog_set_id}"];
+  biological [pos="4,1!",style=filled,
+	label="{BIOLOGICAL\nRELATION | <id> id | descriptor\n(M, MZ, etc)}"];
+
+  // Many to many tables
+  formsource [pos="5,3!",
+	label="{Source of Lexeme |<fid> lexeme_id |<sid> source_id}"];
+  judgesource [pos="5,5!",
+	label="{Source of\nCognate Judgement |<jid> judgement_id |<sid> source_id | reliability}"];
+  cogsource [pos="5,4!",
+	label="{Source of\nReconstruction |<cid> cog_set_id |<sid> source_id}"];
+  formbio [pos="3,2!",
+	label="{Ostensive Link\n(lexeme can refer\nto relation) |<id> id |<fid> lexeme_id |<bid> bio_rel_id}"];
+  biosource [pos="5,2!",
+	label="{Source Link |<lid> link_id |<sid> source_id | reliability}"];
+
+  // meaning [pos="1,1!"];	
+  // language [pos="1,2!"];
+  // lexeme [pos="2,1.5!"];
+  // formsource [pos="4,1!"];
+  // judgesource [pos="4.5,2.5!"];
+  // cogsource [pos="5,1.5!"];
+  // source [pos="6,1.5!"];
+  // cogset [pos="4,1.5!"];
+  // judgement [pos="3,2!"];
+  // biological [pos="4,0!"];
+  // formbio [pos="3,0.5!"];
+
+  judgement:fid -> lexeme:id [weight=8]; 
+  judgement:cid -> cogset:id [weight=8];
+  formsource:fid -> lexeme:id;
+  formsource:sid -> source:id;
+  judgesource:jid -> judgement:id;
+  judgesource:sid -> source:id;
+  cogsource:cid -> cogset:id;
+  cogsource:sid -> source:id;
+  lexeme:lid -> language:id;
+  lexeme:mid -> meaning:id;
+
+  formbio:fid -> lexeme:id [style=dashed];
+  formbio:bid -> biological:id [style=dashed];
+  biosource:lid -> formbio:id [style=dashed];
+  biosource:sid -> source:id [style=dashed];
 }
