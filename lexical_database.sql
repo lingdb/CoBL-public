@@ -20,7 +20,8 @@ CREATE TABLE sources (
   id INTEGER PRIMARY KEY,
   type TEXT,              -- "publication", "person"
   description TEXT,
-  citation TEXT,
+  citation TEXT,          -- "plaintext format" or "name (affiliation)"
+  citekey TEXT,           -- nickname used in spreadsheet import
   datestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
   CHECK (type in ("publication", "person"))
 );
