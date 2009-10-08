@@ -10,31 +10,35 @@ digraph g { // neato -Tpdf -O database_structure.dot
   edge [arrowhead=dot];
 
   lexeme [pos="2,3!",style=filled,
-	label="{LEXEME |<id> id |<lid> language_id |<mid> meaning_id | source_form | phon_form | notes }"];
+	label="{LEXEMES |<id> id |<lid> language_id |<mid> meaning_id | source_form | phon_form | notes }"];
   source [pos="7,3!",style=filled,
-	label="{SOURCE |<id> id |{type_code |{book | person}}| description | citation }"];
+	label="{SOURCES |<id> id |{type_code |{book | person}}| description | citation }"];
   meaning [pos="1,2!",style=filled,
-	label="{MEANING |<id> id | dyen_code | gloss }"];
+	label="{MEANINGS |<id> id | dyen_code | gloss }"];
   language [pos="1,4!",style=filled,
-	label="{LANGUAGE |<id> id | iso_code | ascii_name | utf8_name | dyen_name}"];
+	label="{LANGUAGES |<id> id | iso_code | ascii_name | utf8_name | dyen_name}"];
   cogset [pos="4,4!",style=filled,
-	label="{COGNATE\nSET |<id> id | reconstruction}"];
+	label="{COGNATE\nSETS |<id> id | reconstruction}"];
   biological [pos="4,1!",style=filled,
-	label="{BIOLOGICAL\nRELATION | <id> id |{descriptor |{M | MZ | etc.}}}"];
+	label="{BIOLOGICAL\nRELATIONS | <id> id |{descriptor |{M | MZ | etc.}}}"];
+  dyen_name [pos="0,4.5!",
+	label="{Dyen names |<lid> language_id | name}"];
+  abvd_name [pos="0,3.5!",
+	label="{ABVD names |<lid> language_id | name}"];
 
   // Many to many tables
   judgement [pos="3,4.5!",
-	label="{Cognate\nJudgement |<id> id |<fid> lexeme_id |<cid> cog_set_id}"];
+	label="{Cognate\nJudgements |<id> id |<fid> lexeme_id |<cid> cog_set_id}"];
   formsource [pos="5,3!",
-	label="{Source of Lexeme |<fid> lexeme_id |<sid> source_id}"];
+	label="{Lexeme sources |<fid> lexeme_id |<sid> source_id}"];
   judgesource [pos="5,5!",
-	label="{Source of\nCognate Judgement |<jid> judgement_id |<sid> source_id | reliability}"];
+	label="{Cognate Judgement\nsources |<jid> judgement_id |<sid> source_id | reliability}"];
   cogsource [pos="5,4!",
-	label="{Source of\nReconstruction |<cid> cog_set_id |<sid> source_id}"];
+	label="{Reconstruction\n sources |<cid> cog_set_id |<sid> source_id}"];
   formbio [pos="3,2!",
-	label="{Ostensive Link\n(i.e. “lexeme can\n  refer to relation”) |<id> id |<fid> lexeme_id |<bid> bio_rel_id}"];
+	label="{Extensions\n(i.e. “lexeme can\n  refer to relation”) |<id> id |<fid> lexeme_id |<bid> bio_rel_id}"];
   biosource [pos="5,2!",
-	label="{Source Link |<lid> link_id |<sid> source_id | reliability}"];
+	label="{Extension sources |<lid> link_id |<sid> source_id | reliability}"];
 
   // meaning [pos="1,1!"];	
   // language [pos="1,2!"];
@@ -63,4 +67,7 @@ digraph g { // neato -Tpdf -O database_structure.dot
   formbio:bid -> biological:id [style=dashed];
   biosource:lid -> formbio:id [style=dashed];
   biosource:sid -> source:id [style=dashed];
+
+  dyen_name:lid -> language:id;
+  abvd_name:lid -> language:id;
 }
