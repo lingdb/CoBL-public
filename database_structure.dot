@@ -1,4 +1,4 @@
-digraph g {
+digraph g { // neato -Tpdf -O database_structure.dot
   ordering=out;
   fontsize=10;
   overlap=scale;
@@ -12,19 +12,19 @@ digraph g {
   lexeme [pos="2,3!",style=filled,
 	label="{LEXEME |<id> id |<lid> language_id |<mid> meaning_id | source_form | phon_form | notes }"];
   source [pos="7,3!",style=filled,
-	label="{SOURCE |<id> id | description | citation }"];
+	label="{SOURCE |<id> id | type\n(e.g. book, person) | description | citation }"];
   meaning [pos="1,2!",style=filled,
 	label="{MEANING |<id> id | dyen_code | gloss }"];
   language [pos="1,4!",style=filled,
 	label="{LANGUAGE |<id> id | ascii_name | utf8_name | dyen_name}"];
   cogset [pos="4,4!",style=filled,
 	label="{COGNATE\nSET |<id> id | reconstruction}"];
-  judgement [pos="3,4.5!",
-	label="{Cognate\nJudgement |<id> id |<fid> lexeme_id |<cid> cog_set_id}"];
   biological [pos="4,1!",style=filled,
 	label="{BIOLOGICAL\nRELATION | <id> id | descriptor\n(M, MZ, etc)}"];
 
   // Many to many tables
+  judgement [pos="3,4.5!",
+	label="{Cognate\nJudgement |<id> id |<fid> lexeme_id |<cid> cog_set_id}"];
   formsource [pos="5,3!",
 	label="{Source of Lexeme |<fid> lexeme_id |<sid> source_id}"];
   judgesource [pos="5,5!",
