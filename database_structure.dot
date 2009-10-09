@@ -10,7 +10,7 @@ digraph g { // neato -Tpdf -O database_structure.dot
   edge [arrowhead=dot];
 
   lexeme [pos="2,3!",style=filled,
-	label="{LEXEMES |<id> id |<lid> language_id |<mid> meaning_id | source_form | phon_form | notes }"];
+	label="{LEXEMES |<id> id |<lid> language_id |<mid> meaning_id | source_form | phon_form | gloss | notes }"];
   source [pos="7,3!",style=filled,
 	label="{SOURCES |<id> id |{type_code |{book | person}}| description | citation }"];
   meaning [pos="1,2!",style=filled,
@@ -21,10 +21,13 @@ digraph g { // neato -Tpdf -O database_structure.dot
 	label="{COGNATE\nSETS |<id> id | reconstruction}"];
   biological [pos="4,1!",style=filled,
 	label="{BIOLOGICAL\nRELATIONS | <id> id |{descriptor |{M | MZ | etc.}}}"];
-  dyen_name [pos="0,4.5!",
+  dyen_name [pos="0,4.5!",style=filled,
 	label="{Dyen names |<lid> language_id | name}"];
-  abvd_name [pos="0,3.5!",
+  abvd_name [pos="0,3.5!",style=filled,
 	label="{ABVD names |<lid> language_id | name}"];
+  key1 [pos="0,1!", label="independent table", style=filled];
+  key2 [pos="2,1!", label="many-to-many table"];
+  key2 -> key1 [label="Foreign key"];
 
   // Many to many tables
   judgement [pos="3,4.5!",
