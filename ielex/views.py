@@ -40,4 +40,10 @@ def report_language(request, language):
         "lexemes":lexemes, "meanings":meanings})
 
 def report_word(request, word):
-    return render_to_response("word_report.html", {"word":word})
+    if word.isdigit():
+        meaning = Meaning.objects.get(id=word)
+    else:
+        meaning = Meaning.objects.get(gloss=word)
+    lexemes = Lexeme.objects.filter(meaning=meaning)
+    return render_to_response("word_report.html", {"lexemes":lexemes,
+        "meaning":meaning})

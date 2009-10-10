@@ -1,13 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %}{{ word }}{% endblock %}
+{% block title %}{{ meaning.gloss }}{% endblock %}
 
 {% block content %}
-<h1>Word: {{ word }}</h1>
-<p>language 1</p>
-<p>language 2</p>
-<p>language 3</p>
-<p>language 4</p>
+<h1>{{ meaning.description }}</h1>
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Language</th>
+    <th>Source Form</th>
+    <th>Phonological Form</th>
+    <th>Cognate Set</th>
+  </tr>
+  {% for lexeme in lexemes %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    <td>{{ lexeme.language.id }}</td>
+    <td>{{ lexeme.language.utf8_name }}</td>
+    <td>{{ lexeme.source_form }}</td>
+    <td>{{ lexeme.phon_form }}</td>
+    <td>{% for cogset in lexeme.cognate_set.all %}{{ cogset.id }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</td>
+  </tr>
+  {% endfor %}
+</table>
 {% endblock %}
 
 {# vim: set ft=htmldjango: #}
