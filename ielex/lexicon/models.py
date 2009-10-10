@@ -5,6 +5,9 @@ class Language(models.Model):
     ascii_name = models.CharField(max_length=999)
     utf8_name = models.CharField(max_length=999)
 
+    def __unicode__(self):
+        return self.ascii_name
+
 class DyenName(models.Model):
     language = models.ForeignKey(Language)
     name = models.CharField(max_length=999)
@@ -13,6 +16,9 @@ class Meaning(models.Model):
     gloss = models.CharField(max_length=64) # one word name
     description = models.CharField(max_length=64) # show name
     notes = models.TextField()
+
+    def __unicode__(self):
+        return self.gloss.upper()
 
 class CognateSet(models.Model):
     reconstruction = models.CharField(max_length=999)

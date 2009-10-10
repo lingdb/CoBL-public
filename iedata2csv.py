@@ -54,7 +54,7 @@ def main():
                 language = line[9:24].strip().replace(" ", "_")
                 if language not in languages:
                     languages.append(language)
-                    output_files[language] = file("Dyen-"+language+".csv", "w")
+                    output_files[language] = file("dyen_data/"+language+".csv", "w")
                     print(HEADER, file=output_files[language])
                 form = line[25:].strip()
                 # OUTPUT ROW:

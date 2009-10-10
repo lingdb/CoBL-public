@@ -2,6 +2,18 @@
 <html lang="en">
 <head>
     <title>{% block title %}{% endblock %}</title>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+      h1 { 
+	letter-spacing: 3px;
+	padding: 6px;
+	background: #CF9;
+      }
+      tr.even { background: #CCFF99 }
+      tr.odd { background: #CCCCCC }
+    </style>
 </head>
 <body>
     {% block content %}{% endblock %}

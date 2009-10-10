@@ -1,0 +1,11 @@
+vim
+---
+
+When lots of tabs open::
+
+  set guitablabel=%t
+
+
+
+
+.. vim:ft=rst

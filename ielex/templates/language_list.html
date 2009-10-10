@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Languages{% endblock %}
+
+{% block content %}
+<h1>Languages</h1>
+<table>
+  <tr>
+    <th>Count</th>
+    <th>Language Name</th>
+    <th>ISO-639-3 Code</th>
+  </tr>
+  {% for language in languages %}
+  <tr class="{% cycle 'odd' 'even' %}">
+      <td>{{ forloop.counter }}</td>
+      <td>{{ language.utf8_name }}</td>
+      <td><a href="http://www.ethnologue.com/show_language.asp?code={{ language.iso_code }}">{{ language.iso_code }}</a></td>
+    </tr>
+
+  {% endfor %}
+</table>
+
+{% endblock %}
+
+{# vim: set ft=htmldjango: #}

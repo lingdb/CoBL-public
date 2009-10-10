@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Choose Language{% endblock %}
+
+{% block content %}
+
+<p>Language choice is ambiguous amongst:
+<ul>
+{% for language in languages %}
+  <li><a href="{% url language-report language.ascii_name %}">{{ language.utf8_name }}</a></li>
+{% endfor %}
+</ul>
+</p>
+{% endblock %}

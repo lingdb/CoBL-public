@@ -1,13 +1,29 @@
 {% extends "base.html" %}
 
-{% block title %}{{ language }}{% endblock %}
+{% block title %}Word list report: {{ language.utf8_name }}{% endblock %}
 
 {% block content %}
-<h1>Report for {{ language.title }}</h1>
-<p>word 1</p>
-<p>word 2</p>
-<p>word 3</p>
-<p>word 4</p>
+<h1>{{ language.utf8_name }}</h1>
+
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Meaning</th>
+    <th>Source Form</th>
+    <th>Cognate Set</th>
+  </tr>
+  {% for lexeme in lexemes %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    <td><a href="{% url word-report lexeme.meaning.id %}">{{ lexeme.meaning.id }}</a></td>
+    <td><a href="{% url word-report lexeme.meaning.id %}">{{ lexeme.meaning.gloss }}</a></td>
+    <td>{{ lexeme.source_form }}</td>
+    <td>{% for cogset in lexeme.cognate_set.all %}{{ cogset.id }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+Count: {{ lexemes|length }}
+
 {% endblock %}
 
 {# vim: set ft=htmldjango: #}

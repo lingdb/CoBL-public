@@ -13,9 +13,11 @@ urlpatterns = patterns('',
     # List of meanings in the database
     ('^words/$', view_words),
     # Swadesh list for one language
-    (r'^language/([a-zA-Z0-9_ ]+)/$', report_language),
+    url(r'^language/([a-zA-Z0-9_ ]+)/$', report_language,
+            name="language-report"), # use with {% url language-report English %}
     # All forms in the database with a particular meaning
-    (r'^word/([a-zA-Z0-9_ ]+|\d+)/$', report_word),
+    url(r'^word/([a-zA-Z0-9_ ]+|\d+)/$', report_word,
+            name="word-report"),
     # Select which languages to consider (e.g. Germanic)
     #('^select\/languages/$', view_languages),
     # Select which words to consider (e.g. Swadesh 100)

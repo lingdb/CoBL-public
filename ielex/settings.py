@@ -59,7 +59,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    # 'django.middleware.common.CommonMiddleware',
+    'django.middleware.common.CommonMiddleware', # provides APPEND_SLASH
     # 'django.contrib.sessions.middleware.SessionMiddleware',
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
@@ -67,8 +67,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'ielex.urls'
 
 TEMPLATE_DIRS = (
-    os.path.join(rootdir, 'templates'), #.replace('\\','/'),
-    #"/Users/micdunn/Workspace/Database/Dyen/ielex/templates",
+    os.path.join(rootdir, 'templates'), #.replace('\\','/') for Windows
 )
 
 INSTALLED_APPS = (
