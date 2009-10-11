@@ -8,13 +8,27 @@ def view_frontpage(request):
     return render_to_response("frontpage.html")
 
 def view_languages(request):
+    #debug = ["DEBUG"]
+    set_cookie = False
+    if "selection" in request.POST: #.get("selection",""):
+        selection = request.POST.get("selection")
+        set_cookie = True
+        #debug.append("POST")
+    elif "selection" in request.COOKIES:
+        selection = request.COOKIES["selection"]
+        #debug.append("COOKIE")
+    else:
+        selection = "GA2003"
+        #debug.append("DEFAULT")
+    #debug.append(selection)
     languages = Language.objects.all()
-    language_list = LanguageList.objects.get(id=1)
-    return render_to_response("language_list.html", {"languages":languages,
-            "language_list":language_list})
-    # t = get_template("language_list.html")
-    # html = t.render(Context({"language":language}))
-    # return HttpResponse(html)
+    language_lists = LanguageList.objects.all()
+    current_list = LanguageList.objects.get(name=selection)
+    response = render_to_response("language_list.html", {"languages":languages,
+            "language_lists":language_lists, "current_list":current_list})
+            #"debug":" : ".join(debug)})
+    response.set_cookie("selection", selection)
+    return response
 
 def view_words(request):
     meanings = Meaning.objects.all()
@@ -43,6 +57,7 @@ def report_language(request, language):
         "lexemes":lexemes, "meanings":meanings})
 
 def report_word(request, word):
+    # debug = []
     if word.isdigit():
         meaning = Meaning.objects.get(id=word)
         return HttpResponseRedirect("/word/%s/" % meaning.gloss)

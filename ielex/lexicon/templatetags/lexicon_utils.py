@@ -1,4 +1,5 @@
 from django import template
+from ielex.utilities import int2alpha
 
 register = template.Library()
 

@@ -18,37 +18,32 @@
       <td>{{ forloop.counter }}</td>
       <td><a href="{% url language-report language.id %}">{{ language.utf8_name }}</a></td>
       <td><a href="http://www.ethnologue.com/show_language.asp?code={{ language.iso_code }}">{{ language.iso_code }}</a></td>
-      <td><input type="checkbox" name="include_language" 
-		{% if language.id|in_list:language_list.language_id_list %}
-		checked="checked"
-		{% endif %}
-	 value="{{ language.id }}" /></td>
+      <td>{% if language.id|in_list:current_list.language_id_list %}*{% endif %}</td>
     </tr>
-
   {% endfor %}
 </table>
-
 {% endblock %}
 
 {% block controls %}
 <p><strong>Controls</strong></p>
-<form>
+<p>Go to <a href="/words/">list of meanings</a></p>
+<p>
+<form action="" method="post">
 <fieldset>
-<legend>Change selection</legend>
-<select>
-  <option>select named set...</option>
-  <option>Set 1</option>
-  <option>Set 2</option>
-  <option>Set 3</option>
+<legend>Language List<legend>
+<select name="selection">
+  {% for langlist in language_lists %}
+  <option{% ifequal langlist.name current_list.name %} selected="selected"{% endifequal %}>{{ langlist.name }}</option>
+  {% endfor %}
 </select><input type="submit" value="change" />
-</fieldset>
-<fieldset>
-<legend>Save current selection</legend>
-Name: <input type="text" />
-<input type="submit" value="save" />
+<p id="help">Limit all results to a predefined list of languages</p>
 </fieldset>
 </form>
 </p>
+{% if debug %}
+<h2>DEBUG</h2>
+{{ debug }}
+{% endif %}
 {% endblock %}
 
 {# vim: set ft=htmldjango: #}

@@ -19,10 +19,13 @@
     <td><a href="{% url language-report lexeme.language.id %}">{{ lexeme.language.utf8_name }}</a></td>
     <td>{{ lexeme.source_form }}</td>
     <td>{{ lexeme.phon_form }}</td>
-    <td>{% for cogset in lexeme.cognate_set.all %}{{ cogset.id }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</td>
+    <td>{% for cogset in lexeme.cognate_set.all %}{{ cogset.alias }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</td>
   </tr>
   {% endfor %}
 </table>
 {% endblock %}
 
+{% block controls %}
+Go to <a href="/words/">list of all meanings</a>
+{% endblock %}
 {# vim: set ft=htmldjango nowrap: #}
