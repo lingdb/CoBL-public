@@ -2,8 +2,9 @@
 
 {% block title %}{{ meaning.gloss }}{% endblock %}
 
+{% block top %}<h1>{{ meaning.description }}</h1>{% endblock %}
+
 {% block content %}
-<h1>{{ meaning.description }}</h1>
 <table>
   <tr>
     <th>ID</th>
@@ -15,7 +16,7 @@
   {% for lexeme in lexemes %}
   <tr class="{% cycle 'odd' 'even' %}">
     <td>{{ lexeme.language.id }}</td>
-    <td>{{ lexeme.language.utf8_name }}</td>
+    <td><a href="{% url language-report lexeme.language.id %}">{{ lexeme.language.utf8_name }}</a></td>
     <td>{{ lexeme.source_form }}</td>
     <td>{{ lexeme.phon_form }}</td>
     <td>{% for cogset in lexeme.cognate_set.all %}{{ cogset.id }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</td>
@@ -24,4 +25,4 @@
 </table>
 {% endblock %}
 
-{# vim: set ft=htmldjango: #}
+{# vim: set ft=htmldjango nowrap: #}

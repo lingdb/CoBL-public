@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Word list{% endblock %}
+
+{% block top %}<h1>Meanings</h1>{% endblock %}
+
+{% block content %}
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Meaning</th>
+    <th>Gloss</th>
+    {# <th>Count</th> #}
+  </tr>
+  {% for meaning in meanings %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    <td>{{ meaning.id }}</td>
+    <td>{{ meaning.description }}</td>
+    <td><a href="{% url word-report meaning.id %}">{{ meaning.gloss }}</a></td>
+    {# <td>{{ meaning.lexeme_count }}</td> #}
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
+
+{# vim: set ft=htmldjango: #}

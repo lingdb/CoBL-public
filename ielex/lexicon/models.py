@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, connection
 
 class Language(models.Model):
     iso_code = models.CharField(max_length=3)
@@ -12,18 +12,46 @@ class DyenName(models.Model):
     language = models.ForeignKey(Language)
     name = models.CharField(max_length=999)
 
+    def __unicode__(self):
+        return self.name
+
+# class MeaningCount(models.Manager):
+#     def count_lexemes(self):
+#         return Lexeme.objects.filter(meaning=self).count()
+
 class Meaning(models.Model):
     gloss = models.CharField(max_length=64) # one word name
     description = models.CharField(max_length=64) # show name
     notes = models.TextField()
+    # objects = MeaningCount()
 
     def __unicode__(self):
         return self.gloss.upper()
 
+#class CogSetMeaningManager(models.Manager):
+#    def by_meaning(self, meaning):
+
 class CognateSet(models.Model):
+    # alias = models.CharField(max_length=3)
     reconstruction = models.CharField(max_length=999)
     notes = models.TextField()
     modified = models.DateTimeField(auto_now=True)
+    objects = models.Manager() # all rows
+
+    def _get_meaning_set(self):
+        return set([cj.lexeme.meaning for cj in self.cognatejudgement_set.all()])
+    meaning_set = property(_get_meaning_set)
+
+    def _get_meaning(self):
+        """This will cause problems when/if the database has cognate sets
+        providing reflexes for more than one meaning"""
+        # meaning_set = set([cj.lexeme.meaning for cj in
+        #        self.cognatejudgement_set.all()])
+        return self._get_meaning_set().pop()
+    meaning = property(_get_meaning) # treat as an attribute
+
+    def __unicode__(self):
+        return self.id
 
 class Lexeme(models.Model):
     language = models.ForeignKey(Language)
@@ -36,7 +64,26 @@ class Lexeme(models.Model):
     notes = models.TextField()
     modified = models.DateTimeField(auto_now=True)
 
+    def __unicode__(self):
+        return self.phon_form or self.source_form or "Lexeme"
+
 class CognateJudgement(models.Model):
     lexeme = models.ForeignKey(Lexeme)
     cognate_set = models.ForeignKey(CognateSet)
     modified = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return self.id
+
+class LanguageList(models.Model):
+    name = models.CharField(max_length=999)
+    language_ids = models.CommaSeparatedIntegerField(max_length=999)
+    # modified = models.DateTimeField(auto_now=True) # ADD LATER
+
+    def _get_language_id_list(self):
+        return [int(i) for i in self.language_ids.split(",")]
+    language_id_list = property(_get_language_id_list)
+
+    def __unicode__(self):
+        return self.name
+

@@ -15,6 +15,7 @@ import glob
 import os.path
 import sys
 from ielex.lexicon.models import *
+from ielex.utilities import int2alpha
 
 # Populate Meaning database
 for line in file("ludewig_terms.tab"):
@@ -43,9 +44,8 @@ for line in file("dyen_iso.tab"):
         l = Language(ascii_name=name.title(),
                 utf8_name=name.title().replace("_"," "))
     l.save()
-    if iso_code not in ("xto", "hit", "txb"):
-        d = DyenName(language=l, name=name)
-        d.save()
+    d = DyenName(language=l, name=name)
+    d.save()
 
 # Change a couple of names
 for (code, name) in [("nld", "Dutch"), ("eng", "English")]:

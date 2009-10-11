@@ -3,24 +3,29 @@
 <head>
     <title>{% block title %}{% endblock %}</title>
     <style>
-      body {
-        font-family: sans-serif;
-      }
-      h1 { 
-	letter-spacing: 3px;
-	padding: 6px;
-	background: #CF9;
-      }
-      tr.even { background: #CCFF99 }
-      tr.odd { background: #CCCCCC }
+{% include "ielex.css" %}
     </style>
 </head>
 <body>
+  <div id="container">
+    <div id="top">
+    {% block top %}{% endblock %}
+    </div>
+
+    <div id="controls">
+    {% block controls %}{% endblock %}
+    </div>
+
+    <div id="content">
     {% block content %}{% endblock %}
+    </div>
+
+    <div id="footer">
     {% block footer %}
-    <hr>
     <small>Indo European LEXicon version 0.1</small>
     {% endblock %}
+    </div>
+  </div>
 </body>
 </html>
 

@@ -1,0 +1,45 @@
+
+tr.even { background: #CCFF99 }
+tr.odd { background: #CCCCCC }
+
+#container {
+  font-family: sans-serif;
+  width: 99%;
+  margin: 10px auto;
+  background-color: #fff;
+  color: #333;
+  border: 1px solid gray;
+}
+
+#top {
+  padding: .5em;
+  background-color: #cf9;
+  border-bottom: 1px solid gray;
+}
+
+#top h1 {
+  letter-spacing: 3px;
+  padding: 6px;
+  margin: 0;
+}
+
+#content {
+  margin-right: 26%;
+  padding: 1%;
+  border-right: 1px solid gray;
+}
+
+#controls {
+  float: right;
+  width: 24%;
+  padding: 1%;
+}
+
+#footer {
+  clear: both;
+  margin: 0;
+  padding: .5em;
+  color: #333;
+  background-color: #ddd;
+  border-top: 1px solid gray;
+}

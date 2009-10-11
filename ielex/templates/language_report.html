@@ -2,21 +2,23 @@
 
 {% block title %}Word list report: {{ language.utf8_name }}{% endblock %}
 
-{% block content %}
-<h1>{{ language.utf8_name }}</h1>
+{% block top %}<h1>{{ language.utf8_name }}</h1>{% endblock %}
 
+{% block content %}
 <table>
   <tr>
     <th>ID</th>
     <th>Meaning</th>
     <th>Source Form</th>
+    <th>Phonological Form</th>
     <th>Cognate Set</th>
   </tr>
   {% for lexeme in lexemes %}
   <tr class="{% cycle 'odd' 'even' %}">
-    <td><a href="{% url word-report lexeme.meaning.id %}">{{ lexeme.meaning.id }}</a></td>
+    <td>{{ lexeme.meaning.id }}</a></td>
     <td><a href="{% url word-report lexeme.meaning.id %}">{{ lexeme.meaning.gloss }}</a></td>
     <td>{{ lexeme.source_form }}</td>
+    <td>{{ lexeme.phon_form }}</td>
     <td>{% for cogset in lexeme.cognate_set.all %}{{ cogset.id }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</td>
   </tr>
   {% endfor %}

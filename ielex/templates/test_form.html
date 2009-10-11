@@ -1,0 +1,36 @@
+<html>
+<head>
+    <title>Test</title>
+</head>
+<body>
+{% if selection %}
+<strong>{{ selection }}</strong>
+{% endif %}
+{% if pets %}
+<ul>
+  {% for pet in pets %}
+  <li>{{ pet }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+<form action="" method="post">
+<legend>Change selection</legend>
+<p><input type="checkbox" name="pets" value="hamster" /> Hamster<br />
+<input type="checkbox" name="pets" value="rabbit" /> Rabbit<br />
+<input type="checkbox" name="pets" value="rat" /> Rat<br />
+<input type="checkbox" name="pets" value="penguin" /> Penguin<br />
+</p>
+<p>
+<select name="selection">
+  <option>select named set...</option>
+  <option>Set 1</option>
+  <option>Set 2</option>
+  <option>Set 3</option>
+</select>
+<input type="submit" value="Change" />
+</fieldset>
+</p></form>
+
+</body>
+</html>
+

@@ -9,9 +9,9 @@ urlpatterns = patterns('',
     # Front Page
     ('^$', view_frontpage),
     # List of languages in the database
-    ('^languages/$', view_languages),
+    url('^languages/$', view_languages, name="language-listing"),
     # List of meanings in the database
-    ('^words/$', view_words),
+    url('^words/$', view_words, name="word-listing"),
     # Swadesh list for one language
     url(r'^language/([a-zA-Z0-9_ ]+)/$', report_language,
             name="language-report"), # use with {% url language-report English %}
@@ -23,6 +23,7 @@ urlpatterns = patterns('',
     # Select which words to consider (e.g. Swadesh 100)
     #('^select\/words/$', view_words),
 
+    (r'^test-form/$', test_form),
 
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),

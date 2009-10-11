@@ -5,17 +5,20 @@ from django.shortcuts import render_to_response
 from ielex.lexicon.models import *
 
 def view_frontpage(request):
-    return HttpResponse("Indo European LEXicon")
+    return render_to_response("frontpage.html")
 
 def view_languages(request):
     languages = Language.objects.all()
-    return render_to_response("language_list.html", {"languages":languages})
+    language_list = LanguageList.objects.get(id=1)
+    return render_to_response("language_list.html", {"languages":languages,
+            "language_list":language_list})
     # t = get_template("language_list.html")
     # html = t.render(Context({"language":language}))
     # return HttpResponse(html)
 
 def view_words(request):
-    return HttpResponse("Word list")
+    meanings = Meaning.objects.all()
+    return render_to_response("meaning_list.html", {"meanings":meanings})
 
 def report_language(request, language):
     # languages = None
@@ -42,8 +45,16 @@ def report_language(request, language):
 def report_word(request, word):
     if word.isdigit():
         meaning = Meaning.objects.get(id=word)
+        return HttpResponseRedirect("/word/%s/" % meaning.gloss)
     else:
         meaning = Meaning.objects.get(gloss=word)
     lexemes = Lexeme.objects.filter(meaning=meaning)
     return render_to_response("word_report.html", {"lexemes":lexemes,
         "meaning":meaning})
+
+def test_form(request):
+    selection = request.POST.get("selection","")
+    pets = request.POST.getlist("pets")
+    return render_to_response('test_form.html',
+            {"selection":selection, "pets":pets})
+

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}IELEX{% endblock %}
+
+{% block content %}
+<h1>INDO-EUROPEAN LEXICAL COGNACY DATABASE</h1>
+<p>
+<ul>
+<li><a href="{% url language-listing %}">Languages</a></li>
+<li><a href="{% url word-listing %}">Lexemes</a></li>
+</ul>
+</p>
+
+{% endblock %}
+
+{# vim: set ft=htmldjango: #}
