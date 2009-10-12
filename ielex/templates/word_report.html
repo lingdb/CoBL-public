@@ -5,13 +5,55 @@
 {% block top %}<h1>{{ meaning.description }}</h1>{% endblock %}
 
 {% block content %}
+{% ifequal action "add" %} {# add a word #}
+<form action=".." method="post" name="banana">
+  <fieldset><legend>Add a new row<legend>
+    <table>
+      <tr> {# Language drop box #}
+	<td>Language name:</td>
+	<td>
+	  <select name="language">
+            <option>Select...</option>
+	    {% for language in languages %}
+	    <option>{{ language.utf8_name }}</option>
+	    {% endfor %}
+	  </select>
+	</td>
+      </tr>
+      <tr> {# Source form input box #}
+	<td>Form in source:</td>
+	<td>
+	  <input name="source_form">
+	</td>
+      </tr>
+      <tr> {# Phonological form input box #}
+	<td>Phonological form:</td>
+	<td>
+	  <input name="phon_form">
+	</td>
+      </tr>
+      <tr> {# Cognate class drop-down #}
+	<td>Cognate class:</td>
+	<td>
+	  <select name="cognate_class_alias">
+	    {% for cogset_option in all_cogset_aliases %}
+	    <option{% ifequal cogset_option "none" %} selected="selected"{% endifequal %}>{{ cogset_option }}</option>
+	    {% endfor %}
+	  </select>
+	</td>
+      </tr>
+    </table>
+    <input type="submit" value="Add" name="add"><input type="submit" value="Cancel" name="add">
+  </fieldset>
+</form>
+{% endifequal %}
 <table>
   <tr>
     <th>ID</th>
     <th>Language</th>
     <th>Source Form</th>
     <th>Phonological Form</th>
-    <th>Cognate Set</th>
+    <th>Cognate Class</th>
   </tr>
   {% for lexeme in lexemes %}
   <tr class="{% cycle 'odd' 'even' %}">
@@ -22,7 +64,7 @@
     <td>{% for cogset in lexeme.cognate_class.all %}
 	  {% ifequal action "edit" %} {# drop down selection boxes #}
 	    <form action="" method="post">
-	      <select name="{{ lexeme.id }}" onchange="this.form.submit()">
+	      <select name="{{lexeme.id}},{{ cogset.id }}" onchange="this.form.submit()">
 	      {% for cogset_option in all_cogset_aliases %}
 		<option{% ifequal cogset_option cogset.alias %} selected="selected"{% endifequal %}>{{ cogset_option }}</option>
 	      {% endfor %}
@@ -30,8 +72,8 @@
 	    </form>
 	  {% else %}{# comma separated list #}
 	    {{ cogset.alias }}
+	    {% if forloop.last %}{% else %}, {% endif %}
 	  {% endifequal %}
-	  {% if forloop.last %}{% else %}, {% endif %}
 	{% endfor %}
 	{% ifequal action "edit" %} {# Handle missing cognate sets #}
 	  {% if not lexeme.cognate_class.count %}
@@ -56,8 +98,19 @@
   <ul>
     <li><a href="/word/{{ meaning.gloss }}/">default view</a></li>
     <li><a href="/word/{{ meaning.gloss }}/edit/">edit cognate judgements</a></li>
-    <li><a href="/word{{ meaning.gloss }}/add/">add cognate judgement</a></li>
+    <li><a href="/word/{{ meaning.gloss }}/add/">add word</a></li>
   </ul>
+</p>
+<p class="help">In the cognate class column:
+  <ul>
+    <li>Choose <strong>none</strong> to delete a cognate judgement</li>
+    <li>Choose <strong>add</strong> to create a new cognate class </li>
+    <li>Otherwise choose <strong>A</strong>, <strong>B</strong>,
+        <strong>C</strong>, ...
+  </ul>
+Only add a new class if you're planning to use it for at least two languages.
+Note that a word <i>can</i> registered as belonging to two classes, but
+normally it shouldn't.
 </p>
 {% endblock %}
 

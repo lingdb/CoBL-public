@@ -8,12 +8,18 @@ class Language(models.Model):
     def __unicode__(self):
         return self.ascii_name
 
+    class Meta:
+        ordering = ["utf8_name"]
+
 class DyenName(models.Model):
     language = models.ForeignKey(Language)
     name = models.CharField(max_length=999)
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        ordering = ["name"]
 
 class Meaning(models.Model):
     gloss = models.CharField(max_length=64) # one word name
@@ -23,6 +29,9 @@ class Meaning(models.Model):
 
     def __unicode__(self):
         return self.gloss.upper()
+
+    class Meta:
+        ordering = ["gloss"]
 
 class CognateSet(models.Model):
     alias = models.CharField(max_length=3)
@@ -44,6 +53,9 @@ class CognateSet(models.Model):
     def __unicode__(self):
         return unicode(self.id)
 
+    class Meta:
+        ordering = ["alias"]
+
 class Lexeme(models.Model):
     language = models.ForeignKey(Language)
     meaning = models.ForeignKey(Meaning)
@@ -57,6 +69,9 @@ class Lexeme(models.Model):
 
     def __unicode__(self):
         return self.phon_form or self.source_form or "Lexeme"
+
+    class Meta:
+        order_with_respect_to = "language"
 
 class CognateJudgement(models.Model):
     lexeme = models.ForeignKey(Lexeme)
@@ -77,4 +92,7 @@ class LanguageList(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        ordering = ["name"]
 
