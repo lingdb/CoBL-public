@@ -31,11 +31,11 @@
 <form action="" method="post">
 <fieldset>
 <legend>Language List<legend>
-<select name="selection">
+<select name="selection" onchange="this.form.submit()" >
   {% for langlist in language_lists %}
   <option{% ifequal langlist.name current_list.name %} selected="selected"{% endifequal %}>{{ langlist.name }}</option>
   {% endfor %}
-</select><input type="submit" value="change" />
+</select><!-- <input type="submit" value="change" /> -->
 <p id="help">Limit all results to a predefined list of languages</p>
 </fieldset>
 </form>
