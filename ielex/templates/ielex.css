@@ -1,12 +1,17 @@
  /* CLASS DEFINITIONS */
 body { font-family: sans-serif }
+
 p.help { text-size: small }
+
 tr.even { background: #cf9 }
+
 tr.odd { background: #ccc }
+
 td.rightalign { text-align: right }
+
 li {
   margin: 0px;
-  padding: 0px
+  padding: 0px;
 }
 
 /* ID DEFINITIONS */
