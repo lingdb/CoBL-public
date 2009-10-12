@@ -13,25 +13,19 @@ def view_frontpage(request):
             "meanings":Meaning.objects.count()})
 
 def view_languages(request):
-    #debug = ["DEBUG"]
     set_cookie = False
-    if "language_list_name" in request.POST: #.get("language_list_name",""):
+    if "language_list_name" in request.POST:
         language_list_name = request.POST.get("language_list_name")
         set_cookie = True
-        #debug.append("POST")
     elif "language_list_name" in request.COOKIES:
         language_list_name = request.COOKIES["language_list_name"]
-        #debug.append("COOKIE")
     else:
         language_list_name = "GA2003"
-        #debug.append("DEFAULT")
-    #debug.append(language_list_name)
     languages = Language.objects.all()
     language_lists = LanguageList.objects.all()
     current_list = LanguageList.objects.get(name=language_list_name)
     response = render_to_response("language_list.html", {"languages":languages,
             "language_lists":language_lists, "current_list":current_list})
-            #"debug":" : ".join(debug)})
     response.set_cookie("language_list_name", language_list_name)
     return response
 
@@ -47,7 +41,6 @@ def report_language(request, language):
     else:
         try:
             language = Language.objects.get(ascii_name=language)
-            did_you_mean = None
         except Language.DoesNotExist:
             try:
                 language = Language.objects.get(ascii_name__istartswith=language)
@@ -61,6 +54,16 @@ def report_language(request, language):
     return render_to_response("language_report.html", {"language":language,
         "lexemes":lexemes, "meanings":meanings})
 
+def get_languages(request):
+    """get languages, respecting language_list selection"""
+    if "language_list_name" in request.COOKIES:
+        language_list_name = request.COOKIES["language_list_name"]
+    else:
+        language_list_name = "GA2003" # default
+    languages = Language.objects.filter(
+            id__in=LanguageList.objects.get(name=language_list_name).language_id_list)
+    return languages
+
 def report_word(request, word, action=""):
     debug = ""
     # normalize the url
@@ -73,12 +76,7 @@ def report_word(request, word, action=""):
         meaning = Meaning.objects.get(gloss=word)
 
     # language list
-    if "language_list_name" in request.COOKIES:
-        language_list_name = request.COOKIES["language_list_name"]
-    else:
-        language_list_name = "GA2003"
-    languages = Language.objects.filter(
-            id__in=LanguageList.objects.get(name=language_list_name).language_id_list)
+    languages = get_languages(request)
 
     # basic view
     lexemes = Lexeme.objects.select_related().filter( meaning=meaning,
