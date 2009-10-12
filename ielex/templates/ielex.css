@@ -1,8 +1,15 @@
-
+ /* CLASS DEFINITIONS */
 body { font-family: sans-serif }
-tr.even { background: #CCFF99 }
-tr.odd { background: #CCCCCC }
+p.help { text-size: small }
+tr.even { background: #cf9 }
+tr.odd { background: #ccc }
+td.rightalign { text-align: right }
+li {
+  margin: 0px;
+  padding: 0px
+}
 
+/* ID DEFINITIONS */
 #container {
   width: 99%;
   margin: 10px auto;
@@ -44,4 +51,8 @@ tr.odd { background: #CCCCCC }
   border-top: 1px solid gray;
 }
 
-p.help { text-size: small }
+#debug {
+  padding: 3px;
+  background-color: #ccc;
+  border: 2px dashed #306;
+}

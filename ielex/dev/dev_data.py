@@ -2,18 +2,24 @@
 Populate a database with some basic data
 
 From bash::
-    $ ^C # stop server
     $ rm db.sqlite
     $ python manage.py syncdb
-    $ python manage.py shell
 
-Then from ipython::
-
-    In [1]: %run dev/dev_data.py
+Then run this script (will only work from its base directory)
 """
 import glob
-import os.path
+import os
 import sys
+import time
+
+start_time = time.time()
+print "-> I E L E X"
+print "->"
+print "-> Setting up environment"
+from django.core.management import setup_environ
+sys.path.append(os.path.abspath("../.."))
+from ielex import settings
+setup_environ(settings)
 from ielex.lexicon.models import *
 from ielex.utilities import int2alpha
 
@@ -117,3 +123,5 @@ for meaning in cogset_aliases:
         c.alias = int2alpha(i+1)
         c.save()
     print
+
+print "-> Complete (%s seconds)" % int(time.time() - start_time)

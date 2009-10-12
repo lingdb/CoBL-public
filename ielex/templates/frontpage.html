@@ -7,13 +7,31 @@
 {% endblock %}
 
 {% block content %}
-<p>
-<ul>
-<li><a href="{% url language-listing %}">Languages</a></li>
-<li><a href="{% url word-listing %}">Lexemes</a></li>
-</ul>
+<p> The database contains:
+<table>
+	<tr class="odd">
+		<td>Languages</td>
+		<td class="rightalign">{{ languages }}</td>
+	</tr>
+	<tr class="even">
+		<td>Words</td>
+		<td class="rightalign">{{ lexemes }}</td>
+	</tr>
+	<tr class="odd">
+		<td>Meanings</td>
+		<td class="rightalign">{{ meanings }}</td>
+	</tr>
+	<tr class="even">
+		<td>Cognate Sets</td>
+		<td class="rightalign">{{ cognate_sets }}</td>
+	</tr>
+</table>
 </p>
 
+{% endblock %}
+
+{% block controls %}
+{% include "go_to_snippet.html" %}
 {% endblock %}
 
 {# vim: set ft=htmldjango: #}

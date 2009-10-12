@@ -25,8 +25,8 @@
 {% endblock %}
 
 {% block controls %}
-<p><strong>Controls</strong></p>
-<p>Go to <a href="/words/">list of meanings</a></p>
+{% include "go_to_snippet.html" %}
+<h2>Controls</h2>
 <p>
 <form action="" method="post">
 <fieldset>
@@ -36,7 +36,7 @@
   <option{% ifequal langlist.name current_list.name %} selected="selected"{% endifequal %}>{{ langlist.name }}</option>
   {% endfor %}
 </select><!-- <input type="submit" value="change" /> -->
-<p id="help">Limit all results to a predefined list of languages</p>
+<p class="help">Limit all results to a predefined list of languages</p>
 </fieldset>
 </form>
 </p>

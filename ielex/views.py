@@ -5,7 +5,11 @@ from django.shortcuts import render_to_response
 from ielex.lexicon.models import *
 
 def view_frontpage(request):
-    return render_to_response("frontpage.html")
+    return render_to_response("frontpage.html",
+            {"lexemes":Lexeme.objects.count(),
+            "cognate_sets":CognateSet.objects.count(),
+            "languages":Language.objects.count(),
+            "meanings":Meaning.objects.count()})
 
 def view_languages(request):
     #debug = ["DEBUG"]
@@ -56,16 +60,53 @@ def report_language(request, language):
     return render_to_response("language_report.html", {"language":language,
         "lexemes":lexemes, "meanings":meanings})
 
-def report_word(request, word):
-    # debug = []
+def report_word(request, word, action=""):
+    debug = ""
+    # normalize the url
+    if action:
+        action = action.strip("/")
     if word.isdigit():
         meaning = Meaning.objects.get(id=word)
         return HttpResponseRedirect("/word/%s/" % meaning.gloss)
     else:
         meaning = Meaning.objects.get(gloss=word)
+
+    # basic view
     lexemes = Lexeme.objects.filter(meaning=meaning)
+    judgements = CognateJudgement.objects.filter(lexeme__in=lexemes)
+    all_cogsets = set([j.cognate_set for j in judgements])
+    all_cogset_aliases = [""] + sorted([c.alias for c in all_cogsets]) + ["new"]
+
+    # editing cognate sets
+    if request.POST:
+        assert len(request.POST) == 1
+        target_lexeme_id, target_cogset_alias = request.POST.items()[0]
+        target_lexeme_id = int(target_lexeme_id)
+        debug = "change lexeme %s to %s" % (target_lexeme_id, target_cogset_alias)
+        target_lexeme = Lexeme.objects.get(id=target_lexeme_id)
+        cogset_dict = dict([(c.alias, c) for c in all_cogsets])
+        try:
+            target_cogset = cogset_dict[target_cogset_alias]
+            if CognateJudgement.objects.filter(lexeme=target_lexeme):
+                target_judgement = CognateJudgement.objects.get(lexeme=target_lexeme)
+                target_judgement.cognate_set = target_cogset
+            else:
+                target_judgement = CognateJudgement.objects.create(lexeme=target_lexeme,
+                        cognate_set=target_cogset)
+        except KeyError:
+            if not target_cogset_alias:
+                # delete it
+                target_judgement = CognateJudgement.objects.get(lexeme=target_lexeme)
+                target_judgement.delete()
+            else:
+                assert target_cogset_alias == "new" # just to make sure, may
+        target_judgement.save()
+        lexemes = Lexeme.objects.filter(meaning=meaning)
+        judgements = CognateJudgement.objects.filter(lexeme__in=lexemes)
+
     return render_to_response("word_report.html", {"lexemes":lexemes,
-        "meaning":meaning})
+        "meaning":meaning, "action":action, "all_cogset_aliases":all_cogset_aliases,
+        "debug":debug})
 
 def test_form(request):
     selection = request.POST.get("selection","")
