@@ -27,7 +27,7 @@ def next_alias(l, ignore=[]):
 # cogset_aliases = {}
 # for cj in CognateJudgement.objects.all():
 #     cogset_aliases.setdefault(cj.lexeme.meaning.gloss,
-#             set()).add(cj.cognate_set.id)
+#             set()).add(cj.cognate_class.id)
 
 
 if __name__ == "__main__":

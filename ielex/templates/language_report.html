@@ -19,7 +19,7 @@
     <td><a href="{% url word-report lexeme.meaning.id %}">{{ lexeme.meaning.gloss }}</a></td>
     <td>{{ lexeme.source_form }}</td>
     <td>{{ lexeme.phon_form }}</td>
-    <td>{% for cogset in lexeme.cognate_set.all %}{{ cogset.alias }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</td>
+    <td>{% for cogset in lexeme.cognate_class.all %}{{ cogset.alias }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</td>
   </tr>
   {% endfor %}
 </table>

@@ -8,7 +8,7 @@ from ielex.utilities import next_alias
 def view_frontpage(request):
     return render_to_response("frontpage.html",
             {"lexemes":Lexeme.objects.count(),
-            "cognate_sets":CognateSet.objects.count(),
+            "cognate_classes":CognateSet.objects.count(),
             "languages":Language.objects.count(),
             "meanings":Meaning.objects.count()})
 
@@ -75,7 +75,7 @@ def report_word(request, word, action=""):
     # basic view
     lexemes = Lexeme.objects.filter(meaning=meaning)
     judgements = CognateJudgement.objects.filter(lexeme__in=lexemes)
-    all_cogsets = set([j.cognate_set for j in judgements])
+    all_cogsets = set([j.cognate_class for j in judgements])
     all_cogset_aliases = ["none"]+sorted([c.alias for c in all_cogsets])+["new"]
 
     # editing cognate sets
@@ -87,41 +87,42 @@ def report_word(request, word, action=""):
                 target_cogset_alias)
         target_lexeme = Lexeme.objects.get(id=target_lexeme_id)
         cogset_dict = dict([(c.alias, c) for c in all_cogsets])
-        try: # change judgement to another
+        try: # change one judgement to another
             target_cogset = cogset_dict[target_cogset_alias]
             if CognateJudgement.objects.filter(lexeme=target_lexeme):
                 target_judgement = CognateJudgement.objects.get(
                         lexeme=target_lexeme)
-                target_judgement.cognate_set = target_cogset
+                target_judgement.cognate_class = target_cogset
             else:
                 target_judgement = CognateJudgement.objects.create(
-                        lexeme=target_lexeme, cognate_set=target_cogset)
+                        lexeme=target_lexeme, cognate_class=target_cogset)
+            target_judgement.save()
         except KeyError:
             special_codes = ["none","new"]
             if target_cogset_alias in special_codes:
-                if target_cogset_alias == "none":
+                if target_cogset_alias == "none": # delete coding
                     target_judgement = CognateJudgement.objects.get(
                             lexeme=target_lexeme)
                     debug = "DELETED TJ-%s" % target_judgement.id
-                    target_judgement.delete()
-                    #target_cogset.save()
-                elif target_cogset_alias == "new":
-                    # make new cognate set
+                    target_judgement.delete() # deletes the database row, not
+                                              # the python object
+                    # target_judgement.save() # this _recreated_ the object !@#!
+                elif target_cogset_alias == "new": # make new cognate set
                     new_alias = next_alias(cogset_dict.keys(),
                                 ignore=special_codes)
                     target_cogset = CognateSet.objects.create(alias=new_alias)
                     target_cogset.save()
                     target_judgement = CognateJudgement.objects.create(
-                            lexeme=target_lexeme, cognate_set=target_cogset)
+                            lexeme=target_lexeme, cognate_class=target_cogset)
                     debug = "NEW alias %s" % new_alias
-                target_judgement.save()
+                    target_judgement.save()
             else:
                 assert not target_cogset_alias # just to make sure
 
         # redo basic view
         lexemes = Lexeme.objects.filter(meaning=meaning)
         judgements = CognateJudgement.objects.filter(lexeme__in=lexemes)
-        all_cogsets = set([j.cognate_set for j in judgements])
+        all_cogsets = set([j.cognate_class for j in judgements])
         all_cogset_aliases = ["none"]+sorted([c.alias for c in
             all_cogsets])+["new"]
 

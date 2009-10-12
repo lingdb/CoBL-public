@@ -15,10 +15,6 @@ class DyenName(models.Model):
     def __unicode__(self):
         return self.name
 
-# class MeaningCount(models.Manager):
-#     def count_lexemes(self):
-#         return Lexeme.objects.filter(meaning=self).count()
-
 class Meaning(models.Model):
     gloss = models.CharField(max_length=64) # one word name
     description = models.CharField(max_length=64) # show name
@@ -27,9 +23,6 @@ class Meaning(models.Model):
 
     def __unicode__(self):
         return self.gloss.upper()
-
-#class CogSetMeaningManager(models.Manager):
-#    def by_meaning(self, meaning):
 
 class CognateSet(models.Model):
     alias = models.CharField(max_length=3)
@@ -54,7 +47,7 @@ class CognateSet(models.Model):
 class Lexeme(models.Model):
     language = models.ForeignKey(Language)
     meaning = models.ForeignKey(Meaning)
-    cognate_set = models.ManyToManyField(CognateSet,
+    cognate_class = models.ManyToManyField(CognateSet,
             through="CognateJudgement")
     source_form = models.CharField(max_length=999)
     phon_form = models.CharField(max_length=999)
@@ -67,7 +60,7 @@ class Lexeme(models.Model):
 
 class CognateJudgement(models.Model):
     lexeme = models.ForeignKey(Lexeme)
-    cognate_set = models.ForeignKey(CognateSet)
+    cognate_class = models.ForeignKey(CognateSet)
     modified = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):

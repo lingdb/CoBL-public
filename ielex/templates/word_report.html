@@ -19,7 +19,7 @@
     <td><a href="{% url language-report lexeme.language.id %}">{{ lexeme.language.utf8_name }}</a></td>
     <td>{{ lexeme.source_form }}</td>
     <td>{{ lexeme.phon_form }}</td>
-    <td>{% for cogset in lexeme.cognate_set.all %}
+    <td>{% for cogset in lexeme.cognate_class.all %}
 	  {% ifequal action "edit" %} {# drop down selection boxes #}
 	    <form action="" method="post">
 	      <select name="{{ lexeme.id }}" onchange="this.form.submit()">
@@ -34,11 +34,11 @@
 	  {% if forloop.last %}{% else %}, {% endif %}
 	{% endfor %}
 	{% ifequal action "edit" %} {# Handle missing cognate sets #}
-	  {% if not lexeme.cognate_set.count %}
+	  {% if not lexeme.cognate_class.count %}
 	    <form action="" method="post">
 	      <select name="{{ lexeme.id }}" onchange="this.form.submit()">
 	      {% for cogset_option in all_cogset_aliases %}
-		<option{% if not cogset_option %} selected="selected"{% endif %}>{{ cogset_option }}</option>
+		<option{% ifequal cogset_option "none" %} selected="selected"{% endifequal %}>{{ cogset_option }}</option>
 	      {% endfor %}
 	      </select>
 	    </form>

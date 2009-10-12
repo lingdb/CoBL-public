@@ -82,7 +82,7 @@ l.save()
 # Populate lexical data and link to CognateSet objects vis CognateJudgement
 # objects
 print "--> Populating lexical data"
-cognate_sets = {} # alias: CognateSet
+cognate_classes = {} # alias: CognateSet
 for filename in glob.glob("dyen_data/*.csv"):
     dyen_name = filename[10:-4]
     print "--->", dyen_name
@@ -93,18 +93,18 @@ for filename in glob.glob("dyen_data/*.csv"):
         row = line.split("\t")
         meaning = Meaning.objects.get(id=int(row[0]))
         source_form = row[1].strip()
-        cognate_set_alias = "%s-%s" % (row[0], row[5])
+        cognate_class_alias = "%s-%s" % (row[0], row[5])
         l = Lexeme(language=language,
                 meaning=meaning,
                 source_form=source_form)
         l.save()
-        if cognate_set_alias not in cognate_sets:
+        if cognate_class_alias not in cognate_classes:
             c = CognateSet()
-            cognate_sets[cognate_set_alias] = c
+            cognate_classes[cognate_class_alias] = c
             c.save()
         else:
-            c = cognate_sets[cognate_set_alias]
-        j = CognateJudgement.objects.create(lexeme=l, cognate_set=c)
+            c = cognate_classes[cognate_class_alias]
+        j = CognateJudgement.objects.create(lexeme=l, cognate_class=c)
         j.save()
 
 
@@ -113,7 +113,7 @@ print "--> Making CognateSet aliases"
 cogset_aliases = {}
 for cj in CognateJudgement.objects.all():
     cogset_aliases.setdefault(cj.lexeme.meaning.gloss,
-            set()).add(cj.cognate_set.id)
+            set()).add(cj.cognate_class.id)
 
 for meaning in cogset_aliases:
     print "--->", meaning,
