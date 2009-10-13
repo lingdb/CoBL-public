@@ -89,8 +89,8 @@ def report_word(request, word, action=""):
     languages = get_languages(request)
 
     # basic view
-    lexemes = Lexeme.objects.select_related().filter( meaning=meaning,
-            language__in=languages).order_by( "language") 
+    lexemes = Lexeme.objects.select_related().filter(meaning=meaning,
+            language__in=languages).order_by("language") 
             # select_related follows foreign keys
     judgements = CognateJudgement.objects.filter(lexeme__in=lexemes)
     all_cogsets = set([j.cognate_class for j in judgements])
