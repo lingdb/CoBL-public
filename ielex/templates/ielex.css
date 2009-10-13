@@ -9,6 +9,10 @@ tr.odd { background: #ccc }
 
 td.rightalign { text-align: right }
 
+strong {
+  color: #360;
+}
+
 li {
   margin: 0px;
   padding: 0px;
@@ -47,6 +51,11 @@ li {
   padding: 1%;
 }
 
+#controls h2 {
+  font-size: 120%;
+  color: #360;
+}
+
 #footer {
   clear: both;
   margin: 0;
@@ -57,7 +66,7 @@ li {
 }
 
 #debug {
-  display: none; /* comment this out to show debug messages */
+ /* display: none; comment this out to show debug messages */
   padding: 3px;
   background-color: #ccc;
   border: 2px dashed #306;

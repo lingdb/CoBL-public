@@ -113,23 +113,43 @@ class LanguageList(models.Model):
     class Meta:
         ordering = ["name"]
 
-class Citation(models.Model):
+# class Citation(models.Model):
+#     RELIABILITY_CHOICES = (
+#             ("A", "High"),
+#             ("B", "Good, but needs checking"),
+#             ("C", "Doubtful")
+#             )
+#     source = models.ForeignKey(Source)
+#     pages = models.CharField(max_length=999)
+#     reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
+#     comment = models.CharField(max_length=999)
+#     modified = models.DateTimeField(auto_now=True)
+
+class CognateJudgementCitation(models.Model):
     RELIABILITY_CHOICES = (
             ("A", "High"),
             ("B", "Good, but needs checking"),
             ("C", "Doubtful")
             )
+    cognate_judgement = models.ForeignKey(CognateJudgement)
     source = models.ForeignKey(Source)
     pages = models.CharField(max_length=999)
     reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
     comment = models.CharField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
 
-class CognateJudgementCitation(Citation):
-    cognate_judgement = models.ForeignKey(CognateJudgement)
-
-class LexemeCitation(Citation):
+class LexemeCitation(models.Model):
+    RELIABILITY_CHOICES = (
+            ("A", "High"),
+            ("B", "Good, but needs checking"),
+            ("C", "Doubtful")
+            )
     lexeme = models.ForeignKey(Lexeme)
+    source = models.ForeignKey(Source)
+    pages = models.CharField(max_length=999)
+    reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
+    comment = models.CharField(max_length=999)
+    modified = models.DateTimeField(auto_now=True)
 
 class History(models.Model):
     """Text history of changes to the database (e.g. for reporting in the

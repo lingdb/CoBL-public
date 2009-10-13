@@ -5,9 +5,11 @@
 {% block top %}<h1>{{ meaning.description }}</h1>{% endblock %}
 
 {% block content %}
+
+
 {% ifequal action "add" %} {# add a word #}
 <p>
-<form action=".." method="post" name="banana">
+<form action=".." method="post">
   <fieldset><legend>Add a new row<legend>
     <table>
       <tr> {# Language drop box #}
@@ -48,6 +50,53 @@
   </fieldset>
 </form></p>
 {% endifequal %}
+
+
+{% ifequal action "change" %}
+<p>
+<form action=".." method="post">
+  <fieldset><legend>Change values<legend>
+    <table>
+      <tr> {# Language drop box #}
+	<td>Language name:</td>
+	<td>
+	  <select name="language">
+            <option>Select...</option>
+	    {% for language in languages %}
+	    <option {% ifequal change_lexeme.language language %} selected="selected"{% endifequal %}>{{ language.utf8_name }}</option>
+	    {% endfor %}
+		    </select><small> obligatory</small>
+	</td>
+      </tr>
+      <tr> {# Source form input box #}
+	<td>Form in source:</td>
+	<td>
+	  <input name="source_form" value="{{ change_lexeme.source_form }}"><small> obligatory</small>
+	</td>
+      </tr>
+      <tr> {# Phonological form input box #}
+	<td>Phonological form:</td>
+	<td>
+	  <input name="phon_form" value="{{ change_lexeme.phon_form }}">
+	</td>
+      </tr>
+      <tr> {# Cognate class drop-down #}
+	<td>Cognate class:</td>
+	<td>
+	  <select name="cognate_class_alias">
+	    {% for cogset_option in all_cogset_aliases %}
+	    <option{% ifequal cogset_option "none" %} selected="selected"{% endifequal %}>{{ cogset_option }}</option>
+	    {% endfor %}
+	  </select>
+	</td>
+      </tr>
+    </table>
+    <input type="submit" value="Submit changes" name="change"><input type="submit" value="Cancel" name="change">
+  </fieldset>
+</form>
+</p>
+{% endifequal %}
+
 <table>
   <tr>
     <th>ID</th>
@@ -60,7 +109,7 @@
   <tr class="{% cycle 'odd' 'even' %}">
     <td>{{ lexeme.language.id }}</td>
     <td><a href="{% url language-report lexeme.language.id %}">{{ lexeme.language.utf8_name }}</a></td>
-    <td>{{ lexeme.source_form }}</td>
+    <td><a href="/source/word/{{ lexeme.id }}">{{ lexeme.source_form }}</a></td>
     <td>{{ lexeme.phon_form }}</td>
     <td>{% for cogset in lexeme.cognate_class.all %}
 	  {% ifequal action "edit" %} {# drop down selection boxes #}
@@ -88,6 +137,21 @@
 	  {% endif %}
 	{% endifequal %}
     </td>
+    {% ifequal action "edit" %}
+    <td>
+      <form action="/word/{{ meaning.gloss }}/edit/{{ lexeme.id }}/" method="post">
+        <input type="submit" value="Change" name="change">
+	<input type="hidden" value="{{ lexeme.id }}" name="lexeme_id">
+      </form>
+    </td>
+    <td>
+      <form action="" method="post">
+        <input type="submit" value="Delete" name="delete">
+	<input type="hidden" value="{{ lexeme.id }}" name="lexeme_id">
+      </form>
+    </td>
+    </form>
+    {% endifequal  %}
   </tr>
   {% endfor %}
 </table>
@@ -95,7 +159,8 @@
 
 {% block controls %}
 {% include "go_to_snippet.html" %}
-<p><strong>This page:</strong>
+<h2>This page</h2>
+<p>Current language list: <strong>{{ language_list_name }}</strong>
   <ul>
     <li><a href="/word/{{ meaning.gloss }}/">default view</a></li>
     <li><a href="/word/{{ meaning.gloss }}/edit/">edit cognate judgements</a></li>

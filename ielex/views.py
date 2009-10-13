@@ -53,10 +53,13 @@ def report_language(request, language):
             language = Language.objects.get(ascii_name=language)
         except Language.DoesNotExist:
             try:
-                language = Language.objects.get(ascii_name__istartswith=language)
-                return HttpResponseRedirect("/language/%s/" % language.ascii_name)
+                language = Language.objects.get(
+                        ascii_name__istartswith=language)
+                return HttpResponseRedirect("/language/%s/" %
+                        language.ascii_name)
             except Language.MultipleObjectsReturned:
-                languages = Language.objects.filter(ascii_name__icontains=language)
+                languages = Language.objects.filter(
+                        ascii_name__icontains=language)
                 return render_to_response("choose_language.html",
                         {"languages":languages})
     meanings = Meaning.objects.all()
@@ -69,28 +72,31 @@ def get_languages(request):
     if "language_list_name" in request.COOKIES:
         language_list_name = request.COOKIES["language_list_name"]
     else:
-        language_list_name = "GA2003" # default
+        language_list_name = "all" # default
     languages = Language.objects.filter(
-            id__in=LanguageList.objects.get(name=language_list_name).language_id_list)
-    return languages
+            id__in=LanguageList.objects.get(
+            name=language_list_name).language_id_list)
+    return languages, language_list_name
 
-def report_word(request, word, action=""):
+def report_word(request, word, action="", lexeme_id=None):
     debug = ""
+    change_lexeme = None
     # normalize the url
     if action:
         action = action.strip("/")
     if word.isdigit():
         meaning = Meaning.objects.get(id=word)
+        # if there are actions and lexeme_ids these should be preserved too
         return HttpResponseRedirect("/word/%s/" % meaning.gloss)
     else:
         meaning = Meaning.objects.get(gloss=word)
 
     # language list
-    languages = get_languages(request)
+    languages, language_list_name = get_languages(request)
 
     # basic view
     lexemes = Lexeme.objects.select_related().filter(meaning=meaning,
-            language__in=languages).order_by("language") 
+            language__in=languages).order_by("language")
             # select_related follows foreign keys
     judgements = CognateJudgement.objects.filter(lexeme__in=lexemes)
     all_cogsets = set([j.cognate_class for j in judgements])
@@ -99,12 +105,16 @@ def report_word(request, word, action=""):
     special_codes = ["none","add"]
 
     if request.POST:
+        debug = str(request.POST) ###
         if "add" in request.POST:
             if request.POST["add"] == "Add":
-                language = Language.objects.get(utf8_name=request.POST["language"])
+                language = Language.objects.get(
+                        utf8_name=request.POST["language"])
                 source_form = request.POST["source_form"]
                 phon_form = request.POST["phon_form"]
-                assert source_form or phon_form
+                assert source_form and phon_form # handle error gracefully
+                if not source_form:
+                    source_form = phon_form
                 cognate_class_alias = request.POST["cognate_class_alias"]
                 try:
                     cognate_class = cogset_dict[cognate_class_alias]
@@ -112,8 +122,8 @@ def report_word(request, word, action=""):
                     if cognate_class_alias == "add":
                         new_alias = next_alias(cogset_dict.keys(),
                                     ignore=special_codes)
-                        cognate_class = CognateSet.objects.create(alias=new_alias)
-                        # cognate_class.save()
+                        cognate_class = CognateSet.objects.create(
+                                alias=new_alias)
                     else:
                         cognate_class = None
                 lexeme = Lexeme.objects.create(language=language,
@@ -124,12 +134,25 @@ def report_word(request, word, action=""):
                 if cognate_class:
                     cj = CognateJudgement.objects.create(lexeme=lexeme,
                             cognate_class=cognate_class)
-                    # cj.save()
 
                 debug = "|".join(debug)
             else:
                 assert request.POST["add"] == "Cancel"
                 debug = "CANCELLED"
+        elif "change" in request.POST:
+            try:
+                debug = "CHANGE lexeme %s" % request.POST["lexeme_id"]
+                change_lexeme = Lexeme.objects.get(id=lexeme_id)
+                action="change"
+            except KeyError:
+                if request.POST["change"] != "Cancel":
+                    # XXX do changes to database here XXX
+                    debug = "CHANGE COMPLETE"
+                else:
+                    debug = "CANCELLED CHANGE"
+        elif "delete" in request.POST:
+            debug = "DELETE lexeme %s" % request.POST["lexeme_id"]
+            Lexeme.objects.get(id=request.POST["lexeme_id"]).delete()
         else: # editing cognate sets
             assert len(request.POST) == 1
             name, target_cogset_alias = request.POST.items()[0]
@@ -155,36 +178,51 @@ def report_word(request, word, action=""):
                 if target_cogset_alias in special_codes:
                     if target_cogset_alias == "none": # delete coding
                         target_judgement = CognateJudgement.objects.get(
-                                lexeme__id=lexeme_id, cognate_class__id=cogset_id)
+                                lexeme__id=lexeme_id,
+                                cognate_class__id=cogset_id)
                         debug = "DELETED TJ-%s" % target_judgement.id
-                        target_judgement.delete() # deletes the database row, not
-                                                  # the python object
-                        # target_judgement.save() # this _recreated_ the object !@#!
+                        target_judgement.delete()
                     elif target_cogset_alias == "add": # make new cognate set
                         new_alias = next_alias(cogset_dict.keys(),
                                     ignore=special_codes)
-                        target_cogset = CognateSet.objects.create(alias=new_alias)
-                        # target_cogset.save()
+                        target_cogset = CognateSet.objects.create(
+                                alias=new_alias)
                         target_judgement = CognateJudgement.objects.create(
                                 lexeme=Lexeme.objects.get(id=lexeme_id),
                                 cognate_class=target_cogset)
                         debug = "NEW alias %s" % new_alias
-                        # target_judgement.save()
                 else:
                     assert not target_cogset_alias # just to make sure
 
             # redo basic view after edit
             lexemes = Lexeme.objects.filter(meaning=meaning).order_by(
-                    "language", "source_form") 
+                    "language", "source_form")
             judgements = CognateJudgement.objects.filter(lexeme__in=lexemes)
             all_cogsets = set([j.cognate_class for j in judgements])
             all_cogset_aliases = ["none"]+sorted([c.alias for c in
                 all_cogsets])+["add"]
 
-    return render_to_response("word_report.html", {"lexemes":lexemes,
-            "meaning":meaning, "action":action, "languages":languages,
+    return render_to_response("word_report.html",
+            {"lexemes":lexemes,
+            "meaning":meaning,
+            "action":action,
+            "change_lexeme":change_lexeme,
+            "languages":languages,
+            "language_list_name":language_list_name,
             "all_cogset_aliases":all_cogset_aliases,
             "debug":debug})
+
+def word_source(request, lexeme_id):
+    prev_page = request.META["HTTP_REFERER"]
+    lexeme_id = int(lexeme_id)
+    lexeme = Lexeme.objects.get(id=lexeme_id)
+    citations = lexeme.lexemecitation_set.all()
+    sources = Source.objects.filter(lexeme=lexeme)
+    # l.lexemecitation_set.get(source=s).pages
+    return render_to_response("word_source.html", {"lexeme":lexeme,
+        "sources":sources,
+        "citations":citations,
+        "prev_page":prev_page})
 
 def test_form(request):
     selection = request.POST.get("selection","")

@@ -14,10 +14,15 @@ urlpatterns = patterns('',
     url('^words/$', view_words, name="word-listing"),
     # Swadesh list for one language
     url(r'^language/([a-zA-Z0-9_ ]+)/$', report_language,
-            name="language-report"), # use with {% url language-report English %}
+            name="language-report"), # usage {% url language-report English %}
     # All forms in the database with a particular meaning
     url(r'^word/([a-zA-Z0-9_ ]+|\d+)/(edit/|add/)?$', report_word,
             name="word-report"),
+    url(r'^word/([a-zA-Z0-9_ ]+|\d+)/(edit)/(\d+)/$', report_word,
+            name="word-report"),
+    url(r'^source/word/(\d+)/', word_source,
+            name="word-source"),
+
     # Select which languages to consider (e.g. Germanic)
     #('^select\/languages/$', view_languages),
     # Select which words to consider (e.g. Swadesh 100)
