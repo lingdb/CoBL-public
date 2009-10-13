@@ -57,7 +57,7 @@ li {
 }
 
 #debug {
-  /* display: none; */
+  display: none; /* comment this out to show debug messages */
   padding: 3px;
   background-color: #ccc;
   border: 2px dashed #306;

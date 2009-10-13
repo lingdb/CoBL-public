@@ -6,6 +6,7 @@
 
 {% block content %}
 {% ifequal action "add" %} {# add a word #}
+<p>
 <form action=".." method="post" name="banana">
   <fieldset><legend>Add a new row<legend>
     <table>
@@ -17,13 +18,13 @@
 	    {% for language in languages %}
 	    <option>{{ language.utf8_name }}</option>
 	    {% endfor %}
-	  </select>
+		    </select><small> obligatory</small>
 	</td>
       </tr>
       <tr> {# Source form input box #}
 	<td>Form in source:</td>
 	<td>
-	  <input name="source_form">
+	  <input name="source_form"><small> obligatory</small>
 	</td>
       </tr>
       <tr> {# Phonological form input box #}
@@ -45,7 +46,7 @@
     </table>
     <input type="submit" value="Add" name="add"><input type="submit" value="Cancel" name="add">
   </fieldset>
-</form>
+</form></p>
 {% endifequal %}
 <table>
   <tr>

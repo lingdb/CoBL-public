@@ -1,5 +1,20 @@
 from django.db import models, connection
 
+class Source(models.Model):
+
+    TYPE_CHOICES = (
+            ("P", "Publication"),
+            ("E", "Expert"),
+            ("U", "URL")
+            )
+    type_code = models.CharField(max_length=1, choices=TYPE_CHOICES)
+    description = models.TextField()
+    citation_text = models.TextField()
+    modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["type_code", "citation_text"]
+
 class Language(models.Model):
     iso_code = models.CharField(max_length=3)
     ascii_name = models.CharField(max_length=999)
@@ -38,7 +53,7 @@ class CognateSet(models.Model):
     reconstruction = models.CharField(max_length=999)
     notes = models.TextField()
     modified = models.DateTimeField(auto_now=True)
-    objects = models.Manager() # all rows
+    objects = models.Manager() # XXX delete?
 
     def _get_meaning_set(self):
         return set([cj.lexeme.meaning for cj in self.cognatejudgement_set.all()])
@@ -65,6 +80,7 @@ class Lexeme(models.Model):
     phon_form = models.CharField(max_length=999)
     gloss = models.CharField(max_length=999)
     notes = models.TextField()
+    source = models.ManyToManyField(Source, through="LexemeCitation")
     modified = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
@@ -77,6 +93,7 @@ class CognateJudgement(models.Model):
     lexeme = models.ForeignKey(Lexeme)
     cognate_class = models.ForeignKey(CognateSet)
     modified = models.DateTimeField(auto_now=True)
+    source = models.ManyToManyField(Source, through="CognateJudgementCitation")
 
     def __unicode__(self):
         return unicode(self.id)
@@ -84,7 +101,7 @@ class CognateJudgement(models.Model):
 class LanguageList(models.Model):
     name = models.CharField(max_length=999)
     language_ids = models.CommaSeparatedIntegerField(max_length=999)
-    # modified = models.DateTimeField(auto_now=True) # ADD LATER
+    modified = models.DateTimeField(auto_now=True)
 
     def _get_language_id_list(self):
         return [int(i) for i in self.language_ids.split(",")]
@@ -95,4 +112,29 @@ class LanguageList(models.Model):
 
     class Meta:
         ordering = ["name"]
+
+class Citation(models.Model):
+    RELIABILITY_CHOICES = (
+            ("A", "High"),
+            ("B", "Good, but needs checking"),
+            ("C", "Doubtful")
+            )
+    source = models.ForeignKey(Source)
+    pages = models.CharField(max_length=999)
+    reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
+    comment = models.CharField(max_length=999)
+    modified = models.DateTimeField(auto_now=True)
+
+class CognateJudgementCitation(Citation):
+    cognate_judgement = models.ForeignKey(CognateJudgement)
+
+class LexemeCitation(Citation):
+    lexeme = models.ForeignKey(Lexeme)
+
+class History(models.Model):
+    """Text history of changes to the database (e.g. for reporting in the
+    recent changes pane). It is the responsibility of views to add text to
+    this"""
+    added = models.DateTimeField(auto_now_add=True)
+    description = models.TextField()
 

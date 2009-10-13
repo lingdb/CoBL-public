@@ -12,7 +12,7 @@ digraph g { // neato -Tpdf -O database_structure.dot
   lexeme [pos="2,3!",style=filled,
 	label="{LEXEMES |<id> id |<lid> language_id |<mid> meaning_id | source_form | phon_form | gloss | notes }"];
   source [pos="7,3!",style=filled,
-	label="{SOURCES |<id> id |{type_code |{book | person}}| description | citation }"];
+	label="{SOURCES |<id> id |{type_code |{book | person | url}}| description | citation }"];
   meaning [pos="1,2!",style=filled,
 	label="{MEANINGS |<id> id | dyen_code | gloss }"];
   language [pos="1,4!",style=filled,

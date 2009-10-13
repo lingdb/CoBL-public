@@ -12,7 +12,17 @@ def view_frontpage(request):
             "languages":Language.objects.count(),
             "meanings":Meaning.objects.count()})
 
+def update_language_list_all():
+    try:
+        ll = LanguageList.objects.get(name="all")
+    except:
+        ll = LanguageList.objects.create(name="all")
+    ll.language_ids = ",".join([str(l.id) for l in Language.objects.all()])
+    ll.save()
+    return
+
 def view_languages(request):
+    update_language_list_all()
     set_cookie = False
     if "language_list_name" in request.POST:
         language_list_name = request.POST.get("language_list_name")
@@ -20,7 +30,7 @@ def view_languages(request):
     elif "language_list_name" in request.COOKIES:
         language_list_name = request.COOKIES["language_list_name"]
     else:
-        language_list_name = "GA2003"
+        language_list_name = "all"
     languages = Language.objects.all()
     language_lists = LanguageList.objects.all()
     current_list = LanguageList.objects.get(name=language_list_name)
@@ -103,18 +113,18 @@ def report_word(request, word, action=""):
                         new_alias = next_alias(cogset_dict.keys(),
                                     ignore=special_codes)
                         cognate_class = CognateSet.objects.create(alias=new_alias)
-                        cognate_class.save()
+                        # cognate_class.save()
                     else:
                         cognate_class = None
                 lexeme = Lexeme.objects.create(language=language,
                         meaning=meaning,
                         source_form=source_form,
                         phon_form=phon_form)
-                lexeme.save()
+                # lexeme.save()
                 if cognate_class:
                     cj = CognateJudgement.objects.create(lexeme=lexeme,
                             cognate_class=cognate_class)
-                    cj.save()
+                    # cj.save()
 
                 debug = "|".join(debug)
             else:
@@ -154,17 +164,18 @@ def report_word(request, word, action=""):
                         new_alias = next_alias(cogset_dict.keys(),
                                     ignore=special_codes)
                         target_cogset = CognateSet.objects.create(alias=new_alias)
-                        target_cogset.save()
+                        # target_cogset.save()
                         target_judgement = CognateJudgement.objects.create(
                                 lexeme=Lexeme.objects.get(id=lexeme_id),
                                 cognate_class=target_cogset)
                         debug = "NEW alias %s" % new_alias
-                        target_judgement.save()
+                        # target_judgement.save()
                 else:
                     assert not target_cogset_alias # just to make sure
 
             # redo basic view after edit
-            lexemes = Lexeme.objects.filter(meaning=meaning)
+            lexemes = Lexeme.objects.filter(meaning=meaning).order_by(
+                    "language", "source_form") 
             judgements = CognateJudgement.objects.filter(lexeme__in=lexemes)
             all_cogsets = set([j.cognate_class for j in judgements])
             all_cogset_aliases = ["none"]+sorted([c.alias for c in
