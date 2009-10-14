@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}IELEX{% endblock %}
+
+{% block top %}
+<h1>
+  {{ lexeme.language.utf8_name }}: 
+  {% if lexeme.phon_form %}
+    {{ lexeme.phon_form }}
+  {% else %}
+    {{ lexeme.source_form }}
+  {% endif %}
+</h1>
+{% endblock %}
+
+{% block content %}
+  <ul>
+  {% for citation in citations %}
+    <li>{{ citation.source.citation_text }}
+      {% if citation.pages %}
+        {% ifequal citation.type_code "P" %}
+          (pages: {{citation.pages}})
+        {% else %}
+          ({{citation.pages}})
+        {% endifequal %}
+      {% endif %}
+    </li>
+  {% endfor %}
+  </ul>
+{% endblock %}
+
+{% block controls %}
+{% include "go_to_snippet.html" %}
+<a href="{{ prev_page }}">Back to previous page</a>
+{% endblock %}
+
+{# vim: set ft=htmldjango: #}
