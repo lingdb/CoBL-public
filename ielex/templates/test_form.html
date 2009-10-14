@@ -1,35 +1,18 @@
 <html>
 <head>
-    <title>Test</title>
+  <title>T E S T</title>
 </head>
 <body>
-{% if selection %}
-<strong>{{ selection }}</strong>
-{% endif %}
-{% if pets %}
-<ul>
-  {% for pet in pets %}
-  <li>{{ pet }}</li>
-  {% endfor %}
-</ul>
-{% endif %}
-<form action="" method="post">
-<legend>Change selection</legend>
-<p><input type="checkbox" name="pets" value="hamster" /> Hamster<br />
-<input type="checkbox" name="pets" value="rabbit" /> Rabbit<br />
-<input type="checkbox" name="pets" value="rat" /> Rat<br />
-<input type="checkbox" name="pets" value="penguin" /> Penguin<br />
-</p>
-<p>
-<select name="selection">
-  <option>Furry</option>
-  <option>Feathery</option>
-  <option>Scaly</option>
-</select>
-<input type="submit" value="Change" />
-</fieldset>
-</p></form>
-
+    <form action="" method="post">
+        <table>
+            {{ form.as_table }}
+        </table>
+        {% if no_submit_button %}
+        {% else %}
+        <input type="submit" value="Submit">
+        {% endif %}
+    </form>
 </body>
 </html>
+
 

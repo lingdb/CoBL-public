@@ -8,7 +8,7 @@ class Source(models.Model):
             ("U", "URL")
             )
     type_code = models.CharField(max_length=1, choices=TYPE_CHOICES)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     citation_text = models.TextField()
     modified = models.DateTimeField(auto_now=True)
 
@@ -112,18 +112,6 @@ class LanguageList(models.Model):
 
     class Meta:
         ordering = ["name"]
-
-# class Citation(models.Model):
-#     RELIABILITY_CHOICES = (
-#             ("A", "High"),
-#             ("B", "Good, but needs checking"),
-#             ("C", "Doubtful")
-#             )
-#     source = models.ForeignKey(Source)
-#     pages = models.CharField(max_length=999)
-#     reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
-#     comment = models.CharField(max_length=999)
-#     modified = models.DateTimeField(auto_now=True)
 
 class CognateJudgementCitation(models.Model):
     RELIABILITY_CHOICES = (

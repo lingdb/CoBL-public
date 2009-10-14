@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 from ielex.views import *
+from ielex import settings
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -23,13 +24,6 @@ urlpatterns = patterns('',
     url(r'^source/word/(\d+)/', word_source,
             name="word-source"),
 
-    # Select which languages to consider (e.g. Germanic)
-    #('^select\/languages/$', view_languages),
-    # Select which words to consider (e.g. Swadesh 100)
-    #('^select\/words/$', view_words),
-
-    (r'^test-form/$', test_form),
-
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),
 
@@ -39,4 +33,20 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # (r'^admin/', include(admin.site.urls)),
-)
+    )
+
+
+if settings.DEBUG: # additional urls for testing purposes
+    urlpatterns += patterns('',
+        (r'^media/(?P<path>.*)$', 'django.views.static.serve',  
+         {'document_root':     settings.MEDIA_ROOT}),
+
+    # XXX zap me
+    # (r'^test-form/$', test_form),
+    (r'^test-form/new-word/$', test_form_newword),
+    (r'^test-form/choose-source/$', test_form_choosesource),
+    (r'^test-form/choose-language/$', test_form_chooselanguage),
+    (r'^test-form/new-source/$', test_form_newsource),
+    (r'^test-success/', test_success),
+
+    )

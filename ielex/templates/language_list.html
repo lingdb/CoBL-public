@@ -7,12 +7,15 @@
 
 {% block content %}
 <table>
-  <tr>
-    <th>Count</th>
-    <th>Language Name</th>
-    <th>ISO-639-3 Code</th>
-    <th>Included</th>
-  </tr>
+  <thead> {# handy for the print view #}
+    <tr>
+      <th>Count</th>
+      <th>Language Name</th>
+      <th>ISO-639-3 Code</th>
+      <th>Included</th>
+    </tr>
+  </thead>
+  <tbody>
   {% for language in languages %}
   <tr class="{% cycle 'odd' 'even' %}">
       <td>{{ forloop.counter }}</td>
@@ -21,6 +24,7 @@
       <td>{% if language.id|in_list:current_list.language_id_list %}*{% endif %}</td>
     </tr>
   {% endfor %}
+  </tbody>
 </table>
 {% endblock %}
 

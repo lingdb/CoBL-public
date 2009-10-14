@@ -57,6 +57,22 @@ Django equivalent of a database trigger::
 
 From: http://www.eflorenzano.com/blog/post/database-triggers-arent-evil-and-they-actually-kin/
 
+Database Backups
+----------------
+
+Very good level of compression:
+
+ =================== ========= ===========
+ original file        2360320  db.sqlite3
+ text dump            3402426  db.dump
+ bzip2ed dump          329966  db.dump.bz2
+ reconsitiuted file   2350080  tmp.sqlite3
+ =================== ========= ===========
+
+A useful commandline is::
+
+  sqlite3 db.sqlite3 .dump | bzip2 > db.dump.bz2
+
 vim
 ---
 

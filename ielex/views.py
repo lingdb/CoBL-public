@@ -17,6 +17,7 @@ def update_language_list_all():
         ll = LanguageList.objects.get(name="all")
     except:
         ll = LanguageList.objects.create(name="all")
+    ll = LanguageList.objects.get(name="all")
     ll.language_ids = ",".join([str(l.id) for l in Language.objects.all()])
     ll.save()
     return
@@ -69,14 +70,18 @@ def report_language(request, language):
 
 def get_languages(request):
     """get languages, respecting language_list selection"""
+    language_list_name = get_current_language_list(request)
+    languages = Language.objects.filter(
+            id__in=LanguageList.objects.get(
+            name=language_list_name).language_id_list)
+    return languages
+
+def get_current_language_list(request):
     if "language_list_name" in request.COOKIES:
         language_list_name = request.COOKIES["language_list_name"]
     else:
         language_list_name = "all" # default
-    languages = Language.objects.filter(
-            id__in=LanguageList.objects.get(
-            name=language_list_name).language_id_list)
-    return languages, language_list_name
+    return language_list_name
 
 def report_word(request, word, action="", lexeme_id=None):
     debug = ""
@@ -92,7 +97,8 @@ def report_word(request, word, action="", lexeme_id=None):
         meaning = Meaning.objects.get(gloss=word)
 
     # language list
-    languages, language_list_name = get_languages(request)
+    languages = get_languages(request)
+    language_list_name = get_current_language_list(request)
 
     # basic view
     lexemes = Lexeme.objects.select_related().filter(meaning=meaning,
@@ -224,9 +230,53 @@ def word_source(request, lexeme_id):
         "citations":citations,
         "prev_page":prev_page})
 
-def test_form(request):
-    selection = request.POST.get("selection","")
-    pets = request.POST.getlist("pets")
-    return render_to_response('test_form.html',
-            {"selection":selection, "pets":pets})
 
+from ielex.forms import EnterNewSourceForm
+def test_form_newsource(request):
+    if request.method == 'POST':
+        form = EnterNewSourceForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect('/test-success/')
+    else:
+        form = EnterNewSourceForm()
+    return render_to_response('test_form.html', {'form': form})
+
+from ielex.forms import ChooseSourceForm
+def test_form_choosesource(request):
+    if request.method == 'POST':
+        form = ChooseSourceForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect('/test-success/')
+    else:
+        form = ChooseSourceForm()
+    return render_to_response('test_form.html', {'form': form})
+
+from ielex.forms import AddNewWordForm
+# this works:
+def test_form_newword(request):
+    if request.method == 'POST':
+        form = AddNewWordForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect('/test-success/')
+    else:
+        form = AddNewWordForm()
+    form.fields["language"].queryset = get_languages(request)
+    return render_to_response('test_form.html', {'form': form})
+
+from ielex.forms import ChooseLanguageForm
+def test_form_chooselanguage(request):
+    no_submit_button = True
+    if request.method == 'POST':
+        form = ChooseLanguageForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect('/test-success/')
+    else:
+        form = ChooseLanguageForm()
+    # note that initial values have to be set using id rather than the object
+    # itself
+    form.fields["language"].initial = Language.objects.get(ascii_name='Bengali').id
+    return render_to_response('test_form.html', {'form': form,
+        "no_submit_button":no_submit_button})
+
+def test_success(request):
+    return HttpResponse("Success!")
