@@ -1,12 +1,15 @@
 from django import forms
-from ielex.views import get_languages
-from ielex.lexicon.models import Language, Source
+# from ielex.views import get_languages
+from ielex.lexicon.models import Language, Source, LanguageList
 
 
 class ChooseLanguageField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.utf8_name or obj.ascii_name
 
+class ChooseLanguageListField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.name
 
 class ChooseSourceField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
@@ -37,6 +40,11 @@ class EnterNewSourceForm(forms.ModelForm):
 
 class ChooseLanguageForm(forms.Form):
     language = ChooseLanguageField(queryset=Language.objects.all(),
+            widget=forms.Select(attrs={"onchange":"this.form.submit()"}))
+
+class ChooseLanguageListForm(forms.Form):
+    language_list = ChooseLanguageListField(
+            queryset=LanguageList.objects.all(),
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}))
 
 

@@ -1,7 +1,13 @@
- /* CLASS DEFINITIONS */
+ /* ELEMENT AND CLASS DEFINITIONS */
+
 body { font-family: sans-serif }
 
 p.help { text-size: small }
+
+tr {
+  color: #360;
+  vertical-align: top;
+}
 
 tr.even { background: #cf9 }
 
@@ -17,6 +23,7 @@ li {
   margin: 0px;
   padding: 0px;
 }
+
 
 /* ID DEFINITIONS */
 #container {

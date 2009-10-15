@@ -41,7 +41,6 @@ if settings.DEBUG: # additional urls for testing purposes
         (r'^media/(?P<path>.*)$', 'django.views.static.serve',  
          {'document_root':     settings.MEDIA_ROOT}),
 
-    # XXX zap me
     # (r'^test-form/$', test_form),
     (r'^test-form/new-word/$', test_form_newword),
     (r'^test-form/choose-source/$', test_form_choosesource),

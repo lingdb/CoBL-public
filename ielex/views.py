@@ -3,6 +3,7 @@ from django.template import Context
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from ielex.lexicon.models import *
+from ielex.forms import ChooseLanguageListForm
 from ielex.utilities import next_alias
 
 def view_frontpage(request):
@@ -24,19 +25,23 @@ def update_language_list_all():
 
 def view_languages(request):
     update_language_list_all()
-    set_cookie = False
-    if "language_list_name" in request.POST:
-        language_list_name = request.POST.get("language_list_name")
-        set_cookie = True
-    elif "language_list_name" in request.COOKIES:
-        language_list_name = request.COOKIES["language_list_name"]
+    language_list_name = request.COOKIES.get("language_list_name","all")
+    if request.method == 'POST':
+        form = ChooseLanguageListForm(request.POST)
+        if form.is_valid():
+            current_list = form.cleaned_data["language_list"]
+            language_list_name = current_list.name
     else:
-        language_list_name = "all"
-    languages = Language.objects.all()
-    language_lists = LanguageList.objects.all()
+        form = ChooseLanguageListForm()
+    form.fields["language_list"].initial = LanguageList.objects.get(
+            name=language_list_name).id
+
+    languages = Language.objects.all().order_by("utf8_name")
     current_list = LanguageList.objects.get(name=language_list_name)
-    response = render_to_response("language_list.html", {"languages":languages,
-            "language_lists":language_lists, "current_list":current_list})
+    response = render_to_response("language_list.html",
+            {"languages":languages,
+            "form":form,
+            "current_list":current_list})
     response.set_cookie("language_list_name", language_list_name)
     return response
 
@@ -231,6 +236,8 @@ def word_source(request, lexeme_id):
         "prev_page":prev_page})
 
 
+# -- TESTING ---------------------------------------------------------
+
 from ielex.forms import EnterNewSourceForm
 def test_form_newsource(request):
     if request.method == 'POST':
@@ -269,7 +276,8 @@ def test_form_chooselanguage(request):
     if request.method == 'POST':
         form = ChooseLanguageForm(request.POST)
         if form.is_valid():
-            return HttpResponseRedirect('/test-success/')
+            return HttpResponse(form.cleaned_data["language"])
+            #return HttpResponseRedirect('/test-success/')
     else:
         form = ChooseLanguageForm()
     # note that initial values have to be set using id rather than the object

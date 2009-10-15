@@ -1,4 +1,4 @@
-from django.db import models, connection
+from django.db import models
 
 class Source(models.Model):
 
@@ -19,12 +19,13 @@ class Language(models.Model):
     iso_code = models.CharField(max_length=3)
     ascii_name = models.CharField(max_length=999)
     utf8_name = models.CharField(max_length=999)
+    sort_key = models.IntegerField(null=True, unique=True)
 
     def __unicode__(self):
         return self.ascii_name
 
     class Meta:
-        ordering = ["utf8_name"]
+        ordering = ["sort_key", "utf8_name"]
 
 class DyenName(models.Model):
     language = models.ForeignKey(Language)
@@ -103,9 +104,28 @@ class LanguageList(models.Model):
     language_ids = models.CommaSeparatedIntegerField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
 
-    def _get_language_id_list(self):
+    def _get_list(self):
         return [int(i) for i in self.language_ids.split(",")]
-    language_id_list = property(_get_language_id_list)
+    def _set_list(self, listobj):
+        return ",".join([str(i) for i in listobj])
+    language_id_list = property(_get_list, _set_list)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
+
+class LanguageSortOrder(models.Model):
+
+    name = models.CharField(max_length=999)
+    language_ids = models.CommaSeparatedIntegerField(max_length=999)
+
+    def _get_list(self):
+        return [int(i) for i in self.language_ids.split(",")]
+    def _set_list(self, listobj):
+        return ",".join([str(i) for i in listobj])
+    language_id_list = property(_get_list, _set_list)
 
     def __unicode__(self):
         return self.name
