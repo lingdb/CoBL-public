@@ -197,10 +197,4 @@ for filename in glob.glob("ludewig_data/*.csv"):
                     pages=pages)
 
 
-from ielex import update_language_list_all
-update_language_list_all()
-
-
-
-
 print "-> Complete (%s seconds)" % int(time.time() - start_time)

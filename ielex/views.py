@@ -88,6 +88,9 @@ def get_current_language_list(request):
         language_list_name = "all" # default
     return language_list_name
 
+def report_lexeme(request, lexeme_id, action=""):
+    return render_to_response("report_lexeme.html")
+
 def report_word(request, word, action="", lexeme_id=None):
     debug = ""
     change_lexeme = None
@@ -123,9 +126,9 @@ def report_word(request, word, action="", lexeme_id=None):
                         utf8_name=request.POST["language"])
                 source_form = request.POST["source_form"]
                 phon_form = request.POST["phon_form"]
-                assert source_form and phon_form # handle error gracefully
                 if not source_form:
                     source_form = phon_form
+                assert source_form
                 cognate_class_alias = request.POST["cognate_class_alias"]
                 try:
                     cognate_class = cogset_dict[cognate_class_alias]

@@ -21,8 +21,12 @@ urlpatterns = patterns('',
             name="word-report"),
     url(r'^word/([a-zA-Z0-9_ ]+|\d+)/(edit)/(\d+)/$', report_word,
             name="word-report"),
+    url(r'^lexeme/(\d+)/(edit/)?$', report_lexeme, name="report-lexeme"),
+    url(r'^lexeme/(\d+)/sources/(edit/|add/)?$', report_lexeme, name="report-lexeme"),
     url(r'^source/word/(\d+)/', word_source,
             name="word-source"),
+    # url(r'/source/judgement/(\d+/)(edit/)?', lexeme_source, 
+    #         name="lexeme-source"),
 
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),
