@@ -88,7 +88,8 @@ def get_current_language_list(request):
         language_list_name = "all" # default
     return language_list_name
 
-def report_lexeme(request, lexeme_id, action="", citation_id=0):
+def report_lexeme(request, lexeme_id, action="", citation_id=0,
+        cognate_class_id=0):
     lexeme = Lexeme.objects.get(id=lexeme_id)
     lexeme_citations = lexeme.lexemecitation_set.all()
     sources = Source.objects.filter(lexeme=lexeme)
@@ -135,6 +136,23 @@ def report_lexeme(request, lexeme_id, action="", citation_id=0):
                             pages=cd["pages"])
                     citation.save()
                     return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+            elif action == "edit-cognate":
+                form = EditCitationForm(request.POST)
+                if "cancel" in form.data: # has to be tested before data is cleaned
+                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                if form.is_valid():
+                    cd = form.cleaned_data
+                    citation = CognateJudgementCitation.objects.get(id=citation_id)
+                    if not cd["include"]:
+                        citation.delete()
+                    else:
+                        citation.pages = cd["pages"]
+                        citation.save()
+                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+            elif action == "add-judgement":
+                return HttpResponse("add-judgement with POST data")
+            else:
+                assert not action
 
         # first visit
         else:
@@ -150,6 +168,15 @@ def report_lexeme(request, lexeme_id, action="", citation_id=0):
                         "pages":citation.pages})
             elif action == "add-citation":
                 form = AddCitationForm()
+            elif action == "edit-cognate":
+                citation = CognateJudgementCitation.objects.get(id=citation_id)
+                form = EditCitationForm(
+                        initial={"include":True,
+                        "pages":citation.pages})
+            elif action == "add-judgement":
+                return HttpResponse("add-judgement (new)")
+            else:
+                assert not action
 
     return render_to_response("report_lexeme.html",
             {"lexeme":lexeme,

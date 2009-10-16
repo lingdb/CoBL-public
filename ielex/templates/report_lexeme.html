@@ -5,14 +5,15 @@
 
 {% block content %}
 
-
+{# -- Lexeme -------------------------------------------------------- #}
 <h2>Lexeme data</h2>
 
 {% ifequal action "edit-lexeme" %} 
 <form action="" method="post">
 <fieldset>
 <table>
-<tr><td class="rowname">Language:</td><td>{{ lexeme.language.utf8_name }}</td></tr>
+  <tr><td class="rowname">Language:</td><td><a href="/language/{{ lexeme.language.ascii_name }}">{{ lexeme.language.utf8_name }}</a></td></tr>
+<tr><td class="rowname">Meaning:</td><td><a href="/meaning/{{ lexeme.meaning.gloss }}">{{ lexeme.meaning.gloss }}</a></td></tr>
 <tr><td class="rowname">Source form:</td><td>{{ form.source_form }}</td></tr>
 <tr><td class="rowname">Phonological form:</td><td>{{ form.phon_form }}</td></tr>
 <tr><td class="rowname">Notes:</td><td>{{ form.notes }}</td></tr>
@@ -32,7 +33,8 @@
 {% else %}
 <fieldset><legend><a href="/lexeme/{{ lexeme.id }}/edit-lexeme">edit</a></legend>
 <table>
-<tr><td class="rowname">Language:</td><td>{{ lexeme.language.utf8_name }}</td></tr>
+  <tr><td class="rowname">Language:</td><td><a href="/language/{{ lexeme.language.ascii_name }}">{{ lexeme.language.utf8_name }}</a></td></tr>
+<tr><td class="rowname">Meaning:</td><td><a href="/meaning/{{ lexeme.meaning.gloss }}">{{ lexeme.meaning.gloss }}</a></td></tr>
 <tr><td class="rowname">Source form:</td><td>{{ lexeme.source_form }}</td></tr>
 <tr><td class="rowname">Phonological form:</td><td>{{ lexeme.phon_form }}</td></tr>
 <tr><td class="rowname">Notes:</td><td>{{ lexeme.notes }}</td></tr>
@@ -46,32 +48,30 @@
 {% endifequal %}
 
 
+{# -- Sources ------------------------------------------------------- #}
 <h2>Source{{ lexeme.lexemecitation_set.count|pluralize}} of lexical data</h2>
 
 {% for citation in lexeme.lexemecitation_set.all %}
   {% ifequal citation.id active_citation_id %}
-    <form action="" method="post">
-    <fieldset>
-    <table>
-    {{ citation.source.citation_text }}
-    {{ form.as_table }}
-    </table>
-    <input type="submit" name="change_lexeme" value="Submit" /> 
-    <input type="submit" name="cancel" value="Cancel" /> 
-    </fieldset>
+    {% ifequal action "edit-citation" %}
+      <form action="" method="post">
+      <fieldset>
+      <table>
+      {{ citation.source.citation_text }}
+      {{ form.as_table }}
+      </table>
+      <input type="submit" name="change_lexeme" value="Submit" /> 
+      <input type="submit" name="cancel" value="Cancel" /> 
+      </fieldset>
     </form>
+    {% else %}
+      <fieldset><legend><a href="/lexeme/{{ lexeme.id }}/edit-citation/{{ citation.id }}">edit</a></legend>
+	{% include "snippets/citation_report.html" %}
+      </fieldset>
+    {% endifequal %}
   {% else %}
   <fieldset><legend><a href="/lexeme/{{ lexeme.id }}/edit-citation/{{ citation.id }}">edit</a></legend>
-  {{ citation.source.citation_text }}
-  <table>
-  <tr>
-    <td class="rowname">
-      {% ifequal citation.source.type_code "P" %}Pages:{% endifequal %}
-      {% ifequal citation.source.type_code "E" %}Affiliation:{% endifequal %}
-      {% ifequal citation.source.type_code "U" %}URL:{% endifequal %}
-    </td><td>{{citation.pages}}</td>
-  </tr>
-  </table>
+    {% include "snippets/citation_report.html" %}
   </fieldset>
   {% endifequal %}
 {% endfor %}
@@ -85,6 +85,7 @@
   <input type="submit" name="change_lexeme" value="Submit" /> 
   <input type="submit" name="cancel" value="Cancel" /> 
   </fieldset>
+  </form>
 {% else %}
 <fieldset><legend><a href="/lexeme/{{ lexeme.id }}/add-citation">Add citation</a></legend>
   <small>Add a link to a source already in the database</small>
@@ -92,24 +93,48 @@
 {% endifequal %}
 
 
+{# -- Cognate judgements -------------------------------------------- #}
 {% if lexeme.cognatejudgement_set.count %}
 <h2>Source{{ lexeme.cognatejudgement_set.count|pluralize}} of cognate coding</h2>
-  <ul>
-  {% for cj in lexeme.cognatejudgement_set.all %}
-    {% for cjc in cj.cognatejudgementcitation_set.all %}
-    <li>{{ cjc.source.citation_text }}
-      {% if lexeme.cognatejudgement_set.count %}
-      <strong>[cognate class {{ cj.cognate_class.alias }}]</strong> {% endif %}</li>
+{% for cj in lexeme.cognatejudgement_set.all %}
+  <fieldset><legend><strong>Cognate Class {{ cj.cognate_class.alias }}</strong></legend>
+    {% for citation in cj.cognatejudgementcitation_set.all %}
+    {% ifequal action "edit-cognate" %}
+      <form action="" method="post">
+      <fieldset>
+      <table>
+      {{ citation.source.citation_text }}
+      {{ form.as_table }}
+      </table>
+      <input type="submit" name="change_lexeme" value="Submit" /> 
+      <input type="submit" name="cancel" value="Cancel" /> 
+      </fieldset>
+      <form>
+    {% else %}
+      <fieldset><legend><a href="/lexeme/{{ lexeme.id }}/edit-cognate/{{ cj.cognate_class.id }}/{{ citation.id }}">edit</a></legend>
+      {{ citation.source.citation_text }}
+      <table>
+      <tr>
+	<td class="rowname">
+	  {% ifequal citation.source.type_code "P" %}Pages:{% endifequal %}
+	  {% ifequal citation.source.type_code "E" %}Affiliation:{% endifequal %}
+	  {% ifequal citation.source.type_code "U" %}URL:{% endifequal %}
+	</td><td>{{citation.pages}}</td>
+      </tr>
+      </table>
+      </fieldset>
+    {% endifequal %}
     {% endfor %}
-  {% endfor %}
-  </ul>
+  </fieldset>
+{% endfor %}
 {% endif %}
+<fieldset><legend><a href="/lexeme/{{ lexeme.id }}/add-judgement">Add cognate judgement/citation</a></legend>
+  <small>Register this form as belonging to a congate class. Forms <em>can</em> belong to more than one class, but usually shouldn't.</small>
+</fieldset>
 {% endblock %}
 
 {% block controls %}
-<a href="/lexeme/{{ lexeme.id }}/edit">edit</a>
 {% include "snippets/go_to.html" %}
-
 {% endblock %}
 
 {# vim: set ft=htmldjango: #}
