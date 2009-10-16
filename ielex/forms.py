@@ -2,7 +2,6 @@ from django import forms
 # from ielex.views import get_languages
 from ielex.lexicon.models import Language, Source, LanguageList
 
-
 class ChooseLanguageField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.utf8_name or obj.ascii_name
@@ -29,7 +28,6 @@ class ChooseOneSourceField(forms.ModelChoiceField):
                 return s[:l-4]+" ..."
         return truncate(obj.citation_text, 124)
 
-
 class AddNewWordForm(forms.Form):
     # needs some custom validation: requires one of source_form and phon_form,
     # and will copy source_form to phon_form if empty
@@ -51,7 +49,6 @@ class EditLexemeForm(forms.Form):
             label="Notes",
             required=False)
     # sources = ChooseSourcesField(queryset=Source.objects.all())
-
 
 class EnterNewSourceForm(forms.ModelForm):
     class Meta:
@@ -75,5 +72,5 @@ class EditCitationForm(forms.Form):
 
 class AddCitationForm(forms.Form):
     source = ChooseOneSourceField(queryset=Source.objects.all())
-    #type_code = forms.ModelChoiceField( # radio buttons: P E U
+    type_code = forms.ChoiceField(choices=Source.TYPE_CHOICES ,widget=forms.RadioSelect)# radio buttons: P E U
     pages = forms.CharField(required=False)

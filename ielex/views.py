@@ -88,45 +88,74 @@ def get_current_language_list(request):
         language_list_name = "all" # default
     return language_list_name
 
-def report_lexeme(request, lexeme_id, action=""):
+def report_lexeme(request, lexeme_id, action="", citation_id=0):
     lexeme = Lexeme.objects.get(id=lexeme_id)
     lexeme_citations = lexeme.lexemecitation_set.all()
     sources = Source.objects.filter(lexeme=lexeme)
-    if action=="edit":
+    form = None
+    citation_id = int(citation_id)
+
+    if action: # actions are: edit, edit-lexeme, edit-citation, add-citation
+
+        # Handle POST data
         if request.method == 'POST':
-            form = EditLexemeForm(request.POST)
-            if form.is_valid():
+            if action == "edit-lexeme":
+                form = EditLexemeForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
                     return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
-                cd = form.cleaned_data
-                lexeme.source_form = cd["source_form"]
-                lexeme.phon_form = cd["phon_form"]
-                lexeme.notes = cd["notes"]
-                lexeme.save()
-                return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                if form.is_valid():
+                    cd = form.cleaned_data
+                    lexeme.source_form = cd["source_form"]
+                    lexeme.phon_form = cd["phon_form"]
+                    lexeme.notes = cd["notes"]
+                    lexeme.save()
+                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+            elif action == "edit-citation":
+                form = EditCitationForm(request.POST)
+                if "cancel" in form.data: # has to be tested before data is cleaned
+                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                if form.is_valid():
+                    cd = form.cleaned_data
+                    citation = LexemeCitation.objects.get(id=citation_id)
+                    if not cd["include"]:
+                        citation.delete()
+                    else:
+                        citation.pages = cd["pages"]
+                        citation.save()
+                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+            elif action == "add-citation":
+                form = AddCitationForm(request.POST)
+                if "cancel" in form.data: # has to be tested before data is cleaned
+                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                if form.is_valid():
+                    cd = form.cleaned_data
+                    citation = LexemeCitation(
+                            lexeme=lexeme,
+                            source=cd["source"],
+                            pages=cd["pages"])
+                    citation.save()
+                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+
+        # first visit
         else:
-            form = EditLexemeForm(
-                    initial={"source_form":lexeme.source_form,
-                    "phon_form":lexeme.phon_form, 
-                    "notes":lexeme.notes})
-            citation_forms = []
-            for citation in lexeme.lexemecitation_set.all():
-                citation_forms.append((
-                        EditCitationForm(
+            if action == "edit-lexeme":
+                form = EditLexemeForm(
+                        initial={"source_form":lexeme.source_form,
+                        "phon_form":lexeme.phon_form, 
+                        "notes":lexeme.notes})
+            elif action == "edit-citation":
+                citation = LexemeCitation.objects.get(id=citation_id)
+                form = EditCitationForm(
                         initial={"include":True,
-                        "pages":citation.pages}),
-                        citation.source
-                        ))
-            add_citation_form = AddCitationForm()
-    else:
-        form = None
-        citation_forms = []
-        add_citation_form = []
+                        "pages":citation.pages})
+            elif action == "add-citation":
+                form = AddCitationForm()
+
     return render_to_response("report_lexeme.html",
             {"lexeme":lexeme,
+            "action":action,
             "form":form,
-            "citation_forms":citation_forms,
-            "add_citation_form":add_citation_form,
+            "active_citation_id":citation_id
             })
 
 def report_word(request, word, action="", lexeme_id=None):
@@ -327,6 +356,21 @@ def test_form_chooselanguage(request):
     form.fields["language"].initial = Language.objects.get(ascii_name='Bengali').id
     return render_to_response('test_form.html', {'form': form,
         "no_submit_button":no_submit_button})
+
+def test_form(request):
+    if request.method == 'POST':
+        form = ChooseSourceForm(request.POST)
+        other_form = AddNewWordForm(request.POST)
+        if form.is_valid and other_form.is_valid():
+            return HttpResponse(form.data.items())
+        #return HttpResponse(request.POST.items())
+            #return HttpResponse(form.cleaned_data["language"])
+    else:
+        form = ChooseSourceForm()
+        other_form = AddNewWordForm()
+    return render_to_response('test_other_form.html', {'form': form,
+        "other_form":other_form})
+
 
 def test_success(request):
     return HttpResponse("Success!")

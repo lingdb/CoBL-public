@@ -1,18 +1,14 @@
 {% extends "base.html" %}
-
 {% block title %}Lexeme report{% endblock %}
 
-{% block top %}
-  <h1>{% include "snippets/language_lexeme.html" %}
-</h1>{% endblock %}
+{% block top %}<h1>{% include "snippets/language_lexeme.html" %}</h1>{% endblock %}
 
 {% block content %}
 
 
 <h2>Lexeme data</h2>
 
-
-{% if form %} {# FORM #}
+{% ifequal action "edit-lexeme" %} 
 <form action="" method="post">
 <fieldset>
 <table>
@@ -33,27 +29,8 @@
  <input type="submit" name="cancel" value="Cancel" /> 
 </fieldset>
 </form>
-{% for citation_form, citation_source in citation_forms %}
-<form>
-  <fieldset>
-  <table>
-  {{ citation_source.citation_text }}
-  {{ citation_form.as_table }}
-  </table>
-  <input type="submit" name="change_citation" value="Submit" /> 
-  </fieldset>
-</form>
-<form>
-  <fieldset><legend>Add citation</legend>
-  <table>
-  {{ add_citation_form.as_table }}
-  </table>
-  <input type="submit" name="add_citation" value="Submit" /> 
-  </fieldset>
-</form>
-{% endfor %}
-
-{% else %} {# READ ONLY #}
+{% else %}
+<fieldset><legend><a href="/lexeme/{{ lexeme.id }}/edit-lexeme">edit</a></legend>
 <table>
 <tr><td class="rowname">Language:</td><td>{{ lexeme.language.utf8_name }}</td></tr>
 <tr><td class="rowname">Source form:</td><td>{{ lexeme.source_form }}</td></tr>
@@ -65,22 +42,55 @@
         {% endfor %}</td>
 </tr>
 </table>
-{% endif %}
+</fieldset>
+{% endifequal %}
+
 
 <h2>Source{{ lexeme.lexemecitation_set.count|pluralize}} of lexical data</h2>
-  <ul>
-  {% for citation in lexeme.lexemecitation_set.all %}
-    <li>{{ citation.source.citation_text }}
-      {% if citation.pages %}
-        {% ifequal citation.source.type_code "P" %}
-          (page/s: {{citation.pages}})
-        {% else %}
-          ({{citation.pages}})
-        {% endifequal %}
-      {% endif %}
-    </li>
-  {% endfor %}
-  </ul>
+
+{% for citation in lexeme.lexemecitation_set.all %}
+  {% ifequal citation.id active_citation_id %}
+    <form action="" method="post">
+    <fieldset>
+    <table>
+    {{ citation.source.citation_text }}
+    {{ form.as_table }}
+    </table>
+    <input type="submit" name="change_lexeme" value="Submit" /> 
+    <input type="submit" name="cancel" value="Cancel" /> 
+    </fieldset>
+    </form>
+  {% else %}
+  <fieldset><legend><a href="/lexeme/{{ lexeme.id }}/edit-citation/{{ citation.id }}">edit</a></legend>
+  {{ citation.source.citation_text }}
+  <table>
+  <tr>
+    <td class="rowname">
+      {% ifequal citation.source.type_code "P" %}Pages:{% endifequal %}
+      {% ifequal citation.source.type_code "E" %}Affiliation:{% endifequal %}
+      {% ifequal citation.source.type_code "U" %}URL:{% endifequal %}
+    </td><td>{{citation.pages}}</td>
+  </tr>
+  </table>
+  </fieldset>
+  {% endifequal %}
+{% endfor %}
+
+{% ifequal action "add-citation" %}
+  <form action="" method="post">
+  <fieldset>
+    <table>
+    {{ form.as_table }}
+  </table>
+  <input type="submit" name="change_lexeme" value="Submit" /> 
+  <input type="submit" name="cancel" value="Cancel" /> 
+  </fieldset>
+{% else %}
+<fieldset><legend><a href="/lexeme/{{ lexeme.id }}/add-citation">Add citation</a></legend>
+  <small>Add a link to a source already in the database</small>
+</fieldset>
+{% endifequal %}
+
 
 {% if lexeme.cognatejudgement_set.count %}
 <h2>Source{{ lexeme.cognatejudgement_set.count|pluralize}} of cognate coding</h2>
