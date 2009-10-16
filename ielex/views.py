@@ -11,7 +11,8 @@ def view_frontpage(request):
             {"lexemes":Lexeme.objects.count(),
             "cognate_classes":CognateSet.objects.count(),
             "languages":Language.objects.count(),
-            "meanings":Meaning.objects.count()})
+            "meanings":Meaning.objects.count(),
+            "coded_characters":CognateJudgement.objects.count()})
 
 def update_language_list_all():
     try:
