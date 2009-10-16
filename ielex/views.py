@@ -149,8 +149,22 @@ def report_lexeme(request, lexeme_id, action="", citation_id=0,
                         citation.pages = cd["pages"]
                         citation.save()
                     return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
-            elif action == "add-judgement":
-                return HttpResponse("add-judgement with POST data")
+            elif action == "add-cognate-citation": # XXX
+                form = AddCitationForm(request.POST)
+                if "cancel" in form.data: # has to be tested before data is cleaned
+                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                if form.is_valid():
+                    cd = form.cleaned_data
+                    citation = CognateJudgementCitation.objects.create(
+                            cognate_judgement=CognateJudgement.objects.get(
+                                    lexeme=lexeme,
+                                    cognate_class=cognate_class_id),
+                            source=cd["source"],
+                            pages=cd["pages"])
+                    #citation.save()
+                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+            elif action == "add-cognate": # XXX
+                return HttpResponse("add-cognate with POST data")
             else:
                 assert not action
 
@@ -173,8 +187,11 @@ def report_lexeme(request, lexeme_id, action="", citation_id=0,
                 form = EditCitationForm(
                         initial={"include":True,
                         "pages":citation.pages})
-            elif action == "add-judgement":
-                return HttpResponse("add-judgement (new)")
+            elif action == "add-cognate-citation": # XXX
+                #return HttpResponse("add-cognate-citation (new)")
+                form = AddCitationForm()
+            elif action == "add-cognate": # XXX
+                return HttpResponse("add-cognate (new)")
             else:
                 assert not action
 

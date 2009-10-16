@@ -51,6 +51,8 @@ class EditLexemeForm(forms.Form):
     # sources = ChooseSourcesField(queryset=Source.objects.all())
 
 class EnterNewSourceForm(forms.ModelForm):
+    type_code = forms.ChoiceField(choices=Source.TYPE_CHOICES,
+            widget=forms.RadioSelect())
     class Meta:
         model = Source
 
@@ -72,5 +74,5 @@ class EditCitationForm(forms.Form):
 
 class AddCitationForm(forms.Form):
     source = ChooseOneSourceField(queryset=Source.objects.all())
-    type_code = forms.ChoiceField(choices=Source.TYPE_CHOICES ,widget=forms.RadioSelect)# radio buttons: P E U
+    # type_code = forms.ChoiceField(choices=Source.TYPE_CHOICES ,widget=forms.RadioSelect)# radio buttons: P E U
     pages = forms.CharField(required=False)

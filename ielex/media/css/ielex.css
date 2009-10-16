@@ -36,6 +36,10 @@ li {
   padding: 0px;
 }
 
+form li { /* no bullets on lists inside forms */
+  list-style-type:none;
+}
+
 h2 {
   font-size: 120%;
   color: #360;

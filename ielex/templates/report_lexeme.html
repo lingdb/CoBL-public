@@ -125,11 +125,26 @@
       </fieldset>
     {% endifequal %}
     {% endfor %}
-  </fieldset>
+  {% ifequal action "add-cognate-citation" %}
+    <form action="" method="post">
+    <fieldset>
+      <table>
+      {{ form.as_table }}
+    </table>
+    <input type="submit" name="change_lexeme" value="Submit" /> 
+    <input type="submit" name="cancel" value="Cancel" /> 
+    </fieldset>
+    </form>
+  {% else %}
+    <fieldset><legend><a href="/lexeme/{{ lexeme.id }}/add-cognate-citation/{{ cj.cognate_class.id }}">Add citation</a></legend>
+    <small>Add a link to a source already in the database</small>
+    </fieldset>
+  {% endifequal %}
+</fieldset>
 {% endfor %}
 {% endif %}
-<fieldset><legend><a href="/lexeme/{{ lexeme.id }}/add-judgement">Add cognate judgement/citation</a></legend>
-  <small>Register this form as belonging to a congate class. Forms <em>can</em> belong to more than one class, but usually shouldn't.</small>
+<fieldset><legend><a href="/lexeme/{{ lexeme.id }}/add-cognate">Add cognate judgement</a></legend>
+  <small>Register this form as belonging to a cognate class. Forms <em>can</em> belong to more than one class, but usually shouldn't.</small>
 </fieldset>
 {% endblock %}
 
