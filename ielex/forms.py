@@ -11,14 +11,23 @@ class ChooseLanguageListField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.name
 
-class ChooseSourceField(forms.ModelMultipleChoiceField):
+class ChooseSourcesField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
         def truncate(s, l):
             if len(s) < l:
                 return s
             else:
                 return s[:l-4]+" ..."
-        return truncate(obj.citation_text, 164)
+        return truncate(obj.citation_text, 124)
+
+class ChooseOneSourceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        def truncate(s, l):
+            if len(s) < l:
+                return s
+            else:
+                return s[:l-4]+" ..."
+        return truncate(obj.citation_text, 124)
 
 
 class AddNewWordForm(forms.Form):
@@ -32,11 +41,21 @@ class AddNewWordForm(forms.Form):
             label="Notes",
             required=False)
 
+class EditLexemeForm(forms.Form):
+    # needs some custom validation: requires one of source_form and phon_form,
+    # and will copy source_form to phon_form if empty
+    source_form = forms.CharField(required=False)
+    phon_form = forms.CharField(required=False)
+    notes = forms.CharField(
+            widget=forms.Textarea,
+            label="Notes",
+            required=False)
+    # sources = ChooseSourcesField(queryset=Source.objects.all())
+
 
 class EnterNewSourceForm(forms.ModelForm):
     class Meta:
         model = Source
-
 
 class ChooseLanguageForm(forms.Form):
     language = ChooseLanguageField(queryset=Language.objects.all(),
@@ -47,6 +66,14 @@ class ChooseLanguageListForm(forms.Form):
             queryset=LanguageList.objects.all(),
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}))
 
-
 class ChooseSourceForm(forms.Form):
-    source = ChooseSourceField(queryset=Source.objects.all())
+    source = ChooseSourcesField(queryset=Source.objects.all())
+
+class EditCitationForm(forms.Form):
+    pages = forms.CharField(required=False)
+    include = forms.BooleanField(required=False)
+
+class AddCitationForm(forms.Form):
+    source = ChooseOneSourceField(queryset=Source.objects.all())
+    #type_code = forms.ModelChoiceField( # radio buttons: P E U
+    pages = forms.CharField(required=False)

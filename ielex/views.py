@@ -3,7 +3,7 @@ from django.template import Context
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from ielex.lexicon.models import *
-from ielex.forms import ChooseLanguageListForm
+from ielex.forms import *
 from ielex.utilities import next_alias
 
 def view_frontpage(request):
@@ -36,7 +36,7 @@ def view_languages(request):
     form.fields["language_list"].initial = LanguageList.objects.get(
             name=language_list_name).id
 
-    languages = Language.objects.all().order_by("utf8_name")
+    languages = get_languages(request)
     current_list = LanguageList.objects.get(name=language_list_name)
     response = render_to_response("language_list.html",
             {"languages":languages,
@@ -45,11 +45,11 @@ def view_languages(request):
     response.set_cookie("language_list_name", language_list_name)
     return response
 
-def view_words(request):
+def view_meanings(request):
     meanings = Meaning.objects.all()
     return render_to_response("meaning_list.html", {"meanings":meanings})
 
-def report_language(request, language):
+def report_language(request, language): # TODO refactor
     # languages = None
     if language.isdigit():
         language = Language.objects.get(id=language)
@@ -65,7 +65,7 @@ def report_language(request, language):
                         language.ascii_name)
             except Language.MultipleObjectsReturned:
                 languages = Language.objects.filter(
-                        ascii_name__icontains=language)
+                        ascii_name__icontains=language).order_by("utf8_name")
                 return render_to_response("choose_language.html",
                         {"languages":languages})
     meanings = Meaning.objects.all()
@@ -89,7 +89,45 @@ def get_current_language_list(request):
     return language_list_name
 
 def report_lexeme(request, lexeme_id, action=""):
-    return render_to_response("report_lexeme.html")
+    lexeme = Lexeme.objects.get(id=lexeme_id)
+    lexeme_citations = lexeme.lexemecitation_set.all()
+    sources = Source.objects.filter(lexeme=lexeme)
+    if action=="edit":
+        if request.method == 'POST':
+            form = EditLexemeForm(request.POST)
+            if form.is_valid():
+                if "cancel" in form.data: # has to be tested before data is cleaned
+                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                cd = form.cleaned_data
+                lexeme.source_form = cd["source_form"]
+                lexeme.phon_form = cd["phon_form"]
+                lexeme.notes = cd["notes"]
+                lexeme.save()
+                return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+        else:
+            form = EditLexemeForm(
+                    initial={"source_form":lexeme.source_form,
+                    "phon_form":lexeme.phon_form, 
+                    "notes":lexeme.notes})
+            citation_forms = []
+            for citation in lexeme.lexemecitation_set.all():
+                citation_forms.append((
+                        EditCitationForm(
+                        initial={"include":True,
+                        "pages":citation.pages}),
+                        citation.source
+                        ))
+            add_citation_form = AddCitationForm()
+    else:
+        form = None
+        citation_forms = []
+        add_citation_form = []
+    return render_to_response("report_lexeme.html",
+            {"lexeme":lexeme,
+            "form":form,
+            "citation_forms":citation_forms,
+            "add_citation_form":add_citation_form,
+            })
 
 def report_word(request, word, action="", lexeme_id=None):
     debug = ""
@@ -259,6 +297,7 @@ def test_form_choosesource(request):
             return HttpResponseRedirect('/test-success/')
     else:
         form = ChooseSourceForm()
+    form.fields["source"].initial = [1,2,3]
     return render_to_response('test_form.html', {'form': form})
 
 from ielex.forms import AddNewWordForm

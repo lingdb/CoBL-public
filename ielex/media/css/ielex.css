@@ -1,11 +1,18 @@
- /* ELEMENT AND CLASS DEFINITIONS */
+/* ELEMENT AND CLASS DEFINITIONS */
+
+a img {
+  border: none!important;
+}
 
 body { font-family: sans-serif }
 
 p.help { text-size: small }
 
-tr {
+th {
   color: #360;
+}
+
+tr { 
   vertical-align: top;
 }
 
@@ -14,6 +21,11 @@ tr.even { background: #cf9 }
 tr.odd { background: #ccc }
 
 td.rightalign { text-align: right }
+
+td.rowname {
+  font-weight: bold;	
+  color: #360;
+}
 
 strong {
   color: #360;
@@ -24,6 +36,10 @@ li {
   padding: 0px;
 }
 
+h2 {
+  font-size: 120%;
+  color: #360;
+}
 
 /* ID DEFINITIONS */
 #container {
@@ -58,10 +74,6 @@ li {
   padding: 1%;
 }
 
-#controls h2 {
-  font-size: 120%;
-  color: #360;
-}
 
 #footer {
   clear: both;

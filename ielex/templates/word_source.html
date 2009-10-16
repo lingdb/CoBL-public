@@ -3,14 +3,7 @@
 {% block title %}IELEX{% endblock %}
 
 {% block top %}
-<h1>
-  {{ lexeme.language.utf8_name }}: 
-  {% if lexeme.phon_form %}
-    {{ lexeme.phon_form }}
-  {% else %}
-    {{ lexeme.source_form }}
-  {% endif %}
-</h1>
+  <h1>{% include "snippets/language_lexeme.html" %}
 {% endblock %}
 
 {% block content %}

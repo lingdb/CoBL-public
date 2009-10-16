@@ -68,6 +68,16 @@ Django equivalent of a database trigger::
 
 From: http://www.eflorenzano.com/blog/post/database-triggers-arent-evil-and-they-actually-kin/
 
+Bar charts
+----------
+
+can be made with templates::
+
+ <img src="bar.gif" height="10" width="{% widthratio this_value max_value 100 %}" />
+ 
+I'm not quite sure what the widthratio tag is useful for, since surely a
+constant width bar is all you need.
+
 Database Backups
 ----------------
 

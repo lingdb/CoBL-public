@@ -8,21 +8,24 @@ from ielex import settings
 
 urlpatterns = patterns('',
     # Front Page
-    ('^$', view_frontpage),
+    url('^$', view_frontpage, name="view-frontpage"),
     # List of languages in the database
-    url('^languages/$', view_languages, name="language-listing"),
-    # List of meanings in the database
-    url('^words/$', view_words, name="word-listing"),
+    url('^languages/$', view_languages, name="view-languages"),
     # Swadesh list for one language
     url(r'^language/([a-zA-Z0-9_ ]+)/$', report_language,
             name="language-report"), # usage {% url language-report English %}
+    # List of meanings in the database
+    url('^meanings/$', view_meanings, name="view-meanings"),
+    # url(r'^word/([a-zA-Z0-9_ ]+|\d+)/(edit|add)?$', report_word,
+    #         name="word-report"),
     # All forms in the database with a particular meaning
     url(r'^word/([a-zA-Z0-9_ ]+|\d+)/(edit/|add/)?$', report_word,
             name="word-report"),
     url(r'^word/([a-zA-Z0-9_ ]+|\d+)/(edit)/(\d+)/$', report_word,
-            name="word-report"),
-    url(r'^lexeme/(\d+)/(edit/)?$', report_lexeme, name="report-lexeme"),
-    url(r'^lexeme/(\d+)/sources/(edit/|add/)?$', report_lexeme, name="report-lexeme"),
+            name="word-report"), # XXX
+    url(r'^lexeme/(\d+)/(edit)?$', report_lexeme, name="lexeme-report"),
+    # url(r'^lexeme/(\d+/)sources/(edit/|add/)?$', report_lexeme,
+    #     name="report-lexeme-sources"),
     url(r'^source/word/(\d+)/', word_source,
             name="word-source"),
     # url(r'/source/judgement/(\d+/)(edit/)?', lexeme_source, 

@@ -20,16 +20,21 @@
     <td>{{ lexeme.source_form }}</td>
     <td>{{ lexeme.phon_form }}</td>
     <td>{% for cogset in lexeme.cognate_class.all %}{{ cogset.alias }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</td>
+    <td>
+     <a href="{% url lexeme-report lexeme.id %}">
+       <img src="/media/buttons/view.png" alt="View detailed information on lexeme #{{ lexeme.id}}" /><a>
+     <a href="/lexeme/{{ lexeme.id }}/edit/">
+       <img src="/media/buttons/edit.png" alt="Edit lexeme #{{ lexeme.id}}" /><a>
+    </td>
   </tr>
   {% endfor %}
 </table>
-
 Count: {{ lexemes|length }}
 {% endblock %}
 
 
 {% block controls %}
-{% include "go_to_snippet.html" %}
+{% include "snippets/go_to.html" %}
 {% endblock %}
 
 {# vim: set ft=htmldjango: #}

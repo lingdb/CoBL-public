@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Lexeme report{% endblock %}
+
+{% block top %}
+  <h1>{% include "snippets/language_lexeme.html" %}
+</h1>{% endblock %}
+
+{% block content %}
+
+
+<h2>Lexeme data</h2>
+
+
+{% if form %} {# FORM #}
+<form action="" method="post">
+<fieldset>
+<table>
+<tr><td class="rowname">Language:</td><td>{{ lexeme.language.utf8_name }}</td></tr>
+<tr><td class="rowname">Source form:</td><td>{{ form.source_form }}</td></tr>
+<tr><td class="rowname">Phonological form:</td><td>{{ form.phon_form }}</td></tr>
+<tr><td class="rowname">Notes:</td><td>{{ form.notes }}</td></tr>
+<tr><td class="rowname">Sources:</td>
+    <td>{{ form.sources }}</td>
+</tr>
+<tr><td class="rowname">Cognate codes:</td>
+    <td>{% for cs in lexeme.cognate_class.all %}
+	        {{ cs.alias }}{% if forloop.last %}{% else %}, {% endif %}
+        {% endfor %}</td>
+</tr>
+</table>
+ <input type="submit" name="change_lexeme" value="Submit" /> 
+ <input type="submit" name="cancel" value="Cancel" /> 
+</fieldset>
+</form>
+{% for citation_form, citation_source in citation_forms %}
+<form>
+  <fieldset>
+  <table>
+  {{ citation_source.citation_text }}
+  {{ citation_form.as_table }}
+  </table>
+  <input type="submit" name="change_citation" value="Submit" /> 
+  </fieldset>
+</form>
+<form>
+  <fieldset><legend>Add citation</legend>
+  <table>
+  {{ add_citation_form.as_table }}
+  </table>
+  <input type="submit" name="add_citation" value="Submit" /> 
+  </fieldset>
+</form>
+{% endfor %}
+
+{% else %} {# READ ONLY #}
+<table>
+<tr><td class="rowname">Language:</td><td>{{ lexeme.language.utf8_name }}</td></tr>
+<tr><td class="rowname">Source form:</td><td>{{ lexeme.source_form }}</td></tr>
+<tr><td class="rowname">Phonological form:</td><td>{{ lexeme.phon_form }}</td></tr>
+<tr><td class="rowname">Notes:</td><td>{{ lexeme.notes }}</td></tr>
+<tr><td class="rowname">Cognate codes:</td>
+    <td>{% for cs in lexeme.cognate_class.all %}
+	        {{ cs.alias }}{% if forloop.last %}{% else %}, {% endif %}
+        {% endfor %}</td>
+</tr>
+</table>
+{% endif %}
+
+<h2>Source{{ lexeme.lexemecitation_set.count|pluralize}} of lexical data</h2>
+  <ul>
+  {% for citation in lexeme.lexemecitation_set.all %}
+    <li>{{ citation.source.citation_text }}
+      {% if citation.pages %}
+        {% ifequal citation.source.type_code "P" %}
+          (page/s: {{citation.pages}})
+        {% else %}
+          ({{citation.pages}})
+        {% endifequal %}
+      {% endif %}
+    </li>
+  {% endfor %}
+  </ul>
+
+{% if lexeme.cognatejudgement_set.count %}
+<h2>Source{{ lexeme.cognatejudgement_set.count|pluralize}} of cognate coding</h2>
+  <ul>
+  {% for cj in lexeme.cognatejudgement_set.all %}
+    {% for cjc in cj.cognatejudgementcitation_set.all %}
+    <li>{{ cjc.source.citation_text }}
+      {% if lexeme.cognatejudgement_set.count %}
+      <strong>[cognate class {{ cj.cognate_class.alias }}]</strong> {% endif %}</li>
+    {% endfor %}
+  {% endfor %}
+  </ul>
+{% endif %}
+{% endblock %}
+
+{% block controls %}
+<a href="/lexeme/{{ lexeme.id }}/edit">edit</a>
+{% include "snippets/go_to.html" %}
+
+{% endblock %}
+
+{# vim: set ft=htmldjango: #}
