@@ -16,29 +16,35 @@ urlpatterns = patterns('',
     url(r'^language/([a-zA-Z0-9_ ]+)/$', report_language,
             name="language-report"), # usage {% url language-report English %}
 
-    # List of meanings in the database
-    url('^meanings/$', view_meanings, name="view-meanings"),
     # All forms in the database with a particular meaning
     url(r'^word/([a-zA-Z0-9_ ]+|\d+)/(edit/|add/)?$', report_word,
             name="word-report"),
     url(r'^word/([a-zA-Z0-9_ ]+|\d+)/(edit)/(\d+)/$', report_word,
             name="word-report"), # XXX
 
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-citation|edit-lexeme|add-cognate)?$', report_lexeme, name="lexeme-report"),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-citation)/(?P<citation_id>\d+)$', report_lexeme, name="lexeme-report"),
+    # List of meanings in the database
+    url(r'^meanings/$', view_meanings, name="view-meanings"),
+    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)$', report_meaning),
+    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/add-cognate$', report_meaning),
+
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-citation|edit-lexeme|add-cognate)?$',
+            report_lexeme, name="lexeme-report"),
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-citation)/(?P<citation_id>\d+)$',
+            report_lexeme, name="lexeme-report"),
     # url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-judgement)/(?P<judgement_id>\d+)$', report_lexeme, name="lexeme-report"),
     url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-cognate)/(?P<cognate_class_id>\d+)/(?P<citation_id>\d+)$',
             report_lexeme, name="lexeme-report"),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-cognate-citation)/(?P<cognate_class_id>\d+)$', report_lexeme, name="lexeme-report"),
-    url(r'^source/word/(\d+)/', word_source,
-            name="word-source"),
-    # url(r'/source/judgement/(\d+/)(edit/)?', lexeme_source, 
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-cognate-citation)/(?P<cognate_class_id>\d+)$',
+            report_lexeme, name="lexeme-report"),
+
+    url(r'^source/word/(\d+)/', word_source, name="word-source"),
+    # url(r'/source/judgement/(\d+/)(edit/)?', lexeme_source,
     #         name="lexeme-source"),
 
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),
 
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
+    # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

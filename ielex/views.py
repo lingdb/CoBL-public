@@ -150,9 +150,9 @@ def report_lexeme(request, lexeme_id, action="", citation_id=0,
                         citation.pages = cd["pages"]
                         citation.save()
                     return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
-            elif action == "add-cognate-citation": # XXX
+            elif action == "add-cognate-citation": #
                 form = AddCitationForm(request.POST)
-                if "cancel" in form.data: # has to be tested before data is cleaned
+                if "cancel" in form.data:
                     return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
                 if form.is_valid():
                     cd = form.cleaned_data
@@ -163,6 +163,7 @@ def report_lexeme(request, lexeme_id, action="", citation_id=0,
                             source=cd["source"],
                             pages=cd["pages"])
                     #citation.save()
+
                     return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
             elif action == "add-cognate": # XXX
                 return HttpResponse("add-cognate with POST data")
@@ -174,7 +175,7 @@ def report_lexeme(request, lexeme_id, action="", citation_id=0,
             if action == "edit-lexeme":
                 form = EditLexemeForm(
                         initial={"source_form":lexeme.source_form,
-                        "phon_form":lexeme.phon_form, 
+                        "phon_form":lexeme.phon_form,
                         "notes":lexeme.notes})
             elif action == "edit-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
@@ -192,7 +193,7 @@ def report_lexeme(request, lexeme_id, action="", citation_id=0,
                 #return HttpResponse("add-cognate-citation (new)")
                 form = AddCitationForm()
             elif action == "add-cognate": # XXX
-                return HttpResponse("add-cognate (new)")
+                return HttpResponseRedirect("/meaning/%s/%s" % (lexeme_id, 0))
             else:
                 assert not action
 
@@ -202,6 +203,19 @@ def report_lexeme(request, lexeme_id, action="", citation_id=0,
             "form":form,
             "active_citation_id":citation_id
             })
+
+def report_meaning(request, meaning):
+    if meaning.isdigit():
+        meaning = Meaning.objects.get(id=meaning)
+        # if there are actions and lexeme_ids these should be preserved too
+        return HttpResponseRedirect("/word/%s/" % meaning.gloss)
+    else:
+        meaning = Meaning.objects.get(gloss=meaning)
+    lexemes = Lexeme.objects.select_related().filter(meaning=meaning,
+            language__in=get_languages(request)).order_by("language")
+    return render_to_response("meaning_report.html",
+            {"meaning":meaning,
+            "lexemes": lexemes})
 
 def report_word(request, word, action="", lexeme_id=None):
     debug = ""
