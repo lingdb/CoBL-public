@@ -1,0 +1,13 @@
+{# used by ../report_lexeme.html #}
+{{ citation.source.citation_text }}
+<table>
+<tr>
+  <td class="rowname">
+    {% ifequal citation.source.type_code "P" %}Pages:{% endifequal %}
+    {% ifequal citation.source.type_code "E" %}Affiliation:{% endifequal %}
+    {% ifequal citation.source.type_code "U" %}URL:{% endifequal %}
+  </td><td>{{citation.pages}}</td>
+</tr>
+</table>
+
+{# vim: set ft=htmldjango: #}
