@@ -214,8 +214,9 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0,
             "active_citation_id":citation_id
             })
 
-def report_meaning(request, meaning, lexeme_id=0):
+def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
     lexeme_id = int(lexeme_id)
+    cogjudge_id = int(cogjudge_id)
     if meaning.isdigit():
         meaning = Meaning.objects.get(id=meaning)
         # if there are actions and lexeme_ids these should be preserved too
@@ -237,13 +238,18 @@ def report_meaning(request, meaning, lexeme_id=0):
             lexeme__in=lexemes).distinct()
     # note that initial values have to be set using id 
     # rather than the object itself
-    # form.fields["cognate_class"].initial = Lexeme.objects.get(
-    #       id=lexeme_id).cognate_class.all()[0].id
+    if cogjudge_id:
+        form.fields["cognate_class"].initial = CognateJudgement.objects.get(
+              id=cogjudge_id).cognate_class.id
+        add_cognate_judgement=0 # to lexeme
+    else:
+        add_cognate_judgement=lexeme_id
 
     return render_to_response("meaning_report.html",
             {"meaning":meaning,
             "lexemes": lexemes,
-            "active_lexeme_id":lexeme_id,
+            "add_cognate_judgement":add_cognate_judgement,
+            "edit_cognate_judgement":cogjudge_id,
             "form":form})
 
 def report_word(request, word, action="", lexeme_id=None):

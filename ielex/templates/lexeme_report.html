@@ -171,11 +171,21 @@
 {% endif %}
 <fieldset>
   <legend>
-    <a href="/meaning/{{ lexeme.meaning.gloss }}/{{ lexeme.id }}">
-      <img src="/media/buttons/tag-big.png" alt="Add/edit cognate judgement" title="Add/edit cognate judgement" />
-    </a>
   </legend>
-  <small>Register this form as belonging to a cognate class. Forms <em>can</em> belong to more than one class, but usually shouldn't.</small>
+    {% if lexeme.cognatejudgement_set.all %}
+      {% for cj in lexeme.cognatejudgement_set.all %}
+        <p>
+          <a href="/meaning/{{ lexeme.meaning.gloss }}/{{ lexeme.id }}/{{ cj.id }}/" />
+            <img src="/media/buttons/edit-link.png" alt="Edit cognate judgement" title="Edit cognate judgement" />
+          </a> Edit cognate judgement <strong>Class {{ cj.cognate_class.alias }}</strong></p>
+      {% endfor %}
+    {% endif %}
+    <p>
+      <a href="/meaning/{{ lexeme.meaning.gloss }}/{{ lexeme.id }}/add/">
+        <img src="/media/buttons/add-link.png" alt="Add new cognate judgement" title="Add new cognate judgement" />
+      </a> Add a new link to a new cognate class
+    </p>
+    <p><small>Forms <em>can</em> belong to more than one class, but usually shouldn't.</small></p>
 </fieldset>
 {% endblock %}
 
