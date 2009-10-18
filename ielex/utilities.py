@@ -1,5 +1,6 @@
 from string import uppercase
-from ielex.lexicon.models import *
+# from ielex.lexicon.models import *
+# from ielex.settings import BACKUP_PATH
 
 codes = list(uppercase) + [i+j for i in uppercase for j in uppercase]
 
@@ -22,12 +23,6 @@ def next_alias(l, ignore=[]):
         if alias not in l+ignore:
             return alias
     return
-
-
-# cogset_aliases = {}
-# for cj in CognateJudgement.objects.all():
-#     cogset_aliases.setdefault(cj.lexeme.meaning.gloss,
-#             set()).add(cj.cognate_class.id)
 
 
 if __name__ == "__main__":

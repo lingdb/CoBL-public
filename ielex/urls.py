@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 from ielex.views import *
+#   from ielex.utilities import make_backup
 from ielex import settings
 
 # Uncomment the next two lines to enable the admin:
@@ -29,9 +30,11 @@ urlpatterns = patterns('',
             report_meaning),
 
     # Lexemes
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-citation|edit-lexeme|add-cognate)?/$',
+    url(r'^lexeme/(?P<lexeme_id>\d+)/$',
             lexeme_report, name="lexeme-report"),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-citation)/(?P<citation_id>\d+)/$',
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-citation|edit-lexeme|add-cognate)/$',
+            lexeme_report),
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-citation|delink-citation)/(?P<citation_id>\d+)/$',
             lexeme_report),
     url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-cognate)/(?P<cognate_class_id>\d+)/(?P<citation_id>\d+)/$',
             lexeme_report),
@@ -43,6 +46,8 @@ urlpatterns = patterns('',
     url(r'^source/(?P<source_id>\d+)/$', source_edit),
     url(r'^source/(?P<source_id>\d+)/(?P<action>edit)/$', source_edit),
     url(r'^source/(?P<action>add)$', source_edit),
+
+    # url(r'^backup/$', make_backup),
 
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),

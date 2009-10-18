@@ -55,7 +55,7 @@ h2 {
 }
 
 #top {
-  padding: .5em;
+  padding: 1%;
   background-color: #cf9;
   border-bottom: 1px solid gray;
 }
@@ -64,6 +64,13 @@ h2 {
   letter-spacing: 3px;
   padding: 6px;
   margin: 0;
+}
+
+#login {
+  width: 24%;
+  padding: 1%;
+  background-color: #cf9;
+  float: right;
 }
 
 #content {

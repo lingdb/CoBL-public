@@ -3,7 +3,10 @@ import os.path
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+
 ROOTDIR = os.path.dirname(__file__)
+BACKUP_PATH = os.path.join(ROOTDIR, "backups")
+
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )

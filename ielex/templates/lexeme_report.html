@@ -31,7 +31,8 @@
 </fieldset>
 </form>
 {% else %}
-<fieldset><legend><a href="/lexeme/{{ lexeme.id }}/edit-lexeme">edit</a></legend>
+<fieldset><legend><a href="/lexeme/{{ lexeme.id }}/edit-lexeme"><a href="/lexeme/{{ lexeme.id }}/edit-citation/{{ citation.id }}">
+            <img src="/media/buttons/edit-pencil.png" alt="Edit" title="Edit" /></a></legend>
 <table>
   <tr><td class="rowname">Language:</td><td><a href="/language/{{ lexeme.language.ascii_name }}">{{ lexeme.language.utf8_name }}</a></td></tr>
 <tr><td class="rowname">Meaning:</td><td><a href="/meaning/{{ lexeme.meaning.gloss }}">{{ lexeme.meaning.gloss }}</a></td></tr>
@@ -65,12 +66,24 @@
       </fieldset>
     </form>
     {% else %}
-      <fieldset><legend><a href="/lexeme/{{ lexeme.id }}/edit-citation/{{ citation.id }}">edit</a></legend>
+      <fieldset>
+        <legend>
+          <a href="/lexeme/{{ lexeme.id }}/edit-citation/{{ citation.id }}">
+            <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit citation details" /></a>
+          <a href="/lexeme/{{ lexeme.id }}/delink-citation/{{ citation.id }}">
+            <img src="/media/buttons/delink.png" alt="Delink" title="Delink citation" /></a>
+        </legend>
 	{% include "snippets/citation_report.html" %}
       </fieldset>
     {% endifequal %}
   {% else %}
-  <fieldset><legend><a href="/lexeme/{{ lexeme.id }}/edit-citation/{{ citation.id }}">edit</a></legend>
+  <fieldset>
+    <legend>
+          <a href="/lexeme/{{ lexeme.id }}/edit-citation/{{ citation.id }}">
+            <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit citation details" /></a>
+          <a href="/lexeme/{{ lexeme.id }}/delink-citation/{{ citation.id }}">
+            <img src="/media/buttons/delink.png" alt="Delink" title="Delink citation" /></a>
+    </legend>
     {% include "snippets/citation_report.html" %}
   </fieldset>
   {% endifequal %}
@@ -87,7 +100,8 @@
   </fieldset>
   </form>
 {% else %}
-<fieldset><legend><a href="/lexeme/{{ lexeme.id }}/add-citation">Add citation</a></legend>
+<fieldset><legend><a href="/lexeme/{{ lexeme.id }}/add-citation/">
+            <img src="/media/buttons/add-link.png" alt="Add" title="Add link to citation" /></a></legend>
   <small>Add a link to a source already in the database</small>
 </fieldset>
 {% endifequal %}
@@ -112,12 +126,22 @@
 	</fieldset>
 	<form>
       {% else %}
-	<fieldset><legend><a href="/lexeme/{{ lexeme.id }}/edit-cognate/{{ cj.cognate_class.id }}/{{ citation.id }}">edit</a></legend>
+	<fieldset>
+          <legend>
+            <a href="/lexeme/{{ lexeme.id }}/edit-cognate/{{ cj.cognate_class.id }}/{{ citation.id }}">
+              <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit cognate class details" />
+            </a>
+          </legend>
 	  {% include "snippets/citation_report.html" %}
 	</fieldset>
       {% endifequal %}
     {% else %}
-      <fieldset><legend><a href="/lexeme/{{ lexeme.id }}/edit-cognate/{{ cj.cognate_class.id }}/{{ citation.id }}">edit</a></legend>
+      <fieldset>
+        <legend>
+          <a href="/lexeme/{{ lexeme.id }}/edit-cognate/{{ cj.cognate_class.id }}/{{ citation.id }}">
+            <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit cognate class details" />
+          </a>
+        </legend>
 	{% include "snippets/citation_report.html" %}
       </fieldset>
     {% endifequal %}
@@ -133,14 +157,24 @@
     </fieldset>
     </form>
   {% else %}
-    <fieldset><legend><a href="/lexeme/{{ lexeme.id }}/add-cognate-citation/{{ cj.cognate_class.id }}">Add citation</a></legend>
+    <fieldset>
+      <legend>
+        <a href="/lexeme/{{ lexeme.id }}/add-cognate-citation/{{ cj.cognate_class.id }}">
+          <img src="/media/buttons/add-link.png" alt="Add" title="Add link to citation" /></a></legend>
+        </a>
+      </legend>
     <small>Add a link to a source already in the database</small>
     </fieldset>
   {% endifequal %}
 </fieldset>
 {% endfor %}
 {% endif %}
-<fieldset><legend><a href="/meaning/{{ lexeme.meaning.gloss }}/{{ lexeme.id }}">Add/edit cognate judgement</a></legend>
+<fieldset>
+  <legend>
+    <a href="/meaning/{{ lexeme.meaning.gloss }}/{{ lexeme.id }}">
+      <img src="/media/buttons/tag-big.png" alt="Add/edit cognate judgement" title="Add/edit cognate judgement" />
+    </a>
+  </legend>
   <small>Register this form as belonging to a cognate class. Forms <em>can</em> belong to more than one class, but usually shouldn't.</small>
 </fieldset>
 {% endblock %}

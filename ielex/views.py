@@ -138,6 +138,10 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0,
                             pages=cd["pages"])
                     citation.save()
                     return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+            elif action == "delink-citation":
+                citation = LexemeCitation.objects.get(id=citation_id)
+                citation.delete()
+                return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
             elif action == "edit-cognate":
                 form = EditCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
@@ -196,6 +200,10 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0,
             elif action == "add-cognate":
                 return HttpResponseRedirect("/meaning/%s/%s" %
                         (lexeme.meaning.gloss, lexeme_id))
+            elif action == "delink-citation":
+                citation = LexemeCitation.objects.get(id=citation_id)
+                citation.delete()
+                return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
             else:
                 assert not action
 
@@ -230,7 +238,7 @@ def report_meaning(request, meaning, lexeme_id=0):
     # note that initial values have to be set using id 
     # rather than the object itself
     # form.fields["cognate_class"].initial = Lexeme.objects.get(
-    #         id=lexeme_id).cognatejudgement_set.cognate.id
+    #       id=lexeme_id).cognate_class.all()[0].id
 
     return render_to_response("meaning_report.html",
             {"meaning":meaning,
