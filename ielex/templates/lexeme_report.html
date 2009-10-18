@@ -131,6 +131,9 @@
             <a href="/lexeme/{{ lexeme.id }}/edit-cognate/{{ cj.cognate_class.id }}/{{ citation.id }}">
               <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit cognate class details" />
             </a>
+            <a href="/lexeme/{{ lexeme.id }}/delink-cognate-citation/{{ citation.id }}">
+              <img src="/media/buttons/delink.png" alt="Delink" title="Delink cognate citation" />
+            </a>
           </legend>
 	  {% include "snippets/citation_report.html" %}
 	</fieldset>
@@ -140,6 +143,9 @@
         <legend>
           <a href="/lexeme/{{ lexeme.id }}/edit-cognate/{{ cj.cognate_class.id }}/{{ citation.id }}">
             <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit cognate class details" />
+          </a>
+          <a href="/lexeme/{{ lexeme.id }}/delink-cognate-citation/{{ citation.id }}">
+            <img src="/media/buttons/delink.png" alt="Delink" title="Delink cognate citation" />
           </a>
         </legend>
 	{% include "snippets/citation_report.html" %}

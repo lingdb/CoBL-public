@@ -142,6 +142,10 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0,
                 citation = LexemeCitation.objects.get(id=citation_id)
                 citation.delete()
                 return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+            elif action == "delink-cognate-citation":
+                citation = CognateJudgementCitation.objects.get(id=citation_id)
+                citation.delete()
+                return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
             elif action == "edit-cognate":
                 form = EditCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
@@ -204,6 +208,10 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0,
                 citation = LexemeCitation.objects.get(id=citation_id)
                 citation.delete()
                 return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+            elif action == "delink-cognate-citation":
+                citation = CognateJudgementCitation.objects.get(id=citation_id)
+                citation.delete()
+                return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
             else:
                 assert not action
 
@@ -227,8 +235,18 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
     if request.method == 'POST':
         form = ChooseCognateClassForm(request.POST)
         if form.is_valid():
-            #return HttpResponse(form.cleaned_data["language"])
-            return HttpResponseRedirect('/test-success/')
+            cd = form.cleaned_data
+            if not cogjudge_id: # new cognate judgement
+                cj = CognateJudgement.objects.create(
+                        lexeme=Lexeme.objects.get(id=lexeme_id),
+                        cognate_class=cd["cognate_class"])
+            else:
+                cj = CognateJudgement.objects.get(id=cogjudge_id)
+                cj.cognate_class = cd["cognate_class"]
+                cj.save()
+
+            return HttpResponseRedirect('/lexeme/%s/add-cognate-citation/%s/' %
+                    (lexeme_id, cj.cognate_class.id))
     else:
         form = ChooseCognateClassForm()
 
@@ -403,11 +421,11 @@ def word_source(request, lexeme_id):
         "prev_page":prev_page})
 
 def source_edit(request, source_id=0, action=""):
-    if action != "add":
+    if action == "add":
+        source = None
+    else:
         source_id = int(source_id)
         source = Source.objects.get(id=source_id)
-    else:
-        source = None
     if request.method == 'POST':
         form = EditSourceForm(request.POST)
         if form.is_valid():
@@ -430,6 +448,9 @@ def source_edit(request, source_id=0, action=""):
         elif action == "edit":
             # form = EditSourceForm(Source.objects.get(id=source_id).__dict__)
             form = EditSourceForm(source.__dict__)
+        if action == "delete":
+            source.delete()
+            return HttpResponseRedirect('/sources/')
         else:
             form = None
     return render_to_response('source_edit.html', {

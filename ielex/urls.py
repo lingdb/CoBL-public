@@ -40,13 +40,15 @@ urlpatterns = patterns('',
             lexeme_report),
     url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-cognate)/(?P<cognate_class_id>\d+)/(?P<citation_id>\d+)/$',
             lexeme_report),
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>delink-cognate-citation)/(?P<citation_id>\d+)/$',
+            lexeme_report),
     url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-cognate-citation)/(?P<cognate_class_id>\d+)/$',
             lexeme_report),
 
     # Sources
-    url(r'^sources/$', source_list),
+    url(r'^sources/$', source_list, name="view-sources"),
     url(r'^source/(?P<source_id>\d+)/$', source_edit),
-    url(r'^source/(?P<source_id>\d+)/(?P<action>edit)/$', source_edit),
+    url(r'^source/(?P<source_id>\d+)/(?P<action>edit|delete)/$', source_edit),
     url(r'^source/(?P<action>add)$', source_edit),
 
     # url(r'^backup/$', make_backup),
