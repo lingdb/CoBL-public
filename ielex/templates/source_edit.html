@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}{% if action %}{{ action|title }}{% endif %} Source{% endblock %}
+
+{% block top %}
+<h1>{% if action %}{{ action|title }}{% endif %} Source</h1>
+{% endblock %}
+
+{% block content %}
+{% if action %}
+  {% ifnotequal action "delete" %}
+    <form action="" method="POST">
+      <table>
+        {{ form.as_table }}
+      </table>
+      <input type="submit" name="submit" value="Submit" /> 
+      <input type="submit" name="cancel" value="Cancel" /> 
+    </form>
+  {% endifnotequal %}
+{% else %} 
+<table>
+  <tr>
+    <th>Citation:</th><td>{{ source.citation_text }}</td>
+    {% if not action %}
+      <td>
+        <a href="/source/{{ source.id }}/edit/">
+          <img src="/media/buttons/edit.png" alt="Edit" title="Edit" />
+        </a>
+        <a href="/source/{{ source.id }}/delete/">
+          <img src="/media/buttons/delete.png" alt="Delete" title="Delete" />
+        </a>
+      </td>
+    {% endif %}
+  </tr>
+  <tr><th>Type:</th><td>{{ source.get_type_code_display }}</td></tr>
+  <tr><th>Description:</th><td>{{ source.description }}</td></tr>
+  <tr><th>Modified:</th><td>{{ source.modified|date:"r" }}</td></tr>
+</table>
+  {# {% include "snippets/source_report_table.html" %} #}
+{% endif %}
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
