@@ -16,7 +16,7 @@
   <tr class="{% cycle 'odd' 'even' %}">
     <td>{{ meaning.id }}</td>
     <td>{{ meaning.description }}</td>
-    <td><a href="{% url word-report meaning.id %}">{{ meaning.gloss }}</a></td>
+    <td><a href="{% url meaning-report meaning.id %}">{{ meaning.gloss }}</a></td>
     {# <td>{{ meaning.lexeme_count }}</td> #}
   </tr>
   {% endfor %}

@@ -10,36 +10,39 @@ urlpatterns = patterns('',
     # Front Page
     url('^$', view_frontpage, name="view-frontpage"),
 
-    # List of languages in the database
+    # Languages
     url('^languages/$', view_languages, name="view-languages"),
-    # Swadesh list for one language
     url(r'^language/([a-zA-Z0-9_ ]+)/$', report_language,
             name="language-report"), # usage {% url language-report English %}
 
-    # All forms in the database with a particular meaning
-    url(r'^word/([a-zA-Z0-9_ ]+|\d+)/(edit/|add/)?$', report_word,
-            name="word-report"),
-    url(r'^word/([a-zA-Z0-9_ ]+|\d+)/(edit)/(\d+)/$', report_word,
-            name="word-report"), # XXX
+    ## # All forms in the database with a particular meaning
+    ## url(r'^word/([a-zA-Z0-9_ ]+|\d+)/(edit/|add/)?$', report_word,
+    ##         name="word-report"),
+    ## url(r'^word/([a-zA-Z0-9_ ]+|\d+)/(edit)/(\d+)/$', report_word,
+    ##         name="word-report"), # XXX
 
-    # List of meanings in the database
+    # Meanings
     url(r'^meanings/$', view_meanings, name="view-meanings"),
-    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)$', report_meaning),
-    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/add-cognate$', report_meaning),
+    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/$', report_meaning,
+            name="meaning-report"),
+    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/(?P<lexeme_id>\d+)/$',
+            report_meaning),
 
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-citation|edit-lexeme|add-cognate)?$',
-            report_lexeme, name="lexeme-report"),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-citation)/(?P<citation_id>\d+)$',
-            report_lexeme, name="lexeme-report"),
-    # url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-judgement)/(?P<judgement_id>\d+)$', report_lexeme, name="lexeme-report"),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-cognate)/(?P<cognate_class_id>\d+)/(?P<citation_id>\d+)$',
-            report_lexeme, name="lexeme-report"),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-cognate-citation)/(?P<cognate_class_id>\d+)$',
-            report_lexeme, name="lexeme-report"),
+    # Lexemes
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-citation|edit-lexeme|add-cognate)?/$',
+            lexeme_report, name="lexeme-report"),
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-citation)/(?P<citation_id>\d+)/$',
+            lexeme_report),
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-cognate)/(?P<cognate_class_id>\d+)/(?P<citation_id>\d+)/$',
+            lexeme_report),
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-cognate-citation)/(?P<cognate_class_id>\d+)/$',
+            lexeme_report),
 
-    url(r'^source/word/(\d+)/', word_source, name="word-source"),
-    # url(r'/source/judgement/(\d+/)(edit/)?', lexeme_source,
-    #         name="lexeme-source"),
+    # Sources
+    url(r'^sources/$', source_list),
+    url(r'^source/(?P<source_id>\d+)/$', source_edit),
+    url(r'^source/(?P<source_id>\d+)/(?P<action>edit)/$', source_edit),
+    url(r'^source/(?P<action>add)$', source_edit),
 
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),
@@ -63,7 +66,8 @@ if settings.DEBUG: # additional urls for testing purposes
     (r'^test-form/new-word/$', test_form_newword),
     (r'^test-form/choose-source/$', test_form_choosesource),
     (r'^test-form/choose-language/$', test_form_chooselanguage),
-    (r'^test-form/new-source/$', test_form_newsource),
     (r'^test-success/', test_success),
 
     )
+
+# vim:nowrap

@@ -3,7 +3,7 @@ import os.path
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-rootdir = os.path.dirname(__file__)
+ROOTDIR = os.path.dirname(__file__)
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
@@ -11,7 +11,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = os.path.join(rootdir, 'db.sqlite3')
+DATABASE_NAME = os.path.join(ROOTDIR, 'db.sqlite3')
 DATABASE_USER = ''             # Not used with sqlite3.
 DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
@@ -32,11 +32,11 @@ SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = True
+USE_I18N = False
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'media')
+MEDIA_ROOT = os.path.join(os.path.abspath(ROOTDIR), 'media')
 
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
@@ -68,7 +68,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'ielex.urls'
 
 TEMPLATE_DIRS = (
-    os.path.join(rootdir, 'templates'), #.replace('\\','/') for Windows
+    os.path.join(ROOTDIR, 'templates'), #.replace('\\','/') for Windows
 )
 
 INSTALLED_APPS = (

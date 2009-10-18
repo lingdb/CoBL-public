@@ -140,7 +140,7 @@
 </fieldset>
 {% endfor %}
 {% endif %}
-<fieldset><legend><a href="/lexeme/{{ lexeme.id }}/add-cognate">Add cognate judgement</a></legend>
+<fieldset><legend><a href="/meaning/{{ lexeme.meaning.gloss }}/{{ lexeme.id }}">Add/edit cognate judgement</a></legend>
   <small>Register this form as belonging to a cognate class. Forms <em>can</em> belong to more than one class, but usually shouldn't.</small>
 </fieldset>
 {% endblock %}
@@ -149,4 +149,4 @@
 {% include "snippets/go_to.html" %}
 {% endblock %}
 
-{# vim: set ft=htmldjango: #}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

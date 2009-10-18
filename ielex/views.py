@@ -51,7 +51,6 @@ def view_meanings(request):
     return render_to_response("meaning_list.html", {"meanings":meanings})
 
 def report_language(request, language): # TODO refactor
-    # languages = None
     if language.isdigit():
         language = Language.objects.get(id=language)
         return HttpResponseRedirect("/language/%s/" % language.ascii_name)
@@ -71,8 +70,10 @@ def report_language(request, language): # TODO refactor
                         {"languages":languages})
     meanings = Meaning.objects.all()
     lexemes = Lexeme.objects.filter(language=language)
-    return render_to_response("language_report.html", {"language":language,
-        "lexemes":lexemes, "meanings":meanings})
+    return render_to_response("language_report.html",
+            {"language":language,
+            "lexemes":lexemes,
+            "meanings":meanings})
 
 def get_languages(request):
     """get languages, respecting language_list selection"""
@@ -89,7 +90,7 @@ def get_current_language_list(request):
         language_list_name = "all" # default
     return language_list_name
 
-def report_lexeme(request, lexeme_id, action="", citation_id=0,
+def lexeme_report(request, lexeme_id, action="", citation_id=0,
         cognate_class_id=0):
     lexeme = Lexeme.objects.get(id=lexeme_id)
     lexeme_citations = lexeme.lexemecitation_set.all()
@@ -166,7 +167,8 @@ def report_lexeme(request, lexeme_id, action="", citation_id=0,
 
                     return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
             elif action == "add-cognate": # XXX
-                return HttpResponse("add-cognate with POST data")
+                return HttpResponseRedirect("/meaning/%s/%s" %
+                        (lexeme.meaning.gloss, lexeme_id))
             else:
                 assert not action
 
@@ -189,33 +191,52 @@ def report_lexeme(request, lexeme_id, action="", citation_id=0,
                 form = EditCitationForm(
                         initial={"include":True,
                         "pages":citation.pages})
-            elif action == "add-cognate-citation": # XXX
-                #return HttpResponse("add-cognate-citation (new)")
+            elif action == "add-cognate-citation":
                 form = AddCitationForm()
-            elif action == "add-cognate": # XXX
-                return HttpResponseRedirect("/meaning/%s/%s" % (lexeme_id, 0))
+            elif action == "add-cognate":
+                return HttpResponseRedirect("/meaning/%s/%s" %
+                        (lexeme.meaning.gloss, lexeme_id))
             else:
                 assert not action
 
-    return render_to_response("report_lexeme.html",
+    return render_to_response("lexeme_report.html",
             {"lexeme":lexeme,
             "action":action,
             "form":form,
             "active_citation_id":citation_id
             })
 
-def report_meaning(request, meaning):
+def report_meaning(request, meaning, lexeme_id=0):
+    lexeme_id = int(lexeme_id)
     if meaning.isdigit():
         meaning = Meaning.objects.get(id=meaning)
         # if there are actions and lexeme_ids these should be preserved too
-        return HttpResponseRedirect("/word/%s/" % meaning.gloss)
+        return HttpResponseRedirect("/meaning/%s/" % meaning.gloss)
     else:
         meaning = Meaning.objects.get(gloss=meaning)
+
+    if request.method == 'POST':
+        form = ChooseCognateClassForm(request.POST)
+        if form.is_valid():
+            #return HttpResponse(form.cleaned_data["language"])
+            return HttpResponseRedirect('/test-success/')
+    else:
+        form = ChooseCognateClassForm()
+
     lexemes = Lexeme.objects.select_related().filter(meaning=meaning,
             language__in=get_languages(request)).order_by("language")
+    form.fields["cognate_class"].queryset = CognateSet.objects.filter(
+            lexeme__in=lexemes).distinct()
+    # note that initial values have to be set using id 
+    # rather than the object itself
+    # form.fields["cognate_class"].initial = Lexeme.objects.get(
+    #         id=lexeme_id).cognatejudgement_set.cognate.id
+
     return render_to_response("meaning_report.html",
             {"meaning":meaning,
-            "lexemes": lexemes})
+            "lexemes": lexemes,
+            "active_lexeme_id":lexeme_id,
+            "form":form})
 
 def report_word(request, word, action="", lexeme_id=None):
     debug = ""
@@ -353,7 +374,10 @@ def report_word(request, word, action="", lexeme_id=None):
             "debug":debug})
 
 def word_source(request, lexeme_id):
-    prev_page = request.META["HTTP_REFERER"]
+    try:
+        prev_page = request.META["HTTP_REFERER"]
+    except KeyError:
+        prev_page = None
     lexeme_id = int(lexeme_id)
     lexeme = Lexeme.objects.get(id=lexeme_id)
     citations = lexeme.lexemecitation_set.all()
@@ -364,20 +388,52 @@ def word_source(request, lexeme_id):
         "citations":citations,
         "prev_page":prev_page})
 
+def source_edit(request, source_id=0, action=""):
+    if action != "add":
+        source_id = int(source_id)
+        source = Source.objects.get(id=source_id)
+    else:
+        source = None
+    if request.method == 'POST':
+        form = EditSourceForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            if action == "add":
+                source = Source.objects.create(
+                        citation_text=cd["citation_text"],
+                        type_code=cd["type_code"],
+                        description=cd["description"])
+            elif action == "edit":
+                # source = Source.objects.get(id=source_id)
+                source.citation_text=cd["citation_text"]
+                source.type_code=cd["type_code"]
+                source.description=cd["description"]
+                source.save()
+            return HttpResponseRedirect('/source/%s/' % source.id)
+    else:
+        if action == "add":
+            form = EditSourceForm()
+        elif action == "edit":
+            # form = EditSourceForm(Source.objects.get(id=source_id).__dict__)
+            form = EditSourceForm(source.__dict__)
+        else:
+            form = None
+    return render_to_response('source_edit.html', {
+            "form": form,
+            "source":source or "",
+            "action":action})
+
+def source_list(request):
+    grouped_sources = []
+    for type_code, type_name in Source.TYPE_CHOICES:
+        grouped_sources.append((type_name,
+                Source.objects.filter(type_code=type_code)))
+    return render_to_response("source_list.html", {"grouped_sources":grouped_sources})
+
+
 
 # -- TESTING ---------------------------------------------------------
 
-from ielex.forms import EnterNewSourceForm
-def test_form_newsource(request):
-    if request.method == 'POST':
-        form = EnterNewSourceForm(request.POST)
-        if form.is_valid():
-            return HttpResponseRedirect('/test-success/')
-    else:
-        form = EnterNewSourceForm()
-    return render_to_response('test_form.html', {'form': form})
-
-from ielex.forms import ChooseSourceForm
 def test_form_choosesource(request):
     if request.method == 'POST':
         form = ChooseSourceForm(request.POST)
@@ -388,8 +444,6 @@ def test_form_choosesource(request):
     form.fields["source"].initial = [1,2,3]
     return render_to_response('test_form.html', {'form': form})
 
-from ielex.forms import AddNewWordForm
-# this works:
 def test_form_newword(request):
     if request.method == 'POST':
         form = AddNewWordForm(request.POST)
@@ -400,7 +454,6 @@ def test_form_newword(request):
     form.fields["language"].queryset = get_languages(request)
     return render_to_response('test_form.html', {'form': form})
 
-from ielex.forms import ChooseLanguageForm
 def test_form_chooselanguage(request):
     no_submit_button = True
     if request.method == 'POST':
@@ -429,7 +482,6 @@ def test_form(request):
         other_form = AddNewWordForm()
     return render_to_response('test_other_form.html', {'form': form,
         "other_form":other_form})
-
 
 def test_success(request):
     return HttpResponse("Success!")

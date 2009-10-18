@@ -4,12 +4,12 @@ class Source(models.Model):
 
     TYPE_CHOICES = (
             ("P", "Publication"),
+            ("U", "URL"),
             ("E", "Expert"),
-            ("U", "URL")
             )
+    citation_text = models.TextField()
     type_code = models.CharField(max_length=1, choices=TYPE_CHOICES)
     description = models.TextField(blank=True)
-    citation_text = models.TextField()
     modified = models.DateTimeField(auto_now=True)
 
     class Meta:

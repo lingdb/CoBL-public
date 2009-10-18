@@ -12,7 +12,7 @@ th {
   color: #360;
 }
 
-tr { 
+tr {  /* XXX I really only want to to apply to forms */
   vertical-align: top;
 }
 

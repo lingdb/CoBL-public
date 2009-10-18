@@ -1,6 +1,6 @@
 from django import forms
 # from ielex.views import get_languages
-from ielex.lexicon.models import Language, Source, LanguageList
+from ielex.lexicon.models import Language, Source, LanguageList, CognateSet
 
 class ChooseLanguageField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -9,6 +9,10 @@ class ChooseLanguageField(forms.ModelChoiceField):
 class ChooseLanguageListField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.name
+
+class ChooseCognateClassField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.alias
 
 class ChooseSourcesField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
@@ -50,7 +54,7 @@ class EditLexemeForm(forms.Form):
             required=False)
     # sources = ChooseSourcesField(queryset=Source.objects.all())
 
-class EnterNewSourceForm(forms.ModelForm):
+class EditSourceForm(forms.ModelForm):
     type_code = forms.ChoiceField(choices=Source.TYPE_CHOICES,
             widget=forms.RadioSelect())
     class Meta:
@@ -76,3 +80,9 @@ class AddCitationForm(forms.Form):
     source = ChooseOneSourceField(queryset=Source.objects.all())
     # type_code = forms.ChoiceField(choices=Source.TYPE_CHOICES ,widget=forms.RadioSelect)# radio buttons: P E U
     pages = forms.CharField(required=False)
+
+class ChooseCognateClassForm(forms.Form):
+    cognate_class = ChooseCognateClassField(queryset=CognateSet.objects.all(),
+            widget=forms.Select(attrs={"onchange":"this.form.submit()"}),
+            empty_label="none",
+            label="")
