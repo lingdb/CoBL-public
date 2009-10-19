@@ -14,18 +14,17 @@ def view_frontpage(request):
             "meanings":Meaning.objects.count(),
             "coded_characters":CognateJudgement.objects.count()})
 
-def update_language_list_all():
-    try:
-        ll = LanguageList.objects.get(name="all")
-    except:
-        ll = LanguageList.objects.create(name="all")
-    ll = LanguageList.objects.get(name="all")
-    ll.language_ids = ",".join([str(l.id) for l in Language.objects.all()])
-    ll.save()
-    return
+# def update_language_list_all():
+#     try:
+#         ll = LanguageList.objects.get(name="all")
+#     except:
+#         ll = LanguageList.objects.create(name="all")
+#     ll.language_ids = ",".join([str(l.id) for l in Language.objects.all()])
+#     ll.save()
+#     return
 
 def view_languages(request):
-    update_language_list_all()
+    # update_language_list_all()
     language_list_name = request.COOKIES.get("language_list_name","all")
     if request.method == 'POST':
         form = ChooseLanguageListForm(request.POST)
