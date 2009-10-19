@@ -51,7 +51,7 @@ class Meaning(models.Model):
 
 class CognateSet(models.Model):
     alias = models.CharField(max_length=3)
-    reconstruction = models.CharField(max_length=999)
+    reconstruction = models.CharField(max_length=999) # drop this column XXX
     notes = models.TextField()
     modified = models.DateTimeField(auto_now=True)
     objects = models.Manager() # XXX delete?
@@ -107,7 +107,8 @@ class LanguageList(models.Model):
     def _get_list(self):
         return [int(i) for i in self.language_ids.split(",")]
     def _set_list(self, listobj):
-        return ",".join([str(i) for i in listobj])
+        self.language_ids = ",".join([str(i) for i in listobj])
+        return
     language_id_list = property(_get_list, _set_list)
 
     def __unicode__(self):
@@ -120,6 +121,7 @@ class LanguageSortOrder(models.Model):
 
     name = models.CharField(max_length=999)
     language_ids = models.CommaSeparatedIntegerField(max_length=999)
+    modified = models.DateTimeField(auto_now=True)
 
     def _get_list(self):
         return [int(i) for i in self.language_ids.split(",")]
@@ -166,3 +168,19 @@ class History(models.Model):
     added = models.DateTimeField(auto_now_add=True)
     description = models.TextField()
 
+
+
+def update_language_list_all(sender, instance, **kwargs):
+    """Update the LanguageList 'all' whenever Language objects are saved or
+    deleted"""
+    # it should just be when created or deleted, but the extra overhead is
+    # tiny, since changes in the Language table are rare
+    try:
+        ll = LanguageList.objects.get(name="all")
+    except:
+        ll = LanguageList.objects.create(name="all")
+    ll.language_id_list = [l.id for l in Language.objects.all()]
+    ll.save(force_update=True)
+    return
+models.signals.post_save.connect(update_language_list_all, sender=Language)
+models.signals.post_delete.connect(update_language_list_all, sender=Language)
