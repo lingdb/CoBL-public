@@ -90,12 +90,14 @@ def get_current_language_list(request):
     return language_list_name
 
 def lexeme_report(request, lexeme_id, action="", citation_id=0,
-        cognate_class_id=0):
+        cognate_class_id=0, cogjudge_id=0):
     lexeme = Lexeme.objects.get(id=lexeme_id)
     lexeme_citations = lexeme.lexemecitation_set.all()
     sources = Source.objects.filter(lexeme=lexeme)
     form = None
     citation_id = int(citation_id)
+    cognate_class_id = int(cognate_class_id)
+    cogjudge_id = int(cogjudge_id)
 
     if action: # actions are: edit, edit-lexeme, edit-citation, add-citation
 
@@ -119,11 +121,8 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0,
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = LexemeCitation.objects.get(id=citation_id)
-                    if not cd["include"]:
-                        citation.delete()
-                    else:
-                        citation.pages = cd["pages"]
-                        citation.save()
+                    citation.pages = cd["pages"]
+                    citation.save()
                     return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
             elif action == "add-citation":
                 form = AddCitationForm(request.POST)
@@ -152,11 +151,8 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0,
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = CognateJudgementCitation.objects.get(id=citation_id)
-                    if not cd["include"]:
-                        citation.delete()
-                    else:
-                        citation.pages = cd["pages"]
-                        citation.save()
+                    citation.pages = cd["pages"]
+                    citation.save()
                     return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
             elif action == "add-cognate-citation": #
                 form = AddCitationForm(request.POST)
@@ -166,12 +162,9 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0,
                     cd = form.cleaned_data
                     citation = CognateJudgementCitation.objects.create(
                             cognate_judgement=CognateJudgement.objects.get(
-                                    lexeme=lexeme,
-                                    cognate_class=cognate_class_id),
+                                id=cogjudge_id),
                             source=cd["source"],
                             pages=cd["pages"])
-                    #citation.save()
-
                     return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
             elif action == "add-cognate": # XXX
                 return HttpResponseRedirect("/meaning/%s/%s" %
@@ -189,15 +182,16 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0,
             elif action == "edit-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
                 form = EditCitationForm(
-                        initial={"include":True,
-                        "pages":citation.pages})
+                        initial={"pages":citation.pages})
             elif action == "add-citation":
                 form = AddCitationForm()
             elif action == "edit-cognate":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 form = EditCitationForm(
-                        initial={"include":True,
-                        "pages":citation.pages})
+                        initial={"pages":citation.pages})
+            elif action == "delink-cognate":
+                cj = CognateJudgement.objects.get(id=cogjudge_id)
+                cj.delete()
             elif action == "add-cognate-citation":
                 form = AddCitationForm()
             elif action == "add-cognate":
@@ -218,7 +212,8 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0,
             {"lexeme":lexeme,
             "action":action,
             "form":form,
-            "active_citation_id":citation_id
+            "active_citation_id":citation_id,
+            "active_cogjudge_citation_id":cogjudge_id,
             })
 
 def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
@@ -245,7 +240,7 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
                 cj.save()
 
             return HttpResponseRedirect('/lexeme/%s/add-cognate-citation/%s/' %
-                    (lexeme_id, cj.cognate_class.id))
+                    (lexeme_id, cj.id))
     else:
         form = ChooseCognateClassForm()
 
@@ -420,11 +415,11 @@ def word_source(request, lexeme_id):
         "prev_page":prev_page})
 
 def source_edit(request, source_id=0, action=""):
-    if action == "add":
-        source = None
-    else:
-        source_id = int(source_id)
+    source_id = int(source_id)
+    if source_id:
         source = Source.objects.get(id=source_id)
+    else:
+        source = None
     if request.method == 'POST':
         form = EditSourceForm(request.POST)
         if form.is_valid():
@@ -445,16 +440,15 @@ def source_edit(request, source_id=0, action=""):
         if action == "add":
             form = EditSourceForm()
         elif action == "edit":
-            # form = EditSourceForm(Source.objects.get(id=source_id).__dict__)
             form = EditSourceForm(source.__dict__)
-        if action == "delete":
+        elif action == "delete":
             source.delete()
             return HttpResponseRedirect('/sources/')
         else:
             form = None
     return render_to_response('source_edit.html', {
             "form": form,
-            "source":source or "",
+            "source":source,
             "action":action})
 
 def source_list(request):

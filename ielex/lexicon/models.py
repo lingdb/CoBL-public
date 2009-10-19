@@ -51,10 +51,10 @@ class Meaning(models.Model):
 
 class CognateSet(models.Model):
     alias = models.CharField(max_length=3)
-    reconstruction = models.CharField(max_length=999) # drop this column XXX
+    #reconstruction = models.CharField(max_length=999) # drop this column XXX
     notes = models.TextField()
     modified = models.DateTimeField(auto_now=True)
-    objects = models.Manager() # XXX delete?
+    #objects = models.Manager() # XXX delete?
 
     def _get_meaning_set(self):
         return set([cj.lexeme.meaning for cj in self.cognatejudgement_set.all()])

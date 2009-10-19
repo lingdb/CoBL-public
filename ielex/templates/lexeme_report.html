@@ -108,10 +108,16 @@
 
 
 {# -- Cognate judgements -------------------------------------------- #}
-{% if lexeme.cognatejudgement_set.count %}
 <h2>Cognate coding</h2>
+{% if lexeme.cognatejudgement_set.count %}
 {% for cj in lexeme.cognatejudgement_set.all %}
-<fieldset><legend><strong>Cognate Class {{ cj.cognate_class.alias }}</strong>{# VIEW button #}</legend>
+<fieldset>
+    <legend>
+      <strong>Cognate Class {{ cj.cognate_class.alias }}</strong>
+      <a href="/lexeme/{{ lexeme.id }}/delink-cognate/{{ cj.id }}">
+        <img src="/media/buttons/delink.png" alt="Delink" title="Delink cognate from this lexeme" />
+      </a>
+    </legend>
     {% for citation in cj.cognatejudgementcitation_set.all %}
     {% ifequal action "edit-cognate" %}
       {% ifequal citation.id active_citation_id %}
@@ -152,7 +158,7 @@
       </fieldset>
     {% endifequal %}
     {% endfor %}
-  {% ifequal action "add-cognate-citation" %}
+  {% ifequal active_cogjudge_citation_id cj.id %}
     <form action="" method="post">
     <fieldset>
       <table>
@@ -165,7 +171,7 @@
   {% else %}
     <fieldset>
       <legend>
-        <a href="/lexeme/{{ lexeme.id }}/add-cognate-citation/{{ cj.cognate_class.id }}">
+        <a href="/lexeme/{{ lexeme.id }}/add-cognate-citation/{{ cj.id }}">
           <img src="/media/buttons/add-link.png" alt="Add" title="Add link to citation" /></a></legend>
         </a>
       </legend>
@@ -177,26 +183,25 @@
 {% endif %}
 <fieldset>
   <legend>
+    <strong>Add a new cognate judgement</strong>
+    <a href="/meaning/{{ lexeme.meaning.gloss }}/{{ lexeme.id }}/add/">
+      <img src="/media/buttons/add-link.png" alt="Add new cognate judgement" title="Add new cognate judgement" />
+    </a> 
   </legend>
-    {% if lexeme.cognatejudgement_set.all %}
-      {% for cj in lexeme.cognatejudgement_set.all %}
-        <p>
-          <a href="/meaning/{{ lexeme.meaning.gloss }}/{{ lexeme.id }}/{{ cj.id }}/" />
-            <img src="/media/buttons/edit-link.png" alt="Edit cognate judgement" title="Edit cognate judgement" />
-          </a> Edit cognate judgement <strong>Class {{ cj.cognate_class.alias }}</strong></p>
-      {% endfor %}
-    {% endif %}
-    <p>
-      <a href="/meaning/{{ lexeme.meaning.gloss }}/{{ lexeme.id }}/add/">
-        <img src="/media/buttons/add-link.png" alt="Add new cognate judgement" title="Add new cognate judgement" />
-      </a> Add a new link to a new cognate class
-    </p>
-    <p><small>Forms <em>can</em> belong to more than one class, but usually shouldn't.</small></p>
+      <small><ul>
+        <li>This is additional to judgments already made. </li>
+        <li>After adding a new cognate judgement it is normally appropriate to
+        delete the other ones (forms <em>can</em> belong to more than one
+        class, but usually shouldn't)</li>
+      </ul></small>
 </fieldset>
 {% endblock %}
 
 {% block controls %}
 {% include "snippets/go_to.html" %}
+<ul>
+  <li>Back to meaning list ‘<a href="/meaning/{{ lexeme.meaning.gloss }}">{{ lexeme.meaning.gloss }}</a>’</li>
+</ul>
 {% endblock %}
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

@@ -20,36 +20,25 @@
     <td>{{ lexeme.source_form }}</td>
     <td>{{ lexeme.phon_form }}</td>
     <td> 
-      {% for cj in lexeme.cognatejudgement_set.all %}
-        {% ifequal edit_cognate_judgement cj.id %}
-          <form action="" method="post">
-            {{ form.cognate_class }}
-            {% if lexeme.cognate_class.all %} {# only show the add button if there are other cognate classes already #}
-              <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/"><img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" /><a>
-            {% endif %}
-          </form>
-        {% else %}
+      {# snip #}
+      {% if lexeme.cognatejudgement_set.count %}
+        {% for cj in lexeme.cognatejudgement_set.all %}
           {{ cj.cognate_class.alias }}
-          <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/{{ cj.id }}/"><img src="/media/buttons/tag.png" alt="Change cognate" title="Change the cognate set coding" /><a>
+          <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/"><img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" /></a>
           <br />
-        {% endifequal %}
-      {% endfor %}
+        {% endfor %}
+      {% else %}
+        <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/"><img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" /></a>
+      {% endif %}
 
       {% ifequal add_cognate_judgement lexeme.id %}
         <form action="" method="post">
           {{ form.cognate_class }}
-          {% if lexeme.cognate_class.all %} {# only show the add button if there are other cognate classes already #}
-            <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/"><img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" /><a>
-          {% endif %}
         </form>
-      {% else %}
-        {% if not lexeme.cognatejudgement_set.all %}
-          <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/"><img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" /><a>
-        {% endif %}
       {% endifequal %}
     </td>
     <td>
-        <a href="/lexeme/{{ lexeme.id }}"><img src="/media/buttons/view.png" alt="View" title="View/edit the lexical entry" /><a>
+        <a href="/lexeme/{{ lexeme.id }}"><img src="/media/buttons/view.png" alt="View" title="View/edit the lexical entry" /></a>
     </td>
   {% endfor %}
 </table>
@@ -57,6 +46,11 @@
 
 {% block controls %}
 {% include "snippets/go_to.html" %}
+<ul>
+  <li>Return to <a href="/meaning/{{ meaning.gloss }}/">normal view</a>
+  </li>
+</ul>
+<p>Cognate judgements are added on this page, but deleted by the lexeme view (use the <img src="/media/buttons/view.png" alt="" title="View/Edit the lexical entry" /> button)</p>
 {% endblock %}
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

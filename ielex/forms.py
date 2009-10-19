@@ -74,7 +74,7 @@ class ChooseSourceForm(forms.Form):
 
 class EditCitationForm(forms.Form):
     pages = forms.CharField(required=False)
-    include = forms.BooleanField(required=False)
+    # include = forms.BooleanField(required=False)
 
 class AddCitationForm(forms.Form):
     source = ChooseOneSourceField(queryset=Source.objects.all())
