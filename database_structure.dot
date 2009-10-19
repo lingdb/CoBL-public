@@ -5,43 +5,47 @@ digraph g { // neato -Tpdf -O database_structure.dot
   splines=true;
   sep=0.2;
   ratio=0.7;
-  label="Cognate dictionary database schema";
+  label="IELex database schema version 0.2";
   node [shape=Mrecord];
   edge [arrowhead=dot];
 
   lexeme [pos="2,3!",style=filled,
-	label="{LEXEMES |<id> id |<lid> language_id |<mid> meaning_id | source_form | phon_form | gloss | notes }"];
+	label="{LEXEMES |<id> id |<lid> language_id |<mid> meaning_id | source_form | phon_form | gloss | notes | modified }"];
   source [pos="7,3!",style=filled,
-	label="{SOURCES |<id> id |{type_code |{book | person | url}}| description | citation }"];
+	label="{SOURCES |<id> id |{type_code |{book | person | url}}|  citation | description | modified }"];
   meaning [pos="1,2!",style=filled,
-	label="{MEANINGS |<id> id | dyen_code | gloss }"];
+	label="{MEANINGS |<id> id | gloss | description |notes }"];
   language [pos="1,4!",style=filled,
-	label="{LANGUAGES |<id> id | iso_code | ascii_name | utf8_name | dyen_name}"];
+	label="{LANGUAGES |<id> id | iso_code | ascii_name | utf8_name | sort_key }"];
   cogset [pos="4,4!",style=filled,
-	label="{COGNATE\nSETS |<id> id | reconstruction}"];
+	label="{COGNATE\nSET |<id> id | reconstruction | notes | modified }"];
   biological [pos="4,1!",style=filled,
 	label="{BIOLOGICAL\nRELATIONS | <id> id |{descriptor |{M | MZ | etc.}}}"];
-  dyen_name [pos="0,4.5!",style=filled,
+  dyen_name [pos="0,5!",style=filled,
 	label="{Dyen names |<lid> language_id | name}"];
-  abvd_name [pos="0,3.5!",style=filled,
+  abvd_name [pos="0,4!",style=filled,
 	label="{ABVD names |<lid> language_id | name}"];
+  language_list [pos="0,3!", style=filled,
+	label="{Language\nList | list_id | name |<lid> language_id_list | modified }"];
+  sort_order [pos="0,2!", style=filled,
+	label="{Language\nSort Order | list_id | name |<lid> language_id_list | modified }"];
   key1 [pos="0,1!", label="independent table", style=filled];
   key2 [pos="2,1!", label="many-to-many table"];
   key2 -> key1 [label="Foreign key"];
 
   // Many to many tables
   judgement [pos="3,4.5!",
-	label="{Cognate\nJudgements |<id> id |<fid> lexeme_id |<cid> cog_set_id}"];
+	label="{Cognate\nJudgements |<id> id |<fid> lexeme_id |<cid> cog_set_id | modified }"];
   formsource [pos="5,3!",
-	label="{Lexeme sources |<fid> lexeme_id |<sid> source_id}"];
+	label="{Lexeme sources |<fid> lexeme_id |<sid> source_id | pages | reliability | comment | modified }"];
   judgesource [pos="5,5!",
-	label="{Cognate Judgement\nsources |<jid> judgement_id |<sid> source_id | reliability}"];
-  cogsource [pos="5,4!",
-	label="{Reconstruction\n sources |<cid> cog_set_id |<sid> source_id}"];
+	label="{Cognate Judgement\nsources |<jid> judgement_id |<sid> source_id | pages | reliability | comment | modified }"];
+  // cogsource [pos="5,4!",
+  //	label="{Reconstruction\n sources |<cid> cog_set_id |<sid> source_id}"];
   formbio [pos="3,2!",
-	label="{Extensions\n(i.e. “lexeme can\n  refer to relation”) |<id> id |<fid> lexeme_id |<bid> bio_rel_id}"];
+	label="{Extensions\n(i.e. “lexeme can\n  refer to relation”) |<id> id |<fid> lexeme_id |<bid> bio_rel_id | pages | reliability | comment | modified }"];
   biosource [pos="5,2!",
-	label="{Extension sources |<lid> link_id |<sid> source_id | reliability}"];
+	label="{Extension sources |<lid> link_id |<sid> source_id | pages | reliability | comment | modified }"];
 
   // meaning [pos="1,1!"];	
   // language [pos="1,2!"];
@@ -61,8 +65,8 @@ digraph g { // neato -Tpdf -O database_structure.dot
   formsource:sid -> source:id;
   judgesource:jid -> judgement:id;
   judgesource:sid -> source:id;
-  cogsource:cid -> cogset:id;
-  cogsource:sid -> source:id;
+  // cogsource:cid -> cogset:id;
+  // cogsource:sid -> source:id;
   lexeme:lid -> language:id;
   lexeme:mid -> meaning:id;
 
@@ -73,4 +77,6 @@ digraph g { // neato -Tpdf -O database_structure.dot
 
   dyen_name:lid -> language:id;
   abvd_name:lid -> language:id;
+  language_list:lid -> language:id;
+  sort_order:lid -> language:id;
 }

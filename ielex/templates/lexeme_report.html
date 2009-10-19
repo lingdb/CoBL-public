@@ -31,7 +31,7 @@
 </fieldset>
 </form>
 {% else %}
-<fieldset><legend><a href="/lexeme/{{ lexeme.id }}/edit-lexeme"><a href="/lexeme/{{ lexeme.id }}/edit-citation/{{ citation.id }}">
+<fieldset><legend><a href="/lexeme/{{ lexeme.id }}/edit-lexeme">
             <img src="/media/buttons/edit-pencil.png" alt="Edit" title="Edit" /></a></legend>
 <table>
   <tr><td class="rowname">Language:</td><td><a href="/language/{{ lexeme.language.ascii_name }}">{{ lexeme.language.utf8_name }}</a></td></tr>
@@ -109,9 +109,9 @@
 
 {# -- Cognate judgements -------------------------------------------- #}
 {% if lexeme.cognatejudgement_set.count %}
-<h2>Cognate coding citation{{ lexeme.cognatejudgement_set.count|pluralize}}</h2>
+<h2>Cognate coding</h2>
 {% for cj in lexeme.cognatejudgement_set.all %}
-  <fieldset><legend><strong>Cognate Class {{ cj.cognate_class.alias }}</strong></legend>
+<fieldset><legend><strong>Cognate Class {{ cj.cognate_class.alias }}</strong>{# VIEW button #}</legend>
     {% for citation in cj.cognatejudgementcitation_set.all %}
     {% ifequal action "edit-cognate" %}
       {% ifequal citation.id active_citation_id %}
@@ -129,7 +129,7 @@
 	<fieldset>
           <legend>
             <a href="/lexeme/{{ lexeme.id }}/edit-cognate/{{ cj.cognate_class.id }}/{{ citation.id }}">
-              <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit cognate class details" />
+              <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit cognate citation details" />
             </a>
             <a href="/lexeme/{{ lexeme.id }}/delink-cognate-citation/{{ citation.id }}">
               <img src="/media/buttons/delink.png" alt="Delink" title="Delink cognate citation" />
@@ -142,7 +142,7 @@
       <fieldset>
         <legend>
           <a href="/lexeme/{{ lexeme.id }}/edit-cognate/{{ cj.cognate_class.id }}/{{ citation.id }}">
-            <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit cognate class details" />
+            <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit cognate citation details" />
           </a>
           <a href="/lexeme/{{ lexeme.id }}/delink-cognate-citation/{{ citation.id }}">
             <img src="/media/buttons/delink.png" alt="Delink" title="Delink cognate citation" />

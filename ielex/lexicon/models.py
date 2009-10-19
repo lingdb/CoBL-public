@@ -51,7 +51,7 @@ class Meaning(models.Model):
 
 class CognateSet(models.Model):
     alias = models.CharField(max_length=3)
-    reconstruction = models.CharField(max_length=999)
+    reconstruction = models.CharField(max_length=999) # drop this column XXX
     notes = models.TextField()
     modified = models.DateTimeField(auto_now=True)
     objects = models.Manager() # XXX delete?
@@ -120,6 +120,7 @@ class LanguageSortOrder(models.Model):
 
     name = models.CharField(max_length=999)
     language_ids = models.CommaSeparatedIntegerField(max_length=999)
+    modified = models.DateTimeField(auto_now=True)
 
     def _get_list(self):
         return [int(i) for i in self.language_ids.split(",")]
