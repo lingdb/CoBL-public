@@ -198,6 +198,13 @@ for filename in glob.glob("ludewig_data/*.csv"):
                     reliability="B",
                     pages=pages)
 
+print "-->", "making sort keys"
+for i, row in enumerate(file("sorted_langs.csv")):
+    row = row.split("\t")
+    lang_id = int(row[2])
+    l = Language.objects.get(id=lang_id)
+    l.sort_key = i+1
+    l.save()
 
 print "-> Complete (%s seconds)" % int(time.time() - start_time)
 ll = LanguageList.objects.get(name="all")

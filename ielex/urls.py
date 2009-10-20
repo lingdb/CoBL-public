@@ -16,12 +16,6 @@ urlpatterns = patterns('',
     url(r'^language/([a-zA-Z0-9_ ]+)/$', report_language,
             name="language-report"), # usage {% url language-report English %}
 
-    ## # All forms in the database with a particular meaning
-    ## url(r'^word/([a-zA-Z0-9_ ]+|\d+)/(edit/|add/)?$', report_word,
-    ##         name="word-report"),
-    ## url(r'^word/([a-zA-Z0-9_ ]+|\d+)/(edit)/(\d+)/$', report_word,
-    ##         name="word-report"), # XXX
-
     # Meanings
     url(r'^meanings/$', view_meanings, name="view-meanings"),
     url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/$', report_meaning,
@@ -74,13 +68,6 @@ if settings.DEBUG: # additional urls for testing purposes
     # this is needed for running the development server
     (r'^media/(?P<path>.*)$', 'django.views.static.serve',
      {'document_root': settings.MEDIA_ROOT}),
-
-    (r'^test-form/$', test_form),
-    (r'^test-form/new-word/$', test_form_newword),
-    (r'^test-form/choose-source/$', test_form_choosesource),
-    (r'^test-form/choose-language/$', test_form_chooselanguage),
-    (r'^test-success/', test_success),
-
     )
 
 # vim:nowrap
