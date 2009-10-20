@@ -1,0 +1,35 @@
+Complete
+========
+
+Major features
+------------------------
+
+* Design
+* Basic (all basic data input features in place)
+
+TODO
+====
+
+Major features
+--------------
+
+* Kinship system
+* Reversion
+* Authentication
+* Comments
+
+Minor features
+--------------
+
+* Backup system
+* Nexus output
+* CSV output
+* Reordering sort key
+* Editing membership of named lists
+* Edit Language table
+
+Refactoring
+-----------
+
+* named urls throughout?
+* DRY principle...
