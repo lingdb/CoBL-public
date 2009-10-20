@@ -74,12 +74,14 @@ class ChooseSourceForm(forms.Form):
 
 class EditCitationForm(forms.Form):
     pages = forms.CharField(required=False)
-    # include = forms.BooleanField(required=False)
+    reliability = forms.ChoiceField(choices=Source.RELIABILITY_CHOICES,
+            widget=forms.RadioSelect)
 
 class AddCitationForm(forms.Form):
     source = ChooseOneSourceField(queryset=Source.objects.all())
-    # type_code = forms.ChoiceField(choices=Source.TYPE_CHOICES ,widget=forms.RadioSelect)# radio buttons: P E U
     pages = forms.CharField(required=False)
+    reliability = forms.ChoiceField(choices=Source.RELIABILITY_CHOICES,
+            widget=forms.RadioSelect)
 
 class ChooseCognateClassForm(forms.Form):
     cognate_class = ChooseCognateClassField(queryset=CognateSet.objects.all(),

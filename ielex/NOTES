@@ -33,6 +33,11 @@ TODO
 TECHNICAL NOTES
 ===============
 
+Debugging
+---------
+
+Add ``assert False`` in your view code to dump debug information.
+
 Joins
 -----
 
@@ -49,6 +54,14 @@ Big joins across tables::
 Another trick uses the double-underscore syntax::
 
   Lexeme.objects.filter(meaning__gloss="blood")
+
+
+QuerySet objects
+----------------
+
+- can be concatenated with a "|"::
+
+  cs = CognateSet.objects.filter(alias="O") | CognateSet.objects.filter(alias="P")
 
 Database trigger
 ----------------
@@ -67,6 +80,23 @@ Django equivalent of a database trigger::
   signals.post_save.connect(update_bookmark_aggregate, sender=Vote)
 
 From: http://www.eflorenzano.com/blog/post/database-triggers-arent-evil-and-they-actually-kin/
+
+Forms
+-----
+
+Making your own form via a template:
+
+http://code.djangoproject.com/wiki/TemplatedForm
+
+This article shows, how to use template to render CusstomForms instead of
+as_p(), as_table()...
+
+To make it work change
+
+ * from django import newforms as forms to from django import forms
+ * from django.newforms.forms import BoundField to from django.forms.forms
+   import BoundField
+
 
 Bar charts
 ----------
@@ -93,6 +123,13 @@ Very good level of compression:
 A useful commandline is::
 
   sqlite3 db.sqlite3 .dump | bzip2 > db.dump.bz2
+
+login pages
+-----------
+
+Don't write your own: take them from the auth/admin modules
+
+http://stackoverflow.com/questions/550632/favorite-django-tips-features/559972#559972
 
 vim
 ---

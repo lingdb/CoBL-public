@@ -83,6 +83,8 @@
             <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit citation details" /></a>
           <a href="/lexeme/{{ lexeme.id }}/delink-citation/{{ citation.id }}">
             <img src="/media/buttons/delink.png" alt="Delink" title="Delink citation" /></a>
+          <a href="/source/{{ citation.source.id }}/">
+            <img src="/media/buttons/view-big.png", alt="View source", title="View source" /></a>
     </legend>
     {% include "snippets/citation_report.html" %}
   </fieldset>
@@ -140,6 +142,8 @@
             <a href="/lexeme/{{ lexeme.id }}/delink-cognate-citation/{{ citation.id }}">
               <img src="/media/buttons/delink.png" alt="Delink" title="Delink cognate citation" />
             </a>
+            <a href="/source/{{ citation.source.id }}/">
+              <img src="/media/buttons/view-big.png", alt="View source", title="View source" /></a>
           </legend>
 	  {% include "snippets/citation_report.html" %}
 	</fieldset>
@@ -153,6 +157,8 @@
           <a href="/lexeme/{{ lexeme.id }}/delink-cognate-citation/{{ citation.id }}">
             <img src="/media/buttons/delink.png" alt="Delink" title="Delink cognate citation" />
           </a>
+          <a href="/source/{{ citation.source.id }}/">
+            <img src="/media/buttons/view-big.png", alt="View source", title="View source" /></a>
         </legend>
 	{% include "snippets/citation_report.html" %}
       </fieldset>
@@ -183,16 +189,24 @@
 {% endif %}
 <fieldset>
   <legend>
-    <strong>Add a new cognate judgement</strong>
+    <strong>Add link to cognate class</strong>
     <a href="/meaning/{{ lexeme.meaning.gloss }}/{{ lexeme.id }}/add/">
       <img src="/media/buttons/add-link.png" alt="Add new cognate judgement" title="Add new cognate judgement" />
-    </a> 
+    </a>
   </legend>
       <small><ul>
         <li>This is additional to judgments already made. </li>
         <li>After adding a new cognate judgement it is normally appropriate to
         delete the other ones (forms <em>can</em> belong to more than one
         class, but usually shouldn't)</li>
+      </ul></small>
+    <strong>Link to new cognate class</strong> 
+    <a href="/lexeme/{{ lexeme.id }}/add-new-cognate/">
+      <img src="/media/buttons/add-link.png" alt="Add new cognate judgement" title="Add cognate judgement to new cognate class" />
+    </a>
+      <small><ul>
+        <li>Only link to a new, hitherto unseen, cognate class when you expect there to 
+        be more members of it</li>
       </ul></small>
 </fieldset>
 {% endblock %}

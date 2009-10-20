@@ -23,7 +23,6 @@ from ielex import settings
 setup_environ(settings)
 from ielex.lexicon.models import *
 from ielex.utilities import int2alpha
-from ielex.views import update_language_list_all()
 
 
 
@@ -200,8 +199,6 @@ for filename in glob.glob("ludewig_data/*.csv"):
                     pages=pages)
 
 
-
-
-# make sure the default language list is up-to-date
-update_language_list_all()
 print "-> Complete (%s seconds)" % int(time.time() - start_time)
+ll = LanguageList.objects.get(name="all")
+assert len(ll.language_id_list) == Language.objects.count()

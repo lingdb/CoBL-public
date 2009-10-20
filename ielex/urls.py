@@ -46,6 +46,8 @@ urlpatterns = patterns('',
             lexeme_report),
     url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-cognate-citation)/(?P<cogjudge_id>\d+)/$',
             lexeme_report),
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-new-cognate)/$',
+        lexeme_report),
 
     # Sources
     url(r'^sources/$', source_list, name="view-sources"),
