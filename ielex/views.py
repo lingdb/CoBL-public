@@ -49,30 +49,40 @@ def view_meanings(request):
     meanings = Meaning.objects.all()
     return render_to_response("meaning_list.html", {"meanings":meanings})
 
-def report_language(request, language): # TODO refactor
+def get_canonical_language(language):
+    """Identify language from id number or partial name"""
     if language.isdigit():
         language = Language.objects.get(id=language)
-        return HttpResponseRedirect("/language/%s/" % language.ascii_name)
     else:
         try:
             language = Language.objects.get(ascii_name=language)
         except Language.DoesNotExist:
             try:
                 language = Language.objects.get(
-                        ascii_name__istartswith=language)
-                return HttpResponseRedirect("/language/%s/" %
-                        language.ascii_name)
+                    ascii_name__istartswith=language)
             except Language.MultipleObjectsReturned:
-                languages = Language.objects.filter(
-                        ascii_name__icontains=language).order_by("utf8_name")
-                return render_to_response("choose_language.html",
-                        {"languages":languages})
+                language = Language.objects.filter(
+                    ascii_name__istartswith=language).order_by("ascii_name")[0]
+            # except Language.DoesNotExist # still! XXX
+            #   language = Language.objects.last_added()
+    return language
+
+def report_language(request, language): # TODO refactor
+    try:
+        language = Language.objects.get(ascii_name=language)
+    except Language.DoesNotExist:
+        language = get_canonical_language(language)
+        return HttpResponseRedirect("/language/%s/" %
+                language.ascii_name)
     meanings = Meaning.objects.all()
     lexemes = Lexeme.objects.filter(language=language)
     return render_to_response("language_report.html",
             {"language":language,
             "lexemes":lexemes,
             "meanings":meanings})
+
+def edit_language(request, language):
+    return 
 
 def get_languages(request):
     """get languages, respecting language_list selection"""
