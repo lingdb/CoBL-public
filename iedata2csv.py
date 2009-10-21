@@ -5,18 +5,20 @@ Usage: ./iedata2nexus.py
 
 Note that the raw data is included in a fold below
 """
+# TODO make some unit tests to check the parsing
 from __future__ import print_function
 import sys
 
-INCLUDE_DOUBTFUL = False # TODO: can't handle the True
+INCLUDE_DOUBTFUL = True # False 
 HEADER = "ID\tsource_form\tphon_form\tnotes\tsource\tcognate_class"
 
 def main():
-    # data = {} # key=cognate_class, value=[language list]
     languages = []
     output_files = {}
     meanings = set()
     cognate_class = None # Cognate Class Number
+    cognate_class_subsets = {} # Cognate Class KEY should be 
+                               # treated as Cognate Class VALUE
     for line in raw_data:
         if line.startswith("a"):
             # header line with a meaning
@@ -37,9 +39,10 @@ def main():
                     line.split()[1:]]
             # these should all be "doubtful"
             # TODO if kind == 2, the two classes are judged to be reflexes of
-            # the same class
+            # the same class, and so should count as same
             assert cognate_class1 > 99 and cognate_class2 > 99 
-            # TODO turn this into a note for all daughter rows
+            if kind == 2 or INCLUDE_DOUBTFUL:
+                cognate_class_subsets[cognate_class2] = cognate_class1
         elif line.startswith(" "):
             # language data
             # A form line has a blank in column 1
@@ -50,6 +53,8 @@ def main():
             if cognate_class not in (0, 1) and cognate_class < 100: # i.e.
                 # informative, certain
                 # TODO change this to handle INCLUDE_DOUBTFUL
+                if cognate_class in cognate_class_subsets:
+                    cognate_class = cognate_class_subsets[cognate_class]
                 assert line[:6].strip() == meaning_number
                 language = line[9:24].strip().replace(" ", "_")
                 if language not in languages:
@@ -66,6 +71,8 @@ def main():
             raise ValueError("Don't know what to do with line: "+line)
 
 
+    #print(cognate_class_subsets)
+    #print(len(cognate_class_subsets))
     #print(*sorted(meanings), sep="\n")
     return
 
