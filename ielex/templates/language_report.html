@@ -34,6 +34,10 @@
 
 
 {% block controls %}
+<ul>
+  <li><a href="/language/{{ language.ascii_name }}/edit/">Edit</a> entry for 
+    {{ language.utf8_name }}</li>
+</ul>
 {% include "snippets/go_to.html" %}
 {% endblock %}
 

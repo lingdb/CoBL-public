@@ -16,11 +16,10 @@
   {% for lexeme in lexemes %}
   <tr class="{% cycle 'odd' 'even' %}">
     <td>{{ lexeme.language.id }}</td>
-    <td><a href="{% url language-report lexeme.language.id %}">{{ lexeme.language.utf8_name }}</a></td>
+    <td><a href="{% url language-report lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
     <td>{{ lexeme.source_form }}</td>
     <td>{{ lexeme.phon_form }}</td>
     <td> 
-      {# snip #}
       {% if lexeme.cognatejudgement_set.count %}
         {% for cj in lexeme.cognatejudgement_set.all %}
           <a href="/cognate/{{ cj.cognate_class.id }}/">{{ cj.cognate_class.alias }}</a>
@@ -38,7 +37,13 @@
       {% endifequal %}
     </td>
     <td>
-        <a href="/lexeme/{{ lexeme.id }}"><img src="/media/buttons/view.png" alt="View" title="View/edit the lexical entry" /></a>
+      <a href="/lexeme/{{ lexeme.id }}">
+        {% if lexeme.notes %}
+          <img src="/media/buttons/info.png" alt="View" title="View/edit the lexical entry" />
+        {% else %}
+          <img src="/media/buttons/view.png" alt="View" title="View/edit the lexical entry" />
+        {% endif %}
+      </a>
     </td>
   {% endfor %}
 </table>

@@ -87,7 +87,31 @@ def report_language(request, language): # TODO refactor
             "meanings":meanings})
 
 def edit_language(request, language):
-    return 
+    try:
+        language = Language.objects.get(ascii_name=language)
+    except Language.DoesNotExist:
+        assert False
+        language = get_canonical_language(language)
+        return HttpResponseRedirect("/language/%s/edit/" %
+                language.ascii_name)
+    if request.method == 'POST':
+        form = EditLanguageForm(request.POST)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect('/language/%s/' % language.ascii_name)
+        if form.is_valid():
+            cd = form.cleaned_data
+            language.iso_code = cd["iso_code"]
+            language.ascii_name = cd["ascii_name"]
+            language.utf8_name = cd["utf8_name"]
+            language.save()
+            return HttpResponseRedirect('/language/%s/' % language.ascii_name)
+        else:
+            assert False
+    else:
+        form = EditLanguageForm(language.__dict__)
+    return render_to_response("language_edit.html",
+            {"language":language,
+            "form":form})
 
 def get_languages(request):
     """get languages, respecting language_list selection"""

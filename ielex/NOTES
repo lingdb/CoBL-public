@@ -36,6 +36,7 @@ TODO
 - allow notes to be edited
 - make all the appearances of cognate class aliases in views into links to this
 - put some kind of icon for "reliability" against cognate aliases and lexemes
+- test what happens when you change a language name (does the data get lost)
 
 TECHNICAL NOTES
 ===============
@@ -98,11 +99,14 @@ http://code.djangoproject.com/wiki/TemplatedForm
 This article shows, how to use template to render CusstomForms instead of
 as_p(), as_table()...
 
-To make it work change
+To make the snippet work, change:
 
  * from django import newforms as forms to from django import forms
  * from django.newforms.forms import BoundField to from django.forms.forms
    import BoundField
+
+This looks like the way to get my own classes into forms for css, e.g.
+th.colheader { text-align: center }; th.rowheader { text-align: right }.
 
 
 Bar charts

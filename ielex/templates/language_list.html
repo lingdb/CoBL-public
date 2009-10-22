@@ -19,8 +19,19 @@
   {% for language in languages %}
   <tr class="{% cycle 'odd' 'even' %}">
       <td>{{ forloop.counter }}</td>
-      <td><a href="{% url language-report language.id %}">{{ language.utf8_name }}</a></td>
-      <td><a href="http://www.ethnologue.com/show_language.asp?code={{ language.iso_code }}">{{ language.iso_code }}</a></td>
+      <td>
+        <a href="{% url language-edit language.ascii_name %}">
+          <img src="/media/buttons/edit.png" alt="edit" title="Edit {{ language.utf8_name }} metadata" />
+        </a>
+        <a href="{% url language-report language.ascii_name %}" alt="view lexeme list" title="View Swadesh list for {{ language.utf8_name }}">
+          {{ language.utf8_name }}
+        </a>
+      </td>
+      <td>
+        <a href="http://www.ethnologue.com/show_language.asp?code={{ language.iso_code }}">
+          {{ language.iso_code }}
+        </a>
+      </td>
       <td>{% if language.id|in_list:current_list.language_id_list %}
 	    <img src="/media/buttons/tick.png" alt="*" title="Included" />
 	  {% else %}
@@ -53,4 +64,4 @@
 {% endif %}
 {% endblock %}
 
-{# vim: set ft=htmldjango: #}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

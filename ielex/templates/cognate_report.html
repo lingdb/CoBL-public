@@ -13,16 +13,21 @@
       <th>Language</th>
       <th>Lexeme</th>
       <th>Meaning</th>
+      <th>Notes</th>
     </tr>
   </thead>
   <tbody>
   {% for cj in cognate_class.cognatejudgement_set.all %}
   <tr class="{% cycle 'odd' 'even' %}">
       <td>{{ forloop.counter }}</td>
-      <td><a href="{% url language-report cj.lexeme.language.id %}">
-		{{ cj.lexeme.language.utf8_name }}</a></td>
-      <td>{{ cj.lexeme.source_form }}
-      <td>{{ cj.lexeme.meaning.gloss }}
+      <td>
+        <a href="{% url language-report cj.lexeme.language.id %}">
+          {{ cj.lexeme.language.utf8_name }}
+        </a>
+      </td>
+      <td>{{ cj.lexeme.source_form }}</td>
+      <td>{{ cj.lexeme.meaning.gloss }}</td>
+      <td>{{ cj.lexeme.notes }}</td>
     </tr>
   {% endfor %}
   </tbody>

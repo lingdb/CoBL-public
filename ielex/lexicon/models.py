@@ -22,10 +22,10 @@ class Source(models.Model):
         ordering = ["type_code", "citation_text"]
 
 class Language(models.Model):
-    iso_code = models.CharField(max_length=3)
+    iso_code = models.CharField(max_length=3, blank=True)
     ascii_name = models.CharField(max_length=999)
     utf8_name = models.CharField(max_length=999)
-    sort_key = models.IntegerField(null=True, unique=True)
+    sort_key = models.IntegerField(null=True, blank=True)
 
     def __unicode__(self):
         return self.ascii_name

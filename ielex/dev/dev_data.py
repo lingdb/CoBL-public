@@ -24,7 +24,14 @@ setup_environ(settings)
 from ielex.lexicon.models import *
 from ielex.utilities import int2alpha
 
+POLYSEMY = file("polysemy.txt", "w")
 
+def is_empty(l):
+    empty = True
+    for e in l:
+        if e.strip():
+            empty = False
+    return empty
 
 # Populate Meaning database
 print "--> Populating Meaning Database"
@@ -56,6 +63,7 @@ for line in file("dyen_iso.tab"):
             l = Language(ascii_name=name.title(),
                     utf8_name=name.title().replace("_"," "))
         l.save()
+
         d = DyenName(language=l, name=name)
         d.save()
 
@@ -78,10 +86,10 @@ dkb_ids = ",".join([str(i) for i in dkb_ids])
 l = LanguageList.objects.create(name="DKB1992", language_ids=dkb_ids)
 l.save()
 # no creoles
-nc_ids = [i+1 for i in range(82)]
-nc_ids = ",".join([str(i) for i in nc_ids])
-l = LanguageList.objects.create(name="no-creoles", language_ids=nc_ids)
-l.save()
+# nc_ids = [i+1 for i in range(82)]
+# nc_ids = ",".join([str(i) for i in nc_ids])
+# l = LanguageList.objects.create(name="no-creoles", language_ids=nc_ids)
+# l.save()
 
 dkb_text = "Dyen, Isidore Kruskal, Joseph and Black, Paul (1992). An "\
         "Indoeuropean Classification, a Lexicostatistical Experiment. "\
@@ -94,7 +102,7 @@ dkb1992 = Source.objects.create(citation_text=dkb_text, type_code="P")
 print "--> Populating lexical data"
 cognate_classes = {} # alias: CognateSet
 for filename in glob.glob("dyen_data/*.csv"):
-    dyen_name = filename[10:-4]
+    dyen_name = filename[10:-4].replace("."."")
     print "--->", dyen_name
     language = DyenName.objects.get(name=dyen_name).language # Language object
     fileobj = file(filename)
@@ -135,6 +143,7 @@ cogset_aliases = {}
 for cj in CognateJudgement.objects.all():
     cogset_aliases.setdefault(cj.lexeme.meaning.gloss,
             set()).add(cj.cognate_class.id)
+print
 
 for meaning in cogset_aliases:
     print "--->", meaning,
@@ -162,56 +171,72 @@ for line in file("bibliography.csv"):
     source_dict[key] = source
 
 print "--> reading ludewig data"
-for filename in glob.glob("ludewig_data/*.csv"):
+for filename in glob.glob("ludewig_data/*.tab"):
     name = filename.split("/")[1][:-4]
-    print "--->", name
-    language = Language.objects.create(ascii_name=name,
-            utf8_name=name)
+    print "--->", name, 
+    try:
+        language = Language.objects.get(ascii_name=name)
+        print "(append)"
+    except Language.DoesNotExist:
+        language = Language.objects.create(ascii_name=name,
+                utf8_name=name.replace("_"," "))
+        print "(create)"
     fileobj = file(filename)
     header = fileobj.next().strip()
-    assert header == "ID\tsource_form\tphon_form\tnotes/ altern. Forms (AF)"\
-            "\tsource\tcognate_set"
-    for line in fileobj:
-        (meaning_id, source_form, phon_form, notes, raw_sources,
-                cognate_class) = line.split("\t")
-        meaning_id = int(meaning_id)
-        assert source_form or phon_form
-        if not source_form:
-            source_form = phon_form
-        meaning = Meaning.objects.get(id=meaning_id)
-        lexeme = Lexeme.objects.create(language=language,
-                meaning=meaning,
-                source_form=source_form,
-                phon_form=phon_form,
-                notes=notes)
-
-        for source in raw_sources.split(","):
-            source = re.split(r"(?<!http):", source)
-            if len(source) == 2:
-                source, pages = source
-                pages = pages.strip()
-            else:
-                source = source[0]
-                pages = ""
-            source = source.strip()
-            source = source.replace(" ","")
+    # assert header == "ID\tsource_form\tphon_form\tnotes/ altern. Forms (AF)"\
+    #         "\tsource\tcognate_set"
+    for i, line in enumerate(fileobj):
+        if not is_empty(line):
+            (meaning_id, source_form, phon_form, notes, raw_sources) = \
+                    [e.strip().strip('"').strip() for e in line.split("\t")[:5]]
+            meaning_id = int(meaning_id)
             try:
-                assert source in source_dict
+                assert source_form or phon_form
             except AssertionError:
-                raise AssertionError("error in source `%s' line %s" % (source,
-                        meaning_id))
-            citation = LexemeCitation.objects.create(lexeme=lexeme,
-                    source=source_dict[source],
-                    reliability="C",
-                    pages=pages)
+                # raise AssertionError("error: no lexical forms on line %s" % \
+                #         (i+2))
+                print >>POLYSEMY, "\t".join([name, str(meaning_id), notes,
+                        raw_sources])
+            if not source_form:
+                source_form = phon_form
+            meaning = Meaning.objects.get(id=meaning_id)
+            lexeme = Lexeme.objects.create(language=language,
+                    meaning=meaning,
+                    source_form=source_form,
+                    phon_form=phon_form,
+                    notes=notes)
+
+            for source in raw_sources.split(","):
+                source = re.split(r"(?<!http):", source)
+                if len(source) == 2:
+                    source, pages = source
+                    pages = pages.strip()
+                else:
+                    source = source[0]
+                    pages = ""
+                source = source.strip()
+                source = source.replace(" ","")
+                try:
+                    assert source in source_dict
+                except AssertionError:
+                    raise AssertionError("error in source `%s' line %s" % \
+                            (source, i+2))
+                citation = LexemeCitation.objects.create(lexeme=lexeme,
+                        source=source_dict[source],
+                        reliability="C",
+                        pages=pages)
 
 print "-->", "making sort keys"
-for i, row in enumerate(file("sorted_langs.csv")):
-    row = row.split("\t")
-    lang_id = int(row[2])
-    l = Language.objects.get(id=lang_id)
-    l.sort_key = i+1
-    l.save()
+# for i, row in enumerate(file("sorted_langs.csv")):
+#     row = row.split("\t")
+#     lang_id = int(row[2])
+#     l = Language.objects.get(id=lang_id)
+#     l.sort_key = i+1
+#     l.save()
+languages = Language.objects.all().order_by("utf8_name")
+for i, language in enumerate(languages):
+    language.sort_key = i + 1
+    language.save()
 
 print "-> Complete (%s seconds)" % int(time.time() - start_time)
 ll = LanguageList.objects.get(name="all")

@@ -60,6 +60,10 @@ class EditSourceForm(forms.ModelForm):
     class Meta:
         model = Source
 
+class EditLanguageForm(forms.ModelForm):
+    class Meta:
+        model = Language
+
 class ChooseLanguageForm(forms.Form):
     language = ChooseLanguageField(queryset=Language.objects.all(),
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}))

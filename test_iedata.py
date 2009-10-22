@@ -1,3 +1,26 @@
+"""
+sets to test:
+
+MOTHER
+
+c                         200  3  204
+b                      205
+c                         204  2  205
+  097 65 Khaskura        AMA
+  097 64 Nepali List     AMA
+
+Khaskura and Nepali should have the same class, and it should be cognate class
+A if we're conflating doubtful classes.
+
+Likewise,
+
+3  Albanian G    AMA, MOMA, NANA    B
+2  Albanian C    MEM                A
+4  Albanian K    MEME               A
+5  Albanian T    NENE               A <- should be B
+6  Albanian Top  NENE               B
+
+"""
 
 # FATHER
 
