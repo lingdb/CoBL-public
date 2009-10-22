@@ -36,8 +36,7 @@ for line in file("ludewig_terms.tab"):
             gloss = description.split()[1].lower()
         else:
             gloss = description.split()[0].lower()
-        m = Meaning(description=description, gloss=gloss)
-        m.save()
+        m = Meaning.objects.create(description=description, gloss=gloss)
         assert m.id == ludewig_id
     except ValueError:
         pass
@@ -45,18 +44,20 @@ for line in file("ludewig_terms.tab"):
 # Populate Language and DyenName
 print "--> Populating Language and DyenName"
 for line in file("dyen_iso.tab"):
-    try:
-        name, iso_code = line.strip().split("\t")
-        l = Language(iso_code=iso_code, 
-                ascii_name=name.title(),
-                utf8_name=name.title().replace("_"," "))
-    except ValueError:
-        name = line.strip()
-        l = Language(ascii_name=name.title(),
-                utf8_name=name.title().replace("_"," "))
-    l.save()
-    d = DyenName(language=l, name=name)
-    d.save()
+    line = line.strip()
+    if line:
+        try:
+            name, iso_code = line.split("\t")
+            l = Language(iso_code=iso_code, 
+                    ascii_name=name.title(),
+                    utf8_name=name.title().replace("_"," "))
+        except ValueError:
+            name = line.strip()
+            l = Language(ascii_name=name.title(),
+                    utf8_name=name.title().replace("_"," "))
+        l.save()
+        d = DyenName(language=l, name=name)
+        d.save()
 
 # Change a couple of names
 for (code, name) in [("nld", "Dutch"), ("eng", "English")]:
@@ -103,23 +104,29 @@ for filename in glob.glob("dyen_data/*.csv"):
         meaning = Meaning.objects.get(id=int(row[0]))
         source_form = row[1].strip()
         cognate_class_alias = "%s-%s" % (row[0], row[5])
+        cognate_reliability = row[6]
+        if not row[5]:
+            lexeme_reliability = row[6]
+        else:
+            lexeme_reliability = "A"
         l = Lexeme.objects.create(language=language,
                 meaning=meaning,
                 source_form=source_form)
         lc = LexemeCitation.objects.create(lexeme=l,
                 source=dkb1992,
-                reliability="A")
-        if cognate_class_alias not in cognate_classes:
-            c = CognateSet()
-            cognate_classes[cognate_class_alias] = c
-            c.save()
-        else:
-            c = cognate_classes[cognate_class_alias]
-        j = CognateJudgement.objects.create(lexeme=l,
-                cognate_class=c)
-        cjc = CognateJudgementCitation.objects.create(cognate_judgement=j,
-                source=dkb1992,
-                reliability="A")
+                reliability=lexeme_reliability)
+        if row[5]: # lexeme belongs to a cognate set 
+            if cognate_class_alias not in cognate_classes:
+                c = CognateSet()
+                cognate_classes[cognate_class_alias] = c
+                c.save()
+            else:
+                c = cognate_classes[cognate_class_alias]
+            j = CognateJudgement.objects.create(lexeme=l,
+                    cognate_class=c)
+            cjc = CognateJudgementCitation.objects.create(cognate_judgement=j,
+                    source=dkb1992,
+                    reliability=cognate_reliability)
 
 
 # Make cogset aliases
@@ -172,7 +179,7 @@ for filename in glob.glob("ludewig_data/*.csv"):
         if not source_form:
             source_form = phon_form
         meaning = Meaning.objects.get(id=meaning_id)
-        lexeme = Lexeme.objects.create(language=language, 
+        lexeme = Lexeme.objects.create(language=language,
                 meaning=meaning,
                 source_form=source_form,
                 phon_form=phon_form,
@@ -195,7 +202,7 @@ for filename in glob.glob("ludewig_data/*.csv"):
                         meaning_id))
             citation = LexemeCitation.objects.create(lexeme=lexeme,
                     source=source_dict[source],
-                    reliability="B",
+                    reliability="C",
                     pages=pages)
 
 print "-->", "making sort keys"

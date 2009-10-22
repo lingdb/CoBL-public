@@ -23,7 +23,7 @@
       {# snip #}
       {% if lexeme.cognatejudgement_set.count %}
         {% for cj in lexeme.cognatejudgement_set.all %}
-          {{ cj.cognate_class.alias }}
+          <a href="/cognate/{{ cj.cognate_class.id }}/">{{ cj.cognate_class.alias }}</a>
           <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/"><img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" /></a>
           <br />
         {% endfor %}

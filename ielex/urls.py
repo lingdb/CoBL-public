@@ -51,6 +51,8 @@ urlpatterns = patterns('',
     url(r'^source/(?P<source_id>\d+)/(?P<action>edit|delete)/$', source_edit),
     url(r'^source/(?P<action>add)/$', source_edit),
 
+    url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report),
+
     # url(r'^backup/$', make_backup),
 
     # Example:

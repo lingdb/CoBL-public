@@ -28,7 +28,14 @@ Icons
 TODO
 ====
 
-- Sources table, plus links
+- don't conflate "doubtful" codings, since each "doubtful" subset is not
+  doubtful within itself
+- but put a comment in the cognate set object saying that this set may be
+  cognate with another set
+- add a view notes field and an alias field to /cognate/\d+ view
+- allow notes to be edited
+- make all the appearances of cognate class aliases in views into links to this
+- put some kind of icon for "reliability" against cognate aliases and lexemes
 
 TECHNICAL NOTES
 ===============

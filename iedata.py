@@ -9,40 +9,52 @@ Note that the raw data is included in a fold below
 from __future__ import print_function
 import sys
 
-INCLUDE_DOUBTFUL = True # False 
-HEADER = "ID\tsource_form\tphon_form\tnotes\tsource\tcognate_class"
+# TODO: 
+# - don't conflate "doubtful" codings, since each "doubtful" subset is not
+# doubtful within itself
+# - but put a comment in the cognate set object saying that this set may be
+# cognate with another set
+# - add a view notes field and an alias field to /cognate/\d+ view
 
-def main():
-    languages = []
-    output_files = {}
-    meanings = set()
-    cognate_class = None # Cognate Class Number
-    cognate_class_subsets = {} # Cognate Class KEY should be 
-                               # treated as Cognate Class VALUE
+def parse():
+    """
+    Returns a dictionary of dictionaries keyed on [language name][meaning] with
+    values a tuple of ('source_form', 'cognate_class', 'reliability')
+    """
+    data = {}
     for line in raw_data:
         if line.startswith("a"):
             # header line with a meaning
-            meaning_number = line[2:6].strip()
+            meaning_id = line[2:6].strip()
             meaning = line[6:30].strip()
-            meanings.add(meaning)
+            equivalence_sets = {}
+            doubtful_sets = {}
         elif line.startswith("b"):
             # Cognate Class Number (for the following forms)
             cognate_class = int(line.split()[1])
         elif line.startswith("c"):
-            # "doubtful" equivalence of two cognate classes
-            # c                         207  3  209
-            # A relationship line has a "c" in column 1,
-            # a cognate_class in columns 27-29,
-            # either "2" or "3" in column 32,
-            # and another cognate_class in columns 35-37.
+            # Equivalence cognate classes
             cognate_class1, kind, cognate_class2 = [int(i) for i in
                     line.split()[1:]]
-            # these should all be "doubtful"
-            # TODO if kind == 2, the two classes are judged to be reflexes of
-            # the same class, and so should count as same
+            # if kind == 2, then class2 is equivalent to class1; if kind == 3
+            # the equivalence is "doubtful"
             assert cognate_class1 > 99 and cognate_class2 > 99 
-            if kind == 2 or INCLUDE_DOUBTFUL:
-                cognate_class_subsets[cognate_class2] = cognate_class1
+            if kind == 2:
+                # a series of equivalences:
+                # c     200  2  201
+                # c     201  2  202
+                # c     201  2  207
+                # should map on to:
+                # {207:200, 202:200, 201:200)
+                if cognate_class1 in equivalence_sets:
+                    cognate_class1 = equivalence_sets[cognate_class1]
+                equivalence_sets[cognate_class2] = cognate_class1
+            if kind == 3:
+                if cognate_class1 in doubtful_sets:
+                    cognate_class1 = doubtful_sets[cognate_class1]
+                if cognate_class1 in equivalence_sets:
+                    cognate_class1 = equivalence_sets[cognate_class1]
+                doubtful_sets[cognate_class2] = cognate_class1
         elif line.startswith(" "):
             # language data
             # A form line has a blank in column 1
@@ -50,31 +62,49 @@ def main():
             # the language number in columns 7-8,
             # the language name in columns 10-24,
             # and the form or forms in columns 26-78.
-            if cognate_class not in (0, 1) and cognate_class < 100: # i.e.
+            if cognate_class not in (0, 1):
+                # cognate_class < 100: # i.e.
                 # informative, certain
-                # TODO change this to handle INCLUDE_DOUBTFUL
-                if cognate_class in cognate_class_subsets:
-                    cognate_class = cognate_class_subsets[cognate_class]
-                assert line[:6].strip() == meaning_number
-                language = line[9:24].strip().replace(" ", "_")
-                if language not in languages:
-                    languages.append(language)
-                    output_files[language] = file("dyen_data/"+language+".csv", "w")
-                    print(HEADER, file=output_files[language])
-                form = line[25:].strip()
-                # OUTPUT ROW:
-                # meaning, source_form, notes, source, cognate_class
-                output = [meaning2id[meaning], form, "", "", "DyenDB",
-                        cognate_class]
-                print(*output, sep="\t", file=output_files[language])
+                reliability = "A"
+                try:
+                    cognate_class = equivalence_sets[cognate_class]
+                except KeyError:
+                    try:
+                        cognate_class = doubtful_sets[cognate_class]
+                        reliability = "B"
+                    except KeyError:
+                        pass
+                assert line[:6].strip() == meaning_id
+            elif cognate_class == 1:
+                cognate_class = ""
+                reliability = "A"
+            else:
+                assert cognate_class == 0
+                cognate_class = ""
+                reliability = "B"
+            language = line[9:24].strip().replace(" ", "_")
+            source_form = line[25:].strip()
+            if source_form:
+                data.setdefault(language, {})
+                data[language][meaning] = (source_form, cognate_class,
+                        reliability)
         else:
             raise ValueError("Don't know what to do with line: "+line)
+    return data
 
-
-    #print(cognate_class_subsets)
-    #print(len(cognate_class_subsets))
-    #print(*sorted(meanings), sep="\n")
+def write_csv():
+    HEADER = ["ID", "source_form", "phon_form", "notes",
+                "source", "cognate_class", "reliability"]
+    data = parse()
+    for language in data:
+        output = file("dyen_data/"+language+".csv", "w")
+        print(*HEADER, sep="\t", file=output)
+        for meaning in sorted(data[language]):
+            source_form, cognate_class, reliability= data[language][meaning]
+            print(meaning2id[meaning], source_form, "", "", "DyenDB",
+                    cognate_class, reliability, sep="\t", file=output)
     return
+
 
 # RAW DATA {{{ 
 raw_data = """\
@@ -25890,7 +25920,6 @@ c                         202  3  204
 c                         203  3  204
   200 60 Panjabi ST      PILLA
   200 58 Marathi         PIVLA""".split("\n")
-
 # }}}
 
 # Dyen Codes {{{
@@ -26317,6 +26346,12 @@ id_list = [("1", "ALL"),
 # }}}
 
 if __name__ == "__main__":
-    main()
+    # import pprint
+    # meaning = "ANIMAL"
+    # for language, R in [("Bengali","A"), ("Lahnda","B")]:
+    #     data = parse()
+    #     print("Reliability", R, ":", language, meaning)
+    #     print(data[language][meaning])
+    write_csv()
 
 # vim:fdm=marker

@@ -45,6 +45,11 @@ def view_languages(request):
     response.set_cookie("language_list_name", language_list_name)
     return response
 
+def cognate_report(request, cognate_id):
+    cognate_class = CognateSet.objects.get(id=int(cognate_id))
+    return render_to_response("cognate_report.html",
+            {"cognate_class":cognate_class})
+
 def view_meanings(request):
     meanings = Meaning.objects.all()
     return render_to_response("meaning_list.html", {"meanings":meanings})

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load lexicon_utils %}
+
+{% block title %}Cognate report{% endblock %}
+
+{% block top %}<h1>Cognate set {{ cognate_class.id }}</h1>{% endblock %}
+
+{% block content %}
+<table>
+  <thead> {# handy for the print view #}
+    <tr>
+      <th>Count</th>
+      <th>Language</th>
+      <th>Lexeme</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for cj in cognate_class.cognatejudgement_set.all %}
+  <tr class="{% cycle 'odd' 'even' %}">
+      <td>{{ forloop.counter }}</td>
+      <td><a href="{% url language-report cj.lexeme.language.id %}">
+		{{ cj.lexeme.language.utf8_name }}</a></td>
+      <td>{{ cj.lexeme.source_form }}
+      <td>{{ cj.lexeme.meaning.gloss }}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+{% endblock %}
+
+{# vim: set ft=htmldjango: #}
