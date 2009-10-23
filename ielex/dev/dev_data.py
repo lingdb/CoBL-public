@@ -51,13 +51,13 @@ for line in file("ludewig_terms.tab"):
 
 # Populate Language and DyenName
 print "--> Populating Language and DyenName"
-for line in file("iso-codes.tab"):
+for line in file("iso_codes.tab"):
     line = line.strip()
     if line:
         try:
             name, iso_code = line.split("\t")
-            l = Language(iso_code=iso_code, 
-                    ascii_name=name.title(),
+            l = Language(iso_code=iso_code,
+                    ascii_name=name,
                     utf8_name=name.title().replace("_"," "))
         except ValueError:
             name = line.strip()
@@ -69,14 +69,15 @@ for line in file("iso-codes.tab"):
         d.save()
 
 # Change a couple of names
-for (code, name) in [("nld", "Dutch"), ("eng", "English")]:
-    l = Language.objects.get(iso_code=code)
-    l.ascii_name = name
-    l.save()
-l = Language.objects.get(ascii_name="Penn_Dutch")
-l.ascii_name = "Pennsylvania_Dutch"
-l.utf8_name = "Pennsylvania Dutch"
-l.save()
+# Why give ourselves the grief? Do this later...
+# for (code, name) in [("nld", "Dutch"), ("eng", "English")]:
+#     l = Language.objects.get(iso_code=code)
+#     l.ascii_name = name
+#     l.save()
+# l = Language.objects.get(ascii_name="Penn_Dutch")
+# l.ascii_name = "Pennsylvania_Dutch"
+# l.utf8_name = "Pennsylvania Dutch"
+# l.save()
 
 # Make some default id lists
 # gray atkinson
@@ -106,7 +107,7 @@ dkb1992 = Source.objects.create(citation_text=dkb_text, type_code="P")
 # - link to Source via LexemeCitation objects
 print "--> Populating lexical data"
 cognate_classes = {} # alias: CognateSet
-os.system(r"mv dyen_data/Penn\._Dutch dyen_data/Penn_Dutch")
+#os.system(r"mv dyen_data/Penn\._Dutch dyen_data/Penn_Dutch")
 for filename in glob.glob("dyen_data/*.csv"):
     dyen_name = filename[10:-4]
     print "--->", dyen_name
@@ -247,28 +248,20 @@ for filename in glob.glob("ludewig_data/*.tab"):
                         reliability="C",
                         pages=pages)
 
-# print "-->", "making sort keys"
-# for i, row in enumerate(file("sorted_langs.csv")):
-#     row = row.split("\t")
-#     lang_id = int(row[2])
-#     l = Language.objects.get(id=lang_id)
-#     l.sort_key = i+1
-#     l.save()
-
-# languages = Language.objects.all().order_by("utf8_name")
-# for i, language in enumerate(languages):
-#     language.sort_key = i + 1
-#     language.save()
-keys = {}
-for line in file("sorted.txt"):
-    key, name = line.strip().split()[:2]
+names = [line.strip().split("\t")[1] for line in file("classification.csv")]
+names.reverse()
+for i, name in enumerate(names):
     try:
-        l = Language.objects.get(ascii_name=name)
-        l.sort_key = int(key)
+        l = Language.objects.get(ascii_name__iexact=name)
+        l.sort_key = float(i+1)
         l.save()
     except Language.DoesNotExist:
         print "---> warning: could not match", name
 
-print "-> Complete (%s seconds)" % int(time.time() - start_time)
+seconds = int(time.time() - start_time)
+minutes = seconds // 60
+seconds %= 60
+
+print """-> Complete (%s'%s")""" % (minutes, seconds)
 ll = LanguageList.objects.get(name="all")
 assert len(ll.language_id_list) == Language.objects.count()

@@ -105,19 +105,17 @@ def get_canonical_language(language):
             #   language = Language.objects.last_added()
     return language
 
-def report_language(request, language): # TODO refactor
+def report_language(request, language):
     try:
         language = Language.objects.get(ascii_name=language)
     except Language.DoesNotExist:
         language = get_canonical_language(language)
         return HttpResponseRedirect("/language/%s/" %
                 language.ascii_name)
-    meanings = Meaning.objects.all()
-    lexemes = Lexeme.objects.filter(language=language)
+    lexemes = Lexeme.objects.filter(language=language).order_by("meaning")
     return render_to_response("language_report.html",
             {"language":language,
-            "lexemes":lexemes,
-            "meanings":meanings})
+            "lexemes":lexemes})
 
 def edit_language(request, language):
     try:

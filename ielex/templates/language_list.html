@@ -9,16 +9,15 @@
 <table>
   <thead> {# handy for the print view #}
     <tr>
-      <th>Count</th>
-      <th>Language Name</th>
-      <th>ISO-639-3 Code</th>
-      <th>Included</th>
+      <th>Name</th>
+      <th>ISO-639-3</th>
+      <th>Lexemes</th>
+      <th>Include</th>
     </tr>
   </thead>
   <tbody>
   {% for language in languages %}
   <tr class="{% cycle 'odd' 'even' %}">
-      <td>{{ forloop.counter }}</td>
       <td>
         <a href="{% url language-edit language.ascii_name %}">
           <img src="/media/buttons/edit.png" alt="edit" title="Edit {{ language.utf8_name }} metadata" />
@@ -32,11 +31,14 @@
           {{ language.iso_code }}
         </a>
       </td>
+      <td>
+        {{ language.lexeme_set.all.count }}
+      </td>
       <td>{% if language.id|in_list:current_list.language_id_list %}
-	    <img src="/media/buttons/tick.png" alt="*" title="Included" />
-	  {% else %}
-	    <img src="/media/buttons/delete.png" alt="" title="Excluded" />
-	  {% endif %}
+            <img src="/media/buttons/tick.png" alt="*" title="Included" />
+          {% else %}
+            <img src="/media/buttons/delete.png" alt="" title="Excluded" />
+          {% endif %}
       </td>
     </tr>
   {% endfor %}

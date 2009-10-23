@@ -23,14 +23,19 @@
       {% if lexeme.cognatejudgement_set.count %}
         {% for cj in lexeme.cognatejudgement_set.all %}
           <a href="/cognate/{{ cj.cognate_class.id }}/">{{ cj.cognate_class.alias }}</a>
-          <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/"><img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" /></a>
+          <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/#current">
+            <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
+          </a>
           <br />
         {% endfor %}
       {% else %}
-        <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/"><img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" /></a>
+        <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/#current">
+          <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
+        </a>
       {% endif %}
 
       {% ifequal add_cognate_judgement lexeme.id %}
+        <a id="current"></a> {# target for .../add/#current links #}
         <form action="" method="post">
           {{ form.cognate_class }}
         </form>

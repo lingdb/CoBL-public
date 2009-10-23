@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load lexicon_utils %}
+
+{% block title %}Cognate report{% endblock %}
+
+{% block top %}<h1>Sort Order</h1>{% endblock %}
+
+{% block content %}
+<form action="" method="POST">
+  <input type="submit" name="submit" value="Move up" /><br />
+  {{ form.languages }}<br />
+  <input type="submit" name="submit" value="Move down" /><br />
+  <input type="submit" name="cancel" value="Finish" />
+</form>
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
+

@@ -1,6 +1,6 @@
 Ancient_Greek	202	see WIFE	Woodhouse1910
 Cornish	117	(cf. ‘MAN’ 99)	Ludewig2009
-Rajasthani	155	see also CUT	Ludewig2009
+Marwari	155	see also CUT	Ludewig2009
 Sindhi	5	normally expressed with LOC?	Ludewig2009
 Sindhi	153	see also FEW	Ludewig2009
 Sindhi	171	see also FAT	Ludewig2009
