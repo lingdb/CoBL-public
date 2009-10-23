@@ -52,10 +52,27 @@ def reorder_languages(request):
         form = ReorderLanguageSortKeyForm(request.POST)
         if form.is_valid():
             language = form.cleaned_data["language"]
+            # Moving up
             # get two languages in front of this one
-            # set the sort key to halfway between them
+            try:
+                after = Language.objects.filter(
+                        sort_key__lt=language.sort_key).latest("sort_key")
+                try: 
+                    before = Language.objects.filter(
+                            sort_key__lt=after.sort_key).latest("sort_key")
+                    # set the sort key to halfway between them
+                    language.sort_key = (after.sort_key + before.sort_key) / 2
+                except Language.DoesNotExist:
+                    # language is at index 1 => swap index 0 and index 1
+                    after.sort_key, language.sort_key = language.sort_key, after_sort_key
+                    after.save()
+                language.save()
+            except Language.DoesNotExist:
+                # language is at index 0
+                pass
             # handle min and max sort key values
             # renumber all the sort keys on
+            # moving down the same way
     else:
         form = ReorderLanguageSortKeyForm()
     return render_to_response("language_reorder.html",

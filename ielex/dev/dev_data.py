@@ -246,13 +246,14 @@ for filename in glob.glob("ludewig_data/*.tab"):
                         reliability="C",
                         pages=pages)
 
-print "-->", "making sort keys"
+# print "-->", "making sort keys"
 # for i, row in enumerate(file("sorted_langs.csv")):
 #     row = row.split("\t")
 #     lang_id = int(row[2])
 #     l = Language.objects.get(id=lang_id)
 #     l.sort_key = i+1
 #     l.save()
+
 languages = Language.objects.all().order_by("utf8_name")
 for i, language in enumerate(languages):
     language.sort_key = i + 1

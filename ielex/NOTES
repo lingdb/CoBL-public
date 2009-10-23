@@ -1,30 +1,6 @@
 DESIGN
 ======
 
-Database function
------------------
-
-- Click on the ``source form`` field in the language and word views to get
-  source information (maybe as some kind of popup?)
-
-- Make a cognate set alias
-
-- Register a "sticky" source, so that all subsequent entries are
-  attributed to that source
-
-- Include flag
-
-
-Icons
------
-
- Sweetie BasePack 
-
- Author:  Joseph North
- Email:   sublick@gmail.com
- Licence: Attribution-ShareAlike 3.0
- Website: sweetie.sublink.ca
-
 TODO
 ====
 
@@ -37,6 +13,28 @@ TODO
 - make all the appearances of cognate class aliases in views into links to this
 - put some kind of icon for "reliability" against cognate aliases and lexemes
 - test what happens when you change a language name (does the data get lost)
+
+Sort Key Field
+--------------
+
+http://stackoverflow.com/questions/522997/is-there-a-way-to-auto-increment-a-django-field-with-respect-to-a-foreign-key
+
+Database function
+-----------------
+
+- Register a "sticky" source, so that all subsequent entries default
+  to that source
+
+Icons
+-----
+
+ Sweetie BasePack 
+
+ Author:  Joseph North
+ Email:   sublick@gmail.com
+ Licence: Attribution-ShareAlike 3.0
+ Website: sweetie.sublink.ca
+
 
 TECHNICAL NOTES
 ===============

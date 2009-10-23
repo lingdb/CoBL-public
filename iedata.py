@@ -26366,7 +26366,7 @@ id_list = [("1", "ALL"),
 # }}}
 
 if __name__ == "__main__":
-    #write_csv()
+    write_csv()
     write_doubtful()
 
 # vim:fdm=marker
