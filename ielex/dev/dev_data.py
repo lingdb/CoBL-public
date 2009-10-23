@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Populate a database with some basic data
 
@@ -72,6 +73,10 @@ for (code, name) in [("nld", "Dutch"), ("eng", "English")]:
     l = Language.objects.get(iso_code=code)
     l.ascii_name = name
     l.save()
+l = Language.objects.get(ascii_name="Penn_Dutch")
+l.ascii_name = "Pennsylvania Dutch"
+l.utf8_name = "Pennsylvania Dutch"
+l.save()
 
 # Make some default id lists
 # gray atkinson
@@ -102,7 +107,7 @@ dkb1992 = Source.objects.create(citation_text=dkb_text, type_code="P")
 print "--> Populating lexical data"
 cognate_classes = {} # alias: CognateSet
 for filename in glob.glob("dyen_data/*.csv"):
-    dyen_name = filename[10:-4].replace("."."")
+    dyen_name = filename[10:-4]
     print "--->", dyen_name
     language = DyenName.objects.get(name=dyen_name).language # Language object
     fileobj = file(filename)
@@ -111,7 +116,7 @@ for filename in glob.glob("dyen_data/*.csv"):
         row = line.split("\t")
         meaning = Meaning.objects.get(id=int(row[0]))
         source_form = row[1].strip()
-        cognate_class_alias = "%s-%s" % (row[0], row[5])
+        cognate_class_alias = row[5]
         cognate_reliability = row[6]
         if not row[5]:
             lexeme_reliability = row[6]
@@ -136,6 +141,21 @@ for filename in glob.glob("dyen_data/*.csv"):
                     source=dkb1992,
                     reliability=cognate_reliability)
 
+import pprint
+pprint.pprint(sorted(cognate_classes))
+
+print "--> note doubtful codings"
+for line in file("dyen_data/doubtful_identity.txt"):
+    alias1, alias2 = line.strip().split()
+    try:
+        c1 = cognate_classes[alias1]
+        c2 = cognate_classes[alias2]
+        c1.notes += "DKB: Doubtful identify with /cognate/%s/\n" % c2.id
+        c2.notes += "DKB: Doubtful identify with /cognate/%s/\n" % c1.id
+        c1.save()
+        c2.save()
+    except KeyError:
+        print "---> *error*: failed to match", alias1, "or", alias2
 
 # Make cogset aliases
 print "--> Making CognateSet aliases"
@@ -173,7 +193,7 @@ for line in file("bibliography.csv"):
 print "--> reading ludewig data"
 for filename in glob.glob("ludewig_data/*.tab"):
     name = filename.split("/")[1][:-4]
-    print "--->", name, 
+    print "--->", name,
     try:
         language = Language.objects.get(ascii_name=name)
         print "(append)"

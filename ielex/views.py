@@ -1,3 +1,4 @@
+import itertools
 from django.template.loader import get_template
 from django.template import Context
 from django.http import HttpResponse, HttpResponseRedirect
@@ -44,6 +45,21 @@ def view_languages(request):
             "current_list":current_list})
     response.set_cookie("language_list_name", language_list_name)
     return response
+
+def reorder_languages(request):
+    # XXX
+    if request.method == "POST":
+        form = ReorderLanguageSortKeyForm(request.POST)
+        if form.is_valid():
+            language = form.cleaned_data["language"]
+            # get two languages in front of this one
+            # set the sort key to halfway between them
+            # handle min and max sort key values
+            # renumber all the sort keys on
+    else:
+        form = ReorderLanguageSortKeyForm()
+    return render_to_response("language_reorder.html",
+            {"form":form})
 
 def cognate_report(request, cognate_id):
     cognate_class = CognateSet.objects.get(id=int(cognate_id))

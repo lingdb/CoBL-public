@@ -28,17 +28,17 @@ def parse():
             meaning_id = line[2:6].strip()
             meaning = line[6:30].strip()
             equivalence_sets = {}
-            doubtful_sets = {}
         elif line.startswith("b"):
             # Cognate Class Number (for the following forms)
-            cognate_class = int(line.split()[1])
+            cognate_class = "%s-%s" % (meaning_id, line.split()[1])
         elif line.startswith("c"):
             # Equivalence cognate classes
-            cognate_class1, kind, cognate_class2 = [int(i) for i in
-                    line.split()[1:]]
+            cognate_class1 = "%s-%s" % (meaning_id, line.split()[1])
+            kind = int(line.split()[2])
+            cognate_class2 = "%s-%s" % (meaning_id, line.split()[3])
             # if kind == 2, then class2 is equivalent to class1; if kind == 3
             # the equivalence is "doubtful"
-            assert cognate_class1 > 99 and cognate_class2 > 99 
+            # assert cognate_class1 > 99 and cognate_class2 > 99 
             if kind == 2:
                 # a series of equivalences:
                 # c     200  2  201
@@ -49,12 +49,6 @@ def parse():
                 if cognate_class1 in equivalence_sets:
                     cognate_class1 = equivalence_sets[cognate_class1]
                 equivalence_sets[cognate_class2] = cognate_class1
-            if kind == 3:
-                if cognate_class1 in doubtful_sets:
-                    cognate_class1 = doubtful_sets[cognate_class1]
-                if cognate_class1 in equivalence_sets:
-                    cognate_class1 = equivalence_sets[cognate_class1]
-                doubtful_sets[cognate_class2] = cognate_class1
         elif line.startswith(" "):
             # language data
             # A form line has a blank in column 1
@@ -62,26 +56,22 @@ def parse():
             # the language number in columns 7-8,
             # the language name in columns 10-24,
             # and the form or forms in columns 26-78.
-            if cognate_class not in (0, 1):
-                # cognate_class < 100: # i.e.
+            if cognate_class.endswith("-0"):
+                # uncertain
+                cognate_class = ""
+                reliability = "C"
+            elif cognate_class.endswith("-1"):
+                # uninformative, certain
+                cognate_class = ""
+                reliability = "A"
+            else:
                 # informative, certain
                 reliability = "A"
                 try:
                     cognate_class = equivalence_sets[cognate_class]
                 except KeyError:
-                    try:
-                        cognate_class = doubtful_sets[cognate_class]
-                        reliability = "B"
-                    except KeyError:
-                        pass
+                    pass
                 assert line[:6].strip() == meaning_id
-            elif cognate_class == 1:
-                cognate_class = ""
-                reliability = "A"
-            else:
-                assert cognate_class == 0
-                cognate_class = ""
-                reliability = "B"
             language = line[9:24].strip().replace(" ", "_")
             source_form = line[25:].strip()
             if source_form:
@@ -91,6 +81,36 @@ def parse():
         else:
             raise ValueError("Don't know what to do with line: "+line)
     return data
+
+def doubtful_classes():
+    doubtful = []
+    equivalent = {}
+    for line in raw_data:
+        if line.startswith("a"):
+            # header line with a meaning
+            meaning_id = line[2:6].strip()
+        elif line.startswith("c"):
+            # Equivalence cognate classes
+            cognate_class1 = "%s-%s" % (meaning_id, line.split()[1])
+            kind = int(line.split()[2])
+            cognate_class2 = "%s-%s" % (meaning_id, line.split()[3])
+            if kind == 2:
+                if cognate_class1 in equivalent:
+                    cognate_class1 = equivalent[cognate_class1]
+                equivalent[cognate_class2] = cognate_class1
+            if kind == 3:
+                if cognate_class1 in equivalent:
+                    cognate_class1 =  equivalent[cognate_class1]
+                # if cognate_class2 in equivalent:
+                #     cognate_class2 =  equivalent[cognate_class2]
+                doubtful.append((cognate_class1, cognate_class2))
+    return sorted(set(doubtful))
+
+def write_doubtful():
+    output = file("dyen_data/doubtful_identity.txt", "w")
+    for line in doubtful_classes():
+        print(*line, file=output)
+    return
 
 def write_csv():
     HEADER = ["ID", "source_form", "phon_form", "notes",
@@ -26346,12 +26366,7 @@ id_list = [("1", "ALL"),
 # }}}
 
 if __name__ == "__main__":
-    # import pprint
-    # meaning = "ANIMAL"
-    # for language, R in [("Bengali","A"), ("Lahnda","B")]:
-    #     data = parse()
-    #     print("Reliability", R, ":", language, meaning)
-    #     print(data[language][meaning])
-    write_csv()
+    #write_csv()
+    write_doubtful()
 
 # vim:fdm=marker

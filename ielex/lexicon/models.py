@@ -25,7 +25,7 @@ class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
     ascii_name = models.CharField(max_length=999)
     utf8_name = models.CharField(max_length=999)
-    sort_key = models.IntegerField(null=True, blank=True)
+    sort_key = models.FloatField(null=True, blank=True, editable=False)
 
     def __unicode__(self):
         return self.ascii_name

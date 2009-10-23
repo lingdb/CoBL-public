@@ -13,6 +13,8 @@ urlpatterns = patterns('',
 
     # Languages
     url('^languages/$', view_languages, name="view-languages"),
+    url(r'^languages/reorder/$', reorder_languages,
+            name="language-reorder"),
     url(r'^language/([a-zA-Z0-9_ ]+)/$', report_language,
             name="language-report"), # usage {% url language-report English %}
     url(r'^language/(?P<language>[a-zA-Z0-9_ ]+)/edit/$', edit_language,

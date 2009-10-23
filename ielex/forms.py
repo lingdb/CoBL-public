@@ -6,6 +6,10 @@ class ChooseLanguageField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.utf8_name or obj.ascii_name
 
+class ChooseLanguagesField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.utf8_name or obj.ascii_name
+
 class ChooseLanguageListField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.name
@@ -92,3 +96,9 @@ class ChooseCognateClassForm(forms.Form):
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}),
             empty_label="---",
             label="")
+
+class ReorderLanguageSortKeyForm(forms.Form):
+    language = ChooseLanguagesField(
+            queryset=Language.objects.all().order_by("sort_key"),
+            widget=forms.Select(attrs={"size":20}),
+            empty_label=None)
