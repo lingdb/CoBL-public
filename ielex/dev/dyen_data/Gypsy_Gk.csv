@@ -56,7 +56,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 83	BUZO			DyenDB	079-001	A
 84	TE			DyenDB	080-100	A
 85	ANDRE			DyenDB	081-200	A
-88	JANAV			DyenDB	083-200	A
+88	JANAV			DyenDB	083-201	A
 89	LIMNI			DyenDB	084-000	A
 91	PATRIN			DyenDB	086-005	A
 92	NASUL			DyenDB	087-001	A
@@ -64,7 +64,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 96	KALINJO			DyenDB	091-200	A
 97	LUNGO			DyenDB	092-001	A
 98	JUV			DyenDB	093-204	A
-99	MRUS			DyenDB	094-203	A
+99	MRUS			DyenDB	094-205	A
 100	BUT			DyenDB	095-009	A
 101	MAS			DyenDB	096-007	A
 103	DALE			DyenDB	097-001	A
@@ -81,7 +81,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 114	PHURO			DyenDB	108-003	A
 115	YEK			DyenDB	109-200	A
 116	AVER			DyenDB	110-001	A
-117	MANUS			DyenDB	111-209	A
+117	MANUS			DyenDB	111-210	A
 122	LOLO			DyenDB	116-002	A
 123	TAMAMI			DyenDB	117-001	A
 124	CACO			DyenDB	118-001	A
@@ -91,7 +91,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 128	SKINI			DyenDB	122-001	A
 129	SAPYO			DyenDB	123-005	A
 131	TRIVO			DyenDB	124-001	A
-132	LON			DyenDB	125-200	A
+132	LON			DyenDB	125-201	A
 133	KISAY			DyenDB	126-001	A
 135	XALMAN			DyenDB	128-210	A
 136	DENIZI			DyenDB	129-100	A
@@ -109,7 +109,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 160	KAS			DyenDB	153-001	A
 161	BAR			DyenDB	154-100	A
 162	ISYO			DyenDB	155-001	A
-164	KHAM			DyenDB	157-203	A
+164	KHAM			DyenDB	157-204	A
 167	PORIN			DyenDB	160-001	A
 168	KODOVA			DyenDB	161-001	A
 169	KOTE			DyenDB	162-001	A
@@ -163,7 +163,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 181	KOPAC			DyenDB	174-001	A
 183	DUI			DyenDB	176-002	A
 186	TATO			DyenDB	179-004	A
-188	PAI			DyenDB	181-200	A
+188	PAI			DyenDB	181-201	A
 189	AMEN			DyenDB	182-002	A
 190	KINGO			DyenDB	183-001	A
 191	SO			DyenDB	184-100	A

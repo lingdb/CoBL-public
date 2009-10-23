@@ -5,7 +5,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 4	PHUR			DyenDB	004-100	A
 5	A,SAR-A			DyenDB	005-100	A
 6	PHUSHT			DyenDB	006-006	A
-7	GANDAGH, HARAB			DyenDB	007-200	A
+7	GANDAGH, HARAB			DyenDB	007-202	A
 8	GAWAZ			DyenDB	008-001	A
 9	PHA HAW-AN SAUAV, PHA HAW-AN KHAN, KI			DyenDB	009-001	A
 10	LAF			DyenDB	010-001	A
@@ -57,14 +57,14 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 84	AR, AR KI			DyenDB	080-010	A
 85	NIANWAN, LAFA, SARA			DyenDB	081-001	A
 88	SAHIH BIAGH			DyenDB	083-001	A
-89	DHAND, DAND, DAND			DyenDB	084-206	A
+89	DHAND, DAND, DAND			DyenDB	084-207	A
 91	THAKH			DyenDB	086-001	A
 92	CHAP			DyenDB	087-002	A
 93	PHADH			DyenDB	088-200	A
 96	JAGHAR			DyenDB	091-200	A
 97	DRAZH			DyenDB	092-200	A
 98	BOT			DyenDB	093-001	A
-99	MARD, MAR			DyenDB	094-203	A
+99	MARD, MAR			DyenDB	094-207	A
 100	BA Z			DyenDB	095-009	A
 101	GOZHD			DyenDB	096-004	A
 103	MATH			DyenDB	097-200	A
@@ -81,7 +81,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 114	PHIR			DyenDB	108-003	A
 115	YAK, YA			DyenDB	109-200	A
 116	DOHMI, DUHMI			DyenDB	110-001	A
-117	KHAS			DyenDB	111-209	A
+117	KHAS			DyenDB	111-210	A
 122	SUHR			DyenDB	116-200	A
 123	RAST			DyenDB	117-200	A
 124	RAST			DyenDB	118-200	A
@@ -92,7 +92,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 129	GALAGH			DyenDB	123-001	A
 131	MALAGH, MALITHA, MALTHA			DyenDB	124-200	A
 132	WHADH, WAHADH			DyenDB	125-001	A
-133	REKH			DyenDB	126-203	A
+133	REKH			DyenDB	126-204	A
 135	KHARAGH, KHARITH			DyenDB	128-212	A
 136	SAMUNDAR			DyenDB	129-005	A
 138	BIJ			DyenDB	131-002	A

@@ -43,13 +43,13 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 64	BO			DyenDB	061-002	A
 65	ZEB			DyenDB	062-002	A
 66	VE			DyenDB	063-008	A
-67	THWIP			DyenDB	064-200	A
+67	THWIP			DyenDB	064-203	A
 68	SIVE			DyenDB	065-200	A
 69	LAME			DyenDB	066-002	A
 70	I			DyenDB	067-002	A
 71	TET			DyenDB	068-200	A
 73	CE			DyenDB	070-003	A
-74	LU			DyenDB	071-200	A
+74	LU			DyenDB	071-201	A
 75	ESIT, ISI			DyenDB	072-211	A
 77	CEN			DyenDB	074-004	A
 79	KUMA			DyenDB	075-200	A
@@ -68,7 +68,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 98	PU			DyenDB	093-003	A
 99	NOM			DyenDB	094-200	A
 100	STA, A PIL			DyenDB	095-008	A
-101	VYAN, LASE (FLESH)			DyenDB	096-203	A
+101	VYAN, LASE (FLESH)			DyenDB	096-204	A
 103	MAMA			DyenDB	097-206	A
 104	MON, MOTAY			DyenDB	098-002	A
 105	BUS			DyenDB	099-006	A
@@ -110,7 +110,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 153	CEK (ADJ.), ADA (PN.)			DyenDB	146-005	A
 159	ZETWEL			DyenDB	152-004	A
 160	BATO			DyenDB	153-005	A
-161	HWOS			DyenDB	154-202	A
+161	HWOS			DyenDB	154-203	A
 162	DWET			DyenDB	155-203	A
 164	SOLEY			DyenDB	157-203	A
 167	LACE			DyenDB	160-015	A
@@ -124,7 +124,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 176	THWA			DyenDB	169-002	A
 13	MODE			DyenDB	013-003	A
 16	SUFLE			DyenDB	016-203	A
-19	HWESPIHWE, PWA HALEN, PWA SUF			DyenDB	018-200	A
+19	HWESPIHWE, PWA HALEN, PWA SUF			DyenDB	018-202	A
 20	BURLE			DyenDB	019-212	A
 24	VINI			DyenDB	023-206	A
 25	KOTE			DyenDB	024-203	A
@@ -134,7 +134,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 32	BWE			DyenDB	031-004	A
 38	MAZE			DyenDB	037-004	A
 41	TOBE			DyenDB	040-004	A
-45	PE, KHWEN			DyenDB	044-205	A
+45	PE, KHWEN			DyenDB	044-207	A
 48	GUME			DyenDB	047-206	A
 53	FLOTE			DyenDB	051-003	A
 54	KULE			DyenDB	052-209	A

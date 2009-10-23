@@ -57,7 +57,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 82	UNE			DyenDB	078-200	A
 83	KALKAN			DyenDB	079-001	A
 84	PO			DyenDB	080-009	A
-85	BRENDA			DyenDB	081-207	A
+85	BRENDA			DyenDB	081-208	A
 88	DI, AOR. DINE			DyenDB	083-205	A
 89	GOL			DyenDB	084-204	A
 91	FLETE			DyenDB	086-209	A
@@ -66,10 +66,10 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 96	MELCIA EZEZE			DyenDB	091-007	A
 97	I-GATE			DyenDB	092-203	A
 98	MOR			DyenDB	093-004	A
-99	BURE			DyenDB	094-203	A
+99	BURE			DyenDB	094-212	A
 100	SUME			DyenDB	095-005	A
 101	MIS			DyenDB	096-007	A
-103	NENE			DyenDB	097-209	A
+103	NENE			DyenDB	097-210	A
 104	MAL			DyenDB	098-007	A
 105	GOJE			DyenDB	099-004	A
 106	EMER			DyenDB	100-003	A
@@ -88,7 +88,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 123	DREK, IDREJTE			DyenDB	117-005	A
 124	DJATHE			DyenDB	118-002	A
 125	LHUME			DyenDB	119-009	A
-126	UDHE			DyenDB	120-206	A
+126	UDHE			DyenDB	120-207	A
 127	RENE			DyenDB	121-003	A
 128	TERKUZE			DyenDB	122-012	A
 129	KALHBUR			DyenDB	123-203	A

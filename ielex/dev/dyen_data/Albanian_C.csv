@@ -6,7 +6,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 5	TE			DyenDB	005-001	A
 6	GHARESI, KRAX-T / KARINA			DyenDB	006-213	A
 7	LIK			DyenDB	007-215	A
-9	SE			DyenDB	009-203	A
+9	SE			DyenDB	009-204	A
 10	BARK			DyenDB	010-005	A
 11	I-MATH			DyenDB	011-200	A
 12	ZOG			DyenDB	012-004	A
@@ -62,7 +62,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 96	U-FIGHATU			DyenDB	091-001	A
 97	I-GLAT			DyenDB	092-203	A
 98	MOR			DyenDB	093-004	A
-99	BUR			DyenDB	094-203	A
+99	BUR			DyenDB	094-205	A
 100	SUM			DyenDB	095-005	A
 101	MIS			DyenDB	096-007	A
 103	MEM			DyenDB	097-209	A
@@ -135,7 +135,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 63	JAP			DyenDB	060-200	A
 72	GEGEM			DyenDB	069-208	A
 76	FORT			DyenDB	073-001	A
-80	VETE AKACA			DyenDB	076-203	A
+80	VETE AKACA			DyenDB	076-204	A
 86	VRAS			DyenDB	082-010	A
 90	KES			DyenDB	085-201	A
 94	STIXEM			DyenDB	089-007	A
@@ -179,7 +179,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 194	I-BARDH			DyenDB	187-004	A
 195	KUS			DyenDB	188-200	A
 196	I-GER			DyenDB	189-002	A
-197	SOKE			DyenDB	190-205	A
+197	SOKE			DyenDB	190-206	A
 198	ER			DyenDB	191-002	A
 199	KRAX			DyenDB	192-011	A
 200	FSIN			DyenDB	193-007	A

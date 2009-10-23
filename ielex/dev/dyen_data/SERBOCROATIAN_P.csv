@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	I			DyenDB	002-200	A
 3	ZVER			DyenDB	003-200	A
 4	PEPEO			DyenDB	004-003	A
-5	U			DyenDB	005-200	A
+5	U			DyenDB	005-203	A
 6	HRBAT			DyenDB	006-004	A
 7	ZAO			DyenDB	007-207	A
 8	KORA			DyenDB	008-202	A
@@ -114,13 +114,13 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 169	TAMO			DyenDB	162-203	A
 170	ONI			DyenDB	163-200	A
 171	DEBEO			DyenDB	164-007	A
-174	OVAJ			DyenDB	167-200	A
+174	OVAJ			DyenDB	167-206	A
 175	TI			DyenDB	168-200	A
 176	TRI			DyenDB	169-002	A
 13	GRISTI			DyenDB	013-006	A
 16	DUTI			DyenDB	016-203	A
 19	DIHATI			DyenDB	018-002	A
-20	ZECI			DyenDB	019-200	A
+20	ZECI			DyenDB	019-202	A
 24	DOCI			DyenDB	023-203	A
 25	BROJATI			DyenDB	024-005	A
 26	REZATI			DyenDB	025-207	A

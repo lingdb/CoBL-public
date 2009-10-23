@@ -59,14 +59,14 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 84	JER			DyenDB	080-203	A
 85	AT, -MEDHE			DyenDB	081-200	A
 88	JANNE.			DyenDB	083-200	A
-89	TELE.			DyenDB	084-206	A
+89	TELE.			DyenDB	084-210	A
 91	PAN			DyenDB	086-207	A
 92	DAVA			DyenDB	087-007	A
 93	PAY			DyenDB	088-200	A
 96	KALIJ, YEKRIT			DyenDB	091-200	A
 97	LAMB			DyenDB	092-003	A
 98	U			DyenDB	093-008	A
-99	PURUS			DyenDB	094-203	A
+99	PURUS			DyenDB	094-206	A
 100	PUSKEL, PHAR, KHUP			DyenDB	095-001	A
 101	MAS, MAVS			DyenDB	096-007	A
 103	AI			DyenDB	097-001	A
@@ -83,7 +83,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 114	MHATARA (ANIMATE), JUNA (INANIMATE)			DyenDB	108-001	A
 115	EK			DyenDB	109-200	A
 116	DUSRA, ITER			DyenDB	110-007	A
-117	MANUS, LOK			DyenDB	111-209	A
+117	MANUS, LOK			DyenDB	111-214	A
 122	TAMBDA, LAL			DyenDB	116-002	A
 123	THIK, BEROBER			DyenDB	117-007	A
 124	UJVA			DyenDB	118-001	A
@@ -118,7 +118,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 169	TITHE., TIKDE.			DyenDB	162-203	A
 170	TE, HE			DyenDB	163-200	A
 171	JAD			DyenDB	164-005	A
-172	PATEL			DyenDB	165-200	A
+172	PATEL			DyenDB	165-201	A
 174	HA			DyenDB	167-200	A
 175	TU			DyenDB	168-200	A
 176	TIN			DyenDB	169-002	A
@@ -142,7 +142,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 60	GOTHNE.			DyenDB	058-001	A
 63	DENE.			DyenDB	060-200	A
 72	EYKNE.			DyenDB	069-001	A
-76	APETNE., MARNE.			DyenDB	073-211	A
+76	APETNE., MARNE.			DyenDB	073-212	A
 80	SIKAR+KERNE.			DyenDB	076-004	A
 86	THAR+MARNE.			DyenDB	082-200	A
 90	HESNE.			DyenDB	085-007	A
@@ -171,7 +171,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 177	PHEKNE			DyenDB	170-007	A
 178	BANDHNE.			DyenDB	171-203	A
 182	VELNE.			DyenDB	175-400	A
-184	OKNE.			DyenDB	177-200	A
+184	OKNE.			DyenDB	177-201	A
 185	CELNE.			DyenDB	178-003	A
 187	DHUNE.			DyenDB	180-200	A
 179	JIBH			DyenDB	172-200	A

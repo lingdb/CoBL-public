@@ -18,7 +18,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 22	SUNNEFO			DyenDB	021-207	A
 23	KRUO			DyenDB	022-009	A
 27	MERA, HEMERA			DyenDB	026-002	A
-30	BROMIKOS			DyenDB	029-214	A
+30	BROMIKOS			DyenDB	029-215	A
 31	SKULOS, SKOLI			DyenDB	030-008	A
 33	KSEROS			DyenDB	032-200	A
 34	DIOLOU MUTERO, DEV KOBEI			DyenDB	033-003	A
@@ -29,7 +29,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 40	MATI			DyenDB	039-002	A
 42	MAKRIA			DyenDB	041-002	A
 43	LIPOS, KSUGGI			DyenDB	042-003	A
-44	PATERAS, MPAMPAS			DyenDB	043-209	A
+44	PATERAS, MPAMPAS			DyenDB	043-210	A
 46	FTEROUGA			DyenDB	045-203	A
 47	LIGOI			DyenDB	046-007	A
 50	FOTIA			DyenDB	048-007	A
@@ -58,7 +58,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 83	PAGOS			DyenDB	079-006	A
 84	AN			DyenDB	080-006	A
 85	S , MESA			DyenDB	081-200	A
-88	KSERO			DyenDB	083-200	A
+88	KSERO			DyenDB	083-203	A
 89	LIMNE			DyenDB	084-006	A
 91	FULLO			DyenDB	086-204	A
 92	ARISTERO			DyenDB	087-013	A
@@ -66,11 +66,11 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 96	SEKOTI			DyenDB	091-006	A
 97	MAKRUS			DyenDB	092-002	A
 98	PSULLOS			DyenDB	093-005	A
-99	ANTRAS			DyenDB	094-203	A
+99	ANTRAS			DyenDB	094-214	A
 100	POLLOI			DyenDB	095-203	A
 101	KREAS			DyenDB	096-009	A
 103	MANA, MAMA, METERA			DyenDB	097-200	A
-104	BOUNO			DyenDB	098-209	A
+104	BOUNO			DyenDB	098-210	A
 105	STOMA			DyenDB	099-008	A
 106	ONOMA			DyenDB	100-003	A
 107	STENOS			DyenDB	101-004	A
@@ -80,7 +80,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 111	NUCHTA			DyenDB	105-004	A
 112	MUTI			DyenDB	106-006	A
 113	ME, DEN			DyenDB	107-003	A
-114	PALEOS			DyenDB	108-203	A
+114	PALEOS			DyenDB	108-204	A
 115	HENAS, MIA, HENA			DyenDB	109-002	A
 116	ALLOS			DyenDB	110-207	A
 117	PROSOPO			DyenDB	111-203	A
@@ -105,7 +105,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 150	MALAKOS			DyenDB	143-001	A
 151	FIDI			DyenDB	144-200	A
 152	CHIONI			DyenDB	145-200	A
-153	MERIKOI			DyenDB	146-204	A
+153	MERIKOI			DyenDB	146-209	A
 159	ASTRO			DyenDB	152-004	A
 160	KSULARAKI			DyenDB	153-012	A
 161	PETRA			DyenDB	154-002	A
@@ -117,7 +117,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 170	AUTOI			DyenDB	163-200	A
 171	PUKNOS			DyenDB	164-002	A
 172	ARAIOS			DyenDB	165-008	A
-174	AUTO			DyenDB	167-200	A
+174	AUTO			DyenDB	167-201	A
 175	ESU, SU			DyenDB	168-200	A
 176	TREIS, TRIA			DyenDB	169-002	A
 13	DAGKONO			DyenDB	013-008	A
@@ -135,7 +135,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 45	FOBAMAI			DyenDB	044-005	A
 48	POLEMAO			DyenDB	047-005	A
 53	PLEO			DyenDB	051-005	A
-54	TRECHO			DyenDB	052-206	A
+54	TRECHO			DyenDB	052-207	A
 56	PETAO			DyenDB	054-002	A
 60	PAGONO			DyenDB	058-002	A
 63	DINO			DyenDB	060-200	A
@@ -168,8 +168,8 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 173	SKEPTOMAI			DyenDB	166-200	A
 177	RICHNO			DyenDB	170-211	A
 178	DENO			DyenDB	171-009	A
-182	GURNAO			DyenDB	175-211	A
-184	KANO EMETTO			DyenDB	177-205	A
+182	GURNAO			DyenDB	175-212	A
+184	KANO EMETTO			DyenDB	177-207	A
 185	PERPATAO			DyenDB	178-011	A
 187	PLENO			DyenDB	180-005	A
 179	GLOSSA			DyenDB	172-002	A

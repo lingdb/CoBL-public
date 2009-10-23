@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	I			DyenDB	002-200	A
 3	ZWIERZE			DyenDB	003-200	A
 4	POPIOL			DyenDB	004-003	A
-5	W			DyenDB	005-200	A
+5	W			DyenDB	005-201	A
 6	PLECY			DyenDB	006-100	A
 7	ZLY			DyenDB	007-207	A
 8	KORA			DyenDB	008-202	A
@@ -16,7 +16,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 17	KOSC			DyenDB	017-201	A
 21	DZIECKO			DyenDB	020-004	A
 22	CHMURA			DyenDB	021-201	A
-23	ZIMNY			DyenDB	022-200	A
+23	ZIMNY			DyenDB	022-203	A
 27	DZIEN			DyenDB	026-003	A
 30	BRUDNY			DyenDB	029-002	A
 31	PIES			DyenDB	030-200	A
@@ -70,7 +70,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 100	DUZO			DyenDB	095-004	A
 101	MIESO			DyenDB	096-007	A
 103	MATKA			DyenDB	097-200	A
-104	GORA			DyenDB	098-203	A
+104	GORA			DyenDB	098-204	A
 105	USTA			DyenDB	099-200	A
 106	IMIE			DyenDB	100-003	A
 107	WAZKI			DyenDB	101-200	A
@@ -104,7 +104,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 145	NIEBO			DyenDB	138-002	A
 147	MALY			DyenDB	140-011	A
 149	DYM			DyenDB	142-200	A
-150	GLADKI			DyenDB	143-205	A
+150	GLADKI			DyenDB	143-208	A
 151	WAZ			DyenDB	144-200	A
 152	SNIEG			DyenDB	145-004	A
 153	TROCHE			DyenDB	146-001	A
@@ -158,7 +158,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 142	SPIEWAC			DyenDB	135-006	A
 143	SIEDZIEC			DyenDB	136-200	A
 146	SPAC			DyenDB	139-200	A
-148	CZUC			DyenDB	141-200	A
+148	CZUC			DyenDB	141-203	A
 154	PLUC			DyenDB	147-205	A
 155	ROZSZCZEPIAC			DyenDB	148-006	A
 156	GNIESC			DyenDB	149-005	A
@@ -195,7 +195,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 201	Z			DyenDB	194-200	A
 202	KOBIETA			DyenDB	195-005	A
 203	LAS			DyenDB	196-200	A
-204	ROBAK			DyenDB	197-200	A
+204	ROBAK			DyenDB	197-201	A
 205	WY			DyenDB	198-200	A
 206	ROK			DyenDB	199-003	A
 207	ZOLTY			DyenDB	200-200	A

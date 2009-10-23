@@ -4,7 +4,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 3	JANWER (PRANI) JENAWER			DyenDB	003-400	A
 4	RAKH			DyenDB	004-006	A
 6	PITH, WASO			DyenDB	006-006	A
-7	KNERAB			DyenDB	007-200	A
+7	KNERAB			DyenDB	007-201	A
 8	CHAL			DyenDB	008-205	A
 9	KAREN KE			DyenDB	009-004	A
 10	PET			DyenDB	010-212	A
@@ -45,8 +45,8 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 67	ANTERLA			DyenDB	064-200	A
 68	WAL			DyenDB	065-204	A
 69	NATH			DyenDB	066-001	A
-70	E, TE			DyenDB	067-200	A
-71	MATHU			DyenDB	068-205	A
+70	E, TE			DyenDB	067-207	A
+71	MATHU			DyenDB	068-206	A
 73	(HREDEY)			DyenDB	070-000	A
 74	BHARE			DyenDB	071-200	A
 75	EHI			DyenDB	072-400	A
@@ -70,7 +70,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 104	PERWET, PEHAR			DyenDB	098-206	A
 105	MOH, MOHRU			DyenDB	099-200	A
 106	NAM			DyenDB	100-003	A
-107	SAKRU			DyenDB	101-213	A
+107	SAKRU			DyenDB	101-216	A
 108	PASE			DyenDB	102-006	A
 109	GELU, GERDEN			DyenDB	103-006	A
 110	NEWU			DyenDB	104-200	A
@@ -80,7 +80,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 114	BUDDHU, GHERERU, JUNU			DyenDB	108-200	A
 115	EK			DyenDB	109-200	A
 116	BIJU ("SECOND")			DyenDB	110-003	A
-117	RYEKTI, MANES			DyenDB	111-209	A
+117	RYEKTI, MANES			DyenDB	111-215	A
 122	LAL			DyenDB	116-002	A
 123	SACU, KHERU			DyenDB	117-100	A
 124	JEMELU			DyenDB	118-001	A
@@ -88,7 +88,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 126	RESTO			DyenDB	120-200	A
 127	MUL			DyenDB	121-200	A
 128	DORERU			DyenDB	122-003	A
-131	GHESWU			DyenDB	124-200	A
+131	GHESWU			DyenDB	124-201	A
 132	MITHU			DyenDB	125-200	A
 133	RETI			DyenDB	126-200	A
 135	KHEJEWALWU			DyenDB	128-209	A
@@ -121,7 +121,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 13	KERERWU			DyenDB	013-101	A
 16	FUKWU, FUKAWU (INTR.)			DyenDB	016-006	A
 19	SWASLEWO			DyenDB	018-008	A
-20	BELWU			DyenDB	019-209	A
+20	BELWU			DyenDB	019-210	A
 24	AWEWU			DyenDB	023-200	A
 25	GENEWU			DyenDB	024-002	A
 26	KAPWU			DyenDB	025-010	A
@@ -130,7 +130,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 32	PIWU			DyenDB	031-004	A
 38	KHAWU			DyenDB	037-200	A
 41	PERWU			DyenDB	040-203	A
-45	DERWU, BIHWU			DyenDB	044-200	A
+45	DERWU, BIHWU			DyenDB	044-202	A
 48	LEREWU			DyenDB	047-002	A
 53	TEREWU			DyenDB	051-002	A
 54	WEHEWU			DyenDB	052-215	A
@@ -161,11 +161,11 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 163	CUSWU			DyenDB	156-002	A
 165	SUJWU			DyenDB	158-004	A
 166	TERWU			DyenDB	159-004	A
-173	VICARWU, VICAR KERWO			DyenDB	166-206	A
+173	VICARWU, VICAR KERWO			DyenDB	166-207	A
 177	NAKHWU			DyenDB	170-001	A
 178	BAHDHWU			DyenDB	171-203	A
-182	FERWU			DyenDB	175-205	A
-184	ULTI KERWI, OKWA			DyenDB	177-200	A
+182	FERWU			DyenDB	175-206	A
+184	ULTI KERWI, OKWA			DyenDB	177-202	A
 185	CALWU			DyenDB	178-003	A
 187	DHOWU			DyenDB	180-200	A
 179	JIB			DyenDB	172-200	A
@@ -187,7 +187,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 199	PAKH			DyenDB	192-005	A
 200	LUCHWU			DyenDB	193-001	A
 201	SATHE			DyenDB	194-200	A
-202	STRI			DyenDB	195-205	A
+202	STRI			DyenDB	195-206	A
 203	JENGEE			DyenDB	196-212	A
 204	KIRO			DyenDB	197-004	A
 205	TEME			DyenDB	198-003	A

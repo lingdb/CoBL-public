@@ -66,7 +66,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 96	HEPAR			DyenDB	091-200	A
 97	MAKROS			DyenDB	092-002	A
 98	PSULLOS			DyenDB	093-005	A
-99	ANER			DyenDB	094-203	A
+99	ANER			DyenDB	094-207	A
 100	POLLOI			DyenDB	095-203	A
 101	KREAS			DyenDB	096-009	A
 103	METER			DyenDB	097-200	A
@@ -105,7 +105,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 150	LEIOS			DyenDB	143-205	A
 151	OFUS			DyenDB	144-200	A
 152	CHION			DyenDB	145-200	A
-153	MERIKOI			DyenDB	146-204	A
+153	MERIKOI			DyenDB	146-211	A
 159	ASTER			DyenDB	152-004	A
 160	KSULON			DyenDB	153-012	A
 161	PETRA			DyenDB	154-002	A
@@ -114,7 +114,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 167	OURA			DyenDB	160-013	A
 168	HOTI			DyenDB	161-200	A
 169	EKEI			DyenDB	162-004	A
-170	AUTOI			DyenDB	163-200	A
+170	AUTOI			DyenDB	163-201	A
 171	PUKNOS			DyenDB	164-002	A
 172	ARAIOS			DyenDB	165-008	A
 174	AUTO, TOUTO			DyenDB	167-200	A
@@ -169,7 +169,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 177	RIPTO			DyenDB	170-211	A
 178	PROSDENO			DyenDB	171-009	A
 182	STREFO			DyenDB	175-211	A
-184	EMESSO			DyenDB	177-205	A
+184	EMESSO			DyenDB	177-208	A
 185	BADIDZO			DyenDB	178-001	A
 187	PLINO			DyenDB	180-005	A
 179	GLOSSA			DyenDB	172-002	A

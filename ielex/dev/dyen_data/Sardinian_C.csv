@@ -107,7 +107,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 150	LISU			DyenDB	143-202	A
 151	SERPENTI			DyenDB	144-006	A
 152	NI			DyenDB	145-004	A
-153	CERTU			DyenDB	146-204	A
+153	CERTU			DyenDB	146-207	A
 159	STELLA			DyenDB	152-004	A
 160	BASTONI			DyenDB	153-005	A
 161	PERDA			DyenDB	154-202	A
@@ -118,7 +118,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 169	INNIA			DyenDB	162-003	A
 170	ISSOS			DyenDB	163-207	A
 171	GRUSSU			DyenDB	164-209	A
-172	FINI			DyenDB	165-204	A
+172	FINI			DyenDB	165-206	A
 174	KUSTU			DyenDB	167-200	A
 175	TUI			DyenDB	168-200	A
 176	TRESI			DyenDB	169-002	A
@@ -128,7 +128,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 20	ABRUZAI			DyenDB	019-212	A
 24	BENNI			DyenDB	023-206	A
 25	KONTAI			DyenDB	024-203	A
-26	SEGAI			DyenDB	025-207	A
+26	SEGAI			DyenDB	025-208	A
 28	MORRI			DyenDB	027-003	A
 29	SKAVAI			DyenDB	028-003	A
 32	BUFFAI			DyenDB	031-004	A
@@ -188,7 +188,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 194	BIANKU			DyenDB	187-200	A
 195	KINI			DyenDB	188-200	A
 196	LARGU			DyenDB	189-003	A
-197	MULLERI			DyenDB	190-208	A
+197	MULLERI			DyenDB	190-209	A
 198	BENTU			DyenDB	191-200	A
 199	ALA			DyenDB	192-006	A
 200	SPRUINAI			DyenDB	193-001	A

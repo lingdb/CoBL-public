@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	I, PA			DyenDB	002-200	A
 3	ZIVOTINA, -INKA			DyenDB	003-200	A
 4	PEPEL			DyenDB	004-003	A
-5	U, NA			DyenDB	005-200	A
+5	U, NA			DyenDB	005-208	A
 6	GRB			DyenDB	006-004	A
 7	LOS			DyenDB	007-005	A
 8	KORA			DyenDB	008-202	A
@@ -18,7 +18,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 22	OBLAK			DyenDB	021-206	A
 23	LADEN, STRUD			DyenDB	022-200	A
 27	DEN			DyenDB	026-003	A
-31	PCISTE, KUCE/PES			DyenDB	030-200	A
+31	PCISTE, KUCE/PES			DyenDB	030-201	A
 33	SUV			DyenDB	032-205	A
 34	TAP			DyenDB	033-002	A
 35	PRAV			DyenDB	034-200	A
@@ -27,7 +27,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 39	JAJCE			DyenDB	038-007	A
 40	OKO, OCI			DyenDB	039-002	A
 42	DALEKU			DyenDB	041-205	A
-43	MAST/LOJ/SALO			DyenDB	042-204	A
+43	MAST/LOJ/SALO			DyenDB	042-205	A
 44	TATKO/OTEC			DyenDB	043-200	A
 46	PERO, PERJE, PERJA			DyenDB	045-200	A
 47	NEKOLKU/MALOBROEN			DyenDB	046-201	A
@@ -114,13 +114,13 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 170	ONI/TIE			DyenDB	163-200	A
 171	GUST			DyenDB	164-206	A
 172	TENOK/TANOK			DyenDB	165-002	A
-174	TOJ/OBOJ			DyenDB	167-200	A
+174	TOJ/OBOJ			DyenDB	167-206	A
 175	TI			DyenDB	168-200	A
 176	TRI			DyenDB	169-002	A
 13	KASA/KASNE			DyenDB	013-011	A
 16	DUVA			DyenDB	016-203	A
 19	DISI			DyenDB	018-002	A
-20	GORI, ZEGA, PALI			DyenDB	019-200	A
+20	GORI, ZEGA, PALI			DyenDB	019-202	A
 24	DOJDE, PRIJDE			DyenDB	023-203	A
 25	BROI, NABROI			DyenDB	024-005	A
 26	PO REZE, REZE, SECE			DyenDB	025-207	A
@@ -166,7 +166,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 177	FRLA			DyenDB	170-011	A
 178	VRZE/POVIE			DyenDB	171-003	A
 182	VRTI, ZAVRTI, OBRNE			DyenDB	175-200	A
-184	BLUE			DyenDB	177-216	A
+184	BLUE			DyenDB	177-217	A
 185	ODI			DyenDB	178-016	A
 187	MIE/ISKAPE/PLAKNE			DyenDB	180-203	A
 179	JAZIK			DyenDB	172-200	A

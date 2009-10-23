@@ -4,7 +4,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 3	BIESSE			DyenDB	003-205	A
 4	CINDE			DyenDB	004-002	A
 5	A			DyenDB	005-200	A
-6	RIN			DyenDB	006-200	A
+6	RIN			DyenDB	006-201	A
 7	MAL			DyenDB	007-219	A
 8	PELOTE			DyenDB	008-006	A
 9	PACE QUI			DyenDB	009-010	A
@@ -53,7 +53,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 75	CHAL			DyenDB	072-001	A
 77	TINI, TINRE			DyenDB	074-004	A
 79	KIMINT			DyenDB	075-200	A
-81	OME			DyenDB	077-200	A
+81	OME			DyenDB	077-201	A
 82	DJI			DyenDB	078-200	A
 83	GLECE			DyenDB	079-200	A
 84	SI			DyenDB	080-003	A

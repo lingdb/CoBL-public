@@ -1,7 +1,7 @@
 ID	source_form	phon_form	notes	source	cognate_class	reliability
 1	UILE, GO LEIR, AR FAD			DyenDB	001-006	A
 2	AGUS			DyenDB	002-006	A
-3	AINMHE, BEITHIDHEACH			DyenDB	003-200	A
+3	AINMHE, BEITHIDHEACH			DyenDB	003-202	A
 4	LUAITH			DyenDB	004-005	A
 5	AIG			DyenDB	005-200	A
 6	DROM			DyenDB	006-207	A
@@ -23,12 +23,12 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 33	TIRIM			DyenDB	032-005	A
 34	MAOL			DyenDB	033-001	A
 35	DUSTA, CEO			DyenDB	034-009	A
-36	CLUAS			DyenDB	035-200	A
+36	CLUAS			DyenDB	035-201	A
 37	CRE, ITHIR			DyenDB	036-001	A
 39	UBH			DyenDB	038-007	A
 40	SUIL			DyenDB	039-005	A
 42	FADA, I BHFAD			DyenDB	041-001	A
-43	BLONAG, GEIR			DyenDB	042-200	A
+43	BLONAG, GEIR			DyenDB	042-201	A
 44	ATHAIR			DyenDB	043-209	A
 46	CLEITE			DyenDB	045-002	A
 47	BEAGAN			DyenDB	046-003	A
@@ -46,7 +46,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 67	HUTOGA			DyenDB	064-001	A
 68	GRUAIG			DyenDB	065-008	A
 69	LAMH			DyenDB	066-004	A
-70	SE			DyenDB	067-200	A
+70	SE			DyenDB	067-205	A
 71	CEANN			DyenDB	068-004	A
 73	CROIDHE			DyenDB	070-200	A
 74	TROM			DyenDB	071-003	A
@@ -118,7 +118,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 170	SIAD			DyenDB	163-206	A
 171	TIUGH			DyenDB	164-212	A
 172	TANAI			DyenDB	165-002	A
-174	SO			DyenDB	167-200	A
+174	SO			DyenDB	167-204	A
 175	TU			DyenDB	168-200	A
 176	TRI			DyenDB	169-002	A
 13	GREIM DO BHAINT AS			DyenDB	013-001	A
@@ -163,7 +163,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 156	BRUGHADH			DyenDB	149-001	A
 157	SATHADH			DyenDB	150-101	A
 158	SEASAMH			DyenDB	151-202	A
-163	DIUL			DyenDB	156-202	A
+163	DIUL			DyenDB	156-210	A
 165	AT			DyenDB	158-008	A
 166	SNAMH			DyenDB	159-008	A
 173	SMAOINEAMH			DyenDB	166-212	A

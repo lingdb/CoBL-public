@@ -22,12 +22,12 @@ def parse():
     values a tuple of ('source_form', 'cognate_class', 'reliability')
     """
     data = {}
+    confident, doubtful = make_equivalence_dicts()
     for line in raw_data:
         if line.startswith("a"):
             # header line with a meaning
             meaning_id = line[2:6].strip()
             meaning = line[6:30].strip()
-            equivalence_sets = {}
         elif line.startswith("b"):
             # Cognate Class Number (for the following forms)
             cognate_class = "%s-%s" % (meaning_id, line.split()[1])
@@ -46,9 +46,7 @@ def parse():
                 # c     201  2  207
                 # should map on to:
                 # {207:200, 202:200, 201:200)
-                if cognate_class1 in equivalence_sets:
-                    cognate_class1 = equivalence_sets[cognate_class1]
-                equivalence_sets[cognate_class2] = cognate_class1
+                confident[cognate_class2] = cognate_class1
         elif line.startswith(" "):
             # language data
             # A form line has a blank in column 1
@@ -68,7 +66,7 @@ def parse():
                 # informative, certain
                 reliability = "A"
                 try:
-                    cognate_class = equivalence_sets[cognate_class]
+                    cognate_class = confident[cognate_class]
                 except KeyError:
                     pass
                 assert line[:6].strip() == meaning_id
@@ -82,7 +80,7 @@ def parse():
             raise ValueError("Don't know what to do with line: "+line)
     return data
 
-def doubtful_classes():
+def make_equivalence_dicts():
     doubtful = []
     equivalent = {}
     for line in raw_data:
@@ -104,11 +102,12 @@ def doubtful_classes():
                 # if cognate_class2 in equivalent:
                 #     cognate_class2 =  equivalent[cognate_class2]
                 doubtful.append((cognate_class1, cognate_class2))
-    return sorted(set(doubtful))
+    return (equivalent, doubtful)
 
 def write_doubtful():
+    confident, doubtful = make_equivalence_dicts()
     output = file("dyen_data/doubtful_identity.txt", "w")
-    for line in doubtful_classes():
+    for line in doubtful:
         print(*line, file=output)
     return
 

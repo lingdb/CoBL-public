@@ -1,9 +1,9 @@
 ID	source_form	phon_form	notes	source	cognate_class	reliability
 1	BSICKO			DyenDB	001-002	A
 2	I			DyenDB	002-200	A
-3	ZIVOTNO			DyenDB	003-200	A
+3	ZIVOTNO			DyenDB	003-201	A
 4	PEPEL			DyenDB	004-003	A
-5	NA			DyenDB	005-200	A
+5	NA			DyenDB	005-201	A
 6	(ADV) NAZAD			DyenDB	006-000	A
 7	LOSO			DyenDB	007-005	A
 8	KORA			DyenDB	008-202	A
@@ -19,7 +19,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 23	STUDENO			DyenDB	022-200	A
 27	DEN			DyenDB	026-003	A
 30	MRESNO			DyenDB	029-007	A
-31	KUCE			DyenDB	030-200	A
+31	KUCE			DyenDB	030-203	A
 33	SUXO			DyenDB	032-205	A
 34	TEP			DyenDB	033-002	A
 35	PRAX			DyenDB	034-200	A
@@ -39,7 +39,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 57	MEGLA			DyenDB	055-200	A
 58	KRAK			DyenDB	056-005	A
 59	CETIRI			DyenDB	057-002	A
-61	PLOD			DyenDB	059-200	A
+61	PLOD			DyenDB	059-201	A
 64	DOBRO			DyenDB	061-004	A
 65	TREVA			DyenDB	062-006	A
 66	ZELENO			DyenDB	063-200	A
@@ -53,7 +53,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 75	TUK			DyenDB	072-211	A
 77	DERZI			DyenDB	074-010	A
 79	KAK			DyenDB	075-200	A
-81	SEPRUG			DyenDB	077-206	A
+81	SEPRUG			DyenDB	077-207	A
 82	AZ			DyenDB	078-200	A
 83	LED			DyenDB	079-204	A
 84	AKO			DyenDB	080-203	A
@@ -73,7 +73,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 104	PLANINA			DyenDB	098-203	A
 105	USTA			DyenDB	099-200	A
 106	IME			DyenDB	100-003	A
-107	TESNO			DyenDB	101-200	A
+107	TESNO			DyenDB	101-201	A
 108	BLIZKO			DyenDB	102-002	A
 109	BRAT			DyenDB	103-006	A
 110	NOVO			DyenDB	104-200	A
@@ -97,7 +97,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 133	PJASEK			DyenDB	126-002	A
 135	DA CESA			DyenDB	128-200	A
 136	MORE			DyenDB	129-200	A
-138	ZERNO			DyenDB	131-200	A
+138	ZERNO			DyenDB	131-201	A
 140	OSTRO			DyenDB	133-200	A
 141	KESO			DyenDB	134-001	A
 144	KOZA			DyenDB	137-005	A
@@ -167,7 +167,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 163	DA SMUCI			DyenDB	156-202	A
 165	DA SE PODUE			DyenDB	158-001	A
 166	DA PLURA			DyenDB	159-003	A
-173	DA MISLI			DyenDB	166-209	A
+173	DA MISLI			DyenDB	166-210	A
 177	DA XVERLJA			DyenDB	170-001	A
 178	DA VREZVA			DyenDB	171-003	A
 182	DA SE VERTI			DyenDB	175-200	A
@@ -188,7 +188,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 194	BJALO			DyenDB	187-203	A
 195	KOJ			DyenDB	188-200	A
 196	SIROKO			DyenDB	189-005	A
-197	SEPRUGA			DyenDB	190-200	A
+197	SEPRUGA			DyenDB	190-203	A
 198	VJATER			DyenDB	191-200	A
 199	KRILO			DyenDB	192-003	A
 200	IZTRIVANE			DyenDB	193-004	A

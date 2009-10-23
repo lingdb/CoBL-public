@@ -3,12 +3,12 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	EN			DyenDB	002-009	A
 3	DIER, BEEST			DyenDB	003-005	A
 4	ASCH			DyenDB	004-007	A
-5	TE, AEN			DyenDB	005-200	A
+5	TE, AEN			DyenDB	005-205	A
 6	RUG			DyenDB	006-209	A
 7	SLECHT			DyenDB	007-007	A
 8	BAST			DyenDB	008-202	A
 9	WANT, OMDAT			DyenDB	009-006	A
-10	BUIK			DyenDB	010-204	A
+10	BUIK			DyenDB	010-205	A
 11	GROOT			DyenDB	011-009	A
 12	VOGEL			DyenDB	012-206	A
 14	ZWART			DyenDB	014-003	A
@@ -28,7 +28,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 40	OOG			DyenDB	039-002	A
 42	VER			DyenDB	041-200	A
 43	VET			DyenDB	042-006	A
-44	PAPA, VADER			DyenDB	043-209	A
+44	PAPA, VADER			DyenDB	043-213	A
 47	WEINIG			DyenDB	046-207	A
 50	VUER, BRAND			DyenDB	048-003	A
 51	VISCH			DyenDB	049-009	A
@@ -51,7 +51,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 75	HIER			DyenDB	072-003	A
 77	GRYPEN, VASTHOUDEN			DyenDB	074-200	A
 79	HOE			DyenDB	075-200	A
-81	ECHTGENOOT, MAN			DyenDB	077-206	A
+81	ECHTGENOOT, MAN			DyenDB	077-207	A
 82	IK			DyenDB	078-200	A
 83	YS			DyenDB	079-005	A
 85	IN, BY, OP			DyenDB	081-200	A
@@ -70,8 +70,8 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 104	BERG			DyenDB	098-200	A
 105	MOND			DyenDB	099-007	A
 106	NAEM			DyenDB	100-003	A
-107	NAAUW			DyenDB	101-200	A
-108	DICHT BY			DyenDB	102-200	A
+107	NAAUW			DyenDB	101-207	A
+108	DICHT BY			DyenDB	102-201	A
 109	HALS			DyenDB	103-204	A
 110	NIEUW			DyenDB	104-200	A
 111	NACHT			DyenDB	105-004	A
@@ -80,7 +80,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 114	OUD			DyenDB	108-006	A
 115	EEN			DyenDB	109-200	A
 116	ANDERE			DyenDB	110-205	A
-117	PERSOON, MENSCH			DyenDB	111-209	A
+117	PERSOON, MENSCH			DyenDB	111-217	A
 122	ROOD			DyenDB	116-003	A
 123	GOED			DyenDB	117-001	A
 124	REGTSCH			DyenDB	118-200	A
@@ -89,7 +89,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 127	WORTEL			DyenDB	121-003	A
 128	TOUW			DyenDB	122-006	A
 129	VERROTTEN			DyenDB	123-200	A
-131	SCHUREN			DyenDB	124-203	A
+131	SCHUREN			DyenDB	124-204	A
 132	ZOUT			DyenDB	125-002	A
 133	ZAND			DyenDB	126-004	A
 135	KRABBEN			DyenDB	128-207	A
@@ -104,7 +104,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 150	GLAD, EFFEN			DyenDB	143-205	A
 151	SLANG			DyenDB	144-203	A
 152	SNEEUW			DyenDB	145-004	A
-153	EENIGE, SOMMIGE			DyenDB	146-200	A
+153	EENIGE, SOMMIGE			DyenDB	146-201	A
 159	STER			DyenDB	152-004	A
 160	STOK			DyenDB	153-013	A
 161	STEEN			DyenDB	154-004	A
@@ -116,7 +116,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 170	ZY			DyenDB	163-200	A
 171	DIK			DyenDB	164-212	A
 172	DUN			DyenDB	165-002	A
-174	DIT, DEZE			DyenDB	167-200	A
+174	DIT, DEZE			DyenDB	167-205	A
 175	U, GY			DyenDB	168-003	A
 176	DRIE			DyenDB	169-002	A
 13	BYTEN			DyenDB	013-002	A
@@ -127,19 +127,19 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 25	TELLEN			DyenDB	024-200	A
 26	SNYDEN			DyenDB	025-004	A
 28	STERVEN			DyenDB	027-200	A
-29	GRAVEN, DELVEN			DyenDB	028-203	A
+29	GRAVEN, DELVEN			DyenDB	028-205	A
 32	DRINKEN			DyenDB	031-003	A
 38	ETEN			DyenDB	037-006	A
 41	VALLEN			DyenDB	040-200	A
 45	VREZEN			DyenDB	044-011	A
 48	VECHTEN			DyenDB	047-200	A
 53	DRYVEN			DyenDB	051-006	A
-54	STROMEN			DyenDB	052-200	A
+54	STROMEN			DyenDB	052-204	A
 56	VLIEGEN			DyenDB	054-006	A
 60	BEVRIEZEN			DyenDB	058-207	A
 63	GEVEN			DyenDB	060-002	A
 72	HOOREN			DyenDB	069-003	A
-76	SLAEN, TREFFEN, RAKEN			DyenDB	073-200	A
+76	SLAEN, TREFFEN, RAKEN			DyenDB	073-201	A
 80	JAGEN			DyenDB	076-007	A
 86	DOODEN			DyenDB	082-205	A
 90	LACHEN			DyenDB	085-200	A
@@ -147,7 +147,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 95	LEVEN			DyenDB	090-002	A
 118	SPELEN			DyenDB	112-203	A
 119	TREKKEN			DyenDB	113-004	A
-120	DUWEN			DyenDB	114-203	A
+120	DUWEN			DyenDB	114-204	A
 121	REGENEN			DyenDB	115-002	A
 134	ZEGGEN			DyenDB	127-005	A
 137	ZIEN			DyenDB	130-005	A
@@ -165,7 +165,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 165	OPZWELLEN			DyenDB	158-002	A
 166	ZWEMMEN			DyenDB	159-002	A
 173	DENKEN			DyenDB	166-003	A
-177	WERPEN			DyenDB	170-211	A
+177	WERPEN			DyenDB	170-212	A
 178	BINDEN			DyenDB	171-203	A
 182	DRAAIJEN			DyenDB	175-003	A
 184	BRAKEN			DyenDB	177-003	A

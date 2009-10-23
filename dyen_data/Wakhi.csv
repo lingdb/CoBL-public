@@ -13,7 +13,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 14	SU, SIO			DyenDB	014-007	A
 15	WUSEN, XUN			DyenDB	015-011	A
 17	YUSC, USTUXON			DyenDB	017-200	A
-21	ZA, ZUMAN, KUDUK			DyenDB	020-200	A
+21	ZA, ZUMAN, KUDUK			DyenDB	020-201	A
 22	MOR, WETIS			DyenDB	021-211	A
 23	SUR, SOZ			DyenDB	022-005	A
 27	ROR, REWOR			DyenDB	026-001	A
@@ -46,7 +46,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 71	SER			DyenDB	068-205	A
 73	PEZUV			DyenDB	070-001	A
 74	GHURUNG			DyenDB	071-400	A
-75	DREM, HADREM, YEM, YAEI			DyenDB	072-200	A
+75	DREM, HADREM, YEM, YAEI			DyenDB	072-201	A
 77	WUDER			DyenDB	074-001	A
 79	TSERUNG			DyenDB	075-202	A
 81	SAUHER			DyenDB	077-007	A
@@ -57,11 +57,11 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 89	ZOI			DyenDB	084-001	A
 91	PULC			DyenDB	086-001	A
 92	CUP			DyenDB	087-002	A
-93	LENG, PUED			DyenDB	088-200	A
+93	LENG, PUED			DyenDB	088-201	A
 96	JIGAR			DyenDB	091-200	A
 97	DEROZ, VERZ			DyenDB	092-200	A
 98	SIS			DyenDB	093-010	A
-99	MERDINA, DAEI, XULG			DyenDB	094-203	A
+99	MERDINA, DAEI, XULG			DyenDB	094-209	A
 100	GHUFC			DyenDB	095-001	A
 101	GOST			DyenDB	096-004	A
 103	NUN			DyenDB	097-001	A
@@ -100,7 +100,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 150	LUS, HUNWOR			DyenDB	143-002	A
 151	FUKS			DyenDB	144-001	A
 152	ZEM			DyenDB	145-001	A
-153	TSUM, TSUMER, KUMD, CIZ			DyenDB	146-204	A
+153	TSUM, TSUMER, KUMD, CIZ			DyenDB	146-207	A
 159	STOR			DyenDB	152-004	A
 160	GHWUZ, SUNG			DyenDB	153-001	A
 161	GHAR			DyenDB	154-001	A
@@ -119,7 +119,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 16	KULUMUT, MEST			DyenDB	016-001	A
 20	THAU-			DyenDB	019-001	A
 24	WEZI-			DyenDB	023-001	A
-25	ISOB TSER-			DyenDB	024-206	A
+25	ISOB TSER-			DyenDB	024-207	A
 26	RESED-			DyenDB	025-001	A
 28	MERI-			DyenDB	027-003	A
 29	PUS-			DyenDB	028-001	A
@@ -167,7 +167,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 195	KUI			DyenDB	188-200	A
 196	KESOD, FERUX			DyenDB	189-209	A
 197	JUMAUT, KEND, YUPKWOR			DyenDB	190-001	A
-198	DUMA, SEMOL			DyenDB	191-205	A
+198	DUMA, SEMOL			DyenDB	191-206	A
 199	TUP			DyenDB	192-001	A
 200	VISUV, TUF DI-			DyenDB	193-011	A
 201	DU			DyenDB	194-001	A

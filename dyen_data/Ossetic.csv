@@ -57,7 +57,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 91	SYF			DyenDB	086-001	A
 92	GALAU			DyenDB	087-001	A
 93	ZAENG			DyenDB	088-011	A
-96	IGAER			DyenDB	091-200	A
+96	IGAER			DyenDB	091-201	A
 97	DARG"			DyenDB	092-200	A
 98	SYST			DyenDB	093-010	A
 99	LAEG, NAELGOJMAG			DyenDB	094-211	A
@@ -98,7 +98,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 150	LAEG"Z			DyenDB	143-205	A
 151	KALM			DyenDB	144-001	A
 152	MIT			DyenDB	145-001	A
-153	CYSYL			DyenDB	146-204	A
+153	CYSYL			DyenDB	146-209	A
 159	YST"ALY			DyenDB	152-004	A
 160	LAEDZAEG			DyenDB	153-001	A
 161	DUR			DyenDB	154-001	A
@@ -174,8 +174,8 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 194	URS			DyenDB	187-001	A
 195	CI			DyenDB	188-200	A
 197	BINOJNAG			DyenDB	190-001	A
-198	DYMGAE			DyenDB	191-205	A
-199	BAZYR			DyenDB	192-201	A
+198	DYMGAE			DyenDB	191-207	A
+199	BAZYR			DyenDB	192-202	A
 200	SAERFYN			DyenDB	193-001	A
 201	AED			DyenDB	194-100	A
 202	BINOJNAG			DyenDB	195-001	A

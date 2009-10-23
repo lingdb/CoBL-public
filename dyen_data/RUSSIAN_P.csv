@@ -114,13 +114,13 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 169	TAM			DyenDB	162-203	A
 170	ONI			DyenDB	163-200	A
 171	TOLSTYJ			DyenDB	164-214	A
-174	ETOT			DyenDB	167-200	A
+174	ETOT			DyenDB	167-201	A
 175	TY			DyenDB	168-200	A
 176	TRI			DyenDB	169-002	A
 13	KUSAT			DyenDB	013-011	A
 16	DUT			DyenDB	016-203	A
 19	DYSAT			DyenDB	018-002	A
-20	ZEC			DyenDB	019-200	A
+20	ZEC			DyenDB	019-201	A
 24	PRICHODIT			DyenDB	023-203	A
 25	SCEST			DyenDB	024-009	A
 26	REZAT			DyenDB	025-207	A
@@ -152,7 +152,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 142	PET			DyenDB	135-006	A
 143	SIDET			DyenDB	136-200	A
 146	SPAT			DyenDB	139-200	A
-148	ZAPACH			DyenDB	141-200	A
+148	ZAPACH			DyenDB	141-201	A
 154	PLEVAT			DyenDB	147-205	A
 155	LOMIT			DyenDB	148-005	A
 156	GNESTI			DyenDB	149-005	A
@@ -164,7 +164,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 173	MYSLIT			DyenDB	166-209	A
 177	METAT			DyenDB	170-208	A
 178	V AZAT			DyenDB	171-002	A
-182	VERTET			DyenDB	175-200	A
+182	VERTET			DyenDB	175-201	A
 184	RVAT			DyenDB	177-005	A
 185	ITTI			DyenDB	178-016	A
 187	MYT			DyenDB	180-203	A

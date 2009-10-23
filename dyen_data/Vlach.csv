@@ -7,7 +7,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 7	SLAB			DyenDB	007-006	A
 8	FLUDHE			DyenDB	008-001	A
 9	KA			DyenDB	009-001	A
-10	PENDIKE			DyenDB	010-200	A
+10	PENDIKE			DyenDB	010-201	A
 11	MARE			DyenDB	011-010	A
 12	PULU			DyenDB	012-207	A
 14	LAI			DyenDB	014-001	A
@@ -57,7 +57,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 85	NEUNDRE			DyenDB	081-001	A
 88	STIU			DyenDB	083-003	A
 89	LIMNI			DyenDB	084-000	A
-91	FRYNZE			DyenDB	086-200	A
+91	FRYNZE			DyenDB	086-201	A
 92	ASTEGU			DyenDB	087-010	A
 93	CORU			DyenDB	088-200	A
 96	IDKATU			DyenDB	091-004	A
@@ -80,7 +80,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 114	VYEKLU			DyenDB	108-010	A
 115	UNE			DyenDB	109-200	A
 116	ALTU			DyenDB	110-009	A
-117	OM			DyenDB	111-206	A
+117	OM			DyenDB	111-207	A
 122	AROSE			DyenDB	116-008	A
 123	SOSTO			DyenDB	117-003	A
 124	ANDEARTU			DyenDB	118-200	A
@@ -92,7 +92,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 131	FREK			DyenDB	124-002	A
 132	SARE			DyenDB	125-002	A
 133	ARINE			DyenDB	126-206	A
-136	MARE			DyenDB	129-200	A
+136	MARE			DyenDB	129-203	A
 138	SPOR			DyenDB	131-007	A
 141	SKURTU			DyenDB	134-012	A
 144	KALE			DyenDB	137-205	A
@@ -127,7 +127,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 32	BEAU			DyenDB	031-004	A
 38	MYKU			DyenDB	037-004	A
 41	KADU			DyenDB	040-003	A
-45	MESPARU			DyenDB	044-205	A
+45	MESPARU			DyenDB	044-207	A
 56	PITEKSESKU			DyenDB	054-001	A
 60	EGLICE			DyenDB	058-204	A
 63	DAU			DyenDB	060-200	A
@@ -135,7 +135,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 76	AGUDESKU			DyenDB	073-001	A
 86	VATEMU			DyenDB	082-001	A
 90	ARYTU			DyenDB	085-003	A
-119	TRAGU			DyenDB	113-200	A
+119	TRAGU			DyenDB	113-202	A
 120	PINKU			DyenDB	114-003	A
 134	ZYKU			DyenDB	127-003	A
 137	VEDU			DyenDB	130-003	A

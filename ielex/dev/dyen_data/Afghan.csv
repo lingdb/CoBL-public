@@ -5,7 +5,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 4	IRA			DyenDB	004-001	A
 5	DE...SERA, TA NEZDE			DyenDB	005-100	A
 6	SA			DyenDB	006-101	A
-7	BAD			DyenDB	007-200	A
+7	BAD			DyenDB	007-202	A
 8	POST			DyenDB	008-210	A
 9	DZEKA CE, VALI CE			DyenDB	009-001	A
 10	NAS, GEDA, XETA			DyenDB	010-100	A
@@ -42,7 +42,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 61	MEVA			DyenDB	059-004	A
 64	SA			DyenDB	061-005	A
 65	VASE			DyenDB	062-012	A
-66	SIN			DyenDB	063-200	A
+66	SIN			DyenDB	063-203	A
 67	KULMA			DyenDB	064-008	A
 68	VESTE			DyenDB	065-007	A
 69	LAS			DyenDB	066-202	A
@@ -62,11 +62,11 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 89	KUL, GADIR, DZIHIL, DAND, DARJACA			DyenDB	084-206	A
 91	PANA			DyenDB	086-207	A
 92	KIN			DyenDB	087-003	A
-93	PSA			DyenDB	088-200	A
+93	PSA			DyenDB	088-206	A
 96	INA			DyenDB	091-009	A
 97	UZD			DyenDB	092-007	A
 98	SPEZA, SPEZA			DyenDB	093-002	A
-99	SARAJ			DyenDB	094-203	A
+99	SARAJ			DyenDB	094-214	A
 100	DER			DyenDB	095-206	A
 101	GVASA			DyenDB	096-004	A
 103	MOR			DyenDB	097-200	A
@@ -83,11 +83,11 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 114	ZOR			DyenDB	108-005	A
 115	JAV			DyenDB	109-200	A
 116	BEL			DyenDB	110-004	A
-117	TAN, KAS			DyenDB	111-209	A
+117	TAN, KAS			DyenDB	111-210	A
 122	SUR			DyenDB	116-200	A
 123	SAM			DyenDB	117-100	A
 124	SAJ			DyenDB	118-204	A
-125	RUD, SIND			DyenDB	119-206	A
+125	RUD, SIND			DyenDB	119-207	A
 126	LAR			DyenDB	120-010	A
 127	BEX, RISA			DyenDB	121-203	A
 128	PERAJ			DyenDB	122-009	A
@@ -190,7 +190,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 196	PRAX			DyenDB	189-209	A
 197	SEDZA			DyenDB	190-001	A
 198	BAD			DyenDB	191-205	A
-199	VAZAR			DyenDB	192-201	A
+199	VAZAR			DyenDB	192-203	A
 200	VUCAVEL			DyenDB	193-011	A
 201	DE...SERA			DyenDB	194-200	A
 202	SEDZA			DyenDB	195-007	A

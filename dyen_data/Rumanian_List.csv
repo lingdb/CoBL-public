@@ -4,13 +4,13 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 3	ANIMAL			DyenDB	003-401	A
 4	CENUSA			DyenDB	004-002	A
 5	LA			DyenDB	005-001	A
-6	SPATE, DOS			DyenDB	006-200	A
+6	SPATE, DOS			DyenDB	006-201	A
 7	RAU			DyenDB	007-001	A
 8	SCOARTA			DyenDB	008-202	A
 9	FIINDCA			DyenDB	009-001	A
-10	PINTEC(E)			DyenDB	010-200	A
+10	PINTEC(E)			DyenDB	010-202	A
 11	MARE			DyenDB	011-010	A
-12	PASARE			DyenDB	012-200	A
+12	PASARE			DyenDB	012-201	A
 14	NEGRU			DyenDB	014-005	A
 15	SINGE			DyenDB	015-003	A
 17	OS			DyenDB	017-200	A
@@ -36,7 +36,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 51	PESTE			DyenDB	049-009	A
 52	CINCI			DyenDB	050-002	A
 55	FLOARE			DyenDB	053-002	A
-57	CEATA, NEGURA			DyenDB	055-200	A
+57	CEATA, NEGURA			DyenDB	055-201	A
 58	PICIOR			DyenDB	056-200	A
 59	PATRU			DyenDB	057-002	A
 61	FRUCT			DyenDB	059-003	A
@@ -123,8 +123,8 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 175	TU			DyenDB	168-200	A
 176	TREI			DyenDB	169-002	A
 13	A MUSCA			DyenDB	013-007	A
-16	A SUFLA			DyenDB	016-203	A
-19	A RESPIRA, A RASUFLA			DyenDB	018-200	A
+16	A SUFLA			DyenDB	016-204	A
+19	A RESPIRA, A RASUFLA			DyenDB	018-203	A
 20	A ARDE			DyenDB	019-212	A
 24	A VENI			DyenDB	023-206	A
 25	A NUMARA			DyenDB	024-203	A
@@ -139,9 +139,9 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 53	A PLUTI			DyenDB	051-001	A
 54	A CURGE			DyenDB	052-209	A
 56	A ZBURA			DyenDB	054-005	A
-60	A INGHETA			DyenDB	058-204	A
+60	A INGHETA			DyenDB	058-205	A
 63	A DA			DyenDB	060-200	A
-72	A AUZI			DyenDB	069-200	A
+72	A AUZI			DyenDB	069-201	A
 76	A NIMERI, A LOVI			DyenDB	073-001	A
 80	A VINA			DyenDB	076-001	A
 86	A OMORI, A UCIDE			DyenDB	082-200	A
@@ -185,7 +185,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 191	CE			DyenDB	184-003	A
 192	CIND			DyenDB	185-200	A
 193	UNDE, INCOTRO			DyenDB	186-200	A
-194	ALB			DyenDB	187-200	A
+194	ALB			DyenDB	187-201	A
 195	CINE			DyenDB	188-200	A
 196	LARG, LAT			DyenDB	189-003	A
 197	SOTIE, NEVASTA			DyenDB	190-001	A

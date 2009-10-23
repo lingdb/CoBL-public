@@ -5,7 +5,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 4	KHAKH, SUR			DyenDB	004-004	A
 5	KANI			DyenDB	005-101	A
 6	PYUTHU			DyenDB	006-006	A
-7	MADA, AROTU, BAD			DyenDB	007-200	A
+7	MADA, AROTU, BAD			DyenDB	007-203	A
 8	DEL, TSAM			DyenDB	008-001	A
 9	NEMATI			DyenDB	009-001	A
 10	MYADA, PHORU, YED			DyenDB	010-001	A
@@ -22,7 +22,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 31	HUNU			DyenDB	030-003	A
 33	HOKHU, KHOSHK			DyenDB	032-205	A
 34	MONDU			DyenDB	033-001	A
-35	KHAKH, LATSH, PHEKH			DyenDB	034-206	A
+35	KHAKH, LATSH, PHEKH			DyenDB	034-207	A
 36	KAN			DyenDB	035-003	A
 37	METSU, ZAMIN			DyenDB	036-211	A
 39	THUL			DyenDB	038-001	A
@@ -46,11 +46,11 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 67	TSAPH			DyenDB	064-001	A
 68	MAS, RUM, WAL			DyenDB	065-204	A
 69	ATHA			DyenDB	066-200	A
-70	SUH			DyenDB	067-200	A
+70	SUH			DyenDB	067-201	A
 71	KALA			DyenDB	068-001	A
 73	DIL, REDA, WOLINJ			DyenDB	070-007	A
 74	GOBU			DyenDB	071-001	A
-75	YOR, YUTU			DyenDB	072-200	A
+75	YOR, YUTU			DyenDB	072-201	A
 77	HYONU, RATUN			DyenDB	074-001	A
 79	KETHA			DyenDB	075-200	A
 81	RUNU, BARTA			DyenDB	077-100	A
@@ -66,7 +66,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 96	JIGAR, KALEJA			DyenDB	091-200	A
 97	ZYUTHU			DyenDB	092-001	A
 98	ZOV			DyenDB	093-204	A
-99	MARD, PORUSH, NAR, ZONU			DyenDB	094-203	A
+99	MARD, PORUSH, NAR, ZONU			DyenDB	094-206	A
 100	SETHAH			DyenDB	095-001	A
 101	MAZ			DyenDB	096-007	A
 103	MOJU			DyenDB	097-200	A
@@ -107,12 +107,12 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 151	SARAPH			DyenDB	144-001	A
 152	SHIN			DyenDB	145-201	A
 159	TARUKH			DyenDB	152-004	A
-160	LURU			DyenDB	153-200	A
+160	LURU			DyenDB	153-201	A
 161	WATH, KUNU			DyenDB	154-100	A
 162	SYODU			DyenDB	155-006	A
 164	SURE			DyenDB	157-203	A
 167	LOTU			DyenDB	160-001	A
-168	ATH, TIH			DyenDB	161-200	A
+168	ATH, TIH			DyenDB	161-203	A
 169	TOR, TOTU			DyenDB	162-203	A
 170	TIM			DyenDB	163-200	A
 171	MOTU			DyenDB	164-203	A
@@ -165,7 +165,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 166	TSATH, LAYUNU			DyenDB	159-100	A
 173	ZANUN			DyenDB	166-001	A
 177	TSHUNUN			DyenDB	170-001	A
-178	GANDUN			DyenDB	171-203	A
+178	GANDUN			DyenDB	171-204	A
 184	WAMUN			DyenDB	177-004	A
 185	PAKUN			DyenDB	178-001	A
 187	CHALUN, SORSHUN			DyenDB	180-100	A

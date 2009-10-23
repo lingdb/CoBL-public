@@ -5,7 +5,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 4	XOKISTAR			DyenDB	004-004	A
 5	DAR, BA			DyenDB	005-223	A
 6	PUST, TAXTAPUST			DyenDB	006-006	A
-7	BAD, GANDA			DyenDB	007-200	A
+7	BAD, GANDA			DyenDB	007-204	A
 8	PUST, TAXTAPUST			DyenDB	008-210	A
 9	BAROI..., BAROI XAMIN, BINOBAR IN, AZ IN SABAB			DyenDB	009-100	A
 10	SIKAM, SIKAMBA			DyenDB	010-008	A
@@ -65,7 +65,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 93	PO, POJ			DyenDB	088-200	A
 96	CIGAR			DyenDB	091-200	A
 97	DAROZ, DUR			DyenDB	092-200	A
-99	MARD			DyenDB	094-203	A
+99	MARD			DyenDB	094-206	A
 100	BIS ER, XELE, ZIED			DyenDB	095-003	A
 101	GUST			DyenDB	096-004	A
 103	MODAR			DyenDB	097-200	A
@@ -112,7 +112,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 162	ROST, MUSTAKIM			DyenDB	155-203	A
 164	OFTOB			DyenDB	157-200	A
 167	DUM			DyenDB	160-005	A
-168	ON, XAMON			DyenDB	161-200	A
+168	ON, XAMON			DyenDB	161-202	A
 169	DAR ON CO			DyenDB	162-102	A
 171	WAFS, FARBEX			DyenDB	164-001	A
 172	TUNUK, BORIK			DyenDB	165-002	A

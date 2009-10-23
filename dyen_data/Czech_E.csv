@@ -3,12 +3,12 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	AY			DyenDB	002-200	A
 3	ZVIRE			DyenDB	003-200	A
 4	POPEL			DyenDB	004-003	A
-5	NA, PRI			DyenDB	005-200	A
+5	NA, PRI			DyenDB	005-213	A
 6	HRBET			DyenDB	006-004	A
 7	ZLE, SPATNE			DyenDB	007-207	A
 8	KURA			DyenDB	008-202	A
 9	PROTO			DyenDB	009-206	A
-10	BRUX			DyenDB	010-209	A
+10	BRUX			DyenDB	010-210	A
 11	VELIKE, HRUBE			DyenDB	011-006	A
 12	FTAK			DyenDB	012-207	A
 14	CERNE			DyenDB	014-004	A
@@ -16,13 +16,13 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 17	KOSTY			DyenDB	017-201	A
 21	DYITYE			DyenDB	020-004	A
 22	MRACNO, OBLOHA			DyenDB	021-206	A
-23	ZIMA			DyenDB	022-200	A
+23	ZIMA			DyenDB	022-202	A
 27	DENY			DyenDB	026-003	A
 30	SPINAVE			DyenDB	029-003	A
 31	PES			DyenDB	030-200	A
 33	SUXE			DyenDB	032-205	A
 34	TUPE			DyenDB	033-002	A
-35	PRAX			DyenDB	034-200	A
+35	PRAX			DyenDB	034-201	A
 36	UXO			DyenDB	035-200	A
 37	ZEM, HLINA			DyenDB	036-200	A
 39	VAYCO			DyenDB	038-007	A
@@ -50,13 +50,13 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 71	HLAVA			DyenDB	068-002	A
 73	SRDCO			DyenDB	070-200	A
 74	TYASKE			DyenDB	071-007	A
-75	TU, TADI, SEM			DyenDB	072-211	A
+75	TU, TADI, SEM			DyenDB	072-212	A
 77	DRZAT			DyenDB	074-010	A
 79	YAK			DyenDB	075-201	A
 81	MUZ			DyenDB	077-206	A
 82	YA			DyenDB	078-200	A
 83	LET			DyenDB	079-204	A
-84	KEBI			DyenDB	080-203	A
+84	KEBI			DyenDB	080-204	A
 85	V, VE			DyenDB	081-200	A
 88	VEDET			DyenDB	083-200	A
 89	YAZERO			DyenDB	084-002	A
@@ -69,7 +69,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 99	XLAP, MUSKI			DyenDB	094-203	A
 100	HODNE			DyenDB	095-001	A
 101	MASO			DyenDB	096-007	A
-103	MAMA, MATKA			DyenDB	097-200	A
+103	MAMA, MATKA			DyenDB	097-201	A
 104	HORA			DyenDB	098-203	A
 105	HUBA			DyenDB	099-001	A
 106	MENO			DyenDB	100-003	A
@@ -161,7 +161,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 154	PLUT			DyenDB	147-205	A
 155	ROSCIPNUT			DyenDB	148-006	A
 156	STYISKNUT			DyenDB	149-007	A
-157	PIXNUT			DyenDB	150-205	A
+157	PIXNUT			DyenDB	150-206	A
 158	STAT			DyenDB	151-202	A
 163	CUCAT			DyenDB	156-202	A
 165	SPUXNUT			DyenDB	158-203	A

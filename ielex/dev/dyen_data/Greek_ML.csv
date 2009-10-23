@@ -35,7 +35,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 51	PSARI			DyenDB	049-005	A
 52	PENTE			DyenDB	050-002	A
 55	LOULOUDI			DyenDB	053-006	A
-57	POUSI			DyenDB	055-200	A
+57	POUSI			DyenDB	055-201	A
 58	PODI			DyenDB	056-200	A
 59	TESSERA			DyenDB	057-002	A
 61	FROUTO			DyenDB	059-007	A
@@ -56,8 +56,8 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 82	EGO			DyenDB	078-200	A
 83	PAGOS			DyenDB	079-006	A
 84	AN			DyenDB	080-006	A
-85	MESA			DyenDB	081-200	A
-88	KSERO			DyenDB	083-200	A
+85	MESA			DyenDB	081-203	A
+88	KSERO			DyenDB	083-202	A
 89	LIMNE			DyenDB	084-006	A
 91	FULLO			DyenDB	086-204	A
 92	ARISTEROS			DyenDB	087-013	A
@@ -65,7 +65,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 96	SEKOTI			DyenDB	091-006	A
 97	MAKRUS			DyenDB	092-002	A
 98	PSEIRA			DyenDB	093-006	A
-99	ANTRAS			DyenDB	094-203	A
+99	ANTRAS			DyenDB	094-206	A
 100	POLLOI			DyenDB	095-203	A
 101	KREAS			DyenDB	096-009	A
 103	METERA			DyenDB	097-200	A
@@ -106,7 +106,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 150	ISIOS			DyenDB	143-001	A
 151	FIDI			DyenDB	144-200	A
 152	CHIONI			DyenDB	145-200	A
-153	LIGOS			DyenDB	146-204	A
+153	LIGOS			DyenDB	146-213	A
 159	ASTRO			DyenDB	152-004	A
 160	KSULO			DyenDB	153-012	A
 161	PETRA			DyenDB	154-002	A
@@ -115,10 +115,10 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 167	OURA			DyenDB	160-013	A
 168	EKEINOS			DyenDB	161-200	A
 169	EKEI			DyenDB	162-004	A
-170	AUTOI			DyenDB	163-200	A
+170	AUTOI			DyenDB	163-203	A
 171	PACHUS			DyenDB	164-200	A
 172	PSILOS			DyenDB	165-009	A
-174	AUTOS			DyenDB	167-200	A
+174	AUTOS			DyenDB	167-202	A
 175	ESU			DyenDB	168-200	A
 176	TRIA			DyenDB	169-002	A
 13	DAGKANO			DyenDB	013-008	A
@@ -149,7 +149,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 95	DZO			DyenDB	090-005	A
 118	PAIDZO			DyenDB	112-008	A
 119	TRABO			DyenDB	113-002	A
-120	SKOUNTO			DyenDB	114-213	A
+120	SKOUNTO			DyenDB	114-214	A
 121	BRECHEI (3 SG.)			DyenDB	115-009	A
 134	LEGO			DyenDB	127-007	A
 137	BLEPO			DyenDB	130-012	A
@@ -190,7 +190,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 197	GUNAIKA			DyenDB	190-200	A
 198	AGERAS			DyenDB	191-004	A
 199	FTEROUGA			DyenDB	192-200	A
-200	KATHARIDZO			DyenDB	193-200	A
+200	KATHARIDZO			DyenDB	193-201	A
 201	MADZI			DyenDB	194-202	A
 202	GUNAIKA			DyenDB	195-204	A
 203	DASOS			DyenDB	196-007	A

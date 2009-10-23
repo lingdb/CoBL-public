@@ -3,12 +3,12 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	OCH			DyenDB	002-002	A
 3	DJUR			DyenDB	003-005	A
 4	ASKA, STOFT			DyenDB	004-007	A
-5	VID, PA, I			DyenDB	005-200	A
+5	VID, PA, I			DyenDB	005-201	A
 6	RYGG			DyenDB	006-209	A
 7	DALIG, USEL			DyenDB	007-002	A
 8	BARK, GARVARBARK			DyenDB	008-200	A
 9	EMEDAN, DARFOR ATT			DyenDB	009-210	A
-10	BUK, MAGE			DyenDB	010-204	A
+10	BUK, MAGE			DyenDB	010-206	A
 11	GROV			DyenDB	011-001	A
 12	FAGEL			DyenDB	012-206	A
 14	SVART			DyenDB	014-003	A
@@ -82,7 +82,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 114	GAMMAL			DyenDB	108-004	A
 115	EN			DyenDB	109-200	A
 116	ANDRA, ANNAN, ANNAT			DyenDB	110-205	A
-117	PERSON			DyenDB	111-209	A
+117	PERSON			DyenDB	111-215	A
 122	ROD			DyenDB	116-003	A
 123	RATT			DyenDB	117-200	A
 124	HOGER			DyenDB	118-004	A
@@ -99,11 +99,11 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 138	SAD			DyenDB	131-200	A
 140	SKARP			DyenDB	133-004	A
 141	KORT			DyenDB	134-003	A
-144	HUD, SKINN			DyenDB	137-200	A
+144	HUD, SKINN			DyenDB	137-201	A
 145	HIMMEL			DyenDB	138-200	A
 147	LITEN			DyenDB	140-010	A
 149	ROK			DyenDB	142-002	A
-150	SLAT, GLATT			DyenDB	143-205	A
+150	SLAT, GLATT			DyenDB	143-207	A
 151	ORM			DyenDB	144-201	A
 152	SNO			DyenDB	145-004	A
 153	NAGON, NAGRA			DyenDB	146-200	A
@@ -112,7 +112,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 161	STEN			DyenDB	154-004	A
 162	RAK, RAT			DyenDB	155-203	A
 164	SOL			DyenDB	157-203	A
-167	STJART			DyenDB	160-200	A
+167	STJART			DyenDB	160-201	A
 168	DENNE, DENNA, DETTA			DyenDB	161-200	A
 169	DAR, DARI, DARVIDLAG			DyenDB	162-203	A
 170	DE			DyenDB	163-200	A
@@ -136,7 +136,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 45	FARHAGA			DyenDB	044-004	A
 48	STRIDA			DyenDB	047-204	A
 53	FLYTA			DyenDB	051-005	A
-54	FLYTA, RINNA, STROMMA			DyenDB	052-200	A
+54	FLYTA, RINNA, STROMMA			DyenDB	052-202	A
 56	FLYGA			DyenDB	054-006	A
 60	FRYSA			DyenDB	058-207	A
 63	GIVA			DyenDB	060-002	A
@@ -169,8 +169,8 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 173	TANKA			DyenDB	166-003	A
 177	KASTA, SLANGA			DyenDB	170-002	A
 178	BINDA			DyenDB	171-203	A
-182	VANDA  PA			DyenDB	175-208	A
-184	KRAKAS, KASTA (FA) UPP, SPY			DyenDB	177-212	A
+182	VANDA  PA			DyenDB	175-209	A
+184	KRAKAS, KASTA (FA) UPP, SPY			DyenDB	177-213	A
 185	GA  TILL FOTS  (I.E., ON FOOT)			DyenDB	178-005	A
 187	TVATTA			DyenDB	180-009	A
 179	TUNGA			DyenDB	172-200	A
@@ -182,7 +182,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 189	VI			DyenDB	182-002	A
 190	VAT			DyenDB	183-005	A
 191	VAD			DyenDB	184-003	A
-192	NAR			DyenDB	185-200	A
+192	NAR			DyenDB	185-201	A
 193	VAR			DyenDB	186-200	A
 194	VIT			DyenDB	187-205	A
 195	VEM			DyenDB	188-200	A

@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	I			DyenDB	002-200	A
 3	ZIVOTINJA			DyenDB	003-200	A
 4	PEPEO			DyenDB	004-003	A
-5	KOD			DyenDB	005-200	A
+5	KOD			DyenDB	005-215	A
 6	POZADI			DyenDB	006-000	A
 7	ZAO			DyenDB	007-207	A
 8	KORA			DyenDB	008-202	A
@@ -31,7 +31,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 43	MAST			DyenDB	042-204	A
 44	OTAC			DyenDB	043-200	A
 46	PERO			DyenDB	045-200	A
-47	NEKOLIKO			DyenDB	046-201	A
+47	NEKOLIKO			DyenDB	046-202	A
 50	VATRA			DyenDB	048-001	A
 51	RIBA			DyenDB	049-003	A
 52	PET			DyenDB	050-002	A
@@ -50,7 +50,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 71	GLAVA			DyenDB	068-002	A
 73	SRCE			DyenDB	070-200	A
 74	TEZAK			DyenDB	071-007	A
-75	OVDE			DyenDB	072-211	A
+75	OVDE			DyenDB	072-212	A
 77	DRZATI			DyenDB	074-010	A
 79	KAKO			DyenDB	075-200	A
 81	MUZ			DyenDB	077-206	A
@@ -73,7 +73,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 104	GORA			DyenDB	098-203	A
 105	USTA			DyenDB	099-200	A
 106	IME			DyenDB	100-003	A
-107	UZAK			DyenDB	101-200	A
+107	UZAK			DyenDB	101-201	A
 108	BLIZU			DyenDB	102-002	A
 109	VRAT			DyenDB	103-006	A
 110	NOV			DyenDB	104-200	A
@@ -119,7 +119,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 170	ONI			DyenDB	163-200	A
 171	DEBEO			DyenDB	164-007	A
 172	TANAK			DyenDB	165-002	A
-174	OVAJ			DyenDB	167-200	A
+174	OVAJ			DyenDB	167-208	A
 175	TI			DyenDB	168-200	A
 176	TRI			DyenDB	169-002	A
 13	UGRISTI			DyenDB	013-006	A
@@ -173,7 +173,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 182	OKRENUTI SE			DyenDB	175-011	A
 184	POVRACATI			DyenDB	177-216	A
 185	SETATI			DyenDB	178-001	A
-187	PRATI			DyenDB	180-203	A
+187	PRATI			DyenDB	180-204	A
 179	JEZIK			DyenDB	172-200	A
 180	ZUB			DyenDB	173-002	A
 181	DRVO			DyenDB	174-206	A
@@ -188,7 +188,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 194	BELO			DyenDB	187-203	A
 195	TKO			DyenDB	188-200	A
 196	SIROK			DyenDB	189-005	A
-197	ZENA, SUPRUGA			DyenDB	190-200	A
+197	ZENA, SUPRUGA			DyenDB	190-201	A
 198	VETAR			DyenDB	191-200	A
 199	KRILO			DyenDB	192-003	A
 200	OBRISAC			DyenDB	193-005	A

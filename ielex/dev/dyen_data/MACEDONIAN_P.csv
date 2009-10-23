@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	I			DyenDB	002-200	A
 3	DZVER			DyenDB	003-200	A
 4	PEPEL			DyenDB	004-003	A
-5	PRI			DyenDB	005-200	A
+5	PRI			DyenDB	005-205	A
 6	GRB			DyenDB	006-004	A
 7	ZOL			DyenDB	007-207	A
 8	KORA			DyenDB	008-202	A
@@ -29,7 +29,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 40	OKO			DyenDB	039-002	A
 42	DALEK			DyenDB	041-205	A
 43	MAZ			DyenDB	042-204	A
-44	TATKO			DyenDB	043-200	A
+44	TATKO			DyenDB	043-206	A
 46	PERO			DyenDB	045-200	A
 50	OGON			DyenDB	048-004	A
 51	RIBA			DyenDB	049-003	A
@@ -53,7 +53,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 79	KAKO			DyenDB	075-200	A
 81	MAZ			DyenDB	077-206	A
 82	JAS			DyenDB	078-200	A
-83	MRAZ			DyenDB	079-204	A
+83	MRAZ			DyenDB	079-205	A
 84	AKO			DyenDB	080-203	A
 85	V			DyenDB	081-200	A
 88	ZNAM			DyenDB	083-200	A
@@ -71,7 +71,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 104	PLANINA			DyenDB	098-203	A
 105	USTA			DyenDB	099-200	A
 106	IME			DyenDB	100-003	A
-107	TESEN			DyenDB	101-200	A
+107	TESEN			DyenDB	101-203	A
 108	BLIZOK			DyenDB	102-002	A
 109	VRAT			DyenDB	103-006	A
 110	NOV			DyenDB	104-200	A
@@ -114,7 +114,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 169	TAMU			DyenDB	162-203	A
 170	TIE			DyenDB	163-200	A
 171	DEBEL			DyenDB	164-007	A
-174	OVOJ			DyenDB	167-200	A
+174	OVOJ			DyenDB	167-205	A
 175	TI			DyenDB	168-200	A
 176	TRI			DyenDB	169-002	A
 13	KASAM			DyenDB	013-011	A
@@ -143,10 +143,10 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 94	LEZAM			DyenDB	089-003	A
 95	ZIVEAM			DyenDB	090-005	A
 118	IGRAM			DyenDB	112-200	A
-119	VLECAM			DyenDB	113-206	A
+119	VLECAM			DyenDB	113-207	A
 120	TURKAM			DyenDB	114-001	A
 121	DOZD			DyenDB	115-003	A
-134	KAZAM			DyenDB	127-200	A
+134	KAZAM			DyenDB	127-201	A
 137	VIDAM			DyenDB	130-003	A
 139	SIAM			DyenDB	132-200	A
 142	PEJAM			DyenDB	135-006	A
@@ -159,7 +159,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 157	BODAM			DyenDB	150-205	A
 158	STOAM			DyenDB	151-202	A
 163	CICAM			DyenDB	156-202	A
-165	NADUVAM SE			DyenDB	158-203	A
+165	NADUVAM SE			DyenDB	158-204	A
 166	PLIVAM			DyenDB	159-003	A
 173	MISLAM			DyenDB	166-209	A
 177	FRLAM			DyenDB	170-011	A

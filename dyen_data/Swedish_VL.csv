@@ -7,7 +7,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 6	ROG, (BAK)			DyenDB	006-209	A
 7	DALI			DyenDB	007-002	A
 8	BARK			DyenDB	008-200	A
-10	MAGA  MAGA			DyenDB	010-204	A
+10	MAGA  MAGA			DyenDB	010-205	A
 11	STOR			DyenDB	011-200	A
 12	FOGAL			DyenDB	012-206	A
 14	SVART			DyenDB	014-003	A
@@ -26,7 +26,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 37	JOL			DyenDB	036-004	A
 39	AG			DyenDB	038-007	A
 40	YGA  OGA			DyenDB	039-002	A
-42	LANGT			DyenDB	041-200	A
+42	LANGT			DyenDB	041-201	A
 43	FET			DyenDB	042-006	A
 44	FAR			DyenDB	043-209	A
 46	FJAR  FJER			DyenDB	045-203	A
@@ -82,7 +82,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 114	GAMAL			DyenDB	108-004	A
 115	EN			DyenDB	109-200	A
 116	AN, ANA			DyenDB	110-205	A
-117	PASON, MANIS			DyenDB	111-209	A
+117	PASON, MANIS			DyenDB	111-216	A
 122	RO			DyenDB	116-003	A
 123	RAT			DyenDB	117-200	A
 124	HOGAR			DyenDB	118-004	A
@@ -99,7 +99,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 138	FRO			DyenDB	131-003	A
 140	VAS			DyenDB	133-209	A
 141	KOT			DyenDB	134-003	A
-144	SIN			DyenDB	137-200	A
+144	SIN			DyenDB	137-201	A
 145	SY, HIMAL			DyenDB	138-200	A
 147	LITN			DyenDB	140-010	A
 149	ROK			DyenDB	142-002	A

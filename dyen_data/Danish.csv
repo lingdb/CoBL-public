@@ -83,7 +83,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 114	GAMMEL			DyenDB	108-004	A
 115	EN			DyenDB	109-200	A
 116	ANDEN			DyenDB	110-205	A
-117	PERSON			DyenDB	111-209	A
+117	PERSON			DyenDB	111-216	A
 122	ROD			DyenDB	116-003	A
 123	RET			DyenDB	117-200	A
 124	HOJRE			DyenDB	118-004	A
@@ -142,7 +142,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 60	FRYSE			DyenDB	058-207	A
 63	GIVE			DyenDB	060-002	A
 72	HORE			DyenDB	069-003	A
-76	RAMME, TRAEFFE			DyenDB	073-200	A
+76	RAMME, TRAEFFE			DyenDB	073-201	A
 80	JAGE			DyenDB	076-007	A
 86	DRAEBE			DyenDB	082-205	A
 90	LE			DyenDB	085-200	A
@@ -171,7 +171,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 177	KASTE			DyenDB	170-002	A
 178	BINDE			DyenDB	171-203	A
 182	VENDE SIG			DyenDB	175-208	A
-184	KASTE OP			DyenDB	177-212	A
+184	KASTE OP			DyenDB	177-214	A
 185	GAA			DyenDB	178-005	A
 187	VASKE			DyenDB	180-006	A
 179	TUNGE			DyenDB	172-200	A

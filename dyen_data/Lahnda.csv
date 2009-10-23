@@ -49,17 +49,17 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 70	O			DyenDB	067-213	A
 71	SIR			DyenDB	068-205	A
 73	DIL			DyenDB	070-007	A
-74	BHARI			DyenDB	071-200	A
+74	BHARI			DyenDB	071-202	A
 75	ITTHA			DyenDB	072-208	A
 77	PEKREN			DyenDB	074-003	A
 79	KIWE			DyenDB	075-200	A
 81	GEBHRU			DyenDB	077-001	A
 82	MAE			DyenDB	078-200	A
 83	BERF, BERREF			DyenDB	079-202	A
-84	JE			DyenDB	080-203	A
+84	JE			DyenDB	080-204	A
 85	ENDER			DyenDB	081-200	A
 88	JANEN			DyenDB	083-200	A
-89	JHIL			DyenDB	084-206	A
+89	JHIL			DyenDB	084-207	A
 91	PETTA			DyenDB	086-005	A
 92	KHEBBA			DyenDB	087-017	A
 93	TENG			DyenDB	088-009	A
@@ -69,7 +69,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 100	KEI			DyenDB	095-001	A
 101	MAS			DyenDB	096-007	A
 103	MA			DyenDB	097-200	A
-104	PEHAR			DyenDB	098-206	A
+104	PEHAR			DyenDB	098-207	A
 105	MU			DyenDB	099-200	A
 106	NA			DyenDB	100-003	A
 107	TEG			DyenDB	101-213	A
@@ -86,7 +86,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 122	LAL			DyenDB	116-002	A
 123	THIK			DyenDB	117-007	A
 124	SEJJA			DyenDB	118-203	A
-125	DERYA			DyenDB	119-203	A
+125	DERYA			DyenDB	119-204	A
 126	SEREK			DyenDB	120-200	A
 127	JER			DyenDB	121-200	A
 128	RESSI			DyenDB	122-200	A
@@ -108,12 +108,12 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 152	BERF, BERREF			DyenDB	145-002	A
 153	KUJH			DyenDB	146-204	A
 159	TARA			DyenDB	152-004	A
-160	CHERI			DyenDB	153-200	A
+160	CHERI			DyenDB	153-203	A
 161	PETTHER			DyenDB	154-009	A
 162	SIDDHA			DyenDB	155-006	A
 164	SUREJ			DyenDB	157-203	A
 167	PUCH			DyenDB	160-006	A
-168	O			DyenDB	161-200	A
+168	O			DyenDB	161-203	A
 169	UTTHA			DyenDB	162-203	A
 170	O			DyenDB	163-210	A
 171	MOTA			DyenDB	164-203	A
@@ -148,7 +148,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 94	LETEN			DyenDB	089-008	A
 95	JIWEN			DyenDB	090-005	A
 118	KHEDEN			DyenDB	112-011	A
-119	KHICCEN			DyenDB	113-209	A
+119	KHICCEN			DyenDB	113-210	A
 120	KHICCEN			DyenDB	114-001	A
 121	BARES THIWEN			DyenDB	115-013	A
 134	AKHEN			DyenDB	127-400	A
@@ -170,7 +170,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 177	SUTTEN			DyenDB	170-003	A
 178	BENNEN			DyenDB	171-203	A
 182	ULTAWEN			DyenDB	175-400	A
-184	ULTI KEREN			DyenDB	177-200	A
+184	ULTI KEREN			DyenDB	177-203	A
 185	TUREN			DyenDB	178-015	A
 187	DHOWEN			DyenDB	180-200	A
 179	JIBH			DyenDB	172-200	A
@@ -186,13 +186,13 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 193	KITTHA			DyenDB	186-200	A
 194	SEFED			DyenDB	187-002	A
 195	KON			DyenDB	188-200	A
-196	CORA			DyenDB	189-206	A
+196	CORA			DyenDB	189-207	A
 197	KWAR			DyenDB	190-001	A
 198	HEWA			DyenDB	191-400	A
 199	PER			DyenDB	192-010	A
 200	SAF KEREN			DyenDB	193-001	A
 201	NAL			DyenDB	194-002	A
-202	TRIMMET			DyenDB	195-205	A
+202	TRIMMET			DyenDB	195-206	A
 203	JENGEL			DyenDB	196-212	A
 204	KIRA			DyenDB	197-004	A
 205	TUSSA			DyenDB	198-003	A

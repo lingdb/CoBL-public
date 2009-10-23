@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	UN			DyenDB	002-001	A
 3	DZIVNIEKS, KUSTONIS			DyenDB	003-200	A
 4	PELNI			DyenDB	004-003	A
-5	UZ, PIE			DyenDB	005-200	A
+5	UZ, PIE			DyenDB	005-214	A
 6	MUGURA			DyenDB	006-008	A
 7	SLIKTS			DyenDB	007-001	A
 8	MIZA			DyenDB	008-001	A
@@ -43,14 +43,14 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 64	LABS			DyenDB	061-100	A
 65	ZALE			DyenDB	062-003	A
 66	ZALS			DyenDB	063-200	A
-67	ZARNAS			DyenDB	064-205	A
+67	ZARNAS			DyenDB	064-206	A
 68	MATS			DyenDB	065-001	A
 69	ROKA			DyenDB	066-005	A
 70	VINS			DyenDB	067-211	A
 71	GALVA			DyenDB	068-002	A
 73	SIRDS			DyenDB	070-200	A
 74	SMAGS			DyenDB	071-001	A
-75	SEIT			DyenDB	072-211	A
+75	SEIT			DyenDB	072-212	A
 77	TURET			DyenDB	074-001	A
 79	KA			DyenDB	075-200	A
 81	VIRS			DyenDB	077-203	A
@@ -72,7 +72,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 104	KALNS			DyenDB	098-004	A
 105	MUTE			DyenDB	099-200	A
 106	VARDS			DyenDB	100-002	A
-107	SAURS			DyenDB	101-200	A
+107	SAURS			DyenDB	101-207	A
 108	TUVU			DyenDB	102-001	A
 109	KAKLS			DyenDB	103-207	A
 110	JAUNS			DyenDB	104-001	A
@@ -132,8 +132,8 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 29	RAKT			DyenDB	028-001	A
 32	DZERT			DyenDB	031-005	A
 38	EST			DyenDB	037-006	A
-41	KRIST			DyenDB	040-200	A
-45	BAIDITIES			DyenDB	044-200	A
+41	KRIST			DyenDB	040-201	A
+45	BAIDITIES			DyenDB	044-201	A
 48	KAUTIES, SISTIES, CINITIES			DyenDB	047-003	A
 53	PELDET			DyenDB	051-005	A
 54	PLUST			DyenDB	052-200	A
@@ -163,7 +163,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 156	SPIEST			DyenDB	149-014	A
 157	IEDURT, IESPRAUST			DyenDB	150-007	A
 158	STAVET			DyenDB	151-202	A
-163	ZIST, SUKT			DyenDB	156-202	A
+163	ZIST, SUKT			DyenDB	156-204	A
 165	PAMPT, TUKT			DyenDB	158-103	A
 166	PELDETIES			DyenDB	159-001	A
 173	DOMAT			DyenDB	166-209	A
@@ -193,7 +193,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 200	SLAUCIT			DyenDB	193-012	A
 201	AR			DyenDB	194-001	A
 202	SIEVIETE			DyenDB	195-001	A
-203	MEZA			DyenDB	196-203	A
+203	MEZA			DyenDB	196-204	A
 204	TARPS			DyenDB	197-001	A
 205	JUS			DyenDB	198-200	A
 206	GADS			DyenDB	199-001	A

@@ -1,11 +1,11 @@
 ID	source_form	phon_form	notes	source	cognate_class	reliability
 1	VSE			DyenDB	001-002	A
-2	A			DyenDB	002-200	A
+2	A			DyenDB	002-201	A
 3	ZVIRE			DyenDB	003-200	A
 4	POPEL			DyenDB	004-003	A
-5	U, PRI, ZA, NA, PO, PODLE, KU			DyenDB	005-200	A
+5	U, PRI, ZA, NA, PO, PODLE, KU			DyenDB	005-212	A
 6	ZPATKY, NAZPET, ZPET			DyenDB	006-000	A
-7	SPATNY			DyenDB	007-207	A
+7	SPATNY			DyenDB	007-208	A
 8	KURA			DyenDB	008-202	A
 9	PROTOZE			DyenDB	009-206	A
 10	BRICHO			DyenDB	010-209	A
@@ -24,7 +24,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 34	TUPY			DyenDB	033-002	A
 35	PRACH			DyenDB	034-200	A
 36	UCHO			DyenDB	035-200	A
-37	PUDA			DyenDB	036-200	A
+37	PUDA			DyenDB	036-201	A
 39	VEJCE			DyenDB	038-007	A
 40	OKO			DyenDB	039-002	A
 42	DALEKO			DyenDB	041-205	A
@@ -102,7 +102,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 144	KUZE			DyenDB	137-005	A
 145	NEBE			DyenDB	138-002	A
 147	MALY			DyenDB	140-011	A
-149	KOUR			DyenDB	142-200	A
+149	KOUR			DyenDB	142-202	A
 150	HLADKY			DyenDB	143-205	A
 151	HAD			DyenDB	144-002	A
 152	SNIH			DyenDB	145-004	A
@@ -157,7 +157,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 142	ZPIVATI			DyenDB	135-006	A
 143	SEDETI			DyenDB	136-200	A
 146	SPATI			DyenDB	139-200	A
-148	CITITI			DyenDB	141-200	A
+148	CITITI			DyenDB	141-202	A
 154	PLIVATI			DyenDB	147-205	A
 155	STIPATI, ROZSTIPNOUTI			DyenDB	148-006	A
 156	ZMACKNOUTI, STISKNOUTI			DyenDB	149-007	A
@@ -169,7 +169,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 173	MYSLETI			DyenDB	166-209	A
 177	HAZETI			DyenDB	170-009	A
 178	VAZATI, SVAZOVATI			DyenDB	171-002	A
-182	TOCITI, OTACETI			DyenDB	175-200	A
+182	TOCITI, OTACETI			DyenDB	175-203	A
 184	ZVRACETI			DyenDB	177-216	A
 185	PROCHAZETI SE, CHODITI			DyenDB	178-016	A
 187	MYTI			DyenDB	180-203	A
@@ -187,7 +187,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 194	BILY			DyenDB	187-203	A
 195	KDO			DyenDB	188-200	A
 196	SIROKY			DyenDB	189-005	A
-197	MANZELKA			DyenDB	190-200	A
+197	MANZELKA			DyenDB	190-201	A
 198	VITR			DyenDB	191-200	A
 199	KRIDLO			DyenDB	192-003	A
 200	UTIRATI			DyenDB	193-004	A

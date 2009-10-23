@@ -19,7 +19,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 23	XOLODNYJ			DyenDB	022-200	A
 27	DEN			DyenDB	026-003	A
 30	GRJAZNYJ			DyenDB	029-014	A
-31	SOBAKA			DyenDB	030-200	A
+31	SOBAKA			DyenDB	030-201	A
 33	SUXOJ			DyenDB	032-205	A
 34	TUPOJ			DyenDB	033-002	A
 35	PYL			DyenDB	034-200	A
@@ -36,7 +36,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 51	RYBA			DyenDB	049-003	A
 52	PJAT			DyenDB	050-002	A
 55	CVET			DyenDB	053-200	A
-57	TUMAN			DyenDB	055-200	A
+57	TUMAN			DyenDB	055-203	A
 58	NOGA			DyenDB	056-003	A
 59	CETYRE			DyenDB	057-002	A
 61	PLOD			DyenDB	059-200	A
@@ -50,7 +50,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 71	GOLOVA			DyenDB	068-002	A
 73	SERDCE			DyenDB	070-200	A
 74	TJAZELYJ			DyenDB	071-007	A
-75	ZDES			DyenDB	072-211	A
+75	ZDES			DyenDB	072-212	A
 77	DERZAT			DyenDB	074-010	A
 79	KAK			DyenDB	075-200	A
 81	MUZ			DyenDB	077-206	A
@@ -83,7 +83,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 114	STARYJ			DyenDB	108-002	A
 115	ODIN			DyenDB	109-200	A
 116	DRUGOJ			DyenDB	110-200	A
-117	CELOVEK			DyenDB	111-200	A
+117	CELOVEK			DyenDB	111-201	A
 122	KRASNYJ			DyenDB	116-203	A
 123	PRAVIL NYJ			DyenDB	117-002	A
 124	PRAVYJ			DyenDB	118-003	A
@@ -104,7 +104,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 145	NEBO			DyenDB	138-002	A
 147	MALEN KIJ			DyenDB	140-011	A
 149	DYM			DyenDB	142-200	A
-150	GLADKIJ			DyenDB	143-205	A
+150	GLADKIJ			DyenDB	143-206	A
 151	ZMEJA			DyenDB	144-004	A
 152	SNEG			DyenDB	145-004	A
 153	NEMNOGO			DyenDB	146-001	A
@@ -119,7 +119,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 170	ONI			DyenDB	163-200	A
 171	TOLSTYJ			DyenDB	164-214	A
 172	TONKIJ			DyenDB	165-002	A
-174	ETOT			DyenDB	167-200	A
+174	ETOT			DyenDB	167-204	A
 175	TY			DyenDB	168-200	A
 176	TRI			DyenDB	169-002	A
 13	KUSAT			DyenDB	013-011	A
@@ -142,7 +142,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 60	ZAMERZAT			DyenDB	058-005	A
 63	DAVAT			DyenDB	060-200	A
 72	SLYSAT			DyenDB	069-205	A
-76	BIT			DyenDB	073-205	A
+76	BIT			DyenDB	073-206	A
 80	OXOTIT SJA			DyenDB	076-008	A
 86	UBIVAT			DyenDB	082-008	A
 90	SMEJAT SJA			DyenDB	085-004	A
@@ -152,13 +152,13 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 119	TJANUT			DyenDB	113-206	A
 120	TOLKAT			DyenDB	114-006	A
 121	DOZD  IDET (IT RAINS)			DyenDB	115-003	A
-134	GOVORIT			DyenDB	127-200	A
+134	GOVORIT			DyenDB	127-204	A
 137	VIDET			DyenDB	130-003	A
 139	SIT			DyenDB	132-200	A
 142	PET			DyenDB	135-006	A
 143	SIDET			DyenDB	136-200	A
 146	SPAT			DyenDB	139-200	A
-148	CUVSTVOVAT			DyenDB	141-200	A
+148	CUVSTVOVAT			DyenDB	141-201	A
 154	PLEVAT			DyenDB	147-205	A
 155	RASKALYVAT			DyenDB	148-206	A
 156	SZIMAT			DyenDB	149-006	A

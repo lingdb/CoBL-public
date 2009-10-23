@@ -49,7 +49,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 70	VOH, YEH			DyenDB	067-213	A
 71	SIR			DyenDB	068-205	A
 73	DIL, HRIDEY			DyenDB	070-007	A
-74	BHARI			DyenDB	071-200	A
+74	BHARI			DyenDB	071-201	A
 75	YEHA			DyenDB	072-200	A
 77	DHERNA			DyenDB	074-010	A
 79	KESA			DyenDB	075-200	A
@@ -83,13 +83,13 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 114	BURHA (ANIMATE), PURANA (INANIMATE)			DyenDB	108-200	A
 115	EK			DyenDB	109-200	A
 116	DUSRA			DyenDB	110-007	A
-117	LOG, INSAN			DyenDB	111-209	A
+117	LOG, INSAN			DyenDB	111-210	A
 122	LAL			DyenDB	116-002	A
 123	THIK			DyenDB	117-007	A
 124	DAYA			DyenDB	118-201	A
 125	NEDI			DyenDB	119-203	A
 126	RASTA, SEREK			DyenDB	120-200	A
-127	MUL			DyenDB	121-200	A
+127	MUL			DyenDB	121-201	A
 128	RESSA			DyenDB	122-200	A
 129	SERA			DyenDB	123-010	A
 131	REGERNA			DyenDB	124-005	A
@@ -118,7 +118,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 169	VEHA			DyenDB	162-203	A
 170	VE, YE			DyenDB	163-206	A
 171	MOTA			DyenDB	164-203	A
-172	DUBLA, PETLA			DyenDB	165-200	A
+172	DUBLA, PETLA			DyenDB	165-201	A
 174	YEH			DyenDB	167-200	A
 175	TU			DyenDB	168-200	A
 176	TIN			DyenDB	169-002	A
@@ -133,7 +133,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 29	KHODNA			DyenDB	028-009	A
 32	PINA			DyenDB	031-004	A
 38	KHANA			DyenDB	037-200	A
-41	GIRNA			DyenDB	040-203	A
+41	GIRNA			DyenDB	040-204	A
 45	DERNA			DyenDB	044-200	A
 48	LERNA			DyenDB	047-002	A
 53	UTERANA			DyenDB	051-002	A
@@ -142,7 +142,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 60	JEMNA			DyenDB	058-004	A
 63	DENA			DyenDB	060-200	A
 72	SUNNA			DyenDB	069-205	A
-76	MARNA			DyenDB	073-211	A
+76	MARNA			DyenDB	073-213	A
 80	SIKAR + KERNA			DyenDB	076-004	A
 86	MARNA			DyenDB	082-200	A
 90	HESNA			DyenDB	085-007	A
@@ -171,7 +171,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 177	PHEKNA			DyenDB	170-007	A
 178	BADHNA			DyenDB	171-203	A
 182	MURNA			DyenDB	175-002	A
-184	ULTI+KERNA			DyenDB	177-200	A
+184	ULTI+KERNA			DyenDB	177-202	A
 185	CELNA			DyenDB	178-003	A
 187	DHONA			DyenDB	180-200	A
 179	JIBH			DyenDB	172-200	A
@@ -189,12 +189,12 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 195	KON			DyenDB	188-200	A
 196	CORA			DyenDB	189-206	A
 197	PETNI			DyenDB	190-213	A
-198	VAYU, HEVA			DyenDB	191-200	A
+198	VAYU, HEVA			DyenDB	191-202	A
 199	PENKH			DyenDB	192-005	A
 200	MITANA			DyenDB	193-001	A
 201	SATH			DyenDB	194-200	A
-202	ORET, STRI			DyenDB	195-205	A
-203	JENGEL			DyenDB	196-212	A
+202	ORET, STRI			DyenDB	195-206	A
+203	JENGEL			DyenDB	196-213	A
 204	KIRA			DyenDB	197-004	A
 205	TUM (INFORMAL), AP (FORMAL)			DyenDB	198-003	A
 206	SAL, VERS			DyenDB	199-200	A

@@ -4,7 +4,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 3	DYR			DyenDB	003-005	A
 4	ASKA			DyenDB	004-007	A
 5	VIO			DyenDB	005-200	A
-6	BAK			DyenDB	006-209	A
+6	BAK			DyenDB	006-210	A
 7	LELEGUR, VONDUR, ILLUR			DyenDB	007-210	A
 8	BORKUR			DyenDB	008-200	A
 9	AF THVI AO			DyenDB	009-009	A
@@ -69,7 +69,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 100	MARGIR			DyenDB	095-001	A
 101	HOLD			DyenDB	096-005	A
 103	MOOIR			DyenDB	097-200	A
-104	FJALL			DyenDB	098-200	A
+104	FJALL			DyenDB	098-201	A
 105	MUNNR			DyenDB	099-007	A
 106	NAFN			DyenDB	100-003	A
 107	THRONGUR, MJOR			DyenDB	101-218	A
@@ -90,7 +90,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 126	VEGR			DyenDB	120-209	A
 127	ROT			DyenDB	121-003	A
 128	REIPI			DyenDB	122-007	A
-129	FUINN			DyenDB	123-200	A
+129	FUINN			DyenDB	123-201	A
 131	NUA			DyenDB	124-001	A
 132	SALT			DyenDB	125-002	A
 133	SANDR			DyenDB	126-004	A
@@ -99,7 +99,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 138	FRAE			DyenDB	131-003	A
 140	BEITTUR			DyenDB	133-209	A
 141	STUTTR			DyenDB	134-005	A
-144	HUO, SKINN			DyenDB	137-200	A
+144	HUO, SKINN			DyenDB	137-202	A
 145	HIMINN			DyenDB	138-200	A
 147	LITILL			DyenDB	140-010	A
 149	REYKR			DyenDB	142-002	A
@@ -109,14 +109,14 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 153	NOKKRIR			DyenDB	146-200	A
 159	STJARNA			DyenDB	152-004	A
 161	STEINN			DyenDB	154-004	A
-162	BEINN			DyenDB	155-203	A
+162	BEINN			DyenDB	155-204	A
 164	SOL			DyenDB	157-203	A
 168	THESSI, THETTA			DyenDB	161-200	A
 169	THAR(NA)			DyenDB	162-203	A
 170	THEIR			DyenDB	163-200	A
 171	THYKKR, DIGR			DyenDB	164-212	A
 172	THUNNR, MJOR, GRANNR			DyenDB	165-002	A
-174	THESSI, THETTA			DyenDB	167-200	A
+174	THESSI, THETTA			DyenDB	167-204	A
 175	THU			DyenDB	168-200	A
 176	THRIR			DyenDB	169-002	A
 13	BITA			DyenDB	013-002	A
@@ -150,7 +150,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 121	RIGNA			DyenDB	115-002	A
 134	SEGJA			DyenDB	127-005	A
 137	SEA, SJA			DyenDB	130-005	A
-139	SAUMA			DyenDB	132-200	A
+139	SAUMA			DyenDB	132-201	A
 142	SYNGVA, SYNGJA			DyenDB	135-005	A
 143	SITJA			DyenDB	136-200	A
 146	SOFA			DyenDB	139-200	A
@@ -167,7 +167,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 177	KASTA			DyenDB	170-002	A
 178	BINDA			DyenDB	171-203	A
 182	SNUA(SK)			DyenDB	175-208	A
-184	KASTA UPP			DyenDB	177-212	A
+184	KASTA UPP			DyenDB	177-213	A
 185	GANGA			DyenDB	178-005	A
 187	THVO			DyenDB	180-009	A
 179	TUNGA			DyenDB	172-200	A

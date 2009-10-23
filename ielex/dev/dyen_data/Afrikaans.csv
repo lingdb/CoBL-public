@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	EN			DyenDB	002-009	A
 3	DIER			DyenDB	003-005	A
 4	AS			DyenDB	004-007	A
-5	TE			DyenDB	005-200	A
+5	TE			DyenDB	005-208	A
 6	RUG			DyenDB	006-209	A
 7	SLEG			DyenDB	007-007	A
 8	BAS, BOOMSKORS			DyenDB	008-202	A
@@ -29,14 +29,14 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 40	OOG			DyenDB	039-002	A
 42	VER			DyenDB	041-200	A
 43	VET			DyenDB	042-006	A
-44	VADER, PA			DyenDB	043-209	A
+44	VADER, PA			DyenDB	043-211	A
 46	VEER, PLUIM			DyenDB	045-203	A
 47	N PAAR, WEINIG			DyenDB	046-207	A
 50	VUUR			DyenDB	048-003	A
 51	VIS			DyenDB	049-009	A
 52	VYF			DyenDB	050-002	A
 55	BLOM			DyenDB	053-002	A
-57	MIS, NEWEL			DyenDB	055-200	A
+57	MIS, NEWEL			DyenDB	055-203	A
 58	VOET			DyenDB	056-200	A
 59	VIER			DyenDB	057-002	A
 61	VRUG			DyenDB	059-006	A
@@ -47,7 +47,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 68	HAAR, HARE			DyenDB	065-004	A
 69	HAND			DyenDB	066-003	A
 70	HY			DyenDB	067-203	A
-71	HOOF, KOP			DyenDB	068-200	A
+71	HOOF, KOP			DyenDB	068-201	A
 73	HART			DyenDB	070-200	A
 74	SWAAR			DyenDB	071-008	A
 75	HIER			DyenDB	072-003	A
@@ -69,11 +69,11 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 99	MAN			DyenDB	094-203	A
 100	BAIE, VEEL			DyenDB	095-203	A
 101	VLEES, VLEIS			DyenDB	096-006	A
-103	MOEDER, MA			DyenDB	097-200	A
+103	MOEDER, MA			DyenDB	097-201	A
 104	BERG			DyenDB	098-200	A
 105	MOND			DyenDB	099-007	A
 106	NAAM			DyenDB	100-003	A
-107	NOU, ENG			DyenDB	101-200	A
+107	NOU, ENG			DyenDB	101-205	A
 108	NABY, DIGBY			DyenDB	102-200	A
 109	HALS, NEK			DyenDB	103-204	A
 110	NUWE			DyenDB	104-200	A
@@ -83,7 +83,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 114	OUD, OU			DyenDB	108-006	A
 115	EEN			DyenDB	109-200	A
 116	ANDER			DyenDB	110-205	A
-117	PERSOON			DyenDB	111-209	A
+117	PERSOON			DyenDB	111-219	A
 122	ROOI			DyenDB	116-003	A
 123	REG			DyenDB	117-200	A
 124	REG			DyenDB	118-200	A
@@ -137,7 +137,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 45	VREES, BANG WEES			DyenDB	044-011	A
 48	VEG			DyenDB	047-200	A
 53	DRYF, DRYWE			DyenDB	051-006	A
-54	VLOEI, STROOM			DyenDB	052-200	A
+54	VLOEI, STROOM			DyenDB	052-203	A
 56	VLIE, VLIEG			DyenDB	054-006	A
 60	VRIES			DyenDB	058-207	A
 63	GEE			DyenDB	060-002	A
@@ -168,7 +168,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 165	OPSWEL, SWEL			DyenDB	158-002	A
 166	SWEM			DyenDB	159-002	A
 173	DINK			DyenDB	166-003	A
-177	GOOI, SMYT			DyenDB	170-211	A
+177	GOOI, SMYT			DyenDB	170-213	A
 178	VASMAAK, BIND(E), AANBIND(E)			DyenDB	171-203	A
 182	OMDRAAI, DRAAI, KEER			DyenDB	175-003	A
 184	BRAAK, VOMEER, VERMEER			DyenDB	177-003	A

@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	I			DyenDB	002-200	A
 3	ZVER			DyenDB	003-200	A
 4	POPEL			DyenDB	004-003	A
-5	U			DyenDB	005-200	A
+5	U			DyenDB	005-210	A
 6	ZPATKY			DyenDB	006-000	A
 7	ZLY			DyenDB	007-207	A
 8	KURA			DyenDB	008-202	A
@@ -16,7 +16,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 17	KOST			DyenDB	017-201	A
 21	DITE			DyenDB	020-004	A
 22	OBLAK			DyenDB	021-206	A
-23	CHLADNY			DyenDB	022-200	A
+23	CHLADNY			DyenDB	022-201	A
 27	DEN			DyenDB	026-003	A
 30	SPINAVY			DyenDB	029-003	A
 31	PES			DyenDB	030-200	A
@@ -110,7 +110,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 161	KAMEN			DyenDB	154-006	A
 164	SLUNCE			DyenDB	157-203	A
 167	CHVOST			DyenDB	160-007	A
-168	ONEN			DyenDB	161-200	A
+168	ONEN			DyenDB	161-201	A
 169	TAM			DyenDB	162-203	A
 170	ONI			DyenDB	163-200	A
 171	TLUSTY			DyenDB	164-214	A

@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	IN			DyenDB	002-202	A
 3	ZIVALI			DyenDB	003-200	A
 4	PEPJU			DyenDB	004-003	A
-5	NE, K			DyenDB	005-200	A
+5	NE, K			DyenDB	005-214	A
 6	HERBET			DyenDB	006-004	A
 7	SLABU			DyenDB	007-006	A
 8	LUPOD DRVA			DyenDB	008-001	A
@@ -28,7 +28,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 39	JAJCE			DyenDB	038-007	A
 40	OKO			DyenDB	039-002	A
 42	DALEC			DyenDB	041-205	A
-43	MAST			DyenDB	042-204	A
+43	MAST			DyenDB	042-206	A
 44	OCE (ATEK)			DyenDB	043-200	A
 46	PERU			DyenDB	045-200	A
 47	(MOLO) NEKAJ			DyenDB	046-001	A
@@ -66,14 +66,14 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 96	JTRA			DyenDB	091-203	A
 97	DOVGU			DyenDB	092-200	A
 98	USI			DyenDB	093-203	A
-99	MOZ, MASKI			DyenDB	094-203	A
+99	MOZ, MASKI			DyenDB	094-204	A
 100	DOSTI			DyenDB	095-004	A
 101	MESO			DyenDB	096-007	A
 103	MATI			DyenDB	097-200	A
 104	GORE			DyenDB	098-203	A
 105	VUJSTA			DyenDB	099-200	A
 106	IMJ			DyenDB	100-003	A
-107	TESEN, VASKO			DyenDB	101-200	A
+107	TESEN, VASKO			DyenDB	101-202	A
 108	BLIZII			DyenDB	102-002	A
 109	VRAT			DyenDB	103-006	A
 110	NOVA			DyenDB	104-200	A
@@ -117,7 +117,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 168	TISTO			DyenDB	161-200	A
 169	TOM			DyenDB	162-203	A
 170	ONI			DyenDB	163-200	A
-171	GOSTO			DyenDB	164-206	A
+171	GOSTO			DyenDB	164-207	A
 172	RETKO			DyenDB	165-001	A
 174	TU			DyenDB	167-200	A
 176	TRI			DyenDB	169-002	A
@@ -140,7 +140,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 56	LETETI			DyenDB	054-202	A
 60	ZMRZNE			DyenDB	058-005	A
 63	DATI, DAJ			DyenDB	060-200	A
-72	CUJES			DyenDB	069-205	A
+72	CUJES			DyenDB	069-206	A
 76	UDARIT			DyenDB	073-205	A
 80	JAGAT			DyenDB	076-007	A
 86	UBIJAT			DyenDB	082-008	A

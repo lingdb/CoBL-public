@@ -1,7 +1,7 @@
 ID	source_form	phon_form	notes	source	cognate_class	reliability
 1	UILE			DyenDB	001-006	A
 2	AGUS			DyenDB	002-006	A
-3	AINMHIDH			DyenDB	003-200	A
+3	AINMHIDH			DyenDB	003-207	A
 4	LUAITH			DyenDB	004-005	A
 5	AG			DyenDB	005-200	A
 6	DRUIM			DyenDB	006-207	A
@@ -36,7 +36,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 52	CUIGEAR			DyenDB	050-002	A
 55	BLATH			DyenDB	053-002	A
 57	CEO			DyenDB	055-002	A
-58	COS			DyenDB	056-204	A
+58	COS			DyenDB	056-205	A
 59	CESTHAIR			DyenDB	057-002	A
 61	TORADH, TORAIDH, TORTHA			DyenDB	059-011	A
 64	MAITH			DyenDB	061-006	A
@@ -45,7 +45,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 67	INNREACHTAN, AIN			DyenDB	064-001	A
 68	GRUAIG, GRUAIGE			DyenDB	065-008	A
 69	LAMH			DyenDB	066-004	A
-70	E, SEISEAN, SE			DyenDB	067-200	A
+70	E, SEISEAN, SE			DyenDB	067-206	A
 71	CEANN			DyenDB	068-004	A
 73	CROIDHE			DyenDB	070-200	A
 74	IOMTHROM			DyenDB	071-003	A
@@ -66,7 +66,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 97	FADA			DyenDB	092-006	A
 98	MIOL			DyenDB	093-007	A
 99	DUINE			DyenDB	094-200	A
-100	MORAN, IOMAD, IOMDHA, LIACHT, FOIRLION			DyenDB	095-209	A
+100	MORAN, IOMAD, IOMDHA, LIACHT, FOIRLION			DyenDB	095-210	A
 101	FEOIL			DyenDB	096-002	A
 103	MATHAIR			DyenDB	097-200	A
 104	SLAIBH			DyenDB	098-005	A
@@ -118,7 +118,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 170	IAD, IADSAN			DyenDB	163-206	A
 171	RAMHAR			DyenDB	164-001	A
 172	CAOLUIGHIM, TANUIGHIM			DyenDB	165-002	A
-174	SO, E SEO			DyenDB	167-200	A
+174	SO, E SEO			DyenDB	167-201	A
 175	TU, TUSA			DyenDB	168-200	A
 176	TRI			DyenDB	169-002	A
 13	COGNAIM			DyenDB	013-103	A
@@ -159,7 +159,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 156	FAISCIM			DyenDB	149-012	A
 157	DO RATHADH, LE SCIN, DO MHARBHADH			DyenDB	150-101	A
 158	SEASAIM			DyenDB	151-202	A
-163	DO DHIUIL, DO DHEOL, SUGHAIM			DyenDB	156-202	A
+163	DO DHIUIL, DO DHEOL, SUGHAIM			DyenDB	156-209	A
 165	ATAIM			DyenDB	158-008	A
 166	SNAMH DO DHEANAMH			DyenDB	159-008	A
 173	MEASAIM, SMUAINIM, SAOILIM, CUIMHNIGHIM			DyenDB	166-212	A

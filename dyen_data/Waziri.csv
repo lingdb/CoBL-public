@@ -5,14 +5,14 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 4	TRA			DyenDB	004-001	A
 5	KSHE, PA, PERI			DyenDB	005-222	A
 6	SHAMZAI			DyenDB	006-101	A
-7	BAD, KHAROP			DyenDB	007-200	A
+7	BAD, KHAROP			DyenDB	007-203	A
 8	PATIKAI			DyenDB	008-400	A
 10	GADOLYAI			DyenDB	010-100	A
 11	STER			DyenDB	011-203	A
 12	MARGHAI			DyenDB	012-002	A
 14	TOR			DyenDB	014-008	A
 15	WINA			DyenDB	015-013	A
-17	HADIKAI			DyenDB	017-203	A
+17	HADIKAI			DyenDB	017-204	A
 21	WORKAI			DyenDB	020-001	A
 22	WERYEZ			DyenDB	021-208	A
 23	SOR			DyenDB	022-005	A
@@ -39,7 +39,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 61	MEWA			DyenDB	059-004	A
 64	SHE			DyenDB	061-005	A
 65	WOSHE			DyenDB	062-012	A
-66	SHIN, ZARGHIN			DyenDB	063-200	A
+66	SHIN, ZARGHIN			DyenDB	063-201	A
 67	KULMA, LARMIN			DyenDB	064-008	A
 68	WESHTE			DyenDB	065-007	A
 69	LOS			DyenDB	066-202	A
@@ -58,11 +58,11 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 88	KHABAR, MOLIM (KNOWN)			DyenDB	083-001	A
 91	PONRYE			DyenDB	086-208	A
 92	KINR			DyenDB	087-003	A
-93	LANGRA, PSHA			DyenDB	088-200	A
+93	LANGRA, PSHA			DyenDB	088-203	A
 96	YENNA			DyenDB	091-009	A
 97	WIZHD			DyenDB	092-007	A
 98	SPAZHA			DyenDB	093-002	A
-99	NAR, NER, SARAI			DyenDB	094-203	A
+99	NAR, NER, SARAI			DyenDB	094-212	A
 100	DER			DyenDB	095-206	A
 101	GHOSHA, GHESHA			DyenDB	096-004	A
 103	MOR, MER			DyenDB	097-200	A
@@ -79,7 +79,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 114	ZOR			DyenDB	108-005	A
 115	YO			DyenDB	109-200	A
 116	BEL, NOR			DyenDB	110-004	A
-117	KAS, TAN			DyenDB	111-209	A
+117	KAS, TAN			DyenDB	111-211	A
 122	SIR			DyenDB	116-200	A
 123	SAHI			DyenDB	117-100	A
 124	SHAI			DyenDB	118-204	A
@@ -168,7 +168,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 187	WINZEL			DyenDB	180-007	A
 179	ZHEBBA			DyenDB	172-202	A
 180	GHWOSH, GHOSH			DyenDB	173-004	A
-181	WUNA			DyenDB	174-200	A
+181	WUNA			DyenDB	174-201	A
 183	DWA			DyenDB	176-002	A
 186	TOD			DyenDB	179-005	A
 188	EBO			DyenDB	181-203	A
@@ -182,7 +182,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 196	PLAN			DyenDB	189-212	A
 197	TABAR			DyenDB	190-001	A
 198	BOD			DyenDB	191-205	A
-199	PAR, WAZAR			DyenDB	192-201	A
+199	PAR, WAZAR			DyenDB	192-202	A
 200	MASHEL			DyenDB	193-001	A
 201	SARA, DE...SARA, PA...SARA			DyenDB	194-200	A
 202	SHEZA			DyenDB	195-007	A

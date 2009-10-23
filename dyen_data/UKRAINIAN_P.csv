@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	I			DyenDB	002-200	A
 3	ZVIR			DyenDB	003-200	A
 4	POPIL			DyenDB	004-003	A
-5	U			DyenDB	005-200	A
+5	U			DyenDB	005-205	A
 6	SPYNA			DyenDB	006-005	A
 7	ZLYJ			DyenDB	007-207	A
 8	KORA			DyenDB	008-202	A
@@ -35,7 +35,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 51	RYBA			DyenDB	049-003	A
 52	P AT			DyenDB	050-002	A
 55	KUITKA			DyenDB	053-200	A
-57	TUMAN			DyenDB	055-200	A
+57	TUMAN			DyenDB	055-201	A
 58	NOHA			DyenDB	056-003	A
 59	COTYRY			DyenDB	057-002	A
 64	DOBRYJ			DyenDB	061-004	A
@@ -54,7 +54,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 81	MUZ			DyenDB	077-206	A
 82	JA			DyenDB	078-200	A
 83	LID			DyenDB	079-204	A
-84	KOLY			DyenDB	080-203	A
+84	KOLY			DyenDB	080-206	A
 85	V			DyenDB	081-200	A
 88	ZNATY			DyenDB	083-200	A
 89	OZERO			DyenDB	084-002	A
@@ -92,7 +92,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 131	TERTY			DyenDB	124-003	A
 132	SIL			DyenDB	125-002	A
 133	PISOK			DyenDB	126-002	A
-135	SKREBTY			DyenDB	128-200	A
+135	SKREBTY			DyenDB	128-201	A
 136	MORE			DyenDB	129-200	A
 138	SIM A			DyenDB	131-200	A
 140	HOSTRYJ			DyenDB	133-200	A
@@ -118,10 +118,10 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 175	TY			DyenDB	168-200	A
 176	TRY			DyenDB	169-002	A
 13	KUSATY			DyenDB	013-011	A
-16	DUTY			DyenDB	016-203	A
+16	DUTY			DyenDB	016-204	A
 19	DYCHATY			DyenDB	018-002	A
 20	PALATY			DyenDB	019-200	A
-24	PRYCHODYTY			DyenDB	023-203	A
+24	PRYCHODYTY			DyenDB	023-204	A
 25	RACHUVATY			DyenDB	024-001	A
 26	RIZATY			DyenDB	025-207	A
 28	MERTY			DyenDB	027-003	A

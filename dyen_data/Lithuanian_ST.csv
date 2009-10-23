@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	IR			DyenDB	002-012	A
 3	GYVULYS, ZVERIS (WILD)			DyenDB	003-200	A
 4	PELENAI			DyenDB	004-003	A
-5	PRIE			DyenDB	005-200	A
+5	PRIE			DyenDB	005-213	A
 6	NUGARA			DyenDB	006-008	A
 7	BLOGAS, NEGERAS			DyenDB	007-003	A
 8	MEDZIO ZIEVE			DyenDB	008-004	A
@@ -50,13 +50,13 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 71	GALVA			DyenDB	068-002	A
 73	SIRDIS			DyenDB	070-200	A
 74	SUNKUS			DyenDB	071-005	A
-75	CIA			DyenDB	072-211	A
+75	CIA			DyenDB	072-214	A
 77	LAIKYTI			DyenDB	074-007	A
 79	KAIP			DyenDB	075-200	A
 81	VYRAS			DyenDB	077-203	A
 82	AS			DyenDB	078-200	A
 83	LEDAS			DyenDB	079-204	A
-84	JEI, JEIGU, KAD			DyenDB	080-203	A
+84	JEI, JEIGU, KAD			DyenDB	080-204	A
 85	I			DyenDB	081-200	A
 88	ZINOTI			DyenDB	083-200	A
 89	EZERAS			DyenDB	084-002	A
@@ -73,7 +73,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 104	KALNAS			DyenDB	098-004	A
 105	BURNA			DyenDB	099-005	A
 106	VARDAS			DyenDB	100-002	A
-107	SIAURAS, ANKSTAS			DyenDB	101-200	A
+107	SIAURAS, ANKSTAS			DyenDB	101-207	A
 108	ARTI			DyenDB	102-009	A
 109	KAKLAS			DyenDB	103-207	A
 110	NAUJAS			DyenDB	104-200	A
@@ -134,7 +134,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 32	GERTI			DyenDB	031-005	A
 38	VALGYTI			DyenDB	037-010	A
 41	(NU)KRISTI, NUPULTI			DyenDB	040-200	A
-45	BIJOTI			DyenDB	044-200	A
+45	BIJOTI			DyenDB	044-203	A
 48	KOVOTI			DyenDB	047-003	A
 53	PLAUKTI			DyenDB	051-005	A
 54	TEKETI			DyenDB	052-004	A
@@ -160,7 +160,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 146	MIEGOTI			DyenDB	139-003	A
 148	UZUOSTI			DyenDB	141-205	A
 154	SPIAUTI			DyenDB	147-205	A
-155	SKELTI			DyenDB	148-206	A
+155	SKELTI			DyenDB	148-207	A
 156	SUSPAUSTI			DyenDB	149-014	A
 157	DURTI			DyenDB	150-007	A
 158	STOVETI			DyenDB	151-202	A
@@ -173,7 +173,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 182	KRYPTI, SUKTI			DyenDB	175-008	A
 184	VEMTI			DyenDB	177-004	A
 185	VAIKSCIOTI			DyenDB	178-010	A
-187	MAZGOTI			DyenDB	180-200	A
+187	MAZGOTI			DyenDB	180-201	A
 179	LIEZUVIS			DyenDB	172-200	A
 180	DANTIS			DyenDB	173-003	A
 181	MEDIS			DyenDB	174-010	A
@@ -188,7 +188,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 194	BALTAS			DyenDB	187-203	A
 195	KAS			DyenDB	188-200	A
 196	PLATUS			DyenDB	189-203	A
-197	ZMONA			DyenDB	190-213	A
+197	ZMONA			DyenDB	190-214	A
 198	VEJAS			DyenDB	191-200	A
 199	SPARNAS			DyenDB	192-201	A
 200	SLUOSTYTI			DyenDB	193-012	A

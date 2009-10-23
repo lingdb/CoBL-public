@@ -3,9 +3,9 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	OG			DyenDB	002-002	A
 3	DYRUR			DyenDB	003-005	A
 4	OSKA			DyenDB	004-007	A
-5	VID, I, A			DyenDB	005-200	A
+5	VID, I, A			DyenDB	005-203	A
 6	BAK, (RYGGUR)			DyenDB	006-209	A
-7	ILLUR			DyenDB	007-210	A
+7	ILLUR			DyenDB	007-211	A
 8	BORKUR			DyenDB	008-200	A
 9	(AV) TI (AT)			DyenDB	009-009	A
 10	BUKUR			DyenDB	010-204	A
@@ -21,7 +21,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 30	SKITIN			DyenDB	029-004	A
 31	HUNDUR			DyenDB	030-003	A
 33	TURRUR			DyenDB	032-005	A
-34	OHVASSUR, BAKKI ( )			DyenDB	033-200	A
+34	OHVASSUR, BAKKI ( )			DyenDB	033-201	A
 35	DUST, STOV			DyenDB	034-203	A
 36	OYRA			DyenDB	035-200	A
 37	MOLD, (JORO)			DyenDB	036-002	A
@@ -36,7 +36,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 51	FISKUR			DyenDB	049-009	A
 52	FIMM			DyenDB	050-002	A
 55	BLOMA			DyenDB	053-002	A
-57	TOKA			DyenDB	055-207	A
+57	TOKA			DyenDB	055-208	A
 58	FOTUR			DyenDB	056-200	A
 59	FYRA			DyenDB	057-002	A
 64	GODUR			DyenDB	061-003	A
@@ -60,7 +60,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 89	VATN			DyenDB	084-003	A
 91	(LEYF)BLAD			DyenDB	086-204	A
 92	VINSTRI			DyenDB	087-004	A
-93	BEIN, LEGGUR			DyenDB	088-200	A
+93	BEIN, LEGGUR			DyenDB	088-202	A
 96	LIVUR			DyenDB	091-002	A
 97	LANGUR			DyenDB	092-200	A
 98	LUS			DyenDB	093-200	A
@@ -71,7 +71,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 104	FJALL			DyenDB	098-200	A
 105	MUNNUR			DyenDB	099-007	A
 106	NAVN			DyenDB	100-003	A
-107	TRONGUR			DyenDB	101-218	A
+107	TRONGUR			DyenDB	101-219	A
 108	NAR			DyenDB	102-200	A
 109	HALSUR			DyenDB	103-204	A
 110	NYGGJUR			DyenDB	104-200	A
@@ -126,7 +126,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 20	BRENNA			DyenDB	019-003	A
 24	KOMA			DyenDB	023-206	A
 25	TELJA			DyenDB	024-200	A
-26	SKERA			DyenDB	025-200	A
+26	SKERA			DyenDB	025-201	A
 28	DOYGGJA, ANDAST			DyenDB	027-200	A
 29	GRAVA			DyenDB	028-203	A
 32	DREKKA			DyenDB	031-003	A

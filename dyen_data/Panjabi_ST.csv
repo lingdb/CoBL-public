@@ -18,7 +18,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 22	BEDDEL			DyenDB	021-004	A
 23	THEND			DyenDB	022-004	A
 27	DIN			DyenDB	026-003	A
-30	MELLA			DyenDB	029-211	A
+30	MELLA			DyenDB	029-212	A
 31	KUTTA			DyenDB	030-005	A
 33	SUKKA			DyenDB	032-205	A
 34	KHUNDA			DyenDB	033-007	A
@@ -29,8 +29,8 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 40	EKKH			DyenDB	039-002	A
 42	PERE			DyenDB	041-200	A
 43	CERBI			DyenDB	042-007	A
-44	BAP, PYO			DyenDB	043-209	A
-46	KHEMB			DyenDB	045-200	A
+44	BAP, PYO			DyenDB	043-211	A
+46	KHEMB			DyenDB	045-201	A
 47	THORA			DyenDB	046-205	A
 50	EGG			DyenDB	048-004	A
 51	MECCHI			DyenDB	049-002	A
@@ -53,7 +53,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 75	ETTHE			DyenDB	072-208	A
 77	PHERNA			DyenDB	074-100	A
 79	KIS+TERA			DyenDB	075-200	A
-81	PETI			DyenDB	077-203	A
+81	PETI			DyenDB	077-204	A
 82	ME			DyenDB	078-200	A
 83	BEREPH			DyenDB	079-202	A
 84	EGER, JE			DyenDB	080-203	A
@@ -87,7 +87,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 123	THIK			DyenDB	117-007	A
 124	SEJJA			DyenDB	118-203	A
 125	NEDI, DERYA			DyenDB	119-203	A
-126	SEREK			DyenDB	120-200	A
+126	SEREK			DyenDB	120-201	A
 127	JER			DyenDB	121-200	A
 128	RESSA			DyenDB	122-200	A
 129	SEREA HOYA			DyenDB	123-010	A
@@ -113,11 +113,11 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 162	SIDDA			DyenDB	155-006	A
 164	SUREJ			DyenDB	157-203	A
 167	PUCH			DyenDB	160-006	A
-168	O			DyenDB	161-200	A
+168	O			DyenDB	161-201	A
 169	OTTHE			DyenDB	162-203	A
 170	O			DyenDB	163-210	A
 171	GARA			DyenDB	164-001	A
-172	PETLA			DyenDB	165-200	A
+172	PETLA			DyenDB	165-202	A
 174	E			DyenDB	167-200	A
 175	TU			DyenDB	168-200	A
 176	TINN			DyenDB	169-002	A
@@ -136,12 +136,12 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 45	DERNA			DyenDB	044-200	A
 48	LERNA			DyenDB	047-002	A
 53	TERNA			DyenDB	051-002	A
-54	VEGNA			DyenDB	052-215	A
+54	VEGNA			DyenDB	052-216	A
 56	UDDENA			DyenDB	054-200	A
 60	JEMMENA			DyenDB	058-004	A
 63	DENA			DyenDB	060-200	A
 72	SUNENA			DyenDB	069-205	A
-76	THOKKER+MARNA			DyenDB	073-211	A
+76	THOKKER+MARNA			DyenDB	073-212	A
 80	SEKAR+KERNA			DyenDB	076-004	A
 86	MARNA			DyenDB	082-200	A
 90	HESSENA			DyenDB	085-007	A
@@ -161,7 +161,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 154	THUKKENA			DyenDB	147-202	A
 155	VEKKH+KERNA			DyenDB	148-001	A
 156	NECORNA			DyenDB	149-018	A
-157	CURA+MARNA			DyenDB	150-202	A
+157	CURA+MARNA			DyenDB	150-203	A
 158	KHELONA			DyenDB	151-201	A
 163	CUSNA			DyenDB	156-002	A
 165	PHULLENA			DyenDB	158-005	A

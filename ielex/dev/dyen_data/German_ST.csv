@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	UND			DyenDB	002-009	A
 3	TIER			DyenDB	003-005	A
 4	ASCHE			DyenDB	004-007	A
-5	AN			DyenDB	005-200	A
+5	AN			DyenDB	005-203	A
 6	RUCKEN			DyenDB	006-209	A
 7	SCHLECHT			DyenDB	007-007	A
 8	RINDE			DyenDB	008-002	A
@@ -36,7 +36,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 51	FISCHE			DyenDB	049-009	A
 52	FUNF			DyenDB	050-002	A
 55	BLUME			DyenDB	053-002	A
-57	NEBEL			DyenDB	055-200	A
+57	NEBEL			DyenDB	055-203	A
 58	FUSS			DyenDB	056-200	A
 59	VIER			DyenDB	057-002	A
 61	FRUCHT			DyenDB	059-006	A
@@ -46,8 +46,8 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 67	EINGEWEIDE, GEDARM			DyenDB	064-205	A
 68	HAAR			DyenDB	065-004	A
 69	HAND			DyenDB	066-003	A
-70	ER			DyenDB	067-200	A
-71	KOPF			DyenDB	068-200	A
+70	ER			DyenDB	067-208	A
+71	KOPF			DyenDB	068-202	A
 73	HERZ			DyenDB	070-200	A
 74	SCHWER			DyenDB	071-008	A
 75	HIER			DyenDB	072-003	A
@@ -96,7 +96,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 132	SALZ			DyenDB	125-002	A
 133	SAND			DyenDB	126-004	A
 135	KRATZEN			DyenDB	128-006	A
-136	SEE, MEER OZEAN			DyenDB	129-200	A
+136	SEE, MEER OZEAN			DyenDB	129-202	A
 138	SAAT			DyenDB	131-200	A
 140	SCHARF			DyenDB	133-004	A
 141	KURZ			DyenDB	134-003	A
@@ -143,11 +143,11 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 72	HOREN			DyenDB	069-003	A
 76	SCHLAGEN, TREFFEN			DyenDB	073-200	A
 80	JAGEN			DyenDB	076-007	A
-86	TOTEN			DyenDB	082-205	A
+86	TOTEN			DyenDB	082-206	A
 90	LACHEN			DyenDB	085-200	A
 94	LIEGEN			DyenDB	089-003	A
 95	LEBEN			DyenDB	090-002	A
-118	SPIELEN			DyenDB	112-203	A
+118	SPIELEN			DyenDB	112-204	A
 119	ZIEHEN			DyenDB	113-204	A
 120	STOSSEN			DyenDB	114-200	A
 121	REGNEN			DyenDB	115-002	A
@@ -186,15 +186,15 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 193	WO			DyenDB	186-200	A
 194	WEISS			DyenDB	187-205	A
 195	WER			DyenDB	188-200	A
-196	BREIT			DyenDB	189-200	A
+196	BREIT			DyenDB	189-201	A
 197	FRAU, GATTIN			DyenDB	190-005	A
 198	WIND			DyenDB	191-200	A
 199	FLUGEL			DyenDB	192-004	A
 200	WISCHEN			DyenDB	193-001	A
 201	MIT			DyenDB	194-205	A
 202	WEIB			DyenDB	195-003	A
-203	WALD			DyenDB	196-209	A
-204	WURM			DyenDB	197-203	A
+203	WALD			DyenDB	196-210	A
+204	WURM			DyenDB	197-204	A
 205	IHR			DyenDB	198-200	A
 206	JAHR			DyenDB	199-004	A
 207	GELB			DyenDB	200-200	A

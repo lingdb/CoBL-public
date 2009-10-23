@@ -24,7 +24,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 34	DIFIN			DyenDB	033-013	A
 35	LLWCH			DyenDB	034-006	A
 36	CLUST			DyenDB	035-200	A
-37	PRIDD			DyenDB	036-208	A
+37	PRIDD			DyenDB	036-209	A
 39	WY			DyenDB	038-007	A
 40	LLYGAD			DyenDB	039-004	A
 42	PELL			DyenDB	041-004	A
@@ -42,11 +42,11 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 61	FFRWYTH			DyenDB	059-009	A
 64	DA			DyenDB	061-007	A
 65	PORFA			DyenDB	062-001	A
-66	GWYRDD			DyenDB	063-200	A
+66	GWYRDD			DyenDB	063-201	A
 67	PERFEDD			DyenDB	064-001	A
 68	GWALLT			DyenDB	065-203	A
 69	LLAW			DyenDB	066-004	A
-70	EFE			DyenDB	067-200	A
+70	EFE			DyenDB	067-201	A
 71	PEN			DyenDB	068-004	A
 73	CALON			DyenDB	070-005	A
 74	TRWM			DyenDB	071-003	A
@@ -119,7 +119,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 170	HWY			DyenDB	163-206	A
 171	TRWCHUS			DyenDB	164-006	A
 172	TENAU			DyenDB	165-002	A
-174	HWN			DyenDB	167-200	A
+174	HWN			DyenDB	167-206	A
 175	TI			DyenDB	168-200	A
 176	TRI			DyenDB	169-002	A
 13	CNOI			DyenDB	013-103	A
@@ -130,7 +130,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 25	RHIFO, CYFRIF			DyenDB	024-210	A
 26	TORRI			DyenDB	025-007	A
 28	MARW			DyenDB	027-003	A
-29	PALU			DyenDB	028-200	A
+29	PALU			DyenDB	028-201	A
 32	YFED			DyenDB	031-004	A
 38	BWYTA			DyenDB	037-008	A
 41	CWYMPO			DyenDB	040-007	A
@@ -143,7 +143,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 63	RHOI			DyenDB	060-203	A
 72	CLYWED			DyenDB	069-205	A
 76	BWRW, TARO			DyenDB	073-010	A
-80	HELA			DyenDB	076-200	A
+80	HELA			DyenDB	076-201	A
 86	LLADD			DyenDB	082-002	A
 90	CHWERTHYN			DyenDB	085-002	A
 94	GORWEDD			DyenDB	089-004	A
@@ -163,7 +163,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 155	HOLLTI			DyenDB	148-206	A
 156	GWASGU			DyenDB	149-012	A
 157	BRATHU			DyenDB	150-101	A
-158	SEFYLL			DyenDB	151-202	A
+158	SEFYLL			DyenDB	151-203	A
 163	SUGNO			DyenDB	156-202	A
 165	CHWYDDO			DyenDB	158-007	A
 166	NOFIO			DyenDB	159-008	A

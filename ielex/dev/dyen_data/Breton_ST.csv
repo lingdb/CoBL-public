@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	HA, HAG			DyenDB	002-006	A
 3	LOEN, ANEVAL			DyenDB	003-004	A
 4	LUDU			DyenDB	004-005	A
-5	E, EN			DyenDB	005-200	A
+5	E, EN			DyenDB	005-204	A
 6	KEIN			DyenDB	006-007	A
 7	FALL			DyenDB	007-008	A
 8	RUSK			DyenDB	008-003	A
@@ -46,7 +46,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 67	BOUZELLOU			DyenDB	064-005	A
 68	BLEV			DyenDB	065-208	A
 69	DORN			DyenDB	066-006	A
-70	EN			DyenDB	067-200	A
+70	EN			DyenDB	067-206	A
 71	PENN			DyenDB	068-004	A
 73	KALON			DyenDB	070-005	A
 74	PONNER			DyenDB	071-010	A
@@ -59,7 +59,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 84	MA, MAZ, MAR			DyenDB	080-005	A
 85	E, EN			DyenDB	081-200	A
 88	GOUZOUT			DyenDB	083-200	A
-89	LENN			DyenDB	084-200	A
+89	LENN			DyenDB	084-201	A
 91	DELIENN			DyenDB	086-203	A
 92	KLEIZ			DyenDB	087-005	A
 93	GAR			DyenDB	088-010	A
@@ -73,7 +73,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 104	MENEZ			DyenDB	098-002	A
 105	GENOU			DyenDB	099-204	A
 106	ANV			DyenDB	100-003	A
-107	STRIZH			DyenDB	101-200	A
+107	STRIZH			DyenDB	101-205	A
 108	TOST			DyenDB	102-010	A
 109	GOUZOUG			DyenDB	103-004	A
 110	NEVEZ			DyenDB	104-200	A
@@ -95,7 +95,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 131	FROTAN, RIMIAN			DyenDB	124-006	A
 132	HOLEN			DyenDB	125-002	A
 133	TRAEZH			DyenDB	126-007	A
-135	SKRABAN, KRAVAT			DyenDB	128-200	A
+135	SKRABAN, KRAVAT			DyenDB	128-201	A
 136	MOR			DyenDB	129-200	A
 138	HAD			DyenDB	131-200	A
 140	LEMM			DyenDB	133-002	A
@@ -162,7 +162,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 155	FAOUTAN			DyenDB	148-206	A
 156	GWESKEL			DyenDB	149-012	A
 158	BEZAN EN E SAV			DyenDB	151-202	A
-163	SUNAN, DENAN (OF BABIES)			DyenDB	156-202	A
+163	SUNAN, DENAN (OF BABIES)			DyenDB	156-207	A
 165	C'HWEZHAN, KOENVIN			DyenDB	158-007	A
 166	NEUIN, NEUNVIAL			DyenDB	159-008	A
 173	SONJAL, MEIZAN			DyenDB	166-005	A
@@ -187,7 +187,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 195	PIV			DyenDB	188-200	A
 196	LEDAN			DyenDB	189-203	A
 197	GWREG			DyenDB	190-003	A
-198	AVEL			DyenDB	191-200	A
+198	AVEL			DyenDB	191-201	A
 199	ASKELL			DyenDB	192-007	A
 200	SEC'HAN			DyenDB	193-009	A
 201	GANT			DyenDB	194-211	A

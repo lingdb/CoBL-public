@@ -1,6 +1,6 @@
 ID	source_form	phon_form	notes	source	cognate_class	reliability
 1	TUT			DyenDB	001-003	A
-2	EPI			DyenDB	002-204	A
+2	EPI			DyenDB	002-205	A
 4	SAN			DyenDB	004-002	A
 5	A-, A			DyenDB	005-200	A
 6	DO			DyenDB	006-200	A
@@ -130,7 +130,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 32	BWE			DyenDB	031-004	A
 38	MAZE			DyenDB	037-004	A
 41	TOBE			DyenDB	040-004	A
-45	PE			DyenDB	044-205	A
+45	PE			DyenDB	044-208	A
 48	GUME			DyenDB	047-206	A
 53	FLOTE			DyenDB	051-003	A
 54	KULE			DyenDB	052-209	A
@@ -164,7 +164,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 165	AFLE			DyenDB	158-206	A
 166	NEZE			DyenDB	159-007	A
 173	SOZE			DyenDB	166-213	A
-177	VOYE			DyenDB	170-205	A
+177	VOYE			DyenDB	170-206	A
 178	MAWE			DyenDB	171-010	A
 182	VIWE			DyenDB	175-009	A
 184	VOMI			DyenDB	177-004	A

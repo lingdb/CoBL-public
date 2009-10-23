@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	I			DyenDB	002-200	A
 3	ZYVELA			DyenDB	003-200	A
 4	POPEL			DyenDB	004-003	A
-5	PRY, KALJA, LJA			DyenDB	005-200	A
+5	PRY, KALJA, LJA			DyenDB	005-212	A
 6	ZAD, ADVAROT			DyenDB	006-001	A
 7	BLAGI, DRINNY			DyenDB	007-001	A
 8	KARA			DyenDB	008-202	A
@@ -36,7 +36,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 51	RYBA			DyenDB	049-003	A
 52	PJAC'			DyenDB	050-002	A
 55	KVETKA			DyenDB	053-200	A
-57	IMHLA, TUMAN			DyenDB	055-200	A
+57	IMHLA, TUMAN			DyenDB	055-201	A
 58	STAPA			DyenDB	056-004	A
 59	CATYRY			DyenDB	057-002	A
 61	PLOD			DyenDB	059-200	A
@@ -88,7 +88,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 123	PRAVIDLOVY, -A			DyenDB	117-002	A
 124	PRAVY			DyenDB	118-003	A
 125	RAKA			DyenDB	119-003	A
-126	SLJAX			DyenDB	120-203	A
+126	SLJAX			DyenDB	120-204	A
 127	KARIN'			DyenDB	121-004	A
 128	VJAROWKA			DyenDB	122-005	A
 129	HNILY			DyenDB	123-004	A
@@ -97,7 +97,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 133	PJASOK			DyenDB	126-002	A
 135	CYXACCA			DyenDB	128-200	A
 136	MORA			DyenDB	129-200	A
-138	NASEN'NE			DyenDB	131-200	A
+138	NASEN'NE			DyenDB	131-201	A
 140	VOSTRY			DyenDB	133-200	A
 141	KAROTKI, KAROTKA			DyenDB	134-012	A
 144	SKURA			DyenDB	137-206	A
@@ -125,7 +125,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 13	KUSAC'			DyenDB	013-011	A
 16	DZ'MUC'			DyenDB	016-003	A
 19	DYXAC'			DyenDB	018-002	A
-20	PALIC'			DyenDB	019-200	A
+20	PALIC'			DyenDB	019-201	A
 24	PRYXODZIC'			DyenDB	023-203	A
 25	LIZYC'			DyenDB	024-006	A
 26	REZAC'			DyenDB	025-207	A
@@ -157,17 +157,17 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 142	PJAJAC'			DyenDB	135-006	A
 143	SJADZEC'			DyenDB	136-200	A
 146	SPAC'			DyenDB	139-200	A
-148	CUC' PAX			DyenDB	141-200	A
+148	CUC' PAX			DyenDB	141-202	A
 154	PLERAC'			DyenDB	147-205	A
 155	RAZSCAPLJAC'			DyenDB	148-006	A
 156	SCISKAC', VYCISKAC'			DyenDB	149-007	A
 157	PRABIC'			DyenDB	150-001	A
 158	STAMC'			DyenDB	151-202	A
-163	SSAC'			DyenDB	156-202	A
+163	SSAC'			DyenDB	156-205	A
 165	PUXNUC'			DyenDB	158-203	A
 166	PLAVAC'			DyenDB	159-003	A
 173	DUMAC'			DyenDB	166-209	A
-177	KIDAC'			DyenDB	170-208	A
+177	KIDAC'			DyenDB	170-209	A
 178	VJAZAC'			DyenDB	171-002	A
 182	PAVORACYVAC'			DyenDB	175-200	A
 184	VYRACAC'			DyenDB	177-216	A

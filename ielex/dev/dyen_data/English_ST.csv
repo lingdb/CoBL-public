@@ -3,9 +3,9 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	AND			DyenDB	002-009	A
 3	ANIMAL			DyenDB	003-001	A
 4	ASHES			DyenDB	004-007	A
-5	AT			DyenDB	005-200	A
+5	AT			DyenDB	005-201	A
 6	BACK			DyenDB	006-209	A
-7	BAD			DyenDB	007-200	A
+7	BAD			DyenDB	007-204	A
 8	BARK			DyenDB	008-201	A
 9	BECAUSE			DyenDB	009-011	A
 10	BELLY			DyenDB	010-204	A
@@ -60,7 +60,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 85	IN			DyenDB	081-200	A
 88	KNOW			DyenDB	083-200	A
 89	LAKE			DyenDB	084-001	A
-91	LEAF			DyenDB	086-204	A
+91	LEAF			DyenDB	086-205	A
 92	LEFT (HAND)			DyenDB	087-001	A
 93	LEG			DyenDB	088-204	A
 96	LIVER			DyenDB	091-002	A
@@ -96,18 +96,18 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 132	SALT			DyenDB	125-002	A
 133	SAND			DyenDB	126-004	A
 135	SCRATCH			DyenDB	128-006	A
-136	SEA			DyenDB	129-200	A
+136	SEA			DyenDB	129-201	A
 138	SEED			DyenDB	131-200	A
 140	SHARP			DyenDB	133-004	A
 141	SHORT			DyenDB	134-012	A
-144	SKIN			DyenDB	137-200	A
+144	SKIN			DyenDB	137-203	A
 145	SKY			DyenDB	138-202	A
 147	SMALL			DyenDB	140-011	A
 149	SMOKE			DyenDB	142-003	A
 150	SMOOTH			DyenDB	143-001	A
 151	SNAKE			DyenDB	144-005	A
 152	SNOW			DyenDB	145-004	A
-153	SOME			DyenDB	146-200	A
+153	SOME			DyenDB	146-202	A
 159	STAR			DyenDB	152-004	A
 160	STICK			DyenDB	153-013	A
 161	STONE			DyenDB	154-004	A
@@ -123,7 +123,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 175	THOU			DyenDB	168-002	A
 176	THREE			DyenDB	169-002	A
 13	TO BITE			DyenDB	013-002	A
-16	TO BLOW			DyenDB	016-203	A
+16	TO BLOW			DyenDB	016-204	A
 19	TO BREATHE			DyenDB	018-001	A
 20	TO BURN			DyenDB	019-003	A
 24	TO COME			DyenDB	023-206	A

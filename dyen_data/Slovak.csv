@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	A, I			DyenDB	002-200	A
 3	ZVER			DyenDB	003-200	A
 4	POPOL			DyenDB	004-003	A
-5	PRI			DyenDB	005-200	A
+5	PRI			DyenDB	005-210	A
 6	NAZPAT, NAZAD			DyenDB	006-000	A
 7	ZLY			DyenDB	007-207	A
 8	KORA			DyenDB	008-202	A
@@ -75,14 +75,14 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 106	MENO			DyenDB	100-003	A
 107	UZKY			DyenDB	101-200	A
 108	BLIZKY			DyenDB	102-002	A
-109	KRK			DyenDB	103-200	A
+109	KRK			DyenDB	103-201	A
 110	NOVY			DyenDB	104-200	A
 111	NOC			DyenDB	105-004	A
 112	NOS			DyenDB	106-005	A
 113	NIE			DyenDB	107-005	A
 114	STARY			DyenDB	108-002	A
 115	JEDEN			DyenDB	109-200	A
-116	INY			DyenDB	110-200	A
+116	INY			DyenDB	110-201	A
 117	OSOBA			DyenDB	111-002	A
 122	CERVENY			DyenDB	116-005	A
 123	SPRAVNY			DyenDB	117-002	A
@@ -152,7 +152,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 119	T AHAT			DyenDB	113-206	A
 120	STRKAT			DyenDB	114-010	A
 121	PRSAT			DyenDB	115-011	A
-134	HOVORIT , RIEKNUT			DyenDB	127-200	A
+134	HOVORIT , RIEKNUT			DyenDB	127-203	A
 137	VIDET			DyenDB	130-003	A
 139	SIT			DyenDB	132-200	A
 142	SPIEVAT			DyenDB	135-006	A
@@ -170,7 +170,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 173	MYSLET			DyenDB	166-209	A
 177	DODIT , HADZAT			DyenDB	170-009	A
 178	VIAZAT , SPUTAT			DyenDB	171-002	A
-182	OBRACAT , TOCIT			DyenDB	175-200	A
+182	OBRACAT , TOCIT			DyenDB	175-202	A
 184	VYVRAVAT			DyenDB	177-005	A
 185	CHODIT			DyenDB	178-016	A
 187	MYT			DyenDB	180-203	A
@@ -194,7 +194,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 200	UTRET			DyenDB	193-004	A
 201	S, SO			DyenDB	194-200	A
 202	ZENA			DyenDB	195-204	A
-203	LES			DyenDB	196-200	A
+203	LES			DyenDB	196-201	A
 204	CERV			DyenDB	197-200	A
 205	VY			DyenDB	198-200	A
 206	ROK			DyenDB	199-003	A

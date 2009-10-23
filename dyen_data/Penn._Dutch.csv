@@ -3,12 +3,12 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	UUN			DyenDB	002-009	A
 3	GEDIER			DyenDB	003-005	A
 4	ESCH			DyenDB	004-007	A
-5	ONN			DyenDB	005-200	A
+5	ONN			DyenDB	005-204	A
 6	BUUCKEL			DyenDB	006-209	A
 7	SCHLECHT			DyenDB	007-007	A
 8	RINN			DyenDB	008-002	A
 9	WEIL			DyenDB	009-002	A
-10	BAUCH			DyenDB	010-204	A
+10	BAUCH			DyenDB	010-206	A
 11	GROESZ			DyenDB	011-009	A
 12	FUGGEL			DyenDB	012-206	A
 14	SCHWOTZ			DyenDB	014-003	A
@@ -31,12 +31,12 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 43	FETT			DyenDB	042-006	A
 44	FOTTER			DyenDB	043-209	A
 46	FEDDER			DyenDB	045-203	A
-47	PAWR			DyenDB	046-207	A
+47	PAWR			DyenDB	046-208	A
 50	FEIER			DyenDB	048-003	A
 51	FISCH			DyenDB	049-009	A
 52	FINFE			DyenDB	050-002	A
 55	BLUUM			DyenDB	053-002	A
-57	NEVEL			DyenDB	055-200	A
+57	NEVEL			DyenDB	055-205	A
 58	FUUSZ			DyenDB	056-200	A
 59	FIERE			DyenDB	057-002	A
 61	OEPS			DyenDB	059-001	A
@@ -45,8 +45,8 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 66	GRIE			DyenDB	063-003	A
 68	HORR			DyenDB	065-004	A
 69	HONNDT			DyenDB	066-003	A
-70	ER			DyenDB	067-200	A
-71	KUP			DyenDB	068-200	A
+70	ER			DyenDB	067-207	A
+71	KUP			DyenDB	068-203	A
 73	HOTZ			DyenDB	070-200	A
 74	SCHWAIIR			DyenDB	071-008	A
 75	HAIIR			DyenDB	072-003	A
@@ -132,7 +132,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 32	NEMM EN DRINK			DyenDB	031-003	A
 38	ESS			DyenDB	037-006	A
 41	FOLL			DyenDB	040-200	A
-48	FECHT			DyenDB	047-200	A
+48	FECHT			DyenDB	047-201	A
 54	LAWF			DyenDB	052-001	A
 56	FLIEK			DyenDB	054-006	A
 63	GEP			DyenDB	060-002	A
@@ -161,7 +161,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 165	SCHWELLE UF			DyenDB	158-002	A
 166	SCHWIMM			DyenDB	159-002	A
 173	DENK			DyenDB	166-003	A
-177	SCHMEISS			DyenDB	170-211	A
+177	SCHMEISS			DyenDB	170-214	A
 178	BINN			DyenDB	171-203	A
 182	DRAY			DyenDB	175-003	A
 185	LAWF			DyenDB	178-014	A

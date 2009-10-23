@@ -4,7 +4,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 3	HEYVAN			DyenDB	003-006	A
 4	KHAKESTAR			DyenDB	004-004	A
 6	POSHT			DyenDB	006-006	A
-7	BAD			DyenDB	007-200	A
+7	BAD			DyenDB	007-205	A
 8	PUST			DyenDB	008-210	A
 9	CHUN			DyenDB	009-001	A
 10	SHEKAM			DyenDB	010-008	A
@@ -48,9 +48,9 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 70	U			DyenDB	067-214	A
 71	SAR			DyenDB	068-205	A
 73	QALB			DyenDB	070-001	A
-74	SANGIN			DyenDB	071-207	A
+74	SANGIN			DyenDB	071-208	A
 75	INJA			DyenDB	072-001	A
-77	GEREFTAN			DyenDB	074-200	A
+77	GEREFTAN			DyenDB	074-201	A
 79	CHETOWR			DyenDB	075-205	A
 81	SHOWHAR			DyenDB	077-007	A
 82	MAN			DyenDB	078-200	A
@@ -58,7 +58,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 84	AGAR			DyenDB	080-010	A
 85	DAR			DyenDB	081-001	A
 88	DANESTAN			DyenDB	083-200	A
-89	DARYACHE			DyenDB	084-206	A
+89	DARYACHE			DyenDB	084-207	A
 91	BARG			DyenDB	086-003	A
 92	CHAP			DyenDB	087-002	A
 93	PA			DyenDB	088-200	A
@@ -72,10 +72,10 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 104	KUH			DyenDB	098-003	A
 105	DAHAN			DyenDB	099-203	A
 106	ESM			DyenDB	100-001	A
-107	BARIK			DyenDB	101-212	A
+107	BARIK			DyenDB	101-214	A
 108	NAZDIK			DyenDB	102-203	A
 109	GARDAN			DyenDB	103-006	A
-110	TAZE			DyenDB	104-200	A
+110	TAZE			DyenDB	104-201	A
 111	SHAB			DyenDB	105-002	A
 112	DAMAGH			DyenDB	106-004	A
 113	NA			DyenDB	107-005	A
@@ -118,13 +118,13 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 170	ISHAN (UNA)			DyenDB	163-205	A
 171	KOLOFT			DyenDB	164-001	A
 172	NAZOK (BARIK)			DyenDB	165-001	A
-174	IN			DyenDB	167-212	A
+174	IN			DyenDB	167-213	A
 175	TO			DyenDB	168-200	A
 176	SE			DyenDB	169-002	A
 13	DANDAN GEREFTAN			DyenDB	013-204	A
 16	VAZIDAN			DyenDB	016-201	A
 19	NAFAS KASHIDAN			DyenDB	018-003	A
-20	SUKHTAN			DyenDB	019-206	A
+20	SUKHTAN			DyenDB	019-207	A
 24	AMADAN			DyenDB	023-003	A
 25	SHOMORDAN			DyenDB	024-206	A
 26	BORIDAN			DyenDB	025-002	A
@@ -184,7 +184,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 193	KOJA			DyenDB	186-200	A
 194	SEFID			DyenDB	187-205	A
 195	KI			DyenDB	188-200	A
-196	GOSHAD, PAHN			DyenDB	189-209	A
+196	GOSHAD, PAHN			DyenDB	189-210	A
 197	ZAN			DyenDB	190-200	A
 198	BAD			DyenDB	191-205	A
 199	PAR			DyenDB	192-201	A

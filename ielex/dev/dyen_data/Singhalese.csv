@@ -44,12 +44,12 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 65	TANAKOLA			DyenDB	062-001	A
 66	KOLA			DyenDB	063-001	A
 67	BADAVEL(A)			DyenDB	064-001	A
-68	KES, KONDE			DyenDB	065-204	A
+68	KES, KONDE			DyenDB	065-205	A
 69	ATA			DyenDB	066-200	A
 70	OHU			DyenDB	067-213	A
 71	OLUWA, HISA			DyenDB	068-001	A
 73	PAPUWA, HRADAYA			DyenDB	070-200	A
-74	BARA			DyenDB	071-200	A
+74	BARA			DyenDB	071-205	A
 75	METANA			DyenDB	072-001	A
 77	ALLAGANAWA			DyenDB	074-001	A
 79	KOHOMADA			DyenDB	075-200	A
@@ -83,7 +83,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 114	NAKI			DyenDB	108-001	A
 115	EKA			DyenDB	109-200	A
 116	ARA, ANEK			DyenDB	110-008	A
-117	MINIHA			DyenDB	111-209	A
+117	MINIHA			DyenDB	111-213	A
 122	RATA, RATU			DyenDB	116-004	A
 123	HARI			DyenDB	117-001	A
 124	DAKUNATA			DyenDB	118-002	A
@@ -94,7 +94,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 129	DIRACCA			DyenDB	123-001	A
 131	MADINAWA			DyenDB	124-001	A
 132	LUNU			DyenDB	125-200	A
-133	VALI			DyenDB	126-200	A
+133	VALI			DyenDB	126-201	A
 135	KASANAWA			DyenDB	128-202	A
 136	MUHUDA			DyenDB	129-001	A
 138	ATA, BIJA			DyenDB	131-002	A
@@ -193,7 +193,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 199	TATTA			DyenDB	192-001	A
 200	PIHADANAWA			DyenDB	193-001	A
 201	SAMAGA			DyenDB	194-200	A
-202	GANI, ISTRIYAK			DyenDB	195-205	A
+202	GANI, ISTRIYAK			DyenDB	195-207	A
 203	KALE			DyenDB	196-001	A
 204	PANUWA			DyenDB	197-001	A
 205	UMBALA			DyenDB	198-001	A

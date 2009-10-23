@@ -49,7 +49,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 70	IL			DyenDB	067-002	A
 71	TETE			DyenDB	068-200	A
 73	COEUR			DyenDB	070-200	A
-74	LOURD			DyenDB	071-200	A
+74	LOURD			DyenDB	071-202	A
 75	ICI			DyenDB	072-211	A
 77	TENIR			DyenDB	074-004	A
 79	COMMENT			DyenDB	075-200	A
@@ -117,7 +117,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 168	CELA			DyenDB	161-209	A
 169	LA			DyenDB	162-200	A
 170	ILS			DyenDB	163-207	A
-171	EPAIS			DyenDB	164-209	A
+171	EPAIS			DyenDB	164-210	A
 172	MINCE			DyenDB	165-204	A
 174	CECI			DyenDB	167-200	A
 175	TU			DyenDB	168-200	A
@@ -134,7 +134,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 32	BOIRE			DyenDB	031-004	A
 38	MANGER			DyenDB	037-004	A
 41	TOMBER			DyenDB	040-004	A
-45	CRAINDRE			DyenDB	044-205	A
+45	CRAINDRE			DyenDB	044-206	A
 48	SE BATTRE			DyenDB	047-205	A
 53	FLOTTER			DyenDB	051-003	A
 54	COULER			DyenDB	052-209	A
@@ -192,7 +192,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 198	VENT			DyenDB	191-200	A
 199	AILE			DyenDB	192-006	A
 200	ESSUYER			DyenDB	193-203	A
-201	AVEC			DyenDB	194-206	A
+201	AVEC			DyenDB	194-207	A
 202	FEMME			DyenDB	195-200	A
 203	BOIS			DyenDB	196-206	A
 204	VER			DyenDB	197-203	A

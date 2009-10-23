@@ -3,7 +3,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 2	HA, HAG			DyenDB	002-006	A
 3	LON, ENEVAL			DyenDB	003-004	A
 4	LUDU			DyenDB	004-005	A
-5	E, EN			DyenDB	005-200	A
+5	E, EN			DyenDB	005-201	A
 6	KEIN			DyenDB	006-007	A
 7	FALL			DyenDB	007-008	A
 8	KLOREN			DyenDB	008-001	A
@@ -46,7 +46,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 67	BOELLEU			DyenDB	064-005	A
 68	BLEU			DyenDB	065-208	A
 69	DORN			DyenDB	066-006	A
-70	EAN			DyenDB	067-200	A
+70	EAN			DyenDB	067-205	A
 71	PENN			DyenDB	068-004	A
 73	KALON			DyenDB	070-005	A
 74	PONNER			DyenDB	071-010	A
@@ -67,13 +67,13 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 97	HIR			DyenDB	092-004	A
 98	LEUEN			DyenDB	093-201	A
 99	GOAS			DyenDB	094-002	A
-100	KALZ			DyenDB	095-203	A
+100	KALZ			DyenDB	095-204	A
 101	KIG			DyenDB	096-003	A
 103	MAMM			DyenDB	097-207	A
 104	MANNE			DyenDB	098-002	A
 105	GENEU, BEG			DyenDB	099-204	A
 106	HANU			DyenDB	100-003	A
-107	STREH			DyenDB	101-200	A
+107	STREH			DyenDB	101-203	A
 108	TOST			DyenDB	102-010	A
 109	GOUG			DyenDB	103-004	A
 110	NEUE			DyenDB	104-200	A
@@ -121,7 +121,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 174	EN...-MEN			DyenDB	167-002	A
 175	TE			DyenDB	168-200	A
 176	TRI			DyenDB	169-002	A
-13	DANTEIN			DyenDB	013-201	A
+13	DANTEIN			DyenDB	013-202	A
 16	HUEHEIN			DyenDB	016-002	A
 19	HANALEIN			DyenDB	018-200	A
 20	LOSKEIN			DyenDB	019-004	A
@@ -162,7 +162,7 @@ ID	source_form	phon_form	notes	source	cognate_class	reliability
 155	FEUTEIN			DyenDB	148-206	A
 156	GOASKEIN			DyenDB	149-012	A
 158	BOUT EN E SAU			DyenDB	151-202	A
-163	SUNEIN, DENEIN ( OF BABIES)			DyenDB	156-202	A
+163	SUNEIN, DENEIN ( OF BABIES)			DyenDB	156-206	A
 165	HUEHEIN, FOEUEIN			DyenDB	158-007	A
 166	NEANNEIN			DyenDB	159-008	A
 173	CHONJAL			DyenDB	166-005	A
