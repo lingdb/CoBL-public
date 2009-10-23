@@ -75,6 +75,18 @@ class CognateSet(models.Model):
     class Meta:
         ordering = ["alias"]
 
+class DyenCognateSet(models.Model):
+    cognate_class = models.ForeignKey(CognateSet)
+    name = models.CharField(max_length=8)
+    doubtful = models.BooleanField(default=0)
+
+    def __unicode__(self):
+        if self.doubtful:
+            qmark = " ?"
+        else:
+            qmark =""
+        return "%s%s" % (self.name, qmark)
+
 class Lexeme(models.Model):
     language = models.ForeignKey(Language)
     meaning = models.ForeignKey(Meaning)
