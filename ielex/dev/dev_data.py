@@ -107,6 +107,7 @@ dkb1992 = Source.objects.create(citation_text=dkb_text, type_code="P")
 # - link to Source via LexemeCitation objects
 print "--> Populating lexical data"
 cognate_classes = {} # alias: CognateSet
+original_cognate_classes = []
 #os.system(r"mv dyen_data/Penn\._Dutch dyen_data/Penn_Dutch")
 for filename in glob.glob("dyen_data/*.csv"):
     dyen_name = filename[10:-4]
@@ -120,6 +121,7 @@ for filename in glob.glob("dyen_data/*.csv"):
         source_form = row[1].strip()
         cognate_class_alias = row[5]
         reliability = row[6]
+        original_cognate_class = row[7]
         # if not row[5]:
         #     lexeme_reliability = row[6]
         # else:
@@ -134,11 +136,6 @@ for filename in glob.glob("dyen_data/*.csv"):
             if cognate_class_alias not in cognate_classes:
                 c = CognateSet.objects.create()
                 cognate_classes[cognate_class_alias] = c
-                d = DyenCognateSet.objects.create(
-                        cognate_class=c,
-                        name=cognate_class_alias,
-                        doubtful=(reliability is not "A")
-                        )
             else:
                 c = cognate_classes[cognate_class_alias]
             j = CognateJudgement.objects.create(lexeme=l,
@@ -146,6 +143,12 @@ for filename in glob.glob("dyen_data/*.csv"):
             cjc = CognateJudgementCitation.objects.create(cognate_judgement=j,
                     source=dkb1992,
                     reliability=reliability)
+            if original_cognate_class not in original_cognate_classes:
+                original_cognate_classes.append(original_cognate_class)
+                d = DyenCognateSet.objects.create(
+                        cognate_class=c,
+                        name=original_cognate_class,
+                        doubtful=(reliability is not "A"))
 
 import pprint
 pprint.pprint(sorted(cognate_classes))
