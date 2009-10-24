@@ -16,7 +16,13 @@
       <img src="/media/buttons/view.png" alt="Edit" title="Edit this source"/></a></td>
       <td>{{ source.citation_text }}</td></tr>
     <tr><td></td><td><em>{{ source.description }}</em></td></tr>
-    <tr><td></td><td class="rightalign"><small>{{ source.modified|date:"r"  }}</small></td></tr>
+    <tr><td></td>
+      <td class="rightalign"><small>
+        Lexemes: <strong>{{ source.lexemecitation_set.count }}</strong>
+        Cognate Judgements: <strong>{{ source.cognatejudgementcitation_set.count }}</strong>
+        [{{ source.modified|date:"r"  }}]</small>
+      </td>
+    </tr>
   {% endfor %}
   </table>
 </p>

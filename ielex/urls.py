@@ -43,7 +43,7 @@ urlpatterns = patterns('',
             lexeme_report),
     url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>delink-cognate)/(?P<cogjudge_id>\d+)/$',
             lexeme_report),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-cognate)/(?P<cognate_class_id>\d+)/(?P<citation_id>\d+)/$',
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-cognate-citation)/(?P<citation_id>\d+)/$',
             lexeme_report), # just use <cogjudge_id>
     url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>delink-cognate-citation)/(?P<citation_id>\d+)/$',
             lexeme_report),
@@ -57,7 +57,9 @@ urlpatterns = patterns('',
     url(r'^source/(?P<source_id>\d+)/$', source_edit),
     url(r'^source/(?P<source_id>\d+)/(?P<action>edit|delete)/$', source_edit),
     url(r'^source/(?P<action>add)/$', source_edit),
+    url(r'^source/(?P<action>add)/(?P<cogjudge_id>\d+)/$', source_edit),
 
+    # Cognates
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report),
 
 

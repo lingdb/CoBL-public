@@ -120,6 +120,7 @@ def write_csv():
         print(*HEADER, sep="\t", file=output)
         for meaning in sorted(data[language]):
             source_form, cognate_class, reliability= data[language][meaning]
+
             print(meaning2id[meaning], source_form, "", "", "DyenDB",
                     cognate_class, reliability, sep="\t", file=output)
     return

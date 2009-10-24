@@ -1287,7 +1287,7 @@ b                      007
 b                      008
   006 40 Lithuanian ST   NUGARA
   006 41 Latvian         MUGURA
-b                      209
+b                      109
   006 68 Greek Mod       PLATI
   006 66 Greek ML        PLATE
   006 67 Greek MD        PLATE, RACHE

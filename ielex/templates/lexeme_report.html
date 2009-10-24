@@ -22,7 +22,7 @@
 </tr>
 <tr><td class="rowname">Cognate codes:</td>
     <td>{% for cs in lexeme.cognate_class.all %}
-	        {{ cs.alias }}{% if forloop.last %}{% else %}, {% endif %}
+                {{ cs.alias }}{% if forloop.last %}{% else %}, {% endif %}
         {% endfor %}</td>
 </tr>
 </table>
@@ -41,7 +41,7 @@
 <tr><td class="rowname">Notes:</td><td>{{ lexeme.notes }}</td></tr>
 <tr><td class="rowname">Cognate codes:</td>
     <td>{% for cs in lexeme.cognate_class.all %}
-	        {{ cs.alias }}{% if forloop.last %}{% else %}, {% endif %}
+                {{ cs.alias }}{% if forloop.last %}{% else %}, {% endif %}
         {% endfor %}</td>
 </tr>
 </table>
@@ -73,7 +73,7 @@
           <a href="/lexeme/{{ lexeme.id }}/delink-citation/{{ citation.id }}">
             <img src="/media/buttons/delink.png" alt="Delink" title="Delink citation" /></a>
         </legend>
-	{% include "snippets/citation_report.html" %}
+        {% include "snippets/citation_report.html" %}
       </fieldset>
     {% endifequal %}
   {% else %}
@@ -116,27 +116,30 @@
 <fieldset>
     <legend>
       <strong>Cognate Class {{ cj.cognate_class.alias }}</strong>
-      <a href="/lexeme/{{ lexeme.id }}/delink-cognate/{{ cj.id }}">
+      <a href="/lexeme/{{ lexeme.id }}/delink-cognate/{{ cj.id }}/">
         <img src="/media/buttons/delink.png" alt="Delink" title="Delink cognate from this lexeme" />
+      </a>
+      <a href="/source/add/{{ cj.id }}">
+        <img src="/media/buttons/add-link.png" alt="Add source" title="Add source" /> 
       </a>
     </legend>
     {% for citation in cj.cognatejudgementcitation_set.all %}
-    {% ifequal action "edit-cognate" %}
+    {% ifequal action "edit-cognate-citation" %}
       {% ifequal citation.id active_citation_id %}
-	<form action="" method="post">
-	<fieldset>
-	<table>
-	{{ citation.source.citation_text }}
-	{{ form.as_table }}
-	</table>
-	<input type="submit" name="submit" value="Submit" /> 
-	<input type="submit" name="cancel" value="Cancel" /> 
-	</fieldset>
-	<form>
+        <form action="" method="post">
+        <fieldset>
+        <table>
+        {{ citation.source.citation_text }}
+        {{ form.as_table }}
+        </table>
+        <input type="submit" name="submit" value="Submit" /> 
+        <input type="submit" name="cancel" value="Cancel" /> 
+        </fieldset>
+        <form>
       {% else %}
-	<fieldset>
+        <fieldset>
           <legend>
-            <a href="/lexeme/{{ lexeme.id }}/edit-cognate/{{ cj.cognate_class.id }}/{{ citation.id }}">
+            <a href="/lexeme/{{ lexeme.id }}/edit-cognate-citation/{{ citation.id }}">
               <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit cognate citation details" />
             </a>
             <a href="/lexeme/{{ lexeme.id }}/delink-cognate-citation/{{ citation.id }}">
@@ -145,13 +148,13 @@
             <a href="/source/{{ citation.source.id }}/">
               <img src="/media/buttons/view-big.png", alt="View source", title="View source" /></a>
           </legend>
-	  {% include "snippets/citation_report.html" %}
-	</fieldset>
+          {% include "snippets/citation_report.html" %}
+        </fieldset>
       {% endifequal %}
     {% else %}
       <fieldset>
         <legend>
-          <a href="/lexeme/{{ lexeme.id }}/edit-cognate/{{ cj.cognate_class.id }}/{{ citation.id }}">
+          <a href="/lexeme/{{ lexeme.id }}/edit-cognate-citation/{{ citation.id }}">
             <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit cognate citation details" />
           </a>
           <a href="/lexeme/{{ lexeme.id }}/delink-cognate-citation/{{ citation.id }}">
@@ -160,7 +163,7 @@
           <a href="/source/{{ citation.source.id }}/">
             <img src="/media/buttons/view-big.png", alt="View source", title="View source" /></a>
         </legend>
-	{% include "snippets/citation_report.html" %}
+        {% include "snippets/citation_report.html" %}
       </fieldset>
     {% endifequal %}
     {% endfor %}

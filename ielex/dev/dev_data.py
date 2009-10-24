@@ -119,45 +119,49 @@ for filename in glob.glob("dyen_data/*.csv"):
         meaning = Meaning.objects.get(id=int(row[0]))
         source_form = row[1].strip()
         cognate_class_alias = row[5]
-        cognate_reliability = row[6]
-        if not row[5]:
-            lexeme_reliability = row[6]
-        else:
-            lexeme_reliability = "A"
+        reliability = row[6]
+        # if not row[5]:
+        #     lexeme_reliability = row[6]
+        # else:
+        #     lexeme_reliability = "A"
         l = Lexeme.objects.create(language=language,
                 meaning=meaning,
                 source_form=source_form)
         lc = LexemeCitation.objects.create(lexeme=l,
                 source=dkb1992,
-                reliability=lexeme_reliability)
+                reliability="A")
         if row[5]: # lexeme belongs to a cognate set 
             if cognate_class_alias not in cognate_classes:
-                c = CognateSet()
+                c = CognateSet.objects.create()
                 cognate_classes[cognate_class_alias] = c
-                c.save()
+                d = DyenCognateSet.objects.create(
+                        cognate_class=c,
+                        name=cognate_class_alias,
+                        doubtful=(reliability is not "A")
+                        )
             else:
                 c = cognate_classes[cognate_class_alias]
             j = CognateJudgement.objects.create(lexeme=l,
                     cognate_class=c)
             cjc = CognateJudgementCitation.objects.create(cognate_judgement=j,
                     source=dkb1992,
-                    reliability=cognate_reliability)
+                    reliability=reliability)
 
 import pprint
 pprint.pprint(sorted(cognate_classes))
 
-print "--> note doubtful codings"
-for line in file("dyen_data/doubtful_identity.txt"):
-    alias1, alias2 = line.strip().split()
-    try:
-        c1 = cognate_classes[alias1]
-        c2 = cognate_classes[alias2]
-        c1.notes += "DKB: Doubtful identify with /cognate/%s/\n" % c2.id
-        c2.notes += "DKB: Doubtful identify with /cognate/%s/\n" % c1.id
-        c1.save()
-        c2.save()
-    except KeyError:
-        print "---> *error*: failed to match", alias1, "or", alias2
+# print "--> note doubtful codings"
+# for line in file("dyen_data/doubtful_identity.txt"):
+#     alias1, alias2 = line.strip().split()
+#     try:
+#         c1 = cognate_classes[alias1]
+#         c2 = cognate_classes[alias2]
+#         c1.notes += "DKB: Doubtful identify with /cognate/%s/\n" % c2.id
+#         c2.notes += "DKB: Doubtful identify with /cognate/%s/\n" % c1.id
+#         c1.save()
+#         c2.save()
+#     except KeyError:
+#         print "---> *error*: failed to match", alias1, "or", alias2
 
 # Make cogset aliases
 print "--> Making CognateSet aliases"
@@ -262,6 +266,6 @@ seconds = int(time.time() - start_time)
 minutes = seconds // 60
 seconds %= 60
 
-print """-> Complete (%s' %s")""" % (minutes, seconds)
+print """-> Complete (00:%02d:%02d")""" % (minutes, seconds)
 ll = LanguageList.objects.get(name="all")
 assert len(ll.language_id_list) == Language.objects.count()
