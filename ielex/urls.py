@@ -7,9 +7,12 @@ from ielex import settings
 # from django.contrib import admin
 # admin.autodiscover()
 
+# additional arguments can be passed with a dictionary
+
 urlpatterns = patterns('',
     # Front Page
     url('^$', view_frontpage, name="view-frontpage"),
+    url(r'^backup/$', make_backup),
 
     # Languages
     url('^languages/$', view_languages, name="view-languages"),
@@ -24,6 +27,8 @@ urlpatterns = patterns('',
     url(r'^meanings/$', view_meanings, name="view-meanings"),
     url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/$', report_meaning,
             name="meaning-report"),
+    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/add/$', report_meaning,
+            name="meaning-add-lexeme"),
     url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/(?P<lexeme_id>\d+)/add/$',
             report_meaning),
     url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/(?P<lexeme_id>\d+)/(?P<cogjudge_id>\d+)/$',
@@ -32,7 +37,7 @@ urlpatterns = patterns('',
     # Lexemes
     url(r'^lexeme/(?P<lexeme_id>\d+)/$',
             lexeme_report, name="lexeme-report"),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-citation|edit-lexeme|add-cognate)/$',
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-citation|edit-lexeme|add-cognate|duplicate)/$',
             lexeme_report),
     url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-citation|delink-citation)/(?P<citation_id>\d+)/$',
             lexeme_report),
@@ -55,7 +60,6 @@ urlpatterns = patterns('',
 
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report),
 
-    # url(r'^backup/$', make_backup),
 
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),

@@ -1,6 +1,5 @@
 from string import uppercase
-# from ielex.lexicon.models import *
-# from ielex.settings import BACKUP_PATH
+from ielex.lexicon.models import Language
 
 codes = list(uppercase) + [i+j for i in uppercase for j in uppercase]
 
@@ -24,6 +23,15 @@ def next_alias(l, ignore=[]):
             return alias
     return
 
+def renumber_sort_keys():
+    # XXX run this function from time to time
+    languages = Language.objects.all().order_by("sort_key")
+    i = 1.0
+    for l in languages:
+        l.sort_key = i
+        l.save()
+        i += 1
+    return
 
 if __name__ == "__main__":
     snip_flag = True

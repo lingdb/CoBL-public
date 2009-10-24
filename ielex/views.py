@@ -6,6 +6,12 @@ from django.shortcuts import render_to_response
 from ielex.lexicon.models import *
 from ielex.forms import *
 from ielex.utilities import next_alias
+from ielex.backup import backup
+
+def make_backup(request):
+    msg ="""\
+    Backup successful! Use browser's BACK button to return to application."""
+    return HttpResponse(backup(msg))
 
 def view_frontpage(request):
     return render_to_response("frontpage.html",
@@ -14,15 +20,6 @@ def view_frontpage(request):
             "languages":Language.objects.count(),
             "meanings":Meaning.objects.count(),
             "coded_characters":CognateJudgement.objects.count()})
-
-# def update_language_list_all():
-#     try:
-#         ll = LanguageList.objects.get(name="all")
-#     except:
-#         ll = LanguageList.objects.create(name="all")
-#     ll.language_ids = ",".join([str(l.id) for l in Language.objects.all()])
-#     ll.save()
-#     return
 
 def view_languages(request):
     language_list_name = request.COOKIES.get("language_list_name","all")
@@ -52,27 +49,45 @@ def reorder_languages(request):
         form = ReorderLanguageSortKeyForm(request.POST)
         if form.is_valid():
             language = form.cleaned_data["language"]
-            # Moving up
-            # get two languages in front of this one
-            try:
-                after = Language.objects.filter(
-                        sort_key__lt=language.sort_key).latest("sort_key")
-                try: 
-                    before = Language.objects.filter(
-                            sort_key__lt=after.sort_key).latest("sort_key")
-                    # set the sort key to halfway between them
-                    language.sort_key = (after.sort_key + before.sort_key) / 2
+            if form.data["submit"] == "Move up":
+                # get two languages in front of this one
+                try:
+                    after = Language.objects.filter(
+                            sort_key__lt=language.sort_key).latest("sort_key")
+                    try: 
+                        before = Language.objects.filter(
+                                sort_key__lt=after.sort_key).latest("sort_key")
+                        # set the sort key to halfway between them
+                        language.sort_key = (after.sort_key+before.sort_key)/2
+                    except Language.DoesNotExist:
+                        # language is at index 1 => swap index 0 and index 1
+                        after.sort_key, language.sort_key = language.sort_key,\
+                                after.sort_key
+                        after.save()
+                    language.save()
                 except Language.DoesNotExist:
-                    # language is at index 1 => swap index 0 and index 1
-                    after.sort_key, language.sort_key = language.sort_key, after_sort_key
-                    after.save()
-                language.save()
-            except Language.DoesNotExist:
-                # language is at index 0
-                pass
-            # handle min and max sort key values
-            # renumber all the sort keys on
-            # moving down the same way
+                    pass # already first
+            elif form.data["submit"] == "Move down":
+                try:
+                    # get two languages after this one
+                    before = Language.objects.filter(
+                            sort_key__gt=language.sort_key)[0]
+                    try:
+                        after = Language.objects.filter(
+                                sort_key__gt=before.sort_key)[0]
+                        # set the sort key to halfway between them
+                        language.sort_key = (after.sort_key+before.sort_key)/2
+                    except IndexError:
+                        before.sort_key, language.sort_key = language.sort_key,\
+                                before.sort_key
+                        before.save()
+                    language.save()
+                except IndexError:
+                    pass # already last
+            else:
+                assert form.data["submit"] == "Finish"
+                # renumber the sort keys here? XXX
+                return HttpResponseRedirect("/languages/")
     else:
         form = ReorderLanguageSortKeyForm()
     return render_to_response("language_reorder.html",
