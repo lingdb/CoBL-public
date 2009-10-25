@@ -4,8 +4,10 @@ Complete
 Major features
 ------------------------
 
-* Design
-* Basic (all basic data input features in place)
+0.1   Design
+0.2   Basic (all basic data input features in place)
+0.2.1 Developing usability
+
 
 TODO
 ====
@@ -24,12 +26,34 @@ Minor features
 * Backup system
 * Nexus output
 * CSV output
-* Reordering sort key
 * Editing membership of named lists
-* Edit Language table
 
 Refactoring
 -----------
 
+Concrete
+
+* stacks of ``elif``
+
+  change to::
+
+    actions = {"action1":action1,
+              "action2":action2}
+    actions["action1"](request, **kwargs)
+
+* boilerplate code::
+
+    if request.method == "POST":
+        <handle repeat visit>
+    else:
+        <handle first visit>
+
+General 
+
+* DRY principle
+* functions are too long
 * named urls throughout?
-* DRY principle...
+
+
+
+.. vim:ft=rst

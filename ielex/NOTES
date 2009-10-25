@@ -14,11 +14,6 @@ TODO
 - put some kind of icon for "reliability" against cognate aliases and lexemes
 - test what happens when you change a language name (does the data get lost)
 
-Sort Key Field
---------------
-
-http://stackoverflow.com/questions/522997/is-there-a-way-to-auto-increment-a-django-field-with-respect-to-a-foreign-key
-
 Database function
 -----------------
 
@@ -28,12 +23,12 @@ Database function
 Icons
 -----
 
- Sweetie BasePack 
+ Sweetie BasePack ::
 
- Author:  Joseph North
- Email:   sublick@gmail.com
- Licence: Attribution-ShareAlike 3.0
- Website: sweetie.sublink.ca
+   Author:  Joseph North
+   Email:   sublick@gmail.com
+   Licence: Attribution-ShareAlike 3.0
+   Website: sweetie.sublink.ca
 
 
 TECHNICAL NOTES
@@ -95,14 +90,14 @@ Making your own form via a template:
 
 http://code.djangoproject.com/wiki/TemplatedForm
 
-This article shows, how to use template to render CustomForms instead of
+This article shows how to use template to render CustomForms instead of
 as_p(), as_table()...
 
 To make the snippet work, change:
 
- * from django import newforms as forms to from django import forms
- * from django.newforms.forms import BoundField to from django.forms.forms
-   import BoundField
+ * from ``django import newforms as forms`` to ``from django import forms``
+ * from ``django.newforms.forms import BoundField`` to ``from
+   django.forms.forms import BoundField``
 
 This looks like the way to get my own classes into forms for css, e.g.
 th.colheader { text-align: center }; th.rowheader { text-align: right }.
