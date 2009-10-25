@@ -2,6 +2,7 @@ from django.conf.urls.defaults import *
 from ielex.views import *
 #   from ielex.utilities import make_backup
 from ielex import settings
+# from ielex.lexicon.views import write_nexus
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -86,6 +87,9 @@ urlpatterns = patterns('',
     # (r'^admin/', include(admin.site.urls)),
     )
 
+urlpatterns += patterns('',
+        (r'nexus/', 'ielex.lexicon.views.write_nexus'),
+        )
 
 if settings.DEBUG: # additional urls for testing purposes
     urlpatterns += patterns('',

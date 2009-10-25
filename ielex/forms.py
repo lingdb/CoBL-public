@@ -73,17 +73,22 @@ class EditLanguageForm(forms.ModelForm):
 
     def clean_ascii_name(self):
         data = self.cleaned_data["ascii_name"]
-        try:
+        try: # ascii name must be ascii
             data.decode("ascii")
         except UnicodeEncodeError:
             raise forms.ValidationError("'%s' contains non-ASCII characters" %
                     data)
-        try:
+        try: # ascii name cannot have whitespace
             assert " " not in data
         except AssertionError:
             raise forms.ValidationError(
                     "ASCII name cannot contain whitespace (try '%s')" %
                     data.replace(" ","_"))
+        # try:
+        #     assert not Language.objects.filter(
+        #             ascii_name=data).exclude(id=self.cleaned_data["id"])
+        # except AssertionError:
+        #     raise forms.ValidationError("This ASCII name is already in use")
         return data
 
     class Meta:

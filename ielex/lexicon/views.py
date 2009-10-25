@@ -1,1 +1,26 @@
-# Create your views here.
+from __future__ import print_function
+from textwrap import dedent
+import time
+from django.http import HttpResponse
+from ielex.lexicon.models import *
+
+def write_nexus(response):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(mimetype='text/plain')
+    response['Content-Disposition'] = 'attachment; filename=ielex.nex'
+    print("#NEXUS", file=response)
+    print("[File generated: %s]" % time.strftime("%y-%m-%d %H:%M:%S", time.localtime()),
+            file=response)
+
+    languages = Language.objects.filter(id__in=[1,2,3])
+    cognate_classes = CognateSet.objects.filter(id__in=range(1,21))
+    for language in languages:
+        row = []
+        row.append(language.ascii_name)
+        data = []
+        # cj = CognateJudgement.objects.filter(language=language
+        # CognateSet.objects.filter(lexeme__language=language, id__in=range(1,21))
+        # for cognate_class in cognate_classes.filter(language=language):
+        print(*row, sep="", file=response)
+
+    return HttpResponse(response)
