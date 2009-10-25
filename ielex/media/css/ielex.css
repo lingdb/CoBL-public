@@ -77,6 +77,16 @@ h2 {
   padding: 1%;
   background-color: #cf9;
   float: right;
+  text-align: right;
+}
+
+#sitemap {
+  width: 24%;
+  padding: 1%;
+  background-color: #ddd;
+  float: right;
+  text-align: right;
+  text-size: small;
 }
 
 #content {
