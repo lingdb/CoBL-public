@@ -7,9 +7,9 @@ from ielex.lexicon.models import *
 def write_nexus(response):
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(mimetype='text/plain')
-    response['Content-Disposition'] = 'attachment; filename=ielex.nex'
+    # response['Content-Disposition'] = 'attachment; filename=ielex.nex'
     print("#NEXUS", file=response)
-    print("[File generated: %s]" % time.strftime("%y-%m-%d %H:%M:%S", time.localtime()),
+    print("[ File generated: %s ]" % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
             file=response)
 
     languages = Language.objects.filter(id__in=[1,2,3])
@@ -23,4 +23,4 @@ def write_nexus(response):
         # for cognate_class in cognate_classes.filter(language=language):
         print(*row, sep="", file=response)
 
-    return HttpResponse(response)
+    return response
