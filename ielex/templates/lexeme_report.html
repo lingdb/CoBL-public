@@ -31,8 +31,14 @@
 </fieldset>
 </form>
 {% else %}
-<fieldset><legend><a href="/lexeme/{{ lexeme.id }}/edit-lexeme">
-            <img src="/media/buttons/edit-pencil.png" alt="Edit" title="Edit" /></a></legend>
+<fieldset><legend>
+            <a href="/lexeme/{{ lexeme.id }}/edit-lexeme">
+              <img src="/media/buttons/edit-pencil.png" alt="Edit" title="Edit" />
+            </a>
+            <img src="/media/buttons/delete.png" 
+              alt="To delete lexeme add /delete/to url (use with care!)" 
+              title="To delete lexeme add /delete/ to url (use with care!)" />
+          </legend>
 <table>
   <tr><td class="rowname">Language:</td><td><a href="/language/{{ lexeme.language.ascii_name }}">{{ lexeme.language.utf8_name }}</a></td></tr>
 <tr><td class="rowname">Meaning:</td><td><a href="/meaning/{{ lexeme.meaning.gloss }}">{{ lexeme.meaning.gloss }}</a></td></tr>
@@ -102,13 +108,16 @@
   </fieldset>
   </form>
 {% else %}
-<fieldset><legend><a href="/lexeme/{{ lexeme.id }}/add-citation/">
-            <img src="/media/buttons/add-link.png" alt="Add" title="Add link to citation" /></a></legend>
-  <small>Add a link to a source already in the database</small>
-    <strong>Link to new Source</strong> 
-    <a href="/lexeme/{{ lexeme.id }}/add-new-citation/">
+<fieldset><legend><strong>Add link to source</strong>
+            <a href="/lexeme/{{ lexeme.id }}/add-citation/">
+            <img src="/media/buttons/add-link.png" alt="Add" title="Add link to citation" /></a>
+          </legend>     
+    <small>Add a link to a source already in the database</small><br />
+    <strong>Add link to new Source</strong> 
+    <a href="/source/add/lexeme/{{ lexeme.id }}/">
       <img src="/media/buttons/add.png" alt="Add new source" title="Add citation to new source" />
-    </a>
+    </a><br />
+    <small>Add a new source to the database and link to it</small>
 </fieldset>
 {% endifequal %}
 
@@ -122,9 +131,6 @@
       <strong>Cognate Class {{ cj.cognate_class.alias }}</strong>
       <a href="/lexeme/{{ lexeme.id }}/delink-cognate/{{ cj.id }}/">
         <img src="/media/buttons/delink.png" alt="Delink" title="Delink cognate from this lexeme" />
-      </a>
-      <a href="/source/add/{{ cj.id }}">
-        <img src="/media/buttons/add-link.png" alt="Add source" title="Add source" /> 
       </a>
     </legend>
     {% for citation in cj.cognatejudgementcitation_set.all %}
@@ -183,16 +189,17 @@
     </form>
   {% else %}
     <fieldset>
-      <legend>
+      <legend><strong>Add link to source</strong>
         <a href="/lexeme/{{ lexeme.id }}/add-cognate-citation/{{ cj.id }}/">
           <img src="/media/buttons/add-link.png" alt="Add" title="Add link to citation" /></a></legend>
         </a>
       </legend>
-    <small>Add a link to a source already in the database</small>
-    <strong>Link to new Source</strong> 
-    <a href="/lexeme/{{ lexeme.id }}/add-new-cognate-citation/{{ cj.id }}/">
-      <img src="/media/buttons/add.png" alt="Add new source" title="Add citation to new source" />
-    </a>
+    <small>Add a link to a source already in the database</small><br />
+    <strong>Add link to new Source</strong> 
+      <a href="/source/add/cognate-judgement/{{ cj.id }}">
+        <img src="/media/buttons/add.png" alt="Add new source" title="Add citation to new source" /> 
+      </a><br />
+      <small>Add a new source to the database and link to it</small>
     </fieldset>
   {% endifequal %}
 </fieldset>
@@ -211,7 +218,7 @@
         delete the other ones (forms <em>can</em> belong to more than one
         class, but usually shouldn't)</li>
       </ul></small>
-    <strong>Link to new cognate class</strong> 
+    <strong>Add link to new cognate class</strong> 
     <a href="/lexeme/{{ lexeme.id }}/add-new-cognate/">
       <img src="/media/buttons/add-link.png" alt="Add new cognate judgement" title="Add cognate judgement to new cognate class" />
     </a>
@@ -226,6 +233,7 @@
 {% include "snippets/go_to.html" %}
 <ul>
   <li>Back to meaning list ‘<a href="/meaning/{{ lexeme.meaning.gloss }}">{{ lexeme.meaning.gloss }}</a>’</li>
+  <li>Back to language list ‘<a href="/language/{{ lexeme.language.ascii_name }}">{{ lexeme.language.utf8_name }}</a>’</li>
 </ul>
 {% endblock %}
 

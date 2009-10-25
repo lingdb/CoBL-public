@@ -44,7 +44,6 @@ def view_languages(request):
     return response
 
 def reorder_languages(request):
-    # XXX
     if request.method == "POST":
         form = ReorderLanguageSortKeyForm(request.POST)
         if form.is_valid():
@@ -229,6 +228,19 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                             reliability=cd["reliability"])
                     citation.save()
                     return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+            elif action == "add-new-citation": # TODO
+                form = AddCitationForm(request.POST)
+                if "cancel" in form.data: # has to be tested before data is cleaned
+                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                if form.is_valid():
+                    cd = form.cleaned_data
+                    citation = LexemeCitation(
+                            lexeme=lexeme,
+                            source=cd["source"],
+                            pages=cd["pages"],
+                            reliability=cd["reliability"])
+                    citation.save()
+                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
             elif action == "delink-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
                 citation.delete()
@@ -281,6 +293,8 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                             "reliability":citation.reliability})
             elif action == "add-citation":
                 form = AddCitationForm()
+            elif action == "add-new-citation":# XXX
+                form = AddCitationForm()
             elif action == "edit-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 form = EditCitationForm(
@@ -314,6 +328,10 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         cognate_class=cognate_class)
                 return HttpResponseRedirect('/lexeme/%s/add-cognate-citation/%s' % 
                         (lexeme_id, cj.id))
+            elif action == "delete":
+                redirection = '/meaning/%s' % lexeme.meaning.gloss
+                lexeme.delete()
+                return HttpResponseRedirect(redirection)
             else:
                 assert not action
 
@@ -426,9 +444,10 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
             "edit_cognate_judgement":cogjudge_id,
             "form":form})
 
-def source_edit(request, source_id=0, action="", cogjudge_id=0):
+def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
     source_id = int(source_id)
     cogjudge_id = int(cogjudge_id)
+    lexeme_id = int(lexeme_id)
     if source_id:
         source = Source.objects.get(id=source_id)
     else:
@@ -448,7 +467,14 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0):
                             cognate_judgement=judgement,
                             source=source)
                     return HttpResponseRedirect('/lexeme/%s/edit-cognate-citation/%s/' %\
-                            (judgement.lexeme.id, cogjudge_id))
+                            (judgement.lexeme.id, citation.id))
+                if lexeme_id:
+                    lexeme = Lexeme.objects.get(id=lexeme_id)
+                    citation = LexemeCitation.objects.create(
+                            lexeme=lexeme,
+                            source=source)
+                    return HttpResponseRedirect('/lexeme/%s/edit-citation/%s/' %\
+                            (lexeme.id, citation.id))
             elif action == "edit":
                 # source = Source.objects.get(id=source_id)
                 source.citation_text=cd["citation_text"]

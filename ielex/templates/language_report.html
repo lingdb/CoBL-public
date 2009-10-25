@@ -25,6 +25,9 @@
        <img src="/media/buttons/view.png" alt="View" title="View detailed information on lexeme" /><a>
      <a href="/lexeme/{{ lexeme.id }}/edit-lexeme/">
        <img src="/media/buttons/edit.png" alt="Edit" title="Edit lexeme" /><a>
+      <a href="/lexeme/{{ lexeme.id }}/duplicate">
+          <img src="/media/buttons/duplicate_lexeme.png" alt="Duplicate" title="Duplicate lexical entry" />
+      </a>
     </td>
   </tr>
   {% endfor %}
@@ -34,11 +37,12 @@
 
 
 {% block controls %}
+{% include "snippets/go_to.html" %}
 <ul>
   <li><a href="/language/{{ language.ascii_name }}/edit/">Edit</a> entry for 
     {{ language.utf8_name }}</li>
+  <li>Add a <a href="/language/{{ language.ascii_name }}/add-lexeme/">new lexeme</a></li>
 </ul>
-{% include "snippets/go_to.html" %}
 {% endblock %}
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
