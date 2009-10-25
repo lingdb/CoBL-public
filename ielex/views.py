@@ -102,8 +102,18 @@ def view_meanings(request):
     meanings = Meaning.objects.all()
     return render_to_response("meaning_list.html", {"meanings":meanings})
 
+def get_canonical_meaning(meaning):
+    """Identify meaning from id number or partial name"""
+    if meaning.isdigit():
+        meaning = Meaning.objects.get(id=meaning)
+    else:
+        meaning = Meaning.objects.get(gloss=meaning)
+    return meaning
+
 def get_canonical_language(language):
     """Identify language from id number or partial name"""
+    if not language:
+        raise Language.DoesNotExist
     if language.isdigit():
         language = Language.objects.get(id=language)
     else:
@@ -151,8 +161,6 @@ def edit_language(request, language):
             language.utf8_name = cd["utf8_name"]
             language.save()
             return HttpResponseRedirect('/language/%s/' % language.ascii_name)
-        else:
-            assert False
     else:
         form = EditLanguageForm(language.__dict__)
     return render_to_response("language_edit.html",
@@ -174,8 +182,7 @@ def get_current_language_list(request):
         language_list_name = "all" # default
     return language_list_name
 
-def lexeme_report(request, lexeme_id, action="", citation_id=0,
-        cogjudge_id=0):
+def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     lexeme = Lexeme.objects.get(id=lexeme_id)
     lexeme_citations = lexeme.lexemecitation_set.all()
     sources = Source.objects.filter(lexeme=lexeme)
@@ -318,11 +325,57 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0,
             "active_cogjudge_citation_id":cogjudge_id,
             })
 
+
+def lexeme_add(request, meaning=None, language=None, lexeme_id=0, return_to=None):
+    initial_data = {}
+    if language:
+        initial_data["language"] = get_canonical_language(language)
+    if meaning:
+        initial_data["meaning"] = get_canonical_meaning(meaning)
+    if lexeme_id:
+        lexeme = Lexeme.objects.get(id=int(lexeme_id))
+        initial_data["language"] = lexeme.language
+        initial_data["meaning"] = lexeme.meaning
+
+    if request.method == "POST":
+        form = AddLexemeForm(request.POST)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            if "language" in initial_data:
+                initial_data["language"] = initial_data["language"].ascii_name
+            if "meaning" in initial_data:
+                initial_data["meaning"] = initial_data["meaning"].gloss
+            return HttpResponseRedirect(return_to % initial_data)
+        if form.is_valid():
+            cd = form.cleaned_data
+            lexeme = Lexeme.objects.create(
+                    language=cd["language"],
+                    meaning=cd["meaning"],
+                    source_form=cd["source_form"],
+                    phon_form=cd["phon_form"],
+                    notes=cd["notes"])
+            return HttpResponseRedirect("/lexeme/%s/add-citation/" % lexeme.id)
+    else:
+        form = AddLexemeForm()
+        try:
+            form.fields["language"].initial = initial_data["language"].id
+        except KeyError:
+            pass
+        try:
+            form.fields["meaning"].initial = initial_data["meaning"].id
+        except KeyError:
+            pass
+        if lexeme_id:
+            form.fields["source_form"].initial = lexeme.source_form
+            form.fields["phon_form"].initial = lexeme.phon_form
+            form.fields["notes"].initial = lexeme.notes
+    return render_to_response("lexeme_add.html",
+            {"form":form})
+
 def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
     lexeme_id = int(lexeme_id)
     cogjudge_id = int(cogjudge_id)
     if meaning.isdigit():
-        meaning = Meaning.objects.get(id=meaning)
+        meaning = Meaning.objects.get(id=int(meaning))
         # if there are actions and lexeme_ids these should be preserved too
         return HttpResponseRedirect("/meaning/%s/" % meaning.gloss)
     else:

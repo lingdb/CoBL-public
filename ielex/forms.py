@@ -1,6 +1,6 @@
 from django import forms
 # from ielex.views import get_languages
-from ielex.lexicon.models import Language, Source, LanguageList, CognateSet
+from ielex.lexicon.models import *
 
 class ChooseLanguageField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -13,6 +13,10 @@ class ChooseLanguagesField(forms.ModelChoiceField):
 class ChooseLanguageListField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.name
+
+class ChooseMeaningField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.gloss
 
 class ChooseCognateClassField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -36,10 +40,11 @@ class ChooseOneSourceField(forms.ModelChoiceField):
                 return s[:l-4]+" ..."
         return truncate(obj.citation_text, 124)
 
-class AddNewWordForm(forms.Form):
+class AddLexemeForm(forms.Form):
     # needs some custom validation: requires one of source_form and phon_form,
     # and will copy source_form to phon_form if empty
-    language = ChooseLanguageField(queryset=Language.objects.all()) #
+    language = ChooseLanguageField(queryset=Language.objects.all())
+    meaning = ChooseMeaningField(queryset=Meaning.objects.all())
     source_form = forms.CharField(required=False)
     phon_form = forms.CharField(required=False)
     notes = forms.CharField(
@@ -65,6 +70,22 @@ class EditSourceForm(forms.ModelForm):
         model = Source
 
 class EditLanguageForm(forms.ModelForm):
+
+    def clean_ascii_name(self):
+        data = self.cleaned_data["ascii_name"]
+        try:
+            data.decode("ascii")
+        except UnicodeEncodeError:
+            raise forms.ValidationError("'%s' contains non-ASCII characters" %
+                    data)
+        try:
+            assert " " not in data
+        except AssertionError:
+            raise forms.ValidationError(
+                    "ASCII name cannot contain whitespace (try '%s')" %
+                    data.replace(" ","_"))
+        return data
+
     class Meta:
         model = Language
 

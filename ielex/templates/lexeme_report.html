@@ -105,6 +105,10 @@
 <fieldset><legend><a href="/lexeme/{{ lexeme.id }}/add-citation/">
             <img src="/media/buttons/add-link.png" alt="Add" title="Add link to citation" /></a></legend>
   <small>Add a link to a source already in the database</small>
+    <strong>Link to new Source</strong> 
+    <a href="/lexeme/{{ lexeme.id }}/add-new-citation/">
+      <img src="/media/buttons/add.png" alt="Add new source" title="Add citation to new source" />
+    </a>
 </fieldset>
 {% endifequal %}
 
@@ -180,11 +184,15 @@
   {% else %}
     <fieldset>
       <legend>
-        <a href="/lexeme/{{ lexeme.id }}/add-cognate-citation/{{ cj.id }}">
+        <a href="/lexeme/{{ lexeme.id }}/add-cognate-citation/{{ cj.id }}/">
           <img src="/media/buttons/add-link.png" alt="Add" title="Add link to citation" /></a></legend>
         </a>
       </legend>
     <small>Add a link to a source already in the database</small>
+    <strong>Link to new Source</strong> 
+    <a href="/lexeme/{{ lexeme.id }}/add-new-cognate-citation/{{ cj.id }}/">
+      <img src="/media/buttons/add.png" alt="Add new source" title="Add citation to new source" />
+    </a>
     </fieldset>
   {% endifequal %}
 </fieldset>
