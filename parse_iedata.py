@@ -4,6 +4,7 @@ b                      209
 It should be:
 b                      109
 """
+import bz2
 # I am handing doubtful cognate classes (i.d. CCNs), but not handling doubtful
 # equivalence classes
 
@@ -23,8 +24,8 @@ class CognateClass:
         else:
             return self
 
-def get_fileobj(filename="iedata.txt"):
-    fileobj = file(filename)
+def get_fileobj(filename="iedata.txt.bz2"):
+    fileobj = bz2.BZ2File(filename)
     # find beginning of data
     while fileobj.next().rstrip() != "5. THE DATA":
         pass
@@ -118,11 +119,12 @@ def parse():
             if cognate_class.uninformative:
                 cognate_class.name = ""
             if language not in output:
-                output[language] = file("dyen_data/"+language+".csv", "w")
+                outfile = "dyen_data/%s.csv" % language.replace(".","")
+                output[language] = file(outfile, "w")
                 print >>output[language], "\t".join(HEADER)
             if not cognate_class.exclude:
-                print >>output[language], "\t".join([meaning, source_form, "", "",
-                    "DyenDB", cognate_class.name, reliability,
+                print >>output[language], "\t".join([meaning, source_form, 
+                    "", "", "DyenDB", cognate_class.name, reliability,
                     original_cognate_class.name])
     return
 
@@ -137,6 +139,7 @@ def parse():
 7 1
 8 1
 """
+
 # Dyen Codes {{{
 # conversion Dyen form to Ludewig id
 meaning2id = {"ALL":1,
