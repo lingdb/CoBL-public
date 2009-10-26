@@ -1,8 +1,7 @@
 from django.conf.urls.defaults import *
 from ielex.views import *
-#   from ielex.utilities import make_backup
 from ielex import settings
-# from ielex.lexicon.views import write_nexus
+from ielex.lexicon.views import *
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -34,8 +33,8 @@ urlpatterns = patterns('',
             name="meaning-report"),
     url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/add/$', report_meaning,
             name="meaning-add-lexeme"),
-    # url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/(?P<lexeme_id>\d+)/add/$',
-    #         report_meaning), # XXX remove?
+    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/(?P<lexeme_id>\d+)/add/$',
+            report_meaning),
     url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/(?P<lexeme_id>\d+)/(?P<cogjudge_id>\d+)/$',
             report_meaning),
     url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/add-lexeme/',

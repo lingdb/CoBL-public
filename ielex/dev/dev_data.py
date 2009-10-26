@@ -269,6 +269,6 @@ seconds = int(time.time() - start_time)
 minutes = seconds // 60
 seconds %= 60
 
-print """-> Complete (00:%02d:%02d")""" % (minutes, seconds)
+print """-> Complete (00:%02d:%02d)""" % (minutes, seconds)
 ll = LanguageList.objects.get(name="all")
 assert len(ll.language_id_list) == Language.objects.count()

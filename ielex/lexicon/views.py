@@ -1,4 +1,3 @@
-from __future__ import print_function
 from textwrap import dedent
 import time
 from django.http import HttpResponse
@@ -8,10 +7,9 @@ def write_nexus(response):
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(mimetype='text/plain')
     # response['Content-Disposition'] = 'attachment; filename=ielex.nex'
-    print("#NEXUS", file=response)
-    print("[ File generated: %s ]" % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-            file=response)
-
+    print>>response, "#NEXUS"
+    print>>reponse, "[ File generated: %s ]" % time.strftime("%Y-%m-%d %H:%M:%S",
+            time.localtime()) 
     languages = Language.objects.filter(id__in=[1,2,3])
     cognate_classes = CognateSet.objects.filter(id__in=range(1,21))
     for language in languages:
@@ -21,6 +19,6 @@ def write_nexus(response):
         # cj = CognateJudgement.objects.filter(language=language
         # CognateSet.objects.filter(lexeme__language=language, id__in=range(1,21))
         # for cognate_class in cognate_classes.filter(language=language):
-        print(*row, sep="", file=response)
+        print>>response, "".join(row)
 
     return response
