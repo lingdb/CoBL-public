@@ -4,9 +4,6 @@ DESIGN
 TODO
 ====
 
-- get rid of the (i) icon in the meaning view. Instead, have a column with
-  truncated notes (using ``{{ value|truncatewords:2 }}``, wrapped in a link to
-  the lexeme view, and with the full text put inside a title field)
 - Check that the same alias isn't used twice for different cognates, same
   meaning (e.g. in the 'breathe/life' and 'animal' sets). Maybe: dynamically
   check that the list of aliases corresponds uniquely to a list of cognate
@@ -39,6 +36,15 @@ Debugging
 ---------
 
 Add ``assert False`` in your view code to dump debug information.
+
+Selecting languages by cognate class
+------------------------------------
+
+The following query gets a list of language ids which have a reflex of cognate
+set five::
+
+  CognateSet.objects.get(id=5).lexeme_set.values_list("language", flat=True)
+
 
 Joins
 -----
