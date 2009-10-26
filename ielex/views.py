@@ -454,6 +454,8 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
         source = None
     if request.method == 'POST':
         form = EditSourceForm(request.POST)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect('/sources/')
         if form.is_valid():
             cd = form.cleaned_data
             if action == "add":
