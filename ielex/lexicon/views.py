@@ -1,27 +1,27 @@
 from textwrap import dedent
 import time
 from django.http import HttpResponse
+from django.shortcuts import render_to_response
 from ielex.lexicon.models import *
 
-def write_nexus(response):
+def list_nexus(request):
+    return render_to_response("nexus_list.html", 
+            {"language_lists":LanguageList.objects.all().extra(
+                select={"lower_name":"lower(name)"}).order_by("lower_name")})
+
+def write_nexus(request, language_list=None):
     start_time = time.time()
 
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(mimetype='text/plain')
     # response['Content-Disposition'] = 'attachment; filename=ielex.nex'
-    print>>response, dedent("""\
-        #NEXUS
-
-        [ Citation:                                                        ]
-        [   Dunn, Michael; Ludewig, Julia. 2009. IELex (Indo-European      ]
-        [   Lexicon) Database. Max Planck Institute for Psycholinguistics, ]
-        [   Nijmegen.                                                      ]
-
-        [ File generated: %s ]
-        """ % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 
     # get data together
-    languages = Language.objects.all()
+    if language_list:
+        languages  = Language.objects.filter(
+                id__in=LanguageList.objects.get(name=language_list).language_id_list)
+    else:
+        languages = Language.objects.all()
     language_names = languages.values_list("ascii_name", flat=True)
     max_len = max([len(l) for l in language_names])
     cognate_class_ids = CognateSet.objects.all().values_list("id", flat=True)
@@ -29,7 +29,20 @@ def write_nexus(response):
     for cc in cognate_class_ids:
         data[cc] = CognateSet.objects.get(id=cc).lexeme_set.values_list('language', flat=True)
 
-    # start printout
+    # print out response
+    print>>response, dedent("""\
+        #NEXUS
+
+        [ Citation:                                                        ]
+        [   Dunn, Michael; Ludewig, Julia. 2009. IELex (Indo-European      ]
+        [   Lexicon) Database. Max Planck Institute for Psycholinguistics, ]
+        [   Nijmegen.                                                      ]
+        """)
+    if language_list:
+        print>>response, "[ Taxon list: %s ]" % language_list
+    print>>response, "[ File generated: %s ]\n" % time.strftime("%Y-%m-%d %H:%M:%S",
+            time.localtime())
+
     print>>response, dedent("""\
         begin taxa;
           dimensions ntax=%s;
