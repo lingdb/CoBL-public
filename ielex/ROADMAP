@@ -51,6 +51,10 @@ Concrete
 General 
 
 * DRY principle
+
+  - cancel button handling
+  - fixing type of integer url elements
+
 * functions are too long
 * named urls throughout?
 

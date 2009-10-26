@@ -73,6 +73,7 @@ urlpatterns = patterns('',
 
     # Cognates
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report),
+    url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit)/$', cognate_report),
 
 
     # Example:

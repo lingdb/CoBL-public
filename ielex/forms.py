@@ -123,6 +123,9 @@ class ChooseCognateClassForm(forms.Form):
             empty_label="---",
             label="")
 
+class EditCognateSetForm(forms.Form):
+    notes = forms.CharField(widget=forms.Textarea, required=False)
+
 class ReorderLanguageSortKeyForm(forms.Form):
     language = ChooseLanguagesField(
             queryset=Language.objects.all().order_by("sort_key"),

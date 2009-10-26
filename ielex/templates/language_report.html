@@ -11,6 +11,7 @@
     <th>Meaning</th>
     <th>Source Form</th>
     <th>Phonological Form</th>
+    <th>Notes</th>
     <th>Cognate Set</th>
   </tr>
   {% for lexeme in lexemes %}
@@ -19,12 +20,11 @@
     <td><a href="{% url meaning-report lexeme.meaning.id %}">{{ lexeme.meaning.gloss }}</a></td>
     <td>{{ lexeme.source_form }}</td>
     <td>{{ lexeme.phon_form }}</td>
+    <td><a href="/lexeme/{{ lexeme.id }}" title="{{ lexeme.notes }}">{{ lexeme.notes|truncatewords:5 }}</a></td>
     <td>{% for cogset in lexeme.cognate_class.all %}{{ cogset.alias }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</td>
     <td>
      <a href="{% url lexeme-report lexeme.id %}">
        <img src="/media/buttons/view.png" alt="View" title="View detailed information on lexeme" /><a>
-     <a href="/lexeme/{{ lexeme.id }}/edit-lexeme/">
-       <img src="/media/buttons/edit.png" alt="Edit" title="Edit lexeme" /><a>
       <a href="/lexeme/{{ lexeme.id }}/duplicate">
           <img src="/media/buttons/duplicate_lexeme.png" alt="Duplicate" title="Duplicate lexical entry" />
       </a>

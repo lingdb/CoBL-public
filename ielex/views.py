@@ -92,10 +92,24 @@ def reorder_languages(request):
     return render_to_response("language_reorder.html",
             {"form":form})
 
-def cognate_report(request, cognate_id):
-    cognate_class = CognateSet.objects.get(id=int(cognate_id))
+def cognate_report(request, cognate_id, action=""):
+    cognate_id = int(cognate_id)
+    cognate_class = CognateSet.objects.get(id=cognate_id)
+    if action == "edit":
+        if request.method == 'POST':
+            form = EditCognateSetForm(request.POST)
+            if "cancel" not in form.data and form.is_valid():
+                cd = form.cleaned_data
+                cognate_class.notes = cd["notes"]
+                cognate_class.save()
+            return HttpResponseRedirect('/cognate/%s/' % cognate_class.id)
+        else:
+            form = EditCognateSetForm(cognate_class.__dict__)
+    else:
+        form = None
     return render_to_response("cognate_report.html",
-            {"cognate_class":cognate_class})
+            {"cognate_class":cognate_class,
+             "form":form})
 
 def view_meanings(request):
     meanings = Meaning.objects.all()
@@ -145,7 +159,6 @@ def edit_language(request, language):
     try:
         language = Language.objects.get(ascii_name=language)
     except Language.DoesNotExist:
-        assert False
         language = get_canonical_language(language)
         return HttpResponseRedirect("/language/%s/edit/" %
                 language.ascii_name)

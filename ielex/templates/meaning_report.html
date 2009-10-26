@@ -11,6 +11,7 @@
     <th>Language</th>
     <th>Source Form</th>
     <th>Phonological Form</th>
+    <th>Notes</th>
     <th>Cognate Class</th>
   </tr>
   {% for lexeme in lexemes %}
@@ -19,6 +20,7 @@
     <td><a href="{% url language-report lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
     <td>{{ lexeme.source_form }}</td>
     <td>{{ lexeme.phon_form }}</td>
+    <td><a href="/lexeme/{{ lexeme.id }}" title="{{ lexeme.notes }}">{{ lexeme.notes|truncatewords:5 }}</a></td>
     <td> 
       {% if lexeme.cognatejudgement_set.count %}
         {% for cj in lexeme.cognatejudgement_set.all %}
@@ -43,14 +45,10 @@
     </td>
     <td>
       <a href="/lexeme/{{ lexeme.id }}">
-        {% if lexeme.notes %}
-          <img src="/media/buttons/info.png" alt="View" title="View/edit the lexical entry (notes)" />
-        {% else %}
-          <img src="/media/buttons/view.png" alt="View" title="View/edit the lexical entry" />
-        {% endif %}
+        <img src="/media/buttons/view.png" alt="View" title="View/edit the lexical entry" />
       </a>
       <a href="/lexeme/{{ lexeme.id }}/duplicate">
-          <img src="/media/buttons/duplicate_lexeme.png" alt="Duplicate" title="Duplicate lexical entry" />
+        <img src="/media/buttons/duplicate_lexeme.png" alt="Duplicate" title="Duplicate lexical entry" />
       </a>
     </td>
   {% endfor %}

@@ -4,13 +4,14 @@ DESIGN
 TODO
 ====
 
-- don't conflate "doubtful" codings, since each "doubtful" subset is not
-  doubtful within itself
-- but put a comment in the cognate set object saying that this set may be
-  cognate with another set
-- add a view notes field and an alias field to /cognate/\d+ view
-- allow notes to be edited
-- make all the appearances of cognate class aliases in views into links to this
+- get rid of the (i) icon in the meaning view. Instead, have a column with
+  truncated notes (using ``{{ value|truncatewords:2 }}``, wrapped in a link to
+  the lexeme view, and with the full text put inside a title field)
+- Check that the same alias isn't used twice for different cognates, same
+  meaning (e.g. in the 'breathe/life' and 'animal' sets). Maybe: dynamically
+  check that the list of aliases corresponds uniquely to a list of cognate
+  sets, and apply a new alias to one of the forms (would have to check against
+  the aliases used by the other meanings corresponding to the form as well).
 - put some kind of icon for "reliability" against cognate aliases and lexemes
 - test what happens when you change a language name (does the data get lost)
 

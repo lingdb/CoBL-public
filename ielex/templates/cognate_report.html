@@ -6,6 +6,25 @@
 {% block top %}<h1>Cognate set {{ cognate_class.id }}</h1>{% endblock %}
 
 {% block content %}
+<fieldset>
+  {% if form %}
+  <legend>
+    <strong>Notes</strong>
+  </legend>
+  <form action="" method="POST">
+    {{ form.notes }}
+    <input type="submit" name="submit" value="Submit" /> 
+    <input type="submit" name="cancel" value="Cancel" /> 
+  </form>
+  {% else %}
+  <legend>
+    <strong>Notes</strong><a href="/cognate/{{ cognate_class.id }}/edit">
+      <img src="/media/buttons/edit-pencil.png" />
+    </a>
+  </legend>
+  {{ cognate_class.notes }}
+  {% endif %}
+</fieldset>
 <table>
   <thead> {# handy for the print view #}
     <tr>
