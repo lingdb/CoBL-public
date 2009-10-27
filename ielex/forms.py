@@ -101,6 +101,7 @@ class ChooseLanguageForm(forms.Form):
 class ChooseLanguageListForm(forms.Form):
     language_list = ChooseLanguageListField(
             queryset=LanguageList.objects.all(),
+            empty_label=None,
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}))
 
 class ChooseSourceForm(forms.Form):

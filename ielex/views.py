@@ -5,8 +5,14 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from ielex.lexicon.models import *
 from ielex.forms import *
-from ielex.utilities import next_alias
+from ielex.utilities import next_alias, renumber_sort_keys
 from ielex.backup import backup
+
+# Refactoring: rename the functions which render to response with the format
+# view_TEMPLATE_NAME(request, ...). Put subsiduary functions under their main
+# caller.
+
+# -- Database input, output and maintenance functions ------------------------------------------
 
 def make_backup(request):
     msg ="""\
@@ -21,99 +27,7 @@ def view_frontpage(request):
             "meanings":Meaning.objects.count(),
             "coded_characters":CognateJudgement.objects.count()})
 
-def view_languages(request):
-    language_list_name = request.COOKIES.get("language_list_name","all")
-    if request.method == 'POST':
-        form = ChooseLanguageListForm(request.POST)
-        if form.is_valid():
-            current_list = form.cleaned_data["language_list"]
-            language_list_name = current_list.name
-    else:
-        form = ChooseLanguageListForm()
-    form.fields["language_list"].initial = LanguageList.objects.get(
-            name=language_list_name).id
-
-    languages = Language.objects.all()
-    #languages = get_languages(request)
-    current_list = LanguageList.objects.get(name=language_list_name)
-    response = render_to_response("language_list.html",
-            {"languages":languages,
-            "form":form,
-            "current_list":current_list})
-    response.set_cookie("language_list_name", language_list_name)
-    return response
-
-def reorder_languages(request):
-    if request.method == "POST":
-        form = ReorderLanguageSortKeyForm(request.POST)
-        if form.is_valid():
-            language = form.cleaned_data["language"]
-            if form.data["submit"] == "Move up":
-                # get two languages in front of this one
-                try:
-                    after = Language.objects.filter(
-                            sort_key__lt=language.sort_key).latest("sort_key")
-                    try: 
-                        before = Language.objects.filter(
-                                sort_key__lt=after.sort_key).latest("sort_key")
-                        # set the sort key to halfway between them
-                        language.sort_key = (after.sort_key+before.sort_key)/2
-                    except Language.DoesNotExist:
-                        # language is at index 1 => swap index 0 and index 1
-                        after.sort_key, language.sort_key = language.sort_key,\
-                                after.sort_key
-                        after.save()
-                    language.save()
-                except Language.DoesNotExist:
-                    pass # already first
-            elif form.data["submit"] == "Move down":
-                try:
-                    # get two languages after this one
-                    before = Language.objects.filter(
-                            sort_key__gt=language.sort_key)[0]
-                    try:
-                        after = Language.objects.filter(
-                                sort_key__gt=before.sort_key)[0]
-                        # set the sort key to halfway between them
-                        language.sort_key = (after.sort_key+before.sort_key)/2
-                    except IndexError:
-                        before.sort_key, language.sort_key = language.sort_key,\
-                                before.sort_key
-                        before.save()
-                    language.save()
-                except IndexError:
-                    pass # already last
-            else:
-                assert form.data["submit"] == "Finish"
-                # renumber the sort keys here? XXX
-                return HttpResponseRedirect("/languages/")
-    else:
-        form = ReorderLanguageSortKeyForm()
-    return render_to_response("language_reorder.html",
-            {"form":form})
-
-def cognate_report(request, cognate_id, action=""):
-    cognate_id = int(cognate_id)
-    cognate_class = CognateSet.objects.get(id=cognate_id)
-    if action == "edit":
-        if request.method == 'POST':
-            form = EditCognateSetForm(request.POST)
-            if "cancel" not in form.data and form.is_valid():
-                cd = form.cleaned_data
-                cognate_class.notes = cd["notes"]
-                cognate_class.save()
-            return HttpResponseRedirect('/cognate/%s/' % cognate_class.id)
-        else:
-            form = EditCognateSetForm(cognate_class.__dict__)
-    else:
-        form = None
-    return render_to_response("cognate_report.html",
-            {"cognate_class":cognate_class,
-             "form":form})
-
-def view_meanings(request):
-    meanings = Meaning.objects.all()
-    return render_to_response("meaning_list.html", {"meanings":meanings})
+# -- General purpose queries -------------------------------------------------
 
 def get_canonical_meaning(meaning):
     """Identify meaning from id number or partial name"""
@@ -142,6 +56,46 @@ def get_canonical_language(language):
             # except Language.DoesNotExist # still! XXX
             #   language = Language.objects.last_added()
     return language
+
+def get_languages(request):
+    """Get all Language objects, respecting language_list selection"""
+    language_list_name = get_current_language_list(request)
+    languages = Language.objects.filter(
+            id__in=LanguageList.objects.get(
+            name=language_list_name).language_id_list)
+    return languages
+
+def get_current_language_list(request):
+    """Get the current language list from cookie."""
+    if "language_list_name" in request.COOKIES:
+        language_list_name = request.COOKIES["language_list_name"]
+    else:
+        language_list_name = "all" # default
+    return language_list_name
+
+# -- /language(s)/ ----------------------------------------------------------
+
+def view_languages(request):
+    language_list_name = request.COOKIES.get("language_list_name","all")
+
+    if request.method == 'POST':
+        form = ChooseLanguageListForm(request.POST)
+        if form.is_valid():
+            current_list = form.cleaned_data["language_list"]
+            language_list_name = current_list.name
+    else:
+        form = ChooseLanguageListForm()
+    form.fields["language_list"].initial = LanguageList.objects.get(
+            name=language_list_name).id
+
+    languages = Language.objects.all() # don't use get_languages(request)
+    current_list = LanguageList.objects.get(name=language_list_name)
+    response = render_to_response("language_list.html",
+            {"languages":languages,
+            "form":form,
+            "current_list":current_list})
+    response.set_cookie("language_list_name", language_list_name)
+    return response
 
 def report_language(request, language):
     try:
@@ -179,20 +133,128 @@ def edit_language(request, language):
             {"language":language,
             "form":form})
 
-def get_languages(request):
-    """get languages, respecting language_list selection"""
-    language_list_name = get_current_language_list(request)
-    languages = Language.objects.filter(
-            id__in=LanguageList.objects.get(
-            name=language_list_name).language_id_list)
-    return languages
+def reorder_languages(request):
+    if request.method == "POST":
+        form = ReorderLanguageSortKeyForm(request.POST)
+        if form.is_valid():
+            language = form.cleaned_data["language"]
+            if form.data["submit"] == "Move up":
+                move_language_up_list(language)
+            elif form.data["submit"] == "Move down":
+                move_language_down_list(language)
+            else:
+                assert form.data["submit"] == "Finish"
+                # XXX renumbering is slow, and doesn't need to be done every time
+                renumber_sort_keys()
+                return HttpResponseRedirect("/languages/")
+        else: # pressed Finish without submitting changes
+            return HttpResponseRedirect("/languages/")
+    else: # first visit
+        form = ReorderLanguageSortKeyForm()
+    return render_to_response("language_reorder.html",
+            {"form":form})
 
-def get_current_language_list(request):
-    if "language_list_name" in request.COOKIES:
-        language_list_name = request.COOKIES["language_list_name"]
+def move_language_up_list(language):
+    """Called by reorder languages"""
+    try: # get two languages in front of this one
+        after = Language.objects.filter(
+                sort_key__lt=language.sort_key).latest("sort_key")
+        try:
+            before = Language.objects.filter(
+                    sort_key__lt=after.sort_key).latest("sort_key")
+            # set the sort key to halfway between them
+            language.sort_key = (after.sort_key+before.sort_key)/2
+        except Language.DoesNotExist:
+            # language is at index 1 => swap index 0 and index 1
+            after.sort_key, language.sort_key = language.sort_key,\
+                    after.sort_key
+            after.save()
+        language.save()
+    except Language.DoesNotExist:
+        pass # already first
+    return
+
+def move_language_down_list(language):
+    """Called by reorder languages"""
+    try: # get two languages after this one
+        before = Language.objects.filter(
+                sort_key__gt=language.sort_key)[0]
+        try:
+            after = Language.objects.filter(
+                    sort_key__gt=before.sort_key)[0]
+            # set the sort key to halfway between them
+            language.sort_key = (after.sort_key+before.sort_key)/2
+        except IndexError:
+            before.sort_key, language.sort_key = language.sort_key,\
+                    before.sort_key
+            before.save()
+        language.save()
+    except IndexError:
+        pass # already last
+    return
+
+# -- /meaning(s)/ ---------------------------------------------------------
+
+def view_meanings(request):
+    meanings = Meaning.objects.all()
+    return render_to_response("meaning_list.html", {"meanings":meanings})
+
+def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
+    lexeme_id = int(lexeme_id)
+    cogjudge_id = int(cogjudge_id)
+    if meaning.isdigit():
+        meaning = Meaning.objects.get(id=int(meaning))
+        # if there are actions and lexeme_ids these should be preserved too
+        return HttpResponseRedirect("/meaning/%s/" % meaning.gloss)
     else:
-        language_list_name = "all" # default
-    return language_list_name
+        meaning = Meaning.objects.get(gloss=meaning)
+
+    if request.method == 'POST':
+        form = ChooseCognateClassForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            if not cogjudge_id: # new cognate judgement
+                lexeme = Lexeme.objects.get(id=lexeme_id)
+                cognate_class = cd["cognate_class"]
+                if cognate_class not in lexeme.cognate_class.all():
+                    cj = CognateJudgement.objects.create(
+                            lexeme=lexeme,
+                            cognate_class=cognate_class)
+                else:
+                    cj = CognateJudgement.objects.get(
+                            lexeme=lexeme,
+                            cognate_class=cognate_class)
+            else:
+                cj = CognateJudgement.objects.get(id=cogjudge_id)
+                cj.cognate_class = cd["cognate_class"]
+                cj.save()
+
+            return HttpResponseRedirect('/lexeme/%s/add-cognate-citation/%s/' %
+                    (lexeme_id, cj.id))
+    else:
+        form = ChooseCognateClassForm()
+
+    lexemes = Lexeme.objects.select_related().filter(meaning=meaning,
+            language__in=get_languages(request)).order_by("language")
+    form.fields["cognate_class"].queryset = CognateSet.objects.filter(
+            lexeme__in=lexemes).distinct()
+    # note that initial values have to be set using id 
+    # rather than the object itself
+    if cogjudge_id:
+        form.fields["cognate_class"].initial = CognateJudgement.objects.get(
+              id=cogjudge_id).cognate_class.id
+        add_cognate_judgement=0 # to lexeme
+    else:
+        add_cognate_judgement=lexeme_id
+
+    return render_to_response("meaning_report.html",
+            {"meaning":meaning,
+            "lexemes": lexemes,
+            "add_cognate_judgement":add_cognate_judgement,
+            "edit_cognate_judgement":cogjudge_id,
+            "form":form})
+
+# -- /lexeme/ -------------------------------------------------------------
 
 def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     lexeme = Lexeme.objects.get(id=lexeme_id)
@@ -356,7 +418,6 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             "active_cogjudge_citation_id":cogjudge_id,
             })
 
-
 def lexeme_add(request, meaning=None, language=None, lexeme_id=0, return_to=None):
     initial_data = {}
     if language:
@@ -402,60 +463,28 @@ def lexeme_add(request, meaning=None, language=None, lexeme_id=0, return_to=None
     return render_to_response("lexeme_add.html",
             {"form":form})
 
-def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
-    lexeme_id = int(lexeme_id)
-    cogjudge_id = int(cogjudge_id)
-    if meaning.isdigit():
-        meaning = Meaning.objects.get(id=int(meaning))
-        # if there are actions and lexeme_ids these should be preserved too
-        return HttpResponseRedirect("/meaning/%s/" % meaning.gloss)
+# -- /cognate/ ------------------------------------------------------------
+
+def cognate_report(request, cognate_id, action=""):
+    cognate_id = int(cognate_id)
+    cognate_class = CognateSet.objects.get(id=cognate_id)
+    if action == "edit":
+        if request.method == 'POST':
+            form = EditCognateSetForm(request.POST)
+            if "cancel" not in form.data and form.is_valid():
+                cd = form.cleaned_data
+                cognate_class.notes = cd["notes"]
+                cognate_class.save()
+            return HttpResponseRedirect('/cognate/%s/' % cognate_class.id)
+        else:
+            form = EditCognateSetForm(cognate_class.__dict__)
     else:
-        meaning = Meaning.objects.get(gloss=meaning)
+        form = None
+    return render_to_response("cognate_report.html",
+            {"cognate_class":cognate_class,
+             "form":form})
 
-    if request.method == 'POST':
-        form = ChooseCognateClassForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            if not cogjudge_id: # new cognate judgement
-                lexeme = Lexeme.objects.get(id=lexeme_id)
-                cognate_class = cd["cognate_class"]
-                if cognate_class not in lexeme.cognate_class.all():
-                    cj = CognateJudgement.objects.create(
-                            lexeme=lexeme,
-                            cognate_class=cognate_class)
-                else:
-                    cj = CognateJudgement.objects.get(
-                            lexeme=lexeme,
-                            cognate_class=cognate_class)
-            else:
-                cj = CognateJudgement.objects.get(id=cogjudge_id)
-                cj.cognate_class = cd["cognate_class"]
-                cj.save()
-
-            return HttpResponseRedirect('/lexeme/%s/add-cognate-citation/%s/' %
-                    (lexeme_id, cj.id))
-    else:
-        form = ChooseCognateClassForm()
-
-    lexemes = Lexeme.objects.select_related().filter(meaning=meaning,
-            language__in=get_languages(request)).order_by("language")
-    form.fields["cognate_class"].queryset = CognateSet.objects.filter(
-            lexeme__in=lexemes).distinct()
-    # note that initial values have to be set using id 
-    # rather than the object itself
-    if cogjudge_id:
-        form.fields["cognate_class"].initial = CognateJudgement.objects.get(
-              id=cogjudge_id).cognate_class.id
-        add_cognate_judgement=0 # to lexeme
-    else:
-        add_cognate_judgement=lexeme_id
-
-    return render_to_response("meaning_report.html",
-            {"meaning":meaning,
-            "lexemes": lexemes,
-            "add_cognate_judgement":add_cognate_judgement,
-            "edit_cognate_judgement":cogjudge_id,
-            "form":form})
+# -- /source/ -------------------------------------------------------------
 
 def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
     source_id = int(source_id)

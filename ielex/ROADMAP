@@ -6,8 +6,9 @@ Major features
 
 0.1   Design
 0.2   Basic (all basic data input features in place)
-0.2.1 Developing usability
-
+0.2.1 Development: focus on usability
+0.2.2 Usable form on the basic program
+0.2.3 Version in production
 
 TODO
 ====
@@ -23,8 +24,8 @@ Major features
 Minor features
 --------------
 
-* Backup system
-* Nexus output
+* Backup system (crude version complete)
+* Nexus output (basic version complete)
 * CSV output
 * Editing membership of named lists
 
@@ -48,15 +49,16 @@ Concrete
     else:
         <handle first visit>
 
+* use named urls throughout?
+
 General 
 
-* DRY principle
+* DNRY violations:
 
   - cancel button handling
   - fixing type of integer url elements
 
 * functions are too long
-* named urls throughout?
 
 
 
