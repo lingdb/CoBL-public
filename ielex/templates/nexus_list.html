@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}IE Lexicon NEXUS Export{% endblock %}
+
+{% block top %}
+<h1>NEXUS Export</h1>
+{% endblock %}
+
+{% block content %}
+Download a NEXUS file from a predefined language list.
+<table>
+  <tr><th>Language lists</th></tr>
+{% for ll in language_lists %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    <td><a href="/nexus/{{ ll.name}}/">{{ ll.name }}</a></td>
+  </tr>
+{% endfor %}
+</table>
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
