@@ -116,7 +116,8 @@ def reorder_languages(request):
                 move_language_down_list(language)
             else:
                 assert form.data["submit"] == "Finish"
-                # XXX renumbering is slow, and doesn't need to be done every time
+                # renumbering is slow, and doesn't need to be done every time
+                # on the other hand, we hardly ever call this function ...
                 renumber_sort_keys()
                 return HttpResponseRedirect("/languages/")
         else: # pressed Finish without submitting changes
@@ -253,7 +254,7 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
 
     sort_order = "language__%s" % get_sort_order(request)
     lexemes = Lexeme.objects.select_related().filter(meaning=meaning,
-            language__in=get_languages(request)).order_by(sort_order) # XXX
+            language__in=get_languages(request)).order_by(sort_order)
     form.fields["cognate_class"].queryset = CognateSet.objects.filter(
             lexeme__in=lexemes).distinct()
     # note that initial values have to be set using id 

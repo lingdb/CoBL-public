@@ -41,8 +41,10 @@ class ChooseOneSourceField(forms.ModelChoiceField):
         return truncate(obj.citation_text, 124)
 
 class AddLexemeForm(forms.Form):
-    # needs some custom validation: requires one of source_form and phon_form,
+    # Needs some custom validation: requires one of source_form and phon_form,
     # and will copy source_form to phon_form if empty
+    # Need to think about the default sort order of the Language objects here
+    # It might make sense to have it alphabetical
     language = ChooseLanguageField(queryset=Language.objects.all())
     meaning = ChooseMeaningField(queryset=Meaning.objects.all())
     source_form = forms.CharField(required=False)
@@ -95,6 +97,8 @@ class EditLanguageForm(forms.ModelForm):
         model = Language
 
 class ChooseLanguageForm(forms.Form):
+    # Need to think about the default sort order of the Language objects here
+    # It might make sense to have it alphabetical
     language = ChooseLanguageField(queryset=Language.objects.all(),
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}))
 

@@ -11,16 +11,15 @@ from ielex.lexicon.views import *
 
 urlpatterns = patterns('',
     # Front Page
-    url('^$', view_frontpage, name="view-frontpage"),
+    url(r'^$', view_frontpage, name="view-frontpage"),
     url(r'^backup/$', make_backup),
 
     # Languages
-    url('^languages/$', view_languages, name="view-languages"),
-    url(r'^languages/reorder/$', reorder_languages,
-            name="language-reorder"),
+    url(r'^languages/$', view_languages, name="view-languages"),
+    url(r'^languages/reorder/$', reorder_languages, name="language-reorder"),
     url(r'^languages/sort/(?P<ordered_by>sort_key|ascii_name)/$', sort_languages,
             name="language-sort"),
-    
+
     # Language
     url(r'^language/([a-zA-Z0-9_ ]+)/$', report_language,
             name="language-report"), # usage {% url language-report English %}

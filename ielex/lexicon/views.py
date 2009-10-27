@@ -3,6 +3,7 @@ import time
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from ielex.lexicon.models import *
+from ielex.views import get_sort_order
 
 def list_nexus(request):
     return render_to_response("nexus_list.html", 
@@ -18,8 +19,9 @@ def write_nexus(request, language_list=None):
 
     # get data together
     if language_list:
-        languages  = Language.objects.filter(
-                id__in=LanguageList.objects.get(name=language_list).language_id_list)
+        languages = Language.objects.filter(
+                id__in=LanguageList.objects.get(
+                name=language_list).language_id_list).order_by(get_sort_order(request))
     else:
         languages = Language.objects.all()
     language_names = languages.values_list("ascii_name", flat=True)

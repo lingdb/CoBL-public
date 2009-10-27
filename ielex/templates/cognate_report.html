@@ -47,6 +47,11 @@
       <td>{{ cj.lexeme.source_form }}</td>
       <td>{{ cj.lexeme.meaning.gloss }}</td>
       <td>{{ cj.lexeme.notes }}</td>
+      <td>
+        <a href="/lexeme/{{ cj.lexeme.id }}">
+          <img src="/media/buttons/view.png" alt="View" title="View/edit the lexical entry" />
+        </a>
+      </td>
     </tr>
   {% endfor %}
   </tbody>
@@ -55,6 +60,7 @@
 
 {% block controls %}
 {% include "snippets/go_to.html" %}
+{% include "snippets/change_sort_order.html" %}
 {% endblock %}
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
