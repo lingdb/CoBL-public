@@ -57,12 +57,20 @@ def get_canonical_language(language):
             #   language = Language.objects.last_added()
     return language
 
+def get_sort_order(request):
+    if "language_sort_order" in request.COOKIES:
+        sort_order = request.COOKIES["language_sort_order"]
+    else:
+        sort_order="sort_key"
+    return sort_order
+
 def get_languages(request):
     """Get all Language objects, respecting language_list selection"""
     language_list_name = get_current_language_list(request)
+    sort_order = get_sort_order(request)
     languages = Language.objects.filter(
             id__in=LanguageList.objects.get(
-            name=language_list_name).language_id_list)
+            name=language_list_name).language_id_list).order_by(sort_order)
     return languages
 
 def get_current_language_list(request):
@@ -88,7 +96,7 @@ def view_languages(request):
     form.fields["language_list"].initial = LanguageList.objects.get(
             name=language_list_name).id
 
-    languages = Language.objects.all() # don't use get_languages(request)
+    languages = Language.objects.all().order_by(get_sort_order(request)) 
     current_list = LanguageList.objects.get(name=language_list_name)
     response = render_to_response("language_list.html",
             {"languages":languages,
@@ -96,42 +104,6 @@ def view_languages(request):
             "current_list":current_list})
     response.set_cookie("language_list_name", language_list_name)
     return response
-
-def report_language(request, language):
-    try:
-        language = Language.objects.get(ascii_name=language)
-    except Language.DoesNotExist:
-        language = get_canonical_language(language)
-        return HttpResponseRedirect("/language/%s/" %
-                language.ascii_name)
-    lexemes = Lexeme.objects.filter(language=language).order_by("meaning")
-    return render_to_response("language_report.html",
-            {"language":language,
-            "lexemes":lexemes})
-
-def edit_language(request, language):
-    try:
-        language = Language.objects.get(ascii_name=language)
-    except Language.DoesNotExist:
-        language = get_canonical_language(language)
-        return HttpResponseRedirect("/language/%s/edit/" %
-                language.ascii_name)
-    if request.method == 'POST':
-        form = EditLanguageForm(request.POST)
-        if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect('/language/%s/' % language.ascii_name)
-        if form.is_valid():
-            cd = form.cleaned_data
-            language.iso_code = cd["iso_code"]
-            language.ascii_name = cd["ascii_name"]
-            language.utf8_name = cd["utf8_name"]
-            language.save()
-            return HttpResponseRedirect('/language/%s/' % language.ascii_name)
-    else:
-        form = EditLanguageForm(language.__dict__)
-    return render_to_response("language_edit.html",
-            {"language":language,
-            "form":form})
 
 def reorder_languages(request):
     if request.method == "POST":
@@ -193,6 +165,51 @@ def move_language_down_list(language):
         pass # already last
     return
 
+def sort_languages(request, ordered_by):
+    try:
+        referer = request.META["HTTP_REFERER"]
+    except KeyError:
+        referer = "/languages/"
+    response = HttpResponseRedirect(referer)
+    response.set_cookie("language_sort_order", ordered_by)
+    return response
+
+def report_language(request, language):
+    try:
+        language = Language.objects.get(ascii_name=language)
+    except Language.DoesNotExist:
+        language = get_canonical_language(language)
+        return HttpResponseRedirect("/language/%s/" %
+                language.ascii_name)
+    lexemes = Lexeme.objects.filter(language=language).order_by("meaning")
+    return render_to_response("language_report.html",
+            {"language":language,
+            "lexemes":lexemes})
+
+def edit_language(request, language):
+    try:
+        language = Language.objects.get(ascii_name=language)
+    except Language.DoesNotExist:
+        language = get_canonical_language(language)
+        return HttpResponseRedirect("/language/%s/edit/" %
+                language.ascii_name)
+    if request.method == 'POST':
+        form = EditLanguageForm(request.POST)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect('/language/%s/' % language.ascii_name)
+        if form.is_valid():
+            cd = form.cleaned_data
+            language.iso_code = cd["iso_code"]
+            language.ascii_name = cd["ascii_name"]
+            language.utf8_name = cd["utf8_name"]
+            language.save()
+            return HttpResponseRedirect('/language/%s/' % language.ascii_name)
+    else:
+        form = EditLanguageForm(language.__dict__)
+    return render_to_response("language_edit.html",
+            {"language":language,
+            "form":form})
+
 # -- /meaning(s)/ ---------------------------------------------------------
 
 def view_meanings(request):
@@ -234,8 +251,9 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
     else:
         form = ChooseCognateClassForm()
 
+    sort_order = "language__%s" % get_sort_order(request)
     lexemes = Lexeme.objects.select_related().filter(meaning=meaning,
-            language__in=get_languages(request)).order_by("language")
+            language__in=get_languages(request)).order_by(sort_order) # XXX
     form.fields["cognate_class"].queryset = CognateSet.objects.filter(
             lexeme__in=lexemes).distinct()
     # note that initial values have to be set using id 

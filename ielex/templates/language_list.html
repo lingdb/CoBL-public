@@ -48,6 +48,7 @@
 
 {% block controls %}
 {% include "snippets/go_to.html" %}
+{% include "snippets/change_sort_order.html" %}
 <h2>Controls</h2>
 <p>
 <form action="" method="post">
@@ -60,10 +61,6 @@
 </fieldset>
 </form>
 </p>
-{% if debug %}
-<h2>DEBUG</h2>
-{{ debug }}
-{% endif %}
 {% endblock %}
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
