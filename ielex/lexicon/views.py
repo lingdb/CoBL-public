@@ -11,9 +11,11 @@ def list_nexus(request):
                 select={"lower_name":"lower(name)"}).order_by("lower_name")})
 
 def write_nexus(request, language_list=None):
+    # TODO: this currently ignores whether cognates are coded as "dubious" or
+    # not.
     start_time = time.time()
 
-    # Create the HttpResponse object with the appropriate CSV header.
+    # Create the HttpResponse object with the appropriate header.
     response = HttpResponse(mimetype='text/plain')
     # response['Content-Disposition'] = 'attachment; filename=ielex.nex'
 
