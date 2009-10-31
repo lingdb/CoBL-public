@@ -27,7 +27,7 @@ def view_frontpage(request):
             "meanings":Meaning.objects.count(),
             "coded_characters":CognateJudgement.objects.count()})
 
-# -- General purpose queries -------------------------------------------------
+# -- General purpose queries and functions -----------------------------------
 
 def get_canonical_meaning(meaning):
     """Identify meaning from id number or partial name"""
@@ -80,8 +80,6 @@ def get_current_language_list(request):
     else:
         language_list_name = "all" # default
     return language_list_name
-
-# -- General functions -------------------------------------------------------
 
 # -- /language(s)/ ----------------------------------------------------------
 
@@ -278,12 +276,12 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
 # -- /lexeme/ -------------------------------------------------------------
 
 def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
-    lexeme = Lexeme.objects.get(id=lexeme_id)
-    lexeme_citations = lexeme.lexemecitation_set.all()
-    sources = Source.objects.filter(lexeme=lexeme)
-    form = None
     citation_id = int(citation_id)
     cogjudge_id = int(cogjudge_id)
+    lexeme = Lexeme.objects.get(id=lexeme_id)
+    lexeme_citations = lexeme.lexemecitation_set.all() # XXX not used?
+    sources = Source.objects.filter(lexeme=lexeme)  # XXX not used
+    form = None
 
     if action: # actions are: edit, edit-lexeme, edit-citation, add-citation
 
@@ -413,7 +411,7 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 citation.delete()
                 return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
             elif action == "add-new-cognate":
-                current_aliases = CognateSet.objects.filter(   #
+                current_aliases = CognateSet.objects.filter(
                         lexeme__in=Lexeme.objects.filter(
                         meaning=lexeme.meaning).values_list(
                         "id", flat=True)).distinct().values_list("alias", flat=True)
@@ -422,7 +420,7 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         alias=new_alias)
                 cj = CognateJudgement.objects.create(lexeme=lexeme,
                         cognate_class=cognate_class)
-                return HttpResponseRedirect('/lexeme/%s/add-cognate-citation/%s' % 
+                return HttpResponseRedirect('/lexeme/%s/add-cognate-citation/%s' %
                         (lexeme_id, cj.id))
             elif action == "delete":
                 redirection = '/meaning/%s' % lexeme.meaning.gloss

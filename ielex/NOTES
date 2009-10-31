@@ -11,12 +11,8 @@ TODO
   the aliases used by the other meanings corresponding to the form as well).
 - put some kind of icon for "reliability" against cognate aliases and lexemes
 - test what happens when you change a language name (does the data get lost)
-
-Database function
------------------
-
-- Register a "sticky" source, so that all subsequent entries default
-  to that source
+- I should be able to replace cookies with request.session from
+  SessionMiddleware (http://www.djangobook.com/en/2.0/chapter14/#cn36)
 
 Icons
 -----
@@ -28,6 +24,33 @@ Icons
    Licence: Attribution-ShareAlike 3.0
    Website: sweetie.sublink.ca
 
+Julia's suggestions
+-------------------
+
+1)  It might be a good idea to allow direct links between different meaning
+    since there are cases where I referred to related meanings/forms (e.g.
+    with the Toch. terms for BIRD which are simply the equivalent of flying
+    ANIMAL)
+
+2)  Another handy application could be a search function (just in order to
+    locate terms once seen or the the like).
+
+3)  I came across a couple of terms (across different meanings) which are
+    ultimately cognate, for instance there is a common IE root dheu- in many
+    terms for DUST, SMOKE, BLOW and BREATHE. Consequently, these terms would
+    belong to one single CC, wouldn"t they? I don't how you want to deal with
+    this, but I expect this phenomenon to come up time and again as the work
+    will proceed.
+
+Notes: search function will be hard―it's not really clear how to deal with
+unicode text entry beyond just using grep with re.UNICODE option and leaving
+the rest of the problem to the user. Maybe 'grep' and 'glob' options, and check
+boxes for which fields to search.
+
+Items (1) and (3) are probably the same issue. The architecture allows a
+CognateSet object to link to forms in more than one meaning set. But there just
+needs to be a sensible input method. Maybe allow a view to display two or more
+different meanign sets, e.g. /meaning/dust+blow+smoke/
 
 TECHNICAL NOTES
 ===============
