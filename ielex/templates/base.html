@@ -10,6 +10,11 @@
 
     <div id="top">
       <div id="login">
+        {% if user.is_authenticated %}
+        {{ user.username }} <small>[<a href="/accounts/logout/">logout</a>]</small>
+        {% else %}
+          <a href="/accounts/login/">login</a>
+        {% endif %}
         <a href="/backup/"><img src="/media/buttons/save-backup.png" alt="Backup" title="Make backup of database (slow!)" /></a>
       </div>
     {% block top %}{% endblock %}
@@ -29,7 +34,7 @@
 
     <div id="footer">
       <div id="sitemap">
-	{% block sitemap %}{% endblock %}
+        {% block sitemap %} {% endblock %}
       </div>
     {% block footer %}
     <small>Indo European LEXicon version 0.2.2</small>
