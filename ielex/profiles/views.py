@@ -14,8 +14,6 @@ def view_profile(request, action=None):
                 setattr(request.user, key, form.cleaned_data[key])
             request.user.save()
             return HttpResponseRedirect("/accounts/profile/")
-        else:
-            assert 0 ### form is failing validation
     else:
         form = UserAlterDetailsForm(request.user.__dict__)
     return render_template(request, "profiles/profile.html",

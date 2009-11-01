@@ -1,9 +1,11 @@
 # Django settings for ielex project.
 import os.path
 
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+VERSION = "0.2.3_auth"
 ROOTDIR = os.path.dirname(__file__)
 
 ADMINS = (
@@ -40,7 +42,6 @@ USE_I18N = False
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = os.path.join(os.path.abspath(ROOTDIR), 'media')
 
-
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
@@ -66,6 +67,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
+    'ielex.context_processors.version',
     )
 
 MIDDLEWARE_CLASSES = (
