@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load lexicon_utils %}
 
 {% block title %}{{ meaning.gloss }}{% endblock %}
 
@@ -20,7 +21,14 @@
     <td><a href="{% url language-report lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
     <td>{{ lexeme.source_form }}</td>
     <td>{{ lexeme.phon_form }}</td>
-    <td><a href="/lexeme/{{ lexeme.id }}" title="{{ lexeme.notes }}">{{ lexeme.notes|truncatewords:5 }}</a></td>
+    <td>
+      {{ lexeme.notes|wikilink|truncatewords_html:5 }}
+      {% if lexeme.notes|is_truncated:5 %}
+      <a href="/lexeme/{{ lexeme.id }}" title="{{ lexeme.notes }}">
+        <img src="/media/buttons/view.png/" title="{{ lexeme.notes }}" />
+      </a>
+      {% endif %}
+    </td>  
     <td> 
       {% if lexeme.cognatejudgement_set.count %}
         {% for cj in lexeme.cognatejudgement_set.all %}
