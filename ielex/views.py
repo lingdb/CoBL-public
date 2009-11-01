@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
-# from django.shortcuts import render_to_response
 from django.template import Context
 from django.template.loader import get_template
+from django.contrib.auth.decorators import login_required
 from ielex.backup import backup
 from ielex.forms import *
 from ielex.lexicon.models import *
@@ -14,6 +14,7 @@ from ielex.utilities import next_alias, renumber_sort_keys
 
 # -- Database input, output and maintenance functions ------------------------------------------
 
+@login_required
 def make_backup(request):
     msg ="""\
     Backup successful! Use browser's BACK button to return to application."""
@@ -97,6 +98,7 @@ def view_languages(request):
     request.session["language_list_name"] = language_list_name
     return response
 
+@login_required
 def reorder_languages(request):
     if request.method == "POST":
         form = ReorderLanguageSortKeyForm(request.POST)
@@ -179,6 +181,7 @@ def report_language(request, language):
             {"language":language,
             "lexemes":lexemes})
 
+@login_required
 def edit_language(request, language):
     try:
         language = Language.objects.get(ascii_name=language)
@@ -186,6 +189,7 @@ def edit_language(request, language):
         language = get_canonical_language(language)
         return HttpResponseRedirect("/language/%s/edit/" %
                 language.ascii_name)
+
     if request.method == 'POST':
         form = EditLanguageForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
@@ -557,7 +561,8 @@ def source_list(request):
     for type_code, type_name in Source.TYPE_CHOICES:
         grouped_sources.append((type_name,
                 Source.objects.filter(type_code=type_code)))
-    return render_template(request, "source_list.html", {"grouped_sources":grouped_sources})
+    return render_template(request, "source_list.html",
+            {"grouped_sources":grouped_sources})
 
 
 
