@@ -58,11 +58,7 @@ def get_canonical_language(language):
     return language
 
 def get_sort_order(request):
-    if "language_sort_order" in request.COOKIES:
-        sort_order = request.COOKIES["language_sort_order"]
-    else:
-        sort_order="sort_key"
-    return sort_order
+    return request.session.get("language_sort_order", "sort_key")
 
 def get_languages(request):
     """Get all Language objects, respecting language_list selection"""
@@ -74,17 +70,13 @@ def get_languages(request):
     return languages
 
 def get_current_language_list(request):
-    """Get the current language list from cookie."""
-    if "language_list_name" in request.COOKIES:
-        language_list_name = request.COOKIES["language_list_name"]
-    else:
-        language_list_name = "all" # default
-    return language_list_name
+    """Get the current language list from session."""
+    return request.session.get("language_list_name", "all")
 
 # -- /language(s)/ ----------------------------------------------------------
 
 def view_languages(request):
-    language_list_name = request.COOKIES.get("language_list_name","all")
+    language_list_name = get_current_language_list(request)
 
     if request.method == 'POST':
         form = ChooseLanguageListForm(request.POST)
@@ -102,7 +94,7 @@ def view_languages(request):
             {"languages":languages,
             "form":form,
             "current_list":current_list})
-    response.set_cookie("language_list_name", language_list_name)
+    request.session["language_list_name"] = language_list_name
     return response
 
 def reorder_languages(request):
@@ -172,7 +164,7 @@ def sort_languages(request, ordered_by):
     except KeyError:
         referer = "/languages/"
     response = HttpResponseRedirect(referer)
-    response.set_cookie("language_sort_order", ordered_by)
+    request.session["language_sort_order"] = ordered_by
     return response
 
 def report_language(request, language):
