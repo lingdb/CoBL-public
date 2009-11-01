@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="/media/css/ielex.css" />
+    <link rel="stylesheet" type="text/css" href="/media/css/login.css" />
+    <link rel="stylesheet" type="text/css" media="print" href="/media/css/print.css" />
+</head>
+<body>
+  <div id="container">
+
+    <div id="top">
+    {% block top %}{% endblock %}
+    </div>
+
+    <div id="content">
+    {% block content %}{% endblock %}
+    </div>
+
+    <div id="footer">
+    {% block footer %}
+    <small><a href="/">Indo European LEXicon</a> version 0.2.2</small>
+    {% endblock %}
+    </div>
+  </div>
+</body>
+</html>
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
+

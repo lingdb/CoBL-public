@@ -1,13 +1,29 @@
-{% extends "base.html" %}
+{% extends "profiles/base.html" %}
 
-{% block title %}IELEX{% endblock %}
+{% block title %}IELex User Profile{% endblock %}
 
 {% block top %}
-<h1>User profile</h1>
+<h1><small>User profile: {{ user.username }}</small></h1>
 {% endblock %}
 
 {% block content %}
-
+  {% ifequal action "alter" %}
+  <form action="" method="post">
+    <table>
+      <tr><td>First name:</td><td>{{ form.first_name }}</td></tr>
+      <tr><td>Last name:</td><td>{{ form.last_name }}</td></tr>
+      <tr><td>Email address:</td><td>{{ form.email }}</td></tr>
+      <tr><td></td><td><input type="submit" value="Alter details"></td></tr>
+    </table>
+  </form>
+  {% else %}
+    <table>
+      <tr><td>First name:</td><td>{{ user.first_name }}</td></tr>
+      <tr><td>Last name:</td><td>{{ user.last_name }}</td></tr>
+      <tr><td>Email address:</td><td>{{ user.email }}</td></tr>
+      <tr><td></td><td><a href="/accounts/profile/alter/" class="button"><input type="button" value="Alter details"></a></td></tr>
+    </table>
+  {% endifequal %}
 {% endblock %}
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

@@ -1,12 +1,12 @@
-# import itertools
-from django.template.loader import get_template
-from django.template import Context
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
-from ielex.lexicon.models import *
-from ielex.forms import *
-from ielex.utilities import next_alias, renumber_sort_keys
+# from django.shortcuts import render_to_response
+from django.template import Context
+from django.template.loader import get_template
 from ielex.backup import backup
+from ielex.forms import *
+from ielex.lexicon.models import *
+from ielex.shortcuts import render_template
+from ielex.utilities import next_alias, renumber_sort_keys
 
 # Refactoring: rename the functions which render to response with the format
 # view_TEMPLATE_NAME(request, ...). Put subsiduary functions under their main
@@ -20,7 +20,7 @@ def make_backup(request):
     return HttpResponse(backup(msg))
 
 def view_frontpage(request):
-    return render_to_response("frontpage.html",
+    return render_template(request, "frontpage.html",
             {"lexemes":Lexeme.objects.count(),
             "cognate_classes":CognateSet.objects.count(),
             "languages":Language.objects.count(),
@@ -98,7 +98,7 @@ def view_languages(request):
 
     languages = Language.objects.all().order_by(get_sort_order(request)) 
     current_list = LanguageList.objects.get(name=language_list_name)
-    response = render_to_response("language_list.html",
+    response = render_template(request, "language_list.html",
             {"languages":languages,
             "form":form,
             "current_list":current_list})
@@ -124,7 +124,7 @@ def reorder_languages(request):
             return HttpResponseRedirect("/languages/")
     else: # first visit
         form = ReorderLanguageSortKeyForm()
-    return render_to_response("language_reorder.html",
+    return render_template(request, "language_reorder.html",
             {"form":form})
 
 def move_language_up_list(language):
@@ -183,7 +183,7 @@ def report_language(request, language):
         return HttpResponseRedirect("/language/%s/" %
                 language.ascii_name)
     lexemes = Lexeme.objects.filter(language=language).order_by("meaning")
-    return render_to_response("language_report.html",
+    return render_template(request, "language_report.html",
             {"language":language,
             "lexemes":lexemes})
 
@@ -207,7 +207,7 @@ def edit_language(request, language):
             return HttpResponseRedirect('/language/%s/' % language.ascii_name)
     else:
         form = EditLanguageForm(language.__dict__)
-    return render_to_response("language_edit.html",
+    return render_template(request, "language_edit.html",
             {"language":language,
             "form":form})
 
@@ -215,7 +215,7 @@ def edit_language(request, language):
 
 def view_meanings(request):
     meanings = Meaning.objects.all()
-    return render_to_response("meaning_list.html", {"meanings":meanings})
+    return render_template(request, "meaning_list.html", {"meanings":meanings})
 
 def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
     lexeme_id = int(lexeme_id)
@@ -266,7 +266,7 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
     else:
         add_cognate_judgement=lexeme_id
 
-    return render_to_response("meaning_report.html",
+    return render_template(request, "meaning_report.html",
             {"meaning":meaning,
             "lexemes": lexemes,
             "add_cognate_judgement":add_cognate_judgement,
@@ -429,7 +429,7 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             else:
                 assert not action
 
-    return render_to_response("lexeme_report.html",
+    return render_template(request, "lexeme_report.html",
             {"lexeme":lexeme,
             "action":action,
             "form":form,
@@ -479,7 +479,7 @@ def lexeme_add(request, meaning=None, language=None, lexeme_id=0, return_to=None
             form.fields["source_form"].initial = lexeme.source_form
             form.fields["phon_form"].initial = lexeme.phon_form
             form.fields["notes"].initial = lexeme.notes
-    return render_to_response("lexeme_add.html",
+    return render_template(request, "lexeme_add.html",
             {"form":form})
 
 # -- /cognate/ ------------------------------------------------------------
@@ -499,7 +499,7 @@ def cognate_report(request, cognate_id, action=""):
             form = EditCognateSetForm(cognate_class.__dict__)
     else:
         form = None
-    return render_to_response("cognate_report.html",
+    return render_template(request, "cognate_report.html",
             {"cognate_class":cognate_class,
              "form":form})
 
@@ -555,7 +555,7 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
             return HttpResponseRedirect('/sources/')
         else:
             form = None
-    return render_to_response('source_edit.html', {
+    return render_template(request, 'source_edit.html', {
             "form": form,
             "source":source,
             "action":action})
@@ -565,7 +565,7 @@ def source_list(request):
     for type_code, type_name in Source.TYPE_CHOICES:
         grouped_sources.append((type_name,
                 Source.objects.filter(type_code=type_code)))
-    return render_to_response("source_list.html", {"grouped_sources":grouped_sources})
+    return render_template(request, "source_list.html", {"grouped_sources":grouped_sources})
 
 
 

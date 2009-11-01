@@ -96,12 +96,14 @@ urlpatterns += patterns('',
         )
 
 urlpatterns += patterns('django.contrib.auth',
-    (r'^accounts/login/$','views.login', {'template_name': 'admin/login.html'}),
+    (r'^accounts/login/$','views.login', {'template_name': 'profiles/login.html'}),
     (r'^accounts/logout/$','views.logout'),
     )
 
 urlpatterns += patterns('',
     (r'^accounts/profile/$', 'ielex.profiles.views.view_profile'),
+    (r'^accounts/profile/alter/$', 'ielex.profiles.views.view_profile',
+        {"action":"alter"}),
     )
 
 if settings.DEBUG: # additional urls for testing purposes
