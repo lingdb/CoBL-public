@@ -1,6 +1,23 @@
 TODO
 ====
 
+for Version 0.3
+---------------
+
+- Implement permissions on all editing actions
+- fix logout view
+- change password view
+- report permissions in profile
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+General
+-------
+
+- Dynamically generate a more interesting Acknowledgements page
+
+- Include all relevant citations in export functions.
+
 - Check that the same alias isn't used twice for different cognates, same
   meaning (e.g. in the 'breathe/life' and 'animal' sets). Maybe: dynamically
   check that the list of aliases corresponds uniquely to a list of cognate
@@ -9,8 +26,8 @@ TODO
 
 - put some kind of icon for "reliability" against cognate aliases and lexemes
 
-- test what happens when you change a language name (does the data get lost)
+- test what happens when you change a language name (does the data get lost)?
 
 - Use http://docs.djangoproject.com/en/dev/howto/custom-management-commands/ to
-  make database-specific management functions (e.g. add users, dump data,
-  change superuser password, etc)
+  make database-specific management functions (e.g. add users, change user
+  permissions, change superuser password, etc)
