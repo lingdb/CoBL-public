@@ -1,12 +1,12 @@
-import itertools
-from django.template.loader import get_template
-from django.template import Context
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
-from ielex.lexicon.models import *
-from ielex.forms import *
-from ielex.utilities import next_alias, renumber_sort_keys
+from django.template import Context
+from django.template.loader import get_template
+from django.contrib.auth.decorators import login_required
 from ielex.backup import backup
+from ielex.forms import *
+from ielex.lexicon.models import *
+from ielex.shortcuts import render_template
+from ielex.utilities import next_alias, renumber_sort_keys
 
 # Refactoring: rename the functions which render to response with the format
 # view_TEMPLATE_NAME(request, ...). Put subsiduary functions under their main
@@ -14,13 +14,14 @@ from ielex.backup import backup
 
 # -- Database input, output and maintenance functions ------------------------------------------
 
+@login_required
 def make_backup(request):
     msg ="""\
     Backup successful! Use browser's BACK button to return to application."""
     return HttpResponse(backup(msg))
 
 def view_frontpage(request):
-    return render_to_response("frontpage.html",
+    return render_template(request, "frontpage.html",
             {"lexemes":Lexeme.objects.count(),
             "cognate_classes":CognateSet.objects.count(),
             "languages":Language.objects.count(),
@@ -58,11 +59,7 @@ def get_canonical_language(language):
     return language
 
 def get_sort_order(request):
-    if "language_sort_order" in request.COOKIES:
-        sort_order = request.COOKIES["language_sort_order"]
-    else:
-        sort_order="sort_key"
-    return sort_order
+    return request.session.get("language_sort_order", "sort_key")
 
 def get_languages(request):
     """Get all Language objects, respecting language_list selection"""
@@ -74,17 +71,13 @@ def get_languages(request):
     return languages
 
 def get_current_language_list(request):
-    """Get the current language list from cookie."""
-    if "language_list_name" in request.COOKIES:
-        language_list_name = request.COOKIES["language_list_name"]
-    else:
-        language_list_name = "all" # default
-    return language_list_name
+    """Get the current language list from session."""
+    return request.session.get("language_list_name", "all")
 
 # -- /language(s)/ ----------------------------------------------------------
 
 def view_languages(request):
-    language_list_name = request.COOKIES.get("language_list_name","all")
+    language_list_name = get_current_language_list(request)
 
     if request.method == 'POST':
         form = ChooseLanguageListForm(request.POST)
@@ -98,13 +91,14 @@ def view_languages(request):
 
     languages = Language.objects.all().order_by(get_sort_order(request)) 
     current_list = LanguageList.objects.get(name=language_list_name)
-    response = render_to_response("language_list.html",
+    response = render_template(request, "language_list.html",
             {"languages":languages,
             "form":form,
             "current_list":current_list})
-    response.set_cookie("language_list_name", language_list_name)
+    request.session["language_list_name"] = language_list_name
     return response
 
+@login_required
 def reorder_languages(request):
     if request.method == "POST":
         form = ReorderLanguageSortKeyForm(request.POST)
@@ -124,7 +118,7 @@ def reorder_languages(request):
             return HttpResponseRedirect("/languages/")
     else: # first visit
         form = ReorderLanguageSortKeyForm()
-    return render_to_response("language_reorder.html",
+    return render_template(request, "language_reorder.html",
             {"form":form})
 
 def move_language_up_list(language):
@@ -172,7 +166,7 @@ def sort_languages(request, ordered_by):
     except KeyError:
         referer = "/languages/"
     response = HttpResponseRedirect(referer)
-    response.set_cookie("language_sort_order", ordered_by)
+    request.session["language_sort_order"] = ordered_by
     return response
 
 def report_language(request, language):
@@ -183,10 +177,11 @@ def report_language(request, language):
         return HttpResponseRedirect("/language/%s/" %
                 language.ascii_name)
     lexemes = Lexeme.objects.filter(language=language).order_by("meaning")
-    return render_to_response("language_report.html",
+    return render_template(request, "language_report.html",
             {"language":language,
             "lexemes":lexemes})
 
+@login_required
 def edit_language(request, language):
     try:
         language = Language.objects.get(ascii_name=language)
@@ -194,6 +189,7 @@ def edit_language(request, language):
         language = get_canonical_language(language)
         return HttpResponseRedirect("/language/%s/edit/" %
                 language.ascii_name)
+
     if request.method == 'POST':
         form = EditLanguageForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
@@ -207,7 +203,7 @@ def edit_language(request, language):
             return HttpResponseRedirect('/language/%s/' % language.ascii_name)
     else:
         form = EditLanguageForm(language.__dict__)
-    return render_to_response("language_edit.html",
+    return render_template(request, "language_edit.html",
             {"language":language,
             "form":form})
 
@@ -215,7 +211,7 @@ def edit_language(request, language):
 
 def view_meanings(request):
     meanings = Meaning.objects.all()
-    return render_to_response("meaning_list.html", {"meanings":meanings})
+    return render_template(request, "meaning_list.html", {"meanings":meanings})
 
 def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
     lexeme_id = int(lexeme_id)
@@ -266,7 +262,7 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
     else:
         add_cognate_judgement=lexeme_id
 
-    return render_to_response("meaning_report.html",
+    return render_template(request, "meaning_report.html",
             {"meaning":meaning,
             "lexemes": lexemes,
             "add_cognate_judgement":add_cognate_judgement,
@@ -429,7 +425,7 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             else:
                 assert not action
 
-    return render_to_response("lexeme_report.html",
+    return render_template(request, "lexeme_report.html",
             {"lexeme":lexeme,
             "action":action,
             "form":form,
@@ -479,7 +475,7 @@ def lexeme_add(request, meaning=None, language=None, lexeme_id=0, return_to=None
             form.fields["source_form"].initial = lexeme.source_form
             form.fields["phon_form"].initial = lexeme.phon_form
             form.fields["notes"].initial = lexeme.notes
-    return render_to_response("lexeme_add.html",
+    return render_template(request, "lexeme_add.html",
             {"form":form})
 
 # -- /cognate/ ------------------------------------------------------------
@@ -499,7 +495,7 @@ def cognate_report(request, cognate_id, action=""):
             form = EditCognateSetForm(cognate_class.__dict__)
     else:
         form = None
-    return render_to_response("cognate_report.html",
+    return render_template(request, "cognate_report.html",
             {"cognate_class":cognate_class,
              "form":form})
 
@@ -555,7 +551,7 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
             return HttpResponseRedirect('/sources/')
         else:
             form = None
-    return render_to_response('source_edit.html', {
+    return render_template(request, 'source_edit.html', {
             "form": form,
             "source":source,
             "action":action})
@@ -565,7 +561,8 @@ def source_list(request):
     for type_code, type_name in Source.TYPE_CHOICES:
         grouped_sources.append((type_name,
                 Source.objects.filter(type_code=type_code)))
-    return render_to_response("source_list.html", {"grouped_sources":grouped_sources})
+    return render_template(request, "source_list.html",
+            {"grouped_sources":grouped_sources})
 
 
 

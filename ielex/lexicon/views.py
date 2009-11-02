@@ -1,15 +1,18 @@
 from textwrap import dedent
 import time
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
+# from django.shortcuts import render_to_response
 from ielex.lexicon.models import *
+from ielex.shortcuts import render_template
 from ielex.views import get_sort_order
 
 def list_nexus(request):
-    return render_to_response("nexus_list.html", 
+    return render_template(request, "nexus_list.html", 
             {"language_lists":LanguageList.objects.all().extra(
-                select={"lower_name":"lower(name)"}).order_by("lower_name")})
+                    select={"lower_name":"lower(name)"}).order_by("lower_name")})
 
+@login_required
 def write_nexus(request, language_list=None):
     # TODO: this currently ignores whether cognates are coded as "dubious" or
     # not.

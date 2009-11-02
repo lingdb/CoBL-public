@@ -3,29 +3,14 @@
 <head>
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="/media/css/ielex.css" />
+    <link rel="stylesheet" type="text/css" href="/media/css/login.css" />
     <link rel="stylesheet" type="text/css" media="print" href="/media/css/print.css" />
 </head>
 <body>
   <div id="container">
 
     <div id="top">
-      <div id="login">
-        {% if user.is_authenticated %}
-        {{ user.username }} <small>[<a href="/accounts/logout/">logout</a>]</small>
-        {% else %}
-          <a href="/accounts/login/">login</a>
-        {% endif %}
-        <a href="/backup/"><img src="/media/buttons/save-backup.png" alt="Backup" title="Make backup of database (slow!)" /></a>
-      </div>
     {% block top %}{% endblock %}
-    </div>
-
-    <div id="controls">
-    {% block controls %}{% endblock %}
-    <div id="debug">
-    <strong>DEBUG</strong>
-    {% block debug %}{% endblock %}
-    </div>
     </div>
 
     <div id="content">
@@ -33,9 +18,6 @@
     </div>
 
     <div id="footer">
-      {# <div id="sitemap"> #}
-      {#   {% block sitemap %} {% endblock %} #}
-      {# </div> #}
     {% block footer %}
     <small>Indo European LEXicon version {{ version }}</small>
     {% endblock %}
@@ -45,4 +27,3 @@
 </html>
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
-

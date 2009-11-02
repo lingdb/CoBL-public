@@ -91,9 +91,20 @@ urlpatterns = patterns('',
     )
 
 urlpatterns += patterns('',
-        (r'nexus/$', 'ielex.lexicon.views.list_nexus'),
-        (r'nexus/(?P<language_list>[a-zA-Z0-9_ ]+)/$', 'ielex.lexicon.views.write_nexus'),
+        (r'^nexus/$', 'ielex.lexicon.views.list_nexus'),
+        (r'^nexus/(?P<language_list>[a-zA-Z0-9_ ]+)/$', 'ielex.lexicon.views.write_nexus'),
         )
+
+urlpatterns += patterns('django.contrib.auth',
+    (r'^accounts/login/$','views.login', {'template_name': 'profiles/login.html'}),
+    (r'^accounts/logout/$','views.logout'),
+    )
+
+urlpatterns += patterns('',
+    (r'^accounts/profile/$', 'ielex.profiles.views.view_profile'),
+    (r'^accounts/profile/alter/$', 'ielex.profiles.views.view_profile',
+        {"action":"alter"}),
+    )
 
 if settings.DEBUG: # additional urls for testing purposes
     urlpatterns += patterns('',
