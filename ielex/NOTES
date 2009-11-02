@@ -13,11 +13,13 @@ TODO
 - test what happens when you change a language name (does the data get lost)
 - I should be able to replace cookies with request.session from
   SessionMiddleware (http://www.djangobook.com/en/2.0/chapter14/#cn36)
+- Use http://docs.djangoproject.com/en/dev/howto/custom-management-commands/ to
+  make database-specific management functions (e.g. add users, dump data, etc)
 
 Icons
 -----
 
- Sweetie BasePack ::
+I'm using Sweetie BasePack ::
 
    Author:  Joseph North
    Email:   sublick@gmail.com
