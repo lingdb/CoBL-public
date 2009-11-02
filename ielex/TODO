@@ -1,0 +1,16 @@
+TODO
+====
+
+- Check that the same alias isn't used twice for different cognates, same
+  meaning (e.g. in the 'breathe/life' and 'animal' sets). Maybe: dynamically
+  check that the list of aliases corresponds uniquely to a list of cognate
+  sets, and apply a new alias to one of the forms (would have to check against
+  the aliases used by the other meanings corresponding to the form as well).
+
+- put some kind of icon for "reliability" against cognate aliases and lexemes
+
+- test what happens when you change a language name (does the data get lost)
+
+- Use http://docs.djangoproject.com/en/dev/howto/custom-management-commands/ to
+  make database-specific management functions (e.g. add users, dump data,
+  change superuser password, etc)

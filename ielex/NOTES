@@ -1,30 +1,6 @@
 DESIGN
 ======
 
-TODO
-====
-
-- Check that the same alias isn't used twice for different cognates, same
-  meaning (e.g. in the 'breathe/life' and 'animal' sets). Maybe: dynamically
-  check that the list of aliases corresponds uniquely to a list of cognate
-  sets, and apply a new alias to one of the forms (would have to check against
-  the aliases used by the other meanings corresponding to the form as well).
-- put some kind of icon for "reliability" against cognate aliases and lexemes
-- test what happens when you change a language name (does the data get lost)
-- I should be able to replace cookies with request.session from
-  SessionMiddleware (http://www.djangobook.com/en/2.0/chapter14/#cn36)
-- Use http://docs.djangoproject.com/en/dev/howto/custom-management-commands/ to
-  make database-specific management functions (e.g. add users, dump data, etc)
-
-Icons
------
-
-I'm using Sweetie BasePack ::
-
-   Author:  Joseph North
-   Email:   sublick@gmail.com
-   Licence: Attribution-ShareAlike 3.0
-   Website: sweetie.sublink.ca
 
 Julia's suggestions
 -------------------
@@ -70,6 +46,11 @@ set five::
 
   CognateSet.objects.get(id=5).lexeme_set.values_list("language", flat=True)
 
+To get this to respect cognate judgement reliability::
+
+  CognateSet.objects.get(id=5).cognatejudgement_set.filter(
+    cognatejudgementcitation__reliability="A").values_list(
+    "lexeme__language", flat=True)
 
 Joins
 -----
@@ -174,5 +155,15 @@ vim
 When lots of tabs open::
 
   set guitablabel=%t
+
+Icons
+-----
+
+I'm using Sweetie BasePack ::
+
+   Author:  Joseph North
+   Email:   sublick@gmail.com
+   Licence: Attribution-ShareAlike 3.0
+   Website: sweetie.sublink.ca
 
 .. vim:ft=rst

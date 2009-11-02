@@ -72,8 +72,8 @@ class CognateSet(models.Model):
     def __unicode__(self):
         return unicode(self.id)
 
-    class Meta:
-        ordering = ["alias"]
+    # class Meta:
+    #     ordering = ["alias"]
 
 class DyenCognateSet(models.Model):
     cognate_class = models.ForeignKey(CognateSet)
