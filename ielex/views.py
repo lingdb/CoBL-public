@@ -8,11 +8,14 @@ from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
 from ielex.utilities import next_alias, renumber_sort_keys
 
-# Refactoring: rename the functions which render to response with the format
+# Refactoring: 
+# - rename the functions which render to response with the format
 # view_TEMPLATE_NAME(request, ...). Put subsiduary functions under their main
 # caller.
+# - make the names of the functions reflect whether or not the @login_required
+# or permissions decorators are required.
 
-# -- Database input, output and maintenance functions ------------------------------------------
+# -- Database input, output and maintenance functions ------------------------
 
 @login_required
 def make_backup(request):
@@ -61,7 +64,7 @@ def get_canonical_language(language):
 def get_sort_order(request):
     return request.session.get("language_sort_order", "sort_key")
 
-def get_languages(request):
+def get_languages(request ):
     """Get all Language objects, respecting language_list selection"""
     language_list_name = get_current_language_list(request)
     sort_order = get_sort_order(request)
@@ -71,8 +74,29 @@ def get_languages(request):
     return languages
 
 def get_current_language_list(request):
-    """Get the current language list from session."""
+    """Get the name of the current language list from session."""
     return request.session.get("language_list_name", "all")
+
+def get_prev_and_next_languages(request, current_language):
+    language_list_name = get_current_language_list(request)
+    ids = list(get_languages(request).values_list("id", flat=True))
+    current_idx = ids.index(current_language.id)
+    prev_language = Language.objects.get(id=ids[current_idx-1])
+    try:
+        next_language = Language.objects.get(id=ids[current_idx+1])
+    except IndexError:
+        next_language = Language.objects.get(id=ids[0])
+    return (prev_language, language_list_name, next_language)
+
+def get_prev_and_next_meanings(current_meaning):
+    ids = list(Meaning.objects.values_list("id", flat=True))
+    current_idx = ids.index(current_meaning.id)
+    prev_meaning = Meaning.objects.get(id=ids[current_idx-1])
+    try:
+        next_meaning = Meaning.objects.get(id=ids[current_idx+1])
+    except IndexError:
+        next_meaning = Meaning.objects.get(id=ids[0])
+    return (prev_meaning, next_meaning)
 
 # -- /language(s)/ ----------------------------------------------------------
 
@@ -161,6 +185,7 @@ def move_language_down_list(language):
     return
 
 def sort_languages(request, ordered_by):
+    """Change the selected sort order via url"""
     try:
         referer = request.META["HTTP_REFERER"]
     except KeyError:
@@ -177,9 +202,15 @@ def report_language(request, language):
         return HttpResponseRedirect("/language/%s/" %
                 language.ascii_name)
     lexemes = Lexeme.objects.filter(language=language).order_by("meaning")
+    prev_language, language_list_name, next_language = \
+            get_prev_and_next_languages(request, language)
     return render_template(request, "language_report.html",
             {"language":language,
-            "lexemes":lexemes})
+            "lexemes":lexemes,
+            "prev_language":prev_language,
+            "next_language":next_language,
+            "language_list_name":language_list_name
+            })
 
 @login_required
 def edit_language(request, language):
@@ -261,9 +292,11 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
         add_cognate_judgement=0 # to lexeme
     else:
         add_cognate_judgement=lexeme_id
-
+    prev_meaning, next_meaning = get_prev_and_next_meanings(meaning)
     return render_template(request, "meaning_report.html",
             {"meaning":meaning,
+            "prev_meaning":prev_meaning,
+            "next_meaning":next_meaning,
             "lexemes": lexemes,
             "add_cognate_judgement":add_cognate_judgement,
             "edit_cognate_judgement":cogjudge_id,
