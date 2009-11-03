@@ -1,6 +1,26 @@
 DESIGN
 ======
 
+Permissions
+-----------
+
+edit database (no reason to split add/change/delete)
+add users
+export data
+change permissions
+
+This maybe doesn't make sense: we could allow all logged in users to edit the
+database, and allow superusers to do the admin tasks. But maybe it makes sense
+to distinguish registered downloaders from people empowered to edit the
+database.
+
+Groups: 
+
+Administrator
+Contributor
+Registered User (downloader/commenter)
+
+Each group gets the cumulative permissions of the other groups
 
 Julia's suggestions
 -------------------
@@ -32,6 +52,14 @@ different meanign sets, e.g. /meaning/dust+blow+smoke/
 
 TECHNICAL NOTES
 ===============
+
+Tagging
+-------
+
+The generic relation/generic foreign key functions in the ContentTypes app
+(used e.g. for implementing tagging) could be used to track what users have
+done.
+
 
 Debugging
 ---------

@@ -12,8 +12,6 @@ from ielex.utilities import next_alias, renumber_sort_keys
 # - rename the functions which render to response with the format
 # view_TEMPLATE_NAME(request, ...). Put subsiduary functions under their main
 # caller.
-# - make the names of the functions reflect whether or not the @login_required
-# or permissions decorators are required.
 
 # -- Database input, output and maintenance functions ------------------------
 

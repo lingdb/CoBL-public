@@ -7,12 +7,18 @@ for Version 0.3
 - Implement permissions on all editing actions
 - fix logout view
 - change password view
-- report permissions in profile
+- report permissions/group membership in profile
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 General
 -------
+
+- the login_required decorator can be applied in the urls.py file, e.g.::
+
+  from django.contrib.auth.decorators import login_required
+  (r'^the_url/', myapp.views.function),
+  (r'^the_url/edit/', login_required(myapp.views.function), {"edit":True}),
 
 - Dynamically generate a more interesting Acknowledgements page
 
