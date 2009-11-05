@@ -111,9 +111,16 @@ h2 {
   border-top: 1px solid gray;
 }
 
-#debug {
-  display: none; /* comment this out to show debug messages */
-  padding: 3px;
-  background-color: #ccc;
-  border: 2px dashed #306;
+#message td {
+  padding: 6px;
 }
+
+#message tr.odd {
+  color: #ccc;
+  background-color: #360;
+  }
+
+#message tr.even {
+  color: #360;
+  background-color: #ccc;
+  }

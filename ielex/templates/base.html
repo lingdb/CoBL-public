@@ -22,10 +22,17 @@
 
     <div id="controls">
     {% block controls %}{% endblock %}
-    <div id="debug">
-    <strong>DEBUG</strong>
-    {% block debug %}{% endblock %}
+    {% if messages %}
+    {# user.message_set.create(message="This is a test message") #}
+    <div id="message">
+      <table>
+        <tr class="odd"><td>Message{{ messages|length|pluralize }}:</td></tr>
+      {% for message in messages %}
+      <tr class="even"><td>{{ message }}</td></tr>
+      {% endfor %}
+      </table>
     </div>
+    {% endif %}
     </div>
 
     <div id="content">

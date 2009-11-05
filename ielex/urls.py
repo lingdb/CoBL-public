@@ -15,8 +15,8 @@ urlpatterns = patterns('',
     url(r'^backup/$', make_backup),
 
     # Languages
-    url(r'^languages/$', view_languages, name="view-languages"),
-    url(r'^languages/reorder/$', reorder_languages, name="language-reorder"),
+    url(r'^languages/$', view_language_list, name="view-languages"),
+    url(r'^languages/reorder/$', view_language_reorder, name="language-reorder"),
     url(r'^languages/sort/(?P<ordered_by>sort_key|ascii_name)/$', sort_languages,
             name="language-sort"),
 
@@ -96,8 +96,10 @@ urlpatterns += patterns('',
         )
 
 urlpatterns += patterns('django.contrib.auth',
-    (r'^accounts/login/$','views.login', {'template_name': 'profiles/login.html'}),
-    (r'^accounts/logout/$','views.logout'),
+    (r'^accounts/login/$','views.login', {'template_name':
+        'profiles/login.html'}),
+    (r'^accounts/logout/$','views.logout', {'template_name':
+        'profiles/logout.html'}),
     )
 
 urlpatterns += patterns('',

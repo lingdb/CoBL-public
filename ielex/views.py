@@ -2,6 +2,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context
 from django.template.loader import get_template
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import AnonymousUser
 from ielex.backup import backup
 from ielex.forms import *
 from ielex.lexicon.models import *
@@ -17,9 +18,13 @@ from ielex.utilities import next_alias, renumber_sort_keys
 
 @login_required
 def make_backup(request):
-    msg ="""\
-    Backup successful! Use browser's BACK button to return to application."""
-    return HttpResponse(backup(msg))
+    try:
+        referer = request.META["HTTP_REFERER"]
+    except KeyError:
+        referer = "/"
+    msg=backup()
+    request.user.message_set.create(message=msg)
+    return HttpResponseRedirect(referer)
 
 def view_frontpage(request):
     return render_template(request, "frontpage.html",
@@ -98,7 +103,7 @@ def get_prev_and_next_meanings(current_meaning):
 
 # -- /language(s)/ ----------------------------------------------------------
 
-def view_languages(request):
+def view_language_list(request):
     language_list_name = get_current_language_list(request)
 
     if request.method == 'POST':
@@ -106,6 +111,10 @@ def view_languages(request):
         if form.is_valid():
             current_list = form.cleaned_data["language_list"]
             language_list_name = current_list.name
+            msg = "Language list selection changed to '%s'" %\
+                    language_list_name
+            if request.user.is_authenticated():
+                request.user.message_set.create(message=msg)
     else:
         form = ChooseLanguageListForm()
     form.fields["language_list"].initial = LanguageList.objects.get(
@@ -121,7 +130,7 @@ def view_languages(request):
     return response
 
 @login_required
-def reorder_languages(request):
+def view_language_reorder(request):
     if request.method == "POST":
         form = ReorderLanguageSortKeyForm(request.POST)
         if form.is_valid():
@@ -188,9 +197,8 @@ def sort_languages(request, ordered_by):
         referer = request.META["HTTP_REFERER"]
     except KeyError:
         referer = "/languages/"
-    response = HttpResponseRedirect(referer)
     request.session["language_sort_order"] = ordered_by
-    return response
+    return HttpResponseRedirect(referer)
 
 def report_language(request, language):
     try:
