@@ -180,7 +180,7 @@ http://stackoverflow.com/questions/550632/favorite-django-tips-features/559972#5
 vim
 ---
 
-When lots of tabs open::
+When lots of tabs open, shorted the labels with::
 
   set guitablabel=%t
 

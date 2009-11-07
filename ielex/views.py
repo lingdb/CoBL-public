@@ -1,8 +1,9 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import AnonymousUser
+from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context
 from django.template.loader import get_template
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import AnonymousUser
 from ielex.backup import backup
 from ielex.forms import *
 from ielex.lexicon.models import *
@@ -534,8 +535,12 @@ def cognate_report(request, cognate_id, action=""):
             form = EditCognateSetForm(cognate_class.__dict__)
     else:
         form = None
+    sort_order = "lexeme__language__%s" % get_sort_order(request)
+    cj_ordered = cognate_class.cognatejudgement_set.filter(
+            lexeme__language__in=get_languages(request)).order_by(sort_order)
     return render_template(request, "cognate_report.html",
             {"cognate_class":cognate_class,
+            "cj_ordered":cj_ordered,
              "form":form})
 
 # -- /source/ -------------------------------------------------------------

@@ -41,9 +41,6 @@ General
 Stack Overflow
 --------------
 
-- Ask the best way to get previous and next objects from a filtered, ordered
-  queryset.
-
 - Find out how to send messages to AnonymousUser objects
 
   file://localhost/Users/micdunn/Documents/Django-1.1/docs/_build/html/topics/auth.html#django.contrib.auth.models.User.message_set.create
@@ -53,5 +50,7 @@ Stack Overflow
     framework."
 
   There is no obvious explanation here however.
+
+  **I've starred an answer to this**
 
 - Why must I install the Sites app to use the flatpages app?

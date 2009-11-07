@@ -114,6 +114,9 @@ class CognateJudgement(models.Model):
     def __unicode__(self):
         return unicode(self.id)
 
+    # class Meta:
+    #     order_with_respect_to = "lexeme" # which are ordered by language
+
 class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A
     default list, named 'all' is (re)created on save/delete of the Language
