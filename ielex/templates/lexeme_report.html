@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load lexicon_utils %}
 {% block title %}Lexeme report{% endblock %}
 
 {% block top %}<h1>{% include "snippets/language_lexeme.html" %}</h1>{% endblock %}
@@ -22,7 +23,8 @@
 </tr>
 <tr><td class="rowname">Cognate codes:</td>
     <td>{% for cs in lexeme.cognate_class.all %}
-                {{ cs.alias }}{% if forloop.last %}{% else %}, {% endif %}
+      <a href="/cognate/{{ cs.id }}/">{{ cs.alias }}</a>
+      {% if forloop.last %}{% else %}, {% endif %}
         {% endfor %}</td>
 </tr>
 </table>
@@ -44,10 +46,11 @@
 <tr><td class="rowname">Meaning:</td><td><a href="/meaning/{{ lexeme.meaning.gloss }}">{{ lexeme.meaning.gloss }}</a></td></tr>
 <tr><td class="rowname">Source form:</td><td>{{ lexeme.source_form }}</td></tr>
 <tr><td class="rowname">Phonological form:</td><td>{{ lexeme.phon_form }}</td></tr>
-<tr><td class="rowname">Notes:</td><td>{{ lexeme.notes }}</td></tr>
+<tr><td class="rowname">Notes:</td><td>{{ lexeme.notes|wikilink }}</td></tr>
 <tr><td class="rowname">Cognate codes:</td>
     <td>{% for cs in lexeme.cognate_class.all %}
-                {{ cs.alias }}{% if forloop.last %}{% else %}, {% endif %}
+      <a href="/cognate/{{ cs.id }}/">{{ cs.alias }}</a>
+      {% if forloop.last %}{% else %}, {% endif %}
         {% endfor %}</td>
 </tr>
 </table>

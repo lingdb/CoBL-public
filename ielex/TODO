@@ -9,6 +9,17 @@ for Version 0.3
 - change password view
 - report permissions/group membership in profile
 
+- Check that the same alias isn't used twice for different cognates, same
+  meaning (e.g. in the 'breathe/life' and 'animal' sets). 
+  
+  Maybe: dynamically check that the list of aliases corresponds uniquely to a
+  list of cognate sets, and apply a new alias to one of the forms (would have
+  to check against the aliases used by the other meanings corresponding to the
+  form as well).
+
+  Maybe: test for alias collisions with a post-save hook and rename the alias
+  if it should ever occur.
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 General
@@ -23,12 +34,6 @@ General
 - Dynamically generate a more interesting Acknowledgements page
 
 - Include all relevant citations in export functions.
-
-- Check that the same alias isn't used twice for different cognates, same
-  meaning (e.g. in the 'breathe/life' and 'animal' sets). Maybe: dynamically
-  check that the list of aliases corresponds uniquely to a list of cognate
-  sets, and apply a new alias to one of the forms (would have to check against
-  the aliases used by the other meanings corresponding to the form as well).
 
 - put some kind of icon for "reliability" against cognate aliases and lexemes
 

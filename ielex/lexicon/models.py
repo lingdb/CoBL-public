@@ -170,3 +170,16 @@ def update_language_list_all(sender, instance, **kwargs):
     return
 models.signals.post_save.connect(update_language_list_all, sender=Language)
 models.signals.post_delete.connect(update_language_list_all, sender=Language)
+
+
+# def update_aliases(sender, instance, **kwargs):
+#     """In case a cognate set has cognate judgements relating to two or more
+#     meanings, make sure that the cognate set alias doesn't collide with any
+#     other the others"""
+#     meanings = cs.cognatejudgement_set.values_list("lexeme__meaning",
+#             flat=True).distinct()
+#     if meanings.count() > 1:
+#         for meaning in meanings:
+#             # do something
+# 
+

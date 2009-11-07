@@ -22,7 +22,7 @@
       <img src="/media/buttons/edit-pencil.png" />
     </a>
   </legend>
-  {{ cognate_class.notes }}
+  {{ cognate_class.notes|wikilink }}
   {% endif %}
 </fieldset>
 <table>
@@ -31,6 +31,7 @@
       <th>Count</th>
       <th>Language</th>
       <th>Lexeme</th>
+      <th>Phonological</th>
       <th>Meaning</th>
       <th>Notes</th>
     </tr>
@@ -45,8 +46,9 @@
         </a>
       </td>
       <td>{{ cj.lexeme.source_form }}</td>
-      <td>{{ cj.lexeme.meaning.gloss }}</td>
-      <td>{{ cj.lexeme.notes }}</td>
+      <td>{{ cj.lexeme.phon_form }}</td>
+      <td><a href="/meaning/{{ cj.lexeme.meaning.gloss }}/">{{ cj.lexeme.meaning.gloss }}</a></td>
+      <td>{{ cj.lexeme.notes|wikilink }}</td>
       <td>
         <a href="/lexeme/{{ cj.lexeme.id }}">
           <img src="/media/buttons/view.png" alt="View" title="View/edit the lexical entry" />
