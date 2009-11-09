@@ -8,7 +8,11 @@ Major features
 0.2   Basic (all basic data input features in place)
 0.2.1 Development: focus on usability
 0.2.2 Usable form on the basic program
-0.2.3 Version in production
+0.2.3 Version in production (Julia adding data)
+0.2.4 Integrating the authentication system
+
+0.3   -> when editing buttons on the template have been wrapped with permission
+      checks
 
 TODO
 ====
@@ -20,6 +24,8 @@ Major features
 * Reversion
 * Authentication
 * Comments
+* Tagging/issue tracking system (maybe integrated with comment system, but
+  probably not)
 
 Minor features
 --------------
