@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     # Front Page
     url(r'^$', view_frontpage, name="view-frontpage"),
     url(r'^backup/$', make_backup),
+    url(r'^recent/$', view_recent),
 
     # Languages
     url(r'^languages/$', view_language_list, name="view-languages"),

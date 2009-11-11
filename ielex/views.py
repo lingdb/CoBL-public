@@ -1,3 +1,4 @@
+import datetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import AnonymousUser
 from django.core.paginator import Paginator
@@ -34,6 +35,18 @@ def view_frontpage(request):
             "languages":Language.objects.count(),
             "meanings":Meaning.objects.count(),
             "coded_characters":CognateJudgement.objects.count()})
+
+def view_recent(request):
+    """Recent changes"""
+    recent_changes = []
+    #last_week = datetime.datetime.now() - datetime.timedelta(days=7)
+    recent_changes.extend(
+       CognateJudgement.objects.all().order_by("modified").reverse()[:100])
+    recent_changes.extend(
+            Lexeme.objects.filter(modified__gt=recent_changes[99].modified).order_by("modified"))
+    return render_template(request, "recent_changes.html",
+            {"recent":recent_changes})
+
 
 # -- General purpose queries and functions -----------------------------------
 
