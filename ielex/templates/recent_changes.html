@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}IELEX Recent Changes{% endblock %}
+
+{% block top %}
+<h1>Recent Changes</h1>
+{% endblock %}
+
+{% block content %}
+Changes in Cognate Judgements
+<table>
+  <thead> {# handy for the print view #}
+    <tr>
+      <th>Language</th>
+      <th>Lexeme</th>
+      <th>Cogset</th>
+      <th>Meaning</th>
+      <th>Last Modified</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for cj in recent %}
+    <tr class="{% cycle 'odd' 'even' %}">
+      <td><a href="/language/{{ cj.lexeme.language.ascii_name }}/">{{ cj.lexeme.language.utf8_name }}</a></td>
+      <td><a href="/lexeme/{{ cj.lexeme.id }}/">{{ cj.lexeme.source_form }}</a></td>
+      <td><a href="/cognate/{{ cj.cognate_class.id }}/">{{ cj.cognate_class.alias }}</a></td>
+      <td><a href="/meaning/{{ cj.lexeme.meaning.gloss }}/">{{ cj.lexeme.meaning.gloss }}</a></td>
+      <td>{{ cj.modified|date:"G:i d-M-Y" }}</td>
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
