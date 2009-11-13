@@ -24,7 +24,8 @@ for Version 0.3
   if it should ever occur.
 
 - Need a many to many table linking cognate sets to sources: in lots of cases
-  we have general information about the reconstructed form.
+  we have general information about the reconstructed form: or we could add
+  proto-Indo-European to the language list.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -65,3 +66,6 @@ Stack Overflow
   **I've starred an answer to this**
 
 - Why must I install the Sites app to use the flatpages app?
+
+- How can I add extra choices to a selection drop down otherwise based on a
+  query?
