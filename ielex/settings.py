@@ -71,9 +71,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     )
 
 MIDDLEWARE_CLASSES = (
+    'django.middleware.transaction.TransactionMiddleware',
     'django.middleware.common.CommonMiddleware', # provides APPEND_SLASH
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'reversion.middleware.RevisionMiddleware',
 )
 
 ROOT_URLCONF = 'ielex.urls'
@@ -88,6 +90,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     # 'django.contrib.sites',
     'django.contrib.admin',
+    'reversion',
     'ielex.lexicon',
 )
 

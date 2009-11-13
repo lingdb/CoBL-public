@@ -69,3 +69,5 @@ Stack Overflow
 
 - How can I add extra choices to a selection drop down otherwise based on a
   query?
+
+- Django reversion: retrospectively adding my models to the reversion table...

@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^$', view_frontpage, name="view-frontpage"),
     url(r'^backup/$', make_backup),
     url(r'^recent/$', view_recent),
+    url(r'^changes/$', view_changes),
 
     # Languages
     url(r'^languages/$', view_language_list, name="view-languages"),

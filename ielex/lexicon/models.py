@@ -1,4 +1,5 @@
 from django.db import models
+import reversion
 
 class Source(models.Model):
 
@@ -21,6 +22,8 @@ class Source(models.Model):
     class Meta:
         ordering = ["type_code", "citation_text"]
 
+reversion.register(Source)
+
 class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
     ascii_name = models.CharField(max_length=999)
@@ -32,6 +35,8 @@ class Language(models.Model):
 
     class Meta:
         ordering = ["sort_key", "utf8_name"]
+
+reversion.register(Language)
 
 class DyenName(models.Model):
     language = models.ForeignKey(Language)
@@ -54,26 +59,17 @@ class Meaning(models.Model):
     class Meta:
         ordering = ["gloss"]
 
+reversion.register(Meaning)
+
 class CognateSet(models.Model):
     alias = models.CharField(max_length=3)
     notes = models.TextField()
     modified = models.DateTimeField(auto_now=True)
 
-    # def _get_meaning_set(self):
-    #     return set([cj.lexeme.meaning for cj in self.cognatejudgement_set.all()])
-    # meaning_set = property(_get_meaning_set)
-
-    # def _get_meaning(self):
-    #     """This will cause problems when/if the database has cognate sets
-    #     providing reflexes for more than one meaning"""
-    #     return self._get_meaning_set().pop()
-    # meaning = property(_get_meaning) # treat as an attribute
-
     def __unicode__(self):
         return unicode(self.id)
 
-    # class Meta:
-    #     ordering = ["alias"]
+reversion.register(CognateSet)
 
 class DyenCognateSet(models.Model):
     cognate_class = models.ForeignKey(CognateSet)
@@ -105,6 +101,8 @@ class Lexeme(models.Model):
     class Meta:
         order_with_respect_to = "language"
 
+reversion.register(Lexeme)
+
 class CognateJudgement(models.Model):
     lexeme = models.ForeignKey(Lexeme)
     cognate_class = models.ForeignKey(CognateSet)
@@ -114,8 +112,7 @@ class CognateJudgement(models.Model):
     def __unicode__(self):
         return unicode(self.id)
 
-    # class Meta:
-    #     order_with_respect_to = "lexeme" # which are ordered by language
+reversion.register(CognateJudgement)
 
 class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A
@@ -138,6 +135,8 @@ class LanguageList(models.Model):
     class Meta:
         ordering = ["name"]
 
+reversion.register(LanguageList)
+
 class CognateJudgementCitation(models.Model):
     cognate_judgement = models.ForeignKey(CognateJudgement)
     source = models.ForeignKey(Source)
@@ -145,6 +144,8 @@ class CognateJudgementCitation(models.Model):
     reliability = models.CharField(max_length=1, choices=Source.RELIABILITY_CHOICES)
     comment = models.CharField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
+
+reversion.register(CognateJudgementCitation)
 
 class LexemeCitation(models.Model):
     lexeme = models.ForeignKey(Lexeme)
@@ -154,6 +155,7 @@ class LexemeCitation(models.Model):
     comment = models.CharField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
 
+reversion.register(LexemeCitation)
 
 
 def update_language_list_all(sender, instance, **kwargs):

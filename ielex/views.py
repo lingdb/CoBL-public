@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context
 from django.template.loader import get_template
+from reversion.models import Version
 from ielex.backup import backup
 from ielex.forms import *
 from ielex.lexicon.models import *
@@ -39,7 +40,6 @@ def view_frontpage(request):
 def view_recent(request):
     """Recent changes"""
     recent_changes = []
-    #last_week = datetime.datetime.now() - datetime.timedelta(days=7)
     recent_changes.extend(
        CognateJudgement.objects.all().order_by("modified").reverse()[:100])
     recent_changes.extend(
@@ -47,6 +47,11 @@ def view_recent(request):
     return render_template(request, "recent_changes.html",
             {"recent":recent_changes})
 
+def view_changes(request):
+    """Recent changes"""
+    recent_changes = Version.objects.all().order_by("id").reverse()
+    return render_template(request, "view_changes.html",
+            {"changes":recent_changes})
 
 # -- General purpose queries and functions -----------------------------------
 

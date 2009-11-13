@@ -1,6 +1,21 @@
 DESIGN
 ======
 
+Reversion
+---------
+
+when registering models with the Reversion low level API, you can tell it to
+follow foriegn keys, either directly::
+
+  reversion.register(CognateJudgement, follow=["lexeme", "cognate_class"])
+
+or backwards::
+
+  reversion.register(Lexeme, follow=["cognate_judgement_set"])
+
+This only makes sense in cases where two models are changed at once. It looks
+like this might not be necessary.
+
 Permissions
 -----------
 
