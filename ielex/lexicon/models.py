@@ -206,8 +206,9 @@ def update_language_list_all(sender, instance, **kwargs):
         ll = LanguageList.objects.get(name="all")
     except:
         ll = LanguageList.objects.create(name="all")
-    ll.language_id_list = [l.id for l in Language.objects.all()]
-    ll.save(force_update=True)
+    if ll.language_id_list != list(Language.objects.values_list("id", flat=True)):
+        ll.language_id_list = [l.id for l in Language.objects.all()]
+        ll.save(force_update=True)
     return
 
 models.signals.post_save.connect(update_language_list_all, sender=Language)

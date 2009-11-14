@@ -23,13 +23,13 @@ urlpatterns = patterns('',
             name="language-sort"),
 
     # Language
-    url(r'^language/([a-zA-Z0-9_ ]+)/$', report_language,
+    url(r'^language/([a-zA-Z0-9_ -]+)/$', report_language,
             name="language-report"), # usage {% url language-report English %}
-    url(r'^language/(?P<language>[a-zA-Z0-9_ ]+)/edit/$', edit_language,
+    url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/edit/$', edit_language,
             name="language-edit"),
-    url(r'^language/(?P<language>[a-zA-Z0-9_ ]+|\d+)/add-lexeme/',
+    url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/add-lexeme/',
             lexeme_add, {"return_to":"/language/%(language)s/"}),
-    url(r'^language/(?P<language>[a-zA-Z0-9_ ]+|\d+)/add-lexeme/(?P<meaning>[a-zA-Z0-9_ ]+)/',
+    url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/add-lexeme/(?P<meaning>[a-zA-Z0-9_ ]+)/',
             lexeme_add, {"return_to":"/language/%(language)s/"}),
 
     # Meanings
