@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}IELEX Recent Changes{% endblock %}
+
+{% block top %}
+<h1>View Changes</h1>
+{% endblock %}
+
+{% block content %}
+
+<table>
+{% for version in changes.object_list %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    {# <td>{{ version.field_dict.modified|date:"d-M-Y G:i" }}</td> #}
+    <td>{# Date #}{{ version.revision.date_created|date:"d-M-Y G:i"  }}</td>
+    <td>{# Link to current object #}
+      <a href="{{ version.get_object_version.object.canonical_url }}">
+        {{ version.get_object_version.object.canonical_url }}
+      </a>
+    </td>
+    <td>{{ version.content_type.name}}</td>
+    <td>{# User #}{{ version.revision.user.username }}</td>
+    <td>{{ version.revision.comment }}</td>
+  </tr>
+{% endfor %}
+</table>
+{% endblock %}
+
+{% block controls %}
+<div class="pagination">
+  <span class="step-links">
+    {% if changes.has_previous %}
+      <a href="?page={{ changes.previous_page_number }}">previous</a>
+    {% endif %}
+    <span class="current">
+      Page {{ changes.number }} of {{ changes.paginator.num_pages }}.
+    </span>
+    {% if changes.has_next %}
+      <a href="?page={{ changes.next_page_number }}">next</a>
+    {% endif %}
+  </span>
+  <br />
+{% include "snippets/go_to.html" %}
+</div>
+
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
