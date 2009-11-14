@@ -41,16 +41,14 @@ def view_frontpage(request):
 def view_changes(request):
     """Recent changes"""
     recent_changes = Version.objects.all().order_by("id").reverse()
-    paginator = Paginator(recent_changes, 100) # Show 100 changes per page
+    paginator = Paginator(recent_changes, 1000) 
 
-    # Make sure page request is an int. If not, deliver first page.
-    try:
+    try: # Make sure page request is an int. If not, deliver first page.
         page = int(request.GET.get('page', '1'))
     except ValueError:
         page = 1
 
-    # If page request is out of range, deliver last page of results.
-    try:
+    try: # If page request is out of range, deliver last page of results.
         changes = paginator.page(page)
     except (EmptyPage, InvalidPage):
         changes = paginator.page(paginator.num_pages)
