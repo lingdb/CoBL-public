@@ -154,6 +154,11 @@ class LanguageList(models.Model):
         return
     language_id_list = property(_get_list, _set_list)
 
+    # @property
+    # def canonical_url(self):
+    #     return "/languages/"
+    canonical_url = "/languages/"
+
     def __unicode__(self):
         return self.name
 
@@ -170,6 +175,11 @@ class CognateJudgementCitation(models.Model):
     comment = models.CharField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
 
+    @property
+    def canonical_url(self):
+        return "/lexeme/%s/edit-cognate-citation/%s/" % \
+                (self.cognate_judgement.lexeme.id, self.id)
+
 reversion.register(CognateJudgementCitation)
 
 class LexemeCitation(models.Model):
@@ -179,6 +189,10 @@ class LexemeCitation(models.Model):
     reliability = models.CharField(max_length=1, choices=Source.RELIABILITY_CHOICES)
     comment = models.CharField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
+
+    @property
+    def canonical_url(self):
+        return "/lexeme/%s/edit-citation/%s/" % (self.lexeme.id, self.id)
 
 reversion.register(LexemeCitation)
 

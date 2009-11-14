@@ -203,12 +203,18 @@ A useful commandline is::
 
   sqlite3 db.sqlite3 .dump | bzip2 > db.dump.bz2
 
-login pages
------------
+login
+-----
 
 Don't write your own: take them from the auth/admin modules
 
 http://stackoverflow.com/questions/550632/favorite-django-tips-features/559972#559972
+
+- the login_required decorator can be applied in the urls.py file, e.g.::
+
+  from django.contrib.auth.decorators import login_required
+  (r'^the_url/', myapp.views.function),
+  (r'^the_url/edit/', login_required(myapp.views.function), {"edit":True}),
 
 vim
 ---

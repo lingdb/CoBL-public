@@ -30,11 +30,13 @@ for Version 0.3
 General
 -------
 
-- the login_required decorator can be applied in the urls.py file, e.g.::
+- fix meaning.gloss where it ends with "?"
 
-  from django.contrib.auth.decorators import login_required
-  (r'^the_url/', myapp.views.function),
-  (r'^the_url/edit/', login_required(myapp.views.function), {"edit":True}),
+- change language names to something better for e.g. "English St"
+
+- add a url ``/lexeme/XX/view-citation/YY/`` (and ``view-cognate-citation``,
+  ``view-cognate``) equivalent to ``edit-citation`` etc., but just highlighting
+  the relevant bit (for use in canonical_url)
 
 - Dynamically generate a more interesting Acknowledgements page
 

@@ -1,7 +1,7 @@
 import datetime
 from django.contrib.auth.decorators import login_required
 #from django.contrib.auth.models import AnonymousUser
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context
 from django.template.loader import get_template
@@ -38,21 +38,25 @@ def view_frontpage(request):
             "meanings":Meaning.objects.count(),
             "coded_characters":CognateJudgement.objects.count()})
 
-def view_recent(request):
-    """Recent changes"""
-    recent_changes = []
-    recent_changes.extend(
-       CognateJudgement.objects.all().order_by("modified").reverse()[:100])
-    recent_changes.extend(
-            Lexeme.objects.filter(modified__gt=recent_changes[99].modified).order_by("modified"))
-    return render_template(request, "recent_changes.html",
-            {"recent":recent_changes})
-
 def view_changes(request):
     """Recent changes"""
     recent_changes = Version.objects.all().order_by("id").reverse()
+    paginator = Paginator(recent_changes, 100) # Show 100 changes per page
+
+    # Make sure page request is an int. If not, deliver first page.
+    try:
+        page = int(request.GET.get('page', '1'))
+    except ValueError:
+        page = 1
+
+    # If page request is out of range, deliver last page of results.
+    try:
+        changes = paginator.page(page)
+    except (EmptyPage, InvalidPage):
+        changes = paginator.page(paginator.num_pages)
+
     return render_template(request, "view_changes.html",
-            {"changes":recent_changes})
+            {"changes":changes})
 
 def touch(request, model_name, model_id):
     """Force save of a model object (e.g. in order to trigger the pre_save
