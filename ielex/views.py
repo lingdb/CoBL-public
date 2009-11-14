@@ -1,11 +1,12 @@
 import datetime
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import AnonymousUser
+#from django.contrib.auth.models import AnonymousUser
 from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context
 from django.template.loader import get_template
 from reversion.models import Version
+from reversion import revision
 from ielex.backup import backup
 from ielex.forms import *
 from ielex.lexicon.models import *
@@ -52,6 +53,24 @@ def view_changes(request):
     recent_changes = Version.objects.all().order_by("id").reverse()
     return render_template(request, "view_changes.html",
             {"changes":recent_changes})
+
+def touch(request, model_name, model_id):
+    """Force save of a model object (e.g. in order to trigger the pre_save
+    hooks of the reversion app)"""
+    models = {"Source":Source,
+        "Language":Language,
+        "Meaning":Meaning,
+        "CognateSet":CognateSet,
+        "Lexeme":Lexeme,
+        "CognateJudgement":CognateJudgement,
+        "LanguageList":LanguageList,
+        "CognateJudgementCitation":CognateJudgementCitation,
+        "LexemeCitation":LexemeCitation}
+    model = models[model_name].objects.get(id=int(model_id))
+    model.save()
+    # revision.comment = "Created automatically by touch"
+    return HttpResponseRedirect("/changes/")
+
 
 # -- General purpose queries and functions -----------------------------------
 

@@ -16,6 +16,24 @@ or backwards::
 This only makes sense in cases where two models are changed at once. It looks
 like this might not be necessary.
 
+To register the original states of models with reversion, use the
+``/touch`` url which resaves objects without any further interaction::
+
+  from django.test.client import Client
+  c = Client()
+  c.login(username="test", password="test")
+  response = c.get("/touch/MODEL_NAME/MODEL_ID/")
+
+Process:
+
+  - make logins for *DKB* and *jullud*
+  - for user in DKB, jullud, micdunn
+  - iterate through by object type, object id
+  - use modified date for find all objects belonging to user (except for
+    Meaning and Language, which I'll have to hard code)
+  - touch each object
+
+
 Permissions
 -----------
 

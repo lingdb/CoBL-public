@@ -19,6 +19,10 @@ class Source(models.Model):
     description = models.TextField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
+    @property
+    def canonical_url(self):
+        return "/source/%s/" % self.id
+
     class Meta:
         ordering = ["type_code", "citation_text"]
 
@@ -29,6 +33,10 @@ class Language(models.Model):
     ascii_name = models.CharField(max_length=999)
     utf8_name = models.CharField(max_length=999)
     sort_key = models.FloatField(null=True, blank=True, editable=False)
+
+    @property
+    def canonical_url(self):
+        return "/language/%s/" % self.ascii_name
 
     def __unicode__(self):
         return self.ascii_name
@@ -53,6 +61,10 @@ class Meaning(models.Model):
     description = models.CharField(max_length=64) # show name
     notes = models.TextField()
 
+    @property
+    def canonical_url(self):
+        return "/meaning/%s/" % self.gloss
+
     def __unicode__(self):
         return self.gloss.upper()
 
@@ -65,6 +77,10 @@ class CognateSet(models.Model):
     alias = models.CharField(max_length=3)
     notes = models.TextField()
     modified = models.DateTimeField(auto_now=True)
+
+    @property
+    def canonical_url(self):
+        return "/cognate/%s/" % self.id
 
     def __unicode__(self):
         return unicode(self.id)
@@ -95,6 +111,10 @@ class Lexeme(models.Model):
     source = models.ManyToManyField(Source, through="LexemeCitation")
     modified = models.DateTimeField(auto_now=True)
 
+    @property
+    def canonical_url(self):
+        return "/lexeme/%s/" % self.id
+
     def __unicode__(self):
         return self.phon_form or self.source_form or "Lexeme"
 
@@ -108,6 +128,11 @@ class CognateJudgement(models.Model):
     cognate_class = models.ForeignKey(CognateSet)
     source = models.ManyToManyField(Source, through="CognateJudgementCitation")
     modified = models.DateTimeField(auto_now=True)
+
+    @property
+    def canonical_url(self):
+        return "/meaning/%s/%s/%s/" % (self.lexeme.meaning.gloss,
+                self.lexeme.id, self.id)
 
     def __unicode__(self):
         return unicode(self.id)
@@ -170,6 +195,7 @@ def update_language_list_all(sender, instance, **kwargs):
     ll.language_id_list = [l.id for l in Language.objects.all()]
     ll.save(force_update=True)
     return
+
 models.signals.post_save.connect(update_language_list_all, sender=Language)
 models.signals.post_delete.connect(update_language_list_all, sender=Language)
 

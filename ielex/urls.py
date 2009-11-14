@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     url(r'^backup/$', make_backup),
     url(r'^recent/$', view_recent),
     url(r'^changes/$', view_changes),
+    url(r'^touch/(?P<model_name>[a-zA-Z0-9_ ]+)/(?P<model_id>\d+)/', touch),
 
     # Languages
     url(r'^languages/$', view_language_list, name="view-languages"),

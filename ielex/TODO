@@ -6,8 +6,6 @@ for Version 0.3
 
 - Implement permissions on all editing actions
 
-- fix logout view
-
 - change password view
 
 - report permissions/group membership in profile
@@ -49,6 +47,10 @@ General
 - Use http://docs.djangoproject.com/en/dev/howto/custom-management-commands/ to
   make database-specific management functions (e.g. add users, change user
   permissions, change superuser password, etc)
+
+- Add language "Proto Indo-European"
+
+  http://en.wiktionary.org/wiki/Appendix:Proto-Indo-European_Swadesh_list
 
 Stack Overflow
 --------------
