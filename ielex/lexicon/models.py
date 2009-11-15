@@ -135,7 +135,8 @@ class CognateJudgement(models.Model):
                 self.lexeme.id, self.id)
 
     def __unicode__(self):
-        return unicode(self.id)
+        return u"%s-Set_%s-%s" % (self.lexeme.meaning.gloss,
+                self.cognate_class.alias, self.id)
 
 reversion.register(CognateJudgement)
 
@@ -180,6 +181,9 @@ class CognateJudgementCitation(models.Model):
         return "/lexeme/%s/edit-cognate-citation/%s/" % \
                 (self.cognate_judgement.lexeme.id, self.id)
 
+    # def __unicode__(self):
+    #     return u"Set_%s-Src_%s-%s" % (self.cognate_judgement.cognate_class.alias, self.source.id, self.id)
+
 reversion.register(CognateJudgementCitation)
 
 class LexemeCitation(models.Model):
@@ -193,6 +197,9 @@ class LexemeCitation(models.Model):
     @property
     def canonical_url(self):
         return "/lexeme/%s/edit-citation/%s/" % (self.lexeme.id, self.id)
+
+    def __unicode__(self):
+        return u"%s src=%s cit=%s" % (self.lexeme.source_form, self.source.id, self.id)
 
 reversion.register(LexemeCitation)
 

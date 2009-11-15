@@ -28,8 +28,7 @@
         {% endfor %}</td>
 </tr>
 </table>
- <input type="submit" name="submit" value="Submit" /> 
- <input type="submit" name="cancel" value="Cancel" /> 
+{% include "buttons/submit-gloss-cancel.html" %}
 </fieldset>
 </form>
 {% else %}
@@ -70,8 +69,7 @@
       {{ citation.source.citation_text }}
       {{ form.as_table }}
       </table>
-      <input type="submit" name="submit" value="Submit" /> 
-      <input type="submit" name="cancel" value="Cancel" /> 
+      {% include "buttons/submit-gloss-cancel.html" %}
       </fieldset>
     </form>
     {% else %}
@@ -106,8 +104,7 @@
     <table>
     {{ form.as_table }}
   </table>
-  <input type="submit" name="submit" value="Submit" /> 
-  <input type="submit" name="cancel" value="Cancel" /> 
+  {% include "buttons/submit-gloss-cancel.html" %}
   </fieldset>
   </form>
 {% else %}
@@ -145,8 +142,7 @@
         {{ citation.source.citation_text }}
         {{ form.as_table }}
         </table>
-        <input type="submit" name="submit" value="Submit" /> 
-        <input type="submit" name="cancel" value="Cancel" /> 
+        {% include "buttons/submit-gloss-cancel.html" %}
         </fieldset>
         <form>
       {% else %}
@@ -186,8 +182,7 @@
       <table>
       {{ form.as_table }}
     </table>
-    <input type="submit" name="submit" value="Submit" /> 
-    <input type="submit" name="cancel" value="Cancel" /> 
+    {% include "buttons/submit-gloss-cancel.html" %}
     </fieldset>
     </form>
   {% else %}

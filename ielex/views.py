@@ -41,7 +41,7 @@ def view_frontpage(request):
 def view_changes(request):
     """Recent changes"""
     recent_changes = Version.objects.all().order_by("id").reverse()
-    paginator = Paginator(recent_changes, 1000) 
+    paginator = Paginator(recent_changes, 200) 
 
     try: # Make sure page request is an int. If not, deliver first page.
         page = int(request.GET.get('page', '1'))
@@ -132,7 +132,10 @@ def get_prev_and_next_languages(request, current_language):
     return (prev_language, language_list_name, next_language)
 
 def get_prev_and_next_meanings(current_meaning):
-    ids = list(Meaning.objects.values_list("id", flat=True))
+    # ids = list(Meaning.objects.values_list("id", flat=True))
+    meanings = Meaning.objects.all().extra(select={'lower_gloss':
+            'lower(gloss)'}).order_by('lower_gloss')
+    ids = [m.id for m in meanings]
     current_idx = ids.index(current_meaning.id)
     prev_meaning = Meaning.objects.get(id=ids[current_idx-1])
     try:
@@ -287,7 +290,9 @@ def edit_language(request, language):
 # -- /meaning(s)/ ---------------------------------------------------------
 
 def view_meanings(request):
-    meanings = Meaning.objects.all()
+    # meanings = Meaning.objects.all()
+    meanings = Meaning.objects.all().extra(select={'lower_gloss':
+            'lower(gloss)'}).order_by('lower_gloss')
     return render_template(request, "meaning_list.html", {"meanings":meanings})
 
 def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
@@ -359,35 +364,42 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     form = None
 
     if action: # actions are: edit, edit-lexeme, edit-citation, add-citation
+        redirect_url = '/lexeme/%s/' % lexeme_id
 
         # Handle POST data
         if request.method == 'POST':
             if action == "edit-lexeme":
                 form = EditLexemeForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                    return HttpResponseRedirect(redirect_url)
+                if form.data["submit"] != "Submit":
+                    redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                 if form.is_valid():
                     cd = form.cleaned_data
                     lexeme.source_form = cd["source_form"]
                     lexeme.phon_form = cd["phon_form"]
                     lexeme.notes = cd["notes"]
                     lexeme.save()
-                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                    return HttpResponseRedirect(redirect_url)
             elif action == "edit-citation":
                 form = EditCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                    return HttpResponseRedirect(redirect_url)
+                if form.data["submit"] != "Submit":
+                    redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = LexemeCitation.objects.get(id=citation_id)
                     citation.pages = cd["pages"]
                     citation.reliability = cd["reliability"]
                     citation.save()
-                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                    return HttpResponseRedirect(redirect_url)
             elif action == "add-citation":
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                    return HttpResponseRedirect(redirect_url)
+                if form.data["submit"] != "Submit":
+                    redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = LexemeCitation(
@@ -396,11 +408,13 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                             pages=cd["pages"],
                             reliability=cd["reliability"])
                     citation.save()
-                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                    return HttpResponseRedirect(redirect_url)
             elif action == "add-new-citation": # TODO
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                    return HttpResponseRedirect(redirect_url)
+                if form.data["submit"] != "Submit":
+                    redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = LexemeCitation(
@@ -409,30 +423,34 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                             pages=cd["pages"],
                             reliability=cd["reliability"])
                     citation.save()
-                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                    return HttpResponseRedirect(redirect_url)
             elif action == "delink-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
                 citation.delete()
-                return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                return HttpResponseRedirect(redirect_url)
             elif action == "delink-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 citation.delete()
-                return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                return HttpResponseRedirect(redirect_url)
             elif action == "edit-cognate-citation":
                 form = EditCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                    return HttpResponseRedirect(redirect_url)
+                if form.data["submit"] != "Submit":
+                    redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = CognateJudgementCitation.objects.get(id=citation_id)
                     citation.pages = cd["pages"]
                     citation.reliability = cd["reliability"]
                     citation.save()
-                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                    return HttpResponseRedirect(redirect_url)
             elif action == "add-cognate-citation": #
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data:
-                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                    return HttpResponseRedirect(redirect_url)
+                if form.data["submit"] != "Submit":
+                    redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = CognateJudgementCitation.objects.create(
@@ -441,14 +459,14 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                             source=cd["source"],
                             pages=cd["pages"],
                             reliability=cd["reliability"])
-                    return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                    return HttpResponseRedirect(redirect_url)
             elif action == "add-cognate": # XXX
                 return HttpResponseRedirect("/meaning/%s/%s" %
                         (lexeme.meaning.gloss, lexeme_id))
             else:
                 assert not action
 
-        # first visit
+        # first visit, preload form with previous answer
         else:
             if action == "edit-lexeme":
                 form = EditLexemeForm(
@@ -480,11 +498,11 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "delink-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
                 citation.delete()
-                return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                return HttpResponseRedirect(redirect_url)
             elif action == "delink-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 citation.delete()
-                return HttpResponseRedirect('/lexeme/%s/' % lexeme_id)
+                return HttpResponseRedirect(redirect_url)
             elif action == "add-new-cognate":
                 current_aliases = CognateSet.objects.filter(
                         lexeme__in=Lexeme.objects.filter(
@@ -498,9 +516,9 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 return HttpResponseRedirect('/lexeme/%s/add-cognate-citation/%s' %
                         (lexeme_id, cj.id))
             elif action == "delete":
-                redirection = '/meaning/%s' % lexeme.meaning.gloss
+                redirect_url = '/meaning/%s' % lexeme.meaning.gloss
                 lexeme.delete()
-                return HttpResponseRedirect(redirection)
+                return HttpResponseRedirect(redirect_url)
             else:
                 assert not action
 
