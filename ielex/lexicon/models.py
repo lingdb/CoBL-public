@@ -135,7 +135,7 @@ class CognateJudgement(models.Model):
                 self.lexeme.id, self.id)
 
     def __unicode__(self):
-        return u"%s-Set_%s-%s" % (self.lexeme.meaning.gloss,
+        return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
                 self.cognate_class.alias, self.id)
 
 reversion.register(CognateJudgement)
@@ -181,8 +181,9 @@ class CognateJudgementCitation(models.Model):
         return "/lexeme/%s/edit-cognate-citation/%s/" % \
                 (self.cognate_judgement.lexeme.id, self.id)
 
-    # def __unicode__(self):
-    #     return u"Set_%s-Src_%s-%s" % (self.cognate_judgement.cognate_class.alias, self.source.id, self.id)
+    def __unicode__(self):
+        return u"CJC src=%s cit=%s" % (self.source.id, self.id)
+
 
 reversion.register(CognateJudgementCitation)
 
@@ -202,7 +203,6 @@ class LexemeCitation(models.Model):
         return u"%s src=%s cit=%s" % (self.lexeme.source_form, self.source.id, self.id)
 
 reversion.register(LexemeCitation)
-
 
 def update_language_list_all(sender, instance, **kwargs):
     """Update the LanguageList 'all' whenever Language objects are saved or
