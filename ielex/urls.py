@@ -13,8 +13,8 @@ urlpatterns = patterns('',
     # Front Page
     url(r'^$', view_frontpage, name="view-frontpage"),
     url(r'^backup/$', make_backup),
-    url(r'^changes/$', view_changes),
-    url(r'^touch/(?P<model_name>[a-zA-Z0-9_ ]+)/(?P<model_id>\d+)/', touch),
+    url(r'^changes/$', view_changes, name="view-changes"),
+    # url(r'^touch/(?P<model_name>[a-zA-Z0-9_ ]+)/(?P<model_id>\d+)/', touch),
 
     # Languages
     url(r'^languages/$', view_language_list, name="view-languages"),

@@ -5,6 +5,7 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context
 from django.template.loader import get_template
+from django.contrib.auth.models import User
 from reversion.models import Version
 from reversion import revision
 from ielex.backup import backup
@@ -53,25 +54,33 @@ def view_changes(request):
     except (EmptyPage, InvalidPage):
         changes = paginator.page(paginator.num_pages)
 
-    return render_template(request, "view_changes.html",
-            {"changes":changes})
+    contributors = sorted([(User.objects.get(id=user_id),
+            Version.objects.filter(revision__user=user_id).count())
+            for user_id in Version.objects.values_list("revision__user",
+            flat=True).distinct()],
+            lambda x, y: -cmp(x[1], y[1])) # reverse sort by second element in tuple
 
-def touch(request, model_name, model_id):
-    """Force save of a model object (e.g. in order to trigger the pre_save
-    hooks of the reversion app)"""
-    models = {"Source":Source,
-        "Language":Language,
-        "Meaning":Meaning,
-        "CognateSet":CognateSet,
-        "Lexeme":Lexeme,
-        "CognateJudgement":CognateJudgement,
-        "LanguageList":LanguageList,
-        "CognateJudgementCitation":CognateJudgementCitation,
-        "LexemeCitation":LexemeCitation}
-    model = models[model_name].objects.get(id=int(model_id))
-    model.save()
-    # revision.comment = "Created automatically by touch"
-    return HttpResponseRedirect("/changes/")
+    return render_template(request, "view_changes.html",
+            {"changes":changes,
+            "contributors":contributors})
+
+# Shouldn't need this again
+# def touch(request, model_name, model_id):
+#     """Force save of a model object (e.g. in order to trigger the pre_save
+#     hooks of the reversion app)"""
+#     models = {"Source":Source,
+#         "Language":Language,
+#         "Meaning":Meaning,
+#         "CognateSet":CognateSet,
+#         "Lexeme":Lexeme,
+#         "CognateJudgement":CognateJudgement,
+#         "LanguageList":LanguageList,
+#         "CognateJudgementCitation":CognateJudgementCitation,
+#         "LexemeCitation":LexemeCitation}
+#     model = models[model_name].objects.get(id=int(model_id))
+#     model.save()
+#     # revision.comment = "Created automatically by touch"
+#     return HttpResponseRedirect("/changes/")
 
 
 # -- General purpose queries and functions -----------------------------------
@@ -295,6 +304,7 @@ def view_meanings(request):
             'lower(gloss)'}).order_by('lower_gloss')
     return render_template(request, "meaning_list.html", {"meanings":meanings})
 
+@login_required
 def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
     lexeme_id = int(lexeme_id)
     cogjudge_id = int(cogjudge_id)
@@ -355,6 +365,7 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
 
 # -- /lexeme/ -------------------------------------------------------------
 
+@login_required
 def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     citation_id = int(citation_id)
     cogjudge_id = int(cogjudge_id)
@@ -530,6 +541,7 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             "active_cogjudge_citation_id":cogjudge_id,
             })
 
+@login_required
 def lexeme_add(request, meaning=None, language=None, lexeme_id=0, return_to=None):
     initial_data = {}
     if language:
@@ -577,6 +589,7 @@ def lexeme_add(request, meaning=None, language=None, lexeme_id=0, return_to=None
 
 # -- /cognate/ ------------------------------------------------------------
 
+@login_required
 def cognate_report(request, cognate_id, action=""):
     cognate_id = int(cognate_id)
     cognate_class = CognateSet.objects.get(id=cognate_id)
@@ -602,6 +615,7 @@ def cognate_report(request, cognate_id, action=""):
 
 # -- /source/ -------------------------------------------------------------
 
+@login_required
 def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
     source_id = int(source_id)
     cogjudge_id = int(cogjudge_id)

@@ -4,7 +4,9 @@ TODO
 for Version 0.3
 ---------------
 
-- Implement permissions on all editing actions
+- Sort out un-logged-in viewers' rights
+
+- Implement permissions/permission groups on all editing actions
 
 - change password view
 
@@ -25,12 +27,15 @@ for Version 0.3
   we have general information about the reconstructed form: or we could add
   proto-Indo-European to the language list.
 
+for Version 0.4
+---------------
+
+- Add comments field to all editing functions to add comment to version info.
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 General
 -------
-
-- fix meaning.gloss where it ends with "?"
 
 - change language names to something better for e.g. "English St"
 
@@ -38,7 +43,10 @@ General
   ``view-cognate``) equivalent to ``edit-citation`` etc., but just highlighting
   the relevant bit (for use in canonical_url)
 
-- Dynamically generate a more interesting Acknowledgements page
+- Dynamically generate a more interesting Acknowledgements page (feed it a
+  LanguageList and a MeaningList argument, and output a list of contributors
+  with a measure of their contributions, both who coded the data and the
+  sources)
 
 - Include all relevant citations in export functions.
 

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load lexicon_utils %}
 
 {% block title %}IELEX Recent Changes{% endblock %}
 
@@ -20,7 +21,8 @@
       </a>
     </td>
     <td>{# User #}{{ version.revision.user.username }}</td>
-    <td>{{ version.revision.comment }}</td>
+    <td>{{ version.revision.comment|wikilink|truncatewords_html:1 }}</td>
+    <td><small>{{ version.id }}</small></td>
   </tr>
 {% endfor %}
 </table>
@@ -41,6 +43,17 @@
   </span>
   <br />
 {% include "snippets/go_to.html" %}
+
+<hr />
+<h2>Contributors</h2>
+<table>
+{% for contributor, count in contributors %}
+<tr class="{% cycle 'odd' 'even' %}">
+  <td>{{ contributor.username }}</td>
+  <td>{{ count }}</td>
+</tr>
+{% endfor %}
+</table>
 </div>
 
 {% endblock %}
