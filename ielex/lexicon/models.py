@@ -154,10 +154,6 @@ class LanguageList(models.Model):
         self.language_ids = ",".join([str(i) for i in listobj])
         return
     language_id_list = property(_get_list, _set_list)
-
-    # @property
-    # def canonical_url(self):
-    #     return "/languages/"
     canonical_url = "/languages/"
 
     def __unicode__(self):
@@ -167,6 +163,26 @@ class LanguageList(models.Model):
         ordering = ["name"]
 
 reversion.register(LanguageList)
+
+class MeaningList(models.Model):
+    """Named lists of meanings, e.g. 'All' and 'Swadesh 100'"""
+    name = models.CharField(max_length=999)
+    meaning_ids = models.CommaSeparatedIntegerField(max_length=999)
+    modified = models.DateTimeField(auto_now=True)
+
+    def _get_list(self):
+        return [int(i) for i in self.meaning_ids.split(",")]
+    def _set_list(self, listobj):
+        self.meaning_ids = ",".join([str(i) for i in listobj])
+        return
+    meaning_id_list = property(_get_list, _set_list)
+    canonical_url = "/meanings/"
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
 
 class CognateJudgementCitation(models.Model):
     cognate_judgement = models.ForeignKey(CognateJudgement)
@@ -221,6 +237,18 @@ def update_language_list_all(sender, instance, **kwargs):
 models.signals.post_save.connect(update_language_list_all, sender=Language)
 models.signals.post_delete.connect(update_language_list_all, sender=Language)
 
+def update_meaning_list_all(sender, instance, **kwargs):
+    try:
+        ml = MeaningList.objects.get(name="all")
+    except:
+        ml = MeaningList.objects.create(name="all")
+    if ml.meaning_id_list != list(Meaning.objects.values_list("id", flat=True)):
+        ml.meaning_id_list = [l.id for l in Meaning.objects.all()]
+        ml.save(force_update=True)
+    return
+
+models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
+models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
 # def update_aliases(sender, instance, **kwargs):
 #     """In case a cognate set has cognate judgements relating to two or more

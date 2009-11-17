@@ -64,25 +64,6 @@ def view_changes(request):
             {"changes":changes,
             "contributors":contributors})
 
-# Shouldn't need this again
-# def touch(request, model_name, model_id):
-#     """Force save of a model object (e.g. in order to trigger the pre_save
-#     hooks of the reversion app)"""
-#     models = {"Source":Source,
-#         "Language":Language,
-#         "Meaning":Meaning,
-#         "CognateSet":CognateSet,
-#         "Lexeme":Lexeme,
-#         "CognateJudgement":CognateJudgement,
-#         "LanguageList":LanguageList,
-#         "CognateJudgementCitation":CognateJudgementCitation,
-#         "LexemeCitation":LexemeCitation}
-#     model = models[model_name].objects.get(id=int(model_id))
-#     model.save()
-#     # revision.comment = "Created automatically by touch"
-#     return HttpResponseRedirect("/changes/")
-
-
 # -- General purpose queries and functions -----------------------------------
 
 def get_canonical_meaning(meaning):
@@ -172,7 +153,7 @@ def view_language_list(request):
     form.fields["language_list"].initial = LanguageList.objects.get(
             name=language_list_name).id
 
-    languages = Language.objects.all().order_by(get_sort_order(request)) 
+    languages = Language.objects.all().order_by(get_sort_order(request))
     current_list = LanguageList.objects.get(name=language_list_name)
     response = render_template(request, "language_list.html",
             {"languages":languages,
@@ -299,10 +280,33 @@ def edit_language(request, language):
 # -- /meaning(s)/ ---------------------------------------------------------
 
 def view_meanings(request):
-    # meanings = Meaning.objects.all()
+    meaning_list_name = request.session.get("meaning_list_name", "all")
+
+    if request.method == 'POST':
+        form = ChooseMeaningListForm(request.POST)
+        if form.is_valid():
+            current_list = form.cleaned_data["meaning_list"]
+            meaning_list_name = current_list.name
+            msg = "Meaning list selection changed to '%s'" %\
+                    meaning_list_name
+            if request.user.is_authenticated():
+                request.user.message_set.create(message=msg)
+    else:
+        form = ChooseMeaningListForm()
+    form.fields["meaning_list"].initial = MeaningList.objects.get(
+            name=meaning_list_name).id
+
     meanings = Meaning.objects.all().extra(select={'lower_gloss':
             'lower(gloss)'}).order_by('lower_gloss')
-    return render_template(request, "meaning_list.html", {"meanings":meanings})
+    current_list = MeaningList.objects.get(name=meaning_list_name)
+
+    response = render_template(request, "meaning_list.html",
+            {"meanings":meanings,
+            "form":form,
+            "current_list":current_list})
+    request.session["meaning_list_name"] = meaning_list_name
+    return response 
+
 
 @login_required
 def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):

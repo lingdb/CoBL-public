@@ -14,6 +14,10 @@ class ChooseLanguageListField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.name
 
+class ChooseMeaningListField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.name
+
 class ChooseMeaningField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.gloss
@@ -105,6 +109,12 @@ class ChooseLanguageForm(forms.Form):
 class ChooseLanguageListForm(forms.Form):
     language_list = ChooseLanguageListField(
             queryset=LanguageList.objects.all(),
+            empty_label=None,
+            widget=forms.Select(attrs={"onchange":"this.form.submit()"}))
+
+class ChooseMeaningListForm(forms.Form):
+    meaning_list = ChooseMeaningListField(
+            queryset=MeaningList.objects.all(),
             empty_label=None,
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}))
 

@@ -13,25 +13,8 @@ or backwards::
 
   reversion.register(Lexeme, follow=["cognate_judgement_set"])
 
-This only makes sense in cases where two models are changed at once. It looks
-like this might not be necessary.
-
-To register the original states of models with reversion, use the
-``/touch`` url which resaves objects without any further interaction::
-
-  from django.test.client import Client
-  c = Client()
-  c.login(username="test", password="test")
-  response = c.get("/touch/MODEL_NAME/MODEL_ID/")
-
-Process:
-
-  - make logins for *DKB* and *jullud*
-  - for user in DKB, jullud, micdunn
-  - iterate through by object type, object id
-  - use modified date for find all objects belonging to user (except for
-    Meaning and Language, which I'll have to hard code)
-  - touch each object
+This only makes sense in cases where two models are always changed at once. It
+looks like this might not be necessary.
 
 
 Permissions
@@ -81,7 +64,7 @@ boxes for which fields to search.
 Items (1) and (3) are probably the same issue. The architecture allows a
 CognateSet object to link to forms in more than one meaning set. But there just
 needs to be a sensible input method. Maybe allow a view to display two or more
-different meanign sets, e.g. /meaning/dust+blow+smoke/
+different meaning sets, e.g. /meaning/dust+blow+smoke/
 
 TECHNICAL NOTES
 ===============
@@ -226,7 +209,7 @@ When lots of tabs open, shorted the labels with::
 Icons
 -----
 
-I'm using Sweetie BasePack ::
+Acknowledge that I'm using the Sweetie BasePack ::
 
    Author:  Joseph North
    Email:   sublick@gmail.com
