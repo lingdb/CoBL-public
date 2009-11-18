@@ -94,7 +94,7 @@ urlpatterns = patterns('',
 
 urlpatterns += patterns('',
         (r'^nexus/$', 'ielex.lexicon.views.list_nexus'),
-        (r'^nexus/(?P<language_list>[a-zA-Z0-9_ ]+)/$', 'ielex.lexicon.views.write_nexus'),
+        (r'^nexus-data/$', 'ielex.lexicon.views.write_nexus'),
         )
 
 urlpatterns += patterns('django.contrib.auth',

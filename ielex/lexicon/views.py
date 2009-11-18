@@ -6,35 +6,44 @@ from django.http import HttpResponse
 from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
 from ielex.views import get_sort_order
+from ielex.views import ChooseNexusOutputForm
 
 def list_nexus(request):
-    return render_template(request, "nexus_list.html", 
-            {"language_lists":LanguageList.objects.all().extra(
-                    select={"lower_name":"lower(name)"}).order_by("lower_name")})
+    form =  ChooseNexusOutputForm()
+    return render_template(request, "nexus_list.html", {"form":form})
 
 @login_required
-def write_nexus(request, language_list=None):
-    # TODO: this currently ignores whether cognates are coded as "dubious" or
-    # not.
+def write_nexus(request): #, language_list=None):
+    # TODO this still ignores the reliability rating 
+
     start_time = time.time()
+    assert request.method == 'POST'
 
     # Create the HttpResponse object with the appropriate header.
     response = HttpResponse(mimetype='text/plain')
     # response['Content-Disposition'] = 'attachment; filename=ielex.nex'
 
     # get data together
-    if language_list:
-        languages = Language.objects.filter(
-                id__in=LanguageList.objects.get(
-                name=language_list).language_id_list).order_by(get_sort_order(request))
-    else:
-        languages = Language.objects.all()
-    language_names = languages.values_list("ascii_name", flat=True)
+    #form =  ChooseNexusOutputForm(request.POST)
+    language_list_id = request.POST["language_list"]
+    languages = Language.objects.filter(
+            id__in=LanguageList.objects.get(
+            id=language_list_id).language_id_list).order_by(get_sort_order(request))
+    language_names = ["'"+name+"'" for name in
+            languages.values_list("ascii_name", flat=True)]
+
+    meaning_list_id = request.POST["meaning_list"]
+    meanings = Meaning.objects.filter(id__in=MeaningList.objects.get(
+            id=meaning_list_id).meaning_id_list)
     max_len = max([len(l) for l in language_names])
+
     cognate_class_ids = CognateSet.objects.all().values_list("id", flat=True)
     data = {}
     for cc in cognate_class_ids:
-        data[cc] = CognateSet.objects.get(id=cc).lexeme_set.values_list('language', flat=True)
+        language_ids = CognateSet.objects.get(id=cc).lexeme_set.filter(
+                meaning__in=meanings).values_list('language', flat=True)
+        if language_ids:
+            data[cc] = language_ids
 
     # print out response
     print>>response, dedent("""\
@@ -45,8 +54,12 @@ def write_nexus(request, language_list=None):
         [   Lexicon) Database. Max Planck Institute for Psycholinguistics, ]
         [   Nijmegen.                                                      ]
         """)
-    if language_list:
-        print>>response, "[ Taxon list: %s ]" % language_list
+    print>>response, "[ Language list: %s ]" % LanguageList.objects.get(
+            id=language_list_id).name
+    print>>response, "[ Meaning list: %s ]" % MeaningList.objects.get(
+            id=meaning_list_id).name
+    print>>response, "[ Reliability: %s ]" %", ".join(
+            request.POST.getlist("reliability"))
     print>>response, "[ File generated: %s ]\n" % time.strftime("%Y-%m-%d %H:%M:%S",
             time.localtime())
 
@@ -64,12 +77,13 @@ def write_nexus(request, language_list=None):
 
     for language in languages:
         row = []
-        for cc in cognate_class_ids:
+        for cc in sorted(data):
             if language.id in data[cc]:
                 row.append("1")
             else:
                 row.append("0")
-        print>>response, "    %s %s" % (language.ascii_name.ljust(max_len), "".join(row))
+        print>>response, "    '%s'%s%s" % (language.ascii_name,
+                " "*(max_len - len(language.ascii_name)), "".join(row))
     print>>response, "  ;\nend;"
 
     # timing

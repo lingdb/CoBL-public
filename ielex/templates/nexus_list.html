@@ -7,15 +7,18 @@
 {% endblock %}
 
 {% block content %}
-Download a NEXUS file from a predefined language list.
-<table>
-  <tr><th>Language lists</th></tr>
-{% for ll in language_lists %}
-  <tr class="{% cycle 'odd' 'even' %}">
-    <td><a href="/nexus/{{ ll.name}}/">{{ ll.name }}</a></td>
-  </tr>
-{% endfor %}
-</table>
+Download a NEXUS file from a predefined language list. Specify the list of
+languages, the list of meanings, and the level of coding reliability.
+
+<form action="/nexus-data/" method="POST">
+  <fieldset>
+    <legend>Export data</legend>
+    <table>
+      {{ form.as_table }}
+    </table>
+    {% include "buttons/submit-cancel.html" %}
+  </fieldset>
+</form>
 {% endblock %}
 
 {% block controls %}

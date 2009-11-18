@@ -118,6 +118,18 @@ class ChooseMeaningListForm(forms.Form):
             empty_label=None,
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}))
 
+class ChooseNexusOutputForm(forms.Form):
+    language_list = ChooseLanguageListField(
+            queryset=LanguageList.objects.all(),
+            empty_label=None,
+            widget=forms.Select())
+    meaning_list = ChooseMeaningListField(
+            queryset=MeaningList.objects.all(),
+            empty_label=None,
+            widget=forms.Select())
+    reliability = forms.MultipleChoiceField(choices=Source.RELIABILITY_CHOICES,
+            widget=forms.CheckboxSelectMultiple)
+
 class ChooseSourceForm(forms.Form):
     source = ChooseSourcesField(queryset=Source.objects.all())
 
