@@ -134,6 +134,10 @@ class CognateJudgement(models.Model):
         return "/meaning/%s/%s/%s/" % (self.lexeme.meaning.gloss,
                 self.lexeme.id, self.id)
 
+    @property
+    def reliability_ratings(self):
+        return set(self.cognatejudgementcitation_set.values_list("reliability", flat=True))
+
     def __unicode__(self):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
                 self.cognate_class.alias, self.id)

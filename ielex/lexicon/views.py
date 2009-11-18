@@ -42,6 +42,8 @@ def write_nexus(request): #, language_list=None):
     for cc in cognate_class_ids:
         language_ids = CognateSet.objects.get(id=cc).lexeme_set.filter(
                 meaning__in=meanings).values_list('language', flat=True)
+        # something like the following gets reliability ratings too:
+        # [(cj.lexeme, cj.reliability_ratings) for cj in cs.cognatejudgement_set.all()]
         if language_ids:
             data[cc] = language_ids
 
