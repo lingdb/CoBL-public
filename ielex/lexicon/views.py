@@ -37,13 +37,17 @@ def write_nexus(request): #, language_list=None):
             id=meaning_list_id).meaning_id_list)
     max_len = max([len(l) for l in language_names])
 
+    reliability = request.POST.getlist["reliability"]
+
     cognate_class_ids = CognateSet.objects.all().values_list("id", flat=True)
     data = {}
     for cc in cognate_class_ids:
         language_ids = CognateSet.objects.get(id=cc).lexeme_set.filter(
                 meaning__in=meanings).values_list('language', flat=True)
         # something like the following gets reliability ratings too:
-        # [(cj.lexeme, cj.reliability_ratings) for cj in cs.cognatejudgement_set.all()]
+        # [cj.lexeme.id for cj in cs.cognatejudgement_set.all() if
+        # (cj.reliability_ratings & reliability) and (cj.lexeme.meaning in
+        # meanings)]
         if language_ids:
             data[cc] = language_ids
 
