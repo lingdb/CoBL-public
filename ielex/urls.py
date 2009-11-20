@@ -106,8 +106,9 @@ urlpatterns += patterns('django.contrib.auth',
 
 urlpatterns += patterns('',
     (r'^accounts/profile/$', 'ielex.profiles.views.view_profile'),
-    (r'^accounts/profile/alter/$', 'ielex.profiles.views.view_profile',
-        {"action":"alter"}),
+    (r'^accounts/alter/profile/$', 'ielex.profiles.views.alter_profile'),
+    (r'^accounts/profile/(?P<username>.+)/$', 'ielex.profiles.views.view_profile'),
+    (r'^accounts/alter/profile/(?P<username>.+)/$', 'ielex.profiles.views.alter_profile'),
     )
 
 if settings.DEBUG: # additional urls for testing purposes

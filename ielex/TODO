@@ -4,6 +4,19 @@ TODO
 for Version 0.3
 ---------------
 
+- Admin-Auth pages
+
+  * Administrator:
+
+    - add user
+    - change user details
+
+  * User
+
+    - view own profile (incl. permissions)
+    - view other user's profile (incl. statistics)
+    - change password
+
 - Sort out un-logged-in viewers' rights
 
 - Implement permissions/permission groups on all editing actions
