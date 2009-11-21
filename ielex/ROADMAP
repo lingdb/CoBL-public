@@ -25,6 +25,7 @@ Major features
 * Authentication
 * Reversion
 * Kinship system
+* Registration
 * Comments
 * Tagging/issue tracking system (maybe integrated with comment system, but
   probably not)

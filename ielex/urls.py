@@ -5,7 +5,7 @@ from ielex.lexicon.views import *
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
-# admin.autodiscover()
+admin.autodiscover()
 
 # additional arguments can be passed with a dictionary
 
@@ -105,6 +105,7 @@ urlpatterns += patterns('django.contrib.auth',
     )
 
 urlpatterns += patterns('',
+    (r'^admin/', include(admin.site.urls)),
     (r'^accounts/profile/$', 'ielex.profiles.views.view_profile'),
     (r'^accounts/alter/profile/$', 'ielex.profiles.views.alter_profile'),
     (r'^accounts/profile/(?P<username>.+)/$', 'ielex.profiles.views.view_profile'),
