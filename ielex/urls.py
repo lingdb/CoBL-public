@@ -4,7 +4,7 @@ from ielex import settings
 from ielex.lexicon.views import *
 
 # Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
+from django.contrib import admin
 admin.autodiscover()
 
 # additional arguments can be passed with a dictionary
@@ -80,6 +80,7 @@ urlpatterns = patterns('',
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report),
     url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit)/$', cognate_report),
 
+    url(r'^revert/(?P<version_id>\d+)/$', revert_version),
 
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),

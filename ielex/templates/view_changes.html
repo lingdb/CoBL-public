@@ -22,7 +22,7 @@
     </td>
     <td>{# User #}{{ version.revision.user.username }}</td>
     <td>{{ version.revision.comment|wikilink|truncatewords_html:1 }}</td>
-    <td><small>{{ version.id }}</small></td>
+    <td><small><a href="/revert/{{ version.id }}">undo</a></small></td>
   </tr>
 {% endfor %}
 </table>

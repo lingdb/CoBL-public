@@ -1,5 +1,7 @@
 from django.db import models
 import reversion
+from django.contrib import admin
+from reversion.admin import VersionAdmin
 
 class Source(models.Model):
 
@@ -23,10 +25,17 @@ class Source(models.Model):
     def canonical_url(self):
         return "/source/%s/" % self.id
 
+    def __unicode__(self):
+        return self.citation_text[:64]
+
     class Meta:
         ordering = ["type_code", "citation_text"]
 
-reversion.register(Source)
+#reversion.register(Source)
+class SourceAdmin(VersionAdmin):
+    pass
+
+admin.site.register(Source, SourceAdmin)
 
 class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)

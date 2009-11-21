@@ -16,6 +16,9 @@ or backwards::
 This only makes sense in cases where two models are always changed at once. It
 looks like this might not be necessary.
 
+Rather than listing all revisions, list all objects that have changes, with the
+numver of versions for each, and click to see object history.
+
 
 Permissions
 -----------
@@ -69,6 +72,21 @@ different meaning sets, e.g. /meaning/dust+blow+smoke/
 TECHNICAL NOTES
 ===============
 
+``Model.get_absolute_url()`` is the django native way of doing my
+``Model.canonical_url()``
+
+For further refactoring:
+
+  It's good practice to use get_absolute_url() in templates, instead of
+  hard-coding your objects' URLs. For example, this template code is bad::
+
+    <a href="/people/{{ object.id }}/">{{ object.name }}</a>
+
+  But this template code is good::
+
+    <a href="{{ object.get_absolute_url }}">{{ object.name }}</a>
+
+  
 Tagging
 -------
 

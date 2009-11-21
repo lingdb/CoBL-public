@@ -64,6 +64,22 @@ def view_changes(request):
             {"changes":changes,
             "contributors":contributors})
 
+def revert_version(request, version_id):
+    """Roll back the object saved in a Version to the previous Version"""
+    try:
+        referer = request.META["HTTP_REFERER"]
+    except KeyError:
+        referer = "/"
+    latest = Version.objects.get(pk=version_id)
+    versions = Version.objects.get_for_object(
+            latest.content_type.get_object_for_this_type(
+            id=latest.object_id)).filter(id__lt=version_id).reverse()
+    previous = versions[0]
+    previous.revision.revert() # revert all associated objects too
+    msg = "Rolled back version %s to version %s" % (latest.id, previous.id)
+    request.user.message_set.create(message=msg)
+    return HttpResponseRedirect(referer)
+
 # -- General purpose queries and functions -----------------------------------
 
 def get_canonical_meaning(meaning):
