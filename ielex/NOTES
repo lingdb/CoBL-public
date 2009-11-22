@@ -19,6 +19,11 @@ looks like this might not be necessary.
 Rather than listing all revisions, list all objects that have changes, with the
 numver of versions for each, and click to see object history.
 
+Models include a list of fields, which you can get to via the ``_meta``
+attribute, e.g.::
+
+  [f.name for f in Lexeme._meta.fields]
+
 
 Permissions
 -----------
