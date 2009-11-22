@@ -24,6 +24,8 @@ attribute, e.g.::
 
   [f.name for f in Lexeme._meta.fields]
 
+More info at http://www.b-list.org/weblog/2007/nov/04/working-models/
+
 
 Permissions
 -----------
@@ -40,9 +42,9 @@ database.
 
 Groups: 
 
-Administrator
-Contributor
-Registered User (downloader/commenter)
+Administrator (Everything)
+Contributor (Everything with data, but not user admin)
+Registered User (downloading and commenting)
 
 Each group gets the cumulative permissions of the other groups
 
@@ -78,9 +80,8 @@ TECHNICAL NOTES
 ===============
 
 ``Model.get_absolute_url()`` is the django native way of doing my
-``Model.canonical_url()``
-
-For further refactoring:
+``Model.canonical_url()`` ― refactor everything to use this instead (the admin
+site will love me for it).  Further:
 
   It's good practice to use get_absolute_url() in templates, instead of
   hard-coding your objects' URLs. For example, this template code is bad::
@@ -99,6 +100,7 @@ The generic relation/generic foreign key functions in the ContentTypes app
 (used e.g. for implementing tagging) could be used to track what users have
 done.
 
+But see also http://code.google.com/p/django-tagging/
 
 Debugging
 ---------

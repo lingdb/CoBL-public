@@ -6,7 +6,11 @@
 {% block top %}<h1>Object history</h1>{% endblock %}
 
 {% block content %}
-  {% for
+<table>
+  <tr>{% for field in object._meta.fields %}
+    <td class="column_header">{{ field.name }}</td>
+  {% endfor %}</tr>
+</table>
 {% endblock %}
 
 {% block controls %}
