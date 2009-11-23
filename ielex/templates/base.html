@@ -11,7 +11,7 @@
     <div id="top">
       <div id="login">
         {% if user.is_authenticated %}
-        {{ user.username }} <small>[<a href="/accounts/logout/">logout</a>]</small>
+        <a href="/accounts/profile/{{ user.username }}">{{ user.username }}</a> <small>[<a href="/accounts/logout/">logout</a>]</small>
         {% else %}
           <a href="/accounts/login/">login</a>
         {% endif %}
