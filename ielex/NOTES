@@ -5,7 +5,7 @@ Reversion
 ---------
 
 when registering models with the Reversion low level API, you can tell it to
-follow foriegn keys, either directly::
+follow foreign keys, either directly::
 
   reversion.register(CognateJudgement, follow=["lexeme", "cognate_class"])
 
@@ -17,7 +17,7 @@ This only makes sense in cases where two models are always changed at once. It
 looks like this might not be necessary.
 
 Rather than listing all revisions, list all objects that have changes, with the
-numver of versions for each, and click to see object history.
+number of versions for each, and click to see object history.
 
 Models include a list of fields, which you can get to via the ``_meta``
 attribute, e.g.::

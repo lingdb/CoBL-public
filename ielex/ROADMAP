@@ -61,6 +61,10 @@ Concrete
 
 * use named urls throughout?
 
+* change ``canonical_url`` method to standard ``get_absolute_url``, and change
+  all the links to objects in template to use it ``<a href="{{ object.get_absolute_url
+  }}">{{ object.name }}</a>``
+
 General 
 
 * DNRY violations:
