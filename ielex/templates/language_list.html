@@ -49,7 +49,7 @@
 {% block controls %}
 {% include "snippets/go_to.html" %}
 {% include "snippets/change_sort_order.html" %}
-<ul>
+<ul class="navigation">
 {% if user.is_superuser %}
 <li><a href="/languages/reorder/"><small>Edit default genealogical sort order</small></a></li>
 </ul>

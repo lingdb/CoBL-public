@@ -1,25 +1,31 @@
-/* ELEMENT AND CLASS DEFINITIONS */
+/* ================================================================= */
+/*    ELEMENT AND CLASS DEFINITIONS                             {{{1 */
+/* ================================================================= */
 
-a img {
-  border: none!important;
-}
-
-a:link { text-decoration: none }
-a:visited { text-decoration: none }
-a:active { text-decoration: none }
-a:hover { text-decoration: underline }
-a.button:hover { text-decoration: none }
+/* == Basic ===================================================={{{1 */
 
 body { font-family: sans-serif }
 
 p.help { text-size: small }
 
-th {
+h2 {
+  font-size: 120%;
   color: #360;
 }
 
-tr {  /* XXX I really only want this to to apply to forms */
-  vertical-align: top;
+strong {
+  color: #360;
+}
+
+li {
+  margin: 0px;
+  padding: 0px;
+}
+
+/* == Tables ==================================================={{{1 */
+
+th {
+  color: #360;
 }
 
 tr.even { background: #cf9 }
@@ -33,25 +39,58 @@ td.rowname {
   color: #360;
 }
 
-strong {
-  color: #360;
+/* == Forms ===================================================={{{1 */
+
+form ul {
+  list-style-type: none;
+  padding-left: 0;
 }
 
-li {
-  margin: 0px;
-  padding: 0px;
+form tr { 
+  vertical-align: top;
 }
 
-form li { /* no bullets on lists inside forms */
-  list-style-type:none;
+/* == Navigation button/lists =================================={{{1 */
+
+ul.navigation {
+  list-style-type: none;
+  padding-left: 0;
 }
 
-h2 {
-  font-size: 120%;
-  color: #360;
+ul.navigation li {
+  background: #ccc;
+  }
+
+ul.navigation a {
+  text-decoration: none;
+  color: #666;
+  display: block;
+  padding: 3pt;
+  margin-left: 0;
+  font-weight: bold;
+  border: 1px solid gray;
 }
 
-/* ID DEFINITIONS */
+ul.navigation a:hover {
+  background: #cf9;
+}
+
+/* == Links ===================================================={{{1 */
+
+a img {
+  border: none!important;
+}
+
+a:link { text-decoration: none }
+a:visited { text-decoration: none }
+a:active { text-decoration: none }
+a:hover { text-decoration: underline }
+a.button:hover { text-decoration: none }
+
+/* ================================================================= */
+/*    ID DEFINITIONS                                            {{{1 */
+/* ================================================================= */
+
 #container {
   width: 99%;
   margin: 10px auto;

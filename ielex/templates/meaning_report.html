@@ -67,11 +67,11 @@
 {% include "snippets/prev_next_meaning.html" %}
 {% include "snippets/go_to.html" %}
 {% include "snippets/change_sort_order.html" %}
-<ul>
+<ul class="navigation">
   {% if add_cognate_judgement  %}
-  <li>return to <a href="/meaning/{{ meaning.gloss }}/">normal view</a></li>
+  <li><a href="/meaning/{{ meaning.gloss }}/">return to normal view</a></li>
   {% endif %}
-  <li>add a <a href="/meaning/{{ meaning.gloss }}/add-lexeme/">new lexeme</a></li>
+  <li><a href="/meaning/{{ meaning.gloss }}/add-lexeme/">add a new lexeme</a></li>
 </ul>
 <p>Cognate judgements are added on this page, but deleted by the lexeme view (use the <img src="/media/buttons/view.png" alt="" title="View/Edit the lexical entry" /> button)</p>
 {% endblock %}

@@ -1,11 +1,13 @@
 <p>
-  <ul>
-    {% if prev_page %}<li><a href="{{ prev_page }}">previous page</a></li>{% endif %}
-    <li>list of <a href={% url view-languages %}>languages</a></li>
-    <li>list of <a href={% url view-meanings %}>meanings</a></li>
-    <li>list of <a href={% url view-sources %}>sources</a></li>
-    <li>list of <a href={% url view-changes %}>recent changes</a></li>
-  </ul>
+  <ul class="navigation">
+    {% if prev_page %}
+      <li><a href="{{ prev_page }}">previous page</a></li>
+    {% endif %}
+    <li><a href={% url view-languages %}>view languages</a></li>
+    <li><a href={% url view-meanings %}>view meanings</a></li>
+    <li><a href={% url view-sources %}>view sources</a></li>
+    <li><a href={% url view-changes %}>recent changes</a></li>
+  </ul>            
 </p>
 
 {# vim: set ft=htmldjango: #}

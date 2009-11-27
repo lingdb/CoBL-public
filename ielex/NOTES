@@ -1,6 +1,29 @@
 DESIGN
 ======
 
+* Buttons. Disabling a button once is has been pressed::
+
+    <input type="submit" value="Submit" onclick="this.disabled=true" />
+
+* other usability hints, e.g. shadows of active boxes::
+
+    http://www.smashingmagazine.com/2009/01/12/10-useful-web-application-interface-techniques/
+
+  - think also about ``input:focus``::
+
+      input {
+        border: 2px solid #888;
+        padding: 4px;
+        font-size: 1em;
+        background-color: #F8F8F8;
+      }
+
+      input:focus {
+        border-color: #000;
+        background-color: #FFFE9D;
+      }
+
+
 Reversion
 ---------
 
