@@ -81,6 +81,7 @@ urlpatterns = patterns('',
     url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit)/$', cognate_report),
 
     url(r'^revert/(?P<version_id>\d+)/$', revert_version),
+    url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
 
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),

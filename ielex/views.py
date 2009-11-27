@@ -80,6 +80,21 @@ def revert_version(request, version_id):
     request.user.message_set.create(message=msg)
     return HttpResponseRedirect(referer)
 
+def view_object_history(request, version_id):
+    version = Version.objects.get(pk=version_id)
+    obj = version.content_type.get_object_for_this_type(id=version.object_id)
+    # versions = Version.objects.get_for_object(
+    #         latest.content_type.get_object_for_this_type(
+    #         id=latest.object_id)).filter(id__lt=version_id).reverse()
+    fields = [field.name for field in obj._meta.fields]
+    versions = [[v.field_dict[f] for f in fields]+[v.id] for v in
+            Version.objects.get_for_object(obj).order_by("revision__date_created")]
+    return render_template(request, "view_object_history.html",
+            {"object":obj,
+            "versions":versions,
+            "fields":fields})
+
+
 # -- General purpose queries and functions -----------------------------------
 
 def get_canonical_meaning(meaning):

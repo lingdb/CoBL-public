@@ -6,11 +6,28 @@
 {% block top %}<h1>Object history</h1>{% endblock %}
 
 {% block content %}
+<p><strong>Object:</strong> <a href="{{ object.canonical_url }}">{{ object }}</a></p>
+<fieldset>
+  <legend><strong> Versions </strong></legend>
 <table>
-  <tr>{% for field in object._meta.fields %}
-    <td class="column_header">{{ field.name }}</td>
-  {% endfor %}</tr>
+  <tr>
+  {% for field in fields %}
+    <th class="column_header">{{ field }}</th>
+  {% endfor %}
+  </tr>
+  {% for version in versions %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    {% for item in version %}
+      {% if forloop.last %}
+        <td><a href="/revert/{{ item }}/">revert</a></td
+      {% else %}
+        <td>{{ item }}</td>
+      {% endif %}
+    {% endfor %}
+  </tr>
+  {% endfor %}
 </table>
+</fieldset>
 {% endblock %}
 
 {% block controls %}
