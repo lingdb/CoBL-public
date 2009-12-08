@@ -92,6 +92,9 @@ site will love me for it).  Further:
 
     <a href="{{ object.get_absolute_url }}">{{ object.name }}</a>
 
+Everything that might be linked to **must** have a get_absolute_url method. On
+the recent changes page it would be useful to have links to everything (from
+the other pages it's more limited).
   
 Tagging
 -------
@@ -101,11 +104,6 @@ The generic relation/generic foreign key functions in the ContentTypes app
 done.
 
 But see also http://code.google.com/p/django-tagging/
-
-Debugging
----------
-
-Add ``assert False`` in your view code to dump debug information.
 
 Selecting languages by cognate class
 ------------------------------------
@@ -139,13 +137,16 @@ Another trick uses the double-underscore syntax::
 
   Lexeme.objects.filter(meaning__gloss="blood")
 
+There's a way you can inspect the raw sql in DEBUG mode: what is it?
 
 QuerySet objects
 ----------------
 
 - can be concatenated with a "|"::
 
-  cs = CognateSet.objects.filter(alias="O") | CognateSet.objects.filter(alias="P")
+    cs = CognateSet.objects.filter(alias="O") | CognateSet.objects.filter(alias="P")
+
+  But this only works if it can be parsed as an instance of sql AND
 
 Database trigger
 ----------------
