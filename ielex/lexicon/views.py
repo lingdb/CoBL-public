@@ -37,7 +37,7 @@ def write_nexus(request): #, language_list=None):
             id=meaning_list_id).meaning_id_list)
     max_len = max([len(l) for l in language_names])
 
-    reliability = request.POST.getlist["reliability"]
+    # reliability = request.POST.getlist("reliability")
 
     cognate_class_ids = CognateSet.objects.all().values_list("id", flat=True)
     data = {}
@@ -64,8 +64,8 @@ def write_nexus(request): #, language_list=None):
             id=language_list_id).name
     print>>response, "[ Meaning list: %s ]" % MeaningList.objects.get(
             id=meaning_list_id).name
-    print>>response, "[ Reliability: %s ]" %", ".join(
-            request.POST.getlist("reliability"))
+    # print>>response, "[ Reliability: %s ]" %", ".join(
+    #         request.POST.getlist("reliability"))
     print>>response, "[ File generated: %s ]\n" % time.strftime("%Y-%m-%d %H:%M:%S",
             time.localtime())
 
