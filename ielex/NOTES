@@ -71,6 +71,9 @@ Registered User (downloading and commenting)
 
 Each group gets the cumulative permissions of the other groups
 
+From Django Version 1.2 the permissions of un-logged in users are handled the
+same as logged in users.
+
 Julia's suggestions
 -------------------
 
@@ -85,7 +88,7 @@ Julia's suggestions
 3)  I came across a couple of terms (across different meanings) which are
     ultimately cognate, for instance there is a common IE root dheu- in many
     terms for DUST, SMOKE, BLOW and BREATHE. Consequently, these terms would
-    belong to one single CC, wouldn"t they? I don't how you want to deal with
+    belong to one single CC, wouldn't they? I don't how you want to deal with
     this, but I expect this phenomenon to come up time and again as the work
     will proceed.
 
@@ -95,9 +98,16 @@ the rest of the problem to the user. Maybe 'grep' and 'glob' options, and check
 boxes for which fields to search.
 
 Items (1) and (3) are probably the same issue. The architecture allows a
-CognateSet object to link to forms in more than one meaning set. But there just
-needs to be a sensible input method. Maybe allow a view to display two or more
-different meaning sets, e.g. /meaning/dust+blow+smoke/
+CognateSet object to link to forms in more than one meaning set. The link to
+the meaning list is only about display―analysis is done on the basis of cognate
+sets, which don't pay any attention to the meaning table.
+
+* There needs to be a sensible input method. Maybe allow a view to display two
+  or more different meaning sets, e.g. /meaning/dust+blow+smoke/?
+
+* Maybe add a button to show overlapping cognates registered with different
+  meaning sets? This would mean that the MEANING display would show all cognate
+  sets including at least one form registered as belonging to that meaning.
 
 TECHNICAL NOTES
 ===============
