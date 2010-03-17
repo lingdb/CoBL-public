@@ -4,6 +4,10 @@ TODO
 for Version 0.3
 ---------------
 
+.. Admonition::
+
+  This needs to be completed before Julia returns in May
+
 - Admin-Auth pages
 
   * Administrator:
@@ -18,6 +22,8 @@ for Version 0.3
     - change password
 
 - Sort out un-logged-in viewers' rights
+
+  This should be fixed by Django 1.2
 
 - Implement permissions/permission groups on all editing actions
 
@@ -39,6 +45,11 @@ for Version 0.3
 - Need a many to many table linking cognate sets to sources: in lots of cases
   we have general information about the reconstructed form: or we could add
   proto-Indo-European to the language list.
+
+  For example, a lot of good ones come from Carl Darling Buck.
+
+- Add comments field to Languages, show it in the sidebar of the /language/
+  view
 
 for Version 0.4
 ---------------
@@ -70,6 +81,20 @@ General
 - Use http://docs.djangoproject.com/en/dev/howto/custom-management-commands/ to
   make database-specific management functions (e.g. add users, change user
   permissions, change superuser password, etc)
+
+Development
+-----------
+
+- Make a developer site on e.g. google code
+
+- Make another database with the Aslian materials (so we can keep up with
+  whether the addition of the kinship module has broken anything of the basic
+  db).
+
+- Test starting up a project from scratch (i.e. with no data)
+
+- Do there need to be any import functions?
+
 
 Stack Overflow
 --------------
