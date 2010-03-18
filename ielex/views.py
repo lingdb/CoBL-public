@@ -339,7 +339,7 @@ def view_meanings(request):
     return response 
 
 
-@login_required
+#@login_required
 def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
     lexeme_id = int(lexeme_id)
     cogjudge_id = int(cogjudge_id)
@@ -400,7 +400,7 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
 
 # -- /lexeme/ -------------------------------------------------------------
 
-@login_required
+#@login_required
 def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     citation_id = int(citation_id)
     cogjudge_id = int(cogjudge_id)
@@ -624,7 +624,7 @@ def lexeme_add(request, meaning=None, language=None, lexeme_id=0, return_to=None
 
 # -- /cognate/ ------------------------------------------------------------
 
-@login_required
+#@login_required
 def cognate_report(request, cognate_id, action=""):
     cognate_id = int(cognate_id)
     cognate_class = CognateSet.objects.get(id=cognate_id)

@@ -110,8 +110,10 @@ urlpatterns += patterns('',
     (r'^admin/', include(admin.site.urls)),
     (r'^accounts/profile/$', 'ielex.profiles.views.view_profile'),
     (r'^accounts/alter/profile/$', 'ielex.profiles.views.alter_profile'),
-    (r'^accounts/profile/(?P<username>.+)/$', 'ielex.profiles.views.view_profile'),
-    (r'^accounts/alter/profile/(?P<username>.+)/$', 'ielex.profiles.views.alter_profile'),
+    (r'^accounts/profile/(?P<username>.+)/$',
+        'ielex.profiles.views.view_profile'),
+    (r'^accounts/alter/profile/(?P<username>.+)/$',
+        'ielex.profiles.views.alter_profile'),
     )
 
 if settings.DEBUG: # additional urls for testing purposes

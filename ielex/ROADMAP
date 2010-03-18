@@ -59,6 +59,18 @@ Concrete
     else:
         <handle first visit>
 
+  Maybe set up something like::
+
+    def new_request(request):
+        return request.method != POST
+
+  Then do::
+
+    if new_request(request):
+        <handle first visit>
+    else:
+        <handle repeat visit>
+
 * use named urls throughout?
 
 * change ``canonical_url`` method to standard ``get_absolute_url``, and change

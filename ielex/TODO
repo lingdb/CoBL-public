@@ -51,6 +51,8 @@ for Version 0.3
 - Add comments field to Languages, show it in the sidebar of the /language/
   view
 
+- Duplicate button should duplicate source too
+
 for Version 0.4
 ---------------
 
