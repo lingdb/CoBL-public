@@ -144,7 +144,10 @@ def get_current_language_list(request):
 def get_prev_and_next_languages(request, current_language):
     language_list_name = get_current_language_list(request)
     ids = list(get_languages(request).values_list("id", flat=True))
-    current_idx = ids.index(current_language.id)
+    try:
+        current_idx = ids.index(current_language.id)
+    except ValueError:
+        current_idx = 0
     prev_language = Language.objects.get(id=ids[current_idx-1])
     try:
         next_language = Language.objects.get(id=ids[current_idx+1])
@@ -212,6 +215,7 @@ def view_language_reorder(request):
         else: # pressed Finish without submitting changes
             return HttpResponseRedirect("/languages/")
     else: # first visit
+        renumber_sort_keys() # if new languages have been added, number them
         form = ReorderLanguageSortKeyForm()
     return render_template(request, "language_reorder.html",
             {"form":form})
@@ -281,6 +285,28 @@ def report_language(request, language):
             "next_language":next_language,
             "language_list_name":language_list_name
             })
+
+@login_required
+def view_language_add_new(request):
+    if request.method == 'POST':
+        form = EditLanguageForm(request.POST)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect('/languages/')
+        if form.is_valid():
+            cd = form.cleaned_data
+            # do some more checks: 
+            # make sure iso_code and ascii_name are unique
+            language = Language.objects.create(iso_code=cd["iso_code"],
+                    ascii_name=cd["ascii_name"],
+                    utf8_name=cd["utf8_name"])
+            # copy ascii_name to utf8_name if not other specified
+            language.save()
+            return HttpResponseRedirect('/language/%s/' % language.ascii_name)
+
+    else: # first visit
+        form = EditLanguageForm()
+    return render_template(request, "language_add_new.html",
+            {"form":form})
 
 @login_required
 def edit_language(request, language):

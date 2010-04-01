@@ -53,6 +53,11 @@ for Version 0.3
 
 - Duplicate button should duplicate source too
 
+- Add language (and maybe delete too--from a new page)
+
+- Fix exception raised when you try to change a blank value in the language
+  edit page
+
 for Version 0.4
 ---------------
 

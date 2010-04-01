@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Add new language{% endblock %}
+
+{% block top %}
+<h1>Add new language</h1>
+{% endblock %}
+
+{% block content %}
+The ascii_name field is obligatory. Allowable characters for an ascii name are
+a-z, A-Z and _ (no spaces!)
+<form action="" method="POST">
+  <table>
+    {{ form.as_table }}
+  </table>
+  <input type="submit" name="submit" value="Submit" /> 
+  <input type="submit" name="cancel" value="Cancel" /> 
+</form>
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
