@@ -82,7 +82,7 @@ ielex_id	wiki_id	meaning
 81	41	husband
 82	1	i
 83	165	ice
-84	204	if
+84	205	if
 85	202	in
 86	110	to kill
 87	82	knee
@@ -160,7 +160,7 @@ ielex_id	wiki_id	meaning
 159	149	star
 160	53	stick (of wood)
 161	156	stone
-162		straight
+162	189	straight
 163	95	to suck
 164	147	sun
 165	146	to swell
