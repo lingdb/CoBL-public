@@ -1,3 +1,4 @@
+from __future__ import division
 from django.db import models
 import reversion
 from django.contrib import admin
@@ -46,6 +47,15 @@ class Language(models.Model):
     @property
     def canonical_url(self):
         return "/language/%s/" % self.ascii_name
+
+    @property
+    def percent_coded(self):
+        uncoded = self.lexeme_set.filter(cognate_class=None).count()
+        total = self.lexeme_set.all().count()
+        try:
+            return int(100 * (total - uncoded) / total)
+        except ZeroDivisionError:
+            return ""
 
     def __unicode__(self):
         return self.ascii_name
