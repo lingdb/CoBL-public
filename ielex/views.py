@@ -579,7 +579,7 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                                 initial={"source":citation.source.id,
                                 "pages":citation.pages,
                                 "reliability":citation.reliability})
-                except ValueError:
+                except LexemeCitation.DoesNotExist:
                     form = AddCitationForm()
             elif action == "add-new-citation":# XXX
                 form = AddCitationForm()
@@ -659,7 +659,14 @@ def lexeme_add(request, meaning=None, language=None, lexeme_id=0, return_to=None
                     source_form=cd["source_form"],
                     phon_form=cd["phon_form"],
                     notes=cd["notes"])
-            return HttpResponseRedirect("/lexeme/%s/add-citation/" % lexeme.id)
+            previous_lexemecitation_ids = request.session.get("previous_lexemecitation_ids", None)
+            if previous_lexemecitation_ids:
+                for lexemecitation_id in previous_lexemecitation_ids:
+                    source = LexemeCitation.objects.get(id=lexemecitation_id).source
+                    LexemeCitation.objects.create(lexeme=lexeme,source=source)
+                return HttpResponseRedirect("/lexeme/%s/" % lexeme.id)
+            else:
+                return HttpResponseRedirect("/lexeme/%s/add-citation/" % lexeme.id)
     else:
         form = AddLexemeForm()
         try:
@@ -670,10 +677,12 @@ def lexeme_add(request, meaning=None, language=None, lexeme_id=0, return_to=None
             form.fields["meaning"].initial = initial_data["meaning"].id
         except KeyError:
             pass
-        if lexeme_id:
+        if lexeme_id: # duplicate
             form.fields["source_form"].initial = lexeme.source_form
             form.fields["phon_form"].initial = lexeme.phon_form
             form.fields["notes"].initial = lexeme.notes
+            request.session["previous_lexemecitation_ids"] = \
+                    lexeme.lexemecitation_set.values_list("id", flat=True)
     return render_template(request, "lexeme_add.html",
             {"form":form})
 
