@@ -534,6 +534,7 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     citation.pages = cd["pages"]
                     citation.reliability = cd["reliability"]
                     citation.save()
+                    request.session["previous_cognate_citation_id"] = citation.id
                     return HttpResponseRedirect(redirect_url)
             elif action == "add-cognate-citation": #
                 form = AddCitationForm(request.POST)
@@ -552,9 +553,11 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                             source=cd["source"],
                             pages=cd["pages"],
                             reliability=cd["reliability"])
+                    citation.save()
+                    request.session["previous_cognate_citation_id"] = citation.id
                     return HttpResponseRedirect(redirect_url)
             elif action == "add-cognate": # XXX
-                return HttpResponseRedirect("/meaning/%s/%s" %
+                return HttpResponseRedirect("/meaning/%s/%s/#current" %
                         (lexeme.meaning.gloss, lexeme_id))
             else:
                 assert not action
@@ -571,18 +574,18 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 form = EditCitationForm(
                             initial={"pages":citation.pages,
                             "reliability":citation.reliability})
-            elif action == "add-citation":
-                citation_id = request.session.get("previous_citation_id")
+            elif action in ("add-citation", "add-new-citation"):
+                previous_citation_id = request.session.get("previous_citation_id")
                 try:
-                    citation = LexemeCitation.objects.get(id=citation_id)
+                    citation = LexemeCitation.objects.get(id=previous_citation_id)
                     form = AddCitationForm(
                                 initial={"source":citation.source.id,
                                 "pages":citation.pages,
                                 "reliability":citation.reliability})
                 except LexemeCitation.DoesNotExist:
                     form = AddCitationForm()
-            elif action == "add-new-citation":# XXX
-                form = AddCitationForm()
+            # elif action == "add-new-citation":# XXX
+            #     form = AddCitationForm()
             elif action == "edit-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 form = EditCitationForm(
@@ -592,9 +595,18 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 cj = CognateJudgement.objects.get(id=cogjudge_id)
                 cj.delete()
             elif action == "add-cognate-citation":
-                form = AddCitationForm()
+                previous_citation_id = request.session.get("previous_cognate_citation_id")
+                try:
+                    citation = CognateJudgementCitation.objects.get(id=previous_citation_id)
+                    form = AddCitationForm(
+                                initial={"source":citation.source.id,
+                                "pages":citation.pages,
+                                "reliability":citation.reliability})
+                except CognateJudgementCitation.DoesNotExist:
+                    form = AddCitationForm()
+                # form = AddCitationForm()
             elif action == "add-cognate":
-                return HttpResponseRedirect("/meaning/%s/%s" %
+                return HttpResponseRedirect("/meaning/%s/%s/#current" %
                         (lexeme.meaning.gloss, lexeme_id))
             elif action == "delink-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
