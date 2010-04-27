@@ -1,4 +1,5 @@
 import datetime
+import textwrap
 from django.contrib.auth.decorators import login_required
 #from django.contrib.auth.models import AnonymousUser
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -709,8 +710,15 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
         assert meaning, code
         cognate_classes = CognateSet.objects.filter(alias=code, 
                 cognatejudgement__lexeme__meaning__gloss=meaning).distinct()
-        assert len(cognate_classes) == 1
-        cognate_class = cognate_classes[0]
+        try:
+            assert len(cognate_classes) == 1
+            cognate_class = cognate_classes[0]
+        except AssertionError:
+            msg = """error: meaning='%s', cognate code='%s' identifies %s cognate
+            sets""" % (meaning, code, len(cognate_classes))
+            msg = textwrap.fill(msg, 9999)
+            request.user.message_set.create(message=msg)
+            return HttpResponseRedirect('/meaning/%s/' % meaning)
     if action == "edit":
         if request.method == 'POST':
             form = EditCognateSetForm(request.POST)

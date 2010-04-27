@@ -58,6 +58,10 @@ for Version 0.3
 - Fix exception raised when you try to change a blank value in the language
   edit page
 
+- Handle typos in url fields.
+
+- Add Lexeme always puts Dyen, Kruskal and Black as the source
+
 for Version 0.4
 ---------------
 
