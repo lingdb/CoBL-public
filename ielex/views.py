@@ -701,9 +701,16 @@ def lexeme_add(request, meaning=None, language=None, lexeme_id=0, return_to=None
 # -- /cognate/ ------------------------------------------------------------
 
 #@login_required
-def cognate_report(request, cognate_id, action=""):
-    cognate_id = int(cognate_id)
-    cognate_class = CognateSet.objects.get(id=cognate_id)
+def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
+    if cognate_id:
+        cognate_id = int(cognate_id)
+        cognate_class = CognateSet.objects.get(id=cognate_id)
+    else:
+        assert meaning, code
+        cognate_classes = CognateSet.objects.filter(alias=code, 
+                cognatejudgement__lexeme__meaning__gloss=meaning).distinct()
+        assert len(cognate_classes) == 1
+        cognate_class = cognate_classes[0]
     if action == "edit":
         if request.method == 'POST':
             form = EditCognateSetForm(request.POST)

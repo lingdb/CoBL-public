@@ -80,6 +80,8 @@ urlpatterns = patterns('',
     # Cognates
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report),
     url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit)/$', cognate_report),
+    url(r'^cognate/(?P<meaning>[a-zA-Z0-9_ ]+)/(?P<code>[A-Z]+)/$',
+            cognate_report),
 
     url(r'^revert/(?P<version_id>\d+)/$', revert_version),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
