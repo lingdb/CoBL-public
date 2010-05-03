@@ -645,7 +645,11 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             })
 
 @login_required
-def lexeme_add(request, meaning=None, language=None, lexeme_id=0, return_to=None):
+def lexeme_add(request,
+        meaning=None,
+        language=None,
+        lexeme_id=0, # non-zero -> duplicate
+        return_to=None):
     initial_data = {}
     if language:
         initial_data["language"] = get_canonical_language(language)
@@ -676,7 +680,7 @@ def lexeme_add(request, meaning=None, language=None, lexeme_id=0, return_to=None
             if previous_lexemecitation_ids:
                 for lexemecitation_id in previous_lexemecitation_ids:
                     source = LexemeCitation.objects.get(id=lexemecitation_id).source
-                    LexemeCitation.objects.create(lexeme=lexeme,source=source)
+                    LexemeCitation.objects.create(lexeme=lexeme, source=source)
                 return HttpResponseRedirect("/lexeme/%s/" % lexeme.id)
             else:
                 return HttpResponseRedirect("/lexeme/%s/add-citation/" % lexeme.id)
