@@ -61,7 +61,7 @@ class Language(models.Model):
         return self.ascii_name
 
     class Meta:
-        ordering = ["sort_key", "utf8_name"]
+        ordering = ["sort_key", "ascii_name"]
 
 reversion.register(Language)
 
