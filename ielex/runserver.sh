@@ -6,4 +6,6 @@
 sh runserver_2.sh &
 
 # Step 2: boot up the server in the meantime
-python manage.py runserver
+# python manage.py runserver
+# shared server on local network
+python manage.py runserver 172.16.22.214:8000

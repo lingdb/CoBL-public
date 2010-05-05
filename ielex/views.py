@@ -129,7 +129,7 @@ def get_canonical_language(language):
 def get_sort_order(request):
     return request.session.get("language_sort_order", "sort_key")
 
-def get_languages(request ):
+def get_languages(request):
     """Get all Language objects, respecting language_list selection"""
     language_list_name = get_current_language_list(request)
     sort_order = get_sort_order(request)
@@ -144,7 +144,8 @@ def get_current_language_list(request):
 
 def get_prev_and_next_languages(request, current_language):
     language_list_name = get_current_language_list(request)
-    ids = list(get_languages(request).values_list("id", flat=True))
+    languages = get_languages(request)
+    ids = list(languages.values_list("id", flat=True))
     try:
         current_idx = ids.index(current_language.id)
     except ValueError:
@@ -272,7 +273,7 @@ def sort_languages(request, ordered_by):
 def report_language(request, language):
     try:
         language = Language.objects.get(ascii_name=language)
-    except Language.DoesNotExist:
+    except(Language.DoesNotExist):
         language = get_canonical_language(language)
         return HttpResponseRedirect("/language/%s/" %
                 language.ascii_name)

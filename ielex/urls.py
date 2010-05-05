@@ -20,7 +20,7 @@ urlpatterns = patterns('',
     url(r'^languages/$', view_language_list, name="view-languages"),
     url(r'^languages/reorder/$', view_language_reorder, name="language-reorder"),
     url(r'^languages/add-new/$', view_language_add_new, name="language-add-new"),
-    url(r'^languages/sort/(?P<ordered_by>sort_key|ascii_name)/$', sort_languages,
+    url(r'^languages/sort/(?P<ordered_by>sort_key|utf8_name)/$', sort_languages,
             name="language-sort"),
 
     # Language

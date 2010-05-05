@@ -9,6 +9,7 @@
 <table>
   <thead> {# handy for the print view #}
     <tr>
+      <th></th>
       <th>Name</th>
       <th>ISO-639-3</th>
       <th>Lexemes</th>
@@ -19,6 +20,9 @@
   <tbody>
   {% for language in languages %}
   <tr class="{% cycle 'odd' 'even' %}">
+    <td>
+        <small>{{ forloop.counter }}</small>
+    </td>
       <td>
         <a href="{% url language-edit language.ascii_name %}">
           <img src="/media/buttons/edit.png" alt="edit" title="Edit {{ language.utf8_name }} metadata" />
