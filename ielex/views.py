@@ -651,15 +651,20 @@ def lexeme_add(request,
         language=None,
         lexeme_id=0, # non-zero -> duplicate
         return_to=None):
+    # TODO break out the duplicate stuff to a different a different
+    # (non-interactive) function, that splits and copies the lexemes, along
+    # with cognate coding and everything (include a #current tag too)
     initial_data = {}
     if language:
         initial_data["language"] = get_canonical_language(language)
     if meaning:
         initial_data["meaning"] = get_canonical_meaning(meaning)
     if lexeme_id:
-        lexeme = Lexeme.objects.get(id=int(lexeme_id))
-        initial_data["language"] = lexeme.language
-        initial_data["meaning"] = lexeme.meaning
+        original_lexeme = Lexeme.objects.get(id=int(lexeme_id))
+        original_source_form, new_source_form = [e.strip() for e in
+                original_lexeme.source_form.split(",", 1)]
+        initial_data["language"] = original_lexeme.language
+        initial_data["meaning"] = original_lexeme.meaning
 
     if request.method == "POST":
         form = AddLexemeForm(request.POST)
@@ -696,11 +701,13 @@ def lexeme_add(request,
         except KeyError:
             pass
         if lexeme_id: # duplicate
-            form.fields["source_form"].initial = lexeme.source_form
-            form.fields["phon_form"].initial = lexeme.phon_form
-            form.fields["notes"].initial = lexeme.notes
+            form.fields["source_form"].initial = new_source_form
+            form.fields["phon_form"].initial = original_lexeme.phon_form
+            form.fields["notes"].initial = original_lexeme.notes
+            #form.fields["original_id"] = original_lexeme.id
+            #form.fields["original_source_form"] = original_source_form
             request.session["previous_lexemecitation_ids"] = \
-                    lexeme.lexemecitation_set.values_list("id", flat=True)
+                    original_lexeme.lexemecitation_set.values_list("id", flat=True)
     return render_template(request, "lexeme_add.html",
             {"form":form})
 
