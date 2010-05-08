@@ -50,8 +50,9 @@ urlpatterns = patterns('',
 
     # Lexemes
     url(r'^lexeme/add/', lexeme_add, {"return_to":"/meanings/"}),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/duplicate', lexeme_add,
-        {"return_to":"/meaning/%(meaning)s"}),
+    # url(r'^lexeme/(?P<lexeme_id>\d+)/duplicate', lexeme_add,
+    #     {"return_to":"/meaning/%(meaning)s"}),
+    url(r'^lexeme/(?P<lexeme_id>\d+)/duplicate', lexeme_duplicate),
     url(r'^lexeme/(?P<lexeme_id>\d+)/$',
             lexeme_report, name="lexeme-report"),
     url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-citation|edit-lexeme|add-cognate|add-new-citation)/$',

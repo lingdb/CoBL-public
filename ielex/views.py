@@ -645,6 +645,43 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             "active_cogjudge_citation_id":cogjudge_id,
             })
 
+
+@login_required
+def lexeme_duplicate(request, lexeme_id):
+    original_lexeme = Lexeme.objects.get(id=int(lexeme_id))
+    done_split = False
+
+    if "," in original_lexeme.source_form:
+        original_source_form, new_source_form = [e.strip() for e in
+                original_lexeme.source_form.split(",", 1)]
+        done_split= True
+    else:
+        original_source_form, new_source_form = original_lexeme.source_form, ""
+
+    if "," in original_lexeme.phon_form:
+        original_phon_form, new_phon_form = [e.strip() for e in
+                original_lexeme.phon_form.split(",", 1)]
+        done_split= True
+    else:
+        original_phon_form, new_phon_form = original_lexeme.phon_form, ""
+
+    if done_split:
+        new_lexeme = Lexeme.objects.create(
+                language=original_lexeme.language,
+                meaning=original_lexeme.meaning,
+                source_form=new_source_form,
+                phon_form=new_phon_form,
+                notes=original_lexeme.notes)
+        new_lexeme.save()
+        ## TODO Link to source
+        ## TODO Get cognate code, source, reliability
+
+        original_lexeme.source_form = original_source_form
+        original_lexeme.phon_form = original_phon_form
+        original_lexeme.save()
+        #return render_template(request, "lexeme_duplicate.html")
+    return HttpResponseRedirect("/meaning/%s/" % original_lexeme.meaning.gloss)
+
 @login_required
 def lexeme_add(request,
         meaning=None,
