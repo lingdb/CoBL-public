@@ -1,6 +1,49 @@
 TODO
 ====
 
+Django 1.2
+----------
+
+User Messages API¶
+~~~~~~~~~~~~~~~~~~
+
+The API for storing messages in the user Message model (via user.message_set.create) is now deprecated and will be removed in Django 1.4 according to the standard release process.
+
+To upgrade your code, you need to replace any instances of:
+
+user.message_set.create('a message')
+
+with the following:
+
+from django.contrib import messages
+messages.add_message(request, messages.INFO, 'a message')
+
+Additionally, if you make use of the method, you need to replace the following:
+
+for message in user.get_and_delete_messages():
+    ...
+
+with:
+
+from django.contrib import messages
+for message in messages.get_messages(request):
+    ...
+
+For more information, see the full messages documentation. You should begin to update your code to use the new API immediately.
+
+Object-level permissions¶
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A foundation for specifying permissions at the per-object level was added in Django 1.2 alpha but not documented with the alpha release.
+
+The default authentication backends shipped with Django do not currently make use of this, but third-party authentication backends are free to do so. See the authentication docs for more information.
+
+Permissions for anonymous users¶
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you provide a custom authentication backend with the attribute supports_anonymous_user set to True, the AnonymousUser class will check the backend for permissions, just as the normal User does. This is intended to help centralize permission handling; apps can always delegate the question of whether something is allowed or not to the authorization/authentication system. See the authentication docs for more details.
+
+
 for Version 0.3
 ---------------
 

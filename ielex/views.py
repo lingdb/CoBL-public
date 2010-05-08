@@ -673,13 +673,26 @@ def lexeme_duplicate(request, lexeme_id):
                 phon_form=new_phon_form,
                 notes=original_lexeme.notes)
         new_lexeme.save()
-        ## TODO Link to source
-        ## TODO Get cognate code, source, reliability
+        for lc in original_lexeme.lexemecitation_set.all():
+            LexemeCitation.objects.create(
+                    lexeme=new_lexeme,
+                    source=lc.source,
+                    pages=lc.pages,
+                    reliability=lc.reliability)
+        for cj in original_lexeme.cognatejudgement_set.all():
+            new_cj = CognateJudgement.objects.create(
+                    lexeme=new_lexeme,
+                    cognate_class=cj.cognate_class)
+            for cjc in cj.cognatejudgementcitation_set.all():
+                CognateJudgementCitation.objects.create(
+                        cognate_judgement=new_cj,
+                        source=cjc.source,
+                        pages=cjc.pages,
+                        reliability=cjc.reliability)
 
         original_lexeme.source_form = original_source_form
         original_lexeme.phon_form = original_phon_form
         original_lexeme.save()
-        #return render_template(request, "lexeme_duplicate.html")
     return HttpResponseRedirect("/meaning/%s/" % original_lexeme.meaning.gloss)
 
 @login_required
@@ -696,12 +709,12 @@ def lexeme_add(request,
         initial_data["language"] = get_canonical_language(language)
     if meaning:
         initial_data["meaning"] = get_canonical_meaning(meaning)
-    if lexeme_id:
-        original_lexeme = Lexeme.objects.get(id=int(lexeme_id))
-        original_source_form, new_source_form = [e.strip() for e in
-                original_lexeme.source_form.split(",", 1)]
-        initial_data["language"] = original_lexeme.language
-        initial_data["meaning"] = original_lexeme.meaning
+    # if lexeme_id:
+    #     original_lexeme = Lexeme.objects.get(id=int(lexeme_id))
+    #     original_source_form, new_source_form = [e.strip() for e in
+    #             original_lexeme.source_form.split(",", 1)]
+    #     initial_data["language"] = original_lexeme.language
+    #     initial_data["meaning"] = original_lexeme.meaning
 
     if request.method == "POST":
         form = AddLexemeForm(request.POST)
@@ -719,11 +732,14 @@ def lexeme_add(request,
                     source_form=cd["source_form"],
                     phon_form=cd["phon_form"],
                     notes=cd["notes"])
-            previous_lexemecitation_ids = request.session.get("previous_lexemecitation_ids", None)
-            if previous_lexemecitation_ids:
-                for lexemecitation_id in previous_lexemecitation_ids:
-                    source = LexemeCitation.objects.get(id=lexemecitation_id).source
-                    LexemeCitation.objects.create(lexeme=lexeme, source=source)
+            previous_lexemecitation_id = request.session.get("previous_citation_id", None)
+            if previous_lexemecitation_id:
+                previous_citation = LexemeCitation.objects.get(id=previous_citation_id)
+                LexemeCitation.objects.create(
+                        lexeme=lexeme,
+                        source=previous_citation.source,
+                        pages=previous_citation.pages,
+                        reliability=previous_citation.reliability)
                 return HttpResponseRedirect("/lexeme/%s/" % lexeme.id)
             else:
                 return HttpResponseRedirect("/lexeme/%s/add-citation/" % lexeme.id)
@@ -737,14 +753,14 @@ def lexeme_add(request,
             form.fields["meaning"].initial = initial_data["meaning"].id
         except KeyError:
             pass
-        if lexeme_id: # duplicate
-            form.fields["source_form"].initial = new_source_form
-            form.fields["phon_form"].initial = original_lexeme.phon_form
-            form.fields["notes"].initial = original_lexeme.notes
-            #form.fields["original_id"] = original_lexeme.id
-            #form.fields["original_source_form"] = original_source_form
-            request.session["previous_lexemecitation_ids"] = \
-                    original_lexeme.lexemecitation_set.values_list("id", flat=True)
+        # if lexeme_id: # duplicate
+        #     form.fields["source_form"].initial = new_source_form
+        #     form.fields["phon_form"].initial = original_lexeme.phon_form
+        #     form.fields["notes"].initial = original_lexeme.notes
+        #     #form.fields["original_id"] = original_lexeme.id
+        #     #form.fields["original_source_form"] = original_source_form
+        #     request.session["previous_lexemecitation_ids"] = \
+        #             original_lexeme.lexemecitation_set.values_list("id", flat=True)
     return render_template(request, "lexeme_add.html",
             {"form":form})
 
