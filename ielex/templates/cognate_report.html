@@ -34,6 +34,7 @@
       <th>Phonological</th>
       <th>Meaning</th>
       <th>Notes</th>
+      <th>Rating</th>
     </tr>
   </thead>
   <tbody>
@@ -49,6 +50,10 @@
       <td>{{ cj.lexeme.phon_form }}</td>
       <td><a href="/meaning/{{ cj.lexeme.meaning.gloss }}/">{{ cj.lexeme.meaning.gloss }}</a></td>
       <td>{{ cj.lexeme.notes|wikilink }}</td>
+      <td>{% for rating, description in cj.long_reliability_ratings %}
+            <span title="{{ description }}">{{ rating }}</span>
+          {% endfor %}
+      </td>
       <td>
         <a href="/lexeme/{{ cj.lexeme.id }}">
           <img src="/media/buttons/view.png" alt="View" title="View/edit the lexical entry" />

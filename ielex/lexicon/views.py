@@ -92,6 +92,12 @@ def write_nexus(request): #, language_list=None):
                 " "*(max_len - len(language.ascii_name)), "".join(row))
     print>>response, "  ;\nend;"
 
+    # get contributor list:
+    # lexical sources
+    # lexemes coded by
+    # cognate sources
+    # cognates coded by
+
     # timing
     seconds = int(time.time() - start_time)
     minutes = seconds // 60

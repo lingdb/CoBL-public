@@ -16,6 +16,7 @@ class Source(models.Model):
             ("A", "High"),         # a selection upon seeing this form
             ("B", "Good, but needs checking by an expert"),
             ("C", "Doubtful"),
+            ("L", "Loanword"),
             )
     citation_text = models.TextField()
     type_code = models.CharField(max_length=1, choices=TYPE_CHOICES)
@@ -156,6 +157,12 @@ class CognateJudgement(models.Model):
     @property
     def reliability_ratings(self):
         return set(self.cognatejudgementcitation_set.values_list("reliability", flat=True))
+
+    @property
+    def long_reliability_ratings(self):
+        """An alphabetically sorted list of (rating_code, description) tuples"""
+        descriptions = dict(Source.RELIABILITY_CHOICES)
+        return [(rating, descriptions[rating]) for rating in sorted(self.reliability_ratings)]
 
     def __unicode__(self):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
