@@ -17,7 +17,7 @@
   </tr>
   {% for lexeme in lexemes %}
   <tr class="{% cycle 'odd' 'even' %}">
-    <td>{{ lexeme.language.id }}</td>
+    <td>{{ lexeme.language.id }}{% ifequal current_lexeme lexeme.id %}<a id="current"></a>{# target for current_lexeme links #}{% endifequal %}</td>
     <td><a href="{% url language-report lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
     <td>{{ lexeme.source_form }}</td>
     <td>{{ lexeme.phon_form }}</td>
@@ -55,7 +55,7 @@
       <a href="/lexeme/{{ lexeme.id }}">
         <img src="/media/buttons/view.png" alt="View" title="View/edit the lexical entry" />
       </a>
-      <a href="/lexeme/{{ lexeme.id }}/duplicate">
+      <a href="/lexeme/{{ lexeme.id }}/duplicate/">
         <img src="/media/buttons/duplicate_lexeme.png" alt="Duplicate" title="Duplicate lexical entry" />
       </a>
     </td>

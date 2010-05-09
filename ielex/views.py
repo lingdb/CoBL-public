@@ -368,7 +368,7 @@ def view_meanings(request):
 
 
 #@login_required
-def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
+def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
     lexeme_id = int(lexeme_id)
     cogjudge_id = int(cogjudge_id)
     if meaning.isdigit():
@@ -408,14 +408,18 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
             language__in=get_languages(request)).order_by(sort_order)
     form.fields["cognate_class"].queryset = CognateSet.objects.filter(
             lexeme__in=lexemes).distinct()
-    # note that initial values have to be set using id 
-    # rather than the object itself
-    if cogjudge_id:
-        form.fields["cognate_class"].initial = CognateJudgement.objects.get(
-              id=cogjudge_id).cognate_class.id
-        add_cognate_judgement=0 # to lexeme
-    else:
-        add_cognate_judgement=lexeme_id
+    add_cognate_judgement = 0 # to lexeme
+    current_lexeme = 0
+    if action == "add":
+        if cogjudge_id:
+            # note that initial values have to be set using id 
+            # rather than the object itself
+            form.fields["cognate_class"].initial = CognateJudgement.objects.get(
+                  id=cogjudge_id).cognate_class.id
+        else:
+            add_cognate_judgement = lexeme_id
+    elif action == "goto":
+        current_lexeme = lexeme_id
     prev_meaning, next_meaning = get_prev_and_next_meanings(meaning)
     return render_template(request, "meaning_report.html",
             {"meaning":meaning,
@@ -424,6 +428,7 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0):
             "lexemes": lexemes,
             "add_cognate_judgement":add_cognate_judgement,
             "edit_cognate_judgement":cogjudge_id,
+            "current_lexeme":current_lexeme,
             "form":form})
 
 # -- /lexeme/ -------------------------------------------------------------
@@ -693,7 +698,8 @@ def lexeme_duplicate(request, lexeme_id):
         original_lexeme.source_form = original_source_form
         original_lexeme.phon_form = original_phon_form
         original_lexeme.save()
-    return HttpResponseRedirect("/meaning/%s/" % original_lexeme.meaning.gloss)
+    return HttpResponseRedirect("/meaning/%s/%s/#current" %
+            (original_lexeme.meaning.gloss, original_lexeme.id))
 
 @login_required
 def lexeme_add(request,
