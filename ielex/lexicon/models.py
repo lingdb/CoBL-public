@@ -54,7 +54,7 @@ class Language(models.Model):
         uncoded = self.lexeme_set.filter(cognate_class=None).count()
         total = self.lexeme_set.all().count()
         try:
-            return int(100 * (total - uncoded) / total)
+            return int(100.0 * (total - uncoded) / total)
         except ZeroDivisionError:
             return ""
 
@@ -84,6 +84,15 @@ class Meaning(models.Model):
     @property
     def canonical_url(self):
         return "/meaning/%s/" % self.gloss
+
+    @property
+    def percent_coded(self):
+        uncoded = self.lexeme_set.filter(meaning=self, cognate_class=None).count()
+        total = self.lexeme_set.filter(meaning=self).count()
+        try:
+            return int(100.0 * (total - uncoded) / total)
+        except ZeroDivisionError:
+            return ""
 
     def __unicode__(self):
         return self.gloss.upper()
