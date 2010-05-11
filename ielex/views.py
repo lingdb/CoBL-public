@@ -746,7 +746,8 @@ def lexeme_add(request,
                     notes=cd["notes"])
             previous_lexemecitation_id = request.session.get("previous_citation_id", None)
             if previous_lexemecitation_id:
-                previous_citation = LexemeCitation.objects.get(id=previous_citation_id)
+                previous_citation = \
+                        LexemeCitation.objects.get(id=previous_lexemecitation_id)
                 LexemeCitation.objects.create(
                         lexeme=lexeme,
                         source=previous_citation.source,
