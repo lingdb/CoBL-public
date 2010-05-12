@@ -79,7 +79,7 @@ urlpatterns = patterns('',
     url(r'^source/(?P<action>add)/lexeme/(?P<lexeme_id>\d+)/$', source_edit),
 
     # Cognates
-    url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report),
+    url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report, name="cognate-set"),
     url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit)/$', cognate_report),
     url(r'^cognate/(?P<meaning>[a-zA-Z0-9_ ]+)/(?P<code>[A-Z]+)/$',
             cognate_report),

@@ -12,7 +12,7 @@
     <th>Source Form</th>
     <th>Phonological Form</th>
     <th>Notes</th>
-    <th>Cognate Set</th>
+    <th>Cognate coded?</th>
   </tr>
   {% for lexeme in lexemes %}
   <tr class="{% cycle 'odd' 'even' %}">
@@ -21,7 +21,12 @@
     <td>{{ lexeme.source_form }}</td>
     <td>{{ lexeme.phon_form }}</td>
     <td><a href="/lexeme/{{ lexeme.id }}" title="{{ lexeme.notes }}">{{ lexeme.notes|truncatewords:5 }}</a></td>
-    <td>{% for cogset in lexeme.cognate_class.all %}{{ cogset.alias }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</td>
+    <td>{% for cogset in lexeme.cognate_class.all %}
+      <a href="{% url cognate-set cogset.id %}">
+        <img src="/media/buttons/star-blue.png" alt="*" title="Cognate set {{ cogset.id }}" />
+      </a>
+      {% endfor %}
+    </td>
     <td>
      <a href="{% url lexeme-report lexeme.id %}">
        <img src="/media/buttons/view.png" alt="View" title="View detailed information on lexeme" /><a>
