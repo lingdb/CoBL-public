@@ -24,7 +24,7 @@ def main():
     print
     print "Missing sources:"
     for cj in CognateJudgement.objects.filter(source__isnull=True):
-        print " ", cj.lexeme, cj.lexeme.id
+        print " ", cj.lexeme.meaning.gloss, cj.lexeme, cj.lexeme.id
     return
 
 if __name__ == "__main__":
