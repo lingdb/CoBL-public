@@ -1,13 +1,19 @@
 {# used by ../lexeme_report.html #}
 {{ citation.source.citation_text }}
+{% if citation.pages %}
 <table>
 <tr>
   <td class="rowname">
     {% ifequal citation.source.type_code "P" %}Pages:{% endifequal %}
     {% ifequal citation.source.type_code "E" %}Affiliation:{% endifequal %}
     {% ifequal citation.source.type_code "U" %}URL:{% endifequal %}
-  </td><td>{{citation.pages}}</td>
+  </td>
+  <td>{{citation.pages}}</td>
 </tr>
 </table>
+{% endif %}
+{% if citation.comment %}
+<strong class="rowname">Comment:</strong> {{ citation.comment }}
+{% endif %}
 
 {# vim: set ft=htmldjango: #}
