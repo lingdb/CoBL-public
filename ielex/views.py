@@ -479,6 +479,7 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     citation = LexemeCitation.objects.get(id=citation_id)
                     citation.pages = cd["pages"]
                     citation.reliability = cd["reliability"]
+                    citation.comment = cd["comment"]
                     citation.save()
                     request.session["previous_citation_id"] = citation.id
                     return HttpResponseRedirect(redirect_url)
@@ -498,7 +499,8 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                             lexeme=lexeme,
                             source=cd["source"],
                             pages=cd["pages"],
-                            reliability=cd["reliability"])
+                            reliability=cd["reliability"],
+                            comment=cd["comment"])
                     citation.save()
                     request.session["previous_citation_id"] = citation.id
                     return HttpResponseRedirect(redirect_url)
@@ -518,7 +520,8 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                             lexeme=lexeme,
                             source=cd["source"],
                             pages=cd["pages"],
-                            reliability=cd["reliability"])
+                            reliability=cd["reliability"],
+                            comment=cd["comment"])
                     citation.save()
                     request.session["previous_citation_id"] = citation.id
                     return HttpResponseRedirect(redirect_url)
@@ -545,6 +548,7 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     citation = CognateJudgementCitation.objects.get(id=citation_id)
                     citation.pages = cd["pages"]
                     citation.reliability = cd["reliability"]
+                    citation.comment=cd["comment"]
                     citation.save()
                     request.session["previous_cognate_citation_id"] = citation.id
                     return HttpResponseRedirect(redirect_url)
@@ -565,7 +569,8 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                                 id=cogjudge_id),
                             source=cd["source"],
                             pages=cd["pages"],
-                            reliability=cd["reliability"])
+                            reliability=cd["reliability"],
+                            comment=cd["comment"])
                     citation.save()
                     request.session["previous_cognate_citation_id"] = citation.id
                     return HttpResponseRedirect(redirect_url)
@@ -586,7 +591,8 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 citation = LexemeCitation.objects.get(id=citation_id)
                 form = EditCitationForm(
                             initial={"pages":citation.pages,
-                            "reliability":citation.reliability})
+                            "reliability":citation.reliability,
+                            "comment":citation.comment})
             elif action in ("add-citation", "add-new-citation"):
                 previous_citation_id = request.session.get("previous_citation_id")
                 try:
@@ -594,7 +600,8 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     form = AddCitationForm(
                                 initial={"source":citation.source.id,
                                 "pages":citation.pages,
-                                "reliability":citation.reliability})
+                                "reliability":citation.reliability,
+                                "comment":citation.comment})
                 except LexemeCitation.DoesNotExist:
                     form = AddCitationForm()
             # elif action == "add-new-citation":# XXX
@@ -603,7 +610,8 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 form = EditCitationForm(
                             initial={"pages":citation.pages,
-                            "reliability":citation.reliability})
+                            "reliability":citation.reliability,
+                            "comment":citation.comment})
             elif action == "delink-cognate":
                 cj = CognateJudgement.objects.get(id=cogjudge_id)
                 cj.delete()
@@ -614,7 +622,8 @@ def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     form = AddCitationForm(
                                 initial={"source":citation.source.id,
                                 "pages":citation.pages,
-                                "reliability":citation.reliability})
+                                "reliability":citation.reliability,
+                                "comment":citation.comment})
                 except CognateJudgementCitation.DoesNotExist:
                     form = AddCitationForm()
                 # form = AddCitationForm()

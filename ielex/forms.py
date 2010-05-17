@@ -137,12 +137,14 @@ class EditCitationForm(forms.Form):
     pages = forms.CharField(required=False)
     reliability = forms.ChoiceField(choices=Source.RELIABILITY_CHOICES,
             widget=forms.RadioSelect)
+    comment = forms.CharField(widget=forms.Textarea, required=False)
 
 class AddCitationForm(forms.Form):
     source = ChooseOneSourceField(queryset=Source.objects.all())
     pages = forms.CharField(required=False)
     reliability = forms.ChoiceField(choices=Source.RELIABILITY_CHOICES,
             widget=forms.RadioSelect)
+    comment = forms.CharField(widget=forms.Textarea, required=False)
 
 class ChooseCognateClassForm(forms.Form):
     cognate_class = ChooseCognateClassField(queryset=CognateSet.objects.all(),

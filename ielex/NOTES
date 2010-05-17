@@ -68,6 +68,7 @@ Groups:
 Administrator (Everything)
 Contributor (Everything with data, but not user admin)
 Registered User (downloading and commenting)
+Anonymous (Viewing)
 
 Each group gets the cumulative permissions of the other groups
 
