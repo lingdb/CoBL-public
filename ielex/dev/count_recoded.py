@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 import os
-print "-> I E L E X"
+# print "-> I E L E X"
 from django.core.management import setup_environ
 sys.path.append(os.path.abspath("../.."))
 from ielex import settings
