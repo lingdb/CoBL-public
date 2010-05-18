@@ -13,7 +13,12 @@
 </table>
 {% endif %}
 {% if citation.comment %}
-<strong class="rowname">Comment:</strong> {{ citation.comment }}
+<table>
+  <tr>
+    <td class="rowname">Comment:</td>
+    <td>{{ citation.comment }}</td>
+  </tr>
+</table>
 {% endif %}
 
 {# vim: set ft=htmldjango: #}

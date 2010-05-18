@@ -173,6 +173,10 @@ class CognateJudgement(models.Model):
         descriptions = dict(Source.RELIABILITY_CHOICES)
         return [(rating, descriptions[rating]) for rating in sorted(self.reliability_ratings)]
 
+    @property
+    def is_loanword(self):
+        return "L" in self.reliability_ratings
+
     def __unicode__(self):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
                 self.cognate_class.alias, self.id)

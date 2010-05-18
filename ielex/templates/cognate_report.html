@@ -51,7 +51,7 @@
       <td><a href="/meaning/{{ cj.lexeme.meaning.gloss }}/">{{ cj.lexeme.meaning.gloss }}</a></td>
       <td>{{ cj.lexeme.notes|wikilink }}</td>
       <td>{% for rating, description in cj.long_reliability_ratings %}
-            <span title="{{ description }}">{{ description|truncatewords:1 }}</span>
+        <span title="{{ rating }}: {{ description }}">{{ description|truncatewords:1 }}</span>
           {% endfor %}
       </td>
       <td>
