@@ -13,8 +13,13 @@ def list_nexus(request):
     return render_template(request, "nexus_list.html", {"form":form})
 
 @login_required
-def write_nexus(request): #, language_list=None):
-    # TODO this still ignores the reliability rating 
+def write_nexus(request):
+    # TODO 
+    #   - take into account the requested reliability ratings
+    #   - include unique states
+    #   - contributor and sources list
+    LABEL_COGNATE_SETS = True
+    INCLUDE_UNIQUE_STATES = True
 
     start_time = time.time()
     assert request.method == 'POST'
@@ -37,7 +42,7 @@ def write_nexus(request): #, language_list=None):
             id=meaning_list_id).meaning_id_list)
     max_len = max([len(l) for l in language_names])
 
-    # reliability = request.POST.getlist("reliability")
+    reliability = set(request.POST.getlist("reliability"))
 
     cognate_class_ids = CognateSet.objects.all().values_list("id", flat=True)
     data = {}
@@ -64,8 +69,7 @@ def write_nexus(request): #, language_list=None):
             id=language_list_id).name
     print>>response, "[ Meaning list: %s ]" % MeaningList.objects.get(
             id=meaning_list_id).name
-    # print>>response, "[ Reliability: %s ]" %", ".join(
-    #         request.POST.getlist("reliability"))
+    print>>response, "[ Reliability: %s ]" % ", ".join(sorted(reliability))
     print>>response, "[ File generated: %s ]\n" % time.strftime("%Y-%m-%d %H:%M:%S",
             time.localtime())
 
@@ -80,6 +84,18 @@ def write_nexus(request): #, language_list=None):
           dimensions nchar=%s;
           format symbols="01";
           matrix""" % len(data))
+
+    if LABEL_COGNATE_SETS:
+        print>>response, "   %s [ Cognate class codes ]" \
+                % (" "*max_len)
+        for i in range(max([len(str(i)) for i in data.keys()])):
+            row = []
+            for cc in sorted(data):
+                try:
+                    row.append(str(cc)[i])
+                except IndexError:
+                    row.append(" ")
+            print>>response, "    %s[ %s ]" % (" "*max_len, "".join(row))
 
     for language in languages:
         row = []

@@ -1,6 +1,7 @@
 from string import uppercase
 from ielex.lexicon.models import Language
 
+# TODO make this into an infinite generator
 codes = list(uppercase) + [i+j for i in uppercase for j in uppercase]
 
 def int2alpha(n):
