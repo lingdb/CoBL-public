@@ -236,6 +236,11 @@ class CognateJudgementCitation(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     @property
+    def long_reliability(self):
+        descriptions = dict(Source.RELIABILITY_CHOICES)
+        return descriptions[self.reliability]
+
+    @property
     def canonical_url(self):
         return "/lexeme/%s/edit-cognate-citation/%s/" % \
                 (self.cognate_judgement.lexeme.id, self.id)
@@ -253,6 +258,11 @@ class LexemeCitation(models.Model):
     reliability = models.CharField(max_length=1, choices=Source.RELIABILITY_CHOICES)
     comment = models.CharField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
+
+    @property
+    def long_reliability(self):
+        descriptions = dict(Source.RELIABILITY_CHOICES)
+        return descriptions[self.reliability]
 
     @property
     def canonical_url(self):
