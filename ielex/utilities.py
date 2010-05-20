@@ -1,8 +1,7 @@
-from string import uppercase
+from string import uppercase, lowercase
 from ielex.lexicon.models import Language
 
-# TODO make this into an infinite generator
-codes = list(uppercase) + [i+j for i in uppercase for j in uppercase]
+codes = list(uppercase) + [i+j for i in uppercase for j in lowercase]
 
 def int2alpha(n):
     """Indexes start at 1!"""
@@ -11,12 +10,10 @@ def int2alpha(n):
 
 def alpha2int(a):
     """Indexes start at 1!"""
-    #codes = list(uppercase) + [i+j for i in uppercase for j in uppercase]
     return codes.index(a)+1
 
 def next_alias(l, ignore=[]):
     """Find the next unused alias from a list of aliases"""
-    #codes = list(uppercase) + [i+j for i in uppercase for j in uppercase]
     for alias in l:
         assert alias in codes+ignore
     for alias in codes:
