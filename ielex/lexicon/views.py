@@ -9,7 +9,9 @@ from ielex.views import get_sort_order
 from ielex.views import ChooseNexusOutputForm
 
 def list_nexus(request):
-    form =  ChooseNexusOutputForm()
+    defaults = {"unique":True, "reliability":["L"], "language_list":1,
+            "meaning_list":1}
+    form =  ChooseNexusOutputForm(defaults)
     return render_template(request, "nexus_list.html", {"form":form})
 
 @login_required
@@ -51,9 +53,11 @@ def write_nexus(request):
     for cc in cognate_class_ids:
         # language_ids = CognateSet.objects.get(id=cc).lexeme_set.filter(
         #         meaning__in=meanings).values_list('language', flat=True)
+        ## this is much slower than the values_list version (probably from
+        ## calculating the reliability ratings property
         language_ids = [cj.lexeme.language.id for cj in
                 CognateJudgement.objects.filter(cognate_class=cc)
-                if not (cj.reliability_ratings & exclude)] # much slower
+                if not (cj.reliability_ratings & exclude)]
         if language_ids:
             data[cc] = language_ids
 

@@ -35,6 +35,8 @@ urlpatterns = patterns('',
 
     # Meanings
     url(r'^meanings/$', view_meanings, name="view-meanings"),
+    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+)/add-lexeme/$', lexeme_add,
+            {"return_to":"/meaning/%(meaning)s/"}), # NEW
     url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/$', report_meaning,
             name="meaning-report"),
     url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/add/$', report_meaning,

@@ -130,6 +130,7 @@ class ChooseNexusOutputForm(forms.Form):
     reliability = forms.MultipleChoiceField(choices=Source.RELIABILITY_CHOICES,
             widget=forms.CheckboxSelectMultiple,
             label="Exclude ratings")
+    unique = forms.BooleanField(label="Include unique states")
 
 class ChooseSourceForm(forms.Form):
     source = ChooseSourcesField(queryset=Source.objects.all())

@@ -133,6 +133,10 @@ General
   make database-specific management functions (e.g. add users, change user
   permissions, change superuser password, etc)
 
+- Recent changes is broken in the case that a lexeme is deleted (at least until
+  it goes off the bottom of the screen) -- I think this is to do with the 'link
+  to current object'
+
 Development
 -----------
 
