@@ -30,7 +30,7 @@ def write_nexus(request):
 
     # Create the HttpResponse object with the appropriate header.
     response = HttpResponse(mimetype='text/plain')
-    # response['Content-Disposition'] = 'attachment; filename=ielex.nex'
+    response['Content-Disposition'] = 'attachment; filename=ielex.nex'
 
     # get data together
     #form =  ChooseNexusOutputForm(request.POST)
@@ -49,6 +49,7 @@ def write_nexus(request):
     exclude = set(request.POST.getlist("reliability"))
 
     cognate_class_ids = CognateSet.objects.all().values_list("id", flat=True)
+
     data = {}
     for cc in cognate_class_ids:
         # language_ids = CognateSet.objects.get(id=cc).lexeme_set.filter(
@@ -56,7 +57,8 @@ def write_nexus(request):
         ## this is much slower than the values_list version (probably from
         ## calculating the reliability ratings property
         language_ids = [cj.lexeme.language.id for cj in
-                CognateJudgement.objects.filter(cognate_class=cc)
+                CognateJudgement.objects.filter(cognate_class=cc,
+                    lexeme__meaning__in=meanings)
                 if not (cj.reliability_ratings & exclude)]
         if language_ids:
             data[cc] = language_ids
@@ -65,7 +67,8 @@ def write_nexus(request):
         # add a cc for all the lexemes which are not in a cognate class
         # TODO look at lexeme reliablity ratings here too
         uniques = Lexeme.objects.filter(
-                cognate_class__isnull=True).values_list("language", "id")
+                cognate_class__isnull=True,
+                meaning__in=meanings).values_list("language", "id")
         for language_id, lexeme_id in uniques:
             cc = ("U", lexeme_id)
             data[cc] = [language_id]
