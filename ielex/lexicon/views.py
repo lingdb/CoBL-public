@@ -10,7 +10,7 @@ from ielex.views import ChooseNexusOutputForm
 
 def list_nexus(request):
     defaults = {"unique":True, "reliability":["L"], "language_list":1,
-            "meaning_list":1}
+            "meaning_list":1, "dialect":"NN"}
     form =  ChooseNexusOutputForm(defaults)
     return render_template(request, "nexus_list.html", {"form":form})
 
