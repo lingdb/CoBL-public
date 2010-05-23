@@ -17,9 +17,11 @@ def main():
     lexemes = Lexeme.objects.filter(notes__contains="loan")
     for lexeme in lexemes:
         if not is_loanword(lexeme):
-            print "%s '%s' (%s) /lexeme/%s/" % (lexeme.source_form,
-                    lexeme.meaning.gloss, lexeme.language.utf8_name, lexeme.id)
-            print " ", lexeme.notes.strip()
+            line = "%s '%s' (%s) /lexeme/%s/" % (lexeme.source_form,
+                    lexeme.meaning.gloss,
+                    lexeme.language.utf8_name, lexeme.id)
+            print line.encode("utf-8")
+            print " ", lexeme.notes.strip().encode("utf-8")
             print
     return
 

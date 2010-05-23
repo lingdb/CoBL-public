@@ -188,6 +188,7 @@ class LanguageList(models.Model):
     default list, named 'all' is (re)created on save/delete of the Language
     table (cf. ielex.models.update_language_list_all)"""
     name = models.CharField(max_length=999)
+    # description = models.TextField()
     language_ids = models.CommaSeparatedIntegerField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
 
