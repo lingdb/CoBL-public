@@ -42,8 +42,9 @@ def view_frontpage(request):
 
 def view_changes(request):
     """Recent changes"""
+    # the view fails when an object has been deleted
     recent_changes = Version.objects.all().order_by("id").reverse()
-    paginator = Paginator(recent_changes, 200) 
+    paginator = Paginator(recent_changes, 100) # was 200
 
     try: # Make sure page request is an int. If not, deliver first page.
         page = int(request.GET.get('page', '1'))
@@ -54,6 +55,15 @@ def view_changes(request):
         changes = paginator.page(page)
     except (EmptyPage, InvalidPage):
         changes = paginator.page(paginator.num_pages)
+
+    # def object_exists(version):
+    #     try:
+    #         version.object_version.object
+    #         return version
+    #     except Version.DoesNotExist:
+    #         return None
+
+    # changes.object_list = [version for version in changes.object_list if object_exists(version)]
 
     contributors = sorted([(User.objects.get(id=user_id),
             Version.objects.filter(revision__user=user_id).count())

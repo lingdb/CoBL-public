@@ -249,7 +249,6 @@ class CognateJudgementCitation(models.Model):
     def __unicode__(self):
         return u"CJC src=%s cit=%s" % (self.source.id, self.id)
 
-
 reversion.register(CognateJudgementCitation)
 
 class LexemeCitation(models.Model):
