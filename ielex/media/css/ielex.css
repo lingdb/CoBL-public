@@ -119,6 +119,12 @@ a.button:hover { text-decoration: none }
   text-align: right;
 }
 
+#logo{
+  width: 100px;
+  float: left;
+  padding: 3px;
+}
+
 #sitemap {
   width: 24%;
   padding: 1%;
