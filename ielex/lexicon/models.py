@@ -14,9 +14,10 @@ class Source(models.Model):
     RELIABILITY_CHOICES = ( # used by Citation classes
             #("X", "Unclassified"), # change "X" to "" will force users to make
             ("A", "High"),         # a selection upon seeing this form
-            ("B", "Good, but needs checking by an expert"),
+            ("B", "Good (e.g. but needs further checking)"),
             ("C", "Doubtful"),
             ("L", "Loanword"),
+            ("X", "Exclude (e.g. not the Swadesh term)"),
             )
     citation_text = models.TextField()
     type_code = models.CharField(max_length=1, choices=TYPE_CHOICES)

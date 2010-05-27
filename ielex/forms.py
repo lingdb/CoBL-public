@@ -119,8 +119,8 @@ class ChooseMeaningListForm(forms.Form):
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}))
 
 class ChooseNexusOutputForm(forms.Form):
-    DIALECT = (("BP", "BayesPhylogeneties"), 
-            ("NN", "NeighborNet"), 
+    DIALECT = (("BP", "BayesPhylogenies"),
+            ("NN", "NeighborNet"),
             ("MB", "MrBayes"))
     language_list = ChooseLanguageListField(
             queryset=LanguageList.objects.all(),

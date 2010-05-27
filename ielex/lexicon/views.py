@@ -9,7 +9,7 @@ from ielex.views import get_sort_order
 from ielex.views import ChooseNexusOutputForm
 
 def list_nexus(request):
-    defaults = {"unique":True, "reliability":["L"], "language_list":1,
+    defaults = {"unique":1, "reliability":["L","X"], "language_list":1,
             "meaning_list":1, "dialect":"NN"}
     form =  ChooseNexusOutputForm(defaults)
     return render_template(request, "nexus_list.html", {"form":form})
@@ -21,29 +21,30 @@ def write_nexus(request):
     #   - include unique states
     #   - contributor and sources list
     LABEL_COGNATE_SETS = True
-    INCLUDE_UNIQUE_STATES = True
+    # INCLUDE_UNIQUE_STATES = int(request.POST["unique"])
+    try:
+        INCLUDE_UNIQUE_STATES = bool(request.POST["unique"])
+    except KeyError:
+        INCLUDE_UNIQUE_STATES = False
     # 0:19 included
     # 0.17 excluded
 
     start_time = time.time()
     assert request.method == 'POST'
 
-    # Create the HttpResponse object with the appropriate header.
-    response = HttpResponse(mimetype='text/plain')
-    response['Content-Disposition'] = 'attachment; filename=ielex.nex'
-
     # get data together
     #form =  ChooseNexusOutputForm(request.POST)
     language_list_id = request.POST["language_list"]
+    language_list = LanguageList.objects.get(id=language_list_id)
     languages = Language.objects.filter(
-            id__in=LanguageList.objects.get(
-            id=language_list_id).language_id_list).order_by(get_sort_order(request))
+            id__in=language_list.language_id_list).order_by(
+            get_sort_order(request))
     language_names = ["'"+name+"'" for name in
             languages.values_list("ascii_name", flat=True)]
 
     meaning_list_id = request.POST["meaning_list"]
-    meanings = Meaning.objects.filter(id__in=MeaningList.objects.get(
-            id=meaning_list_id).meaning_id_list)
+    meaning_list = MeaningList.objects.get(id=meaning_list_id)
+    meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
     max_len = max([len(l) for l in language_names])
 
     exclude = set(request.POST.getlist("reliability"))
@@ -73,6 +74,12 @@ def write_nexus(request):
             cc = ("U", lexeme_id)
             data[cc] = [language_id]
 
+    # Create the HttpResponse object with the appropriate header.
+    filename = "ielex-%s-%s.nex" % (language_list.name, meaning_list.name)
+    response = HttpResponse(mimetype='text/plain')
+    response['Content-Disposition'] = 'attachment; filename=%s' % \
+            filename.replace(" ", "_")
+
     # print out response
     print>>response, dedent("""\
         #NEXUS
@@ -86,21 +93,32 @@ def write_nexus(request):
             id=language_list_id).name
     print>>response, "[ Meaning list: %s ]" % MeaningList.objects.get(
             id=meaning_list_id).name
-    print>>response, "[ Exclude rating: %s ]" % ", ".join(sorted(exclude))
-    print>>response, "[ File generated: %s ]\n" % time.strftime("%Y-%m-%d %H:%M:%S",
-            time.localtime())
+    print>>response, "[ Exclude rating/s: %s ]" % ", ".join(sorted(exclude))
+    print>>response, "[ Include unique states: %s ]" % INCLUDE_UNIQUE_STATES
+    print>>response, "[ File generated: %s ]\n" % \
+            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-    print>>response, dedent("""\
-        begin taxa;
-          dimensions ntax=%s;
-          taxlabels %s;
-        end;
-        """ % (len(languages), " ".join(language_names)))
-    print>>response, dedent("""\
-        begin characters;
-          dimensions nchar=%s;
-          format symbols="01";
-          matrix""" % len(data))
+    if request.POST["dialect"] in ("NN", "MB"):
+        print>>response, dedent("""\
+            begin taxa;
+              dimensions ntax=%s;
+              taxlabels %s;
+            end;
+            """ % (len(languages), " ".join(language_names)))
+        print>>response, dedent("""\
+            begin characters;
+              dimensions nchar=%s;
+              format symbols="01";
+              matrix""" % len(data))
+    else:
+        assert request.POST["dialect"] == "BP"
+        print>>response, dedent("""\
+            begin data;
+              dimensions ntax=%s nchar=%s;
+              taxlabels %s;
+              format symbols="01";
+              matrix
+            """ % (len(languages), len(data), " ".join(language_names)))
 
     if LABEL_COGNATE_SETS:
         def get_code(cc):
@@ -134,6 +152,18 @@ def write_nexus(request):
         print>>response, "    '%s'%s%s" % (language.ascii_name,
                 " "*(max_len - len(language.ascii_name)), "".join(row))
     print>>response, "  ;\nend;"
+
+    if request.POST["dialect"] == "BP":
+        print>>response, dedent("""\
+            begin BayesPhylogenies;
+                Chains 1;
+                it 12000000;
+                Model m1p;
+                bf emp;
+                cv 2;
+                pf 10000;
+                autorun;
+            end;""")
 
     # get contributor list:
     # lexical sources
