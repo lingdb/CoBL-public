@@ -151,7 +151,7 @@ def write_nexus(request):
                 row.append("0")
         print>>response, "    '%s'%s%s" % (language.ascii_name,
                 " "*(max_len - len(language.ascii_name)), "".join(row))
-    print>>response, "  ;\nend;"
+    print>>response, "  ;\nend;\n"
 
     if request.POST["dialect"] == "BP":
         print>>response, dedent("""\
@@ -163,7 +163,8 @@ def write_nexus(request):
                 cv 2;
                 pf 10000;
                 autorun;
-            end;""")
+            end;
+            """)
 
     # get contributor list:
     # lexical sources
