@@ -68,6 +68,8 @@ for Version 0.3
 
   This will be fixed in Django 1.2.
 
+  *serious* it looks like un-logged-in users can make some changes
+
 - Implement permissions/permission groups on all editing actions
 
 - change password view
