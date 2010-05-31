@@ -68,13 +68,14 @@ def view_changes(request):
     contributors = sorted([(User.objects.get(id=user_id),
             Version.objects.filter(revision__user=user_id).count())
             for user_id in Version.objects.values_list("revision__user",
-            flat=True).distinct()],
+                    flat=True).distinct()],
             lambda x, y: -cmp(x[1], y[1])) # reverse sort by second element in tuple
 
     return render_template(request, "view_changes.html",
             {"changes":changes,
             "contributors":contributors})
 
+@login_required
 def revert_version(request, version_id):
     """Roll back the object saved in a Version to the previous Version"""
     try:
