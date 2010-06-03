@@ -127,8 +127,6 @@ General
 
 - Include all relevant citations in export functions.
 
-- put some kind of icon for "reliability" against cognate aliases and lexemes
-
 - test what happens when you change a language name (does data get lost)?
 
 - Use http://docs.djangoproject.com/en/dev/howto/custom-management-commands/ to

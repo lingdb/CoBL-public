@@ -68,8 +68,9 @@ def view_changes(request):
     contributors = sorted([(User.objects.get(id=user_id),
             Version.objects.filter(revision__user=user_id).count())
             for user_id in Version.objects.values_list("revision__user",
-                    flat=True).distinct()],
+                    flat=True).distinct() if user_id is not None],
             lambda x, y: -cmp(x[1], y[1])) # reverse sort by second element in tuple
+            # TODO user_id should never be None
 
     return render_template(request, "view_changes.html",
             {"changes":changes,
@@ -444,8 +445,14 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
 
 # -- /lexeme/ -------------------------------------------------------------
 
-#@login_required
-def lexeme_report(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
+def view_lexeme(request, lexeme_id):
+    """For un-logged-in users, view only"""
+    lexeme = Lexeme.objects.get(id=lexeme_id)
+    return render_template(request, "lexeme_report.html",
+            {"lexeme":lexeme})
+
+@login_required
+def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     citation_id = int(citation_id)
     cogjudge_id = int(cogjudge_id)
     lexeme = Lexeme.objects.get(id=lexeme_id)

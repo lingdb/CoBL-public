@@ -1,7 +1,6 @@
 # Django settings for ielex project.
 import os.path
 
-
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
