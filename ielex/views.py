@@ -739,13 +739,8 @@ def lexeme_add(request,
             return HttpResponseRedirect(return_to % initial_data)
         if form.is_valid():
             lexeme = Lexeme.objects.create(**form.cleaned_data)
-                    # language=cd["language"],
-                    # meaning=cd["meaning"],
-                    # source_form=cd["source_form"],
-                    # phon_form=cd["phon_form"],
-                    # notes=cd["notes"])
-            previous_lexemecitation_id = request.session.get("previous_citation_id", None)
-            if previous_lexemecitation_id:
+            previous_lexemecitation_id = request.session.get("previous_citation_id")
+            try:
                 previous_citation = \
                         LexemeCitation.objects.get(id=previous_lexemecitation_id)
                 LexemeCitation.objects.create(
@@ -754,7 +749,7 @@ def lexeme_add(request,
                         pages=previous_citation.pages,
                         reliability=previous_citation.reliability)
                 return HttpResponseRedirect("/lexeme/%s/" % lexeme.id)
-            else:
+            except LexemeCitation.DoesNotExist:
                 return HttpResponseRedirect("/lexeme/%s/add-citation/" % lexeme.id)
     else:
         form = AddLexemeForm()
