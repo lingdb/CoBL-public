@@ -182,12 +182,12 @@ def get_prev_and_next_meanings(current_meaning):
     return (prev_meaning, next_meaning)
 
 def update_object_from_form(model_object, form):
-    """Update an object with data from a form. We assume that the form is a
-    ModelForm based on the same model as the object, but not tests are
-    performed to check this up front."""
-    cd = form.cleaned_data
-    for field_name in cd:
-        setattr(model_object, field_name, cd[field_name])
+    """Update an object with data from a form."""
+    # cd = form.cleaned_data
+    # for field_name in cd:
+    #     setattr(model_object, field_name, cd[field_name])
+    assert set(form.cleaned_data).issubset(set(model_object.__dict__))
+    model_object.__dict__.update(form.cleaned_data)
     model_object.save()
     return
 
@@ -739,10 +739,10 @@ def lexeme_add(request,
             return HttpResponseRedirect(return_to % initial_data)
         if form.is_valid():
             lexeme = Lexeme.objects.create(**form.cleaned_data)
-            previous_lexemecitation_id = request.session.get("previous_citation_id")
+            previous_citation_id = request.session.get("previous_citation_id")
             try:
                 previous_citation = \
-                        LexemeCitation.objects.get(id=previous_lexemecitation_id)
+                        LexemeCitation.objects.get(id=previous_citation_id)
                 LexemeCitation.objects.create(
                         lexeme=lexeme,
                         source=previous_citation.source,
