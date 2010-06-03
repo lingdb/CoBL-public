@@ -90,11 +90,6 @@ class EditLanguageForm(forms.ModelForm):
             raise forms.ValidationError(
                     "ASCII name cannot contain whitespace (try '%s')" %
                     data.replace(" ","_"))
-        # try:
-        #     assert not Language.objects.filter(
-        #             ascii_name=data).exclude(id=self.cleaned_data["id"])
-        # except AssertionError:
-        #     raise forms.ValidationError("This ASCII name is already in use")
         return data
 
     class Meta:

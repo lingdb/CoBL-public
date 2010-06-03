@@ -42,9 +42,10 @@ admin.site.register(Source, SourceAdmin)
 
 class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
-    ascii_name = models.CharField(max_length=999)
-    utf8_name = models.CharField(max_length=999)
+    ascii_name = models.CharField(max_length=999, unique=True)
+    utf8_name = models.CharField(max_length=999, unique=True)
     sort_key = models.FloatField(null=True, blank=True, editable=False)
+    description = models.TextField(blank=True, null=True)
 
     @property
     def canonical_url(self):
@@ -189,7 +190,7 @@ class LanguageList(models.Model):
     default list, named 'all' is (re)created on save/delete of the Language
     table (cf. ielex.models.update_language_list_all)"""
     name = models.CharField(max_length=999)
-    # description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     language_ids = models.CommaSeparatedIntegerField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
 
@@ -212,6 +213,7 @@ reversion.register(LanguageList)
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh 100'"""
     name = models.CharField(max_length=999)
+    description = models.TextField(blank=True, null=True)
     meaning_ids = models.CommaSeparatedIntegerField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
 

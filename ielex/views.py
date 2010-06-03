@@ -182,6 +182,16 @@ def get_prev_and_next_meanings(current_meaning):
         next_meaning = Meaning.objects.get(id=ids[0])
     return (prev_meaning, next_meaning)
 
+def update_object_from_form(model_object, form):
+    """Update an object with data from a form."""
+    # cd = form.cleaned_data
+    # for field_name in cd:
+    #     setattr(model_object, field_name, cd[field_name])
+    assert set(form.cleaned_data).issubset(set(model_object.__dict__))
+    model_object.__dict__.update(form.cleaned_data)
+    model_object.save()
+    return
+
 # -- /language(s)/ ----------------------------------------------------------
 
 def view_language_list(request):
@@ -307,14 +317,7 @@ def view_language_add_new(request):
         if "cancel" in form.data: # has to be tested before data is cleaned
             return HttpResponseRedirect('/languages/')
         if form.is_valid():
-            cd = form.cleaned_data
-            # do some more checks: 
-            # make sure iso_code and ascii_name are unique
-            language = Language.objects.create(iso_code=cd["iso_code"],
-                    ascii_name=cd["ascii_name"],
-                    utf8_name=cd["utf8_name"])
-            # copy ascii_name to utf8_name if not other specified
-            language.save()
+            language = Language.objects.create(**form.cleaned_data)
             return HttpResponseRedirect('/language/%s/' % language.ascii_name)
 
     else: # first visit
@@ -332,18 +335,17 @@ def edit_language(request, language):
                 language.ascii_name)
 
     if request.method == 'POST':
-        form = EditLanguageForm(request.POST)
+        form = EditLanguageForm(request.POST, instance=language)
         if "cancel" in form.data: # has to be tested before data is cleaned
             return HttpResponseRedirect('/language/%s/' % language.ascii_name)
         if form.is_valid():
-            cd = form.cleaned_data
-            language.iso_code = cd["iso_code"]
-            language.ascii_name = cd["ascii_name"]
-            language.utf8_name = cd["utf8_name"]
-            language.save()
+            # update_object_from_form(language, form) # TODO fix the rest of
+            # the views using model forms along the following lines:
+            form.save()
             return HttpResponseRedirect('/language/%s/' % language.ascii_name)
     else:
-        form = EditLanguageForm(language.__dict__)
+        #form = EditLanguageForm(language.__dict__, instance=language)
+        form = EditLanguageForm(instance=language)
     return render_template(request, "language_edit.html",
             {"language":language,
             "form":form})
@@ -476,11 +478,7 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
                 if form.is_valid():
-                    cd = form.cleaned_data
-                    lexeme.source_form = cd["source_form"]
-                    lexeme.phon_form = cd["phon_form"]
-                    lexeme.notes = cd["notes"]
-                    lexeme.save()
+                    update_object_from_form(lexeme, form)
                     return HttpResponseRedirect(redirect_url)
             elif action == "edit-citation":
                 form = EditCitationForm(request.POST)
@@ -493,12 +491,8 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
                 if form.is_valid():
-                    cd = form.cleaned_data
                     citation = LexemeCitation.objects.get(id=citation_id)
-                    citation.pages = cd["pages"]
-                    citation.reliability = cd["reliability"]
-                    citation.comment = cd["comment"]
-                    citation.save()
+                    update_object_from_form(citation, form)
                     request.session["previous_citation_id"] = citation.id
                     return HttpResponseRedirect(redirect_url)
             elif action == "add-citation":
@@ -562,12 +556,8 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
                 if form.is_valid():
-                    cd = form.cleaned_data
                     citation = CognateJudgementCitation.objects.get(id=citation_id)
-                    citation.pages = cd["pages"]
-                    citation.reliability = cd["reliability"]
-                    citation.comment=cd["comment"]
-                    citation.save()
+                    update_object_from_form(citation, form)
                     request.session["previous_cognate_citation_id"] = citation.id
                     return HttpResponseRedirect(redirect_url)
             elif action == "add-cognate-citation": #
@@ -581,18 +571,12 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
                 if form.is_valid():
-                    cd = form.cleaned_data
                     citation = CognateJudgementCitation.objects.create(
                             cognate_judgement=CognateJudgement.objects.get(
-                                id=cogjudge_id),
-                            source=cd["source"],
-                            pages=cd["pages"],
-                            reliability=cd["reliability"],
-                            comment=cd["comment"])
-                    citation.save()
+                            id=cogjudge_id), **form.cleaned_data)
                     request.session["previous_cognate_citation_id"] = citation.id
                     return HttpResponseRedirect(redirect_url)
-            elif action == "add-cognate": # XXX
+            elif action == "add-cognate":
                 return HttpResponseRedirect("/meaning/%s/%s/#current" %
                         (lexeme.meaning.gloss, lexeme_id))
             else:
@@ -710,7 +694,7 @@ def lexeme_duplicate(request, lexeme_id):
                 source_form=new_source_form,
                 phon_form=new_phon_form,
                 notes=original_lexeme.notes)
-        new_lexeme.save()
+        # new_lexeme.save()
         for lc in original_lexeme.lexemecitation_set.all():
             LexemeCitation.objects.create(
                     lexeme=new_lexeme,
@@ -764,24 +748,18 @@ def lexeme_add(request,
                 initial_data["meaning"] = initial_data["meaning"].gloss
             return HttpResponseRedirect(return_to % initial_data)
         if form.is_valid():
-            cd = form.cleaned_data
-            lexeme = Lexeme.objects.create(
-                    language=cd["language"],
-                    meaning=cd["meaning"],
-                    source_form=cd["source_form"],
-                    phon_form=cd["phon_form"],
-                    notes=cd["notes"])
-            previous_lexemecitation_id = request.session.get("previous_citation_id", None)
-            if previous_lexemecitation_id:
+            lexeme = Lexeme.objects.create(**form.cleaned_data)
+            previous_citation_id = request.session.get("previous_citation_id")
+            try:
                 previous_citation = \
-                        LexemeCitation.objects.get(id=previous_lexemecitation_id)
+                        LexemeCitation.objects.get(id=previous_citation_id)
                 LexemeCitation.objects.create(
                         lexeme=lexeme,
                         source=previous_citation.source,
                         pages=previous_citation.pages,
                         reliability=previous_citation.reliability)
                 return HttpResponseRedirect("/lexeme/%s/" % lexeme.id)
-            else:
+            except LexemeCitation.DoesNotExist:
                 return HttpResponseRedirect("/lexeme/%s/add-citation/" % lexeme.id)
     else:
         form = AddLexemeForm()
@@ -828,9 +806,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
         if request.method == 'POST':
             form = EditCognateSetForm(request.POST)
             if "cancel" not in form.data and form.is_valid():
-                cd = form.cleaned_data
-                cognate_class.notes = cd["notes"]
-                cognate_class.save()
+                update_object_from_form(cognate_class, form)
             return HttpResponseRedirect('/cognate/%s/' % cognate_class.id)
         else:
             form = EditCognateSetForm(cognate_class.__dict__)
@@ -860,12 +836,8 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
         if "cancel" in form.data:
             return HttpResponseRedirect('/sources/')
         if form.is_valid():
-            cd = form.cleaned_data
             if action == "add":
-                source = Source.objects.create(
-                        citation_text=cd["citation_text"],
-                        type_code=cd["type_code"],
-                        description=cd["description"])
+                source = Source.objects.create(**form.cleaned_data)
                 if cogjudge_id: # send back to origin
                     judgement = CognateJudgement.objects.get(id=cogjudge_id)
                     citation = CognateJudgementCitation.objects.create(
@@ -882,10 +854,7 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
                             (lexeme.id, citation.id))
             elif action == "edit":
                 # source = Source.objects.get(id=source_id)
-                source.citation_text=cd["citation_text"]
-                source.type_code=cd["type_code"]
-                source.description=cd["description"]
-                source.save()
+                update_object_from_form(source, form)
             return HttpResponseRedirect('/source/%s/' % source.id)
     else:
         if action == "add":

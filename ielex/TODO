@@ -47,10 +47,6 @@ If you provide a custom authentication backend with the attribute supports_anony
 for Version 0.3
 ---------------
 
-.. Admonition::
-
-  This needs to be completed before Julia returns in May
-
 - Admin-Auth pages
 
   * Administrator:
@@ -76,8 +72,6 @@ for Version 0.3
 
 - report permissions/group membership in profile
 
-- button: include unique states in nexus export.
-
 - Check that the same alias isn't used twice for different cognates, same
   meaning (e.g. in the 'breathe/life' and 'animal' sets). 
   
@@ -92,17 +86,20 @@ for Version 0.3
 - Need a many to many table linking cognate sets to sources: in lots of cases
   we have general information about the reconstructed form
 
-- Add comments field to Languages, show it in the sidebar of the /language/
-  view
+- The Language.description field in (the sidebar of?) the) /language/ view
 
-- Add language (and maybe delete too--from a new page)
+- Add language (and maybe delete too--from a new page) # part DONE
 
 - Fix exception raised when you try to change a blank value in the language
-  edit page
+  edit page # DONE?
 
 - Handle typos in url fields.
 
 - Add/edit meaning pages
+
+- check all ModelForm edit functions that the instance is specified when these
+  are intended to edit an existing object rather than create a new one (see
+  view.py edit_language.py).
 
 for Version 0.4
 ---------------
