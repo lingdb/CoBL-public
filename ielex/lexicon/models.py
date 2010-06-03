@@ -42,8 +42,8 @@ admin.site.register(Source, SourceAdmin)
 
 class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
-    ascii_name = models.CharField(max_length=999) # unique=True
-    utf8_name = models.CharField(max_length=999)
+    ascii_name = models.CharField(max_length=999, unique=True)
+    utf8_name = models.CharField(max_length=999, unique=True)
     sort_key = models.FloatField(null=True, blank=True, editable=False)
     description = models.TextField(blank=True, null=True)
 
