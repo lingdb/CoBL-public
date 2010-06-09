@@ -242,7 +242,10 @@ class CognateJudgementCitation(models.Model):
     @property
     def long_reliability(self):
         descriptions = dict(Source.RELIABILITY_CHOICES)
-        return descriptions[self.reliability]
+        try:
+            return descriptions[self.reliability]
+        except KeyError:
+            return "PLEASE ENTER A RELIABILITY RATING"
 
     @property
     def canonical_url(self):
@@ -265,7 +268,11 @@ class LexemeCitation(models.Model):
     @property
     def long_reliability(self):
         descriptions = dict(Source.RELIABILITY_CHOICES)
-        return descriptions[self.reliability]
+        # return descriptions[self.reliability]
+        try:
+            return descriptions[self.reliability]
+        except KeyError:
+            return "PLEASE ENTER A RELIABILITY RATING"
 
     @property
     def canonical_url(self):
