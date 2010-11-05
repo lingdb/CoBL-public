@@ -443,6 +443,7 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
             "add_cognate_judgement":add_cognate_judgement,
             "edit_cognate_judgement":cogjudge_id,
             "current_lexeme":current_lexeme,
+            "current_language_list_name":get_current_language_list(request),
             "form":form})
 
 # -- /lexeme/ -------------------------------------------------------------
