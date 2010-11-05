@@ -69,8 +69,13 @@
 <fieldset>
 <legend>Language List<legend>
 <table>
-{{ form.as_table }}
+{{ language_list_form.as_table }}
 </table>
+{% if current_list.description %}
+<small>
+  <b>Description:</b> {{ current_list.description }}
+</small>
+{% endif %}
 <p class="help">Limit all results to a predefined list of languages</p>
 </fieldset>
 </form>

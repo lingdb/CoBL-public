@@ -143,19 +143,19 @@ def get_sort_order(request):
 
 def get_languages(request):
     """Get all Language objects, respecting language_list selection"""
-    language_list_name = get_current_language_list(request)
+    language_list_name = get_current_language_list_name(request)
     sort_order = get_sort_order(request)
     languages = Language.objects.filter(
             id__in=LanguageList.objects.get(
             name=language_list_name).language_id_list).order_by(sort_order)
     return languages
 
-def get_current_language_list(request):
+def get_current_language_list_name(request):
     """Get the name of the current language list from session."""
     return request.session.get("language_list_name", "all")
 
 def get_prev_and_next_languages(request, current_language):
-    language_list_name = get_current_language_list(request)
+    language_list_name = get_current_language_list_name(request)
     languages = get_languages(request)
     ids = list(languages.values_list("id", flat=True))
     try:
@@ -194,9 +194,8 @@ def update_object_from_form(model_object, form):
 
 # -- /language(s)/ ----------------------------------------------------------
 
-def view_language_list(request):
-    language_list_name = get_current_language_list(request)
-
+def get_language_list_form(request):
+    language_list_name = get_current_language_list_name(request)
     if request.method == 'POST':
         form = ChooseLanguageListForm(request.POST)
         if form.is_valid():
@@ -210,12 +209,15 @@ def view_language_list(request):
         form = ChooseLanguageListForm()
     form.fields["language_list"].initial = LanguageList.objects.get(
             name=language_list_name).id
+    return form
 
+def view_language_list(request):
+    language_list_name = get_current_language_list_name(request)
     languages = Language.objects.all().order_by(get_sort_order(request))
     current_list = LanguageList.objects.get(name=language_list_name)
     response = render_template(request, "language_list.html",
             {"languages":languages,
-            "form":form,
+            "language_list_form":get_language_list_form(request),
             "current_list":current_list})
     request.session["language_list_name"] = language_list_name
     return response
@@ -385,6 +387,7 @@ def view_meanings(request):
 def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
     lexeme_id = int(lexeme_id)
     cogjudge_id = int(cogjudge_id)
+
     if meaning.isdigit():
         meaning = Meaning.objects.get(id=int(meaning))
         # if there are actions and lexeme_ids these should be preserved too
@@ -443,7 +446,8 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
             "add_cognate_judgement":add_cognate_judgement,
             "edit_cognate_judgement":cogjudge_id,
             "current_lexeme":current_lexeme,
-            "current_language_list_name":get_current_language_list(request),
+            "language_list_name":get_current_language_list_name(request),
+            #"language_list_form":get_language_list_form(request),
             "form":form})
 
 # -- /lexeme/ -------------------------------------------------------------

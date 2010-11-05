@@ -22,6 +22,7 @@ urlpatterns = patterns('',
     url(r'^languages/add-new/$', view_language_add_new, name="language-add-new"),
     url(r'^languages/sort/(?P<ordered_by>sort_key|utf8_name)/$', sort_languages,
             name="language-sort"),
+    # TODO add something to edit language_list descriptions
 
     # Language
     url(r'^language/([a-zA-Z0-9_ -]+)/$', report_language,

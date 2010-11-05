@@ -5,4 +5,9 @@
   <li>
     <a href="/languages/sort/sort_key/">sort languages genealogically</a>
   </li>
+  {% if language_list_name %}
+  <li>
+    <a href={% url view-languages %}>language list: {{ language_list_name }}</a>
+  </li>
+  {% endif %}
 </ul>
