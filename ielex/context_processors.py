@@ -12,3 +12,6 @@ TEMPLATE_CONTEXT_PROCESSORS setting."""
 
 def version(request):
     return {"version":VERSION}
+
+def current_url(request):
+    return {"current_url":request.get_full_path()}

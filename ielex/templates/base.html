@@ -50,7 +50,7 @@
   <div id="message">
     <ul>
     {% for message in messages %}
-    <li>{{ message }}</li>
+    <li><a href="{{ current_url }}">{{ message }}</a></li>
     {% endfor %}
     </ul>
   </div>
