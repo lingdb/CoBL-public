@@ -10,7 +10,7 @@
 Download a NEXUS file from a predefined language list. Specify the list of
 languages, the list of meanings, and the level of coding reliability.
 
-<form action="/nexus-data/" method="POST">
+<form action="/nexus-data/" method="POST">{% csrf_token %}
   <fieldset>
     <legend>Export data</legend>
     <table>

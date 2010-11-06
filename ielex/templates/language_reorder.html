@@ -6,7 +6,7 @@
 {% block top %}<h1>Change default genealogical sort order</h1>{% endblock %}
 
 {% block content %}
-<form action="" method="POST">
+<form action="" method="POST">{% csrf_token %}
   <input type="submit" name="submit" value="Move up" /><br />
   {{ form.language }}<br />
   <input type="submit" name="submit" value="Move down" /><br />

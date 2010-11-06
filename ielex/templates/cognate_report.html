@@ -11,7 +11,7 @@
   <legend>
     <strong>Notes</strong>
   </legend>
-  <form action="" method="POST">
+  <form action="" method="POST">{% csrf_token %}
     {{ form.notes }}
     <input type="submit" name="submit" value="Submit" /> 
     <input type="submit" name="cancel" value="Cancel" /> 

@@ -31,7 +31,7 @@
 {% include "snippets/go_to.html" %}
 <h2>Controls</h2>
 <p>
-<form action="" method="post">
+<form action="" method="post">{% csrf_token %}
 <fieldset>
 <legend>Meaning List<legend>
 <table>

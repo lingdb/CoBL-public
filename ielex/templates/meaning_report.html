@@ -46,7 +46,7 @@
 
       {% ifequal add_cognate_judgement lexeme.id %}
         <a id="current"></a> {# target for .../add/#current links #}
-        <form action="" method="post">
+        <form action="" method="post">{% csrf_token %}
           {{ form.cognate_class }}
         </form>
       {% endifequal %}
