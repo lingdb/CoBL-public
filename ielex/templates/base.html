@@ -25,17 +25,6 @@
 
     <div id="controls">
     {% block controls %}{% endblock %}
-    {% if messages %}{# make nice css for this: some kind of floating box aesthetic... #}
-    {# user.message_set.create(message="This is a test message") #}
-    <div id="message">
-      <table>
-        <tr class="odd"><td>Message{{ messages|length|pluralize }}:</td></tr>
-      {% for message in messages %}
-      <tr class="even"><td>{{ message }}</td></tr>
-      {% endfor %}
-      </table>
-    </div>
-    {% endif %}
     {{ request.session.previous_citation_id }}
     </div>
 
@@ -52,6 +41,21 @@
     {% endblock %}
     </div>
   </div>
+
+</div>
+
+  {# == Floating messages == #}
+  {% if messages %}
+  {# user.message_set.create(message="This is a test message") #}
+  <div id="message">
+    <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
 </body>
 </html>
 

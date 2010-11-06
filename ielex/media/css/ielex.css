@@ -156,16 +156,26 @@ a.button:hover { text-decoration: none }
   border-top: 1px solid gray;
 }
 
-#message td {
-  padding: 6px;
+#message {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  text-align: center;
+  opacity: 0.8;
 }
 
-#message tr.odd {
-  color: #ccc;
-  background-color: #360;
-  }
+#message ul {
+  list-style-type: none;
+  display: block;
+  margin: 0px;
+  padding: 0px;
+}
 
-#message tr.even {
-  color: #360;
-  background-color: #ccc;
+#message li {
+  color: #333;
+  background-color: #fc6;
+  font-weight: bold;
+  padding: 3pt;
+  border: 1px solid #f60;
   }
