@@ -168,6 +168,7 @@ a.button:hover { text-decoration: none }
 #message a {
   color: #333;
   text-decoration: none;
+  display: block;
 }
 
 #message:hover {
