@@ -7,6 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.template.loader import get_template
 from django.contrib.auth.models import User
+from django.contrib import messages
 from reversion.models import Version
 from reversion import revision
 from ielex.backup import backup
@@ -29,7 +30,7 @@ def make_backup(request):
     except KeyError:
         referer = "/"
     msg=backup()
-    request.user.message_set.create(message=msg)
+    messages.add_message(request, messages.INFO, msg)
     return HttpResponseRedirect(referer)
 
 def view_frontpage(request):
@@ -90,7 +91,7 @@ def revert_version(request, version_id):
     previous = versions[0]
     previous.revision.revert() # revert all associated objects too
     msg = "Rolled back version %s to version %s" % (latest.id, previous.id)
-    request.user.message_set.create(message=msg)
+    messages.add_message(request, messages.INFO, msg)
     return HttpResponseRedirect(referer)
 
 def view_object_history(request, version_id):
@@ -203,8 +204,7 @@ def get_language_list_form(request):
             language_list_name = current_list.name
             msg = "Language list selection changed to '%s'" %\
                     language_list_name
-            if request.user.is_authenticated():
-                request.user.message_set.create(message=msg)
+            messages.add_message(request, messages.INFO, msg)
     else:
         form = ChooseLanguageListForm()
     form.fields["language_list"].initial = LanguageList.objects.get(
@@ -364,8 +364,7 @@ def view_meanings(request):
             meaning_list_name = current_list.name
             msg = "Meaning list selection changed to '%s'" %\
                     meaning_list_name
-            if request.user.is_authenticated():
-                request.user.message_set.create(message=msg)
+            messages.add_message(request, messages.INFO, msg)
     else:
         form = ChooseMeaningListForm()
     form.fields["meaning_list"].initial = MeaningList.objects.get(
@@ -805,7 +804,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
             msg = """error: meaning='%s', cognate code='%s' identifies %s cognate
             sets""" % (meaning, code, len(cognate_classes))
             msg = textwrap.fill(msg, 9999)
-            request.user.message_set.create(message=msg)
+            messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect('/meaning/%s/' % meaning)
     if action == "edit":
         if request.method == 'POST':

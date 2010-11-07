@@ -66,6 +66,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
+    'django.contrib.messages.context_processors.messages',
     'ielex.context_processors.version',
     'ielex.context_processors.current_url',
     )
@@ -75,6 +76,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware', # provides APPEND_SLASH
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware', ### XXX added 2010-11-06
     'reversion.middleware.RevisionMiddleware',
 )
@@ -90,6 +92,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     # 'django.contrib.sites',
+    'django.contrib.messages',
     'django.contrib.admin',
     'reversion',
     'ielex.lexicon',
