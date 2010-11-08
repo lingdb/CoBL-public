@@ -103,13 +103,13 @@ LOGIN_URL = '/accounts/login/'
 LOGOUT_URL = '/accounts/logout/'
 LOGIN_REDIRECT_URL = '/accounts/profile/'
 
-# local settings file, overrides
+# local settings file, overrides settings.py
 try:
     from local_settings import *
 except ImportError:
-    # create default local settings
+    ## create default local settings
     # import shutil
-    # shutil.copy(os.path.join(ROOTDIR, "local_settings_template.py"),
-    # os.path.join(ROOTDIR, "local_settings.py"))
+    # shutil.copy(os.path.join(ROOTDIR, "local_setting.py.dist"),
+    #     os.path.join(ROOTDIR, "local_settings.py"))
     # from local_settings import *
     pass
