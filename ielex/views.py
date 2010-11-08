@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import datetime
 import textwrap
 from django.contrib.auth.decorators import login_required

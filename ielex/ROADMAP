@@ -11,11 +11,11 @@ Major features
 0.2.3 Version in production (Julia adding data)
 0.2.4 Integrating the authentication system
 0.2.5 Integrating the reversion system
-
 0.3   -> when editing buttons on the template have been wrapped with permission
       checks
 
-0.4   -> when the revert/undo button works
+0.4   -> when the revert/undo button works well
+      -> lexeme_history view
 
 TODO
 ====

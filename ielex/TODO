@@ -4,33 +4,6 @@ TODO
 Django 1.2
 ----------
 
-User Messages API¶
-~~~~~~~~~~~~~~~~~~
-
-The API for storing messages in the user Message model (via user.message_set.create) is now deprecated and will be removed in Django 1.4 according to the standard release process.
-
-To upgrade your code, you need to replace any instances of:
-
-user.message_set.create('a message')
-
-with the following:
-
-from django.contrib import messages
-messages.add_message(request, messages.INFO, 'a message')
-
-Additionally, if you make use of the method, you need to replace the following:
-
-for message in user.get_and_delete_messages():
-    ...
-
-with:
-
-from django.contrib import messages
-for message in messages.get_messages(request):
-    ...
-
-For more information, see the full messages documentation. You should begin to update your code to use the new API immediately.
-
 Object-level permissions¶
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -60,12 +33,6 @@ for Version 0.3
     - view other user's profile (incl. statistics)
     - change password
 
-- Sort out un-logged-in viewers' rights
-
-  This will be fixed in Django 1.2.
-
-  *serious* it looks like un-logged-in users can make some changes
-
 - Implement permissions/permission groups on all editing actions
 
 - change password view
@@ -86,7 +53,7 @@ for Version 0.3
 - Need a many to many table linking cognate sets to sources: in lots of cases
   we have general information about the reconstructed form
 
-- The Language.description field in (the sidebar of?) the) /language/ view
+- The Language.description field in (the sidebar of?) the /language/ view
 
 - Add language (and maybe delete too--from a new page) # part DONE
 

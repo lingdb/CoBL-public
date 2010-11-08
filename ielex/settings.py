@@ -4,7 +4,7 @@ import os.path
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-VERSION = "0.2.5"
+VERSION = "0.3"
 ROOTDIR = os.path.dirname(__file__)
 
 ADMINS = (
@@ -77,7 +77,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware', ### XXX added 2010-11-06
+    'django.middleware.csrf.CsrfViewMiddleware',
     'reversion.middleware.RevisionMiddleware',
 )
 
@@ -103,3 +103,13 @@ LOGIN_URL = '/accounts/login/'
 LOGOUT_URL = '/accounts/logout/'
 LOGIN_REDIRECT_URL = '/accounts/profile/'
 
+# local settings file, overrides
+try:
+    from local_settings import *
+except ImportError:
+    # create default local settings
+    # import shutil
+    # shutil.copy(os.path.join(ROOTDIR, "local_settings_template.py"),
+    # os.path.join(ROOTDIR, "local_settings.py"))
+    # from local_settings import *
+    pass

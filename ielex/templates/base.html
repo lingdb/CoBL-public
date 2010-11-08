@@ -15,10 +15,10 @@
       <div id="login">
         {% if user.is_authenticated %}
         <a href="/accounts/profile/{{ user.username }}">{{ user.username }}</a> <small>[<a href="/accounts/logout/">logout</a>]</small>
+        <a href="/backup/"><img src="/media/buttons/save-backup.png" alt="Backup" title="Make backup of database (slow!)" /></a>
         {% else %}
           <a href="/accounts/login/">login</a>
         {% endif %}
-        <a href="/backup/"><img src="/media/buttons/save-backup.png" alt="Backup" title="Make backup of database (slow!)" /></a>
       </div>
     {% block top %}{% endblock %}
     </div>
