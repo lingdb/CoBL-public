@@ -67,8 +67,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.contrib.messages.context_processors.messages',
-    'ielex.context_processors.version',
-    'ielex.context_processors.current_url',
+    'ielex.context_processors.configuration',
+    # 'ielex.context_processors.version',
+    # 'ielex.context_processors.current_url',
     )
 
 MIDDLEWARE_CLASSES = (
@@ -108,8 +109,8 @@ try:
     from local_settings import *
 except ImportError:
     ## create default local settings
-    # import shutil
-    # shutil.copy(os.path.join(ROOTDIR, "local_setting.py.dist"),
-    #     os.path.join(ROOTDIR, "local_settings.py"))
-    # from local_settings import *
-    pass
+    import shutil
+    assert not os.path.exists(os.path.join(ROOTDIR, "local_setting.py"))
+    shutil.copy(os.path.join(ROOTDIR, "local_settings.py.dist"),
+        os.path.join(ROOTDIR, "local_settings.py"))
+    from local_settings import *

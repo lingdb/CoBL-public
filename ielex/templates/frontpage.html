@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}IELEX{% endblock %}
+{% block title %}{{ project_short_name }}{% endblock %}
 
 {% block top %}
-<h1>INDO-EUROPEAN LEXICAL COGNACY DATABASE</h1>
+<h1>{{ project_long_name|upper }}</h1>
 {% endblock %}
 
 {% block content %}
+{% if project_description %}
+<p>{{ project_description }}</p>
+{% endif %}
 <p> The database contains:
 <table>
 	<tr class="odd">
@@ -40,14 +43,10 @@
   <li class="navigation"><a class="navigation" href="/nexus/">Export NEXUS file</a></li>
   <li class="navigation"><a class="navigation" href="/changes/">Recent changes</a></li>
 </ul>
+{% if acknowledgements %}
 <h2>Acknowledgements</h2>
-<p>The icons used in this project are taken from the set ‘Sweetie BasePack’:
-<table>
-  <tr><td>Author:</td><td>Joseph North</td></tr>
-  <tr><td>Licence:</td><td><a href="http://creativecommons.org/licenses/by-sa/3.0/">Attribution-ShareAlike 3.0</a></td></tr>
-  <tr><td>Website:</td><td><a href="http://sweetie.sublink.ca">sweetie.sublink.ca</a></td></tr>
-</table>
-</p>
+{{ acknowledgements|safe }}
+{% endif %}
 {% endblock %}
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

@@ -1,11 +1,7 @@
 # SECRET_KEY should be kept here!
 
-project_long_name = "Indo European LEXicon"
-project_short_name = "IELEX"
+project_long_name = "X Lexical Cognacy Database"
+project_short_name = "X-Lex"
 project_description = """Description for the front page"""
-
-
-
-
 
 # vim:ft=python

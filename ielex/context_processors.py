@@ -9,14 +9,25 @@ about is that your custom context processors are pointed-to by the
 TEMPLATE_CONTEXT_PROCESSORS setting."""
 
 from ielex.settings import VERSION
+from ielex import local_settings
 config = None
 
-def version(request):
-    """Provides a {{ version }} tag (referring to the application, not the
-    particular installation"""
-    return {"version":VERSION}
+# def version(request):
+#     """Provides a {{ version }} tag (referring to the application, not the
+#     particular installation"""
+#     return {"version":VERSION}
+# 
+# def current_url(request):
+#     """The {{ current_url }} tag is used as a link target to force reloading of
+#     a page (e.g. to dismiss a message)"""
+#     return {"current_url":request.get_full_path()}
 
-def current_url(request):
-    """The {{ current_url }} tag is used as a link target to force reloading of
-    a page (e.g. to dismiss a message)"""
-    return {"current_url":request.get_full_path()}
+def configuration(request):
+    """Various things stored in local_settings.py"""
+    return {"version":VERSION,
+            "current_url":request.get_full_path(),
+            "project_long_name":local_settings.project_long_name,
+            "project_short_name":local_settings.project_short_name,
+            "project_description":local_settings.project_description,
+            "acknowledgements":local_settings.acknowledgements,
+            }
