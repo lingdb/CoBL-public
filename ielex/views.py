@@ -147,9 +147,12 @@ def get_languages(request):
     """Get all Language objects, respecting language_list selection"""
     language_list_name = get_current_language_list_name(request)
     sort_order = get_sort_order(request)
-    languages = Language.objects.filter(
-            id__in=LanguageList.objects.get(
-            name=language_list_name).language_id_list).order_by(sort_order)
+    try:
+        languages = Language.objects.filter(
+                id__in=LanguageList.objects.get(
+                name=language_list_name).language_id_list).order_by(sort_order)
+    except LanguageList.DoesNotExist:
+        languages = Language.objects.all()
     return languages
 
 def get_current_language_list_name(request):
@@ -382,6 +385,42 @@ def view_meanings(request):
     request.session["meaning_list_name"] = meaning_list_name
     return response 
 
+@login_required
+def view_meaning_add_new(request):
+    if request.method == 'POST':
+        form = EditMeaningForm(request.POST)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect('/meanings/')
+        if form.is_valid():
+            meaning = Meaning.objects.create(**form.cleaned_data)
+            return HttpResponseRedirect('/meaning/%s/' % meaning.gloss)
+
+    else: # first visit
+        form = EditMeaningForm()
+    return render_template(request, "meaning_add_new.html",
+            {"form":form})
+
+@login_required
+def edit_meaning(request, meaning):
+    try:
+        meaning = Meaning.objects.get(gloss=meaning)
+    except Meaning.DoesNotExist:
+        meaning = get_canonical_meaning(meaning)
+        return HttpResponseRedirect("/meaning/%s/edit/" %
+                meaning.gloss)
+
+    if request.method == 'POST':
+        form = EditMeaningForm(request.POST, instance=meaning)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect('/meaning/%s/' % meaning.gloss)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/meaning/%s/' % meaning.gloss)
+    else:
+        form = EditMeaningForm(instance=meaning)
+    return render_template(request, "meaning_edit.html",
+            {"meaning":meaning,
+            "form":form})
 
 #@login_required
 def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):

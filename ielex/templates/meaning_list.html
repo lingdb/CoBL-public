@@ -17,7 +17,14 @@
   {% for meaning in meanings %}
   <tr class="{% cycle 'odd' 'even' %}">
     <td>{% if meaning.id|in_list:current_list.meaning_id_list %}{{ meaning.id }}{% endif %}</td>
-    <td>{{ meaning.description }}</td>
+    <td>
+      {% if user.is_superuser %}
+        <a href="{% url meaning-edit meaning.gloss %}">
+          <img src="/media/buttons/edit.png" alt="edit" title="Edit ‘{{ meaning.gloss }}’ metadata" />
+        </a>
+      {% endif %}
+      {{ meaning.description }}
+    </td>
     <td><a href="{% url meaning-report meaning.id %}">{{ meaning.gloss }}</a></td>
     {# <td>{{ meaning.lexeme_count }}</td> #}
     <td>{{ meaning.percent_coded }}</td>
@@ -29,6 +36,11 @@
 
 {% block controls %}
 {% include "snippets/go_to.html" %}
+{% if user.is_superuser %}
+<ul class="navigation">
+<li><a href="/meanings/add-new/"><small>Add/Delete meaning</small></a></li>
+</ul>
+{% endif %}
 <h2>Controls</h2>
 <p>
 <form action="" method="post">{% csrf_token %}

@@ -95,6 +95,11 @@ class EditLanguageForm(forms.ModelForm):
     class Meta:
         model = Language
 
+class EditMeaningForm(forms.ModelForm):
+
+    class Meta:
+        model = Meaning
+
 class ChooseLanguageForm(forms.Form):
     # Need to think about the default sort order of the Language objects here
     # It might make sense to have it alphabetical
