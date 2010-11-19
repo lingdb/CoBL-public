@@ -1,0 +1,15 @@
+Dependencies:
+
+  * Recent Django (tested on 1.2.3)
+
+  * Recent ``reversion`` middleware (``easy_install django-reversion``;
+    currently using 1.3.2)
+  
+After a clean install, 
+
+  * Copy ``local_settings.py.dist`` to ``local_settings.py`` and customize
+    (details in file -- don't neglect to set the SECRET_KEY). 
+    
+  * Run ``python manage.py syncdb`` and add superuser when prompted.
+
+.. vim:ft=rst

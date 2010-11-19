@@ -68,8 +68,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
     'django.contrib.messages.context_processors.messages',
     'ielex.context_processors.configuration',
-    # 'ielex.context_processors.version',
-    # 'ielex.context_processors.current_url',
     )
 
 MIDDLEWARE_CLASSES = (
