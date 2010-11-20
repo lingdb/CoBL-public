@@ -7,8 +7,10 @@ Dependencies:
   
 After a clean install, 
 
-  * Copy ``local_settings.py.dist`` to ``local_settings.py`` and customize. 
-    
-  * Run ``python manage.py syncdb`` and add superuser when prompted.
+  * Run ``python manage.py syncdb`` and add superuser when prompted (this will
+    copy ``local_settings.py.dist`` to ``local_settings.py`` and generate a
+    secret key)
+
+  * Customize ``local_settings.py`` with name of database etc.
 
 .. vim:ft=rst
