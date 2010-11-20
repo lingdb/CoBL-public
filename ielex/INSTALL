@@ -7,8 +7,7 @@ Dependencies:
   
 After a clean install, 
 
-  * Copy ``local_settings.py.dist`` to ``local_settings.py`` and customize
-    (details in file -- don't neglect to set the SECRET_KEY). 
+  * Copy ``local_settings.py.dist`` to ``local_settings.py`` and customize. 
     
   * Run ``python manage.py syncdb`` and add superuser when prompted.
 

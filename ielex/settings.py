@@ -51,9 +51,6 @@ MEDIA_URL = '/media/'
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/admin_media/'
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'yoy*s27dgk+8&@rq1s$siz0b80*$clc^!yh+o6(*jxh74h6w4k'
-
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
@@ -103,12 +100,15 @@ LOGOUT_URL = '/accounts/logout/'
 LOGIN_REDIRECT_URL = '/accounts/profile/'
 
 # local settings file, overrides settings.py
+local_settings_path = os.path.join(ROOTDIR, "local_settings.py")
 try:
-    from local_settings import *
-except ImportError:
+    assert not os.path.exists(local_settings_path)
+except AssertionError:
     ## create default local settings
-    import shutil
-    assert not os.path.exists(os.path.join(ROOTDIR, "local_setting.py"))
-    shutil.copy(os.path.join(ROOTDIR, "local_settings.py.dist"),
-        os.path.join(ROOTDIR, "local_settings.py"))
-    from local_settings import *
+    import random
+    settings_template = file(os.path.join(ROOTDIR, "local_settings.py.dist")).read()
+    key_chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
+    secret_key = "".join([random.choice(key_chars) for i in range(50)])
+    print>>file(local_settings_path, "w"), setting_template.replace("<++>",
+            secret_key)
+from local_settings import *

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# SECRET_KEY should be kept here!
 
 project_long_name = "Indo-European Lexical Cognacy Database"
 project_short_name = "IELEX"
@@ -13,6 +12,7 @@ acknowledgements = """\
 </table>
 </p>"""
 
+SECRET_KEY = 'yoy*s27dgk+8&@rq1s$siz0b80*$clc^!yh+o6(*jxh74h6w4k'
 
 
 
