@@ -3,7 +3,7 @@
 import sys
 import os
 from django.core.management import setup_environ
-sys.path.append(os.path.abspath("../.."))
+sys.path.append(os.path.abspath(".."))
 from ielex import settings
 setup_environ(settings)
 from ielex.lexicon.models import *
