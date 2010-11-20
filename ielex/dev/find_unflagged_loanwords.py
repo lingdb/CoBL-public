@@ -5,7 +5,6 @@ which aren't flagged as 'loanword' in the cognate judgement.
 """
 import sys
 import os
-# print "-> I E L E X"
 from django.core.management import setup_environ
 sys.path.append(os.path.abspath("../.."))
 from ielex import settings
