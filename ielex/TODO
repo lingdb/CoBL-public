@@ -110,8 +110,6 @@ Development
   whether the addition of the kinship module has broken anything of the basic
   db).
 
-- Test starting up a project from scratch (i.e. with no data)
-
 - Do there need to be any import functions?
 
 
