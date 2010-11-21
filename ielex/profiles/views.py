@@ -35,6 +35,8 @@ def alter_profile(request, username=None):
             for key in form.cleaned_data:
                 setattr(the_user, key, form.cleaned_data[key])
             the_user.save()
+            msg = "Profile details changed"
+            messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(redirect_url)
     else:
         form = UserAlterDetailsForm(the_user.__dict__)
@@ -51,6 +53,8 @@ def change_password(request):
             return HttpResponseRedirect(redirect_url)
         if form.is_valid():
             form.save()
+            msg = "Password changed"
+            messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(redirect_url)
     else:
         form = PasswordChangeForm(request.user)
