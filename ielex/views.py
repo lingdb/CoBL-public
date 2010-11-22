@@ -343,12 +343,12 @@ def edit_language(request, language):
     if request.method == 'POST':
         form = EditLanguageForm(request.POST, instance=language)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect('/language/%s/' % language.ascii_name)
+            return HttpResponseRedirect('/languages/')
         if form.is_valid():
             # update_object_from_form(language, form) # TODO fix the rest of
             # the views using model forms along the following lines:
             form.save()
-            return HttpResponseRedirect('/language/%s/' % language.ascii_name)
+            return HttpResponseRedirect('/languages/')
     else:
         #form = EditLanguageForm(language.__dict__, instance=language)
         form = EditLanguageForm(instance=language)
