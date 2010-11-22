@@ -4,7 +4,7 @@
 project_long_name = u"Test Lexical Cognacy Database"
 project_short_name = u"TestLex"
 project_description = u"""Description for the front page"""
-acknowledgements = u""
+acknowledgements = u"" # may include html markup
 
 # Automatically generated secret key
 SECRET_KEY = "<++>"
