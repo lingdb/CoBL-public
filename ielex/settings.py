@@ -101,12 +101,11 @@ LOGIN_REDIRECT_URL = '/accounts/profile/'
 
 # local settings file, overrides settings.py
 local_settings_path = os.path.join(ROOTDIR, "local_settings.py")
-try:
-    assert os.path.exists(local_settings_path)
-except AssertionError:
+if not os.path.exists(local_settings_path):
     ## create default local settings
     import random
-    settings_template = file(os.path.join(ROOTDIR, "local_settings.py.dist")).read()
+    settings_template = file(os.path.join(ROOTDIR,
+        "local_settings.py.dist")).read()
     key_chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
     secret_key = "".join([random.choice(key_chars) for i in range(50)])
     print>>file(local_settings_path, "w"), settings_template.replace("<++>",

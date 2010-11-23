@@ -6,9 +6,17 @@ import os
 import subprocess
 import bz2
 import time
+import md5
+from ielex.settings import SECRET_KEY
 
 DB_FILE = "db.sqlite3"
-BACKUP_DIR = os.path.expanduser("~/.ielex/backups")
+BACKUP_DIR = os.path.join(os.path.expanduser("~/.ielex/backups"),
+    md5.md5(SECRET_KEY).hexdigest())
+
+# TODO: insert the md5 hash of the secret key into the backup path (so that
+# multiple databases can be saved under the same hierarchy (plus put a soft
+# link using the short name - in case of name collisions the most recent
+# version will the the link, which is probably the right behaviour)
 
 def backup():
     # check that the backup directory exists
