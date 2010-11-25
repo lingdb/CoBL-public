@@ -5,7 +5,7 @@ digraph g { // neato -Tpdf -O database_structure.dot
   splines=true;
   sep=0.2;
   ratio=0.7;
-  label="IELex database schema version 0.2";
+  label="IELEX database schema version 0.4";
   node [shape=Mrecord];
   edge [arrowhead=dot];
 
@@ -19,8 +19,8 @@ digraph g { // neato -Tpdf -O database_structure.dot
 	label="{LANGUAGES |<id> id | iso_code | ascii_name | utf8_name | sort_key }"];
   cogset [pos="4,4!",style=filled,
 	label="{COGNATE\nSET |<id> id | reconstruction | notes | modified }"];
-  biological [pos="4,1!",style=filled,
-	label="{BIOLOGICAL\nRELATIONS | <id> id |{descriptor |{M | MZ | etc.}}}"];
+  relation [pos="4,1!",style=filled,
+	label="{SEMANTIC\nRELATIONS | <id> id |{descriptor\n(kinship category\npronominal category\netc.) |{M | MZ | etc.}}}"];
   dyen_name [pos="0,5!",style=filled,
 	label="{Dyen names |<lid> language_id | name}"];
   abvd_name [pos="0,4!",style=filled,
@@ -42,10 +42,12 @@ digraph g { // neato -Tpdf -O database_structure.dot
 	label="{Cognate Judgement\nsources |<jid> judgement_id |<sid> source_id | pages | reliability | comment | modified }"];
   // cogsource [pos="5,4!",
   //	label="{Reconstruction\n sources |<cid> cog_set_id |<sid> source_id}"];
-  formbio [pos="3,2!",
-	label="{Extensions\n(i.e. “lexeme can\n  refer to relation”) |<id> id |<fid> lexeme_id |<bid> bio_rel_id | pages | reliability | comment | modified }"];
-  biosource [pos="5,2!",
-	label="{Extension sources |<lid> link_id |<sid> source_id | pages | reliability | comment | modified }"];
+  semantic_extension [pos="3,2!",
+	label="{Semantic Extension\n(i.e. “lexeme can\n  refer to relation”) |<id> id |<fid> lexeme_id |<bid> bio_rel_id | pages | reliability | comment | modified }"];
+  extension_source [pos="5,2!",
+	label="{Semantic Extension sources |<lid> link_id |<sid> source_id | pages | reliability | comment | modified }"];
+  relation_sort_order [pos="5.5,1!", style=filled,
+	label="{Semantic Relation\nSort Order | list_id | name |<rid> relation_id_list | modified }"];
 
   // meaning [pos="1,1!"];	
   // language [pos="1,2!"];
@@ -56,8 +58,8 @@ digraph g { // neato -Tpdf -O database_structure.dot
   // source [pos="6,1.5!"];
   // cogset [pos="4,1.5!"];
   // judgement [pos="3,2!"];
-  // biological [pos="4,0!"];
-  // formbio [pos="3,0.5!"];
+  // relation [pos="4,0!"];
+  // semantic_extension [pos="3,0.5!"];
 
   judgement:fid -> lexeme:id [weight=8]; 
   judgement:cid -> cogset:id [weight=8];
@@ -70,13 +72,14 @@ digraph g { // neato -Tpdf -O database_structure.dot
   lexeme:lid -> language:id;
   lexeme:mid -> meaning:id;
 
-  formbio:fid -> lexeme:id [style=dashed];
-  formbio:bid -> biological:id [style=dashed];
-  biosource:lid -> formbio:id [style=dashed];
-  biosource:sid -> source:id [style=dashed];
+  semantic_extension:fid -> lexeme:id [style=dashed];
+  semantic_extension:bid -> relation:id [style=dashed];
+  extension_source:lid -> semantic_extension:id [style=dashed];
+  extension_source:sid -> source:id [style=dashed];
 
   dyen_name:lid -> language:id;
   abvd_name:lid -> language:id;
   language_list:lid -> language:id;
   sort_order:lid -> language:id;
+  relation_sort_order:rid -> relation:id
 }
