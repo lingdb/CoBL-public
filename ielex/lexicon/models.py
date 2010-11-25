@@ -319,7 +319,7 @@ class SemanticExtension(models.Model):
         return set(self.kinmappingcitation_set.values_list("reliability", flat=True))
 
     def __unicode__(self):
-        return self.id
+        return u"%s" % (self.id)
 
 reversion.register(SemanticExtension)
 
