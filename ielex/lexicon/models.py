@@ -347,7 +347,7 @@ class RelationList(models.Model):
     table (cf. ielex.models.update_relation_list_all)"""
     name = models.CharField(max_length=999)
     description = models.TextField(blank=True, null=True)
-    language_ids = models.CommaSeparatedIntegerField(max_length=999)
+    relation_ids = models.CommaSeparatedIntegerField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
 
     def _get_list(self):
