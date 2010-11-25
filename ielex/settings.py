@@ -94,12 +94,12 @@ INSTALLED_APPS = (
     'ielex.lexicon',
 )
 
-# 
+# admin urls
 LOGIN_URL = '/accounts/login/'
 LOGOUT_URL = '/accounts/logout/'
 LOGIN_REDIRECT_URL = '/accounts/profile/'
 
-# local settings file, overrides settings.py
+# -- local settings file, overrides settings.py ------------------
 local_settings_path = os.path.join(ROOTDIR, "local_settings.py")
 if not os.path.exists(local_settings_path):
     ## create default local settings
@@ -111,3 +111,4 @@ if not os.path.exists(local_settings_path):
     print>>file(local_settings_path, "w"), settings_template.replace("<++>",
             secret_key)
 from local_settings import *
+# ----------------------------------------------------------------
