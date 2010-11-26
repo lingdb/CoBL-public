@@ -399,6 +399,19 @@ def update_meaning_list_all(sender, instance, **kwargs):
 models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
 models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
+def update_relation_list_all(sender, instance, **kwargs):
+    try:
+        ml = RelationList.objects.get(name="all")
+    except:
+        ml = RelationList.objects.create(name="all")
+    if ml.relation_id_list != list(Meaning.objects.values_list("id", flat=True)):
+        ml.relation_id_list = [l.id for l in SemanticRelation.objects.all()]
+        ml.save(force_update=True)
+    return
+
+models.signals.post_save.connect(update_relation_list_all, sender=SemanticRelation)
+models.signals.post_delete.connect(update_relation_list_all, sender=SemanticRelation)
+
 # def update_aliases(sender, instance, **kwargs):
 #     """In case a cognate set has cognate judgements relating to two or more
 #     meanings, make sure that the cognate set alias doesn't collide with any
