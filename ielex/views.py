@@ -189,6 +189,9 @@ def get_prev_and_next_meanings(current_meaning):
 
 def update_object_from_form(model_object, form):
     """Update an object with data from a form."""
+    # XXX I think this is unneccessary: form.save() does all this
+    # automatically.
+
     # cd = form.cleaned_data
     # for field_name in cd:
     #     setattr(model_object, field_name, cd[field_name])
@@ -924,4 +927,29 @@ def source_list(request):
             {"grouped_sources":grouped_sources})
 
 
+# -- relation list --------------------------------------------------------
+
+def get_current_relation_list_name(request):
+    """Get the name of the current relation list from session."""
+    return request.session.get("relation_list_name", "all")
+
+@login_required
+def add_relation_list(request):
+    if request.method == "POST":
+        form = ChooseSemanticRelationsForm(request.POST)
+    else:
+        form = ChooseSemanticRelationsForm()
+    try:
+        included_ids = RelationList.objects.get( \
+                    name=form.domain_name).relation_id_list
+        form.fields["included_relations"].queryset = \
+                SemanticRelation.objects.filter(id__in=included_ids) 
+                # or .in_bulk(included_ids)
+        form.fields["excluded_relations"].queryset = \
+                SemanticRelation.objects.exclude(id__in=included_ids)
+    except AttributeError:
+        pass
+
+    return render_template(request, "relation_list_edit.html",
+            {"form":form})
 

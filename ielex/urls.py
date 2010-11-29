@@ -95,6 +95,7 @@ urlpatterns = patterns('',
     url(r'^revert/(?P<version_id>\d+)/$', revert_version),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
 
+    url(r'domains/add-new/$', add_relation_list, name="add-relation-list")
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),
 

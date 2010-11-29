@@ -7,6 +7,7 @@ class ChooseLanguageField(forms.ModelChoiceField):
         return obj.utf8_name or obj.ascii_name
 
 class ChooseLanguagesField(forms.ModelChoiceField):
+    # XXX shouldn't this be forms.ModelMultipleChoiceField ?
     def label_from_instance(self, obj):
         return obj.utf8_name or obj.ascii_name
 
@@ -43,6 +44,16 @@ class ChooseOneSourceField(forms.ModelChoiceField):
             else:
                 return s[:l-4]+" ..."
         return truncate(obj.citation_text, 124)
+
+class ChooseSemanticRelationsField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return obj.relation_code
+
+class ChooseIncludedRelationsField(ChooseSemanticRelationsField):
+    pass
+
+class ChooseExcludedRelationsField(ChooseSemanticRelationsField):
+    pass
 
 class AddLexemeForm(forms.Form):
     # Needs some custom validation: requires one of source_form and phon_form,
@@ -168,3 +179,13 @@ class ReorderLanguageSortKeyForm(forms.Form):
             queryset=Language.objects.all().order_by("sort_key"),
             widget=forms.Select(attrs={"size":20}),
             empty_label=None)
+
+class ChooseSemanticRelationsForm(forms.Form):
+    domain_name = forms.CharField(initial="New-name",
+            required=True)
+    included_relations = ChooseIncludedRelationsField(
+            queryset=SemanticRelation.objects.none(),
+            widget=forms.SelectMultiple(attrs={"size":20}))
+    excluded_relations = ChooseExcludedRelationsField(
+            queryset=SemanticRelation.objects.all(),
+            widget=forms.SelectMultiple(attrs={"size":20}))
