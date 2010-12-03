@@ -75,7 +75,8 @@ def write_nexus(request):
             data[cc] = [language_id]
 
     # Create the HttpResponse object with the appropriate header.
-    filename = "ielex-%s-%s.nex" % (language_list.name, meaning_list.name)
+    filename = "%s-%s-%s.nex" % (settings.project_short_name, 
+            language_list.name, meaning_list.name)
     response = HttpResponse(mimetype='text/plain')
     response['Content-Disposition'] = 'attachment; filename=%s' % \
             filename.replace(" ", "_")

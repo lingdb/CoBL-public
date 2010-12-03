@@ -16,6 +16,7 @@ from ielex.forms import *
 from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
 from ielex.utilities import next_alias, renumber_sort_keys
+import re
 
 # Refactoring: 
 # - rename the functions which render to response with the format
@@ -717,19 +718,20 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
 
 @login_required
 def lexeme_duplicate(request, lexeme_id):
+    SPLIT_RE = re.compile("[,;]")
     original_lexeme = Lexeme.objects.get(id=int(lexeme_id))
     done_split = False
 
-    if "," in original_lexeme.source_form:
+    if SPLIT_RE.search(original_lexeme.source_form):
         original_source_form, new_source_form = [e.strip() for e in
-                original_lexeme.source_form.split(",", 1)]
+                SPLIT_RE.split(original_lexeme.source_form, 1)]
         done_split= True
     else:
         original_source_form, new_source_form = original_lexeme.source_form, ""
 
-    if "," in original_lexeme.phon_form:
+    if SPLIT_RE.search(original_lexeme.phon_form):
         original_phon_form, new_phon_form = [e.strip() for e in
-                original_lexeme.phon_form.split(",", 1)]
+                SPLIT_RE.split(original_lexeme.phon_form, 1)]
         done_split= True
     else:
         original_phon_form, new_phon_form = original_lexeme.phon_form, ""
@@ -741,7 +743,6 @@ def lexeme_duplicate(request, lexeme_id):
                 source_form=new_source_form,
                 phon_form=new_phon_form,
                 notes=original_lexeme.notes)
-        # new_lexeme.save()
         for lc in original_lexeme.lexemecitation_set.all():
             LexemeCitation.objects.create(
                     lexeme=new_lexeme,
