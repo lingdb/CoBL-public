@@ -718,8 +718,9 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
 
 @login_required
 def lexeme_duplicate(request, lexeme_id):
-    SPLIT_RE = re.compile("[,;]")
     original_lexeme = Lexeme.objects.get(id=int(lexeme_id))
+    SPLIT_RE = re.compile("[,;]")   # split on these characters 
+                                    # XXX get this from settings.SPLIT_CHARS ?
     done_split = False
 
     if SPLIT_RE.search(original_lexeme.source_form):
