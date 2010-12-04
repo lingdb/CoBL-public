@@ -917,8 +917,8 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
             form = None
     return render_template(request, 'source_edit.html', {
             "form": form,
-            "source":source,
-            "action":action})
+            "source": source,
+            "action": action})
 
 def source_list(request):
     grouped_sources = []
@@ -928,17 +928,46 @@ def source_list(request):
     return render_template(request, "source_list.html",
             {"grouped_sources":grouped_sources})
 
-
-# -- relation list --------------------------------------------------------
-
-def get_current_relation_list_name(request):
-    """Get the name of the current relation list from session."""
-    return request.session.get("relation_list_name", "all")
+# -- semantic extensions --------------------------------------------------
 
 @login_required
-def add_relation_list(request):
+def view_domains(request):
+    domains = RelationList.objects.all()
+    return render_template(request, "view_domains.html", {"domains":domains})
+
+@login_required
+def edit_lexeme_semantic_extensions(request, lexeme_id, domain):
+    lexeme = Lexeme.objects.get(id=int(lexeme_id))
+    return render_template(request, 'edit_lexeme_semantic_extensions.html', {
+            "lexeme": lexeme,
+            "tagged_relations": lexeme.semanticextension_set.all()})
+
+@login_required
+def edit_language_semantic_domain(request, language, domain):
+    try:
+        language = Language.objects.get(ascii_name=language)
+    except(Language.DoesNotExist):
+        language = get_canonical_language(language)
+        return HttpResponseRedirect("/language/%s/domain/%s/" %
+                (language.ascii_name, domain))
+    relations = SemanticRelation.objects.filter(
+            id__in=RelationList.objects.get(name=domain).relation_id_list)
+    extensions = SemanticExtension.objects.filter(
+            relation__in=relations,
+            lexeme__language=language).order_by("relation__relation_code",
+            "lexeme__phon_form", "lexeme__source_form")
+    return render_template(request, 'edit_language_semantic_domain.html', {
+            "language":language,
+            "domain":domain,
+            "semantic_extensions": extensions,
+            })
+
+@login_required
+def edit_relation_list(request, domain="all"):
     if request.method == "POST":
         form = ChooseSemanticRelationsForm(request.POST)
+        if form.is_valid():
+            form.save()
     else:
         form = ChooseSemanticRelationsForm()
     try:
@@ -955,3 +984,23 @@ def add_relation_list(request):
     return render_template(request, "relation_list_edit.html",
             {"form":form})
 
+def search_lexeme(request):
+    if request.method == 'POST':
+        form = SearchLexemeForm(request.POST)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect('/')
+        if form.is_valid():
+            regex = form.cleaned_data["regex"]
+            languages = form.cleaned_data["languages"]
+            if not languages:
+                languages = Language.objects.all()
+            return render_template(request, "search_lexeme_results.html", {
+                    "regex": regex,
+                    "lexemes": Lexeme.objects.filter(
+                            phon_form__regex=regex,
+                            language__in=languages),
+                    })
+    else:
+        form = SearchLexemeForm()
+    return render_template(request, "search_lexeme.html",
+            {"form":form})

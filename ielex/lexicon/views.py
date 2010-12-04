@@ -3,6 +3,7 @@ import time
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 # from django.shortcuts import render_to_response
+from ielex import settings
 from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
 from ielex.views import get_sort_order

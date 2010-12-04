@@ -1,13 +1,12 @@
+# -*- coding: utf-8 -*-
 from django import forms
-# from ielex.views import get_languages
 from ielex.lexicon.models import *
 
 class ChooseLanguageField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.utf8_name or obj.ascii_name
 
-class ChooseLanguagesField(forms.ModelChoiceField):
-    # XXX shouldn't this be forms.ModelMultipleChoiceField ?
+class ChooseLanguagesField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
         return obj.utf8_name or obj.ascii_name
 
@@ -175,7 +174,7 @@ class EditCognateSetForm(forms.Form):
     notes = forms.CharField(widget=forms.Textarea, required=False)
 
 class ReorderLanguageSortKeyForm(forms.Form):
-    language = ChooseLanguagesField(
+    language = ChooseLanguageField(
             queryset=Language.objects.all().order_by("sort_key"),
             widget=forms.Select(attrs={"size":20}),
             empty_label=None)
@@ -189,3 +188,11 @@ class ChooseSemanticRelationsForm(forms.Form):
     excluded_relations = ChooseExcludedRelationsField(
             queryset=SemanticRelation.objects.all(),
             widget=forms.SelectMultiple(attrs={"size":20}))
+
+class SearchLexemeForm(forms.Form):
+    regex = forms.CharField()
+    languages = ChooseLanguagesField(queryset=Language.objects.all(),
+            required=False,
+            widget=forms.SelectMultiple(attrs={"size":min(40,
+                Language.objects.count())}),
+            help_text=u"no selection → all")

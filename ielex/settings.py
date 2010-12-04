@@ -4,7 +4,7 @@ import os.path
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-VERSION = "0.3"
+VERSION = "0.4"
 ROOTDIR = os.path.dirname(__file__)
 
 ADMINS = (

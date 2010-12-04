@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Semantic extensions{% endblock %}
+
+{% block top %}
+<h1>
+  {% include "snippets/lexeme_form.html" %}
+  ({{ lexeme.language.utf8_name }})
+</h1>
+{% endblock %}
+
+{% block content %}
+<table>
+  <tr>
+    <th>Code</th>
+    <th>Relation</th>
+    <th>Description</th>
+  </tr>
+  {% for semantic_extension in tagged_relations %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    <td>{{ semantic_extension.relation.relation_code }}</td>
+    <td>{{ semantic_extension.relation.long_name }}</td>
+    <td>{{ semantic_extension.relation.description }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
+
+{% block controls %}
+{# prev-next lexeme by domain #}
+{% include "snippets/go_to.html" %}
+<ul>
+  <li>Back to lexeme <a href="/lexeme/{{ lexeme.id }}/">
+    ‘{% include "snippets/lexeme_form.html" %}’</a>
+  </li>
+  {% if lexeme.meaning %}
+  <li>Back to meaning list ‘<a href="/meaning/{{ lexeme.meaning.gloss }}">
+    {{ lexeme.meaning.gloss }}</a>’
+  </li>
+  {% endif %}
+  <li>Back to language list ‘<a href="/language/{{ lexeme.language.ascii_name }}">{{ lexeme.language.utf8_name }}</a>’</li>
+</ul>
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

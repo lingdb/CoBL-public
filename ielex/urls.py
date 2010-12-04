@@ -60,6 +60,8 @@ urlpatterns = patterns('',
 
     # Lexemes
     url(r'^lexeme/add/', lexeme_add, {"return_to":"/meanings/"}),
+    url(r'^lexeme/search/$', search_lexeme, name="search-lexeme"),
+
     url(r'^lexeme/(?P<lexeme_id>\d+)/duplicate/$', lexeme_duplicate),
     url(r'^lexeme/(?P<lexeme_id>\d+)/$',
             view_lexeme, name="view-lexeme"),
@@ -95,7 +97,15 @@ urlpatterns = patterns('',
     url(r'^revert/(?P<version_id>\d+)/$', revert_version),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
 
-    url(r'domains/add-new/$', add_relation_list, name="add-relation-list")
+    # Semantic domains
+    url(r'^domains/$', view_domains, name="view-domains"),
+    url(r'^domain/add-new/$', edit_relation_list, name="add-relation-list"),
+    #url(r'^domain/(?P<domain>[a-zA-Z0-9_ ]+)/edit/$', edit_relation_list),
+    url(r'^lexeme/(?P<lexeme_id>\d+)/extensions/(?P<domain>[a-zA-Z0-9_ ]+)/$',
+            edit_lexeme_semantic_extensions, name="view-lexeme-extensions"),
+    url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/domain/(?P<domain>[a-zA-Z0-9_ ]+)/$',
+            edit_language_semantic_domain, name="view-extensions"),
+
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),
 

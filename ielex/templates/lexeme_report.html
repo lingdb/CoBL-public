@@ -2,7 +2,9 @@
 {% load lexicon_utils %}
 {% block title %}Lexeme report{% endblock %}
 
-{% block top %}<h1>{% include "snippets/language_lexeme.html" %}</h1>{% endblock %}
+{% block top %}
+<h1>{{ lexeme.language.utf8_name }}: {% include "snippets/lexeme_form.html" %}</h1>
+{% endblock %}
 
 {% block content %}
 
