@@ -17,8 +17,6 @@ def list_nexus(request):
 @login_required
 def write_nexus(request):
     # TODO 
-    #   - take into account the requested reliability ratings
-    #   - include unique states
     #   - contributor and sources list
     LABEL_COGNATE_SETS = True
     # INCLUDE_UNIQUE_STATES = int(request.POST["unique"])
