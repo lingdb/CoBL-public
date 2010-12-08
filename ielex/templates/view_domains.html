@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Semantic domains{% endblock %}
+
+{% block top %}
+<h1>
+  Semantic domains
+</h1>
+{% endblock %}
+
+
+{% block content %}
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+  </tr>
+  {% for domain in domains %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    <td>{{ domain.name }}</td>
+    <td>{{ domain.description }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
+
+{% block controls %}
+{# prev-next lexeme by domain #}
+{% include "snippets/go_to.html" %}
+<ul class="navigation">
+  <li><a href="/domain/add-new/">Add new semantic domain</a></li>
+</ul>
+{% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
