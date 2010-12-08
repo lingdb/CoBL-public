@@ -967,14 +967,30 @@ def edit_relation_list(request, domain="all"):
     if request.method == "POST":
         form = ChooseSemanticRelationsForm(request.POST)
         if form.is_valid():
-            form.save()
+            rl, created = RelationList.get_or_create(
+                    name=form.cleaned_data["domain_name"],
+                    description=form.cleaned_data["description"]
+                    )
+            include = form.cleaned_data["excluded_relations"]
+            exclude = form.cleaned_data["included_relations"]
+            current = rl.relation_id_list
+            for r_id in include:
+                if r_id not in current:
+                    current.append(r_id)
+            for r_id in exclude:
+                if r_id in current:
+                    current.remove(r_id)
+            rl.save()
+            return HttpResponseRedirect("/domain/edit/%s/" % rl.name)
+        else:
+            assert False
     else:
         form = ChooseSemanticRelationsForm()
     try:
         included_ids = RelationList.objects.get( \
                     name=form.domain_name).relation_id_list
         form.fields["included_relations"].queryset = \
-                SemanticRelation.objects.filter(id__in=included_ids) 
+                SemanticRelation.objects.filter(id__in=included_ids)
                 # or .in_bulk(included_ids)
         form.fields["excluded_relations"].queryset = \
                 SemanticRelation.objects.exclude(id__in=included_ids)

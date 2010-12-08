@@ -8,6 +8,7 @@
 {% block content %}
 <form action="" method="POST">{% csrf_token %}
   {{ form.domain_name }}<br />
+  {{ form.description }}<br />
   <table>
     <tr>
       <th>Excluded</th>

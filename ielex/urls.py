@@ -100,6 +100,8 @@ urlpatterns = patterns('',
     # Semantic domains
     url(r'^domains/$', view_domains, name="view-domains"),
     url(r'^domain/add-new/$', edit_relation_list, name="add-relation-list"),
+    url(r'^domain/edit/(?P<domain>[a-zA-Z0-9_ ]+)/$', edit_relation_list,
+            name="edit-relation-list"),
     #url(r'^domain/(?P<domain>[a-zA-Z0-9_ ]+)/edit/$', edit_relation_list),
     url(r'^lexeme/(?P<lexeme_id>\d+)/extensions/(?P<domain>[a-zA-Z0-9_ ]+)/$',
             edit_lexeme_semantic_extensions, name="view-lexeme-extensions"),

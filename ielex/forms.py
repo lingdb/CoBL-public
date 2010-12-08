@@ -182,6 +182,7 @@ class ReorderLanguageSortKeyForm(forms.Form):
 class ChooseSemanticRelationsForm(forms.Form):
     domain_name = forms.CharField(initial="New-name",
             required=True)
+    description = forms.CharField(widget=forms.Textarea, required=False)
     included_relations = ChooseIncludedRelationsField(
             queryset=SemanticRelation.objects.none(),
             widget=forms.SelectMultiple(attrs={"size":20}))
