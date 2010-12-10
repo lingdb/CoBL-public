@@ -10,9 +10,13 @@ from ielex.views import get_sort_order
 from ielex.views import ChooseNexusOutputForm
 
 def list_nexus(request):
-    defaults = {"unique":1, "reliability":["L","X"], "language_list":1,
-            "meaning_list":1, "dialect":"NN"}
-    form =  ChooseNexusOutputForm(defaults)
+    if request.method == "POST":
+        form =  ChooseNexusOutputForm(request.POST)
+        return HttpResponseRedirect("/nexus-data/")
+    else:
+        defaults = {"unique":1, "reliability":["L","X"], "language_list":1,
+                "meaning_list":1, "dialect":"NN"}
+        form =  ChooseNexusOutputForm(defaults)
     return render_template(request, "nexus_list.html", {"form":form})
 
 @login_required
@@ -32,7 +36,6 @@ def write_nexus(request):
     assert request.method == 'POST'
 
     # get data together
-    #form =  ChooseNexusOutputForm(request.POST)
     language_list_id = request.POST["language_list"]
     language_list = LanguageList.objects.get(id=language_list_id)
     languages = Language.objects.filter(
