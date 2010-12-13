@@ -22,11 +22,11 @@ def write_nexus(request):
     #   - include unique states
     #   - contributor and sources list
     LABEL_COGNATE_SETS = True
-    # INCLUDE_UNIQUE_STATES = int(request.POST["unique"])
-    try:
-        INCLUDE_UNIQUE_STATES = bool(request.POST["unique"])
-    except KeyError:
-        INCLUDE_UNIQUE_STATES = False
+    INCLUDE_UNIQUE_STATES = bool(request.POST.get("unique", 0))
+    language_list_id = request.POST["language_list"]
+    meaning_list_id = request.POST["meaning_list"]
+    exclude = set(request.POST.getlist("reliability"))
+    dialect = request.POST.get("dialect", "NN")
     # 0:19 included
     # 0.17 excluded
 
@@ -35,7 +35,6 @@ def write_nexus(request):
 
     # get data together
     #form =  ChooseNexusOutputForm(request.POST)
-    language_list_id = request.POST["language_list"]
     language_list = LanguageList.objects.get(id=language_list_id)
     languages = Language.objects.filter(
             id__in=language_list.language_id_list).order_by(
@@ -43,12 +42,10 @@ def write_nexus(request):
     language_names = ["'"+name+"'" for name in
             languages.values_list("ascii_name", flat=True)]
 
-    meaning_list_id = request.POST["meaning_list"]
     meaning_list = MeaningList.objects.get(id=meaning_list_id)
     meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
     max_len = max([len(l) for l in language_names])
 
-    exclude = set(request.POST.getlist("reliability"))
 
     cognate_class_ids = CognateSet.objects.all().values_list("id", flat=True)
 
@@ -100,7 +97,7 @@ def write_nexus(request):
     print>>response, "[ File generated: %s ]\n" % \
             time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-    if request.POST["dialect"] in ("NN", "MB"):
+    if dialect in ("NN", "MB"):
         print>>response, dedent("""\
             begin taxa;
               dimensions ntax=%s;
@@ -113,7 +110,7 @@ def write_nexus(request):
               format symbols="01";
               matrix""" % len(data))
     else:
-        assert request.POST["dialect"] == "BP"
+        assert dialect == "BP"
         print>>response, dedent("""\
             begin data;
               dimensions ntax=%s nchar=%s;
@@ -155,7 +152,7 @@ def write_nexus(request):
                 " "*(max_len - len(language.ascii_name)), "".join(row))
     print>>response, "  ;\nend;\n"
 
-    if request.POST["dialect"] == "BP":
+    if dialect == "BP":
         print>>response, dedent("""\
             begin BayesPhylogenies;
                 Chains 1;
