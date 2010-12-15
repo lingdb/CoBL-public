@@ -59,16 +59,20 @@ def write_nexus(request):
         #         meaning__in=meanings).values_list('language', flat=True)
         ## this is much slower than the values_list version (probably from
         ## calculating the reliability ratings property
+        # TODO look at LexemeCitation reliablity ratings here too
         language_ids = [cj.lexeme.language.id for cj in
                 CognateJudgement.objects.filter(cognate_class=cc,
-                    lexeme__meaning__in=meanings)
+                lexeme__meaning__in=meanings)
                 if not (cj.reliability_ratings & exclude)]
         if language_ids:
             data[cc] = language_ids
 
     if INCLUDE_UNIQUE_STATES:
-        # add a cc for all the lexemes which are not in a cognate class
-        # TODO look at lexeme reliablity ratings here too
+        # adds a cc code for all the lexemes which are not registered as
+        # belonging to a cognate class
+        # TODO look at LexemeCitation reliablity ratings here too
+        # note that registered cognate classes with one member will NOT be
+        # ignored when INCLUDE_UNIQUE_STATES = False
         uniques = Lexeme.objects.filter(
                 cognate_class__isnull=True,
                 meaning__in=meanings).values_list("language", "id")
