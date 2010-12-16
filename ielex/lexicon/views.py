@@ -10,16 +10,18 @@ from ielex.views import get_sort_order
 from ielex.views import ChooseNexusOutputForm
 
 def list_nexus(request):
-    defaults = {"unique":1, "reliability":["L","X"], "language_list":1,
-            "meaning_list":1, "dialect":"NN"}
-    form =  ChooseNexusOutputForm(defaults)
+    if request.method == "POST":
+        form =  ChooseNexusOutputForm(request.POST)
+        return HttpResponseRedirect("/nexus-data/")
+    else:
+        defaults = {"unique":1, "reliability":["L","X"], "language_list":1,
+                "meaning_list":1, "dialect":"NN"}
+        form =  ChooseNexusOutputForm(defaults)
     return render_template(request, "nexus_list.html", {"form":form})
 
 @login_required
 def write_nexus(request):
     # TODO 
-    #   - take into account the requested reliability ratings
-    #   - include unique states
     #   - contributor and sources list
     LABEL_COGNATE_SETS = True
     INCLUDE_UNIQUE_STATES = bool(request.POST.get("unique", 0))
@@ -34,7 +36,6 @@ def write_nexus(request):
     assert request.method == 'POST'
 
     # get data together
-    #form =  ChooseNexusOutputForm(request.POST)
     language_list = LanguageList.objects.get(id=language_list_id)
     languages = Language.objects.filter(
             id__in=language_list.language_id_list).order_by(
@@ -55,16 +56,20 @@ def write_nexus(request):
         #         meaning__in=meanings).values_list('language', flat=True)
         ## this is much slower than the values_list version (probably from
         ## calculating the reliability ratings property
+        # TODO look at LexemeCitation reliablity ratings here too
         language_ids = [cj.lexeme.language.id for cj in
                 CognateJudgement.objects.filter(cognate_class=cc,
-                    lexeme__meaning__in=meanings)
+                lexeme__meaning__in=meanings)
                 if not (cj.reliability_ratings & exclude)]
         if language_ids:
             data[cc] = language_ids
 
     if INCLUDE_UNIQUE_STATES:
-        # add a cc for all the lexemes which are not in a cognate class
-        # TODO look at lexeme reliablity ratings here too
+        # adds a cc code for all the lexemes which are not registered as
+        # belonging to a cognate class
+        # TODO look at LexemeCitation reliablity ratings here too
+        # note that registered cognate classes with one member will NOT be
+        # ignored when INCLUDE_UNIQUE_STATES = False
         uniques = Lexeme.objects.filter(
                 cognate_class__isnull=True,
                 meaning__in=meanings).values_list("language", "id")
