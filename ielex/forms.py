@@ -1,6 +1,17 @@
 # -*- coding: utf-8 -*-
+import re
 from django import forms
 from ielex.lexicon.models import *
+
+def clean_ascii_name(data):
+    """Check that a string is suitable to be part of a url (ascii, no spaces)"""
+    illegal_chars = re.findall(r"[^a-zA-Z0-9$\-_\.+!*'(),]", data)
+    try:
+        assert not illegal_chars
+    except AssertionError:
+        raise forms.ValidationError("Invalid character/s for an ascii label:"\
+                " '%s'" % "', '".join(illegal_chars))
+    return data
 
 class ChooseLanguageField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -89,17 +100,7 @@ class EditLanguageForm(forms.ModelForm):
 
     def clean_ascii_name(self):
         data = self.cleaned_data["ascii_name"]
-        try: # ascii name must be ascii
-            data.decode("ascii")
-        except UnicodeEncodeError:
-            raise forms.ValidationError("'%s' contains non-ASCII characters" %
-                    data)
-        try: # ascii name cannot have whitespace
-            assert " " not in data
-        except AssertionError:
-            raise forms.ValidationError(
-                    "ASCII name cannot contain whitespace (try '%s')" %
-                    data.replace(" ","_"))
+        clean_ascii_name(data)
         return data
 
     class Meta:
@@ -189,6 +190,17 @@ class ChooseSemanticRelationsForm(forms.Form):
     excluded_relations = ChooseExcludedRelationsField(
             queryset=SemanticRelation.objects.all(),
             widget=forms.SelectMultiple(attrs={"size":20}))
+
+class EditRelationListForm(forms.ModelForm):
+
+    def clean_name(self):
+        data = self.cleaned_data["name"]
+        clean_ascii_name(data)
+        return data
+
+    class Meta:
+        model = RelationList
+        exclude = ["relation_ids"]
 
 class SearchLexemeForm(forms.Form):
     regex = forms.CharField()

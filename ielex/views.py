@@ -158,7 +158,7 @@ def get_languages(request):
 
 def get_current_language_list_name(request):
     """Get the name of the current language list from session."""
-    return request.session.get("language_list_name", "all")
+    return request.session.get("language_list_name", LanguageList.DEFAULT)
 
 def get_prev_and_next_languages(request, current_language):
     language_list_name = get_current_language_list_name(request)
@@ -363,7 +363,8 @@ def edit_language(request, language):
 # -- /meaning(s)/ ---------------------------------------------------------
 
 def view_meanings(request):
-    meaning_list_name = request.session.get("meaning_list_name", "all")
+    meaning_list_name = request.session.get("meaning_list_name",
+            MeaningList.DEFAULT)
 
     if request.method == 'POST':
         form = ChooseMeaningListForm(request.POST)
@@ -930,7 +931,7 @@ def source_list(request):
 
 # -- semantic extensions --------------------------------------------------
 
-@login_required
+#@login_required
 def view_domains(request):
     domains = RelationList.objects.all()
     return render_template(request, "view_domains.html", {"domains":domains})
@@ -962,9 +963,25 @@ def edit_language_semantic_domain(request, language, domain=RelationList.DEFAULT
             "semantic_extensions": extensions,
             })
 
+@login_required
+def add_relation_list(request):
+    if request.method == "POST":
+        form = EditRelationListForm(request.POST)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect('/domains/')
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/domains/')
+    else:
+        form = EditRelationListForm()
+    return render_template(request, "relation_list_edit.html",
+            {"form":form})
+
+def view_relation_list(request, domain):
+    pass
 
 @login_required
-def edit_relation_list(request, domain="all"):
+def edit_relation_list(request, domain=RelationList.DEFAULT):
     if request.method == "POST":
         form = ChooseSemanticRelationsForm(request.POST)
         if form.is_valid():
@@ -998,7 +1015,7 @@ def edit_relation_list(request, domain="all"):
     except AttributeError:
         pass
 
-    return render_template(request, "relation_list_edit.html",
+    return render_template(request, "relation_list_change_items.html",
             {"form":form})
 
 def search_lexeme(request):
