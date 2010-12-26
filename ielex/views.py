@@ -943,7 +943,7 @@ def edit_lexeme_semantic_extensions(request, lexeme_id, domain):
             "tagged_relations": lexeme.semanticextension_set.all()})
 
 @login_required
-def edit_language_semantic_domain(request, language, domain):
+def edit_language_semantic_domain(request, language, domain=RelationList.DEFAULT):
     try:
         language = Language.objects.get(ascii_name=language)
     except(Language.DoesNotExist):
@@ -961,6 +961,7 @@ def edit_language_semantic_domain(request, language, domain):
             "domain":domain,
             "semantic_extensions": extensions,
             })
+
 
 @login_required
 def edit_relation_list(request, domain="all"):

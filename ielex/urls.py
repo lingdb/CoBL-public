@@ -107,6 +107,8 @@ urlpatterns = patterns('',
             edit_lexeme_semantic_extensions, name="view-lexeme-extensions"),
     url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/domain/(?P<domain>[a-zA-Z0-9_ ]+)/$',
             edit_language_semantic_domain, name="view-extensions"),
+    url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/domain/$', 
+            edit_language_semantic_domain, name="view-extensions"), # DEFAULT
 
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),
@@ -114,9 +116,6 @@ urlpatterns = patterns('',
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
-    # (r'^admin/', include(admin.site.urls)),
     )
 
 urlpatterns += patterns('',

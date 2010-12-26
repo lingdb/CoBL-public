@@ -19,6 +19,7 @@ class Source(models.Model):
             ("L", "Loanword"),
             ("X", "Exclude (e.g. not the Swadesh term)"),
             )
+
     citation_text = models.TextField()
     type_code = models.CharField(max_length=1, choices=TYPE_CHOICES)
     description = models.TextField(blank=True)
@@ -189,6 +190,8 @@ class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A
     default list, named 'all' is (re)created on save/delete of the Language
     table (cf. ielex.models.update_language_list_all)"""
+    DEFAULT = "all"
+
     name = models.CharField(max_length=999)
     description = models.TextField(blank=True, null=True)
     language_ids = models.CommaSeparatedIntegerField(max_length=999)
@@ -215,6 +218,8 @@ reversion.register(LanguageList)
 
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh 100'"""
+    DEFAULT = "all"
+
     name = models.CharField(max_length=999)
     description = models.TextField(blank=True, null=True)
     meaning_ids = models.CommaSeparatedIntegerField(max_length=999)
@@ -345,6 +350,8 @@ class RelationList(models.Model):
     """A named, ordered list of semantic relations for use in display and output. A
     default list, named 'all' is (re)created on save/delete of the Language
     table (cf. ielex.models.update_relation_list_all)"""
+    DEFAULT = "all"
+
     name = models.CharField(max_length=999)
     description = models.TextField(blank=True, null=True)
     relation_ids = models.CommaSeparatedIntegerField(max_length=999)
@@ -375,9 +382,9 @@ def update_language_list_all(sender, instance, **kwargs):
     # it should just be when created or deleted, but the extra overhead is
     # tiny, since changes in the Language table are rare
     try:
-        ll = LanguageList.objects.get(name="all")
+        ll = LanguageList.objects.get(name=LanguageList.DEFAULT)
     except:
-        ll = LanguageList.objects.create(name="all")
+        ll = LanguageList.objects.create(name=LanguageList.DEFAULT)
     if ll.language_id_list != list(Language.objects.values_list("id", flat=True)):
         ll.language_id_list = [l.id for l in Language.objects.all()]
         ll.save(force_update=True)
@@ -388,9 +395,9 @@ models.signals.post_delete.connect(update_language_list_all, sender=Language)
 
 def update_meaning_list_all(sender, instance, **kwargs):
     try:
-        ml = MeaningList.objects.get(name="all")
+        ml = MeaningList.objects.get(name=MeaningList.DEFAULT)
     except:
-        ml = MeaningList.objects.create(name="all")
+        ml = MeaningList.objects.create(name=MeaningList.DEFAULT)
     if ml.meaning_id_list != list(Meaning.objects.values_list("id", flat=True)):
         ml.meaning_id_list = [l.id for l in Meaning.objects.all()]
         ml.save(force_update=True)
@@ -401,9 +408,9 @@ models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
 def update_relation_list_all(sender, instance, **kwargs):
     try:
-        ml = RelationList.objects.get(name="all")
+        ml = RelationList.objects.get(name=RelationList.DEFAULT)
     except:
-        ml = RelationList.objects.create(name="all")
+        ml = RelationList.objects.create(name=RelationList.DEFAULT)
     if ml.relation_id_list != list(Meaning.objects.values_list("id", flat=True)):
         ml.relation_id_list = [l.id for l in SemanticRelation.objects.all()]
         ml.save(force_update=True)
