@@ -108,6 +108,11 @@ class EditLanguageForm(forms.ModelForm):
 
 class EditMeaningForm(forms.ModelForm):
 
+    def clean_gloss(self):
+        data = self.cleaned_data["gloss"]
+        clean_ascii_name(data)
+        return data
+
     class Meta:
         model = Meaning
 
