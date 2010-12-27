@@ -15,7 +15,7 @@ from ielex.backup import backup
 from ielex.forms import *
 from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
-from ielex.utilities import next_alias, renumber_sort_keys
+from ielex.utilities import next_alias, renumber_sort_keys, confirm_required
 import re
 
 # Refactoring: 
@@ -45,7 +45,7 @@ def view_frontpage(request):
 
 def view_changes(request):
     """Recent changes"""
-    # the view fails when an object has been deleted
+    # XXX the view fails when an object has been deleted
     recent_changes = Version.objects.all().order_by("id").reverse()
     paginator = Paginator(recent_changes, 100) # was 200
 
@@ -71,7 +71,7 @@ def view_changes(request):
     contributors = sorted([(User.objects.get(id=user_id),
             Version.objects.filter(revision__user=user_id).count())
             for user_id in Version.objects.values_list("revision__user",
-                    flat=True).distinct() if user_id is not None],
+            flat=True).distinct() if user_id is not None],
             lambda x, y: -cmp(x[1], y[1])) # reverse sort by second element in tuple
             # TODO user_id should never be None
 
@@ -82,10 +82,7 @@ def view_changes(request):
 @login_required
 def revert_version(request, version_id):
     """Roll back the object saved in a Version to the previous Version"""
-    try:
-        referer = request.META["HTTP_REFERER"]
-    except KeyError:
-        referer = "/"
+    referer = request.META.get("HTTP_REFERER", "/")
     latest = Version.objects.get(pk=version_id)
     versions = Version.objects.get_for_object(
             latest.content_type.get_object_for_this_type(
@@ -190,8 +187,8 @@ def get_prev_and_next_meanings(current_meaning):
 
 def update_object_from_form(model_object, form):
     """Update an object with data from a form."""
-    # XXX I think this is unneccessary: form.save() does all this
-    # automatically.
+    # XXX This is only neccessary when not using a model form: otherwise
+    # form.save() does all this automatically
 
     # cd = form.cleaned_data
     # for field_name in cd:
@@ -971,52 +968,72 @@ def add_relation_list(request):
             return HttpResponseRedirect('/domains/')
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/domains/')
+            return HttpResponseRedirect("/domain/%s/edit/" %
+                    form.cleaned_data["name"])
     else:
         form = EditRelationListForm()
     return render_template(request, "relation_list_edit.html",
             {"form":form})
 
 def view_relation_list(request, domain):
-    pass
+    rl = RelationList.objects.get(name=domain)
+    sr = SemanticRelation.objects.filter(id__in=rl.relation_id_list)
+    return render_template(request, "relation_list_view.html",
+            {"relation_list":rl, "relations":sr})
 
 @login_required
 def edit_relation_list(request, domain=RelationList.DEFAULT):
+    rl = RelationList.objects.get(name=domain)
     if request.method == "POST":
-        form = ChooseSemanticRelationsForm(request.POST)
-        if form.is_valid():
-            rl, created = RelationList.get_or_create(
-                    name=form.cleaned_data["domain_name"],
-                    description=form.cleaned_data["description"]
-                    )
-            include = form.cleaned_data["excluded_relations"]
-            exclude = form.cleaned_data["included_relations"]
-            current = rl.relation_id_list
-            for r_id in include:
-                if r_id not in current:
-                    current.append(r_id)
-            for r_id in exclude:
-                if r_id in current:
-                    current.remove(r_id)
+        name_form = EditRelationListForm(request.POST, instance=rl)
+        items_form = ChooseSemanticRelationsForm(request.POST)
+        items_form.fields["included_relations"].queryset = \
+                SemanticRelation.objects.filter(id__in=rl.relation_id_list)
+        items_form.fields["excluded_relations"].queryset = \
+                SemanticRelation.objects.exclude(id__in=rl.relation_id_list)
+        # if "cancel" in items_form.data: # has to be tested before data is cleaned
+        #     return HttpResponseRedirect('/domains/')
+        if items_form.is_valid() and name_form.is_valid():
+            # move from one to the other (thus include < exclude, exclude < include)
+            include = items_form.cleaned_data["excluded_relations"] 
+            exclude = items_form.cleaned_data["included_relations"]
+            new_list = rl.relation_id_list
+            if include:
+                new_list.append(include.id)
+            if exclude:
+                new_list.remove(exclude.id)
+            rl.relation_id_list = new_list
             rl.save()
-            return HttpResponseRedirect("/domain/edit/%s/" % rl.name)
+            name_form.save()
+            if "cancel" in request.POST:
+                return HttpResponseRedirect("/domains/")
+            else:
+                return HttpResponseRedirect("/domain/%s/edit/" % rl.name)
         else:
-            assert False
+            assert False # XXX delete me later
     else:
-        form = ChooseSemanticRelationsForm()
-    try:
-        included_ids = RelationList.objects.get( \
-                    name=form.domain_name).relation_id_list
-        form.fields["included_relations"].queryset = \
-                SemanticRelation.objects.filter(id__in=included_ids)
-                # or .in_bulk(included_ids)
-        form.fields["excluded_relations"].queryset = \
-                SemanticRelation.objects.exclude(id__in=included_ids)
-    except AttributeError:
-        pass
-
+        name_form = EditRelationListForm(instance=rl)
+        items_form = ChooseSemanticRelationsForm()
+        items_form.fields["included_relations"].queryset = \
+                SemanticRelation.objects.filter(id__in=rl.relation_id_list)
+        items_form.fields["excluded_relations"].queryset = \
+                SemanticRelation.objects.exclude(id__in=rl.relation_id_list)
     return render_template(request, "relation_list_change_items.html",
-            {"form":form})
+            {"items_form":items_form,
+             "name_form":name_form,
+             "relation_list":rl})
+
+##def delete_relation_list_context(request, domain):
+    ##return RequestContext(request, {"domain_name":domain})
+
+##@confirm_required("snippets/confirm_delete.html", delete_relation_list_context)
+@confirm_required("confirm_delete.html",
+        lambda request, domain: RequestContext(request, {"domain_name":domain}))
+def delete_relation_list(request, domain):
+    rl = RelationList.objects.get(name=domain)
+    rl.delete()
+    messages.warning(request, "Relation list '%s' deleted" % domain)
+    return HttpResponseRedirect("/domains/")
 
 def search_lexeme(request):
     if request.method == 'POST':

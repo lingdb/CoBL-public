@@ -100,15 +100,17 @@ urlpatterns = patterns('',
     # Semantic domains
     url(r'^domains/$', view_domains, name="view-domains"),
     url(r'^domains/add-new/$', add_relation_list, name="add-relation-list"),
-    url(r'^domain/(?P<domain>[a-zA-Z0-9_ ]+)/edit/$', edit_relation_list,
-            name="edit-relation-list"),
     url(r'^domain/(?P<domain>[a-zA-Z0-9_ ]+)/$', view_relation_list,
             name="view-relation-list"),
+    url(r'^domain/(?P<domain>[a-zA-Z0-9_ ]+)/edit/$', edit_relation_list,
+            name="edit-relation-list"),
+    url(r'^domain/(?P<domain>[a-zA-Z0-9_ ]+)/delete/$', delete_relation_list,
+            name="delete-relation-list"),
     url(r'^lexeme/(?P<lexeme_id>\d+)/extensions/(?P<domain>[a-zA-Z0-9_ ]+)/$',
             edit_lexeme_semantic_extensions, name="view-lexeme-extensions"),
     url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/domain/(?P<domain>[a-zA-Z0-9_ ]+)/$',
             edit_language_semantic_domain, name="view-extensions"),
-    url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/domain/$', 
+    url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/domain/$',
             edit_language_semantic_domain, name="view-extensions"), # DEFAULT
 
     # Example:

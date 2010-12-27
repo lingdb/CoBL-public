@@ -352,7 +352,7 @@ class RelationList(models.Model):
     table (cf. ielex.models.update_relation_list_all)"""
     DEFAULT = "all"
 
-    name = models.CharField(max_length=999)
+    name = models.CharField(max_length=999, unique=True)
     description = models.TextField(blank=True, null=True)
     relation_ids = models.CommaSeparatedIntegerField(blank=True,
             max_length=999)
@@ -409,12 +409,13 @@ models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
 def update_relation_list_all(sender, instance, **kwargs):
     try:
-        ml = RelationList.objects.get(name=RelationList.DEFAULT)
+        rl = RelationList.objects.get(name=RelationList.DEFAULT)
     except:
-        ml = RelationList.objects.create(name=RelationList.DEFAULT)
-    if ml.relation_id_list != list(Meaning.objects.values_list("id", flat=True)):
-        ml.relation_id_list = [l.id for l in SemanticRelation.objects.all()]
-        ml.save(force_update=True)
+        rl = RelationList.objects.create(name=RelationList.DEFAULT,
+                description="Default relation list of all semantic relations")
+    if rl.relation_id_list != list(SemanticRelation.objects.values_list("id", flat=True)):
+        rl.relation_id_list = [l.id for l in SemanticRelation.objects.all()]
+        rl.save(force_update=True)
     return
 
 models.signals.post_save.connect(update_relation_list_all, sender=SemanticRelation)

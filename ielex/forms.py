@@ -55,7 +55,8 @@ class ChooseOneSourceField(forms.ModelChoiceField):
                 return s[:l-4]+" ..."
         return truncate(obj.citation_text, 124)
 
-class ChooseSemanticRelationsField(forms.ModelMultipleChoiceField):
+class ChooseSemanticRelationsField(forms.ModelChoiceField):
+
     def label_from_instance(self, obj):
         return obj.relation_code
 
@@ -185,17 +186,6 @@ class ReorderLanguageSortKeyForm(forms.Form):
             widget=forms.Select(attrs={"size":20}),
             empty_label=None)
 
-class ChooseSemanticRelationsForm(forms.Form):
-    domain_name = forms.CharField(initial="New-name",
-            required=True)
-    description = forms.CharField(widget=forms.Textarea, required=False)
-    included_relations = ChooseIncludedRelationsField(
-            queryset=SemanticRelation.objects.none(),
-            widget=forms.SelectMultiple(attrs={"size":20}))
-    excluded_relations = ChooseExcludedRelationsField(
-            queryset=SemanticRelation.objects.all(),
-            widget=forms.SelectMultiple(attrs={"size":20}))
-
 class EditRelationListForm(forms.ModelForm):
 
     def clean_name(self):
@@ -206,6 +196,18 @@ class EditRelationListForm(forms.ModelForm):
     class Meta:
         model = RelationList
         exclude = ["relation_ids"]
+
+class ChooseSemanticRelationsForm(forms.Form):
+    #domain_name = forms.CharField(required=True)
+    #description = forms.CharField(widget=forms.Textarea, required=False)
+    included_relations = ChooseIncludedRelationsField(
+            required=False, empty_label=None,
+            queryset=SemanticRelation.objects.none(),
+            widget=forms.Select(attrs={"size":20, "onchange":"this.form.submit()"}))
+    excluded_relations = ChooseExcludedRelationsField(
+            required=False, empty_label=None,
+            queryset=SemanticRelation.objects.all(),
+            widget=forms.Select(attrs={"size":20, "onchange":"this.form.submit()"}))
 
 class SearchLexemeForm(forms.Form):
     regex = forms.CharField()

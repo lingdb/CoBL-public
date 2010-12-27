@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load lexicon_utils %}
+
+{% block title %}Relation list{% endblock %}
+
+{% block top %}<h1>Relation list ‘{{ relation_list.name }}’</h1>{% endblock %}
+
+{% block content %}
+<p>{{ relation_list.description }}</p>
+<table>
+  <thead> {# handy for the print view #}
+    <tr>
+      <th></th>
+      <th>Code</th>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for relation in relations %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    <td>
+        <small>{{ forloop.counter }}</small>
+    </td>
+    <td>{{ relation.relation_code }}</td>
+    <td>{{ relation.long_name }}</td>
+    <td>{{ relation.description|truncatewords:10 }}</td>
+    <td>{{ relation.notes|truncatewords:10 }}</td>
+  </tr>
+
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+<ul class="navigation">
+  <li><a href="{% url add-relation-list %}">add new semantic domain</a></li>
+  <li><a href="{% url edit-relation-list relation_list.name %}">
+    edit relation list: {{ relation_list.name }}</a>
+  </li>
+</ul>
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
+
