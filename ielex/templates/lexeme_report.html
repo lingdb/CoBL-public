@@ -248,12 +248,12 @@
 
 {% block controls %}
 {% include "snippets/go_to.html" %}
-<ul>
-  <li>Back to meaning list ‘<a href="/meaning/{{ lexeme.meaning.gloss }}">{{ lexeme.meaning.gloss }}</a>’</li>
-  <li>Back to language list ‘<a href="/language/{{ lexeme.language.ascii_name }}">{{ lexeme.language.utf8_name }}</a>’</li>
+<ul class="navigation">
+  <li><a href="/meaning/{{ lexeme.meaning.gloss }}">back to meaning list ‘{{ lexeme.meaning.gloss }}’</a></li>
+  <li><a href="/language/{{ lexeme.language.ascii_name }}">back to language list ‘{{ lexeme.language.utf8_name }}’</a></li>
   {% if user.is_authenticated %}
-    <li>Add a <a href="/language/{{ lexeme.language.ascii_name }}/add-lexeme/">new lexeme</a> to ‘{{ lexeme.language.utf8_name }}’</li>
-    <li>Add a <a href="/meaning/{{ lexeme.meaning.gloss }}/add-lexeme/">new lexeme</a> to ‘{{ lexeme.meaning.gloss }}’</li>
+    <li><a href="/language/{{ lexeme.language.ascii_name }}/add-lexeme/">add a new lexeme to ‘{{ lexeme.language.utf8_name }}’</a></li>
+    <li><a href="/meaning/{{ lexeme.meaning.gloss }}/add-lexeme/">add a new lexeme to ‘{{ lexeme.meaning.gloss }}’</a></li>
   {% endif %}
 </ul>
 {% endblock %}

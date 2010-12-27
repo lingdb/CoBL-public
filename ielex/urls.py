@@ -112,6 +112,8 @@ urlpatterns = patterns('',
             edit_language_semantic_domain, name="view-extensions"),
     url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/domain/$',
             edit_language_semantic_domain, name="view-extensions"), # DEFAULT
+    url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/domains/$',
+            view_language_semantic_domains, name="view-language-domains"), 
 
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),

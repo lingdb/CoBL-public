@@ -9,6 +9,7 @@ from django.template import RequestContext
 from django.template.loader import get_template
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.core.urlresolvers import reverse
 from reversion.models import Version
 from reversion import revision
 from ielex.backup import backup
@@ -960,12 +961,29 @@ def edit_language_semantic_domain(request, language, domain=RelationList.DEFAULT
             "semantic_extensions": extensions,
             })
 
+def view_language_semantic_domains(request, language):
+    try:
+        language = Language.objects.get(ascii_name=language)
+    except(Language.DoesNotExist):
+        language = get_canonical_language(language)
+        return HttpResponseRedirect("/language/%s/domains/" %
+                (language.ascii_name))
+    domain_ids = set(SemanticExtension.objects.filter(
+            lexeme__language=language).values_list("relation_id", flat=True))
+    domains = []
+    for domain in RelationList.objects.all():
+        if set(domain.relation_id_list) & domain_ids:
+            domains.append(domain)
+    return render_template(request, 'view_language_semantic_domains.html',
+            {"domains":domains, "language":language})
+
 @login_required
 def add_relation_list(request):
     if request.method == "POST":
         form = EditRelationListForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect('/domains/')
+            #return HttpResponseRedirect('/domains/')
+            return HttpResponseRedirect(reverse('view-domains'))
         if form.is_valid():
             form.save()
             return HttpResponseRedirect("/domain/%s/edit/" %

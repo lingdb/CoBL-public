@@ -48,11 +48,11 @@
 {% block controls %}
 {% include "snippets/prev_next_language.html" %}
 {% include "snippets/go_to.html" %}
+<strong>{{ language.utf8_name }}:</strong>
 <ul class="navigation">
-  <li><a href="/language/{{ language.ascii_name }}/edit/">edit entry for 
-    {{ language.utf8_name }}</a></li>
+  <li><a href="/language/{{ language.ascii_name }}/edit/">edit language entry</a></li>
   <li><a href="/language/{{ language.ascii_name }}/add-lexeme/">add a new lexeme</a></li>
-  <li><a href="/language/{{ language.ascii_name }}/domain/all/">view semantic domains</a></li>
+  <li><a href="{% url view-language-domains language.ascii_name %}">view semantic domains</a></li>
 </ul>
 {% if language.description %}
 <small>
