@@ -15,20 +15,13 @@
 <form action="" method="post">{% csrf_token %}
 <fieldset>
 <table>
-  <tr><td class="rowname">Language:</td><td><a href="/language/{{ lexeme.language.ascii_name }}">{{ lexeme.language.utf8_name }}</a></td></tr>
-  <tr><td class="rowname">Meaning:</td><td><a href="/meaning/{{ lexeme.meaning.gloss }}/{{ lexeme.id }}/#current">{{ lexeme.meaning.gloss }}</a></td></tr>
-<tr><td class="rowname">Source form:</td><td>{{ form.source_form }}</td></tr>
-<tr><td class="rowname">Phonological form:</td><td>{{ form.phon_form }}</td></tr>
-<tr><td class="rowname">Notes:</td><td>{{ form.notes }}</td></tr>
-<tr><td class="rowname">Sources:</td>
-    <td>{{ form.sources }}</td>
-</tr>
-<tr><td class="rowname">Cognate codes:</td>
-    <td>{% for cs in lexeme.cognate_class.all %}
-      <a href="/cognate/{{ cs.id }}/">{{ cs.alias }}</a>
-      {% if forloop.last %}{% else %}, {% endif %}
-        {% endfor %}</td>
-</tr>
+  {{ form.as_table }}
+  <tr><td class="rowname">Cognate codes:</td>
+      <td>{% for cs in lexeme.cognate_class.all %}
+        <a href="/cognate/{{ cs.id }}/">{{ cs.alias }}</a>
+        {% if forloop.last %}{% else %}, {% endif %}
+          {% endfor %}</td>
+  </tr>
 </table>
 {% include "buttons/submit-gloss-cancel.html" %}
 </fieldset>
@@ -49,6 +42,7 @@
 <tr><td class="rowname">Meaning:</td><td><a href="/meaning/{{ lexeme.meaning.gloss }}/{{ lexeme.id }}/#current">{{ lexeme.meaning.gloss }}</a></td></tr>
 <tr><td class="rowname">Source form:</td><td>{{ lexeme.source_form }}</td></tr>
 <tr><td class="rowname">Phonological form:</td><td>{{ lexeme.phon_form }}</td></tr>
+<tr><td class="rowname">Gloss:</td><td>{{ lexeme.gloss }}</td></tr>
 <tr><td class="rowname">Notes:</td><td>{{ lexeme.notes|wikilink }}</td></tr>
 <tr><td class="rowname">Cognate codes:</td>
     <td>{% for cs in lexeme.cognate_class.all %}
@@ -249,11 +243,18 @@
 {% block controls %}
 {% include "snippets/go_to.html" %}
 <ul class="navigation">
-  <li><a href="/meaning/{{ lexeme.meaning.gloss }}">back to meaning list ‘{{ lexeme.meaning.gloss }}’</a></li>
+  {% if lexeme.meaning %}
+    <li><a href="/meaning/{{ lexeme.meaning.gloss }}">back to meaning list ‘{{ lexeme.meaning.gloss }}’</a></li>
+  {% endif %}
+  {% if lexeme.semanticextension_set.count %}
+  <li><a href="{% url view-all-lexeme-extensions lexeme.id  %}">view semantic exensions</a></li>
+  {% endif %}
   <li><a href="/language/{{ lexeme.language.ascii_name }}">back to language list ‘{{ lexeme.language.utf8_name }}’</a></li>
   {% if user.is_authenticated %}
     <li><a href="/language/{{ lexeme.language.ascii_name }}/add-lexeme/">add a new lexeme to ‘{{ lexeme.language.utf8_name }}’</a></li>
+      {% if lexeme.meaning %}
     <li><a href="/meaning/{{ lexeme.meaning.gloss }}/add-lexeme/">add a new lexeme to ‘{{ lexeme.meaning.gloss }}’</a></li>
+  {% endif %}
   {% endif %}
 </ul>
 {% endblock %}

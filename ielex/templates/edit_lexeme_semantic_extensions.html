@@ -4,41 +4,65 @@
 
 {% block top %}
 <h1>
-  {% include "snippets/lexeme_form.html" %}
-  ({{ lexeme.language.utf8_name }})
+  {{ domain }}: {{ lexeme }} ({{ lexeme.language.utf8_name }})
 </h1>
 {% endblock %}
 
 {% block content %}
-<table>
-  <tr>
-    <th>Code</th>
-    <th>Relation</th>
-    <th>Description</th>
-  </tr>
-  {% for semantic_extension in tagged_relations %}
-  <tr class="{% cycle 'odd' 'even' %}">
-    <td>{{ semantic_extension.relation.relation_code }}</td>
-    <td>{{ semantic_extension.relation.long_name }}</td>
-    <td>{{ semantic_extension.relation.description }}</td>
-  </tr>
-  {% endfor %}
-</table>
+
+{% if action == "view" %}
+  {% if tagged_relations %}
+  <table>
+    <tr>
+      <th>Code</th>
+      <th>Relation</th>
+      <th>Description</th>
+    </tr>
+    {% for semantic_extension in tagged_relations %}
+    <tr class="{% cycle 'odd' 'even' %}">
+      <td>{{ semantic_extension.relation.relation_code }}</td>
+      <td>{{ semantic_extension.relation.long_name }}</td>
+      <td>{{ semantic_extension.relation.description }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  Lexeme ‘<a href="{% url view-lexeme lexeme.id %}">{{ lexeme }}</a> ’
+  has no tagged relations in the domain 
+  ‘<a href="{% url view-language-domain lexeme.language.ascii_name domain %}">{{ domain }}</a>’
+  {% endif %}
+{% endif %}
+
+
+{% if action == "edit" %}
+  <form action="" method="POST">{% csrf_token %}
+  <table>
+    {{ form.as_table }}
+  </table>
+    <input type="submit" name="submit" value="Submit" />
+    <input type="submit" name="cancel" value="Cancel" />
+  </form>
+  {# TODO needs citation form #}
+{% endif %}
+
 {% endblock %}
 
 {% block controls %}
 {# prev-next lexeme by domain #}
 {% include "snippets/go_to.html" %}
-<ul>
-  <li>Back to lexeme <a href="/lexeme/{{ lexeme.id }}/">
-    ‘{% include "snippets/lexeme_form.html" %}’</a>
+<ul class="navigation">
+  {% if action != "edit" %}
+  <li><a href="{% url edit-lexeme-extensions lexeme.id domain %}">Edit semantic extensions</a></li>
+  {% endif %}
+  <li><a href="{% url view-lexeme lexeme.id %}">Back to lexeme ‘{{ lexeme }}’</a>
   </li>
   {% if lexeme.meaning %}
-  <li>Back to meaning list ‘<a href="/meaning/{{ lexeme.meaning.gloss }}">
-    {{ lexeme.meaning.gloss }}</a>’
+  <li><a href="{% url meaning-report lexeme.meaning.gloss %}">
+    Back to meaning list ‘{{ lexeme.meaning.gloss }}’</a>
   </li>
   {% endif %}
-  <li>Back to language list ‘<a href="/language/{{ lexeme.language.ascii_name }}">{{ lexeme.language.utf8_name }}</a>’</li>
+  <li><a href="{% url language-report lexeme.language.ascii_name %}">
+    Back to language list ‘{{ lexeme.language.utf8_name }}’</a></li>
 </ul>
 {% endblock %}
 

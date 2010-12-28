@@ -1,7 +1,7 @@
 from __future__ import division
 from django.db import models
-import reversion
 from django.contrib import admin
+import reversion
 from reversion.admin import VersionAdmin
 
 class Source(models.Model):
@@ -148,7 +148,7 @@ class Lexeme(models.Model):
         return "/lexeme/%s/" % self.id
 
     def __unicode__(self):
-        return self.phon_form or self.source_form or "Lexeme"
+        return self.phon_form or self.source_form or ("Lexeme %s" % self.id)
 
     class Meta:
         order_with_respect_to = "language"

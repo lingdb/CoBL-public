@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 import datetime
 import textwrap
+import re
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-#from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.template.loader import get_template
-from django.contrib.auth.models import User
-from django.contrib import messages
-from django.core.urlresolvers import reverse
 from reversion.models import Version
 from reversion import revision
 from ielex.backup import backup
@@ -17,7 +18,6 @@ from ielex.forms import *
 from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
 from ielex.utilities import next_alias, renumber_sort_keys, confirm_required
-import re
 
 # Refactoring: 
 # - rename the functions which render to response with the format
@@ -635,7 +635,8 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 form = EditLexemeForm(
                         initial={"source_form":lexeme.source_form,
                         "phon_form":lexeme.phon_form,
-                        "notes":lexeme.notes})
+                        "notes":lexeme.notes,
+                        "meaning":lexeme.meaning})
             elif action == "edit-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
                 form = EditCitationForm(
@@ -819,14 +820,6 @@ def lexeme_add(request,
             form.fields["meaning"].initial = initial_data["meaning"].id
         except KeyError:
             pass
-        # if lexeme_id: # duplicate
-        #     form.fields["source_form"].initial = new_source_form
-        #     form.fields["phon_form"].initial = original_lexeme.phon_form
-        #     form.fields["notes"].initial = original_lexeme.notes
-        #     #form.fields["original_id"] = original_lexeme.id
-        #     #form.fields["original_source_form"] = original_source_form
-        #     request.session["previous_lexemecitation_ids"] = \
-        #             original_lexeme.lexemecitation_set.values_list("id", flat=True)
     return render_template(request, "lexeme_add.html",
             {"form":form})
 
@@ -838,7 +831,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
         cognate_id = int(cognate_id)
         cognate_class = CognateSet.objects.get(id=cognate_id)
     else:
-        assert meaning, code
+        assert meaning and code
         cognate_classes = CognateSet.objects.filter(alias=code, 
                 cognatejudgement__lexeme__meaning__gloss=meaning).distinct()
         try:
@@ -934,28 +927,67 @@ def view_domains(request):
     domains = RelationList.objects.all()
     return render_template(request, "view_domains.html", {"domains":domains})
 
-@login_required
-def edit_lexeme_semantic_extensions(request, lexeme_id, domain):
+def view_lexeme_semantic_domains(request, lexeme_id):
     lexeme = Lexeme.objects.get(id=int(lexeme_id))
+    domain_ids = set(lexeme.semanticextension_set.values_list("relation",
+            flat=True))
+    domains = []
+    for domain in RelationList.objects.all():
+        if set(domain.relation_id_list) & domain_ids:
+            domains.append(domain)
+    return render_template(request, 'view_lexeme_semantic_domains.html', {
+            "lexeme": lexeme,
+            "domains": domains})
+
+def view_lexeme_semantic_extensions(request, lexeme_id, domain, action="view"):
+    """View and edit a lexeme's semantic extensions in a particular domain"""
+    lexeme = Lexeme.objects.get(id=int(lexeme_id))
+    rl = RelationList.objects.get(name=domain)
+    tagged_relations = lexeme.semanticextension_set.filter(
+            relation__id__in=rl.relation_id_list)
+    relations = SemanticRelation.objects.filter(
+            id__in=RelationList.objects.get(name=domain).relation_id_list).values_list("id", "relation_code")
+    if action == "edit":
+        if request.method == "POST":
+            form = AddSemanticExtensionForm(request.POST)
+            if "cancel" in form.data:
+                return HttpResponseRedirect(reverse("view-lexeme-extensions",
+                    args=[lexeme_id, domain]))
+            if form.is_valid():
+                # TODO demand citation
+                # -> Add citation
+                # ( -> Add source -> return to Add citation view )
+                # -> return to View lex sem ext view
+                raise AttributeError(form.cleaned_data["relations"])
+        else:
+            form = AddSemanticExtensionForm()
+            form.fields["relations"].choices = relations
+            form.fields["relations"].initial = tagged_relations
+    else:
+        assert action == "view"
+        form = None
+
     return render_template(request, 'edit_lexeme_semantic_extensions.html', {
             "lexeme": lexeme,
-            "tagged_relations": lexeme.semanticextension_set.all()})
+            "domain": domain,
+            "tagged_relations": tagged_relations,
+            "action": action,
+            "form":form})
 
-@login_required
-def edit_language_semantic_domain(request, language, domain=RelationList.DEFAULT):
+def view_language_semantic_domain(request, language, domain=RelationList.DEFAULT):
     try:
         language = Language.objects.get(ascii_name=language)
     except(Language.DoesNotExist):
         language = get_canonical_language(language)
-        return HttpResponseRedirect("/language/%s/domain/%s/" %
-                (language.ascii_name, domain))
+        return HttpResponseRedirect(reverse("view-language-domain",
+                args=[language.ascii_name, domain]))
     relations = SemanticRelation.objects.filter(
             id__in=RelationList.objects.get(name=domain).relation_id_list)
     extensions = SemanticExtension.objects.filter(
             relation__in=relations,
             lexeme__language=language).order_by("relation__relation_code",
             "lexeme__phon_form", "lexeme__source_form")
-    return render_template(request, 'edit_language_semantic_domain.html', {
+    return render_template(request, 'view_language_semantic_domain.html', {
             "language":language,
             "domain":domain,
             "semantic_extensions": extensions,
@@ -1009,17 +1041,14 @@ def edit_relation_list(request, domain=RelationList.DEFAULT):
                 SemanticRelation.objects.filter(id__in=rl.relation_id_list)
         items_form.fields["excluded_relations"].queryset = \
                 SemanticRelation.objects.exclude(id__in=rl.relation_id_list)
-        # if "cancel" in items_form.data: # has to be tested before data is cleaned
-        #     return HttpResponseRedirect('/domains/')
         if items_form.is_valid() and name_form.is_valid():
-            # move from one to the other (thus include < exclude, exclude < include)
-            include = items_form.cleaned_data["excluded_relations"] 
-            exclude = items_form.cleaned_data["included_relations"]
+            exclude = items_form.cleaned_data["excluded_relations"] 
+            include = items_form.cleaned_data["included_relations"]
             new_list = rl.relation_id_list
             if include:
-                new_list.append(include.id)
+                new_list.remove(include.id)
             if exclude:
-                new_list.remove(exclude.id)
+                new_list.append(exclude.id)
             rl.relation_id_list = new_list
             rl.save()
             name_form.save()
@@ -1028,7 +1057,7 @@ def edit_relation_list(request, domain=RelationList.DEFAULT):
             else:
                 return HttpResponseRedirect("/domain/%s/edit/" % rl.name)
         else:
-            assert False # XXX delete me later
+            assert False, "Shouldn't get to here"
     else:
         name_form = EditRelationListForm(instance=rl)
         items_form = ChooseSemanticRelationsForm()
@@ -1041,10 +1070,6 @@ def edit_relation_list(request, domain=RelationList.DEFAULT):
              "name_form":name_form,
              "relation_list":rl})
 
-##def delete_relation_list_context(request, domain):
-    ##return RequestContext(request, {"domain_name":domain})
-
-##@confirm_required("snippets/confirm_delete.html", delete_relation_list_context)
 @confirm_required("confirm_delete.html",
         lambda request, domain: RequestContext(request, {"domain_name":domain}))
 def delete_relation_list(request, domain):
@@ -1063,13 +1088,22 @@ def search_lexeme(request):
             languages = form.cleaned_data["languages"]
             if not languages:
                 languages = Language.objects.all()
+            if form.cleaned_data["search_fields"] == "L": # Search language fields
+                lexemes = Lexeme.objects.filter(
+                        Q(phon_form__regex=regex) | Q(source_form__regex=regex),
+                        language__in=languages)
+            else:
+                assert form.cleaned_data["search_fields"] == "E" # Search English fields
+                lexemes = Lexeme.objects.filter(
+                        Q(gloss__regex=regex) | Q(notes__regex=regex) | Q(meaning__gloss__regex=regex),
+                        language__in=languages)
             return render_template(request, "search_lexeme_results.html", {
                     "regex": regex,
-                    "lexemes": Lexeme.objects.filter(
-                            phon_form__regex=regex,
-                            language__in=languages),
+                    "language_names":[(l.utf8_name or l.ascii_name) for l in languages],
+                    "lexemes": lexemes,
                     })
     else:
         form = SearchLexemeForm()
     return render_template(request, "search_lexeme.html",
             {"form":form})
+

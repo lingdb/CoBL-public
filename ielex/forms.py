@@ -68,13 +68,16 @@ class ChooseExcludedRelationsField(ChooseSemanticRelationsField):
 
 class AddLexemeForm(forms.Form):
     # Needs some custom validation: requires one of source_form and phon_form,
-    # and will copy source_form to phon_form if empty
+    # and will copy phon_form to source_form if empty
     # Need to think about the default sort order of the Language objects here
     # It might make sense to have it alphabetical
     language = ChooseLanguageField(queryset=Language.objects.all())
-    meaning = ChooseMeaningField(queryset=Meaning.objects.all())
     source_form = forms.CharField(required=False)
     phon_form = forms.CharField(required=False)
+    meaning = ChooseMeaningField(queryset=Meaning.objects.all(),
+            help_text="e.g. Swadesh meaning", required=False)
+    gloss = forms.CharField(required=False, help_text="""The actual gloss of
+            this lexeme, may be different to 'meaning'""")
     notes = forms.CharField(
             widget=forms.Textarea,
             label="Notes",
@@ -85,6 +88,10 @@ class EditLexemeForm(forms.Form):
     # and will copy source_form to phon_form if empty
     source_form = forms.CharField(required=False)
     phon_form = forms.CharField(required=False)
+    meaning = ChooseMeaningField(queryset=Meaning.objects.all(),
+            help_text="e.g. Swadesh meaning", required=False)
+    gloss = forms.CharField(required=False, help_text="""The actual gloss of
+            this item, may be different to 'meaning'""")
     notes = forms.CharField(
             widget=forms.Textarea,
             label="Notes",
@@ -197,6 +204,13 @@ class EditRelationListForm(forms.ModelForm):
         model = RelationList
         exclude = ["relation_ids"]
 
+class AddSemanticExtensionForm(forms.Form):
+    relations = forms.MultipleChoiceField(
+            required=False,
+            widget=forms.CheckboxSelectMultiple(),
+            choices=SemanticRelation.objects.values_list("id", "relation_code"),
+            )
+
 class ChooseSemanticRelationsForm(forms.Form):
     #domain_name = forms.CharField(required=True)
     #description = forms.CharField(widget=forms.Textarea, required=False)
@@ -210,7 +224,11 @@ class ChooseSemanticRelationsForm(forms.Form):
             widget=forms.Select(attrs={"size":20, "onchange":"this.form.submit()"}))
 
 class SearchLexemeForm(forms.Form):
+    SEARCH_FIELD_CHOICES = [("L", "Search phonological and source form"),
+            ("E", "Search gloss, meaning and notes")]
     regex = forms.CharField()
+    search_fields = forms.ChoiceField(widget=forms.RadioSelect(),
+            choices=SEARCH_FIELD_CHOICES, initial="L")
     languages = ChooseLanguagesField(queryset=Language.objects.all(),
             required=False,
             widget=forms.SelectMultiple(attrs={"size":min(40,

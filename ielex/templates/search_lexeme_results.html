@@ -10,7 +10,8 @@
 {% endblock %}
 
 {% block content %}
-
+Querying {{ language_names|length }} language{{ language_names|pluralize }}: 
+{{ language_names|join:", " }}
 <table>
   <tr>
     <th>Language</th>

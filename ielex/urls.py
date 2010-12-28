@@ -9,6 +9,12 @@ admin.autodiscover()
 
 # additional arguments can be passed with a dictionary
 
+# TODO: refactoring. Make standard patterns/capture names into a dictionary of
+# centralized # variables (DNRY), e.g. 
+# patterns = # {LANGUAGE:"(?P<language>[a-zA-Z0-9_ -]+)" ,
+#               MEANING:"(?P<meaning>[a-zA-Z0-9_ ]+|\d+)"} etc., 
+# then build the urls as url(r'/language/%(LANGUAGE)s/' % patterns ... )
+
 urlpatterns = patterns('',
     # Front Page
     url(r'^$', view_frontpage, name="view-frontpage"),
@@ -36,9 +42,9 @@ urlpatterns = patterns('',
 
     # Meanings
     url(r'^meanings/$', view_meanings, name="view-meanings"),
-    url(r'^meanings/add-new/$', view_meaning_add_new, name="meaning-add-new"), # NEW
+    url(r'^meanings/add-new/$', view_meaning_add_new, name="meaning-add-new"), # NEW XXX
     url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+)/edit/$', edit_meaning,
-            name="meaning-edit"), # NEW
+            name="meaning-edit"), # NEW XXX
 
     # Meaning
     url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+)/add-lexeme/$', lexeme_add,
@@ -106,12 +112,17 @@ urlpatterns = patterns('',
             name="edit-relation-list"),
     url(r'^domain/(?P<domain>[a-zA-Z0-9_ ]+)/delete/$', delete_relation_list,
             name="delete-relation-list"),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/extensions/(?P<domain>[a-zA-Z0-9_ ]+)/$',
-            edit_lexeme_semantic_extensions, name="view-lexeme-extensions"),
+
+    # Semantic extensions of lexemes
+    url(r'^lexeme/(?P<lexeme_id>\d+)/domains/$',
+            view_lexeme_semantic_domains, name="view-all-lexeme-extensions"),
+    url(r'^lexeme/(?P<lexeme_id>\d+)/domain/(?P<domain>[a-zA-Z0-9_]+)/$',
+            view_lexeme_semantic_extensions, name="view-lexeme-extensions"),
+    url(r'^lexeme/(?P<lexeme_id>\d+)/domain/(?P<domain>[a-zA-Z0-9_]+)/edit/$',
+            view_lexeme_semantic_extensions, {"action":"edit"}, name="edit-lexeme-extensions"),
+
     url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/domain/(?P<domain>[a-zA-Z0-9_ ]+)/$',
-            edit_language_semantic_domain, name="view-extensions"),
-    url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/domain/$',
-            edit_language_semantic_domain, name="view-extensions"), # DEFAULT
+            view_language_semantic_domain, name="view-language-domain"),
     url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/domains/$',
             view_language_semantic_domains, name="view-language-domains"), 
 
