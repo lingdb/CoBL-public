@@ -50,6 +50,10 @@ form tr {
   vertical-align: top;
 }
 
+form ul.errorlist {
+  color: #E31A1C;
+}
+
 /* == Navigation button/lists =================================={{{1 */
 
 ul.navigation {

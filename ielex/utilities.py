@@ -29,7 +29,7 @@ def next_alias(l, ignore=[]):
     return
 
 def renumber_sort_keys():
-    # XXX run this function from time to time
+    """Run this function from time to time to stop sort keys getting 'bunched'"""
     languages = Language.objects.all().order_by("sort_key")
     i = 1.0
     for l in languages:

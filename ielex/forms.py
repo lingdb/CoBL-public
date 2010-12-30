@@ -172,7 +172,8 @@ class EditCitationForm(forms.Form):
     comment = forms.CharField(widget=forms.Textarea, required=False)
 
 class AddCitationForm(forms.Form):
-    source = ChooseOneSourceField(queryset=Source.objects.all())
+    source = ChooseOneSourceField(queryset=Source.objects.all(),
+            help_text="")
     pages = forms.CharField(required=False)
     reliability = forms.ChoiceField(choices=Source.RELIABILITY_CHOICES,
             widget=forms.RadioSelect)
@@ -211,9 +212,31 @@ class AddSemanticExtensionForm(forms.Form):
             choices=SemanticRelation.objects.values_list("id", "relation_code"),
             )
 
+class SemanticExtensionCitationForm(forms.ModelForm):
+
+    # overridden to ensure no "-----" choice
+    reliability = forms.ChoiceField(choices=Source.RELIABILITY_CHOICES,
+            widget=forms.RadioSelect) 
+
+    class Meta:
+        #exclude = ["extension"]
+        model = SemanticExtensionCitation
+
+class MultipleSemanticExtensionCitationForm(forms.ModelForm):
+    """Hides the extension value; will be applied to multiple objects"""
+
+    # overridden to ensure no "-----" choice
+    reliability = forms.ChoiceField(choices=Source.RELIABILITY_CHOICES,
+            widget=forms.RadioSelect) 
+
+    class Meta:
+        exclude = ["extension"]
+        model = SemanticExtensionCitation
+        widgets = {
+                "comment":forms.Textarea(),
+                }
+
 class ChooseSemanticRelationsForm(forms.Form):
-    #domain_name = forms.CharField(required=True)
-    #description = forms.CharField(widget=forms.Textarea, required=False)
     included_relations = ChooseIncludedRelationsField(
             required=False, empty_label=None,
             queryset=SemanticRelation.objects.none(),
@@ -232,5 +255,5 @@ class SearchLexemeForm(forms.Form):
     languages = ChooseLanguagesField(queryset=Language.objects.all(),
             required=False,
             widget=forms.SelectMultiple(attrs={"size":min(40,
-                Language.objects.count())}),
+                    Language.objects.count())}),
             help_text=u"no selection → all")

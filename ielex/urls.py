@@ -2,6 +2,7 @@ from django.conf.urls.defaults import *
 from ielex.views import *
 from ielex import settings
 from ielex.lexicon.views import *
+from ielex.lexicon.models import *
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -120,6 +121,11 @@ urlpatterns = patterns('',
             view_lexeme_semantic_extensions, name="view-lexeme-extensions"),
     url(r'^lexeme/(?P<lexeme_id>\d+)/domain/(?P<domain>[a-zA-Z0-9_]+)/edit/$',
             view_lexeme_semantic_extensions, {"action":"edit"}, name="edit-lexeme-extensions"),
+    url(r'^domain/(?P<domain>[a-zA-Z0-9_]+)/extension/(?P<extension_id>\d+)/add-citation/$',
+            add_lexeme_extension_citation, name="add-domain-extension-citation"),
+    url(r'^extension/(?P<extension_id>\d+)/add-citation/$',
+            add_lexeme_extension_citation, {"domain":RelationList.DEFAULT},
+            name="add-extension-citation"),
 
     url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/domain/(?P<domain>[a-zA-Z0-9_ ]+)/$',
             view_language_semantic_domain, name="view-language-domain"),

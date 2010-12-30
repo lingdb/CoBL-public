@@ -29,6 +29,9 @@ class Source(models.Model):
     def canonical_url(self):
         return "/source/%s/" % self.id
 
+    def get_absolute_url(self):
+        return "/source/%s/" % self.id
+
     def __unicode__(self):
         return self.citation_text[:64]
 
@@ -145,6 +148,9 @@ class Lexeme(models.Model):
 
     @property
     def canonical_url(self):
+        return "/lexeme/%s/" % self.id
+
+    def get_absolute_url(self):
         return "/lexeme/%s/" % self.id
 
     def __unicode__(self):
@@ -331,10 +337,10 @@ reversion.register(SemanticExtension)
 class SemanticExtensionCitation(models.Model):
     extension = models.ForeignKey(SemanticExtension)
     source = models.ForeignKey(Source)
-    pages = models.CharField(max_length=999)
+    pages = models.CharField(max_length=999, blank=True)
     reliability = models.CharField(max_length=1,
             choices=Source.RELIABILITY_CHOICES)
-    comment = models.CharField(max_length=999)
+    comment = models.TextField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     # def get_absolute_url(self):
@@ -343,6 +349,10 @@ class SemanticExtensionCitation(models.Model):
 
     def __unicode__(self):
         return u"%s" % (self.id)
+
+    class Meta:
+
+        unique_together = (("extension", "source"),)
 
 reversion.register(SemanticExtensionCitation)
 

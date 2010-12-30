@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Semantic domains{% endblock %}
+
+{% block top %}
+<h1>
+  {{ language.utf8_name }} ― {{ domain }}
+</h1>
+{% endblock %}
+
+{% block content %}
+<table>
+  <thead> {# handy for the print view #}
+    <tr>
+      <th></th>
+      <th>Code</th>
+      <th>Lexeme</th>
+    </tr>
+  </thead>
+  
+  <tbody>
+  {% for extension in semantic_extensions %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    <td>
+        <small>{{ forloop.counter }}</small>
+    </td>
+    <td>{{ extension.relation.relation_code }}</td>
+    <td><a href="{% url view-lexeme extension.lexeme.id %}">{{ extension.lexeme }}</a></td>
+  </tr>
+
+  {% endfor %}
+  </tbody>
+
+</table>
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+<ul class="navigation">
+  <li><a href="/language/{{ language.ascii_name }}">Back to language list ‘{{ language.utf8_name }}’</a></li>
+</ul>
+
+{% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

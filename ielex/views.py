@@ -19,6 +19,8 @@ from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
 from ielex.utilities import next_alias, renumber_sort_keys, confirm_required
 
+
+
 # Refactoring: 
 # - rename the functions which render to response with the format
 # view_TEMPLATE_NAME(request, ...). Put subsiduary functions under their main
@@ -243,9 +245,9 @@ def view_language_reorder(request):
                 # renumbering is slow, and doesn't need to be done every time
                 # on the other hand, we hardly ever call this function ...
                 renumber_sort_keys()
-                return HttpResponseRedirect("/languages/")
+                return HttpResponseRedirect(reverse("view-languages"))
         else: # pressed Finish without submitting changes
-            return HttpResponseRedirect("/languages/")
+            return HttpResponseRedirect(reverse("view-languages"))
     else: # first visit
         renumber_sort_keys() # if new languages have been added, number them
         form = ReorderLanguageSortKeyForm()
@@ -323,7 +325,7 @@ def view_language_add_new(request):
     if request.method == 'POST':
         form = EditLanguageForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect('/languages/')
+            return HttpResponseRedirect(reverse("view-languages"))
         if form.is_valid():
             language = Language.objects.create(**form.cleaned_data)
             return HttpResponseRedirect('/language/%s/' % language.ascii_name)
@@ -345,12 +347,12 @@ def edit_language(request, language):
     if request.method == 'POST':
         form = EditLanguageForm(request.POST, instance=language)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect('/languages/')
+            return HttpResponseRedirect(reverse("view-languages"))
         if form.is_valid():
-            # update_object_from_form(language, form) # TODO fix the rest of
-            # the views using model forms along the following lines:
+            # update_object_from_form(language, form) 
+            # TODO fix the rest of the views using model forms with form.save()
             form.save()
-            return HttpResponseRedirect('/languages/')
+            return HttpResponseRedirect(reverse("view-languages"))
     else:
         #form = EditLanguageForm(language.__dict__, instance=language)
         form = EditLanguageForm(instance=language)
@@ -944,35 +946,92 @@ def view_lexeme_semantic_extensions(request, lexeme_id, domain, action="view"):
     lexeme = Lexeme.objects.get(id=int(lexeme_id))
     rl = RelationList.objects.get(name=domain)
     tagged_relations = lexeme.semanticextension_set.filter(
-            relation__id__in=rl.relation_id_list)
+            relation__id__in=rl.relation_id_list).values_list("relation__id",
+                    flat=True)
+    # tagged_relations = SemanticExtension.objects.filter(
+    #         relation__id__in=rl.relation_id_list,
+    #         lexeme=lexeme).order_by("relation__relation_code",
+    #         "lexeme__phon_form", "lexeme__source_form")
     relations = SemanticRelation.objects.filter(
             id__in=RelationList.objects.get(name=domain).relation_id_list).values_list("id", "relation_code")
     if action == "edit":
         if request.method == "POST":
             form = AddSemanticExtensionForm(request.POST)
+            citation_form =  MultipleSemanticExtensionCitationForm(request.POST)
             if "cancel" in form.data:
                 return HttpResponseRedirect(reverse("view-lexeme-extensions",
                     args=[lexeme_id, domain]))
-            if form.is_valid():
+            if form.is_valid() and citation_form.is_valid():
                 # TODO demand citation
-                # -> Add citation
-                # ( -> Add source -> return to Add citation view )
-                # -> return to View lex sem ext view
-                raise AttributeError(form.cleaned_data["relations"])
+                return_to = reverse("view-lexeme-extensions", args=[lexeme_id, domain])
+                original_relations = set(tagged_relations)
+                new_relations = set(int(e) for e in form.cleaned_data["relations"])
+                removed_relations = original_relations.difference(new_relations)
+                added_relations = new_relations.difference(original_relations)
+                if removed_relations:
+                    SemanticExtension.objects.filter(lexeme=lexeme,
+                            relation__id__in=removed_relations).delete()
+                if added_relations:
+                    for relation in SemanticRelation.objects.filter(
+                            id__in=added_relations):
+                        extension = SemanticExtension.objects.create(
+                                lexeme=lexeme,
+                                relation=relation)
+                        citation_form.extension=extension
+                        citation_form.save()
+                return HttpResponseRedirect(return_to)
         else:
             form = AddSemanticExtensionForm()
             form.fields["relations"].choices = relations
             form.fields["relations"].initial = tagged_relations
+            citation_form =  MultipleSemanticExtensionCitationForm()
     else:
         assert action == "view"
-        form = None
+        form, citation_form = None, None
 
     return render_template(request, 'edit_lexeme_semantic_extensions.html', {
             "lexeme": lexeme,
             "domain": domain,
             "tagged_relations": tagged_relations,
             "action": action,
+            "form":form,
+            "citation_form":citation_form})
+
+def add_lexeme_extension_citation(request, domain, extension_id):
+    """Given lexeme and semantic_extension, select source"""
+    extension = SemanticExtension.objects.get(id=int(extension_id))
+    def fix_form_fields(form):
+        source_help_text = """Each source can only be cited once for each
+                semantic extension.<br />If a source has already been cited the
+                citation should be <a href="%s">edited</a> instead.
+                """ % reverse("view-lexeme-extensions",
+                        args=[extension.lexeme.id, domain])
+        # "disabled" attribute is not in general secure, but acceptable here
+        # because we put it back in any case, even if the user manages to
+        # change it illegally
+        form.fields["extension"].widget.attrs["disabled"] = True
+        form.fields["source"].help_text = source_help_text
+        return form
+    if request.method == "POST":
+        post_data = dict((key, request.POST[key]) for key in request.POST)
+        post_data["extension"] = extension_id
+        form = fix_form_fields(SemanticExtensionCitationForm(post_data))
+        #fix_form_fields(form)
+        if "cancel" in form.data:
+            return HttpResponseRedirect(reverse("view-lexeme-extensions",
+                args=[extension.lexeme.id, domain]))
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("view-lexeme-extensions",
+                args=[extension.lexeme.id, domain]))
+    else:
+        form = fix_form_fields(SemanticExtensionCitationForm(
+                initial={"extension":extension}))
+        #fix_form_fields(form)
+    return render_template(request, "citation_add.html", {
+            "extension":extension,
             "form":form})
+
 
 def view_language_semantic_domain(request, language, domain=RelationList.DEFAULT):
     try:
@@ -1014,7 +1073,6 @@ def add_relation_list(request):
     if request.method == "POST":
         form = EditRelationListForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            #return HttpResponseRedirect('/domains/')
             return HttpResponseRedirect(reverse('view-domains'))
         if form.is_valid():
             form.save()
