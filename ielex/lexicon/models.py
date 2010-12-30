@@ -25,10 +25,6 @@ class Source(models.Model):
     description = models.TextField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
-    @property
-    def canonical_url(self):
-        return "/source/%s/" % self.id
-
     def get_absolute_url(self):
         return "/source/%s/" % self.id
 
@@ -51,8 +47,7 @@ class Language(models.Model):
     sort_key = models.FloatField(null=True, blank=True, editable=False)
     description = models.TextField(blank=True, null=True)
 
-    @property
-    def canonical_url(self):
+    def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
 
     @property
@@ -87,8 +82,7 @@ class Meaning(models.Model):
     description = models.CharField(max_length=64) # show name
     notes = models.TextField()
 
-    @property
-    def canonical_url(self):
+    def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
 
     @property
@@ -113,8 +107,7 @@ class CognateSet(models.Model):
     notes = models.TextField()
     modified = models.DateTimeField(auto_now=True)
 
-    @property
-    def canonical_url(self):
+    def get_absolute_url(self):
         return "/cognate/%s/" % self.id
 
     def __unicode__(self):
@@ -146,8 +139,7 @@ class Lexeme(models.Model):
     source = models.ManyToManyField(Source, through="LexemeCitation")
     modified = models.DateTimeField(auto_now=True)
 
-    @property
-    def canonical_url(self):
+    def get_absolute_url(self):
         return "/lexeme/%s/" % self.id
 
     def get_absolute_url(self):
@@ -167,8 +159,7 @@ class CognateJudgement(models.Model):
     source = models.ManyToManyField(Source, through="CognateJudgementCitation")
     modified = models.DateTimeField(auto_now=True)
 
-    @property
-    def canonical_url(self):
+    def get_absolute_url(self):
         return "/meaning/%s/%s/%s/" % (self.lexeme.meaning.gloss,
                 self.lexeme.id, self.id)
 
@@ -212,7 +203,9 @@ class LanguageList(models.Model):
         self.language_ids = ",".join([str(i) for i in listobj])
         return
     language_id_list = property(_get_list, _set_list)
-    canonical_url = "/languages/"
+
+    def get_absolute_url(self):
+        return "/languages/"
 
     def __unicode__(self):
         return self.name
@@ -240,7 +233,9 @@ class MeaningList(models.Model):
         self.meaning_ids = ",".join([str(i) for i in listobj])
         return
     meaning_id_list = property(_get_list, _set_list)
-    canonical_url = "/meanings/"
+
+    def get_absolute_url(self):
+        return "/meanings/"
 
     def __unicode__(self):
         return self.name
@@ -264,8 +259,7 @@ class CognateJudgementCitation(models.Model):
         except KeyError:
             return "PLEASE ENTER A RELIABILITY RATING"
 
-    @property
-    def canonical_url(self):
+    def get_absolute_url(self):
         return "/lexeme/%s/edit-cognate-citation/%s/" % \
                 (self.cognate_judgement.lexeme.id, self.id)
 
@@ -291,8 +285,7 @@ class LexemeCitation(models.Model):
         except KeyError:
             return "PLEASE ENTER A RELIABILITY RATING"
 
-    @property
-    def canonical_url(self):
+    def get_absolute_url(self):
         return "/lexeme/%s/edit-citation/%s/" % (self.lexeme.id, self.id)
 
     def __unicode__(self):
@@ -329,6 +322,9 @@ class SemanticExtension(models.Model):
     def reliability_ratings(self):
         return set(self.kinmappingcitation_set.values_list("reliability", flat=True))
 
+    def get_absolute_url(self):
+        return "/extension/%s/" % self.id
+
     def __unicode__(self):
         return u"%s" % (self.id)
 
@@ -346,6 +342,12 @@ class SemanticExtensionCitation(models.Model):
     # def get_absolute_url(self):
     #     return "/lexeme/%s/edit-cognate-citation/%s/" % \
     #             (self.cognate_judgement.lexeme.id, self.id)
+    @property
+    def long_reliability(self):
+        return dict(Source.RELIABILITY_CHOICES)[self.reliability]
+
+    def get_absolute_url(self):
+        return "/citation/extension/%s/" % self.id
 
     def __unicode__(self):
         return u"%s" % (self.id)

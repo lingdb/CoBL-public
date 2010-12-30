@@ -997,7 +997,7 @@ def view_lexeme_semantic_extensions(request, lexeme_id, domain, action="view"):
             "form":form,
             "citation_form":citation_form})
 
-def add_lexeme_extension_citation(request, domain, extension_id):
+def add_lexeme_extension_citation(request, extension_id, domain=RelationList.DEFAULT):
     """Given lexeme and semantic_extension, select source"""
     extension = SemanticExtension.objects.get(id=int(extension_id))
     def fix_form_fields(form):
@@ -1032,6 +1032,11 @@ def add_lexeme_extension_citation(request, domain, extension_id):
             "extension":extension,
             "form":form})
 
+def view_extension_citation(request, citation_id):
+    citation = SemanticExtensionCitation.objects.get(id=int(citation_id))
+    return render_template(request, "view_extension_citation.html", {
+            "citation":citation,
+            })
 
 def view_language_semantic_domain(request, language, domain=RelationList.DEFAULT):
     try:

@@ -16,7 +16,7 @@
     <td>{# Date #}{{ version.revision.date_created|date:"d-M-Y G:i"  }}</td>
     <td>{{ version.content_type.name }}</td>
     <td>{# Link to current object #}
-      <a href="{{ version.get_object_version.object.canonical_url }}">
+      <a href="{{ version.get_object_version.object.get_absolute_url }}">
          {{ version.get_object_version.object }}
       </a>
     </td>

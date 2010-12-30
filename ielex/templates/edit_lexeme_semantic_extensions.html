@@ -26,7 +26,7 @@
       <td>{{ semantic_extension.relation.description }}</td>
       <td>
         {% for citation in semantic_extension.semanticextensioncitation_set.all %}
-        <a href="{{ citation.source.get_absolute_url }}" alt="{{ citation.source.citation_text }}">
+        <a href="{{ citation.get_absolute_url }}" alt="{{ citation.source.citation_text }}">
           [{{ citation.source.id }}]
         </a>
         {% endfor %}
