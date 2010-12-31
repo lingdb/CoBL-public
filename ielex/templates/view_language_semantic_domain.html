@@ -24,7 +24,7 @@
     <td>
         <small>{{ forloop.counter }}</small>
     </td>
-    <td>{{ extension.relation.relation_code }}</td>
+    <td><a href="{{ extension.relation.get_absolute_url }}">{{ extension.relation.relation_code }}</a></td>
     <td><a href="{% url view-lexeme extension.lexeme.id %}">{{ extension.lexeme }}</a></td>
   </tr>
 

@@ -12,9 +12,13 @@ admin.autodiscover()
 
 # TODO: refactoring. Make standard patterns/capture names into a dictionary of
 # centralized # variables (DNRY), e.g. 
-# patterns = # {LANGUAGE:"(?P<language>[a-zA-Z0-9_ -]+)" ,
+# regex_patterns = # {LANGUAGE:"(?P<language>[a-zA-Z0-9_ -]+)" ,
 #               MEANING:"(?P<meaning>[a-zA-Z0-9_ ]+|\d+)"} etc., 
 # then build the urls as url(r'/language/%(LANGUAGE)s/' % patterns ... )
+
+R = {"DOMAIN":"(?P<domain>[a-zA-Z0-9_.-]+)",
+    "RELATION":"(?P<relation>[a-zA-Z0-9_.-]+)",  
+    }
 
 urlpatterns = patterns('',
     # Front Page
@@ -104,14 +108,21 @@ urlpatterns = patterns('',
     url(r'^revert/(?P<version_id>\d+)/$', revert_version),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
 
-    # Semantic domains
+    # Semantic relations
+    url(r'^relation/add/$', add_relation, name="add-relation"),
+    url(r'^relation/%(RELATION)s/edit/$' % R, edit_relation,
+            name="edit-relation"),
+    url(r'^relation/%(RELATION)s/$' % R, view_relation,
+            name="view-relation"),
+
+    # Semantic domains (lists of Semantic relations)
     url(r'^domains/$', view_domains, name="view-domains"),
     url(r'^domains/add-new/$', add_relation_list, name="add-relation-list"),
-    url(r'^domain/(?P<domain>[a-zA-Z0-9_ ]+)/$', view_relation_list,
+    url(r'^domain/%(DOMAIN)s/$' % R, view_relation_list,
             name="view-relation-list"),
-    url(r'^domain/(?P<domain>[a-zA-Z0-9_ ]+)/edit/$', edit_relation_list,
+    url(r'^domain/%(DOMAIN)s/edit/$' % R, edit_relation_list,
             name="edit-relation-list"),
-    url(r'^domain/(?P<domain>[a-zA-Z0-9_ ]+)/delete/$', delete_relation_list,
+    url(r'^domain/%(DOMAIN)s/delete/$' % R, delete_relation_list,
             name="delete-relation-list"),
 
     # Semantic extensions of lexemes
@@ -119,6 +130,7 @@ urlpatterns = patterns('',
             view_lexeme_semantic_domains, name="view-all-lexeme-extensions"),
     url(r'^lexeme/(?P<lexeme_id>\d+)/domain/(?P<domain>[a-zA-Z0-9_]+)/$',
             view_lexeme_semantic_extensions, name="view-lexeme-extensions"),
+    # TODO isn't working yet
     url(r'^lexeme/(?P<lexeme_id>\d+)/domain/(?P<domain>[a-zA-Z0-9_]+)/edit/$',
             view_lexeme_semantic_extensions, {"action":"edit"}, name="edit-lexeme-extensions"),
     url(r'^domain/(?P<domain>[a-zA-Z0-9_]+)/extension/(?P<extension_id>\d+)/add-citation/$',
@@ -127,13 +139,13 @@ urlpatterns = patterns('',
             add_lexeme_extension_citation, name="add-extension-citation"),
     # url(r'^extension/(?P<extension_id>\d+)/$', 
     #         view_lexeme_extension_citation, name="view-extension"),
-    url(r'^citation/extension/(?P<citation_id>\d+)/$', 
+    url(r'^citation/extension/(?P<citation_id>\d+)/$',
             view_extension_citation, name="view-extension-citation"),
 
-    url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/domain/(?P<domain>[a-zA-Z0-9_ ]+)/$',
+    url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/domain/%(DOMAIN)s/$' % R,
             view_language_semantic_domain, name="view-language-domain"),
     url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/domains/$',
-            view_language_semantic_domains, name="view-language-domains"), 
+            view_language_semantic_domains, name="view-language-domains"),
 
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),

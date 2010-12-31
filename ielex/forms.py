@@ -66,41 +66,35 @@ class ChooseIncludedRelationsField(ChooseSemanticRelationsField):
 class ChooseExcludedRelationsField(ChooseSemanticRelationsField):
     pass
 
-class AddLexemeForm(forms.Form):
-    # Needs some custom validation: requires one of source_form and phon_form,
-    # and will copy phon_form to source_form if empty
-    # Need to think about the default sort order of the Language objects here
-    # It might make sense to have it alphabetical
+class AddLexemeForm(forms.ModelForm):
+
     language = ChooseLanguageField(queryset=Language.objects.all())
-    source_form = forms.CharField(required=False)
-    phon_form = forms.CharField(required=False)
     meaning = ChooseMeaningField(queryset=Meaning.objects.all(),
             help_text="e.g. Swadesh meaning", required=False)
     gloss = forms.CharField(required=False, help_text="""The actual gloss of
             this lexeme, may be different to 'meaning'""")
-    notes = forms.CharField(
-            widget=forms.Textarea,
-            label="Notes",
-            required=False)
 
-class EditLexemeForm(forms.Form):
-    # needs some custom validation: requires one of source_form and phon_form,
-    # and will copy source_form to phon_form if empty
-    source_form = forms.CharField(required=False)
-    phon_form = forms.CharField(required=False)
+    class Meta:
+        model = Lexeme
+        exclude = ["cognate_class", "source"]
+
+class EditLexemeForm(forms.ModelForm):
+
     meaning = ChooseMeaningField(queryset=Meaning.objects.all(),
             help_text="e.g. Swadesh meaning", required=False)
     gloss = forms.CharField(required=False, help_text="""The actual gloss of
-            this item, may be different to 'meaning'""")
-    notes = forms.CharField(
-            widget=forms.Textarea,
-            label="Notes",
-            required=False)
-    # sources = ChooseSourcesField(queryset=Source.objects.all())
+            this lexeme, may be different to 'meaning'""")
+
+    class Meta:
+        model = Lexeme
+        exclude = ["language", "cognate_class", "source"]
+
 
 class EditSourceForm(forms.ModelForm):
+
     type_code = forms.ChoiceField(choices=Source.TYPE_CHOICES,
             widget=forms.RadioSelect())
+
     class Meta:
         model = Source
 
@@ -123,6 +117,16 @@ class EditMeaningForm(forms.ModelForm):
 
     class Meta:
         model = Meaning
+
+class EditRelationForm(forms.ModelForm):
+
+    def clean_relation_code(self):
+        data = self.cleaned_data["relation_code"]
+        clean_ascii_name(data)
+        return data
+
+    class Meta:
+        model = SemanticRelation
 
 class ChooseLanguageForm(forms.Form):
     # Need to think about the default sort order of the Language objects here

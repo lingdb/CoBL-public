@@ -349,8 +349,6 @@ def edit_language(request, language):
         if "cancel" in form.data: # has to be tested before data is cleaned
             return HttpResponseRedirect(reverse("view-languages"))
         if form.is_valid():
-            # update_object_from_form(language, form) 
-            # TODO fix the rest of the views using model forms with form.save()
             form.save()
             return HttpResponseRedirect(reverse("view-languages"))
     else:
@@ -427,7 +425,46 @@ def edit_meaning(request, meaning):
             {"meaning":meaning,
             "form":form})
 
-#@login_required
+def view_relation(request, relation):
+    relation = SemanticRelation.objects.get(relation_code=relation)
+    return render_template(request, "relation_view.html",
+            {"relation":relation})
+
+@login_required
+def edit_relation(request, relation):
+    relation = SemanticRelation.objects.get(relation_code=relation)
+    if request.method == 'POST':
+        form = EditRelationForm(request.POST, instance=relation)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect(relation.get_absolute_url())
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(relation.get_absolute_url())
+    else:
+        form = EditRelationForm(instance=relation)
+    return render_template(request, "relation_edit.html",
+            {"relation":relation,
+            "form":form})
+
+@login_required
+def add_relation(request):
+    if request.method == 'POST':
+        form = EditRelationForm(request.POST)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect(relation.get_absolute_url())
+        if form.is_valid():
+            form.save()
+            relation = SemanticRelation.objects.get(
+                    relation_code=form.cleaned_data["relation_code"])
+            return HttpResponseRedirect(relation.get_absolute_url())
+    else:
+        form = EditRelationForm()
+    return render_template(request, "relation_edit.html",
+            {"form":form,
+            "relation":"Add semantic relation"})
+
+
+
 def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
     lexeme_id = int(lexeme_id)
     cogjudge_id = int(cogjudge_id)
@@ -517,17 +554,17 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
         # Handle POST data
         if request.method == 'POST':
             if action == "edit-lexeme":
-                form = EditLexemeForm(request.POST)
+                form = EditLexemeForm(request.POST, instance=lexeme) ### 
                 if "cancel" in form.data: # has to be tested before data is cleaned
                     return HttpResponseRedirect(redirect_url)
                 if form.data["submit"] != "Submit":
                     if "new lexeme" in form.data["submit"].lower():
                         redirect_url = "/language/%s/add-lexeme/" % lexeme.language.ascii_name
                     else:
-                        # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
                 if form.is_valid():
-                    update_object_from_form(lexeme, form)
+                    form.save()
+                    ## update_object_from_form(lexeme, form)
                     return HttpResponseRedirect(redirect_url)
             elif action == "edit-citation":
                 form = EditCitationForm(request.POST)
@@ -634,11 +671,11 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
         # first visit, preload form with previous answer
         else:
             if action == "edit-lexeme":
-                form = EditLexemeForm(
-                        initial={"source_form":lexeme.source_form,
-                        "phon_form":lexeme.phon_form,
-                        "notes":lexeme.notes,
-                        "meaning":lexeme.meaning})
+                form = EditLexemeForm(instance=lexeme)
+                        # initial={"source_form":lexeme.source_form,
+                        # "phon_form":lexeme.phon_form,
+                        # "notes":lexeme.notes,
+                        # "meaning":lexeme.meaning})
             elif action == "edit-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
                 form = EditCitationForm(
@@ -847,12 +884,12 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
             return HttpResponseRedirect('/meaning/%s/' % meaning)
     if action == "edit":
         if request.method == 'POST':
-            form = EditCognateSetForm(request.POST)
+            form = EditCognateSetForm(request.POST, instance=cognate_class)
             if "cancel" not in form.data and form.is_valid():
                 update_object_from_form(cognate_class, form)
             return HttpResponseRedirect('/cognate/%s/' % cognate_class.id)
         else:
-            form = EditCognateSetForm(cognate_class.__dict__)
+            form = EditCognateSetForm(instance=cognate_class)
     else:
         form = None
     sort_order = "lexeme__language__%s" % get_sort_order(request)
@@ -875,7 +912,7 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
     else:
         source = None
     if request.method == 'POST':
-        form = EditSourceForm(request.POST)
+        form = EditSourceForm(request.POST, instance=source)
         if "cancel" in form.data:
             return HttpResponseRedirect('/sources/')
         if form.is_valid():
@@ -896,14 +933,14 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
                     return HttpResponseRedirect('/lexeme/%s/edit-citation/%s/' %\
                             (lexeme.id, citation.id))
             elif action == "edit":
-                # source = Source.objects.get(id=source_id)
-                update_object_from_form(source, form)
+                form.save()
             return HttpResponseRedirect('/source/%s/' % source.id)
     else:
         if action == "add":
             form = EditSourceForm()
         elif action == "edit":
-            form = EditSourceForm(source.__dict__)
+            #form = EditSourceForm(source.__dict__)
+            form = EditSourceForm(instance=source)
         elif action == "delete":
             source.delete()
             return HttpResponseRedirect('/sources/')
@@ -955,6 +992,7 @@ def view_lexeme_semantic_extensions(request, lexeme_id, domain, action="view"):
     relations = SemanticRelation.objects.filter(
             id__in=RelationList.objects.get(name=domain).relation_id_list).values_list("id", "relation_code")
     if action == "edit":
+        # TODO currently doesn't work....
         if request.method == "POST":
             form = AddSemanticExtensionForm(request.POST)
             citation_form =  MultipleSemanticExtensionCitationForm(request.POST)
@@ -962,7 +1000,6 @@ def view_lexeme_semantic_extensions(request, lexeme_id, domain, action="view"):
                 return HttpResponseRedirect(reverse("view-lexeme-extensions",
                     args=[lexeme_id, domain]))
             if form.is_valid() and citation_form.is_valid():
-                # TODO demand citation
                 return_to = reverse("view-lexeme-extensions", args=[lexeme_id, domain])
                 original_relations = set(tagged_relations)
                 new_relations = set(int(e) for e in form.cleaned_data["relations"])

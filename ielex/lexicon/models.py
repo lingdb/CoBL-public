@@ -20,7 +20,7 @@ class Source(models.Model):
             ("X", "Exclude (e.g. not the Swadesh term)"),
             )
 
-    citation_text = models.TextField()
+    citation_text = models.TextField(unique=True)
     type_code = models.CharField(max_length=1, choices=TYPE_CHOICES)
     description = models.TextField(blank=True)
     modified = models.DateTimeField(auto_now=True)
@@ -50,7 +50,7 @@ class Language(models.Model):
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
 
-    @property
+    # @property
     def percent_coded(self):
         uncoded = self.lexeme_set.filter(cognate_class=None).count()
         total = self.lexeme_set.all().count()
@@ -131,12 +131,13 @@ class Lexeme(models.Model):
     language = models.ForeignKey(Language)
     meaning = models.ForeignKey(Meaning, blank=True, null=True)
     cognate_class = models.ManyToManyField(CognateSet,
-            through="CognateJudgement")
+            through="CognateJudgement", blank=True)
     source_form = models.CharField(max_length=999)
-    phon_form = models.CharField(max_length=999)
-    gloss = models.CharField(max_length=999)
-    notes = models.TextField()
-    source = models.ManyToManyField(Source, through="LexemeCitation")
+    phon_form = models.CharField(max_length=999, blank=True)
+    gloss = models.CharField(max_length=999, blank=True)
+    notes = models.TextField(blank=True)
+    source = models.ManyToManyField(Source, through="LexemeCitation",
+            blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -308,10 +309,10 @@ class SemanticRelation(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
-        return "/relation/%s/" % self.id
+        return "/relation/%s/" % self.relation_code
 
     def __unicode__(self):
-        return unicode(self.id)
+        return unicode("%s (%s)" % (self.relation_code, self.long_name))
 
 reversion.register(SemanticRelation)
 
@@ -366,9 +367,10 @@ class SemanticExtensionCitation(models.Model):
 reversion.register(SemanticExtensionCitation)
 
 class RelationList(models.Model):
-    """A named, ordered list of semantic relations for use in display and output. A
-    default list, named 'all' is (re)created on save/delete of the Language
-    table (cf. ielex.models.update_relation_list_all)"""
+    """A named, ordered list of semantic relations (referred to as a 'domain'
+    in the user interface) for use in display and output. A default list, named
+    'all' is (re)created on save/delete of the Language table (cf.
+    ielex.models.update_relation_list_all)"""
     DEFAULT = "all"
 
     name = models.CharField(max_length=999, unique=True)
