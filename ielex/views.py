@@ -96,6 +96,7 @@ def revert_version(request, version_id):
     messages.add_message(request, messages.INFO, msg)
     return HttpResponseRedirect(referer)
 
+# login?
 def view_object_history(request, version_id):
     version = Version.objects.get(pk=version_id)
     obj = version.content_type.get_object_for_this_type(id=version.object_id)
@@ -145,7 +146,8 @@ def get_sort_order(request):
     return request.session.get("language_sort_order", "sort_key")
 
 def get_languages(request):
-    """Get all Language objects, respecting language_list selection"""
+    """Get all Language objects, respecting language_list selection; if no
+    language list then all languages are selected"""
     language_list_name = get_current_language_list_name(request)
     sort_order = get_sort_order(request)
     try:
@@ -161,9 +163,7 @@ def get_current_language_list_name(request):
     return request.session.get("language_list_name", LanguageList.DEFAULT)
 
 def get_prev_and_next_languages(request, current_language):
-    language_list_name = get_current_language_list_name(request)
-    languages = get_languages(request)
-    ids = list(languages.values_list("id", flat=True))
+    ids = list(get_languages(request).values_list("id", flat=True))
     try:
         current_idx = ids.index(current_language.id)
     except ValueError:
@@ -173,10 +173,11 @@ def get_prev_and_next_languages(request, current_language):
         next_language = Language.objects.get(id=ids[current_idx+1])
     except IndexError:
         next_language = Language.objects.get(id=ids[0])
-    return (prev_language, language_list_name, next_language)
+    return (prev_language, 
+            get_current_language_list_name(request),
+            next_language)
 
 def get_prev_and_next_meanings(current_meaning):
-    # ids = list(Meaning.objects.values_list("id", flat=True))
     meanings = Meaning.objects.all().extra(select={'lower_gloss':
             'lower(gloss)'}).order_by('lower_gloss')
     ids = [m.id for m in meanings]
@@ -192,10 +193,7 @@ def update_object_from_form(model_object, form):
     """Update an object with data from a form."""
     # XXX This is only neccessary when not using a model form: otherwise
     # form.save() does all this automatically
-
-    # cd = form.cleaned_data
-    # for field_name in cd:
-    #     setattr(model_object, field_name, cd[field_name])
+    # TODO Refactor this function away
     assert set(form.cleaned_data).issubset(set(model_object.__dict__))
     model_object.__dict__.update(form.cleaned_data)
     model_object.save()
@@ -227,11 +225,11 @@ def view_language_list(request):
             {"languages":languages,
             "language_list_form":get_language_list_form(request),
             "current_list":current_list})
-    request.session["language_list_name"] = language_list_name
+    request.session["language_list_name"] = language_list_name # XXX what's this for?
     return response
 
 @login_required
-def view_language_reorder(request):
+def language_reorder(request):
     if request.method == "POST":
         form = ReorderLanguageSortKeyForm(request.POST)
         if form.is_valid():
@@ -295,10 +293,7 @@ def move_language_down_list(language):
 
 def sort_languages(request, ordered_by):
     """Change the selected sort order via url"""
-    try:
-        referer = request.META["HTTP_REFERER"]
-    except KeyError:
-        referer = "/languages/"
+    referer = request.META.get("HTTP_REFERER", reverse("view-languages"))
     request.session["language_sort_order"] = ordered_by
     return HttpResponseRedirect(referer)
 
@@ -307,8 +302,8 @@ def report_language(request, language):
         language = Language.objects.get(ascii_name=language)
     except(Language.DoesNotExist):
         language = get_canonical_language(language)
-        return HttpResponseRedirect("/language/%s/" %
-                language.ascii_name)
+        return HttpResponseRedirect(reverse("language-report",
+            args=[language.ascii_name]))
     lexemes = Lexeme.objects.filter(language=language).order_by("meaning")
     prev_language, language_list_name, next_language = \
             get_prev_and_next_languages(request, language)
@@ -321,15 +316,15 @@ def report_language(request, language):
             })
 
 @login_required
-def view_language_add_new(request):
+def language_add_new(request):
     if request.method == 'POST':
         form = EditLanguageForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
             return HttpResponseRedirect(reverse("view-languages"))
         if form.is_valid():
-            language = Language.objects.create(**form.cleaned_data)
-            return HttpResponseRedirect('/language/%s/' % language.ascii_name)
-
+            form.save()
+            return HttpResponseRedirect(reverse("language-report",
+                args=[form.cleaned_data["ascii_name"]]))
     else: # first visit
         form = EditLanguageForm()
     return render_template(request, "language_add_new.html",
@@ -352,7 +347,6 @@ def edit_language(request, language):
             form.save()
             return HttpResponseRedirect(reverse("view-languages"))
     else:
-        #form = EditLanguageForm(language.__dict__, instance=language)
         form = EditLanguageForm(instance=language)
     return render_template(request, "language_edit.html",
             {"language":language,
@@ -363,7 +357,6 @@ def edit_language(request, language):
 def view_meanings(request):
     meaning_list_name = request.session.get("meaning_list_name",
             MeaningList.DEFAULT)
-
     if request.method == 'POST':
         form = ChooseMeaningListForm(request.POST)
         if form.is_valid():
@@ -389,15 +382,15 @@ def view_meanings(request):
     return response 
 
 @login_required
-def view_meaning_add_new(request):
+def meaning_add_new(request):
     if request.method == 'POST':
         form = EditMeaningForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect('/meanings/')
+            return HttpResponseRedirect(reverse("view-meanings"))
         if form.is_valid():
-            meaning = Meaning.objects.create(**form.cleaned_data)
-            return HttpResponseRedirect('/meaning/%s/' % meaning.gloss)
-
+            form.save()
+            return HttpResponseRedirect(reverse("meaning-report",
+                args=[form.cleaned_data["gloss"]]))
     else: # first visit
         form = EditMeaningForm()
     return render_template(request, "meaning_add_new.html",
@@ -409,61 +402,20 @@ def edit_meaning(request, meaning):
         meaning = Meaning.objects.get(gloss=meaning)
     except Meaning.DoesNotExist:
         meaning = get_canonical_meaning(meaning)
-        return HttpResponseRedirect("/meaning/%s/edit/" %
-                meaning.gloss)
-
+        return HttpResponseRedirect(reverse("meaning-edit",
+                args=[meaning.gloss]))
     if request.method == 'POST':
         form = EditMeaningForm(request.POST, instance=meaning)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect('/meaning/%s/' % meaning.gloss)
+            return HttpResponseRedirect(meaning.get_absolute_url())
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/meaning/%s/' % meaning.gloss)
+            return HttpResponseRedirect(meaning.get_absolute_url())
     else:
         form = EditMeaningForm(instance=meaning)
     return render_template(request, "meaning_edit.html",
             {"meaning":meaning,
             "form":form})
-
-def view_relation(request, relation):
-    relation = SemanticRelation.objects.get(relation_code=relation)
-    return render_template(request, "relation_view.html",
-            {"relation":relation})
-
-@login_required
-def edit_relation(request, relation):
-    relation = SemanticRelation.objects.get(relation_code=relation)
-    if request.method == 'POST':
-        form = EditRelationForm(request.POST, instance=relation)
-        if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect(relation.get_absolute_url())
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(relation.get_absolute_url())
-    else:
-        form = EditRelationForm(instance=relation)
-    return render_template(request, "relation_edit.html",
-            {"relation":relation,
-            "form":form})
-
-@login_required
-def add_relation(request):
-    if request.method == 'POST':
-        form = EditRelationForm(request.POST)
-        if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect(relation.get_absolute_url())
-        if form.is_valid():
-            form.save()
-            relation = SemanticRelation.objects.get(
-                    relation_code=form.cleaned_data["relation_code"])
-            return HttpResponseRedirect(relation.get_absolute_url())
-    else:
-        form = EditRelationForm()
-    return render_template(request, "relation_edit.html",
-            {"form":form,
-            "relation":"Add semantic relation"})
-
-
 
 def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
     lexeme_id = int(lexeme_id)
@@ -959,6 +911,46 @@ def source_list(request):
     return render_template(request, "source_list.html",
             {"grouped_sources":grouped_sources})
 
+# -- /relation(s)/ --------------------------------------------------------
+
+def view_relation(request, relation):
+    relation = SemanticRelation.objects.get(relation_code=relation)
+    return render_template(request, "relation_view.html",
+            {"relation":relation})
+
+@login_required
+def edit_relation(request, relation):
+    relation = SemanticRelation.objects.get(relation_code=relation)
+    if request.method == 'POST':
+        form = EditRelationForm(request.POST, instance=relation)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect(relation.get_absolute_url())
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(relation.get_absolute_url())
+    else:
+        form = EditRelationForm(instance=relation)
+    return render_template(request, "relation_edit.html",
+            {"relation":relation,
+            "form":form})
+
+@login_required
+def add_relation(request):
+    if request.method == 'POST':
+        form = EditRelationForm(request.POST)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect(relation.get_absolute_url())
+        if form.is_valid():
+            form.save()
+            relation = SemanticRelation.objects.get(
+                    relation_code=form.cleaned_data["relation_code"])
+            return HttpResponseRedirect(relation.get_absolute_url())
+    else:
+        form = EditRelationForm()
+    return render_template(request, "relation_edit.html",
+            {"form":form,
+            "relation":"Add semantic relation"})
+
 # -- semantic extensions --------------------------------------------------
 
 #@login_required
@@ -1170,8 +1162,9 @@ def edit_relation_list(request, domain=RelationList.DEFAULT):
              "name_form":name_form,
              "relation_list":rl})
 
-@confirm_required("confirm_delete.html",
-        lambda request, domain: RequestContext(request, {"domain_name":domain}))
+confirm_delete_context = lambda request, domain: RequestContext(request, {"domain_name":domain}))
+
+@confirm_required("confirm_delete.html", confirm_delete_context)
 def delete_relation_list(request, domain):
     rl = RelationList.objects.get(name=domain)
     rl.delete()

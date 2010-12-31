@@ -29,8 +29,8 @@ urlpatterns = patterns('',
 
     # Languages
     url(r'^languages/$', view_language_list, name="view-languages"),
-    url(r'^languages/reorder/$', view_language_reorder, name="language-reorder"),
-    url(r'^languages/add-new/$', view_language_add_new, name="language-add-new"),
+    url(r'^languages/reorder/$', language_reorder, name="language-reorder"),
+    url(r'^languages/add-new/$', language_add_new, name="language-add-new"),
     url(r'^languages/sort/(?P<ordered_by>sort_key|utf8_name)/$', sort_languages,
             name="language-sort"),
     # TODO add something to edit language_list descriptions
@@ -47,7 +47,7 @@ urlpatterns = patterns('',
 
     # Meanings
     url(r'^meanings/$', view_meanings, name="view-meanings"),
-    url(r'^meanings/add-new/$', view_meaning_add_new, name="meaning-add-new"), # NEW XXX
+    url(r'^meanings/add-new/$', meaning_add_new, name="meaning-add-new"), # NEW XXX
     url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+)/edit/$', edit_meaning,
             name="meaning-edit"), # NEW XXX
 
