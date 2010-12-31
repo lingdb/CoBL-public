@@ -71,7 +71,7 @@ urlpatterns = patterns('',
 
     # Lexemes
     url(r'^lexeme/add/', lexeme_add, {"return_to":"/meanings/"}),
-    url(r'^lexeme/search/$', search_lexeme, name="search-lexeme"),
+    url(r'^lexeme/search/$', lexeme_search, name="search-lexeme"),
 
     url(r'^lexeme/(?P<lexeme_id>\d+)/duplicate/$', lexeme_duplicate),
     url(r'^lexeme/(?P<lexeme_id>\d+)/$',

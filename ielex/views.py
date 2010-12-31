@@ -1171,7 +1171,7 @@ def delete_relation_list(request, domain):
     messages.warning(request, "Relation list '%s' deleted" % domain)
     return HttpResponseRedirect("/domains/")
 
-def search_lexeme(request):
+def lexeme_search(request):
     if request.method == 'POST':
         form = SearchLexemeForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
@@ -1190,13 +1190,13 @@ def search_lexeme(request):
                 lexemes = Lexeme.objects.filter(
                         Q(gloss__regex=regex) | Q(notes__regex=regex) | Q(meaning__gloss__regex=regex),
                         language__in=languages)
-            return render_template(request, "search_lexeme_results.html", {
+            return render_template(request, "lexeme_search_results.html", {
                     "regex": regex,
                     "language_names":[(l.utf8_name or l.ascii_name) for l in languages],
                     "lexemes": lexemes,
                     })
     else:
         form = SearchLexemeForm()
-    return render_template(request, "search_lexeme.html",
+    return render_template(request, "lexeme_search.html",
             {"form":form})
 
