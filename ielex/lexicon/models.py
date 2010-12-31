@@ -266,6 +266,10 @@ class CognateJudgementCitation(models.Model):
     def __unicode__(self):
         return u"CJC src=%s cit=%s" % (self.source.id, self.id)
 
+    class Meta:
+
+        unique_together = (("cognate_judgement", "source"),)
+
 reversion.register(CognateJudgementCitation)
 
 class LexemeCitation(models.Model):
@@ -290,6 +294,9 @@ class LexemeCitation(models.Model):
 
     def __unicode__(self):
         return u"%s src=%s cit=%s" % (self.lexeme.source_form, self.source.id, self.id)
+    class Meta:
+
+        unique_together = (("lexeme", "source"),)
 
 reversion.register(LexemeCitation)
 
