@@ -11,7 +11,7 @@
 {# -- Lexeme -------------------------------------------------------- #}
 <h2>Lexeme data</h2>
 
-{% ifequal action "edit-lexeme" %} 
+{% ifequal action "edit" %} 
 <form action="" method="post">{% csrf_token %}
 <fieldset>
 <table>
@@ -29,7 +29,7 @@
 {% else %}
 <fieldset><legend>
             {% if user.is_authenticated %}
-            <a href="/lexeme/{{ lexeme.id }}/edit-lexeme">
+            <a href="/lexeme/{{ lexeme.id }}/edit">
               <img src="/media/buttons/edit-pencil.png" alt="Edit" title="Edit" />
             </a>
             <img src="/media/buttons/delete.png" 

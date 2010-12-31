@@ -71,25 +71,25 @@ urlpatterns = patterns('',
 
     # Lexemes
     url(r'^lexeme/add/', lexeme_add, {"return_to":"/meanings/"}),
-    url(r'^lexeme/search/$', lexeme_search, name="search-lexeme"),
+    url(r'^lexeme/search/$', lexeme_search, name="lexeme-search"),
 
     url(r'^lexeme/(?P<lexeme_id>\d+)/duplicate/$', lexeme_duplicate),
     url(r'^lexeme/(?P<lexeme_id>\d+)/$',
             view_lexeme, name="view-lexeme"),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-citation|edit-lexeme|add-cognate|add-new-citation)/$',
-            edit_lexeme),
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-citation|edit|add-cognate|add-new-citation)/$',
+            lexeme_edit),
     url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-citation|delink-citation)/(?P<citation_id>\d+)/$',
-            edit_lexeme),
+            lexeme_edit),
     url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>delink-cognate)/(?P<cogjudge_id>\d+)/$',
-            edit_lexeme),
+            lexeme_edit),
     url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-cognate-citation)/(?P<citation_id>\d+)/$',
-            edit_lexeme), # just use <cogjudge_id>
+            lexeme_edit), # just use <cogjudge_id>
     url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>delink-cognate-citation)/(?P<citation_id>\d+)/$',
-            edit_lexeme),
+            lexeme_edit),
     url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-cognate-citation|add-new-cognate-citation)/(?P<cogjudge_id>\d+)/$',
-            edit_lexeme),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-new-cognate)/$', edit_lexeme),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>delete)/$', edit_lexeme),
+            lexeme_edit),
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-new-cognate)/$', lexeme_edit),
+    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>delete)/$', lexeme_edit),
 
     # Sources
     url(r'^sources/$', source_list, name="view-sources"),

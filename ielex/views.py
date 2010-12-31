@@ -492,7 +492,7 @@ def view_lexeme(request, lexeme_id):
             {"lexeme":lexeme})
 
 @login_required
-def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
+def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     citation_id = int(citation_id)
     cogjudge_id = int(cogjudge_id)
     lexeme = Lexeme.objects.get(id=lexeme_id)
@@ -500,12 +500,12 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     sources = Source.objects.filter(lexeme=lexeme)  # XXX not used
     form = None
 
-    if action: # actions are: edit, edit-lexeme, edit-citation, add-citation
+    if action: # actions are: edit, edit-citation, add-citation
         redirect_url = '/lexeme/%s/' % lexeme_id
 
         # Handle POST data
         if request.method == 'POST':
-            if action == "edit-lexeme":
+            if action == "edit":
                 form = EditLexemeForm(request.POST, instance=lexeme) ### 
                 if "cancel" in form.data: # has to be tested before data is cleaned
                     return HttpResponseRedirect(redirect_url)
@@ -622,7 +622,7 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
 
         # first visit, preload form with previous answer
         else:
-            if action == "edit-lexeme":
+            if action == "edit":
                 form = EditLexemeForm(instance=lexeme)
                         # initial={"source_form":lexeme.source_form,
                         # "phon_form":lexeme.phon_form,
@@ -1162,7 +1162,7 @@ def edit_relation_list(request, domain=RelationList.DEFAULT):
              "name_form":name_form,
              "relation_list":rl})
 
-confirm_delete_context = lambda request, domain: RequestContext(request, {"domain_name":domain}))
+confirm_delete_context = lambda request, domain: RequestContext(request, {"domain_name":domain})
 
 @confirm_required("confirm_delete.html", confirm_delete_context)
 def delete_relation_list(request, domain):
