@@ -41,7 +41,7 @@
   {% else %}
   Lexeme ‘<a href="{% url view-lexeme lexeme.id %}">{{ lexeme }}</a> ’
   has no tagged relations in the domain 
-  ‘<a href="{% url view-language-domain lexeme.language.ascii_name domain %}">{{ domain }}</a>’
+  ‘<a href="{% url language-domain-view lexeme.language.ascii_name domain %}">{{ domain }}</a>’
   {% endif %}
 {% endif %}
 

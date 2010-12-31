@@ -119,7 +119,7 @@ urlpatterns = patterns('',
     url(r'^relation/%(RELATION)s/$' % R, view_relation,
             name="view-relation"),
 
-    # Semantic domains (lists of Semantic relations)
+    # Semantic domains (lists of semantic relations)
     url(r'^domains/$', view_domains, name="view-domains"),
     url(r'^domains/add-new/$', add_relation_list, name="add-relation-list"),
     url(r'^domain/%(DOMAIN)s/$' % R, view_relation_list,
@@ -129,7 +129,12 @@ urlpatterns = patterns('',
     url(r'^domain/%(DOMAIN)s/delete/$' % R, delete_relation_list,
             name="delete-relation-list"),
 
-    # Semantic extensions of lexemes
+    url(r'^language/%(LANGUAGE)s/domain/%(DOMAIN)s/$' % R,
+            language_domain_view, name="language-domain-view"),
+    url(r'^language/%(LANGUAGE)s/domains/$' % R,
+            language_domains_list, name="language-domains-list"),
+
+    # Semantic extensions of lexemes -- within a specified domain
     url(r'^lexeme/%(LEXEME_ID)s/domains/$' % R,
             view_lexeme_semantic_domains, name="view-all-lexeme-extensions"),
     url(r'^lexeme/%(LEXEME_ID)s/domain/%(DOMAIN)s/$' % R,
@@ -137,6 +142,8 @@ urlpatterns = patterns('',
     # TODO isn't working yet
     url(r'^lexeme/%(LEXEME_ID)s/domain/%(DOMAIN)s/edit/$' % R,
             view_lexeme_semantic_extensions, {"action":"edit"}, name="edit-lexeme-extensions"),
+
+    # Semantic extensions of lexemes -- individual extensions
     url(r'^domain/%(DOMAIN)s/extension/(?P<extension_id>\d+)/add-citation/$' % R,
             add_lexeme_extension_citation, name="add-domain-extension-citation"),
     url(r'^extension/(?P<extension_id>\d+)/add-citation/$',
@@ -145,11 +152,6 @@ urlpatterns = patterns('',
     #         view_lexeme_extension_citation, name="view-extension"),
     url(r'^citation/extension/(?P<citation_id>\d+)/$',
             view_extension_citation, name="view-extension-citation"),
-
-    url(r'^language/%(LANGUAGE)s/domain/%(DOMAIN)s/$' % R,
-            view_language_semantic_domain, name="view-language-domain"),
-    url(r'^language/%(LANGUAGE)s/domains/$' % R,
-            view_language_semantic_domains, name="view-language-domains"),
 
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),

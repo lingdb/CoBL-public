@@ -1067,12 +1067,12 @@ def view_extension_citation(request, citation_id):
             "citation":citation,
             })
 
-def view_language_semantic_domain(request, language, domain=RelationList.DEFAULT):
+def language_domain_view(request, language, domain=RelationList.DEFAULT):
     try:
         language = Language.objects.get(ascii_name=language)
     except(Language.DoesNotExist):
         language = get_canonical_language(language)
-        return HttpResponseRedirect(reverse("view-language-domain",
+        return HttpResponseRedirect(reverse("language-domain-view",
                 args=[language.ascii_name, domain]))
     relations = SemanticRelation.objects.filter(
             id__in=RelationList.objects.get(name=domain).relation_id_list)
@@ -1080,13 +1080,13 @@ def view_language_semantic_domain(request, language, domain=RelationList.DEFAULT
             relation__in=relations,
             lexeme__language=language).order_by("relation__relation_code",
             "lexeme__phon_form", "lexeme__source_form")
-    return render_template(request, 'view_language_semantic_domain.html', {
+    return render_template(request, 'language_domain_view.html', {
             "language":language,
             "domain":domain,
             "semantic_extensions": extensions,
             })
 
-def view_language_semantic_domains(request, language):
+def language_domains_list(request, language):
     try:
         language = Language.objects.get(ascii_name=language)
     except(Language.DoesNotExist):
@@ -1099,7 +1099,7 @@ def view_language_semantic_domains(request, language):
     for domain in RelationList.objects.all():
         if set(domain.relation_id_list) & domain_ids:
             domains.append(domain)
-    return render_template(request, 'view_language_semantic_domains.html',
+    return render_template(request, 'language_domains_list.html',
             {"domains":domains, "language":language})
 
 @login_required
