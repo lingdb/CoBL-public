@@ -120,7 +120,7 @@ urlpatterns = patterns('',
             name="view-relation"),
 
     # Semantic domains (lists of semantic relations)
-    url(r'^domains/$', view_domains, name="view-domains"),
+    url(r'^domains/$', domains_list, name="view-domains"),
     url(r'^domains/add-new/$', add_relation_list, name="add-relation-list"),
     url(r'^domain/%(DOMAIN)s/$' % R, view_relation_list,
             name="view-relation-list"),

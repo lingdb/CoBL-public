@@ -953,9 +953,9 @@ def add_relation(request):
 # -- semantic extensions --------------------------------------------------
 
 #@login_required
-def view_domains(request):
+def domains_list(request):
     domains = RelationList.objects.all()
-    return render_template(request, "view_domains.html", {"domains":domains})
+    return render_template(request, "domains_list.html", {"domains":domains})
 
 def lexeme_domains_view(request, lexeme_id):
     lexeme = Lexeme.objects.get(id=int(lexeme_id))
