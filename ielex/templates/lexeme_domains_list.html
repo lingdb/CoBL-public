@@ -17,7 +17,7 @@
   <a href="{% url view-domains %}">semantic domains</a>:
   <ul>
     {% for domain in domains %}
-    <li><a href="{% url view-lexeme-extensions lexeme.id domain.name %}">
+    <li><a href="{% url lexeme-domain-view lexeme.id domain.name %}">
       {{ domain.name }}</a>
     </li>
     {% endfor %}

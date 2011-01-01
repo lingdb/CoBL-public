@@ -297,13 +297,15 @@ def sort_languages(request, ordered_by):
     request.session["language_sort_order"] = ordered_by
     return HttpResponseRedirect(referer)
 
-def report_language(request, language):
+def language_report(request, language):
     try:
         language = Language.objects.get(ascii_name=language)
     except(Language.DoesNotExist):
         language = get_canonical_language(language)
         return HttpResponseRedirect(reverse("language-report",
             args=[language.ascii_name]))
+    # TODO further ordering by phon_form, source_form, and put blanks at the
+    # end rather than the beginning
     lexemes = Lexeme.objects.filter(language=language).order_by("meaning")
     prev_language, language_list_name, next_language = \
             get_prev_and_next_languages(request, language)
@@ -957,7 +959,7 @@ def domains_list(request):
     domains = RelationList.objects.all()
     return render_template(request, "domains_list.html", {"domains":domains})
 
-def lexeme_domains_view(request, lexeme_id):
+def lexeme_domains_list(request, lexeme_id):
     lexeme = Lexeme.objects.get(id=int(lexeme_id))
     domain_ids = set(lexeme.semanticextension_set.values_list("relation",
             flat=True))
@@ -965,11 +967,11 @@ def lexeme_domains_view(request, lexeme_id):
     for domain in RelationList.objects.all():
         if set(domain.relation_id_list) & domain_ids:
             domains.append(domain)
-    return render_template(request, 'lexeme_domains_view.html', {
+    return render_template(request, 'lexeme_domains_list.html', {
             "lexeme": lexeme,
             "domains": domains})
 
-def lexeme_extensions_view(request, lexeme_id, domain, action="view"):
+def lexeme_domain_view(request, lexeme_id, domain, action="view"):
     """View and edit a lexeme's semantic extensions in a particular domain"""
     lexeme = Lexeme.objects.get(id=int(lexeme_id))
     rl = RelationList.objects.get(name=domain)
@@ -988,10 +990,10 @@ def lexeme_extensions_view(request, lexeme_id, domain, action="view"):
             form = AddSemanticExtensionForm(request.POST)
             citation_form =  MultipleSemanticExtensionCitationForm(request.POST)
             if "cancel" in form.data:
-                return HttpResponseRedirect(reverse("view-lexeme-extensions",
+                return HttpResponseRedirect(reverse("lexeme-domain-view",
                     args=[lexeme_id, domain]))
             if form.is_valid() and citation_form.is_valid():
-                return_to = reverse("view-lexeme-extensions", args=[lexeme_id, domain])
+                return_to = reverse("lexeme-domain-view", args=[lexeme_id, domain])
                 original_relations = set(tagged_relations)
                 new_relations = set(int(e) for e in form.cleaned_data["relations"])
                 removed_relations = original_relations.difference(new_relations)
@@ -1032,7 +1034,7 @@ def add_lexeme_extension_citation(request, extension_id, domain=RelationList.DEF
         source_help_text = """Each source can only be cited once for each
                 semantic extension.<br />If a source has already been cited the
                 citation should be <a href="%s">edited</a> instead.
-                """ % reverse("view-lexeme-extensions",
+                """ % reverse("lexeme-domain-view",
                         args=[extension.lexeme.id, domain])
         # "disabled" attribute is not in general secure, but acceptable here
         # because we put it back in any case, even if the user manages to
@@ -1046,11 +1048,11 @@ def add_lexeme_extension_citation(request, extension_id, domain=RelationList.DEF
         form = fix_form_fields(SemanticExtensionCitationForm(post_data))
         #fix_form_fields(form)
         if "cancel" in form.data:
-            return HttpResponseRedirect(reverse("view-lexeme-extensions",
+            return HttpResponseRedirect(reverse("lexeme-domain-view",
                 args=[extension.lexeme.id, domain]))
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("view-lexeme-extensions",
+            return HttpResponseRedirect(reverse("lexeme-domain-view",
                 args=[extension.lexeme.id, domain]))
     else:
         form = fix_form_fields(SemanticExtensionCitationForm(

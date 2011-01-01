@@ -247,7 +247,7 @@
     <li><a href="/meaning/{{ lexeme.meaning.gloss }}">back to meaning list ‘{{ lexeme.meaning.gloss }}’</a></li>
   {% endif %}
   {% if lexeme.semanticextension_set.count %}
-  <li><a href="{% url view-all-lexeme-extensions lexeme.id  %}">view semantic exensions</a></li>
+  <li><a href="{% url lexeme-domains-list lexeme.id  %}">view semantic exensions</a></li>
   {% endif %}
   <li><a href="/language/{{ lexeme.language.ascii_name }}">back to language list ‘{{ lexeme.language.utf8_name }}’</a></li>
   {% if user.is_authenticated %}

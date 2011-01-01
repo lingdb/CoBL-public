@@ -40,7 +40,7 @@ urlpatterns = patterns('',
     # TODO add something to edit language_list descriptions
 
     # Language
-    url(r'^language/%(LANGUAGE)s/$' % R, report_language,
+    url(r'^language/%(LANGUAGE)s/$' % R, language_report,
             name="language-report"),
     url(r'^language/%(LANGUAGE)s/edit/$' % R, edit_language,
             name="language-edit"),
@@ -136,12 +136,14 @@ urlpatterns = patterns('',
 
     # Semantic extensions of lexemes -- within a specified domain
     url(r'^lexeme/%(LEXEME_ID)s/domains/$' % R,
-            lexeme_domains_view, name="view-all-lexeme-extensions"),
+            lexeme_domains_list, name="lexeme-domains-list"),
     url(r'^lexeme/%(LEXEME_ID)s/domain/%(DOMAIN)s/$' % R,
-            lexeme_extensions_view, name="view-lexeme-extensions"),
+            lexeme_domain_view, name="lexeme-domain-view"),
+    url(r'^lexeme/%(LEXEME_ID)s/extensions/$' % R,
+            lexeme_extensions_view, name="lexeme-extensions-view"),
     # TODO isn't working yet
     url(r'^lexeme/%(LEXEME_ID)s/domain/%(DOMAIN)s/edit/$' % R,
-            lexeme_extensions_view, {"action":"edit"}, name="edit-lexeme-extensions"),
+            lexeme_domain_view, {"action":"edit"}, name="edit-lexeme-extensions"),
 
     # Semantic extensions of lexemes -- individual extensions
     url(r'^domain/%(DOMAIN)s/extension/(?P<extension_id>\d+)/add-citation/$' % R,
