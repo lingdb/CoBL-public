@@ -149,11 +149,14 @@ urlpatterns = patterns('',
     url(r'^domain/%(DOMAIN)s/extension/(?P<extension_id>\d+)/add-citation/$' % R,
             add_lexeme_extension_citation, name="add-domain-extension-citation"),
     url(r'^extension/(?P<extension_id>\d+)/add-citation/$',
-            add_lexeme_extension_citation, name="add-extension-citation"),
+            add_lexeme_extension_citation, name="extension-add-citation"),
     # url(r'^extension/(?P<extension_id>\d+)/$', 
     #         view_lexeme_extension_citation, name="view-extension"),
+
+
+    # citation/object/id patterns
     url(r'^citation/extension/(?P<citation_id>\d+)/$',
-            extension_citation_view, name="extension-citation-view"),
+            extension_citation_view, name="citation-extension-view"),
 
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),
