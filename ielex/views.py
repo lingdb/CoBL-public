@@ -706,7 +706,6 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             "active_cogjudge_citation_id":cogjudge_id,
             })
 
-
 @login_required
 def lexeme_duplicate(request, lexeme_id):
     original_lexeme = Lexeme.objects.get(id=int(lexeme_id))
@@ -958,7 +957,7 @@ def view_domains(request):
     domains = RelationList.objects.all()
     return render_template(request, "view_domains.html", {"domains":domains})
 
-def view_lexeme_semantic_domains(request, lexeme_id):
+def lexeme_domains_view(request, lexeme_id):
     lexeme = Lexeme.objects.get(id=int(lexeme_id))
     domain_ids = set(lexeme.semanticextension_set.values_list("relation",
             flat=True))
@@ -966,11 +965,11 @@ def view_lexeme_semantic_domains(request, lexeme_id):
     for domain in RelationList.objects.all():
         if set(domain.relation_id_list) & domain_ids:
             domains.append(domain)
-    return render_template(request, 'view_lexeme_semantic_domains.html', {
+    return render_template(request, 'lexeme_domains_view.html', {
             "lexeme": lexeme,
             "domains": domains})
 
-def view_lexeme_semantic_extensions(request, lexeme_id, domain, action="view"):
+def lexeme_extensions_view(request, lexeme_id, domain, action="view"):
     """View and edit a lexeme's semantic extensions in a particular domain"""
     lexeme = Lexeme.objects.get(id=int(lexeme_id))
     rl = RelationList.objects.get(name=domain)
@@ -1018,7 +1017,7 @@ def view_lexeme_semantic_extensions(request, lexeme_id, domain, action="view"):
         assert action == "view"
         form, citation_form = None, None
 
-    return render_template(request, 'edit_lexeme_semantic_extensions.html', {
+    return render_template(request, 'lexeme_extensions_edit.html', {
             "lexeme": lexeme,
             "domain": domain,
             "tagged_relations": tagged_relations,
@@ -1057,13 +1056,13 @@ def add_lexeme_extension_citation(request, extension_id, domain=RelationList.DEF
         form = fix_form_fields(SemanticExtensionCitationForm(
                 initial={"extension":extension}))
         #fix_form_fields(form)
-    return render_template(request, "citation_add.html", {
+    return render_template(request, "extension_citation_add.html", {
             "extension":extension,
             "form":form})
 
-def view_extension_citation(request, citation_id):
+def extension_citation_view(request, citation_id):
     citation = SemanticExtensionCitation.objects.get(id=int(citation_id))
-    return render_template(request, "view_extension_citation.html", {
+    return render_template(request, "extension_citation_view.html", {
             "citation":citation,
             })
 
@@ -1164,6 +1163,7 @@ def edit_relation_list(request, domain=RelationList.DEFAULT):
 
 confirm_delete_context = lambda request, domain: RequestContext(request, {"domain_name":domain})
 
+@login_required
 @confirm_required("confirm_delete.html", confirm_delete_context)
 def delete_relation_list(request, domain):
     rl = RelationList.objects.get(name=domain)

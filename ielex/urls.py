@@ -70,7 +70,7 @@ urlpatterns = patterns('',
             report_meaning),
     url(r'^meaning/%(MEANING)s/add-lexeme/' % R,
             lexeme_add, {"return_to":"/meaning/%(meaning)s/"}),
-    url(r'^meaning/%(MEANING)s/add-lexeme/%(LANGUAGE2)s/' % R,
+    url(r'^meaning/%(MEANING)s/add-lexeme/%(LANGUAGE)s/' % R,
             lexeme_add, {"return_to":"/meaning/%(meaning)s/"}),
 
     # Lexemes
@@ -136,12 +136,12 @@ urlpatterns = patterns('',
 
     # Semantic extensions of lexemes -- within a specified domain
     url(r'^lexeme/%(LEXEME_ID)s/domains/$' % R,
-            view_lexeme_semantic_domains, name="view-all-lexeme-extensions"),
+            lexeme_domains_view, name="view-all-lexeme-extensions"),
     url(r'^lexeme/%(LEXEME_ID)s/domain/%(DOMAIN)s/$' % R,
-            view_lexeme_semantic_extensions, name="view-lexeme-extensions"),
+            lexeme_extensions_view, name="view-lexeme-extensions"),
     # TODO isn't working yet
     url(r'^lexeme/%(LEXEME_ID)s/domain/%(DOMAIN)s/edit/$' % R,
-            view_lexeme_semantic_extensions, {"action":"edit"}, name="edit-lexeme-extensions"),
+            lexeme_extensions_view, {"action":"edit"}, name="edit-lexeme-extensions"),
 
     # Semantic extensions of lexemes -- individual extensions
     url(r'^domain/%(DOMAIN)s/extension/(?P<extension_id>\d+)/add-citation/$' % R,
@@ -151,7 +151,7 @@ urlpatterns = patterns('',
     # url(r'^extension/(?P<extension_id>\d+)/$', 
     #         view_lexeme_extension_citation, name="view-extension"),
     url(r'^citation/extension/(?P<citation_id>\d+)/$',
-            view_extension_citation, name="view-extension-citation"),
+            extension_citation_view, name="extension-citation-view"),
 
     # Example:
     # (r'^ielex/', include('ielex.foo.urls')),
