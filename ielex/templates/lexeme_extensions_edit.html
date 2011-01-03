@@ -4,60 +4,37 @@
 
 {% block top %}
 <h1>
-  {{ domain }}: {{ lexeme }} ({{ lexeme.language.utf8_name }})
+  Semantic extensions: {{ lexeme }} ({{ lexeme.language.utf8_name }})
 </h1>
 {% endblock %}
 
 {% block content %}
-
-{% if action == "view" %}
-  {% if tagged_relations %}
-  <table>
-    <tr>
-      <th>Code</th>
-      <th>Relation</th>
-      <th>Description</th>
-      <th>Citations</th>
-    </tr>
-    {% for semantic_extension in lexeme.semanticextension_set.all %}
-    <tr class="{% cycle 'odd' 'even' %}">
-      <td>{{ semantic_extension.relation.relation_code }}</td>
-      <td>{{ semantic_extension.relation.long_name }}</td>
-      <td>{{ semantic_extension.relation.description }}</td>
-      <td>
-        {% for citation in semantic_extension.semanticextensioncitation_set.all %}
-        <a href="{{ citation.get_absolute_url }}" alt="{{ citation.source.citation_text }}">
-          [{{ citation.source.id }}]
-        </a>
-        {% endfor %}
-        {# TODO #}
-        <a href="{% url add-domain-extension-citation domain semantic_extension.id %}">
-          <img src="/media/buttons/add.png" alt="Add citation" title="Add citation" /> 
-        </a>
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
-  {% else %}
-  Lexeme ‘<a href="{% url view-lexeme lexeme.id %}">{{ lexeme }}</a> ’
-  has no tagged relations in the domain 
-  ‘<a href="{% url language-domain-view lexeme.language.ascii_name domain %}">{{ domain }}</a>’
-  {% endif %}
-{% endif %}
-
-
-{% if action == "edit" %}
-  <form action="" method="POST">{% csrf_token %}
-  <table>
-    {{ form.as_table }}
-  </table>
-  <table>{{ citation_form }}</table>
-    <input type="submit" name="submit" value="Submit" />
-    <input type="submit" name="cancel" value="Cancel" />
-  </form>
-  {# TODO needs citation form #}
-{% endif %}
-
+<table>
+  <tr>
+    <th>Code</th>
+    <th>Relation</th>
+    <th>Description</th>
+    <th>Citations</th>
+  </tr>
+  {% for extension in lexeme.semanticextension_set.all %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    <td>{{ extension.relation.relation_code }}</td>
+    <td>{{ extension.relation.long_name }}</td>
+    <td>{{ extension.relation.description }}</td>
+    <td>
+      {% for citation in semantic_extension.semanticextensioncitation_set.all %}
+      <a href="{{ citation.get_absolute_url }}" alt="{{ citation.source.citation_text }}">
+        [{{ citation.source.id }}]
+      </a>
+      {% endfor %}
+      {# TODO #}
+      <a href="{% url add-domain-extension-citation domain semantic_extension.id %}">
+        <img src="/media/buttons/add.png" alt="Add citation" title="Add citation" /> 
+      </a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
 {% endblock %}
 
 {% block controls %}

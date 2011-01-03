@@ -971,6 +971,10 @@ def lexeme_domains_list(request, lexeme_id):
             "lexeme": lexeme,
             "domains": domains})
 
+def lexeme_extensions_view(request, lexeme_id):
+    return render_template(request, 'lexeme_extensions_view.html', {
+            "lexeme": Lexeme.objects.get(id=int(lexeme_id))})
+
 def lexeme_domain_view(request, lexeme_id, domain, action="view"):
     """View and edit a lexeme's semantic extensions in a particular domain"""
     lexeme = Lexeme.objects.get(id=int(lexeme_id))
@@ -978,10 +982,6 @@ def lexeme_domain_view(request, lexeme_id, domain, action="view"):
     tagged_relations = lexeme.semanticextension_set.filter(
             relation__id__in=rl.relation_id_list).values_list("relation__id",
                     flat=True)
-    # tagged_relations = SemanticExtension.objects.filter(
-    #         relation__id__in=rl.relation_id_list,
-    #         lexeme=lexeme).order_by("relation__relation_code",
-    #         "lexeme__phon_form", "lexeme__source_form")
     relations = SemanticRelation.objects.filter(
             id__in=RelationList.objects.get(name=domain).relation_id_list).values_list("id", "relation_code")
     if action == "edit":

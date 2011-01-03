@@ -244,25 +244,31 @@ class MeaningList(models.Model):
     class Meta:
         ordering = ["name"]
 
-class CognateJudgementCitation(models.Model):
-    cognate_judgement = models.ForeignKey(CognateJudgement)
-    source = models.ForeignKey(Source)
+class AbstractBaseCitation(models.Model):
+    """Abstract base class for citation models
+    The source field has to be in the subclasses in order for the
+    unique_together constraints to work properly"""
     pages = models.CharField(max_length=999)
     reliability = models.CharField(max_length=1, choices=Source.RELIABILITY_CHOICES)
     comment = models.CharField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
 
-    @property
     def long_reliability(self):
         descriptions = dict(Source.RELIABILITY_CHOICES)
-        try:
-            return descriptions[self.reliability]
-        except KeyError:
-            return "PLEASE ENTER A RELIABILITY RATING"
+        return descriptions[self.reliability]
+
+    class Meta:
+        abstract = True
+
+
+class CognateJudgementCitation(AbstractBaseCitation):
+    cognate_judgement = models.ForeignKey(CognateJudgement)
+    source = models.ForeignKey(Source)
 
     def get_absolute_url(self):
         return "/lexeme/%s/edit-cognate-citation/%s/" % \
                 (self.cognate_judgement.lexeme.id, self.id)
+        # TODO "/citation/cognate/%s/"
 
     def __unicode__(self):
         return u"CJC src=%s cit=%s" % (self.source.id, self.id)
@@ -273,30 +279,18 @@ class CognateJudgementCitation(models.Model):
 
 reversion.register(CognateJudgementCitation)
 
-class LexemeCitation(models.Model):
+class LexemeCitation(AbstractBaseCitation):
     lexeme = models.ForeignKey(Lexeme)
     source = models.ForeignKey(Source)
-    pages = models.CharField(max_length=999)
-    reliability = models.CharField(max_length=1, choices=Source.RELIABILITY_CHOICES)
-    comment = models.CharField(max_length=999)
-    modified = models.DateTimeField(auto_now=True)
-
-    @property
-    def long_reliability(self):
-        descriptions = dict(Source.RELIABILITY_CHOICES)
-        # return descriptions[self.reliability]
-        try:
-            return descriptions[self.reliability]
-        except KeyError:
-            return "PLEASE ENTER A RELIABILITY RATING"
 
     def get_absolute_url(self):
         return "/lexeme/%s/edit-citation/%s/" % (self.lexeme.id, self.id)
+        # TODO "/citation/lexeme/%s/"
 
     def __unicode__(self):
         return u"%s src=%s cit=%s" % (self.lexeme.source_form, self.source.id, self.id)
-    class Meta:
 
+    class Meta:
         unique_together = (("lexeme", "source"),)
 
 reversion.register(LexemeCitation)
@@ -322,11 +316,6 @@ class SemanticExtension(models.Model):
     source = models.ManyToManyField(Source, through="SemanticExtensionCitation")
     modified = models.DateTimeField(auto_now=True)
 
-    # def get_absolute_url(self):
-    #     return "/meaning/%s/%s/%s/" % (self.lexeme.meaning.gloss,
-    #             self.lexeme.id, self.id)
-
-    @property
     def reliability_ratings(self):
         return set(self.kinmappingcitation_set.values_list("reliability", flat=True))
 
@@ -338,30 +327,17 @@ class SemanticExtension(models.Model):
 
 reversion.register(SemanticExtension)
 
-class SemanticExtensionCitation(models.Model):
+class SemanticExtensionCitation(AbstractBaseCitation):
     extension = models.ForeignKey(SemanticExtension)
     source = models.ForeignKey(Source)
-    pages = models.CharField(max_length=999, blank=True)
-    reliability = models.CharField(max_length=1,
-            choices=Source.RELIABILITY_CHOICES)
-    comment = models.TextField(blank=True)
-    modified = models.DateTimeField(auto_now=True)
-
-    # def get_absolute_url(self):
-    #     return "/lexeme/%s/edit-cognate-citation/%s/" % \
-    #             (self.cognate_judgement.lexeme.id, self.id)
-    @property
-    def long_reliability(self):
-        return dict(Source.RELIABILITY_CHOICES)[self.reliability]
 
     def get_absolute_url(self):
         return "/citation/extension/%s/" % self.id
 
     def __unicode__(self):
-        return u"%s" % (self.id)
+        return u"<SEC %s src=%s sec=%s>" % (self.id, self.extension.id, self.source.id)
 
     class Meta:
-
         unique_together = (("extension", "source"),)
 
 reversion.register(SemanticExtensionCitation)
