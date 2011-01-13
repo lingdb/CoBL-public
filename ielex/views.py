@@ -217,6 +217,7 @@ def get_language_list_form(request):
             name=language_list_name).id
     return form
 
+
 def view_language_list(request):
     language_list_name = get_current_language_list_name(request)
     languages = Language.objects.all().order_by(get_sort_order(request))
@@ -1081,10 +1082,18 @@ def language_domain_view(request, language, domain=RelationList.DEFAULT):
             relation__in=relations,
             lexeme__language=language).order_by("relation__relation_code",
             "lexeme__phon_form", "lexeme__source_form")
+
+    # change language
+    redirect, form = goto_language_domain_form(request, domain)
+    form.fields["language"].initial = language.id
+    if redirect:
+        return redirect
+
     return render_template(request, 'language_domain_view.html', {
             "language":language,
             "domain":domain,
             "semantic_extensions": extensions,
+            "form":form,
             })
 
 def language_domains_list(request, language):
@@ -1118,11 +1127,28 @@ def add_relation_list(request):
     return render_template(request, "relation_list_edit.html",
             {"form":form})
 
+def goto_language_domain_form(request, domain):
+    """Returns a tuple (redirect, form), only one of which is valid"""
+    redirect = None
+    language_list_name = get_current_language_list_name(request)
+    if request.method == 'POST':
+        form = ChooseLanguageForm(request.POST)
+        if form.is_valid():
+            language = form.cleaned_data["language"]
+            redirect = HttpResponseRedirect(reverse("language-domain-view",
+                args=[language.ascii_name, domain]))
+    else:
+        form = ChooseLanguageForm()
+    return (redirect, form)
+
 def view_relation_list(request, domain):
     rl = RelationList.objects.get(name=domain)
     sr = SemanticRelation.objects.filter(id__in=rl.relation_id_list)
+    redirect, form = goto_language_domain_form(request, domain)
+    if redirect:
+        return redirect
     return render_template(request, "relation_list_view.html",
-            {"relation_list":rl, "relations":sr})
+            {"relation_list":rl, "relations":sr, "form":form})
 
 @login_required
 def edit_relation_list(request, domain=RelationList.DEFAULT):

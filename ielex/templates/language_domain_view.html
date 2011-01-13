@@ -40,5 +40,14 @@
   <li><a href="/language/{{ language.ascii_name }}">Back to language list ‘{{ language.utf8_name }}’</a></li>
 </ul>
 
+<form action="" method="post">{% csrf_token %}
+<fieldset>
+<legend>View extension for language<legend>
+<table>
+{{ form.as_table }}
+</table>
+</fieldset>
+</form>
+
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

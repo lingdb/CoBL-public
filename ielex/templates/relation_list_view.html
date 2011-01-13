@@ -42,6 +42,15 @@
     edit relation list: {{ relation_list.name }}</a>
   </li>
 </ul>
+
+<form action="" method="post">{% csrf_token %}
+<fieldset>
+<legend>View extension for language<legend>
+<table>
+{{ form.as_table }}
+</table>
+</fieldset>
+</form>
 {% endblock %}
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
