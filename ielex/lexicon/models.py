@@ -342,11 +342,11 @@ class SemanticExtensionCitation(AbstractBaseCitation):
 
 reversion.register(SemanticExtensionCitation)
 
-class RelationList(models.Model):
+class SemanticDomain(models.Model):
     """A named, ordered list of semantic relations (referred to as a 'domain'
     in the user interface) for use in display and output. A default list, named
     'all' is (re)created on save/delete of the Language table (cf.
-    ielex.models.update_relation_list_all)"""
+    ielex.models.update_semantic_domain_all)"""
     DEFAULT = "all"
 
     name = models.CharField(max_length=999, unique=True)
@@ -371,7 +371,7 @@ class RelationList(models.Model):
     class Meta:
         ordering = ["name"]
 
-reversion.register(RelationList)
+reversion.register(SemanticDomain)
 
 
 def update_language_list_all(sender, instance, **kwargs):
@@ -404,19 +404,19 @@ def update_meaning_list_all(sender, instance, **kwargs):
 models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
 models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
-def update_relation_list_all(sender, instance, **kwargs):
+def update_semantic_domain_all(sender, instance, **kwargs):
     try:
-        rl = RelationList.objects.get(name=RelationList.DEFAULT)
+        sd = SemanticDomain.objects.get(name=SemanticDomain.DEFAULT)
     except:
-        rl = RelationList.objects.create(name=RelationList.DEFAULT,
-                description="Default relation list of all semantic relations")
-    if rl.relation_id_list != list(SemanticRelation.objects.values_list("id", flat=True)):
-        rl.relation_id_list = [l.id for l in SemanticRelation.objects.all()]
-        rl.save(force_update=True)
+        sd = SemanticDomain.objects.create(name=SemanticDomain.DEFAULT,
+                description="Default semantic domain containing a list of all semantic relations")
+    if sd.relation_id_list != list(SemanticRelation.objects.values_list("id", flat=True)):
+        sd.relation_id_list = [l.id for l in SemanticRelation.objects.all()]
+        sd.save(force_update=True)
     return
 
-models.signals.post_save.connect(update_relation_list_all, sender=SemanticRelation)
-models.signals.post_delete.connect(update_relation_list_all, sender=SemanticRelation)
+models.signals.post_save.connect(update_semantic_domain_all, sender=SemanticRelation)
+models.signals.post_delete.connect(update_semantic_domain_all, sender=SemanticRelation)
 
 # def update_aliases(sender, instance, **kwargs):
 #     """In case a cognate set has cognate judgements relating to two or more

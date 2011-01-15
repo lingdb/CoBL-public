@@ -37,11 +37,13 @@ urlpatterns = patterns('',
     url(r'^languages/add-new/$', language_add_new, name="language-add-new"),
     url(r'^languages/sort/(?P<ordered_by>sort_key|utf8_name)/$', sort_languages,
             name="language-sort"),
-    # TODO add something to edit language_list descriptions
 
     # Language
     url(r'^language/%(LANGUAGE)s/$' % R, language_report,
             name="language-report"),
+    ## TODO Change this to
+    # url(r'^language/%(LANGUAGE)s/lexemes/%(WORDLIST)s/$' % R, language_report,
+    #         name="language-report"),
     url(r'^language/%(LANGUAGE)s/edit/$' % R, edit_language,
             name="language-edit"),
     url(r'^language/%(LANGUAGE)s/add-lexeme/' % R,
@@ -121,13 +123,13 @@ urlpatterns = patterns('',
 
     # Semantic domains (lists of semantic relations)
     url(r'^domains/$', domains_list, name="view-domains"),
-    url(r'^domains/add-new/$', add_relation_list, name="add-relation-list"),
-    url(r'^domain/%(DOMAIN)s/$' % R, view_relation_list,
-            name="view-relation-list"),
-    url(r'^domain/%(DOMAIN)s/edit/$' % R, edit_relation_list,
-            name="edit-relation-list"),
-    url(r'^domain/%(DOMAIN)s/delete/$' % R, delete_relation_list,
-            name="delete-relation-list"),
+    url(r'^domains/add-new/$', add_semantic_domain, name="add-semantic-domain"),
+    url(r'^domain/%(DOMAIN)s/$' % R, view_semantic_domain,
+            name="view-semantic-domain"),
+    url(r'^domain/%(DOMAIN)s/edit/$' % R, edit_semantic_domain,
+            name="edit-semantic-domain"),
+    url(r'^domain/%(DOMAIN)s/delete/$' % R, delete_semantic_domain,
+            name="delete-semantic-domain"),
 
     url(r'^language/%(LANGUAGE)s/domain/%(DOMAIN)s/$' % R,
             language_domain_view, name="language-domain-view"),

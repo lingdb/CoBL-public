@@ -198,7 +198,7 @@ class ReorderLanguageSortKeyForm(forms.Form):
             widget=forms.Select(attrs={"size":20}),
             empty_label=None)
 
-class EditRelationListForm(forms.ModelForm):
+class EditSemanticDomainForm(forms.ModelForm):
 
     def clean_name(self):
         data = self.cleaned_data["name"]
@@ -206,7 +206,7 @@ class EditRelationListForm(forms.ModelForm):
         return data
 
     class Meta:
-        model = RelationList
+        model = SemanticDomain
         exclude = ["relation_ids"]
 
 class AddSemanticExtensionForm(forms.Form):

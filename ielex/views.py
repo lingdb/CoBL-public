@@ -957,7 +957,7 @@ def add_relation(request):
 
 #@login_required
 def domains_list(request):
-    domains = RelationList.objects.all()
+    domains = SemanticDomain.objects.all()
     return render_template(request, "domains_list.html", {"domains":domains})
 
 def lexeme_domains_list(request, lexeme_id):
@@ -965,7 +965,7 @@ def lexeme_domains_list(request, lexeme_id):
     domain_ids = set(lexeme.semanticextension_set.values_list("relation",
             flat=True))
     domains = []
-    for domain in RelationList.objects.all():
+    for domain in SemanticDomain.objects.all():
         if set(domain.relation_id_list) & domain_ids:
             domains.append(domain)
     return render_template(request, 'lexeme_domains_list.html', {
@@ -979,12 +979,12 @@ def lexeme_extensions_view(request, lexeme_id):
 def lexeme_domain_view(request, lexeme_id, domain, action="view"):
     """View and edit a lexeme's semantic extensions in a particular domain"""
     lexeme = Lexeme.objects.get(id=int(lexeme_id))
-    rl = RelationList.objects.get(name=domain)
+    sd = SemanticDomain.objects.get(name=domain)
     tagged_relations = lexeme.semanticextension_set.filter(
-            relation__id__in=rl.relation_id_list).values_list("relation__id",
+            relation__id__in=sd.relation_id_list).values_list("relation__id",
                     flat=True)
     relations = SemanticRelation.objects.filter(
-            id__in=RelationList.objects.get(name=domain).relation_id_list).values_list("id", "relation_code")
+            id__in=SemanticDomain.objects.get(name=domain).relation_id_list).values_list("id", "relation_code")
     if action == "edit":
         # TODO currently doesn't work....
         if request.method == "POST":
@@ -1028,7 +1028,7 @@ def lexeme_domain_view(request, lexeme_id, domain, action="view"):
             "form":form,
             "citation_form":citation_form})
 
-def add_lexeme_extension_citation(request, extension_id, domain=RelationList.DEFAULT):
+def add_lexeme_extension_citation(request, extension_id, domain=SemanticDomain.DEFAULT):
     """Given lexeme and semantic_extension, select source"""
     extension = SemanticExtension.objects.get(id=int(extension_id))
     def fix_form_fields(form):
@@ -1069,7 +1069,7 @@ def extension_citation_view(request, citation_id):
             "citation":citation,
             })
 
-def language_domain_view(request, language, domain=RelationList.DEFAULT):
+def language_domain_view(request, language, domain=SemanticDomain.DEFAULT):
     try:
         language = Language.objects.get(ascii_name=language)
     except(Language.DoesNotExist):
@@ -1077,7 +1077,7 @@ def language_domain_view(request, language, domain=RelationList.DEFAULT):
         return HttpResponseRedirect(reverse("language-domain-view",
                 args=[language.ascii_name, domain]))
     relations = SemanticRelation.objects.filter(
-            id__in=RelationList.objects.get(name=domain).relation_id_list)
+            id__in=SemanticDomain.objects.get(name=domain).relation_id_list)
     extensions = SemanticExtension.objects.filter(
             relation__in=relations,
             lexeme__language=language).order_by("relation__relation_code",
@@ -1106,16 +1106,16 @@ def language_domains_list(request, language):
     domain_ids = set(SemanticExtension.objects.filter(
             lexeme__language=language).values_list("relation_id", flat=True))
     domains = []
-    for domain in RelationList.objects.all():
+    for domain in SemanticDomain.objects.all():
         if set(domain.relation_id_list) & domain_ids:
             domains.append(domain)
     return render_template(request, 'language_domains_list.html',
             {"domains":domains, "language":language})
 
 @login_required
-def add_relation_list(request):
+def add_semantic_domain(request):
     if request.method == "POST":
-        form = EditRelationListForm(request.POST)
+        form = EditSemanticDomainForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
             return HttpResponseRedirect(reverse('view-domains'))
         if form.is_valid():
@@ -1123,8 +1123,8 @@ def add_relation_list(request):
             return HttpResponseRedirect("/domain/%s/edit/" %
                     form.cleaned_data["name"])
     else:
-        form = EditRelationListForm()
-    return render_template(request, "relation_list_edit.html",
+        form = EditSemanticDomainForm()
+    return render_template(request, "semantic_domain_edit.html",
             {"form":form})
 
 def goto_language_domain_form(request, domain):
@@ -1141,62 +1141,62 @@ def goto_language_domain_form(request, domain):
         form = ChooseLanguageForm()
     return (redirect, form)
 
-def view_relation_list(request, domain):
-    rl = RelationList.objects.get(name=domain)
-    sr = SemanticRelation.objects.filter(id__in=rl.relation_id_list)
+def view_semantic_domain(request, domain):
+    sd = SemanticDomain.objects.get(name=domain)
+    sr = SemanticRelation.objects.filter(id__in=sd.relation_id_list)
     redirect, form = goto_language_domain_form(request, domain)
     if redirect:
         return redirect
-    return render_template(request, "relation_list_view.html",
-            {"relation_list":rl, "relations":sr, "form":form})
+    return render_template(request, "semantic_domain_view.html",
+            {"semantic_domain":sd, "relations":sr, "form":form})
 
 @login_required
-def edit_relation_list(request, domain=RelationList.DEFAULT):
-    rl = RelationList.objects.get(name=domain)
+def edit_semantic_domain(request, domain=SemanticDomain.DEFAULT):
+    sd = SemanticDomain.objects.get(name=domain)
     if request.method == "POST":
-        name_form = EditRelationListForm(request.POST, instance=rl)
+        name_form = EditSemanticDomainForm(request.POST, instance=sd)
         items_form = ChooseSemanticRelationsForm(request.POST)
         items_form.fields["included_relations"].queryset = \
-                SemanticRelation.objects.filter(id__in=rl.relation_id_list)
+                SemanticRelation.objects.filter(id__in=sd.relation_id_list)
         items_form.fields["excluded_relations"].queryset = \
-                SemanticRelation.objects.exclude(id__in=rl.relation_id_list)
+                SemanticRelation.objects.exclude(id__in=sd.relation_id_list)
         if items_form.is_valid() and name_form.is_valid():
             exclude = items_form.cleaned_data["excluded_relations"] 
             include = items_form.cleaned_data["included_relations"]
-            new_list = rl.relation_id_list
+            new_list = sd.relation_id_list
             if include:
                 new_list.remove(include.id)
             if exclude:
                 new_list.append(exclude.id)
-            rl.relation_id_list = new_list
-            rl.save()
+            sd.relation_id_list = new_list
+            sd.save()
             name_form.save()
             if "cancel" in request.POST:
                 return HttpResponseRedirect("/domains/")
             else:
-                return HttpResponseRedirect("/domain/%s/edit/" % rl.name)
+                return HttpResponseRedirect("/domain/%s/edit/" % sd.name)
         else:
             assert False, "Shouldn't get to here"
     else:
-        name_form = EditRelationListForm(instance=rl)
+        name_form = EditSemanticDomainForm(instance=sd)
         items_form = ChooseSemanticRelationsForm()
         items_form.fields["included_relations"].queryset = \
-                SemanticRelation.objects.filter(id__in=rl.relation_id_list)
+                SemanticRelation.objects.filter(id__in=sd.relation_id_list)
         items_form.fields["excluded_relations"].queryset = \
-                SemanticRelation.objects.exclude(id__in=rl.relation_id_list)
-    return render_template(request, "relation_list_change_items.html",
+                SemanticRelation.objects.exclude(id__in=sd.relation_id_list)
+    return render_template(request, "semantic_domain_change_items.html",
             {"items_form":items_form,
              "name_form":name_form,
-             "relation_list":rl})
+             "semantic_domain":sd})
 
 confirm_delete_context = lambda request, domain: RequestContext(request, {"domain_name":domain})
 
 @login_required
 @confirm_required("confirm_delete.html", confirm_delete_context)
-def delete_relation_list(request, domain):
-    rl = RelationList.objects.get(name=domain)
-    rl.delete()
-    messages.warning(request, "Relation list '%s' deleted" % domain)
+def delete_semantic_domain(request, domain):
+    sd = SemanticDomain.objects.get(name=domain)
+    sd.delete()
+    messages.warning(request, "Semantic domain '%s' deleted" % domain)
     return HttpResponseRedirect("/domains/")
 
 def lexeme_search(request):

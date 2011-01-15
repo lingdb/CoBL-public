@@ -56,10 +56,10 @@ class SemanticExtensionCitation(models.Model):
 
 reversion.register(SemanticExtensionCitation)
 
-class RelationList(models.Model):
+class SemanticDomain(models.Model):
     """A named, ordered list of semantic relations for use in display and output. A
     default list, named 'all' is (re)created on save/delete of the Language
-    table (cf. ielex.models.update_relation_list_all)"""
+    table (cf. ielex.models.update_semantic_domain_all)"""
     name = models.CharField(max_length=999)
     description = models.TextField(blank=True, null=True)
     language_ids = models.CommaSeparatedIntegerField(max_length=999)
@@ -81,4 +81,4 @@ class RelationList(models.Model):
     class Meta:
         ordering = ["name"]
 
-reversion.register(RelationList)
+reversion.register(SemanticDomain)

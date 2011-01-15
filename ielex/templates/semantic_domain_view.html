@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% load lexicon_utils %}
 
-{% block title %}Relation list{% endblock %}
+{% block title %}Semantic domain{% endblock %}
 
-{% block top %}<h1>Relation list ‘{{ relation_list.name }}’</h1>{% endblock %}
+{% block top %}<h1>Semantic domain ‘{{ semantic_domain.name }}’</h1>{% endblock %}
 
 {% block content %}
-<p>{{ relation_list.description }}</p>
+<p>{{ semantic_domain.description }}</p>
 <table>
   <thead> {# handy for the print view #}
     <tr>
@@ -37,9 +37,9 @@
 {% block controls %}
 {% include "snippets/go_to.html" %}
 <ul class="navigation">
-  <li><a href="{% url add-relation-list %}">add new semantic domain</a></li>
-  <li><a href="{% url edit-relation-list relation_list.name %}">
-    edit relation list: {{ relation_list.name }}</a>
+  <li><a href="{% url add-semantic-domain %}">add new semantic domain</a></li>
+  <li><a href="{% url edit-semantic-domain semantic_domain.name %}">
+    edit semantic domain: {{ semantic_domain.name }}</a>
   </li>
 </ul>
 
