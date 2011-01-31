@@ -12,15 +12,6 @@ from ielex.settings import VERSION
 from ielex import local_settings
 config = None
 
-# def version(request):
-#     """Provides a {{ version }} tag (referring to the application, not the
-#     particular installation"""
-#     return {"version":VERSION}
-# 
-# def current_url(request):
-#     """The {{ current_url }} tag is used as a link target to force reloading of
-#     a page (e.g. to dismiss a message)"""
-#     return {"current_url":request.get_full_path()}
 
 def configuration(request):
     """Various things stored in local_settings.py"""

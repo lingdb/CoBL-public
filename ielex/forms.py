@@ -2,6 +2,7 @@
 import re
 from django import forms
 from ielex.lexicon.models import *
+from ielex.extensional_semantics.models import *
 
 def clean_ascii_name(data):
     """Check that a string is suitable to be part of a url (ascii, no spaces)"""
@@ -92,7 +93,7 @@ class EditLexemeForm(forms.ModelForm):
 
 class EditSourceForm(forms.ModelForm):
 
-    type_code = forms.ChoiceField(choices=Source.TYPE_CHOICES,
+    type_code = forms.ChoiceField(choices=TYPE_CHOICES,
             widget=forms.RadioSelect())
 
     class Meta:
@@ -158,7 +159,7 @@ class ChooseNexusOutputForm(forms.Form):
             queryset=MeaningList.objects.all(),
             empty_label=None,
             widget=forms.Select())
-    reliability = forms.MultipleChoiceField(choices=Source.RELIABILITY_CHOICES,
+    reliability = forms.MultipleChoiceField(choices=RELIABILITY_CHOICES,
             widget=forms.CheckboxSelectMultiple,
             label="Exclude ratings")
     unique = forms.BooleanField(label="Include unique states")
@@ -171,7 +172,7 @@ class ChooseSourceForm(forms.Form):
 
 class EditCitationForm(forms.Form):
     pages = forms.CharField(required=False)
-    reliability = forms.ChoiceField(choices=Source.RELIABILITY_CHOICES,
+    reliability = forms.ChoiceField(choices=RELIABILITY_CHOICES,
             widget=forms.RadioSelect)
     comment = forms.CharField(widget=forms.Textarea, required=False)
 
@@ -179,7 +180,7 @@ class AddCitationForm(forms.Form):
     source = ChooseOneSourceField(queryset=Source.objects.all(),
             help_text="")
     pages = forms.CharField(required=False)
-    reliability = forms.ChoiceField(choices=Source.RELIABILITY_CHOICES,
+    reliability = forms.ChoiceField(choices=RELIABILITY_CHOICES,
             widget=forms.RadioSelect)
     comment = forms.CharField(widget=forms.Textarea, required=False)
 
@@ -219,7 +220,7 @@ class AddSemanticExtensionForm(forms.Form):
 class SemanticExtensionCitationForm(forms.ModelForm):
 
     # overridden to ensure no "-----" choice
-    reliability = forms.ChoiceField(choices=Source.RELIABILITY_CHOICES,
+    reliability = forms.ChoiceField(choices=RELIABILITY_CHOICES,
             widget=forms.RadioSelect) 
 
     class Meta:
@@ -230,7 +231,7 @@ class MultipleSemanticExtensionCitationForm(forms.ModelForm):
     """Hides the extension value; will be applied to multiple objects"""
 
     # overridden to ensure no "-----" choice
-    reliability = forms.ChoiceField(choices=Source.RELIABILITY_CHOICES,
+    reliability = forms.ChoiceField(choices=RELIABILITY_CHOICES,
             widget=forms.RadioSelect) 
 
     class Meta:
