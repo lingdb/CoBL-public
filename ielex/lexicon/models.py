@@ -1,24 +1,26 @@
 from __future__ import division
 from django.db import models
-from django.contrib import admin
+# from django.contrib import admin
 import reversion
-from reversion.admin import VersionAdmin
+# from reversion.admin import VersionAdmin
+
+TYPE_CHOICES = (
+        ("P", "Publication"),
+        ("U", "URL"),
+        ("E", "Expert"),
+        )
+
+RELIABILITY_CHOICES = ( # used by Citation classes
+        #("X", "Unclassified"), # change "X" to "" will force users to make
+        ("A", "High"),         # a selection upon seeing this form
+        ("B", "Good (e.g. but needs further checking)"),
+        ("C", "Doubtful"),
+        ("L", "Loanword"),
+        ("X", "Exclude (e.g. not the Swadesh term)"),
+        )
 
 class Source(models.Model):
 
-    TYPE_CHOICES = (
-            ("P", "Publication"),
-            ("U", "URL"),
-            ("E", "Expert"),
-            )
-    RELIABILITY_CHOICES = ( # used by Citation classes
-            #("X", "Unclassified"), # change "X" to "" will force users to make
-            ("A", "High"),         # a selection upon seeing this form
-            ("B", "Good (e.g. but needs further checking)"),
-            ("C", "Doubtful"),
-            ("L", "Loanword"),
-            ("X", "Exclude (e.g. not the Swadesh term)"),
-            )
 
     citation_text = models.TextField(unique=True)
     type_code = models.CharField(max_length=1, choices=TYPE_CHOICES)
@@ -34,11 +36,7 @@ class Source(models.Model):
     class Meta:
         ordering = ["type_code", "citation_text"]
 
-#reversion.register(Source)
-class SourceAdmin(VersionAdmin):
-    pass
-
-admin.site.register(Source, SourceAdmin)
+reversion.register(Source)
 
 class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
@@ -171,7 +169,7 @@ class CognateJudgement(models.Model):
     @property
     def long_reliability_ratings(self):
         """An alphabetically sorted list of (rating_code, description) tuples"""
-        descriptions = dict(Source.RELIABILITY_CHOICES)
+        descriptions = dict(RELIABILITY_CHOICES)
         return [(rating, descriptions[rating]) for rating in sorted(self.reliability_ratings)]
 
     @property
@@ -249,12 +247,12 @@ class AbstractBaseCitation(models.Model):
     The source field has to be in the subclasses in order for the
     unique_together constraints to work properly"""
     pages = models.CharField(max_length=999)
-    reliability = models.CharField(max_length=1, choices=Source.RELIABILITY_CHOICES)
+    reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
     comment = models.CharField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
 
     def long_reliability(self):
-        descriptions = dict(Source.RELIABILITY_CHOICES)
+        descriptions = dict(RELIABILITY_CHOICES)
         return descriptions[self.reliability]
 
     class Meta:
@@ -295,85 +293,6 @@ class LexemeCitation(AbstractBaseCitation):
 
 reversion.register(LexemeCitation)
 
-class SemanticRelation(models.Model):
-    relation_code = models.CharField(max_length=64)
-    long_name = models.CharField(max_length=128)
-    description = models.TextField(blank=True)
-    notes = models.TextField(blank=True)
-    modified = models.DateTimeField(auto_now=True)
-
-    def get_absolute_url(self):
-        return "/relation/%s/" % self.relation_code
-
-    def __unicode__(self):
-        return unicode("%s (%s)" % (self.relation_code, self.long_name))
-
-reversion.register(SemanticRelation)
-
-class SemanticExtension(models.Model):
-    lexeme = models.ForeignKey(Lexeme)
-    relation = models.ForeignKey(SemanticRelation)
-    source = models.ManyToManyField(Source, through="SemanticExtensionCitation")
-    modified = models.DateTimeField(auto_now=True)
-
-    def reliability_ratings(self):
-        return set(self.kinmappingcitation_set.values_list("reliability", flat=True))
-
-    def get_absolute_url(self):
-        return "/extension/%s/" % self.id
-
-    def __unicode__(self):
-        return u"%s" % (self.id)
-
-reversion.register(SemanticExtension)
-
-class SemanticExtensionCitation(AbstractBaseCitation):
-    extension = models.ForeignKey(SemanticExtension)
-    source = models.ForeignKey(Source)
-
-    def get_absolute_url(self):
-        return "/citation/extension/%s/" % self.id
-
-    def __unicode__(self):
-        return u"<SEC %s src=%s sec=%s>" % (self.id, self.extension.id, self.source.id)
-
-    class Meta:
-        unique_together = (("extension", "source"),)
-
-reversion.register(SemanticExtensionCitation)
-
-class SemanticDomain(models.Model):
-    """A named, ordered list of semantic relations (referred to as a 'domain'
-    in the user interface) for use in display and output. A default list, named
-    'all' is (re)created on save/delete of the Language table (cf.
-    ielex.models.update_semantic_domain_all)"""
-    DEFAULT = "all"
-
-    name = models.CharField(max_length=999, unique=True)
-    description = models.TextField(blank=True, null=True)
-    relation_ids = models.CommaSeparatedIntegerField(blank=True,
-            max_length=999)
-    modified = models.DateTimeField(auto_now=True)
-
-    def _get_list(self):
-        if not self.relation_ids: # i.e. fresh install
-            self.relation_ids = ",".join([str(i) for i in
-                SemanticRelation.objects.values_list("id", flat=True)])
-        return [int(i) for i in self.relation_ids.split(",")]
-    def _set_list(self, listobj):
-        self.relation_ids = ",".join([str(i) for i in listobj])
-        return
-    relation_id_list = property(_get_list, _set_list)
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        ordering = ["name"]
-
-reversion.register(SemanticDomain)
-
-
 def update_language_list_all(sender, instance, **kwargs):
     """Update the LanguageList 'all' whenever Language objects are saved or
     deleted"""
@@ -403,20 +322,6 @@ def update_meaning_list_all(sender, instance, **kwargs):
 
 models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
 models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
-
-def update_semantic_domain_all(sender, instance, **kwargs):
-    try:
-        sd = SemanticDomain.objects.get(name=SemanticDomain.DEFAULT)
-    except:
-        sd = SemanticDomain.objects.create(name=SemanticDomain.DEFAULT,
-                description="Default semantic domain containing a list of all semantic relations")
-    if sd.relation_id_list != list(SemanticRelation.objects.values_list("id", flat=True)):
-        sd.relation_id_list = [l.id for l in SemanticRelation.objects.all()]
-        sd.save(force_update=True)
-    return
-
-models.signals.post_save.connect(update_semantic_domain_all, sender=SemanticRelation)
-models.signals.post_delete.connect(update_semantic_domain_all, sender=SemanticRelation)
 
 # def update_aliases(sender, instance, **kwargs):
 #     """In case a cognate set has cognate judgements relating to two or more

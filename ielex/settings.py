@@ -80,7 +80,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'ielex.urls'
 
 TEMPLATE_DIRS = (
-    os.path.join(ROOTDIR, 'templates'), #.replace('\\','/') for Windows
+    os.path.join(ROOTDIR, 'templates'), 
 )
 
 INSTALLED_APPS = (
@@ -92,6 +92,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'reversion',
     'ielex.lexicon',
+    'ielex.extensional_semantics',
 )
 
 # admin urls
