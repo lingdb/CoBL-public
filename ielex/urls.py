@@ -10,18 +10,15 @@ admin.autodiscover()
 
 # additional arguments can be passed with a dictionary
 
-# TODO: refactoring. Make standard patterns/capture names into a dictionary of
-# centralized # variables (DNRY), e.g. 
-# regex_patterns = # {LANGUAGE:"(?P<language>[a-zA-Z0-9_ -]+)" ,
-#               MEANING:"(?P<meaning>[a-zA-Z0-9_ ]+|\d+)"} etc., 
-# then build the urls as url(r'/language/%(LANGUAGE)s/' % patterns ... )
-
-R = {"DOMAIN":r"(?P<domain>[a-zA-Z0-9_.-]+)",
-    "RELATION":r"(?P<relation>[a-zA-Z0-9_.-]+)",
+# standard regexes for urls
+R = {
+    "COGJUDGE_ID":r"(?P<cogjudge_id>\d+)",
+    "DOMAIN":r"(?P<domain>[a-zA-Z0-9_.-]+)",
     "LANGUAGE":r"(?P<language>[a-zA-Z0-9_-]+)",
-    "MEANING":r"(?P<meaning>[a-zA-Z0-9_]+)",
     "LEXEME_ID":r"(?P<lexeme_id>\d+)",
-    "COGJUDGE_ID":r"(?P<cogjudge_id>\d+)"
+    "MEANING":r"(?P<meaning>[a-zA-Z0-9_]+)",
+    "RELATION":r"(?P<relation>[a-zA-Z0-9_.-]+)",
+    #"WORDLIST":r"",
     }
 
 urlpatterns = patterns('',
