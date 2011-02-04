@@ -23,7 +23,8 @@ class Source(models.Model):
 
 
     citation_text = models.TextField(unique=True)
-    type_code = models.CharField(max_length=1, choices=TYPE_CHOICES)
+    type_code = models.CharField(max_length=1, choices=TYPE_CHOICES,
+            default="P")
     description = models.TextField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
