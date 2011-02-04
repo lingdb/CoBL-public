@@ -908,7 +908,7 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
 
 def source_list(request):
     grouped_sources = []
-    for type_code, type_name in Source.TYPE_CHOICES:
+    for type_code, type_name in TYPE_CHOICES:
         grouped_sources.append((type_name,
                 Source.objects.filter(type_code=type_code)))
     return render_template(request, "source_list.html",
