@@ -287,7 +287,8 @@ class LexemeCitation(AbstractBaseCitation):
         # TODO "/citation/lexeme/%s/"
 
     def __unicode__(self):
-        return u"%s src=%s cit=%s" % (self.lexeme.source_form, self.source.id, self.id)
+        return u"%s src=%s cit=%s" % (self.lexeme.source_form, self.source.id,
+                self.id)
 
     class Meta:
         unique_together = (("lexeme", "source"),)
