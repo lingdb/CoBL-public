@@ -59,8 +59,8 @@ def write_nexus(request):
         # TODO look at LexemeCitation reliablity ratings here too
         language_ids = [cj.lexeme.language.id for cj in
                 CognateJudgement.objects.filter(cognate_class=cc,
-                lexeme__meaning__in=meanings)
-                if not (cj.reliability_ratings & exclude)]
+                        lexeme__meaning__in=meanings)
+                        if not (cj.reliability_ratings & exclude)]
         if language_ids:
             data[cc] = language_ids
 

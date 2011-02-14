@@ -1,8 +1,10 @@
 from __future__ import division
+import re ###
 from django.db import models
 # from django.contrib import admin
 import reversion
 # from reversion.admin import VersionAdmin
+from ielex.lexicon.validators import *
 
 TYPE_CHOICES = (
         ("P", "Publication"),
@@ -41,7 +43,7 @@ reversion.register(Source)
 
 class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
-    ascii_name = models.CharField(max_length=999, unique=True)
+    ascii_name = models.CharField(max_length=999, unique=True, validators=[suitable_for_url])
     utf8_name = models.CharField(max_length=999, unique=True)
     sort_key = models.FloatField(null=True, blank=True, editable=False)
     description = models.TextField(blank=True, null=True)
@@ -77,9 +79,9 @@ class DyenName(models.Model):
         ordering = ["name"]
 
 class Meaning(models.Model):
-    gloss = models.CharField(max_length=64) # one word name
-    description = models.CharField(max_length=64) # show name
-    notes = models.TextField()
+    gloss = models.CharField(max_length=64, validators=[suitable_for_url])
+    description = models.CharField(max_length=64, blank=True) # show name
+    notes = models.TextField(blank=True)
 
     def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
@@ -189,7 +191,7 @@ class LanguageList(models.Model):
     table (cf. ielex.models.update_language_list_all)"""
     DEFAULT = "all"
 
-    name = models.CharField(max_length=999)
+    name = models.CharField(max_length=999, validators=[suitable_for_url])
     description = models.TextField(blank=True, null=True)
     language_ids = models.CommaSeparatedIntegerField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
@@ -216,10 +218,10 @@ class LanguageList(models.Model):
 reversion.register(LanguageList)
 
 class MeaningList(models.Model):
-    """Named lists of meanings, e.g. 'All' and 'Swadesh 100'"""
+    """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
     DEFAULT = "all"
 
-    name = models.CharField(max_length=999)
+    name = models.CharField(max_length=999, validators=[suitable_for_url])
     description = models.TextField(blank=True, null=True)
     meaning_ids = models.CommaSeparatedIntegerField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
