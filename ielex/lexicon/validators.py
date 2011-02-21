@@ -8,9 +8,15 @@ import re
 from django.core.validators import ValidationError
 
 def suitable_for_url(value):
+    """Test that value contains onlys unreserved characters
+    according to RFC3986/2.3:
+
+    unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
+    """
     # cf also clean_ascii_name function in forms.py
-    regex = re.compile(r"[a-zA-Z0-9_-.]+")
+    regex = re.compile(r"[a-zA-Z0-9_.~-]+")
     match = regex.match(value)
     if match.start() > 0 or match.end() < len(value):
-        raise ValidationError("Meaning.gloss does not match regex pattern")
+        raise ValidationError("Meaning.gloss does not match %s" %
+                repr(regex.pattern))
     return
