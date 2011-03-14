@@ -1,7 +1,8 @@
 TODO
 ====
 
-
+- rewrite templates so the database can handle startup from nothing (e.g.
+  initially, only offer "create language", "create meaning" pages
 
 for Version 0.3
 ---------------
@@ -34,9 +35,6 @@ for Version 0.3
   list of cognate sets, and apply a new alias to one of the forms (would have
   to check against the aliases used by the other meanings corresponding to the
   form as well).
-
-  Maybe: test for alias collisions with a post-save hook and rename the alias
-  if it should ever occur.
 
 - Need a many to many table linking cognate sets to sources: in lots of cases
   we have general information about the reconstructed form
