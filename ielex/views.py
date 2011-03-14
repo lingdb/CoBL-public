@@ -356,6 +356,18 @@ def edit_language(request, language):
             {"language":language,
             "form":form})
 
+@login_required
+def delete_language(request, language):
+    try:
+        language = Language.objects.get(ascii_name=language)
+    except Language.DoesNotExist:
+        language = get_canonical_language(language)
+        return HttpResponseRedirect(reverse("language-delete"),
+                args=[language.ascii_name])
+
+    language.delete()
+    return HttpResponseRedirect(reverse("view-languages"))
+
 # -- /meaning(s)/ ---------------------------------------------------------
 
 def view_meanings(request):

@@ -1,5 +1,29 @@
-DESIGN
-======
+Permissions
+-----------
+
+edit database (no reason to split add/change/delete)
+add users
+export data
+change permissions
+
+This maybe doesn't make sense: we could allow all logged in users to edit the
+database, and allow superusers to do the admin tasks. But maybe it makes sense
+to distinguish registered downloaders from people empowered to edit the
+database.
+
+Groups: 
+
+* Administrator (Everything)
+* Contributor (Everything with data, but not user admin)
+* Registered User (downloading and commenting)
+* Anonymous (Viewing)
+
+Each group gets the cumulative permissions of the other groups
+
+It would be nice to distinguish "released" and "unreleased" data too...
+
+Design
+------
 
 * Buttons. Disabling a button once is has been pressed::
 
@@ -49,30 +73,6 @@ via the ``_meta`` attribute, e.g.::
 
 More info at http://www.b-list.org/weblog/2007/nov/04/working-models/
 
-
-Permissions
------------
-
-edit database (no reason to split add/change/delete)
-add users
-export data
-change permissions
-
-This maybe doesn't make sense: we could allow all logged in users to edit the
-database, and allow superusers to do the admin tasks. But maybe it makes sense
-to distinguish registered downloaders from people empowered to edit the
-database.
-
-Groups: 
-
-Administrator (Everything)
-Contributor (Everything with data, but not user admin)
-Registered User (downloading and commenting)
-Anonymous (Viewing)
-
-Each group gets the cumulative permissions of the other groups
-
-It would be nice to distinguish "released" and "unreleased" data too...
 
 Commenting
 ----------
@@ -263,5 +263,21 @@ Acknowledge that I'm using the Sweetie BasePack ::
    Email:   sublick@gmail.com
    Licence: Attribution-ShareAlike 3.0
    Website: sweetie.sublink.ca
+
+Django 1.2
+----------
+
+Object-level permissions¶
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A foundation for specifying permissions at the per-object level was added in Django 1.2 alpha but not documented with the alpha release.
+
+The default authentication backends shipped with Django do not currently make use of this, but third-party authentication backends are free to do so. See the authentication docs for more information.
+
+Permissions for anonymous users¶
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you provide a custom authentication backend with the attribute supports_anonymous_user set to True, the AnonymousUser class will check the backend for permissions, just as the normal User does. This is intended to help centralize permission handling; apps can always delegate the question of whether something is allowed or not to the authorization/authentication system. See the authentication docs for more details.
+
 
 .. vim:ft=rst

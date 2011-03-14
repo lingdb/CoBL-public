@@ -1,21 +1,8 @@
 TODO
 ====
 
-Django 1.2
-----------
-
-Object-level permissions¶
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-A foundation for specifying permissions at the per-object level was added in Django 1.2 alpha but not documented with the alpha release.
-
-The default authentication backends shipped with Django do not currently make use of this, but third-party authentication backends are free to do so. See the authentication docs for more information.
-
-Permissions for anonymous users¶
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you provide a custom authentication backend with the attribute supports_anonymous_user set to True, the AnonymousUser class will check the backend for permissions, just as the normal User does. This is intended to help centralize permission handling; apps can always delegate the question of whether something is allowed or not to the authorization/authentication system. See the authentication docs for more details.
-
+- rewrite templates so the database can handle startup from nothing (e.g.
+  initially, only offer "create language", "create meaning" pages
 
 for Version 0.3
 ---------------
@@ -33,6 +20,8 @@ for Version 0.3
     - view other user's profile (incl. statistics)
     - change password
 
+  * Dashboard thing
+
 - Implement permissions/permission groups on all editing actions
 
 - change password view
@@ -47,20 +36,12 @@ for Version 0.3
   to check against the aliases used by the other meanings corresponding to the
   form as well).
 
-  Maybe: test for alias collisions with a post-save hook and rename the alias
-  if it should ever occur.
-
 - Need a many to many table linking cognate sets to sources: in lots of cases
   we have general information about the reconstructed form
 
 - The Language.description field in (the sidebar of?) the /language/ view
 
-- Add language (and maybe delete too--from a new page) # part DONE
-
-- Fix exception raised when you try to change a blank value in the language
-  edit page # DONE?
-
-- Handle typos in url fields.
+- Handle typos in url fields. **full 404 handling**
 
 - Add/edit meaning pages
 
@@ -90,8 +71,6 @@ General
   sources)
 
 - Include all relevant citations in export functions.
-
-- test what happens when you change a language name (does data get lost)?
 
 - Use http://docs.djangoproject.com/en/dev/howto/custom-management-commands/ to
   make database-specific management functions (e.g. add users, change user
