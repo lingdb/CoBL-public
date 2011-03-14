@@ -12,13 +12,16 @@ def suitable_for_url(value):
     according to RFC3986/2.3:
 
     unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
-    
-    TODO: reserved names 'all', 'none'
+
+    TODO: reserved names 'all', 'none' # put this list somewhere
     """
+    reserved_names =["all"]
     # cf also clean_ascii_name function in forms.py
     regex = re.compile(r"[a-zA-Z0-9_.~-]+")
     match = regex.match(value)
     if match.start() > 0 or match.end() < len(value):
         raise ValidationError("Meaning.gloss does not match %s" %
                 repr(regex.pattern))
+    if value in reserved_names:
+        raise ValidationError("Meaning.gloss is a reserved name")
     return
