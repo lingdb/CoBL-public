@@ -12,6 +12,8 @@ def suitable_for_url(value):
     according to RFC3986/2.3:
 
     unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
+    
+    TODO: reserved names 'all', 'none'
     """
     # cf also clean_ascii_name function in forms.py
     regex = re.compile(r"[a-zA-Z0-9_.~-]+")

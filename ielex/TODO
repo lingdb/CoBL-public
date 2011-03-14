@@ -4,6 +4,40 @@ TODO
 - rewrite templates so the database can handle startup from nothing (e.g.
   initially, only offer "create language", "create meaning" pages
 
+- Decorate drop-down menu names (e.g. so that languages without data can be
+  bracketted)
+
+- The url `/language/Maniq/` should be qualified::
+
+    /language/Maniq/wordlist/Swadesh100/
+
+  Treat `/language/Maniq/` as an alias of `/language/Maniq/wordlist/all`
+
+- Get rid of the LanguageList session variable, and put the info into urls
+  instead::
+
+    /languages/Dunn2011/meaning/ash/
+
+  Treat `/meaning/ash/` as an alias of `/languages/all/meaning/ash`
+
+- language lists and wordlists should have two orders, the default order (saved
+  in the database) and alphabetical order. People don't need to be able to
+  customize this further.
+
+- Describe grammar of urls::
+
+  /language/.../(wordlist/.../) # list of words in a language
+  /language/.../                # default: all words in language
+  /language/.../domain/.../     # list of words in a language pertaining to
+                                # domain
+  (/languages/...)/meaning/.../ # list of words with a meaning (in language
+                                # list)
+  /meaning/.../                 # list of all words with a meaning
+  /domain/.../                  # relation names in a domain
+  
+  Reserved names for sets 'all' (for languages, meanings), 'none' (for
+  meanings, domains)
+
 for Version 0.3
 ---------------
 
