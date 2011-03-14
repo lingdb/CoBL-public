@@ -264,4 +264,20 @@ Acknowledge that I'm using the Sweetie BasePack ::
    Licence: Attribution-ShareAlike 3.0
    Website: sweetie.sublink.ca
 
+Django 1.2
+----------
+
+Object-level permissions¶
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A foundation for specifying permissions at the per-object level was added in Django 1.2 alpha but not documented with the alpha release.
+
+The default authentication backends shipped with Django do not currently make use of this, but third-party authentication backends are free to do so. See the authentication docs for more information.
+
+Permissions for anonymous users¶
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you provide a custom authentication backend with the attribute supports_anonymous_user set to True, the AnonymousUser class will check the backend for permissions, just as the normal User does. This is intended to help centralize permission handling; apps can always delegate the question of whether something is allowed or not to the authorization/authentication system. See the authentication docs for more details.
+
+
 .. vim:ft=rst
