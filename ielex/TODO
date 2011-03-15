@@ -24,15 +24,19 @@ TODO
   in the database) and alphabetical order. People don't need to be able to
   customize this further.
 
+- XXX Next big task: refactor the /meaning/.../ functions to handle
+  /languages/.../ specification.
+
 - Describe grammar of urls::
 
-    /language/.../(wordlist/.../) # list of words in a language
+    /language/...(/wordlist/...)/ # list of words in a language
     /language/.../                # default: all words in language
     /language/.../domain/.../     # list of words in a language pertaining to
                                   # domain
-    (/languages/...)/meaning/.../ # list of words with a meaning (in language
+    /meaning/...(/languages/...)/ # list of words with a meaning (in language
                                   # list)
     /meaning/.../                 # list of all words with a meaning
+    /meaning/.../delete/          # TODO
     /meanings/                    # alias for /wordlist/all/
     /meanings/add-new/            # (this is why we need both meanings and wordlist)
     /wordlist/Swadesh100/         # a named list of meanings

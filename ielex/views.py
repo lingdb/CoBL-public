@@ -146,7 +146,7 @@ def get_canonical_language(language):
 def get_sort_order(request):
     return request.session.get("language_sort_order", "sort_key")
 
-def get_languages(request):
+def get_languages(request): # refactor this away XXX
     """Get all Language objects, respecting language_list selection; if no
     language list then all languages are selected"""
     language_list_name = get_current_language_list_name(request)
@@ -159,12 +159,16 @@ def get_languages(request):
         languages = Language.objects.all()
     return languages
 
-def get_current_language_list_name(request):
+def get_current_language_list_name(request): # refactor this away XXX
     """Get the name of the current language list from session."""
     return request.session.get("language_list_name", LanguageList.DEFAULT)
 
-def get_prev_and_next_languages(request, current_language):
-    ids = list(get_languages(request).values_list("id", flat=True))
+def get_prev_and_next_languages(request, current_language, language_list=None):
+    # XXX language_list argument is not currently used
+    if language_list:
+        ids = LanguageList.objects.get(name=language_list).language_id_list
+    else:
+        ids = list(Language.objects.values_list("id", flat=True))
     try:
         current_idx = ids.index(current_language.id)
     except ValueError:
