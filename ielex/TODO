@@ -51,6 +51,14 @@ TODO
   Urls consist of a sequence of  FUNCTION-ARGUMENT, VERB-OBJECT,
   CLASSIFIER-NOUN elements
 
+  Adding lexemes, with different amounts of prespecified info::
+
+    /language/.../lexeme/add/
+    /meaning/.../lexeme/add/
+    /language/.../meaning/.../lexeme/add/ # return to language
+    /meaning/.../language/.../lexeme/add/ # return to meaning
+    /lexeme/add/
+
 for Version 0.3
 ---------------
 

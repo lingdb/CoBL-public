@@ -301,6 +301,7 @@ def sort_languages(request, ordered_by):
     request.session["language_sort_order"] = ordered_by
     return HttpResponseRedirect(referer)
 
+
 def view_language_wordlist(request, language, wordlist):
     wordlist = MeaningList.objects.get(name=wordlist)
 
@@ -461,7 +462,7 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
     else:
         meaning = Meaning.objects.get(gloss=meaning)
 
-    # cognate class judgement
+    # cognate class judgement button
     if request.method == 'POST':
         form = ChooseCognateClassForm(request.POST)
         if form.is_valid():
@@ -545,7 +546,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     return HttpResponseRedirect(redirect_url)
                 if form.data["submit"] != "Submit":
                     if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = "/language/%s/add-lexeme/" % lexeme.language.ascii_name
+                        redirect_url = reverse("language-add-lexeme",
+                                args=[lexeme.language.ascii_name])
                     else:
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
                 if form.is_valid():
@@ -558,7 +560,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     return HttpResponseRedirect(redirect_url)
                 if form.data["submit"] != "Submit":
                     if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = "/language/%s/add-lexeme/" % lexeme.language.ascii_name
+                        redirect_url = reverse("language-add-lexeme",
+                                args=[lexeme.language.ascii_name])
                     else:
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
@@ -573,7 +576,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     return HttpResponseRedirect(redirect_url)
                 if form.data["submit"] != "Submit":
                     if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = "/language/%s/add-lexeme/" % lexeme.language.ascii_name
+                        redirect_url = reverse("language-add-lexeme",
+                                args=[lexeme.language.ascii_name])
                     else:
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
@@ -594,7 +598,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     return HttpResponseRedirect(redirect_url)
                 if form.data["submit"] != "Submit":
                     if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = "/language/%s/add-lexeme/" % lexeme.language.ascii_name
+                        redirect_url = reverse("language-add-lexeme",
+                                args=[lexeme.language.ascii_name])
                     else:
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
@@ -623,7 +628,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     return HttpResponseRedirect(redirect_url)
                 if form.data["submit"] != "Submit":
                     if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = "/language/%s/add-lexeme/" % lexeme.language.ascii_name
+                        redirect_url = reverse("language-add-lexeme",
+                                args=[lexeme.language.ascii_name])
                     else:
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
@@ -638,7 +644,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     return HttpResponseRedirect(redirect_url)
                 if form.data["submit"] != "Submit":
                     if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = "/language/%s/add-lexeme/" % lexeme.language.ascii_name
+                        redirect_url = reverse("language-add-lexeme",
+                                args=[lexeme.language.ascii_name])
                     else:
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
