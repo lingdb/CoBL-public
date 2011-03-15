@@ -35,6 +35,8 @@ TODO
                                   # domain
     /meaning/...(/languages/...)/ # list of words with a meaning (in language
                                   # list)
+    # lexemes in this view have identifiers, e.g.
+    /meaning/animal/languages/aslian/#lexeme_6
     /meaning/.../                 # list of all words with a meaning
     /meaning/.../delete/          # TODO
     /meanings/                    # alias for /wordlist/all/

@@ -181,6 +181,7 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
     return (prev_language, next_language)
 
 def get_prev_and_next_meanings(current_meaning):
+    # XXX this should also know about wordlist
     meanings = Meaning.objects.all().extra(select={'lower_gloss':
             'lower(gloss)'}).order_by('lower_gloss')
     ids = [m.id for m in meanings]
@@ -449,6 +450,31 @@ def edit_meaning(request, meaning):
     return render_template(request, "meaning_edit.html",
             {"meaning":meaning,
             "form":form})
+
+
+def view_meaning(request, meaning, languages):
+    # XXX a refactored version of report_meaning
+
+    # normalize meaning
+    if meaning.isdigit():
+        meaning = Meaning.objects.get(id=int(meaning))
+        # if there are actions and lexeme_ids these should be preserved too
+        return HttpResponseRedirect("/meaning/%s/" % meaning.gloss)
+    else:
+        meaning = Meaning.objects.get(gloss=meaning)
+
+    # get lexemes, respecting 'languages'
+    lexemes = Lexeme.objects.filter(meaning=meaning,
+            language__id__in=LanguageList.objects.get(name=languages).language_id_list)
+
+    prev_meaning, next_meaning = get_prev_and_next_meanings(meaning)
+    return render_template(request, "view_meaning.html",
+            {"meaning":meaning,
+            "prev_meaning":prev_meaning,
+            "next_meaning":next_meaning,
+            "lexemes": lexemes,
+            })
+
 
 def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
     lexeme_id = int(lexeme_id)
