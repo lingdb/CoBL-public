@@ -36,11 +36,10 @@ urlpatterns = patterns('',
             name="language-sort"),
 
     # Language
-    url(r'^language/%(LANGUAGE)s/$' % R, language_report,
-            name="language-report"),
-    ## TODO Change this to
-    # url(r'^language/%(LANGUAGE)s/lexemes/%(WORDLIST)s/$' % R, language_report,
-    #         name="language-report"),
+    url(r'^language/%(LANGUAGE)s/$' % R, view_language_wordlist,
+            {"wordlist":"all"}, name="language-report"),
+    url(r'^language/%(LANGUAGE)s/wordlist/%(WORDLIST)s/$' % R,
+            view_language_wordlist, name="view-language-wordlist"),
     url(r'^language/%(LANGUAGE)s/edit/$' % R, edit_language,
             name="language-edit"),
     url(r'^language/%(LANGUAGE)s/delete/$' % R, delete_language,

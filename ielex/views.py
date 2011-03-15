@@ -174,9 +174,7 @@ def get_prev_and_next_languages(request, current_language):
         next_language = Language.objects.get(id=ids[current_idx+1])
     except IndexError:
         next_language = Language.objects.get(id=ids[0])
-    return (prev_language, 
-            get_current_language_list_name(request),
-            next_language)
+    return (prev_language, next_language)
 
 def get_prev_and_next_meanings(current_meaning):
     meanings = Meaning.objects.all().extra(select={'lower_gloss':
@@ -299,24 +297,43 @@ def sort_languages(request, ordered_by):
     request.session["language_sort_order"] = ordered_by
     return HttpResponseRedirect(referer)
 
-def language_report(request, language):
+def view_language_wordlist(request, language, wordlist):
+    wordlist = MeaningList.objects.get(name=wordlist)
+
+    # clean language name
     try:
         language = Language.objects.get(ascii_name=language)
     except(Language.DoesNotExist):
         language = get_canonical_language(language)
-        return HttpResponseRedirect(reverse("language-report",
-            args=[language.ascii_name]))
-    # TODO further ordering by phon_form, source_form, and put blanks at the
-    # end rather than the beginning
-    lexemes = Lexeme.objects.filter(language=language).order_by("meaning")
-    prev_language, language_list_name, next_language = \
+        return HttpResponseRedirect(reverse("view-language-wordlist",
+            args=[language.ascii_name, wordlist.name]))
+
+    # change wordlist
+    if request.method == 'POST':
+        form = ChooseMeaningListForm(request.POST)
+        if form.is_valid():
+            wordlist = form.cleaned_data["meaning_list"]
+            msg = u"Wordlist selection changed to '%s'" %\
+                    wordlist.name
+            messages.add_message(request, messages.INFO, msg)
+            return HttpResponseRedirect(reverse("view-language-wordlist",
+                    args=[language.ascii_name, wordlist.name]))
+    else:
+        form = ChooseMeaningListForm()
+    form.fields["meaning_list"].initial = wordlist.id
+
+    # collect data
+    lexemes = Lexeme.objects.filter(language=language,
+            meaning__id__in=wordlist.meaning_id_list)
+    prev_language, next_language = \
             get_prev_and_next_languages(request, language)
-    return render_template(request, "language_report.html",
+    return render_template(request, "language_wordlist.html",
             {"language":language,
             "lexemes":lexemes,
             "prev_language":prev_language,
             "next_language":next_language,
-            "language_list_name":language_list_name
+            "wordlist":wordlist,
+            "form":form
             })
 
 @login_required
@@ -369,33 +386,6 @@ def delete_language(request, language):
     return HttpResponseRedirect(reverse("view-languages"))
 
 # -- /meaning(s)/ and /wordlist/ ------------------------------------------
-
-def view_meanings(request): # XXX defunct, remove (view wordlist)
-    meaning_list_name = request.session.get("meaning_list_name",
-            MeaningList.DEFAULT)
-    if request.method == 'POST':
-        form = ChooseMeaningListForm(request.POST)
-        if form.is_valid():
-            current_list = form.cleaned_data["meaning_list"]
-            meaning_list_name = current_list.name
-            msg = "Meaning list selection changed to '%s'" %\
-                    meaning_list_name
-            messages.add_message(request, messages.INFO, msg)
-    else:
-        form = ChooseMeaningListForm()
-    form.fields["meaning_list"].initial = MeaningList.objects.get(
-            name=meaning_list_name).id
-
-    meanings = Meaning.objects.all().extra(select={'lower_gloss':
-            'lower(gloss)'}).order_by('lower_gloss')
-    current_list = MeaningList.objects.get(name=meaning_list_name)
-
-    response = render_template(request, "meaning_list.html",
-            {"meanings":meanings,
-            "form":form,
-            "current_list":current_list})
-    request.session["meaning_list_name"] = meaning_list_name
-    return response 
 
 def view_wordlist(request, wordlist="all"):
     wordlist = MeaningList.objects.get(name=wordlist)

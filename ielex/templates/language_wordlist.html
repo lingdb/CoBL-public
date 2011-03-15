@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}Word list report: {{ language.utf8_name }}{% endblock %}
+{% block title %}{{ language.utf8_name }} ({{ wordlist }}){% endblock %}
 
-{% block top %}<h1>{{ language.utf8_name }}</h1>{% endblock %}
+{% block top %}<h1>{{ language.utf8_name }} ({{ wordlist }})</h1>{% endblock %}
 
 {% block content %}
 <table>
@@ -65,6 +65,17 @@
 </fieldset>
 </small>
 {% endif %}
+<p>
+<form action="" method="post">{% csrf_token %}
+<fieldset>
+<legend>Change wordlist<legend>
+<table>
+{{ form.as_table }}
+</table>
+<p class="help">Limit all results to a predefined set of meanings</p>
+</fieldset>
+</form>
+</p>
 {% endblock %}
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
