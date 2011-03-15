@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load lexicon_utils %}
+
+{% block title %}Word list{% endblock %}
+
+{% block top %}<h1>Meanings</h1>{% endblock %}
+
+{% block content %}
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Meaning</th>
+    <th>Gloss</th>
+    <th>% Coded</th>
+    {# <th>Count</th> #}
+  </tr>
+  {% for meaning in meanings %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    <td>
+      {% if user.is_superuser %}
+        <a href="{% url meaning-edit meaning.gloss %}">
+          <img src="/media/buttons/edit.png" alt="edit" title="Edit ‘{{ meaning.gloss }}’ metadata" />
+        </a>
+      {% endif %}
+      {{ meaning.description }}
+    </td>
+    <td><a href="{% url meaning-report meaning.id %}">{{ meaning.gloss }}</a></td>
+    {# <td>{{ meaning.lexeme_count }}</td> #}
+    <td>{{ meaning.percent_coded }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
+
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+{% if user.is_superuser %}
+<ul class="navigation">
+  <li><a href="/meanings/add-new/">Add/Delete meaning</a></li>
+  <li><a href="/lexeme/search/">Search lexemes</a></li>
+</ul>
+{% endif %}
+<h2>Controls</h2>
+<p>
+<form action="" method="post">{% csrf_token %}
+<fieldset>
+<legend>Meaning List<legend>
+<table>
+{{ form.as_table }}
+</table>
+<p class="help">Limit all results to a predefined set of meanings</p>
+</fieldset>
+</form>
+</p>
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
