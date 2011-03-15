@@ -26,17 +26,26 @@ TODO
 
 - Describe grammar of urls::
 
-  /language/.../(wordlist/.../) # list of words in a language
-  /language/.../                # default: all words in language
-  /language/.../domain/.../     # list of words in a language pertaining to
-                                # domain
-  (/languages/...)/meaning/.../ # list of words with a meaning (in language
-                                # list)
-  /meaning/.../                 # list of all words with a meaning
-  /domain/.../                  # relation names in a domain
+    /language/.../(wordlist/.../) # list of words in a language
+    /language/.../                # default: all words in language
+    /language/.../domain/.../     # list of words in a language pertaining to
+                                  # domain
+    (/languages/...)/meaning/.../ # list of words with a meaning (in language
+                                  # list)
+    /meaning/.../                 # list of all words with a meaning
+    /meanings/                    # alias for /wordlist/all/
+    /meanings/add-new/            # (this is why we need both meanings and wordlist)
+    /wordlist/Swadesh100/         # a named list of meanings
+    /wordlists/                   # list defined wordlists
+    /domain/.../                  # relation names in a domain
   
   Reserved names for sets 'all' (for languages, meanings), 'none' (for
   meanings, domains)
+
+  TODO: work on a set of explicit principles for url element order
+
+  Urls consist of a sequence of  FUNCTION-ARGUMENT, VERB-OBJECT,
+  CLASSIFIER-NOUN elements
 
 for Version 0.3
 ---------------

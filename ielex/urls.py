@@ -18,7 +18,7 @@ R = {
     "LEXEME_ID":r"(?P<lexeme_id>\d+)",
     "MEANING":r"(?P<meaning>[a-zA-Z0-9_]+)",
     "RELATION":r"(?P<relation>[a-zA-Z0-9_.-]+)",
-    #"WORDLIST":r"",
+    "WORDLIST":r"(?P<wordlist>[a-zA-Z0-9_.-]+)",
     }
 
 urlpatterns = patterns('',
@@ -50,8 +50,13 @@ urlpatterns = patterns('',
     url(r'^language/%(LANGUAGE)s/add-lexeme/%(MEANING)s/' % R,
             lexeme_add, {"return_to":"/language/%(language)s/"}),
 
-    # Meanings
-    url(r'^meanings/$', view_meanings, name="view-meanings"),
+    # Meanings (aka wordlist)
+    url(r'^wordlist/%(WORDLIST)s/$' % R, view_wordlist, name="view-wordlist"),
+    # url(r'^wordlist/%(WORDLIST)s/edit/$' % R, edit_wordlist,
+    #         name="edit-wordlist"),
+    #url(r'^wordlist/%(WORDLIST)s/reorder/$' % R, reorder_wordlist,
+    #         name="reorder-wordlist"),
+    url(r'^meanings/$', view_wordlist, {"wordlist":"all"}, name="view-meanings"),
     url(r'^meanings/add-new/$', meaning_add_new, name="meaning-add-new"),
     url(r'^meaning/%(MEANING)s/edit/$' % R, edit_meaning,
             name="meaning-edit"),

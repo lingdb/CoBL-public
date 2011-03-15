@@ -368,9 +368,9 @@ def delete_language(request, language):
     language.delete()
     return HttpResponseRedirect(reverse("view-languages"))
 
-# -- /meaning(s)/ ---------------------------------------------------------
+# -- /meaning(s)/ and /wordlist/ ------------------------------------------
 
-def view_meanings(request):
+def view_meanings(request): # XXX defunct, remove (view wordlist)
     meaning_list_name = request.session.get("meaning_list_name",
             MeaningList.DEFAULT)
     if request.method == 'POST':
@@ -396,6 +396,28 @@ def view_meanings(request):
             "current_list":current_list})
     request.session["meaning_list_name"] = meaning_list_name
     return response 
+
+def view_wordlist(request, wordlist="all"):
+    wordlist = MeaningList.objects.get(name=wordlist)
+    if request.method == 'POST':
+        form = ChooseMeaningListForm(request.POST)
+        if form.is_valid():
+            current_list = form.cleaned_data["meaning_list"]
+            wordlist_name = current_list.name
+            msg = "Wordlist selection changed to '%s'" %\
+                    wordlist_name
+            messages.add_message(request, messages.INFO, msg)
+            return HttpResponseRedirect(reverse("view-wordlist",
+                    args=[wordlist_name]))
+    else:
+        form = ChooseMeaningListForm()
+    form.fields["meaning_list"].initial = wordlist.id
+
+    meanings = Meaning.objects.filter(id__in=wordlist.meaning_id_list)
+    response = render_template(request, "wordlist.html",
+            {"meanings":meanings,
+            "form":form})
+    return response
 
 @login_required
 def meaning_add_new(request):
