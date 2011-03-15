@@ -19,7 +19,7 @@
     <td>{% if meaning.id|in_list:current_list.meaning_id_list %}{{ meaning.id }}{% endif %}</td>
     <td>
       {% if user.is_superuser %}
-        <a href="{% url meaning-edit meaning.gloss %}">
+        <a href="{% url edit-meaning meaning.gloss %}">
           <img src="/media/buttons/edit.png" alt="edit" title="Edit ‘{{ meaning.gloss }}’ metadata" />
         </a>
       {% endif %}

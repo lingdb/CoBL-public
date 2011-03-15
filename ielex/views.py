@@ -434,7 +434,7 @@ def edit_meaning(request, meaning):
         meaning = Meaning.objects.get(gloss=meaning)
     except Meaning.DoesNotExist:
         meaning = get_canonical_meaning(meaning)
-        return HttpResponseRedirect(reverse("meaning-edit",
+        return HttpResponseRedirect(reverse("edit-meaning",
                 args=[meaning.gloss]))
     if request.method == 'POST':
         form = EditMeaningForm(request.POST, instance=meaning)
@@ -453,6 +453,7 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
     lexeme_id = int(lexeme_id)
     cogjudge_id = int(cogjudge_id)
 
+    # normalize meaning
     if meaning.isdigit():
         meaning = Meaning.objects.get(id=int(meaning))
         # if there are actions and lexeme_ids these should be preserved too
@@ -460,6 +461,7 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
     else:
         meaning = Meaning.objects.get(gloss=meaning)
 
+    # cognate class judgement
     if request.method == 'POST':
         form = ChooseCognateClassForm(request.POST)
         if form.is_valid():

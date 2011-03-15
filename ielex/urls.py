@@ -24,13 +24,13 @@ R = {
 urlpatterns = patterns('',
     # Front Page
     url(r'^$', view_frontpage, name="view-frontpage"),
-    url(r'^backup/$', make_backup),
+    url(r'^backup/$', make_backup), # XXX only in dev mode?
     url(r'^changes/$', view_changes, name="view-changes"),
     # url(r'^touch/(?P<model_name>[a-zA-Z0-9_ ]+)/(?P<model_id>\d+)/', touch),
 
     # Languages
     url(r'^languages/$', view_language_list, name="view-languages"),
-    url(r'^languages/reorder/$', language_reorder, name="language-reorder"),
+    url(r'^languages/reorder/$', language_reorder, name="languages-reorder"),
     url(r'^languages/add-new/$', language_add_new, name="language-add-new"),
     url(r'^languages/sort/(?P<ordered_by>sort_key|utf8_name)/$', sort_languages,
             name="language-sort"),
@@ -58,7 +58,7 @@ urlpatterns = patterns('',
     url(r'^meanings/$', view_wordlist, {"wordlist":"all"}, name="view-meanings"),
     url(r'^meanings/add-new/$', meaning_add_new, name="meaning-add-new"),
     url(r'^meaning/%(MEANING)s/edit/$' % R, edit_meaning,
-            name="meaning-edit"),
+            name="edit-meaning"),
 
     # Meaning
     url(r'^meaning/%(MEANING)s/add-lexeme/$' % R, lexeme_add,
