@@ -205,6 +205,13 @@ def update_object_from_form(model_object, form):
 
 # -- /language(s)/ ----------------------------------------------------------
 
+def get_canonical_languages(languages):
+    if languages.isdigit():
+        languages = LanguageList.objects.get(id=languages)
+    else:
+        languages = LanguageList.objects.get(name=languages)
+    return languages
+
 def get_language_list_form(request):
     language_list_name = get_current_language_list_name(request)
     if request.method == 'POST':
@@ -451,15 +458,15 @@ def edit_meaning(request, meaning):
             {"meaning":meaning,
             "form":form})
 
-
 def view_meaning(request, meaning, languages):
     # XXX a refactored version of report_meaning
 
     # normalize meaning
-    if meaning.isdigit():
-        meaning = Meaning.objects.get(id=int(meaning))
-        # if there are actions and lexeme_ids these should be preserved too
-        return HttpResponseRedirect("/meaning/%s/" % meaning.gloss)
+    canonical_gloss = get_canonical_meaning(meaning).gloss
+    canonical_languages = get_canonical_languages(languages).name
+    if meaning != canonical_gloss or languages != canonical_languages:
+        return HttpResponseRedirect(reverse("view-meaning-languages", 
+            args=[canonical_gloss, canonical_languages]))
     else:
         meaning = Meaning.objects.get(gloss=meaning)
 
