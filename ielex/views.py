@@ -544,6 +544,20 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
             #"language_list_form":get_language_list_form(request),
             "form":form})
 
+@login_required
+def delete_meaning(request, meaning):
+
+    # normalize meaning
+    if meaning.isdigit():
+        meaning = Meaning.objects.get(id=int(meaning))
+        # if there are actions and lexeme_ids these should be preserved too
+        return HttpResponseRedirect("/meaning/%s/" % meaning.gloss)
+    else:
+        meaning = Meaning.objects.get(gloss=meaning)
+
+    meaning.delete()
+    return HttpResponseRedirect(reverse("view-meanings"))
+
 # -- /lexeme/ -------------------------------------------------------------
 
 def view_lexeme(request, lexeme_id):

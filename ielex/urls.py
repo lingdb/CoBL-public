@@ -75,6 +75,8 @@ urlpatterns = patterns('',
             name="meaning-report"),
     url(r'^meaning/%(MEANING)s/add/$' % R, report_meaning,
             name="meaning-add"),
+    url(r'^meaning/%(MEANING)s/delete/$' % R, delete_meaning,
+            name="delete-meaning"), # XXX needs confirm dialog
     url(r'^meaning/%(MEANING)s/%(LEXEME_ID)s/$' % R,
             report_meaning, {"action":"goto"}),
     url(r'^meaning/%(MEANING)s/%(LEXEME_ID)s/add/$' % R,
