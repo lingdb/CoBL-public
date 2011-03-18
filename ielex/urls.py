@@ -2,6 +2,7 @@ from django.conf.urls.defaults import *
 from ielex.views import *
 from ielex import settings
 from ielex.lexicon.views import *
+from ielex.lexicon.models import *
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -9,102 +10,130 @@ admin.autodiscover()
 
 # additional arguments can be passed with a dictionary
 
+# standard regexes for urls
+R = {
+    "COGJUDGE_ID":r"(?P<cogjudge_id>\d+)",
+    "DOMAIN":r"(?P<domain>[a-zA-Z0-9_.-]+)",
+    "LANGUAGE":r"(?P<language>[a-zA-Z0-9_-]+)",
+    "LANGUAGES":r"(?P<languages>[a-zA-Z0-9_-]+)",
+    "LEXEME_ID":r"(?P<lexeme_id>\d+)",
+    "MEANING":r"(?P<meaning>[a-zA-Z0-9_]+)",
+    "RELATION":r"(?P<relation>[a-zA-Z0-9_.-]+)",
+    "WORDLIST":r"(?P<wordlist>[a-zA-Z0-9_.-]+)",
+    }
+
 urlpatterns = patterns('',
     # Front Page
     url(r'^$', view_frontpage, name="view-frontpage"),
-    url(r'^backup/$', make_backup),
+    url(r'^backup/$', make_backup), # XXX only in dev mode?
     url(r'^changes/$', view_changes, name="view-changes"),
     # url(r'^touch/(?P<model_name>[a-zA-Z0-9_ ]+)/(?P<model_id>\d+)/', touch),
 
     # Languages
     url(r'^languages/$', view_language_list, name="view-languages"),
-    url(r'^languages/reorder/$', view_language_reorder, name="language-reorder"),
-    url(r'^languages/add-new/$', view_language_add_new, name="language-add-new"),
+    url(r'^languages/reorder/$', language_reorder, name="languages-reorder"),
+    url(r'^languages/add-new/$', language_add_new, name="language-add-new"),
     url(r'^languages/sort/(?P<ordered_by>sort_key|utf8_name)/$', sort_languages,
             name="language-sort"),
-    # TODO add something to edit language_list descriptions
 
     # Language
-    url(r'^language/([a-zA-Z0-9_ -]+)/$', report_language,
-            name="language-report"), # usage {% url language-report English %}
-    url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/edit/$', edit_language,
+    url(r'^language/%(LANGUAGE)s/$' % R, view_language_wordlist,
+            {"wordlist":"all"}, name="language-report"),
+    url(r'^language/%(LANGUAGE)s/wordlist/%(WORDLIST)s/$' % R,
+            view_language_wordlist, name="view-language-wordlist"),
+    url(r'^language/%(LANGUAGE)s/edit/$' % R, edit_language,
             name="language-edit"),
-    url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/add-lexeme/',
-            lexeme_add, {"return_to":"/language/%(language)s/"}),
-    url(r'^language/(?P<language>[a-zA-Z0-9_ -]+)/add-lexeme/(?P<meaning>[a-zA-Z0-9_ ]+)/',
-            lexeme_add, {"return_to":"/language/%(language)s/"}),
+    url(r'^language/%(LANGUAGE)s/delete/$' % R, delete_language,
+            name="language-delete"),
+    url(r'^language/%(LANGUAGE)s/lexeme/add/' % R,
+            lexeme_add, {"return_to":"/language/%(language)s/"},
+            name="language-add-lexeme"),
+    # this should be
+    # url(r'^language/%(LANGUAGE)s/meaning/%(MEANING)s/add/' % R,
+    url(r'^language/%(LANGUAGE)s/meaning/%(MEANING)s/lexeme/add/' % R,
+            lexeme_add, {"return_to":"/language/%(language)s/"},
+            name="language-meaning-add-lexeme"),
 
-    # Meanings
-    url(r'^meanings/$', view_meanings, name="view-meanings"),
-    url(r'^meanings/add-new/$', view_meaning_add_new, name="meaning-add-new"), # NEW
-    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+)/edit/$', edit_meaning,
-            name="meaning-edit"), # NEW
+    # Meanings (aka wordlist)
+    url(r'^wordlist/%(WORDLIST)s/$' % R, view_wordlist, name="view-wordlist"),
+    # url(r'^wordlist/%(WORDLIST)s/edit/$' % R, edit_wordlist,
+    #         name="edit-wordlist"),
+    #url(r'^wordlist/%(WORDLIST)s/reorder/$' % R, reorder_wordlist,
+    #         name="reorder-wordlist"),
+    url(r'^meanings/$', view_wordlist, {"wordlist":"all"}, name="view-meanings"),
+    url(r'^meanings/add-new/$', meaning_add_new, name="meaning-add-new"),
+    url(r'^meaning/%(MEANING)s/edit/$' % R, edit_meaning,
+            name="edit-meaning"),
 
     # Meaning
-    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+)/add-lexeme/$', lexeme_add,
-            {"return_to":"/meaning/%(meaning)s/"}),
-    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/$', report_meaning,
-            name="meaning-report"),
-    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/add/$', report_meaning,
+    url(r'^meaning/%(MEANING)s/lexeme/add/$' % R, lexeme_add,
+            {"return_to":"/meaning/%(meaning)s/"},
             name="meaning-add-lexeme"),
-    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/(?P<lexeme_id>\d+)/$',
+    url(r'^meaning/%(MEANING)s/languages/%(LANGUAGES)s/$' % R, view_meaning,
+            name="view-meaning-languages"),
+    url(r'^meaning/%(MEANING)s/$' % R, report_meaning,
+            name="meaning-report"),
+    url(r'^meaning/%(MEANING)s/add/$' % R, report_meaning,
+            name="meaning-add"),
+    url(r'^meaning/%(MEANING)s/delete/$' % R, delete_meaning,
+            name="delete-meaning"), # XXX needs confirm dialog
+    url(r'^meaning/%(MEANING)s/%(LEXEME_ID)s/$' % R,
             report_meaning, {"action":"goto"}),
-    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/(?P<lexeme_id>\d+)/add/$',
+    url(r'^meaning/%(MEANING)s/%(LEXEME_ID)s/add/$' % R,
             report_meaning, {"action":"add"}),
-    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/(?P<lexeme_id>\d+)/(?P<cogjudge_id>\d+)/$',
+    url(r'^meaning/%(MEANING)s/%(LEXEME_ID)s/%(COGJUDGE_ID)s/$' % R,
             report_meaning),
-    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/add-lexeme/',
-            lexeme_add, {"return_to":"/meaning/%(meaning)s/"}),
-    url(r'^meaning/(?P<meaning>[a-zA-Z0-9_ ]+|\d+)/add-lexeme/(?P<language>[a-zA-Z0-9_ ]+)/',
-            lexeme_add, {"return_to":"/meaning/%(meaning)s/"}),
+    url(r'^meaning/%(MEANING)s/language/%(LANGUAGE)s/lexeme/add/' % R,
+            lexeme_add, {"return_to":"/meaning/%(meaning)s/"},
+            name="meaning-language-add-lexeme"),
 
     # Lexemes
     url(r'^lexeme/add/', lexeme_add, {"return_to":"/meanings/"}),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/duplicate/$', lexeme_duplicate),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/$',
+    url(r'^lexeme/search/$', lexeme_search, name="lexeme-search"),
+
+    url(r'^lexeme/%(LEXEME_ID)s/duplicate/$' % R, lexeme_duplicate),
+    url(r'^lexeme/%(LEXEME_ID)s/$' % R,
             view_lexeme, name="view-lexeme"),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-citation|edit-lexeme|add-cognate|add-new-citation)/$',
-            edit_lexeme),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-citation|delink-citation)/(?P<citation_id>\d+)/$',
-            edit_lexeme),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>delink-cognate)/(?P<cogjudge_id>\d+)/$',
-            edit_lexeme),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>edit-cognate-citation)/(?P<citation_id>\d+)/$',
-            edit_lexeme), # just use <cogjudge_id>
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>delink-cognate-citation)/(?P<citation_id>\d+)/$',
-            edit_lexeme),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-cognate-citation|add-new-cognate-citation)/(?P<cogjudge_id>\d+)/$',
-            edit_lexeme),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>add-new-cognate)/$', edit_lexeme),
-    url(r'^lexeme/(?P<lexeme_id>\d+)/(?P<action>delete)/$', edit_lexeme),
+    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>add-citation|edit|add-cognate|add-new-citation)/$' % R,
+            lexeme_edit),
+    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>edit-citation|delink-citation)/(?P<citation_id>\d+)/$' % R,
+            lexeme_edit),
+    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>delink-cognate)/%(COGJUDGE_ID)s/$' % R,
+            lexeme_edit),
+    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>edit-cognate-citation)/(?P<citation_id>\d+)/$' % R,
+            lexeme_edit), # just use <cogjudge_id>
+    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>delink-cognate-citation)/(?P<citation_id>\d+)/$' % R,
+            lexeme_edit),
+    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>add-cognate-citation|add-new-cognate-citation)/%(COGJUDGE_ID)s/$' % R,
+            lexeme_edit),
+    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>add-new-cognate)/$' % R, lexeme_edit),
+    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>delete)/$' % R, lexeme_edit),
 
     # Sources
     url(r'^sources/$', source_list, name="view-sources"),
     url(r'^source/(?P<source_id>\d+)/$', source_edit),
     url(r'^source/(?P<source_id>\d+)/(?P<action>edit|delete)/$', source_edit),
     url(r'^source/(?P<action>add)/$', source_edit),
-    url(r'^source/(?P<action>add)/cognate-judgement/(?P<cogjudge_id>\d+)/$', source_edit),
-    url(r'^source/(?P<action>add)/lexeme/(?P<lexeme_id>\d+)/$', source_edit),
+    url(r'^source/(?P<action>add)/cognate-judgement/%(COGJUDGE_ID)s/$' % R, source_edit),
+    url(r'^source/(?P<action>add)/lexeme/%(LEXEME_ID)s/$' % R, source_edit),
 
     # Cognates
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report, name="cognate-set"),
     url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit)/$', cognate_report),
-    url(r'^cognate/(?P<meaning>[a-zA-Z0-9_ ]+)/(?P<code>[A-Z]+)/$',
+    url(r'^cognate/%(MEANING)s/(?P<code>[A-Z]+[0-9]*)/$' % R,
             cognate_report),
 
     url(r'^revert/(?P<version_id>\d+)/$', revert_version),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
 
-    # Example:
-    # (r'^ielex/', include('ielex.foo.urls')),
-
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
-    # (r'^admin/', include(admin.site.urls)),
     )
+
+urlpatterns += patterns('',
+        ('', include('ielex.extensional_semantics.urls')),
+        )
 
 urlpatterns += patterns('',
         (r'^nexus/$', 'ielex.lexicon.views.list_nexus'),

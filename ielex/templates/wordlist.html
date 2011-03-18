@@ -16,7 +16,6 @@
   </tr>
   {% for meaning in meanings %}
   <tr class="{% cycle 'odd' 'even' %}">
-    <td>{% if meaning.id|in_list:current_list.meaning_id_list %}{{ meaning.id }}{% endif %}</td>
     <td>
       {% if user.is_superuser %}
         <a href="{% url edit-meaning meaning.gloss %}">

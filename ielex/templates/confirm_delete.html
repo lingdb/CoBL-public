@@ -1,0 +1,16 @@
+{% extends "base_admin.html" %} 
+
+{% block title %}Confirm delete{% endblock %}
+
+{% block top %}Delete semantic domain ‘{{ domain_name }}’?{% endblock %}
+
+{% block content %}
+
+Delete a named semantic domain (individual semantic relations are preserved).
+
+<form method="POST" action="">{% csrf_token %}
+    <input type="hidden" name="__confirm__" value="1" />
+    <input type="submit" value="delete"/> 
+    <a href="/domain/{{ domain_name }}/" class="button"><input type="submit" value="cancel" /></a>
+</form>
+{% endblock %}

@@ -1,21 +1,65 @@
 TODO
 ====
 
-Django 1.2
-----------
+- rewrite templates so the database can handle startup from nothing (e.g.
+  initially, only offer "create language", "create meaning" pages
 
-Object-level permissions¶
-~~~~~~~~~~~~~~~~~~~~~~~~~
+- Decorate drop-down menu names (e.g. so that languages without data can be
+  bracketted)
 
-A foundation for specifying permissions at the per-object level was added in Django 1.2 alpha but not documented with the alpha release.
+- The url `/language/Maniq/` should be qualified::
 
-The default authentication backends shipped with Django do not currently make use of this, but third-party authentication backends are free to do so. See the authentication docs for more information.
+    /language/Maniq/wordlist/Swadesh100/
 
-Permissions for anonymous users¶
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Treat `/language/Maniq/` as an alias of `/language/Maniq/wordlist/all`
 
-If you provide a custom authentication backend with the attribute supports_anonymous_user set to True, the AnonymousUser class will check the backend for permissions, just as the normal User does. This is intended to help centralize permission handling; apps can always delegate the question of whether something is allowed or not to the authorization/authentication system. See the authentication docs for more details.
+- Get rid of the LanguageList session variable, and put the info into urls
+  instead::
 
+    /languages/Dunn2011/meaning/ash/
+
+  Treat `/meaning/ash/` as an alias of `/languages/all/meaning/ash`
+
+- language lists and wordlists should have two orders, the default order (saved
+  in the database) and alphabetical order. People don't need to be able to
+  customize this further.
+
+- XXX Next big task: refactor the /meaning/.../ functions to handle
+  /languages/.../ specification.
+
+- Describe grammar of urls::
+
+    /language/...(/wordlist/...)/ # list of words in a language
+    /language/.../                # default: all words in language
+    /language/.../domain/.../     # list of words in a language pertaining to
+                                  # domain
+    /meaning/...(/languages/...)/ # list of words with a meaning (in language
+                                  # list)
+    # lexemes in this view have identifiers, e.g.
+    /meaning/animal/languages/aslian/#lexeme_6
+    /meaning/.../                 # list of all words with a meaning
+    /meaning/.../delete/          # TODO
+    /meanings/                    # alias for /wordlist/all/
+    /meanings/add-new/            # (this is why we need both meanings and wordlist)
+    /wordlist/Swadesh100/         # a named list of meanings
+    /wordlists/                   # list defined wordlists
+    /domain/.../                  # relation names in a domain
+  
+  Reserved names for sets 'all' (for languages, meanings), 'none' (for
+  meanings, domains)
+
+  TODO: work on a set of explicit principles for url element order
+
+  Urls consist of a sequence of  FUNCTION-ARGUMENT, VERB-OBJECT,
+  CLASSIFIER-NOUN elements
+
+  Adding lexemes, with different amounts of prespecified info::
+
+    /language/.../lexeme/add/
+    /meaning/.../lexeme/add/
+    /language/.../meaning/.../lexeme/add/ # return to language
+    /meaning/.../language/.../lexeme/add/ # return to meaning
+    /lexeme/add/
 
 for Version 0.3
 ---------------
@@ -33,6 +77,8 @@ for Version 0.3
     - view other user's profile (incl. statistics)
     - change password
 
+  * Dashboard thing
+
 - Implement permissions/permission groups on all editing actions
 
 - change password view
@@ -47,20 +93,12 @@ for Version 0.3
   to check against the aliases used by the other meanings corresponding to the
   form as well).
 
-  Maybe: test for alias collisions with a post-save hook and rename the alias
-  if it should ever occur.
-
 - Need a many to many table linking cognate sets to sources: in lots of cases
   we have general information about the reconstructed form
 
 - The Language.description field in (the sidebar of?) the /language/ view
 
-- Add language (and maybe delete too--from a new page) # part DONE
-
-- Fix exception raised when you try to change a blank value in the language
-  edit page # DONE?
-
-- Handle typos in url fields.
+- Handle typos in url fields. **full 404 handling**
 
 - Add/edit meaning pages
 
@@ -90,8 +128,6 @@ General
   sources)
 
 - Include all relevant citations in export functions.
-
-- test what happens when you change a language name (does data get lost)?
 
 - Use http://docs.djangoproject.com/en/dev/howto/custom-management-commands/ to
   make database-specific management functions (e.g. add users, change user

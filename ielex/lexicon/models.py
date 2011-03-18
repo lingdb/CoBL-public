@@ -1,31 +1,36 @@
 from __future__ import division
+import re ###
 from django.db import models
+# from django.contrib import admin
 import reversion
-from django.contrib import admin
-from reversion.admin import VersionAdmin
+# from reversion.admin import VersionAdmin
+from ielex.lexicon.validators import *
+
+TYPE_CHOICES = (
+        ("P", "Publication"),
+        ("U", "URL"),
+        ("E", "Expert"),
+        )
+
+RELIABILITY_CHOICES = ( # used by Citation classes
+        #("X", "Unclassified"), # change "X" to "" will force users to make
+        ("A", "High"),         # a selection upon seeing this form
+        ("B", "Good (e.g. but needs further checking)"),
+        ("C", "Doubtful"),
+        ("L", "Loanword"),
+        ("X", "Exclude (e.g. not the Swadesh term)"),
+        )
 
 class Source(models.Model):
 
-    TYPE_CHOICES = (
-            ("P", "Publication"),
-            ("U", "URL"),
-            ("E", "Expert"),
-            )
-    RELIABILITY_CHOICES = ( # used by Citation classes
-            #("X", "Unclassified"), # change "X" to "" will force users to make
-            ("A", "High"),         # a selection upon seeing this form
-            ("B", "Good (e.g. but needs further checking)"),
-            ("C", "Doubtful"),
-            ("L", "Loanword"),
-            ("X", "Exclude (e.g. not the Swadesh term)"),
-            )
-    citation_text = models.TextField()
-    type_code = models.CharField(max_length=1, choices=TYPE_CHOICES)
+
+    citation_text = models.TextField(unique=True)
+    type_code = models.CharField(max_length=1, choices=TYPE_CHOICES,
+            default="P")
     description = models.TextField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
-    @property
-    def canonical_url(self):
+    def get_absolute_url(self):
         return "/source/%s/" % self.id
 
     def __unicode__(self):
@@ -34,24 +39,19 @@ class Source(models.Model):
     class Meta:
         ordering = ["type_code", "citation_text"]
 
-#reversion.register(Source)
-class SourceAdmin(VersionAdmin):
-    pass
-
-admin.site.register(Source, SourceAdmin)
+reversion.register(Source)
 
 class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
-    ascii_name = models.CharField(max_length=999, unique=True)
+    ascii_name = models.CharField(max_length=999, unique=True, validators=[suitable_for_url])
     utf8_name = models.CharField(max_length=999, unique=True)
     sort_key = models.FloatField(null=True, blank=True, editable=False)
     description = models.TextField(blank=True, null=True)
 
-    @property
-    def canonical_url(self):
+    def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
 
-    @property
+    # @property
     def percent_coded(self):
         uncoded = self.lexeme_set.filter(cognate_class=None).count()
         total = self.lexeme_set.all().count()
@@ -79,12 +79,11 @@ class DyenName(models.Model):
         ordering = ["name"]
 
 class Meaning(models.Model):
-    gloss = models.CharField(max_length=64) # one word name
-    description = models.CharField(max_length=64) # show name
-    notes = models.TextField()
+    gloss = models.CharField(max_length=64, validators=[suitable_for_url])
+    description = models.CharField(max_length=64, blank=True) # show name
+    notes = models.TextField(blank=True)
 
-    @property
-    def canonical_url(self):
+    def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
 
     @property
@@ -109,8 +108,7 @@ class CognateSet(models.Model):
     notes = models.TextField()
     modified = models.DateTimeField(auto_now=True)
 
-    @property
-    def canonical_url(self):
+    def get_absolute_url(self):
         return "/cognate/%s/" % self.id
 
     def __unicode__(self):
@@ -132,22 +130,25 @@ class DyenCognateSet(models.Model):
 
 class Lexeme(models.Model):
     language = models.ForeignKey(Language)
-    meaning = models.ForeignKey(Meaning)
+    meaning = models.ForeignKey(Meaning, blank=True, null=True)
     cognate_class = models.ManyToManyField(CognateSet,
-            through="CognateJudgement")
+            through="CognateJudgement", blank=True)
     source_form = models.CharField(max_length=999)
-    phon_form = models.CharField(max_length=999)
-    gloss = models.CharField(max_length=999)
-    notes = models.TextField()
-    source = models.ManyToManyField(Source, through="LexemeCitation")
+    phon_form = models.CharField(max_length=999, blank=True)
+    gloss = models.CharField(max_length=999, blank=True)
+    notes = models.TextField(blank=True)
+    source = models.ManyToManyField(Source, through="LexemeCitation",
+            blank=True)
     modified = models.DateTimeField(auto_now=True)
 
-    @property
-    def canonical_url(self):
+    def get_absolute_url(self):
+        return "/lexeme/%s/" % self.id
+
+    def get_absolute_url(self):
         return "/lexeme/%s/" % self.id
 
     def __unicode__(self):
-        return self.phon_form or self.source_form or "Lexeme"
+        return self.phon_form or self.source_form or ("Lexeme %s" % self.id)
 
     class Meta:
         order_with_respect_to = "language"
@@ -160,8 +161,7 @@ class CognateJudgement(models.Model):
     source = models.ManyToManyField(Source, through="CognateJudgementCitation")
     modified = models.DateTimeField(auto_now=True)
 
-    @property
-    def canonical_url(self):
+    def get_absolute_url(self):
         return "/meaning/%s/%s/%s/" % (self.lexeme.meaning.gloss,
                 self.lexeme.id, self.id)
 
@@ -172,7 +172,7 @@ class CognateJudgement(models.Model):
     @property
     def long_reliability_ratings(self):
         """An alphabetically sorted list of (rating_code, description) tuples"""
-        descriptions = dict(Source.RELIABILITY_CHOICES)
+        descriptions = dict(RELIABILITY_CHOICES)
         return [(rating, descriptions[rating]) for rating in sorted(self.reliability_ratings)]
 
     @property
@@ -189,7 +189,9 @@ class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A
     default list, named 'all' is (re)created on save/delete of the Language
     table (cf. ielex.models.update_language_list_all)"""
-    name = models.CharField(max_length=999)
+    DEFAULT = "all"
+
+    name = models.CharField(max_length=999, validators=[suitable_for_url])
     description = models.TextField(blank=True, null=True)
     language_ids = models.CommaSeparatedIntegerField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
@@ -203,7 +205,9 @@ class LanguageList(models.Model):
         self.language_ids = ",".join([str(i) for i in listobj])
         return
     language_id_list = property(_get_list, _set_list)
-    canonical_url = "/languages/"
+
+    def get_absolute_url(self):
+        return "/languages/"
 
     def __unicode__(self):
         return self.name
@@ -214,8 +218,10 @@ class LanguageList(models.Model):
 reversion.register(LanguageList)
 
 class MeaningList(models.Model):
-    """Named lists of meanings, e.g. 'All' and 'Swadesh 100'"""
-    name = models.CharField(max_length=999)
+    """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
+    DEFAULT = "all"
+
+    name = models.CharField(max_length=999, validators=[suitable_for_url])
     description = models.TextField(blank=True, null=True)
     meaning_ids = models.CommaSeparatedIntegerField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
@@ -229,7 +235,9 @@ class MeaningList(models.Model):
         self.meaning_ids = ",".join([str(i) for i in listobj])
         return
     meaning_id_list = property(_get_list, _set_list)
-    canonical_url = "/meanings/"
+
+    def get_absolute_url(self):
+        return "/meanings/"
 
     def __unicode__(self):
         return self.name
@@ -237,55 +245,55 @@ class MeaningList(models.Model):
     class Meta:
         ordering = ["name"]
 
-class CognateJudgementCitation(models.Model):
-    cognate_judgement = models.ForeignKey(CognateJudgement)
-    source = models.ForeignKey(Source)
+class AbstractBaseCitation(models.Model):
+    """Abstract base class for citation models
+    The source field has to be in the subclasses in order for the
+    unique_together constraints to work properly"""
     pages = models.CharField(max_length=999)
-    reliability = models.CharField(max_length=1, choices=Source.RELIABILITY_CHOICES)
+    reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
     comment = models.CharField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
 
-    @property
     def long_reliability(self):
-        descriptions = dict(Source.RELIABILITY_CHOICES)
-        try:
-            return descriptions[self.reliability]
-        except KeyError:
-            return "PLEASE ENTER A RELIABILITY RATING"
+        descriptions = dict(RELIABILITY_CHOICES)
+        return descriptions[self.reliability]
 
-    @property
-    def canonical_url(self):
+    class Meta:
+        abstract = True
+
+
+class CognateJudgementCitation(AbstractBaseCitation):
+    cognate_judgement = models.ForeignKey(CognateJudgement)
+    source = models.ForeignKey(Source)
+
+    def get_absolute_url(self):
         return "/lexeme/%s/edit-cognate-citation/%s/" % \
                 (self.cognate_judgement.lexeme.id, self.id)
+        # TODO "/citation/cognate/%s/"
 
     def __unicode__(self):
         return u"CJC src=%s cit=%s" % (self.source.id, self.id)
 
+    class Meta:
+
+        unique_together = (("cognate_judgement", "source"),)
+
 reversion.register(CognateJudgementCitation)
 
-class LexemeCitation(models.Model):
+class LexemeCitation(AbstractBaseCitation):
     lexeme = models.ForeignKey(Lexeme)
     source = models.ForeignKey(Source)
-    pages = models.CharField(max_length=999)
-    reliability = models.CharField(max_length=1, choices=Source.RELIABILITY_CHOICES)
-    comment = models.CharField(max_length=999)
-    modified = models.DateTimeField(auto_now=True)
 
-    @property
-    def long_reliability(self):
-        descriptions = dict(Source.RELIABILITY_CHOICES)
-        # return descriptions[self.reliability]
-        try:
-            return descriptions[self.reliability]
-        except KeyError:
-            return "PLEASE ENTER A RELIABILITY RATING"
-
-    @property
-    def canonical_url(self):
+    def get_absolute_url(self):
         return "/lexeme/%s/edit-citation/%s/" % (self.lexeme.id, self.id)
+        # TODO "/citation/lexeme/%s/"
 
     def __unicode__(self):
-        return u"%s src=%s cit=%s" % (self.lexeme.source_form, self.source.id, self.id)
+        return u"%s src=%s cit=%s" % (self.lexeme.source_form, self.source.id,
+                self.id)
+
+    class Meta:
+        unique_together = (("lexeme", "source"),)
 
 reversion.register(LexemeCitation)
 
@@ -295,9 +303,9 @@ def update_language_list_all(sender, instance, **kwargs):
     # it should just be when created or deleted, but the extra overhead is
     # tiny, since changes in the Language table are rare
     try:
-        ll = LanguageList.objects.get(name="all")
+        ll = LanguageList.objects.get(name=LanguageList.DEFAULT)
     except:
-        ll = LanguageList.objects.create(name="all")
+        ll = LanguageList.objects.create(name=LanguageList.DEFAULT)
     if ll.language_id_list != list(Language.objects.values_list("id", flat=True)):
         ll.language_id_list = [l.id for l in Language.objects.all()]
         ll.save(force_update=True)
@@ -308,9 +316,9 @@ models.signals.post_delete.connect(update_language_list_all, sender=Language)
 
 def update_meaning_list_all(sender, instance, **kwargs):
     try:
-        ml = MeaningList.objects.get(name="all")
+        ml = MeaningList.objects.get(name=MeaningList.DEFAULT)
     except:
-        ml = MeaningList.objects.create(name="all")
+        ml = MeaningList.objects.create(name=MeaningList.DEFAULT)
     if ml.meaning_id_list != list(Meaning.objects.values_list("id", flat=True)):
         ml.meaning_id_list = [l.id for l in Meaning.objects.all()]
         ml.save(force_update=True)

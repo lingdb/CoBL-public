@@ -39,10 +39,11 @@
 
 {% block controls %}
 {% include "snippets/go_to.html" %}
-<ul>
-  <li class="navigation"><a class="navigation" href="/nexus/">Export NEXUS file</a></li>
-  <li class="navigation"><a class="navigation" href="/changes/">Recent changes</a></li>
+{% if user.is_superuser %}
+<ul class="navigation">
+  <li><a href="/nexus/">Export NEXUS file</a></li>
 </ul>
+{% endif %}
 {% if acknowledgements %}
 <h2>Acknowledgements</h2>
 {{ acknowledgements|safe }}

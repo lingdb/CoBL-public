@@ -3,29 +3,32 @@ import time
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 # from django.shortcuts import render_to_response
+from ielex import settings
 from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
 from ielex.views import get_sort_order
 from ielex.views import ChooseNexusOutputForm
 
 def list_nexus(request):
-    defaults = {"unique":1, "reliability":["L","X"], "language_list":1,
-            "meaning_list":1, "dialect":"NN"}
-    form =  ChooseNexusOutputForm(defaults)
+    if request.method == "POST":
+        form =  ChooseNexusOutputForm(request.POST)
+        return HttpResponseRedirect("/nexus-data/")
+    else:
+        defaults = {"unique":1, "reliability":["L","X"], "language_list":1,
+                "meaning_list":1, "dialect":"NN"}
+        form =  ChooseNexusOutputForm(defaults)
     return render_template(request, "nexus_list.html", {"form":form})
 
 @login_required
 def write_nexus(request):
     # TODO 
-    #   - take into account the requested reliability ratings
-    #   - include unique states
     #   - contributor and sources list
     LABEL_COGNATE_SETS = True
-    # INCLUDE_UNIQUE_STATES = int(request.POST["unique"])
-    try:
-        INCLUDE_UNIQUE_STATES = bool(request.POST["unique"])
-    except KeyError:
-        INCLUDE_UNIQUE_STATES = False
+    INCLUDE_UNIQUE_STATES = bool(request.POST.get("unique", 0))
+    language_list_id = request.POST["language_list"]
+    meaning_list_id = request.POST["meaning_list"]
+    exclude = set(request.POST.getlist("reliability"))
+    dialect = request.POST.get("dialect", "NN")
     # 0:19 included
     # 0.17 excluded
 
@@ -33,8 +36,6 @@ def write_nexus(request):
     assert request.method == 'POST'
 
     # get data together
-    #form =  ChooseNexusOutputForm(request.POST)
-    language_list_id = request.POST["language_list"]
     language_list = LanguageList.objects.get(id=language_list_id)
     languages = Language.objects.filter(
             id__in=language_list.language_id_list).order_by(
@@ -42,12 +43,10 @@ def write_nexus(request):
     language_names = ["'"+name+"'" for name in
             languages.values_list("ascii_name", flat=True)]
 
-    meaning_list_id = request.POST["meaning_list"]
     meaning_list = MeaningList.objects.get(id=meaning_list_id)
     meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
     max_len = max([len(l) for l in language_names])
 
-    exclude = set(request.POST.getlist("reliability"))
 
     cognate_class_ids = CognateSet.objects.all().values_list("id", flat=True)
 
@@ -57,16 +56,20 @@ def write_nexus(request):
         #         meaning__in=meanings).values_list('language', flat=True)
         ## this is much slower than the values_list version (probably from
         ## calculating the reliability ratings property
+        # TODO look at LexemeCitation reliablity ratings here too
         language_ids = [cj.lexeme.language.id for cj in
                 CognateJudgement.objects.filter(cognate_class=cc,
-                    lexeme__meaning__in=meanings)
-                if not (cj.reliability_ratings & exclude)]
+                        lexeme__meaning__in=meanings)
+                        if not (cj.reliability_ratings & exclude)]
         if language_ids:
             data[cc] = language_ids
 
     if INCLUDE_UNIQUE_STATES:
-        # add a cc for all the lexemes which are not in a cognate class
-        # TODO look at lexeme reliablity ratings here too
+        # adds a cc code for all the lexemes which are not registered as
+        # belonging to a cognate class
+        # TODO look at LexemeCitation reliablity ratings here too
+        # note that registered cognate classes with one member will NOT be
+        # ignored when INCLUDE_UNIQUE_STATES = False
         uniques = Lexeme.objects.filter(
                 cognate_class__isnull=True,
                 meaning__in=meanings).values_list("language", "id")
@@ -75,7 +78,8 @@ def write_nexus(request):
             data[cc] = [language_id]
 
     # Create the HttpResponse object with the appropriate header.
-    filename = "ielex-%s-%s.nex" % (language_list.name, meaning_list.name)
+    filename = "%s-%s-%s.nex" % (settings.project_short_name, 
+            language_list.name, meaning_list.name)
     response = HttpResponse(mimetype='text/plain')
     response['Content-Disposition'] = 'attachment; filename=%s' % \
             filename.replace(" ", "_")
@@ -98,7 +102,7 @@ def write_nexus(request):
     print>>response, "[ File generated: %s ]\n" % \
             time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-    if request.POST["dialect"] in ("NN", "MB"):
+    if dialect in ("NN", "MB"):
         print>>response, dedent("""\
             begin taxa;
               dimensions ntax=%s;
@@ -111,7 +115,7 @@ def write_nexus(request):
               format symbols="01";
               matrix""" % len(data))
     else:
-        assert request.POST["dialect"] == "BP"
+        assert dialect == "BP"
         print>>response, dedent("""\
             begin data;
               dimensions ntax=%s nchar=%s;
@@ -153,7 +157,7 @@ def write_nexus(request):
                 " "*(max_len - len(language.ascii_name)), "".join(row))
     print>>response, "  ;\nend;\n"
 
-    if request.POST["dialect"] == "BP":
+    if dialect == "BP":
         print>>response, dedent("""\
             begin BayesPhylogenies;
                 Chains 1;

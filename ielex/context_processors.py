@@ -10,17 +10,10 @@ TEMPLATE_CONTEXT_PROCESSORS setting."""
 
 from ielex.settings import VERSION
 from ielex import local_settings
-config = None
+from ielex.lexicon.models import *
+from ielex.extensional_semantics.models import *
 
-# def version(request):
-#     """Provides a {{ version }} tag (referring to the application, not the
-#     particular installation"""
-#     return {"version":VERSION}
-# 
-# def current_url(request):
-#     """The {{ current_url }} tag is used as a link target to force reloading of
-#     a page (e.g. to dismiss a message)"""
-#     return {"current_url":request.get_full_path()}
+config = None # XXX what's this for?
 
 def configuration(request):
     """Various things stored in local_settings.py"""
@@ -30,4 +23,6 @@ def configuration(request):
             "project_short_name":local_settings.project_short_name,
             "project_description":local_settings.project_description,
             "acknowledgements":local_settings.acknowledgements,
+            "semantic_domains":local_settings.semantic_domains,
+            "structural_features":local_settings.structural_features
             }

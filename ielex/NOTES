@@ -1,5 +1,29 @@
-DESIGN
-======
+Permissions
+-----------
+
+edit database (no reason to split add/change/delete)
+add users
+export data
+change permissions
+
+This maybe doesn't make sense: we could allow all logged in users to edit the
+database, and allow superusers to do the admin tasks. But maybe it makes sense
+to distinguish registered downloaders from people empowered to edit the
+database.
+
+Groups: 
+
+* Administrator (Everything)
+* Contributor (Everything with data, but not user admin)
+* Registered User (downloading and commenting)
+* Anonymous (Viewing)
+
+Each group gets the cumulative permissions of the other groups
+
+It would be nice to distinguish "released" and "unreleased" data too...
+
+Design
+------
 
 * Buttons. Disabling a button once is has been pressed::
 
@@ -50,30 +74,8 @@ via the ``_meta`` attribute, e.g.::
 More info at http://www.b-list.org/weblog/2007/nov/04/working-models/
 
 
-Permissions
------------
-
-edit database (no reason to split add/change/delete)
-add users
-export data
-change permissions
-
-This maybe doesn't make sense: we could allow all logged in users to edit the
-database, and allow superusers to do the admin tasks. But maybe it makes sense
-to distinguish registered downloaders from people empowered to edit the
-database.
-
-Groups: 
-
-Administrator (Everything)
-Contributor (Everything with data, but not user admin)
-Registered User (downloading and commenting)
-Anonymous (Viewing)
-
-Each group gets the cumulative permissions of the other groups
-
-From Django Version 1.2 the permissions of un-logged in users are handled the
-same as logged in users.
+Commenting
+----------
 
 Julia's suggestions
 -------------------
@@ -84,7 +86,7 @@ Julia's suggestions
     ANIMAL)
 
 2)  Another handy application could be a search function (just in order to
-    locate terms once seen or the the like).
+    locate terms once seen or the like).
 
 3)  I came across a couple of terms (across different meanings) which are
     ultimately cognate, for instance there is a common IE root dheu- in many
@@ -182,6 +184,10 @@ QuerySet objects
 
   But this only works if it can be parsed as an instance of sql AND
 
+  Another way to express this, using Q-objects::
+
+    cs = CognateSet.objects.filter(Q(alias="O") | Q(alias="P"))
+
 Database trigger
 ----------------
 
@@ -200,35 +206,30 @@ Django equivalent of a database trigger::
 
 From: http://www.eflorenzano.com/blog/post/database-triggers-arent-evil-and-they-actually-kin/
 
-Forms
------
+Alternate rendering method
+--------------------------
 
-Making your own form via a template:
+Which I haven't made work::
 
-http://code.djangoproject.com/wiki/TemplatedForm
+  from django.shortcuts import render_to_response
 
-This article shows how to use template to render CustomForms instead of
-as_p(), as_table()...
+  def render_to(template_name):
+      """Rendering decorator
+      Usage:
 
-To make the snippet work, change:
-
- * from ``django import newforms as forms`` to ``from django import forms``
- * from ``django.newforms.forms import BoundField`` to ``from
-   django.forms.forms import BoundField``
-
-This looks like the way to get my own classes into forms for css, e.g.
-th.colheader { text-align: center }; th.rowheader { text-align: right }.
-
-
-Bar charts
-----------
-
-can be made with templates::
-
- <img src="bar.gif" height="10" width="{% widthratio this_value max_value 100 %}" />
- 
-I'm not quite sure what the widthratio tag is useful for, since surely a
-constant width bar is all you need.
+        @render_to('my_template.html')
+        def my_view(request):
+            # View code here...
+            return some_dict
+      """
+      def renderer(func):
+          def wrapper(request, *args, **kw):
+              output = func(request, *args, **kw)
+              if not isinstance(output, dict):
+                  return output
+              return render_to_response(request, template_name, output)
+          return wrapper
+      return renderer
 
 Database Backups
 ----------------
@@ -246,19 +247,6 @@ A useful commandline is::
 
   sqlite3 db.sqlite3 .dump | bzip2 > db.dump.bz2
 
-login
------
-
-Don't write your own: take them from the auth/admin modules
-
-http://stackoverflow.com/questions/550632/favorite-django-tips-features/559972#559972
-
-- the login_required decorator can be applied in the urls.py file, e.g.::
-
-  from django.contrib.auth.decorators import login_required
-  (r'^the_url/', myapp.views.function),
-  (r'^the_url/edit/', login_required(myapp.views.function), {"edit":True}),
-
 vim
 ---
 
@@ -275,5 +263,21 @@ Acknowledge that I'm using the Sweetie BasePack ::
    Email:   sublick@gmail.com
    Licence: Attribution-ShareAlike 3.0
    Website: sweetie.sublink.ca
+
+Django 1.2
+----------
+
+Object-level permissions¶
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A foundation for specifying permissions at the per-object level was added in Django 1.2 alpha but not documented with the alpha release.
+
+The default authentication backends shipped with Django do not currently make use of this, but third-party authentication backends are free to do so. See the authentication docs for more information.
+
+Permissions for anonymous users¶
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you provide a custom authentication backend with the attribute supports_anonymous_user set to True, the AnonymousUser class will check the backend for permissions, just as the normal User does. This is intended to help centralize permission handling; apps can always delegate the question of whether something is allowed or not to the authorization/authentication system. See the authentication docs for more details.
+
 
 .. vim:ft=rst

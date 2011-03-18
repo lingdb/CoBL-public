@@ -1,21 +1,26 @@
 # -*- coding: utf-8 -*-
 import datetime
 import textwrap
+import re
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-#from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.template.loader import get_template
-from django.contrib.auth.models import User
-from django.contrib import messages
 from reversion.models import Version
 from reversion import revision
 from ielex.backup import backup
 from ielex.forms import *
 from ielex.lexicon.models import *
+from ielex.extensional_semantics.views import *
 from ielex.shortcuts import render_template
-from ielex.utilities import next_alias, renumber_sort_keys
+from ielex.utilities import next_alias, renumber_sort_keys, confirm_required
+
+
 
 # Refactoring: 
 # - rename the functions which render to response with the format
@@ -44,7 +49,7 @@ def view_frontpage(request):
 
 def view_changes(request):
     """Recent changes"""
-    # the view fails when an object has been deleted
+    # XXX the view fails when an object has been deleted
     recent_changes = Version.objects.all().order_by("id").reverse()
     paginator = Paginator(recent_changes, 100) # was 200
 
@@ -70,7 +75,7 @@ def view_changes(request):
     contributors = sorted([(User.objects.get(id=user_id),
             Version.objects.filter(revision__user=user_id).count())
             for user_id in Version.objects.values_list("revision__user",
-                    flat=True).distinct() if user_id is not None],
+            flat=True).distinct() if user_id is not None],
             lambda x, y: -cmp(x[1], y[1])) # reverse sort by second element in tuple
             # TODO user_id should never be None
 
@@ -81,10 +86,7 @@ def view_changes(request):
 @login_required
 def revert_version(request, version_id):
     """Roll back the object saved in a Version to the previous Version"""
-    try:
-        referer = request.META["HTTP_REFERER"]
-    except KeyError:
-        referer = "/"
+    referer = request.META.get("HTTP_REFERER", "/")
     latest = Version.objects.get(pk=version_id)
     versions = Version.objects.get_for_object(
             latest.content_type.get_object_for_this_type(
@@ -95,6 +97,7 @@ def revert_version(request, version_id):
     messages.add_message(request, messages.INFO, msg)
     return HttpResponseRedirect(referer)
 
+# login?
 def view_object_history(request, version_id):
     version = Version.objects.get(pk=version_id)
     obj = version.content_type.get_object_for_this_type(id=version.object_id)
@@ -143,8 +146,9 @@ def get_canonical_language(language):
 def get_sort_order(request):
     return request.session.get("language_sort_order", "sort_key")
 
-def get_languages(request):
-    """Get all Language objects, respecting language_list selection"""
+def get_languages(request): # refactor this away XXX
+    """Get all Language objects, respecting language_list selection; if no
+    language list then all languages are selected"""
     language_list_name = get_current_language_list_name(request)
     sort_order = get_sort_order(request)
     try:
@@ -155,14 +159,16 @@ def get_languages(request):
         languages = Language.objects.all()
     return languages
 
-def get_current_language_list_name(request):
+def get_current_language_list_name(request): # refactor this away XXX
     """Get the name of the current language list from session."""
-    return request.session.get("language_list_name", "all")
+    return request.session.get("language_list_name", LanguageList.DEFAULT)
 
-def get_prev_and_next_languages(request, current_language):
-    language_list_name = get_current_language_list_name(request)
-    languages = get_languages(request)
-    ids = list(languages.values_list("id", flat=True))
+def get_prev_and_next_languages(request, current_language, language_list=None):
+    # XXX language_list argument is not currently used
+    if language_list:
+        ids = LanguageList.objects.get(name=language_list).language_id_list
+    else:
+        ids = list(Language.objects.values_list("id", flat=True))
     try:
         current_idx = ids.index(current_language.id)
     except ValueError:
@@ -172,10 +178,10 @@ def get_prev_and_next_languages(request, current_language):
         next_language = Language.objects.get(id=ids[current_idx+1])
     except IndexError:
         next_language = Language.objects.get(id=ids[0])
-    return (prev_language, language_list_name, next_language)
+    return (prev_language, next_language)
 
 def get_prev_and_next_meanings(current_meaning):
-    # ids = list(Meaning.objects.values_list("id", flat=True))
+    # XXX this should also know about wordlist
     meanings = Meaning.objects.all().extra(select={'lower_gloss':
             'lower(gloss)'}).order_by('lower_gloss')
     ids = [m.id for m in meanings]
@@ -189,15 +195,22 @@ def get_prev_and_next_meanings(current_meaning):
 
 def update_object_from_form(model_object, form):
     """Update an object with data from a form."""
-    # cd = form.cleaned_data
-    # for field_name in cd:
-    #     setattr(model_object, field_name, cd[field_name])
+    # XXX This is only neccessary when not using a model form: otherwise
+    # form.save() does all this automatically
+    # TODO Refactor this function away
     assert set(form.cleaned_data).issubset(set(model_object.__dict__))
     model_object.__dict__.update(form.cleaned_data)
     model_object.save()
     return
 
 # -- /language(s)/ ----------------------------------------------------------
+
+def get_canonical_languages(languages):
+    if languages.isdigit():
+        languages = LanguageList.objects.get(id=languages)
+    else:
+        languages = LanguageList.objects.get(name=languages)
+    return languages
 
 def get_language_list_form(request):
     language_list_name = get_current_language_list_name(request)
@@ -215,6 +228,7 @@ def get_language_list_form(request):
             name=language_list_name).id
     return form
 
+
 def view_language_list(request):
     language_list_name = get_current_language_list_name(request)
     languages = Language.objects.all().order_by(get_sort_order(request))
@@ -223,11 +237,11 @@ def view_language_list(request):
             {"languages":languages,
             "language_list_form":get_language_list_form(request),
             "current_list":current_list})
-    request.session["language_list_name"] = language_list_name
+    request.session["language_list_name"] = language_list_name # XXX what's this for?
     return response
 
 @login_required
-def view_language_reorder(request):
+def language_reorder(request):
     if request.method == "POST":
         form = ReorderLanguageSortKeyForm(request.POST)
         if form.is_valid():
@@ -241,9 +255,9 @@ def view_language_reorder(request):
                 # renumbering is slow, and doesn't need to be done every time
                 # on the other hand, we hardly ever call this function ...
                 renumber_sort_keys()
-                return HttpResponseRedirect("/languages/")
+                return HttpResponseRedirect(reverse("view-languages"))
         else: # pressed Finish without submitting changes
-            return HttpResponseRedirect("/languages/")
+            return HttpResponseRedirect(reverse("view-languages"))
     else: # first visit
         renumber_sort_keys() # if new languages have been added, number them
         form = ReorderLanguageSortKeyForm()
@@ -291,41 +305,60 @@ def move_language_down_list(language):
 
 def sort_languages(request, ordered_by):
     """Change the selected sort order via url"""
-    try:
-        referer = request.META["HTTP_REFERER"]
-    except KeyError:
-        referer = "/languages/"
+    referer = request.META.get("HTTP_REFERER", reverse("view-languages"))
     request.session["language_sort_order"] = ordered_by
     return HttpResponseRedirect(referer)
 
-def report_language(request, language):
+
+def view_language_wordlist(request, language, wordlist):
+    wordlist = MeaningList.objects.get(name=wordlist)
+
+    # clean language name
     try:
         language = Language.objects.get(ascii_name=language)
     except(Language.DoesNotExist):
         language = get_canonical_language(language)
-        return HttpResponseRedirect("/language/%s/" %
-                language.ascii_name)
-    lexemes = Lexeme.objects.filter(language=language).order_by("meaning")
-    prev_language, language_list_name, next_language = \
+        return HttpResponseRedirect(reverse("view-language-wordlist",
+            args=[language.ascii_name, wordlist.name]))
+
+    # change wordlist
+    if request.method == 'POST':
+        form = ChooseMeaningListForm(request.POST)
+        if form.is_valid():
+            wordlist = form.cleaned_data["meaning_list"]
+            msg = u"Wordlist selection changed to '%s'" %\
+                    wordlist.name
+            messages.add_message(request, messages.INFO, msg)
+            return HttpResponseRedirect(reverse("view-language-wordlist",
+                    args=[language.ascii_name, wordlist.name]))
+    else:
+        form = ChooseMeaningListForm()
+    form.fields["meaning_list"].initial = wordlist.id
+
+    # collect data
+    lexemes = Lexeme.objects.filter(language=language,
+            meaning__id__in=wordlist.meaning_id_list)
+    prev_language, next_language = \
             get_prev_and_next_languages(request, language)
-    return render_template(request, "language_report.html",
+    return render_template(request, "language_wordlist.html",
             {"language":language,
             "lexemes":lexemes,
             "prev_language":prev_language,
             "next_language":next_language,
-            "language_list_name":language_list_name
+            "wordlist":wordlist,
+            "form":form
             })
 
 @login_required
-def view_language_add_new(request):
+def language_add_new(request):
     if request.method == 'POST':
         form = EditLanguageForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect('/languages/')
+            return HttpResponseRedirect(reverse("view-languages"))
         if form.is_valid():
-            language = Language.objects.create(**form.cleaned_data)
-            return HttpResponseRedirect('/language/%s/' % language.ascii_name)
-
+            form.save()
+            return HttpResponseRedirect(reverse("language-report",
+                args=[form.cleaned_data["ascii_name"]]))
     else: # first visit
         form = EditLanguageForm()
     return render_template(request, "language_add_new.html",
@@ -343,58 +376,62 @@ def edit_language(request, language):
     if request.method == 'POST':
         form = EditLanguageForm(request.POST, instance=language)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect('/languages/')
+            return HttpResponseRedirect(reverse("view-languages"))
         if form.is_valid():
-            # update_object_from_form(language, form) # TODO fix the rest of
-            # the views using model forms along the following lines:
             form.save()
-            return HttpResponseRedirect('/languages/')
+            return HttpResponseRedirect(reverse("view-languages"))
     else:
-        #form = EditLanguageForm(language.__dict__, instance=language)
         form = EditLanguageForm(instance=language)
     return render_template(request, "language_edit.html",
             {"language":language,
             "form":form})
 
-# -- /meaning(s)/ ---------------------------------------------------------
+@login_required
+def delete_language(request, language):
+    try:
+        language = Language.objects.get(ascii_name=language)
+    except Language.DoesNotExist:
+        language = get_canonical_language(language)
+        return HttpResponseRedirect(reverse("language-delete"),
+                args=[language.ascii_name])
 
-def view_meanings(request):
-    meaning_list_name = request.session.get("meaning_list_name", "all")
+    language.delete()
+    return HttpResponseRedirect(reverse("view-languages"))
 
+# -- /meaning(s)/ and /wordlist/ ------------------------------------------
+
+def view_wordlist(request, wordlist="all"):
+    wordlist = MeaningList.objects.get(name=wordlist)
     if request.method == 'POST':
         form = ChooseMeaningListForm(request.POST)
         if form.is_valid():
             current_list = form.cleaned_data["meaning_list"]
-            meaning_list_name = current_list.name
-            msg = "Meaning list selection changed to '%s'" %\
-                    meaning_list_name
+            wordlist_name = current_list.name
+            msg = "Wordlist selection changed to '%s'" %\
+                    wordlist_name
             messages.add_message(request, messages.INFO, msg)
+            return HttpResponseRedirect(reverse("view-wordlist",
+                    args=[wordlist_name]))
     else:
         form = ChooseMeaningListForm()
-    form.fields["meaning_list"].initial = MeaningList.objects.get(
-            name=meaning_list_name).id
+    form.fields["meaning_list"].initial = wordlist.id
 
-    meanings = Meaning.objects.all().extra(select={'lower_gloss':
-            'lower(gloss)'}).order_by('lower_gloss')
-    current_list = MeaningList.objects.get(name=meaning_list_name)
-
-    response = render_template(request, "meaning_list.html",
+    meanings = Meaning.objects.filter(id__in=wordlist.meaning_id_list)
+    response = render_template(request, "wordlist.html",
             {"meanings":meanings,
-            "form":form,
-            "current_list":current_list})
-    request.session["meaning_list_name"] = meaning_list_name
-    return response 
+            "form":form})
+    return response
 
 @login_required
-def view_meaning_add_new(request):
+def meaning_add_new(request):
     if request.method == 'POST':
         form = EditMeaningForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect('/meanings/')
+            return HttpResponseRedirect(reverse("view-meanings"))
         if form.is_valid():
-            meaning = Meaning.objects.create(**form.cleaned_data)
-            return HttpResponseRedirect('/meaning/%s/' % meaning.gloss)
-
+            form.save()
+            return HttpResponseRedirect(reverse("meaning-report",
+                args=[form.cleaned_data["gloss"]]))
     else: # first visit
         form = EditMeaningForm()
     return render_template(request, "meaning_add_new.html",
@@ -406,27 +443,51 @@ def edit_meaning(request, meaning):
         meaning = Meaning.objects.get(gloss=meaning)
     except Meaning.DoesNotExist:
         meaning = get_canonical_meaning(meaning)
-        return HttpResponseRedirect("/meaning/%s/edit/" %
-                meaning.gloss)
-
+        return HttpResponseRedirect(reverse("edit-meaning",
+                args=[meaning.gloss]))
     if request.method == 'POST':
         form = EditMeaningForm(request.POST, instance=meaning)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect('/meaning/%s/' % meaning.gloss)
+            return HttpResponseRedirect(meaning.get_absolute_url())
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/meaning/%s/' % meaning.gloss)
+            return HttpResponseRedirect(meaning.get_absolute_url())
     else:
         form = EditMeaningForm(instance=meaning)
     return render_template(request, "meaning_edit.html",
             {"meaning":meaning,
             "form":form})
 
-#@login_required
+def view_meaning(request, meaning, languages):
+    # XXX a refactored version of report_meaning
+
+    # normalize meaning
+    canonical_gloss = get_canonical_meaning(meaning).gloss
+    canonical_languages = get_canonical_languages(languages).name
+    if meaning != canonical_gloss or languages != canonical_languages:
+        return HttpResponseRedirect(reverse("view-meaning-languages", 
+            args=[canonical_gloss, canonical_languages]))
+    else:
+        meaning = Meaning.objects.get(gloss=meaning)
+
+    # get lexemes, respecting 'languages'
+    lexemes = Lexeme.objects.filter(meaning=meaning,
+            language__id__in=LanguageList.objects.get(name=languages).language_id_list)
+
+    prev_meaning, next_meaning = get_prev_and_next_meanings(meaning)
+    return render_template(request, "view_meaning.html",
+            {"meaning":meaning,
+            "prev_meaning":prev_meaning,
+            "next_meaning":next_meaning,
+            "lexemes": lexemes,
+            })
+
+
 def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
     lexeme_id = int(lexeme_id)
     cogjudge_id = int(cogjudge_id)
 
+    # normalize meaning
     if meaning.isdigit():
         meaning = Meaning.objects.get(id=int(meaning))
         # if there are actions and lexeme_ids these should be preserved too
@@ -434,6 +495,7 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
     else:
         meaning = Meaning.objects.get(gloss=meaning)
 
+    # cognate class judgement button
     if request.method == 'POST':
         form = ChooseCognateClassForm(request.POST)
         if form.is_valid():
@@ -489,6 +551,20 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
             #"language_list_form":get_language_list_form(request),
             "form":form})
 
+@login_required
+def delete_meaning(request, meaning):
+
+    # normalize meaning
+    if meaning.isdigit():
+        meaning = Meaning.objects.get(id=int(meaning))
+        # if there are actions and lexeme_ids these should be preserved too
+        return HttpResponseRedirect("/meaning/%s/" % meaning.gloss)
+    else:
+        meaning = Meaning.objects.get(gloss=meaning)
+
+    meaning.delete()
+    return HttpResponseRedirect(reverse("view-meanings"))
+
 # -- /lexeme/ -------------------------------------------------------------
 
 def view_lexeme(request, lexeme_id):
@@ -498,7 +574,7 @@ def view_lexeme(request, lexeme_id):
             {"lexeme":lexeme})
 
 @login_required
-def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
+def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     citation_id = int(citation_id)
     cogjudge_id = int(cogjudge_id)
     lexeme = Lexeme.objects.get(id=lexeme_id)
@@ -506,23 +582,24 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     sources = Source.objects.filter(lexeme=lexeme)  # XXX not used
     form = None
 
-    if action: # actions are: edit, edit-lexeme, edit-citation, add-citation
+    if action: # actions are: edit, edit-citation, add-citation
         redirect_url = '/lexeme/%s/' % lexeme_id
 
         # Handle POST data
         if request.method == 'POST':
-            if action == "edit-lexeme":
-                form = EditLexemeForm(request.POST)
+            if action == "edit":
+                form = EditLexemeForm(request.POST, instance=lexeme) ### 
                 if "cancel" in form.data: # has to be tested before data is cleaned
                     return HttpResponseRedirect(redirect_url)
                 if form.data["submit"] != "Submit":
                     if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = "/language/%s/add-lexeme/" % lexeme.language.ascii_name
+                        redirect_url = reverse("language-add-lexeme",
+                                args=[lexeme.language.ascii_name])
                     else:
-                        # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
                 if form.is_valid():
-                    update_object_from_form(lexeme, form)
+                    form.save()
+                    ## update_object_from_form(lexeme, form)
                     return HttpResponseRedirect(redirect_url)
             elif action == "edit-citation":
                 form = EditCitationForm(request.POST)
@@ -530,7 +607,8 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     return HttpResponseRedirect(redirect_url)
                 if form.data["submit"] != "Submit":
                     if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = "/language/%s/add-lexeme/" % lexeme.language.ascii_name
+                        redirect_url = reverse("language-add-lexeme",
+                                args=[lexeme.language.ascii_name])
                     else:
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
@@ -545,7 +623,8 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     return HttpResponseRedirect(redirect_url)
                 if form.data["submit"] != "Submit":
                     if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = "/language/%s/add-lexeme/" % lexeme.language.ascii_name
+                        redirect_url = reverse("language-add-lexeme",
+                                args=[lexeme.language.ascii_name])
                     else:
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
@@ -566,7 +645,8 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     return HttpResponseRedirect(redirect_url)
                 if form.data["submit"] != "Submit":
                     if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = "/language/%s/add-lexeme/" % lexeme.language.ascii_name
+                        redirect_url = reverse("language-add-lexeme",
+                                args=[lexeme.language.ascii_name])
                     else:
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
@@ -595,7 +675,8 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     return HttpResponseRedirect(redirect_url)
                 if form.data["submit"] != "Submit":
                     if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = "/language/%s/add-lexeme/" % lexeme.language.ascii_name
+                        redirect_url = reverse("language-add-lexeme",
+                                args=[lexeme.language.ascii_name])
                     else:
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
@@ -610,7 +691,8 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     return HttpResponseRedirect(redirect_url)
                 if form.data["submit"] != "Submit":
                     if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = "/language/%s/add-lexeme/" % lexeme.language.ascii_name
+                        redirect_url = reverse("language-add-lexeme",
+                                args=[lexeme.language.ascii_name])
                     else:
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
                         redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
@@ -628,11 +710,12 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
 
         # first visit, preload form with previous answer
         else:
-            if action == "edit-lexeme":
-                form = EditLexemeForm(
-                        initial={"source_form":lexeme.source_form,
-                        "phon_form":lexeme.phon_form,
-                        "notes":lexeme.notes})
+            if action == "edit":
+                form = EditLexemeForm(instance=lexeme)
+                        # initial={"source_form":lexeme.source_form,
+                        # "phon_form":lexeme.phon_form,
+                        # "notes":lexeme.notes,
+                        # "meaning":lexeme.meaning})
             elif action == "edit-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
                 form = EditCitationForm(
@@ -711,22 +794,23 @@ def edit_lexeme(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             "active_cogjudge_citation_id":cogjudge_id,
             })
 
-
 @login_required
 def lexeme_duplicate(request, lexeme_id):
     original_lexeme = Lexeme.objects.get(id=int(lexeme_id))
+    SPLIT_RE = re.compile("[,;]")   # split on these characters 
+                                    # XXX get this from settings.SPLIT_CHARS ?
     done_split = False
 
-    if "," in original_lexeme.source_form:
+    if SPLIT_RE.search(original_lexeme.source_form):
         original_source_form, new_source_form = [e.strip() for e in
-                original_lexeme.source_form.split(",", 1)]
+                SPLIT_RE.split(original_lexeme.source_form, 1)]
         done_split= True
     else:
         original_source_form, new_source_form = original_lexeme.source_form, ""
 
-    if "," in original_lexeme.phon_form:
+    if SPLIT_RE.search(original_lexeme.phon_form):
         original_phon_form, new_phon_form = [e.strip() for e in
-                original_lexeme.phon_form.split(",", 1)]
+                SPLIT_RE.split(original_lexeme.phon_form, 1)]
         done_split= True
     else:
         original_phon_form, new_phon_form = original_lexeme.phon_form, ""
@@ -738,7 +822,6 @@ def lexeme_duplicate(request, lexeme_id):
                 source_form=new_source_form,
                 phon_form=new_phon_form,
                 notes=original_lexeme.notes)
-        # new_lexeme.save()
         for lc in original_lexeme.lexemecitation_set.all():
             LexemeCitation.objects.create(
                     lexeme=new_lexeme,
@@ -815,14 +898,6 @@ def lexeme_add(request,
             form.fields["meaning"].initial = initial_data["meaning"].id
         except KeyError:
             pass
-        # if lexeme_id: # duplicate
-        #     form.fields["source_form"].initial = new_source_form
-        #     form.fields["phon_form"].initial = original_lexeme.phon_form
-        #     form.fields["notes"].initial = original_lexeme.notes
-        #     #form.fields["original_id"] = original_lexeme.id
-        #     #form.fields["original_source_form"] = original_source_form
-        #     request.session["previous_lexemecitation_ids"] = \
-        #             original_lexeme.lexemecitation_set.values_list("id", flat=True)
     return render_template(request, "lexeme_add.html",
             {"form":form})
 
@@ -834,7 +909,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
         cognate_id = int(cognate_id)
         cognate_class = CognateSet.objects.get(id=cognate_id)
     else:
-        assert meaning, code
+        assert meaning and code
         cognate_classes = CognateSet.objects.filter(alias=code, 
                 cognatejudgement__lexeme__meaning__gloss=meaning).distinct()
         try:
@@ -848,12 +923,12 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
             return HttpResponseRedirect('/meaning/%s/' % meaning)
     if action == "edit":
         if request.method == 'POST':
-            form = EditCognateSetForm(request.POST)
+            form = EditCognateSetForm(request.POST, instance=cognate_class)
             if "cancel" not in form.data and form.is_valid():
                 update_object_from_form(cognate_class, form)
             return HttpResponseRedirect('/cognate/%s/' % cognate_class.id)
         else:
-            form = EditCognateSetForm(cognate_class.__dict__)
+            form = EditCognateSetForm(instance=cognate_class)
     else:
         form = None
     sort_order = "lexeme__language__%s" % get_sort_order(request)
@@ -876,7 +951,7 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
     else:
         source = None
     if request.method == 'POST':
-        form = EditSourceForm(request.POST)
+        form = EditSourceForm(request.POST, instance=source)
         if "cancel" in form.data:
             return HttpResponseRedirect('/sources/')
         if form.is_valid():
@@ -897,14 +972,14 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
                     return HttpResponseRedirect('/lexeme/%s/edit-citation/%s/' %\
                             (lexeme.id, citation.id))
             elif action == "edit":
-                # source = Source.objects.get(id=source_id)
-                update_object_from_form(source, form)
+                form.save()
             return HttpResponseRedirect('/source/%s/' % source.id)
     else:
         if action == "add":
             form = EditSourceForm()
         elif action == "edit":
-            form = EditSourceForm(source.__dict__)
+            #form = EditSourceForm(source.__dict__)
+            form = EditSourceForm(instance=source)
         elif action == "delete":
             source.delete()
             return HttpResponseRedirect('/sources/')
@@ -912,16 +987,45 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
             form = None
     return render_template(request, 'source_edit.html', {
             "form": form,
-            "source":source,
-            "action":action})
+            "source": source,
+            "action": action})
 
 def source_list(request):
     grouped_sources = []
-    for type_code, type_name in Source.TYPE_CHOICES:
+    for type_code, type_name in TYPE_CHOICES:
         grouped_sources.append((type_name,
                 Source.objects.filter(type_code=type_code)))
     return render_template(request, "source_list.html",
             {"grouped_sources":grouped_sources})
 
+# -- search ---------------------------------------------------------------
 
+def lexeme_search(request):
+    if request.method == 'POST':
+        form = SearchLexemeForm(request.POST)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect('/')
+        if form.is_valid():
+            regex = form.cleaned_data["regex"]
+            languages = form.cleaned_data["languages"]
+            if not languages:
+                languages = Language.objects.all()
+            if form.cleaned_data["search_fields"] == "L": # Search language fields
+                lexemes = Lexeme.objects.filter(
+                        Q(phon_form__regex=regex) | Q(source_form__regex=regex),
+                        language__in=languages)
+            else:
+                assert form.cleaned_data["search_fields"] == "E" # Search English fields
+                lexemes = Lexeme.objects.filter(
+                        Q(gloss__regex=regex) | Q(notes__regex=regex) | Q(meaning__gloss__regex=regex),
+                        language__in=languages)
+            return render_template(request, "lexeme_search_results.html", {
+                    "regex": regex,
+                    "language_names":[(l.utf8_name or l.ascii_name) for l in languages],
+                    "lexemes": lexemes,
+                    })
+    else:
+        form = SearchLexemeForm()
+    return render_template(request, "lexeme_search.html",
+            {"form":form})
 

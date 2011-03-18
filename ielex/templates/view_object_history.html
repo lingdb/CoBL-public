@@ -6,7 +6,7 @@
 {% block top %}<h1>Object history</h1>{% endblock %}
 
 {% block content %}
-<p><strong>Object:</strong> <a href="{{ object.canonical_url }}">{{ object }}</a></p>
+<p><strong>Object:</strong> <a href="{{ object.get_absolute_url }}">{{ object }}</a></p>
 <fieldset>
   <legend><strong> Versions </strong></legend>
 <table>

@@ -4,8 +4,8 @@ import os.path
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-VERSION = "0.3"
-ROOTDIR = os.path.dirname(__file__)
+VERSION = "0.4"
+ROOTDIR = os.path.abspath(os.path.dirname(__file__))
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -39,7 +39,7 @@ USE_I18N = False
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.join(os.path.abspath(ROOTDIR), 'media')
+MEDIA_ROOT = os.path.join(ROOTDIR, 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -80,7 +80,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'ielex.urls'
 
 TEMPLATE_DIRS = (
-    os.path.join(ROOTDIR, 'templates'), #.replace('\\','/') for Windows
+    os.path.join(ROOTDIR, 'templates'), 
 )
 
 INSTALLED_APPS = (
@@ -92,6 +92,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'reversion',
     'ielex.lexicon',
+    'ielex.extensional_semantics',
 )
 
 # admin urls

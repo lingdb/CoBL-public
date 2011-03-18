@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ relation }}{% endblock %}
+
+{% block top %}
+<h1>{{ relation }}</h1>
+{% endblock %}
+
+{% block content %}
+<table>
+  <tr>
+    <th>Code</th>
+    <td>{{ relation.relation_code }}</td>
+  </tr>
+  <tr>
+    <th>Name</th>
+    <td>{{ relation.long_name }}</td>
+  </tr>
+  <tr>
+    <th>Description</th>
+    <td>{{ relation.description }}</td>
+  </tr>
+  <tr>
+    <th>Notes</th>
+    <td>{{ relation.notes }}</td>
+  </tr>
+  <tr>
+    <th>Modified</th>
+    <td>{{ relation.modified|date:"SHORT_DATETIME_FORMAT" }}</td>
+  </tr>
+
+</table>
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

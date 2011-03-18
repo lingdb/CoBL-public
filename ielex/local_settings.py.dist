@@ -1,13 +1,24 @@
 # -*- coding: utf-8 -*-
 
+## Datetime formats
+## These may be freely customized according to:
+## http://docs.djangoproject.com/en/dev/ref/templates/builtins/#date
+# DATE_FORMAT = "d M Y"
+# DATETIME_FORMAT = "l, dS F Y  H:i:s O"
+# SHORT_DATE_FORMAT = "d-m-Y"
+# SHORT_DATETIME_FORMAT = "Y-m-d H:i:s"
+
 # Project customization
 project_long_name = u"Test Lexical Cognacy Database"
 project_short_name = u"TestLex"
 project_description = u"""Description for the front page"""
 acknowledgements = u"" # may include html markup
 
+# Which modules to use (True or False)
+semantic_domains = True
+structural_features = False # NotImplemented
+
 # Automatically generated secret key
 SECRET_KEY = "<++>"
-
 
 # vim:ft=python

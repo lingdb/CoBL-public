@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load lexicon_utils %}
+
+{% block title %}Search results{% endblock %}
+
+{% block top %}
+<h1>
+  Search results <tt>{{ regex }}</tt>
+</h1>
+{% endblock %}
+
+{% block content %}
+Querying {{ language_names|length }} language{{ language_names|pluralize }}: 
+{{ language_names|join:", " }}
+<table>
+  <tr>
+    <th>Language</th>
+    <th>Source Form</th>
+    <th>Phonological Form</th>
+    <th>Meaning set</th>
+    <th>Gloss</th>
+    <th>Notes</th>
+  </tr>
+  {% for lexeme in lexemes %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    <td><a href="{% url language-report lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
+    <td>{{ lexeme.source_form }}</td>
+    <td>{{ lexeme.phon_form }}</td>
+    <td>{{ lexeme.meaning.gloss }}</td>
+    <td>{{ lexeme.gloss }}</td>
+    <td>
+      {{ lexeme.notes|wikilink|truncatewords_html:5 }}
+      {% if lexeme.notes|is_truncated:5 %}
+      <a href="/lexeme/{{ lexeme.id }}" title="{{ lexeme.notes }}">
+        <img src="/media/buttons/view.png/" title="{{ lexeme.notes }}" />
+      </a>
+      {% endif %}
+    </td>  
+    <td>
+      <a href="{% url view-lexeme lexeme.id %}">
+        <img src="/media/buttons/view.png" alt="View" title="View lexeme" />
+      <a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+<ul class="navigation">
+  <li><a href="/lexeme/search/">Search again</a></li>
+</ul>
+
+{% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

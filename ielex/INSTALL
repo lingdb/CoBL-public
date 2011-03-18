@@ -13,4 +13,4 @@ After a clean install,
 
   * Customize ``local_settings.py`` with name of database etc.
 
-.. vim:ft=rst
+.. vim:ft=rst:nospell

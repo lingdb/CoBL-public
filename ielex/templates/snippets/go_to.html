@@ -5,9 +5,13 @@
     {% endif %}
     <li><a href={% url view-languages %}>view languages</a></li>
     <li><a href={% url view-meanings %}>view meanings</a></li>
+    {% if semantic_domains %}
+      <li><a href={% url view-domains %}>view domains</a></li>
+    {% endif %}
     <li><a href={% url view-sources %}>view sources</a></li>
+    <li><a href={% url lexeme-search %}>search lexemes</a></li>
     <li><a href={% url view-changes %}>recent changes</a></li>
-  </ul>            
+  </ul>
 </p>
 
 {# vim: set ft=htmldjango: #}
