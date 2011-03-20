@@ -33,21 +33,24 @@ TODO
 
 - Describe grammar of urls::
 
-    /language/...(/wordlist/...)/ # list of words in a language
-    /language/.../                # default: all words in language
+    /language/...(/wordlist/...)/ # list of words in a language *
+    /language/.../                # default: all words in language *
     /language/.../domain/.../     # list of words in a language pertaining to
-                                  # domain
+                                  # domain *
+    /languages/.../               # names lists *
+    /meaning/.../                 # list of all words with a meaning
     /meaning/...(/languages/...)/ # list of words with a meaning (in language
-                                  # list)
+                                  # list) *
     # lexemes in this view have identifiers, e.g.
     /meaning/animal/languages/aslian/#lexeme_6
-    /meaning/.../                 # list of all words with a meaning
     /meaning/.../delete/          # TODO
-    /meanings/                    # alias for /wordlist/all/
+    /meanings/                    # alias for /wordlist/all/ *
+    /wordlist/Swadesh100/         # a named list of meanings *
     /meanings/add-new/            # (this is why we need both meanings and wordlist)
-    /wordlist/Swadesh100/         # a named list of meanings
     /wordlists/                   # list defined wordlists
-    /domain/.../                  # relation names in a domain
+    /domain/.../                  # relation names in a domain *
+
+    * DONE
   
   Reserved names for sets 'all' (for languages, meanings), 'none' (for
   meanings, domains)
@@ -64,6 +67,17 @@ TODO
     /language/.../meaning/.../lexeme/add/ # return to language
     /meaning/.../language/.../lexeme/add/ # return to meaning
     /lexeme/add/
+
+- refactor base templates:
+
+  These just need to take object, title_text, header_text arguments. This
+  should then be easy to convert to class based views.
+
+  * edit_object 
+  * view_object
+  * list_object
+  * change_and_reorder_from list (for language lists, meaning lists, etc)
+
 
 for Version 0.3
 ---------------

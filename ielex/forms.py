@@ -119,6 +119,17 @@ class EditMeaningForm(forms.ModelForm):
     class Meta:
         model = Meaning
 
+class EditMeaningListForm(forms.ModelForm):
+
+    def clean_gloss(self):
+        data = self.cleaned_data["name"]
+        clean_ascii_name(data)
+        return data
+
+    class Meta:
+        model = MeaningList
+        exclude = ["meaning_ids"]
+
 class EditRelationForm(forms.ModelForm):
 
     def clean_relation_code(self):

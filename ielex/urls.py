@@ -56,9 +56,10 @@ urlpatterns = patterns('',
             name="language-meaning-add-lexeme"),
 
     # Meanings (aka wordlist)
+    url(r'^wordlists/$', view_wordlists, name="view-wordlists"),
     url(r'^wordlist/%(WORDLIST)s/$' % R, view_wordlist, name="view-wordlist"),
-    # url(r'^wordlist/%(WORDLIST)s/edit/$' % R, edit_wordlist,
-    #         name="edit-wordlist"),
+    url(r'^wordlist/%(WORDLIST)s/edit/$' % R, edit_wordlist,
+            name="edit-wordlist"),
     #url(r'^wordlist/%(WORDLIST)s/reorder/$' % R, reorder_wordlist,
     #         name="reorder-wordlist"),
     url(r'^meanings/$', view_wordlist, {"wordlist":"all"}, name="view-meanings"),

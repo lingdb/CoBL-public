@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load lexicon_utils %}
+
+{% block title %}{{ meaning.gloss }}{% endblock %}
+
+{% block top %}<h1>{{ meaning.description }}</h1>{% endblock %}
+
+{% block content %}
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Language</th>
+    <th>Source Form</th>
+    <th>Phonological Form</th>
+    <th>Notes</th>
+    <th>Cognate Class</th>
+  </tr>
+  {% for lexeme in lexemes %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    <td id="lexeme_{{ lexeme.id }}">{{ lexeme.language.id }}</td>
+    <td><a href="{% url language-report lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
+    <td>{{ lexeme.source_form }}</td>
+    <td>{{ lexeme.phon_form }}</td>
+    <td>
+      {{ lexeme.notes|wikilink|truncatewords_html:5 }}
+      {% if lexeme.notes|is_truncated:5 %}
+      <a href="/lexeme/{{ lexeme.id }}" title="{{ lexeme.notes }}">
+        <img src="/media/buttons/view.png/" title="{{ lexeme.notes }}" />
+      </a>
+      {% endif %}
+    </td>  
+    <td> 
+      {% if lexeme.cognatejudgement_set.count %}
+        {% for cj in lexeme.cognatejudgement_set.all %}
+          {%if cj.is_loanword %}({% endif %}<a href="/cognate/{{ cj.cognate_class.id }}/">{{ cj.cognate_class.alias }}</a>{%if cj.is_loanword %}){% endif %}
+          <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/#lexeme_{{ lexeme.id }}">
+            <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
+          </a>
+          <br />
+        {% endfor %}
+      {% else %}
+        <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/#current">
+          <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
+        </a>
+      {% endif %}
+    </td>
+    <td>
+      <a href="/lexeme/{{ lexeme.id }}">
+        <img src="/media/buttons/view.png" alt="View" title="View/edit the lexical entry" />
+      </a>
+      <a href="/lexeme/{{ lexeme.id }}/duplicate/">
+        <img src="/media/buttons/duplicate_lexeme.png" alt="Duplicate" title="Duplicate lexical entry" />
+      </a>
+    </td>
+  {% endfor %}
+</table>
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/prev_next_meaning.html" %}
+{% include "snippets/go_to.html" %}
+{% include "snippets/change_sort_order.html" %}
+<ul class="navigation">
+  {% if add_cognate_judgement  %}
+  <li><a href="/meaning/{{ meaning.gloss }}/">return to normal view</a></li>
+  {% endif %}
+  <li><a href="/lexeme/search/">Search lexemes</a></li>
+  <li><a href="{% url meaning-add-lexeme meaning.gloss %}">add a new lexeme</a></li>
+</ul>
+<p>Cognate judgements are added on this page, but deleted by the lexeme view (use the <img src="/media/buttons/view.png" alt="" title="View/Edit the lexical entry" /> button)</p>
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

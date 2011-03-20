@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Wordlists (lists of semantic fields){% endblock %}
+
+{% block top %}<h1>Wordlists</h1>{% endblock %}
+
+
+{% block content %}
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+  </tr>
+  {% for wordlist in wordlists %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    <td>
+      <a href="{% url view-wordlist wordlist.name %}">{{ wordlist.name }}</a>
+    </td>
+    <td>{{ wordlist.description|truncatewords_html:10 }}</td>
+    {% if user.is_superuser and wordlist.name != wordlist.DEFAULT %}
+    <td>
+      <a href="{% url edit-wordlist wordlist.name %}">
+        <img src="/media/buttons/edit.png" alt="edit" title="Edit {{ wordlist.name }} metadata" />
+      </a>
+    </td>
+    {% endif %}
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
+
+{% block controls %}
+{# prev-next lexeme by domain #}
+{% include "snippets/go_to.html" %}
+<ul class="navigation">
+  <li><a href="{% url add-semantic-domain %}">Add new semantic domain</a></li>
+</ul>
+{% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

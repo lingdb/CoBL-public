@@ -20,7 +20,7 @@ from ielex.extensional_semantics.views import *
 from ielex.shortcuts import render_template
 from ielex.utilities import next_alias, renumber_sort_keys, confirm_required
 
-
+All = "all"
 
 # Refactoring: 
 # - rename the functions which render to response with the format
@@ -209,7 +209,7 @@ def get_canonical_languages(languages=None):
     if languages.isdigit():
         languages = LanguageList.objects.get(id=languages)
     elif languages is None:
-        languages = LanguageList.objects.get(name="all")
+        languages = LanguageList.objects.get(name=All)
     else:
         languages = LanguageList.objects.get(name=languages)
     return languages
@@ -413,7 +413,12 @@ def delete_language(request, language):
 
 # -- /meaning(s)/ and /wordlist/ ------------------------------------------
 
-def view_wordlist(request, wordlist="all"):
+def view_wordlists(request):
+    wordlists = MeaningList.objects.all()
+    return render_template(request, "wordlists_list.html",
+            {"wordlists":wordlists})
+
+def view_wordlist(request, wordlist=All):
     wordlist = MeaningList.objects.get(name=wordlist)
     if request.method == 'POST':
         form = ChooseMeaningListForm(request.POST)
@@ -434,6 +439,24 @@ def view_wordlist(request, wordlist="all"):
             {"meanings":meanings,
             "form":form})
     return response
+
+def edit_wordlist(request, wordlist):
+    wordlist = MeaningList.objects.get(name=wordlist)
+
+    if request.method == 'POST':
+        form = EditMeaningListForm(request.POST, instance=wordlist)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect(reverse("view-wordlists"))
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("view-wordlists"))
+    else:
+        form = EditMeaningListForm(instance=wordlist)
+
+    return render_template(request, "edit_wordlist.html",
+            {"wordlist":wordlist,
+            "form":form})
+    return
 
 @login_required
 def meaning_add_new(request):
