@@ -11,7 +11,11 @@ TODO
 
     /language/Maniq/wordlist/Swadesh100/
 
+  **DONE**
+
   Treat `/language/Maniq/` as an alias of `/language/Maniq/wordlist/all`
+
+  **DONE**
 
 - Get rid of the LanguageList session variable, and put the info into urls
   instead::

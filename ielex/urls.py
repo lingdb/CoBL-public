@@ -30,7 +30,8 @@ urlpatterns = patterns('',
     # url(r'^touch/(?P<model_name>[a-zA-Z0-9_ ]+)/(?P<model_id>\d+)/', touch),
 
     # Languages
-    url(r'^languages/$', view_language_list, name="view-languages"),
+    url(r'^languages/$', view_languages, name="view-all-languages"),
+    url(r'^languages/%(LANGUAGES)s/' % R, view_languages, name="view-languages"),
     url(r'^languages/reorder/$', language_reorder, name="languages-reorder"),
     url(r'^languages/add-new/$', language_add_new, name="language-add-new"),
     url(r'^languages/sort/(?P<ordered_by>sort_key|utf8_name)/$', sort_languages,

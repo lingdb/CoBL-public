@@ -205,40 +205,53 @@ def update_object_from_form(model_object, form):
 
 # -- /language(s)/ ----------------------------------------------------------
 
-def get_canonical_languages(languages):
+def get_canonical_languages(languages=None):
     if languages.isdigit():
         languages = LanguageList.objects.get(id=languages)
+    elif languages is None:
+        languages = LanguageList.objects.get(name="all")
     else:
         languages = LanguageList.objects.get(name=languages)
     return languages
 
-def get_language_list_form(request):
-    language_list_name = get_current_language_list_name(request)
+# def get_language_list_form(request):
+#     language_list_name = get_current_language_list_name(request)
+#     if request.method == 'POST':
+#         form = ChooseLanguageListForm(request.POST)
+#         if form.is_valid():
+#             current_list = form.cleaned_data["language_list"]
+#             language_list_name = current_list.name
+#             msg = "Language list selection changed to '%s'" %\
+#                     language_list_name
+#             messages.add_message(request, messages.INFO, msg)
+#     else:
+#         form = ChooseLanguageListForm()
+#     form.fields["language_list"].initial = LanguageList.objects.get(
+#             name=language_list_name).id
+#     return form
+
+
+def view_languages(request, languages=None):
+    current_list = get_canonical_languages(languages)
+    languages = Language.objects.filter(id__in=current_list.language_id_list)
+
     if request.method == 'POST':
         form = ChooseLanguageListForm(request.POST)
         if form.is_valid():
             current_list = form.cleaned_data["language_list"]
-            language_list_name = current_list.name
             msg = "Language list selection changed to '%s'" %\
-                    language_list_name
+                    current_list.name
             messages.add_message(request, messages.INFO, msg)
+            return HttpResponseRedirect(reverse("view-languages",
+                    args=[current_list.name]))
     else:
         form = ChooseLanguageListForm()
-    form.fields["language_list"].initial = LanguageList.objects.get(
-            name=language_list_name).id
-    return form
+    form.fields["language_list"].initial = current_list.id
 
-
-def view_language_list(request):
-    language_list_name = get_current_language_list_name(request)
-    languages = Language.objects.all().order_by(get_sort_order(request))
-    current_list = LanguageList.objects.get(name=language_list_name)
-    response = render_template(request, "language_list.html",
+    return render_template(request, "language_list.html",
             {"languages":languages,
-            "language_list_form":get_language_list_form(request),
+            "language_list_form":form,
             "current_list":current_list})
-    request.session["language_list_name"] = language_list_name # XXX what's this for?
-    return response
 
 @login_required
 def language_reorder(request):
@@ -255,9 +268,9 @@ def language_reorder(request):
                 # renumbering is slow, and doesn't need to be done every time
                 # on the other hand, we hardly ever call this function ...
                 renumber_sort_keys()
-                return HttpResponseRedirect(reverse("view-languages"))
+                return HttpResponseRedirect(reverse("view-all-languages"))
         else: # pressed Finish without submitting changes
-            return HttpResponseRedirect(reverse("view-languages"))
+            return HttpResponseRedirect(reverse("view-all-languages"))
     else: # first visit
         renumber_sort_keys() # if new languages have been added, number them
         form = ReorderLanguageSortKeyForm()
@@ -305,7 +318,7 @@ def move_language_down_list(language):
 
 def sort_languages(request, ordered_by):
     """Change the selected sort order via url"""
-    referer = request.META.get("HTTP_REFERER", reverse("view-languages"))
+    referer = request.META.get("HTTP_REFERER", reverse("view-all-languages"))
     request.session["language_sort_order"] = ordered_by
     return HttpResponseRedirect(referer)
 
@@ -354,7 +367,7 @@ def language_add_new(request):
     if request.method == 'POST':
         form = EditLanguageForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect(reverse("view-languages"))
+            return HttpResponseRedirect(reverse("view-all-languages"))
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("language-report",
@@ -376,10 +389,10 @@ def edit_language(request, language):
     if request.method == 'POST':
         form = EditLanguageForm(request.POST, instance=language)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect(reverse("view-languages"))
+            return HttpResponseRedirect(reverse("view-all-languages"))
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("view-languages"))
+            return HttpResponseRedirect(reverse("view-all-languages"))
     else:
         form = EditLanguageForm(instance=language)
     return render_template(request, "language_edit.html",
@@ -396,7 +409,7 @@ def delete_language(request, language):
                 args=[language.ascii_name])
 
     language.delete()
-    return HttpResponseRedirect(reverse("view-languages"))
+    return HttpResponseRedirect(reverse("view-all-languages"))
 
 # -- /meaning(s)/ and /wordlist/ ------------------------------------------
 
