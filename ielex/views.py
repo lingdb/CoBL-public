@@ -440,6 +440,7 @@ def view_wordlist(request, wordlist=All):
             "form":form})
     return response
 
+@login_required
 def edit_wordlist(request, wordlist):
     wordlist = MeaningList.objects.get(name=wordlist)
 
