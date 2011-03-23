@@ -206,10 +206,10 @@ def update_object_from_form(model_object, form):
 # -- /language(s)/ ----------------------------------------------------------
 
 def get_canonical_languages(languages=None):
-    if languages.isdigit():
-        languages = LanguageList.objects.get(id=languages)
-    elif languages is None:
+    if languages is None:
         languages = LanguageList.objects.get(name=All)
+    elif languages.isdigit():
+        languages = LanguageList.objects.get(id=languages)
     else:
         languages = LanguageList.objects.get(name=languages)
     return languages

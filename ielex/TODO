@@ -4,9 +4,6 @@ TODO
 - rewrite templates so the database can handle startup from nothing (e.g.
   initially, only offer "create language", "create meaning" pages
 
-- Decorate drop-down menu names (e.g. so that languages without data can be
-  bracketted)
-
 - The url `/language/Maniq/` should be qualified::
 
     /language/Maniq/wordlist/Swadesh100/
@@ -38,16 +35,16 @@ TODO
     /language/.../domain/.../     # list of words in a language pertaining to
                                   # domain *
     /languages/.../               # names lists *
-    /meaning/.../                 # list of all words with a meaning
+    /meaning/.../                 # list of all words with a meaning *
     /meaning/...(/languages/...)/ # list of words with a meaning (in language
                                   # list) *
     # lexemes in this view have identifiers, e.g.
     /meaning/animal/languages/aslian/#lexeme_6
-    /meaning/.../delete/          # TODO
+    /meaning/.../delete/          # *
     /meanings/                    # alias for /wordlist/all/ *
     /wordlist/Swadesh100/         # a named list of meanings *
-    /meanings/add-new/            # (this is why we need both meanings and wordlist)
-    /wordlists/                   # list defined wordlists
+    /meanings/add-new/            # (this is why we need both meanings and wordlist) *
+    /wordlists/                   # list defined wordlists *
     /domain/.../                  # relation names in a domain *
 
     * DONE
