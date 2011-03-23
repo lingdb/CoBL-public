@@ -498,18 +498,32 @@ def edit_meaning(request, meaning):
 def view_meaning(request, meaning, languages):
     # XXX a refactored version of report_meaning
 
-    # normalize meaning
+    # Normalize calling parameters
     canonical_gloss = get_canonical_meaning(meaning).gloss
-    canonical_languages = get_canonical_languages(languages).name
-    if meaning != canonical_gloss or languages != canonical_languages:
+    current_language_list = get_canonical_languages(languages)
+    if meaning != canonical_gloss or languages != current_language_list.name:
         return HttpResponseRedirect(reverse("view-meaning-languages", 
-            args=[canonical_gloss, canonical_languages]))
+            args=[canonical_gloss, current_language_list.name]))
     else:
         meaning = Meaning.objects.get(gloss=meaning)
 
-    # get lexemes, respecting 'languages'
+    # Change language list
+    if request.method == 'POST':
+        language_form = ChooseLanguageListForm(request.POST)
+        if language_form.is_valid():
+            current_language_list = language_form.cleaned_data["language_list"]
+            msg = "Language list selection changed to '%s'" %\
+                    current_language_list.name
+            messages.add_message(request, messages.INFO, msg)
+            return HttpResponseRedirect(reverse("view-meaning-languages",
+                    args=[canonical_gloss, current_language_list.name]))
+    else:
+        language_form = ChooseLanguageListForm()
+    language_form.fields["language_list"].initial = current_language_list.id
+
+    # Get lexemes, respecting 'languages'
     lexemes = Lexeme.objects.filter(meaning=meaning,
-            language__id__in=LanguageList.objects.get(name=languages).language_id_list)
+            language__id__in=current_language_list.language_id_list)
 
     prev_meaning, next_meaning = get_prev_and_next_meanings(meaning)
     return render_template(request, "view_meaning.html",
@@ -517,6 +531,7 @@ def view_meaning(request, meaning, languages):
             "prev_meaning":prev_meaning,
             "next_meaning":next_meaning,
             "lexemes": lexemes,
+            "language_form":language_form,
             })
 
 

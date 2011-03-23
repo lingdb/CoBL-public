@@ -60,6 +60,13 @@
 {% include "snippets/prev_next_meaning.html" %}
 {% include "snippets/go_to.html" %}
 {% include "snippets/change_sort_order.html" %}
+<p>
+<form action="" method="post">{% csrf_token %}
+<table>
+{{ language_form.as_table }}
+</table>
+</form>
+</p>
 <ul class="navigation">
   {% if add_cognate_judgement  %}
   <li><a href="/meaning/{{ meaning.gloss }}/">return to normal view</a></li>
