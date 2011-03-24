@@ -507,7 +507,7 @@ def view_meaning(request, meaning, languages):
     else:
         meaning = Meaning.objects.get(gloss=meaning)
 
-    # Change language list
+    # Change language list form
     if request.method == 'POST':
         language_form = ChooseLanguageListForm(request.POST)
         if language_form.is_valid():
@@ -521,6 +521,33 @@ def view_meaning(request, meaning, languages):
         language_form = ChooseLanguageListForm()
     language_form.fields["language_list"].initial = current_language_list.id
 
+    # Cognate class judgement button
+    if request.method == 'POST':
+        cognate_form = ChooseCognateClassForm(request.POST)
+        if cognate_form.is_valid():
+            cd = cognate_form.cleaned_data
+            if not cogjudge_id: # new cognate judgement
+                lexeme = Lexeme.objects.get(id=lexeme_id)
+                cognate_class = cd["cognate_class"]
+                if cognate_class not in lexeme.cognate_class.all():
+                    cj = CognateJudgement.objects.create(
+                            lexeme=lexeme,
+                            cognate_class=cognate_class)
+                else:
+                    cj = CognateJudgement.objects.get(
+                            lexeme=lexeme,
+                            cognate_class=cognate_class)
+            else:
+                cj = CognateJudgement.objects.get(id=cogjudge_id)
+                cj.cognate_class = cd["cognate_class"]
+                cj.save()
+
+            # change this to a reverse() pattern
+            return HttpResponseRedirect('/lexeme/%s/add-cognate-citation/%s/' %
+                    (lexeme_id, cj.id))
+    else:
+        cognate_form = ChooseCognateClassForm()
+
     # Get lexemes, respecting 'languages'
     lexemes = Lexeme.objects.filter(meaning=meaning,
             language__id__in=current_language_list.language_id_list)
@@ -532,6 +559,7 @@ def view_meaning(request, meaning, languages):
             "next_meaning":next_meaning,
             "lexemes": lexemes,
             "language_form":language_form,
+            "cognate_form":cognate_form,
             })
 
 

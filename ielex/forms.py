@@ -198,7 +198,7 @@ class AddCitationForm(forms.Form):
 class ChooseCognateClassForm(forms.Form):
     cognate_class = ChooseCognateClassField(queryset=CognateSet.objects.all(),
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}),
-            empty_label="---",
+            empty_label="---", # make this into the "new" button?
             label="")
 
 class EditCognateSetForm(forms.Form):
