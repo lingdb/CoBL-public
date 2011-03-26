@@ -676,7 +676,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         redirect_url = reverse("language-add-lexeme",
                                 args=[lexeme.language.ascii_name])
                     else:
-                        redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
+                        redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
+                                (lexeme.meaning.gloss, lexeme.id, lexeme.id)
                 if form.is_valid():
                     form.save()
                     ## update_object_from_form(lexeme, form)
@@ -691,7 +692,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                                 args=[lexeme.language.ascii_name])
                     else:
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
-                        redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
+                        redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
+                                (lexeme.meaning.gloss, lexeme.id, lexeme.id)
                 if form.is_valid():
                     citation = LexemeCitation.objects.get(id=citation_id)
                     update_object_from_form(citation, form)
@@ -707,7 +709,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                                 args=[lexeme.language.ascii_name])
                     else:
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
-                        redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
+                        redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
+                                (lexeme.meaning.gloss, lexeme.id, lexeme.id)
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = LexemeCitation(
@@ -729,7 +732,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                                 args=[lexeme.language.ascii_name])
                     else:
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
-                        redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
+                        redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
+                                (lexeme.meaning.gloss, lexeme.id, lexeme.id)
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = LexemeCitation(
@@ -759,7 +763,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                                 args=[lexeme.language.ascii_name])
                     else:
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
-                        redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
+                        redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
+                                (lexeme.meaning.gloss, lexeme.id, lexeme.id)
                 if form.is_valid():
                     citation = CognateJudgementCitation.objects.get(id=citation_id)
                     update_object_from_form(citation, form)
@@ -775,7 +780,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                                 args=[lexeme.language.ascii_name])
                     else:
                         # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
-                        redirect_url = '/meaning/%s/%s/#current' % (lexeme.meaning.gloss, lexeme.id)
+                        redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
+                                (lexeme.meaning.gloss, lexeme.id, lexeme.id)
                 if form.is_valid():
                     citation = CognateJudgementCitation.objects.create(
                             cognate_judgement=CognateJudgement.objects.get(
@@ -783,8 +789,9 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     request.session["previous_cognate_citation_id"] = citation.id
                     return HttpResponseRedirect(redirect_url)
             elif action == "add-cognate":
-                return HttpResponseRedirect("/meaning/%s/%s/#current" %
-                        (lexeme.meaning.gloss, lexeme_id))
+                redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
+                        (lexeme.meaning.gloss, lexeme.id, lexeme.id)
+                return HttpResponseRedirect(redirect_url)
             else:
                 assert not action
 
@@ -837,8 +844,9 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     form = AddCitationForm()
                 # form = AddCitationForm()
             elif action == "add-cognate":
-                return HttpResponseRedirect("/meaning/%s/%s/#current" %
-                        (lexeme.meaning.gloss, lexeme_id))
+                redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
+                        (lexeme.meaning.gloss, lexeme.id, lexeme.id)
+                return HttpResponseRedirect(redirect_url)
             elif action == "delink-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
                 citation.delete()
@@ -922,8 +930,8 @@ def lexeme_duplicate(request, lexeme_id):
         original_lexeme.source_form = original_source_form
         original_lexeme.phon_form = original_phon_form
         original_lexeme.save()
-    return HttpResponseRedirect("/meaning/%s/%s/#current" %
-            (original_lexeme.meaning.gloss, original_lexeme.id))
+    return HttpResponseRedirect("/meaning/%s/%s/#lexeme_%s" %
+            (original_lexeme.meaning.gloss, original_lexeme.id, original_lexeme.id))
 
 @login_required
 def lexeme_add(request,
@@ -931,7 +939,7 @@ def lexeme_add(request,
         language=None,
         lexeme_id=0, # non-zero -> duplicate
         return_to=None):
-    # TODO break out the duplicate stuff to a different a different
+    # TODO break out the duplicate stuff to a different
     # (non-interactive) function, that splits and copies the lexemes, along
     # with cognate coding and everything (include a #current tag too)
     initial_data = {}

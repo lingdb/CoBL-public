@@ -39,12 +39,12 @@
           <br />
         {% endfor %}
       {% else %}
-        <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/#current">
+        <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/#lexeme_{{ lexeme.id }}">
           <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
         </a>
       {% endif %}
       {% ifequal add_cognate_judgement lexeme.id %}
-        <a id="current"></a> {# target for .../add/#current links #}
+        <a id="lexeme_{{ lexeme.id }}"></a> {# target for #ANCHOR links #}
         <form action="" method="post">{% csrf_token %}
           {{ cognate_form.cognate_class }}
         </form>
