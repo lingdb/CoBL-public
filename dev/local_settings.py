@@ -12,6 +12,10 @@ acknowledgements = """\
 </table>
 </p>"""
 
+# Which modules to use (True or False)
+semantic_domains = True
+structural_features = False # NotImplemented
+
 SECRET_KEY = 'yoy*s27dgk+8&@rq1s$siz0b80*$clc^!yh+o6(*jxh74h6w4k'
 
 
