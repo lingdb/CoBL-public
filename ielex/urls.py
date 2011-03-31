@@ -34,8 +34,8 @@ urlpatterns = patterns('',
     url(r'^languages/reorder/$', language_reorder, name="languages-reorder"),
     url(r'^languages/add-new/$', language_add_new, name="language-add-new"),
     url(r'^languages/%(LANGUAGES)s/' % R, view_languages, name="view-languages"),
-    url(r'^languages/sort/(?P<ordered_by>sort_key|utf8_name)/$', sort_languages,
-            name="language-sort"),
+    #url(r'^languages/sort/(?P<ordered_by>sort_key|utf8_name)/$', sort_languages,
+    #        name="language-sort"),
 
     # Language
     url(r'^language/%(LANGUAGE)s/$' % R, view_language_wordlist,

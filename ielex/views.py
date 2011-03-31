@@ -141,18 +141,17 @@ def get_canonical_language(language):
             #   language = Language.objects.last_added()
     return language
 
-def get_sort_order(request):
-    return request.session.get("language_sort_order", "sort_key")
+# def get_sort_order(request):
+#     return request.session.get("language_sort_order", "sort_key")
 
 def get_languages(request): # refactor this away XXX
     """Get all Language objects, respecting language_list selection; if no
     language list then all languages are selected"""
     language_list_name = get_current_language_list_name(request)
-    sort_order = get_sort_order(request)
     try:
         languages = Language.objects.filter(
                 id__in=LanguageList.objects.get(
-                name=language_list_name).language_id_list).order_by(sort_order)
+                name=language_list_name).language_id_list).order_by("sort_key")
     except LanguageList.DoesNotExist:
         languages = Language.objects.all()
     return languages
@@ -317,11 +316,11 @@ def move_language_down_list(language):
         pass # already last
     return
 
-def sort_languages(request, ordered_by):
-    """Change the selected sort order via url"""
-    referer = request.META.get("HTTP_REFERER", reverse("view-all-languages"))
-    request.session["language_sort_order"] = ordered_by
-    return HttpResponseRedirect(referer)
+# def sort_languages(request, ordered_by):
+#     """Change the selected sort order via url"""
+#     referer = request.META.get("HTTP_REFERER", reverse("view-all-languages"))
+#     request.session["language_sort_order"] = ordered_by
+#     return HttpResponseRedirect(referer)
 
 def view_language_wordlist(request, language, wordlist):
     wordlist = MeaningList.objects.get(name=wordlist)
@@ -601,9 +600,8 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
     else:
         form = ChooseCognateClassForm()
 
-    sort_order = "language__%s" % get_sort_order(request)
     lexemes = Lexeme.objects.select_related().filter(meaning=meaning,
-            language__in=get_languages(request)).order_by(sort_order)
+            language__in=get_languages(request)).order_by("sort_key")
     form.fields["cognate_class"].queryset = CognateSet.objects.filter(
             lexeme__in=lexemes).distinct()
     add_cognate_judgement = 0 # to lexeme
@@ -985,9 +983,8 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
             form = EditCognateSetForm(instance=cognate_class)
     else:
         form = None
-    sort_order = "lexeme__language__%s" % get_sort_order(request)
     cj_ordered = cognate_class.cognatejudgement_set.filter(
-            lexeme__language__in=get_languages(request)).order_by(sort_order)
+            lexeme__language__in=get_languages(request)).order_by("sort_key")
     return render_template(request, "cognate_report.html",
             {"cognate_class":cognate_class,
             "cj_ordered":cj_ordered,

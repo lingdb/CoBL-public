@@ -14,12 +14,9 @@ TODO
   (session variable is still useful for 'return_to' pages and '#lexeme_XX'
   anchors)
 
-- language lists and wordlists should have two orders, the default order (saved
-  in the database) and alphabetical order. People don't need to be able to
-  customize this further.
-
-- XXX Next big task: refactor the /meaning/.../ functions to handle
-  /languages/.../ specification.
+- language lists and wordlists should have a single set order; if we want two
+  different orders we should simply save them as two distinct
+  language/meaning lists.
 
 - Describe grammar of urls::
 

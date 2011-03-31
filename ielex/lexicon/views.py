@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from ielex import settings
 from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
-from ielex.views import get_sort_order
+#from ielex.views import get_sort_order
 from ielex.views import ChooseNexusOutputForm
 
 def list_nexus(request):
@@ -38,8 +38,7 @@ def write_nexus(request):
     # get data together
     language_list = LanguageList.objects.get(id=language_list_id)
     languages = Language.objects.filter(
-            id__in=language_list.language_id_list).order_by(
-            get_sort_order(request))
+            id__in=language_list.language_id_list).order_by("sort_key")
     language_names = ["'"+name+"'" for name in
             languages.values_list("ascii_name", flat=True)]
 

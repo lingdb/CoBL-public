@@ -56,10 +56,10 @@
 
 {% block controls %}
 {% include "snippets/go_to.html" %}
-{% include "snippets/change_sort_order.html" %}
+{# include "snippets/change_sort_order.html" #}
 <ul class="navigation">
 {% if user.is_superuser %}
-<li><a href="/languages/reorder/">edit genealogical sort order</a></li>
+<li><a href="/languages/reorder/">edit sort order</a></li>
 <li><a href="/languages/add-new/">add/delete language</a></li>
 </ul>
 {% endif %}
