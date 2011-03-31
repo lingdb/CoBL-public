@@ -14,16 +14,18 @@
   <td>{{citation.pages}}</td>
 </tr>
 {% endif %}
+{% if citation.long_reliability %}
 <tr>
   <td class="rowname">Reliability:</td>
   <td>{{ citation.long_reliability }}</td>
 </tr>
+{% endif %}
 {% if citation.comment %}
   <tr>
     <td class="rowname">Comment:</td>
     <td>{{ citation.comment }}</td>
   </tr>
-  {% endif %}
+{% endif %}
 
 </table>
 

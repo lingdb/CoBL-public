@@ -251,7 +251,7 @@
   {% endif %}
   <li><a href="/language/{{ lexeme.language.ascii_name }}">back to language list ‘{{ lexeme.language.utf8_name }}’</a></li>
   {% if user.is_authenticated %}
-    <li><a href="{% url language-add-lexeme language.ascii_name %}">add a new lexeme to ‘{{ lexeme.language.utf8_name }}’</a></li>
+    <li><a href="{% url language-add-lexeme lexeme.language.ascii_name %}">add a new lexeme to ‘{{ lexeme.language.utf8_name }}’</a></li>
       {% if lexeme.meaning %}
       <li><a href="{% url meaning-add-lexeme lexeme.meaning.gloss %}">add a new lexeme to ‘{{ lexeme.meaning.gloss }}’</a></li>
   {% endif %}
