@@ -15,7 +15,9 @@
       <div id="login">
         {% if user.is_authenticated %}
         <a href="/accounts/profile/{{ user.username }}">{{ user.username }}</a> <small>[<a href="/accounts/logout/">logout</a>]</small>
-        <a href="/backup/"><img src="/media/buttons/save-backup.png" alt="Backup" title="Make backup of database (slow!)" /></a>
+          {% if user.is_staff %}
+            <a href="/admin/"><img src="/media/buttons/save-backup.png" alt="Admin site" title="Go to the admin site" /></a>
+          {% endif %}
         {% else %}
           <a href="/accounts/login/">login</a>
         {% endif %}

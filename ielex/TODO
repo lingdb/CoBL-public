@@ -4,21 +4,15 @@ TODO
 - rewrite templates so the database can handle startup from nothing (e.g.
   initially, only offer "create language", "create meaning" pages
 
-- Decorate drop-down menu names (e.g. so that languages without data can be
-  bracketted)
-
-- The url `/language/Maniq/` should be qualified::
-
-    /language/Maniq/wordlist/Swadesh100/
-
-  Treat `/language/Maniq/` as an alias of `/language/Maniq/wordlist/all`
-
-- Get rid of the LanguageList session variable, and put the info into urls
+- Don't use LanguageList session variable, and put the info into urls
   instead::
 
     /languages/Dunn2011/meaning/ash/
 
   Treat `/meaning/ash/` as an alias of `/languages/all/meaning/ash`
+
+  (session variable is still useful for 'return_to' pages and '#lexeme_XX'
+  anchors)
 
 - language lists and wordlists should have two orders, the default order (saved
   in the database) and alphabetical order. People don't need to be able to
@@ -29,21 +23,24 @@ TODO
 
 - Describe grammar of urls::
 
-    /language/...(/wordlist/...)/ # list of words in a language
-    /language/.../                # default: all words in language
+    /language/...(/wordlist/...)/ # list of words in a language *
+    /language/.../                # default: all words in language *
     /language/.../domain/.../     # list of words in a language pertaining to
-                                  # domain
+                                  # domain *
+    /languages/.../               # names lists *
+    /meaning/.../                 # list of all words with a meaning *
     /meaning/...(/languages/...)/ # list of words with a meaning (in language
-                                  # list)
+                                  # list) *
     # lexemes in this view have identifiers, e.g.
     /meaning/animal/languages/aslian/#lexeme_6
-    /meaning/.../                 # list of all words with a meaning
-    /meaning/.../delete/          # TODO
-    /meanings/                    # alias for /wordlist/all/
-    /meanings/add-new/            # (this is why we need both meanings and wordlist)
-    /wordlist/Swadesh100/         # a named list of meanings
-    /wordlists/                   # list defined wordlists
-    /domain/.../                  # relation names in a domain
+    /meaning/.../delete/          # *
+    /meanings/                    # alias for /wordlist/all/ *
+    /wordlist/Swadesh100/         # a named list of meanings *
+    /meanings/add-new/            # (this is why we need both meanings and wordlist) *
+    /wordlists/                   # list defined wordlists *
+    /domain/.../                  # relation names in a domain *
+
+    * DONE
   
   Reserved names for sets 'all' (for languages, meanings), 'none' (for
   meanings, domains)
@@ -61,6 +58,57 @@ TODO
     /meaning/.../language/.../lexeme/add/ # return to meaning
     /lexeme/add/
 
+  What is this for?::
+
+    /meaning/GLOSS/LEXEME_ID/#lexeme_ID
+
+  (it's used as a target for 'add cognate'). It should be::
+
+    /lexeme/.../add-cognate/
+
+- lexeme actions. Most of these could be handled on separate pages with
+  separate view logic rather than on a monster combined page::
+
+    /lexeme/.../add-citation                        "add-lexeme-citation"
+    /lexeme/.../add-cognate                         "link-cognate"
+        => /lexeme/.../cognate/.../link
+    /lexeme/.../add-cognate-citation/COGNATE_ID     "add-cognate-citation"
+        => /lexeme/.../cognate/.../citation/
+    /lexeme/.../add-new-citation # DELETE (not different from add-citation)
+                                                    "add-new-lexeme-citation"
+    /lexeme/.../add-new-cognate # previously unattested cognate set
+                                                    "link-new-cognate"
+    /lexeme/.../delete                              "delete-lexeme"
+    /lexeme/.../delink-citation/CITATION_ID
+        => /lexeme/.../citation/.../delink/         "delink-lexeme-citation'
+    /lexeme/.../delink-cognate/COGNATE_ID
+        => /lexeme/.../cognate/.../delink/          "delink-cognate"
+    /lexeme/.../delink-cognate-citation/COGCITE_ID  "delink-cognate-citation"
+        => /lexeme/.../cognate/.../citation/.../delink/
+    /lexeme/.../edit                                "edit-lexeme"
+    /lexeme/.../edit-citation/CITATION_ID
+        => /lexeme/.../citation/.../edit/           "edit-lexeme-citation"
+    /lexeme/.../edit-cognate-citation/COGCITE_ID    "edit-cognate-citation"
+        => /lexeme/.../cognate/.../citation/.../edit/
+
+- refactor base templates:
+
+  These just need to take object, title_text, header_text arguments. This
+  should then be easy to convert to class based views.
+
+  * edit_object 
+  * view_object
+  * list_object
+  * delete_object
+  * link_object
+  * delink_object
+  * change_and_reorder_from list (for language lists, meaning lists, etc)
+
+  This is crying out for class-based views...
+
+- I can still use session dictionaries to store "return to" information, since
+  this needn't be part of the (explicit, replicable) url scheme.
+
 for Version 0.3
 ---------------
 
@@ -77,7 +125,8 @@ for Version 0.3
     - view other user's profile (incl. statistics)
     - change password
 
-  * Dashboard thing
+  * Dashboard thing for users to set prefs, look at their contribution stats
+    und zo weiter
 
 - Implement permissions/permission groups on all editing actions
 

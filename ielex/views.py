@@ -20,8 +20,6 @@ from ielex.extensional_semantics.views import *
 from ielex.shortcuts import render_template
 from ielex.utilities import next_alias, renumber_sort_keys, confirm_required
 
-
-
 # Refactoring: 
 # - rename the functions which render to response with the format
 # view_TEMPLATE_NAME(request, ...). Put subsiduary functions under their main
@@ -205,40 +203,56 @@ def update_object_from_form(model_object, form):
 
 # -- /language(s)/ ----------------------------------------------------------
 
-def get_canonical_languages(languages):
-    if languages.isdigit():
-        languages = LanguageList.objects.get(id=languages)
-    else:
-        languages = LanguageList.objects.get(name=languages)
+def get_canonical_languages(languages=None):
+    try:
+        if languages is None:
+            languages = LanguageList.objects.get(name=LanguageList.DEFAULT)
+        elif languages.isdigit():
+            languages = LanguageList.objects.get(id=languages)
+        else:
+            languages = LanguageList.objects.get(name=languages)
+    except LanguageList.DoesNotExist:
+        languages = LanguageList.objects.get(name=LanguageList.DEFAULT)
     return languages
 
-def get_language_list_form(request):
-    language_list_name = get_current_language_list_name(request)
+# def get_language_list_form(request):
+#     language_list_name = get_current_language_list_name(request)
+#     if request.method == 'POST':
+#         form = ChooseLanguageListForm(request.POST)
+#         if form.is_valid():
+#             current_list = form.cleaned_data["language_list"]
+#             language_list_name = current_list.name
+#             msg = "Language list selection changed to '%s'" %\
+#                     language_list_name
+#             messages.add_message(request, messages.INFO, msg)
+#     else:
+#         form = ChooseLanguageListForm()
+#     form.fields["language_list"].initial = LanguageList.objects.get(
+#             name=language_list_name).id
+#     return form
+
+
+def view_languages(request, languages=None):
+    current_list = get_canonical_languages(languages)
+    languages = Language.objects.filter(id__in=current_list.language_id_list)
+
     if request.method == 'POST':
         form = ChooseLanguageListForm(request.POST)
         if form.is_valid():
             current_list = form.cleaned_data["language_list"]
-            language_list_name = current_list.name
             msg = "Language list selection changed to '%s'" %\
-                    language_list_name
+                    current_list.name
             messages.add_message(request, messages.INFO, msg)
+            return HttpResponseRedirect(reverse("view-languages",
+                    args=[current_list.name]))
     else:
         form = ChooseLanguageListForm()
-    form.fields["language_list"].initial = LanguageList.objects.get(
-            name=language_list_name).id
-    return form
+    form.fields["language_list"].initial = current_list.id
 
-
-def view_language_list(request):
-    language_list_name = get_current_language_list_name(request)
-    languages = Language.objects.all().order_by(get_sort_order(request))
-    current_list = LanguageList.objects.get(name=language_list_name)
-    response = render_template(request, "language_list.html",
+    return render_template(request, "language_list.html",
             {"languages":languages,
-            "language_list_form":get_language_list_form(request),
+            "language_list_form":form,
             "current_list":current_list})
-    request.session["language_list_name"] = language_list_name # XXX what's this for?
-    return response
 
 @login_required
 def language_reorder(request):
@@ -255,9 +269,9 @@ def language_reorder(request):
                 # renumbering is slow, and doesn't need to be done every time
                 # on the other hand, we hardly ever call this function ...
                 renumber_sort_keys()
-                return HttpResponseRedirect(reverse("view-languages"))
+                return HttpResponseRedirect(reverse("view-all-languages"))
         else: # pressed Finish without submitting changes
-            return HttpResponseRedirect(reverse("view-languages"))
+            return HttpResponseRedirect(reverse("view-all-languages"))
     else: # first visit
         renumber_sort_keys() # if new languages have been added, number them
         form = ReorderLanguageSortKeyForm()
@@ -305,10 +319,9 @@ def move_language_down_list(language):
 
 def sort_languages(request, ordered_by):
     """Change the selected sort order via url"""
-    referer = request.META.get("HTTP_REFERER", reverse("view-languages"))
+    referer = request.META.get("HTTP_REFERER", reverse("view-all-languages"))
     request.session["language_sort_order"] = ordered_by
     return HttpResponseRedirect(referer)
-
 
 def view_language_wordlist(request, language, wordlist):
     wordlist = MeaningList.objects.get(name=wordlist)
@@ -354,7 +367,7 @@ def language_add_new(request):
     if request.method == 'POST':
         form = EditLanguageForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect(reverse("view-languages"))
+            return HttpResponseRedirect(reverse("view-all-languages"))
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("language-report",
@@ -376,10 +389,10 @@ def edit_language(request, language):
     if request.method == 'POST':
         form = EditLanguageForm(request.POST, instance=language)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect(reverse("view-languages"))
+            return HttpResponseRedirect(reverse("view-all-languages"))
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("view-languages"))
+            return HttpResponseRedirect(reverse("view-all-languages"))
     else:
         form = EditLanguageForm(instance=language)
     return render_template(request, "language_edit.html",
@@ -396,11 +409,16 @@ def delete_language(request, language):
                 args=[language.ascii_name])
 
     language.delete()
-    return HttpResponseRedirect(reverse("view-languages"))
+    return HttpResponseRedirect(reverse("view-all-languages"))
 
 # -- /meaning(s)/ and /wordlist/ ------------------------------------------
 
-def view_wordlist(request, wordlist="all"):
+def view_wordlists(request):
+    wordlists = MeaningList.objects.all()
+    return render_template(request, "wordlists_list.html",
+            {"wordlists":wordlists})
+
+def view_wordlist(request, wordlist=MeaningList.DEFAULT):
     wordlist = MeaningList.objects.get(name=wordlist)
     if request.method == 'POST':
         form = ChooseMeaningListForm(request.POST)
@@ -421,6 +439,25 @@ def view_wordlist(request, wordlist="all"):
             {"meanings":meanings,
             "form":form})
     return response
+
+@login_required
+def edit_wordlist(request, wordlist):
+    wordlist = MeaningList.objects.get(name=wordlist)
+
+    if request.method == 'POST':
+        form = EditMeaningListForm(request.POST, instance=wordlist)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect(reverse("view-wordlists"))
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("view-wordlists"))
+    else:
+        form = EditMeaningListForm(instance=wordlist)
+
+    return render_template(request, "edit_wordlist.html",
+            {"wordlist":wordlist,
+            "form":form})
+    return
 
 @login_required
 def meaning_add_new(request):
@@ -461,18 +498,59 @@ def edit_meaning(request, meaning):
 def view_meaning(request, meaning, languages):
     # XXX a refactored version of report_meaning
 
-    # normalize meaning
+    # Normalize calling parameters
     canonical_gloss = get_canonical_meaning(meaning).gloss
-    canonical_languages = get_canonical_languages(languages).name
-    if meaning != canonical_gloss or languages != canonical_languages:
+    current_language_list = get_canonical_languages(languages)
+    if meaning != canonical_gloss or languages != current_language_list.name:
         return HttpResponseRedirect(reverse("view-meaning-languages", 
-            args=[canonical_gloss, canonical_languages]))
+            args=[canonical_gloss, current_language_list.name]))
     else:
         meaning = Meaning.objects.get(gloss=meaning)
 
-    # get lexemes, respecting 'languages'
+    # Change language list form
+    if request.method == 'POST':
+        language_form = ChooseLanguageListForm(request.POST)
+        if language_form.is_valid():
+            current_language_list = language_form.cleaned_data["language_list"]
+            msg = "Language list selection changed to '%s'" %\
+                    current_language_list.name
+            messages.add_message(request, messages.INFO, msg)
+            return HttpResponseRedirect(reverse("view-meaning-languages",
+                    args=[canonical_gloss, current_language_list.name]))
+    else:
+        language_form = ChooseLanguageListForm()
+    language_form.fields["language_list"].initial = current_language_list.id
+
+    # Cognate class judgement button
+    if request.method == 'POST':
+        cognate_form = ChooseCognateClassForm(request.POST)
+        if cognate_form.is_valid():
+            cd = cognate_form.cleaned_data
+            if not cogjudge_id: # new cognate judgement
+                lexeme = Lexeme.objects.get(id=lexeme_id)
+                cognate_class = cd["cognate_class"]
+                if cognate_class not in lexeme.cognate_class.all():
+                    cj = CognateJudgement.objects.create(
+                            lexeme=lexeme,
+                            cognate_class=cognate_class)
+                else:
+                    cj = CognateJudgement.objects.get(
+                            lexeme=lexeme,
+                            cognate_class=cognate_class)
+            else:
+                cj = CognateJudgement.objects.get(id=cogjudge_id)
+                cj.cognate_class = cd["cognate_class"]
+                cj.save()
+
+            # change this to a reverse() pattern
+            return HttpResponseRedirect('/lexeme/%s/add-cognate-citation/%s/' %
+                    (lexeme_id, cj.id))
+    else:
+        cognate_form = ChooseCognateClassForm()
+
+    # Get lexemes, respecting 'languages'
     lexemes = Lexeme.objects.filter(meaning=meaning,
-            language__id__in=LanguageList.objects.get(name=languages).language_id_list)
+            language__id__in=current_language_list.language_id_list)
 
     prev_meaning, next_meaning = get_prev_and_next_meanings(meaning)
     return render_template(request, "view_meaning.html",
@@ -480,6 +558,8 @@ def view_meaning(request, meaning, languages):
             "prev_meaning":prev_meaning,
             "next_meaning":next_meaning,
             "lexemes": lexemes,
+            "language_form":language_form,
+            "cognate_form":cognate_form,
             })
 
 
@@ -619,7 +699,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "add-citation":
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect(redirect_url)
+                    return HttpResponseRedirect(get_redirect_url(form))
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = LexemeCitation(
@@ -674,8 +754,9 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     request.session["previous_cognate_citation_id"] = citation.id
                     return HttpResponseRedirect(get_redirect_url(form))
             elif action == "add-cognate":
-                return HttpResponseRedirect("/meaning/%s/%s/#current" %
-                        (lexeme.meaning.gloss, lexeme_id))
+                redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
+                        (lexeme.meaning.gloss, lexeme.id, lexeme.id)
+                return HttpResponseRedirect(redirect_url)
             else:
                 assert not action
 
@@ -729,8 +810,9 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     form = AddCitationForm()
                 # form = AddCitationForm()
             elif action == "add-cognate":
-                return HttpResponseRedirect("/meaning/%s/%s/#current" %
-                        (lexeme.meaning.gloss, lexeme_id))
+                redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
+                        (lexeme.meaning.gloss, lexeme.id, lexeme.id)
+                return HttpResponseRedirect(redirect_url)
             elif action == "delink-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
                 citation.delete()
@@ -814,8 +896,8 @@ def lexeme_duplicate(request, lexeme_id):
         original_lexeme.source_form = original_source_form
         original_lexeme.phon_form = original_phon_form
         original_lexeme.save()
-    return HttpResponseRedirect("/meaning/%s/%s/#current" %
-            (original_lexeme.meaning.gloss, original_lexeme.id))
+    return HttpResponseRedirect("/meaning/%s/%s/#lexeme_%s" %
+            (original_lexeme.meaning.gloss, original_lexeme.id, original_lexeme.id))
 
 @login_required
 def lexeme_add(request,
@@ -823,7 +905,7 @@ def lexeme_add(request,
         language=None,
         lexeme_id=0, # non-zero -> duplicate
         return_to=None):
-    # TODO break out the duplicate stuff to a different a different
+    # TODO break out the duplicate stuff to a different
     # (non-interactive) function, that splits and copies the lexemes, along
     # with cognate coding and everything (include a #current tag too)
     initial_data = {}

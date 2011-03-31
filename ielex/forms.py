@@ -119,6 +119,17 @@ class EditMeaningForm(forms.ModelForm):
     class Meta:
         model = Meaning
 
+class EditMeaningListForm(forms.ModelForm):
+
+    def clean_gloss(self):
+        data = self.cleaned_data["name"]
+        clean_ascii_name(data)
+        return data
+
+    class Meta:
+        model = MeaningList
+        exclude = ["meaning_ids"]
+
 class EditRelationForm(forms.ModelForm):
 
     def clean_relation_code(self):
@@ -187,7 +198,7 @@ class AddCitationForm(forms.Form):
 class ChooseCognateClassForm(forms.Form):
     cognate_class = ChooseCognateClassField(queryset=CognateSet.objects.all(),
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}),
-            empty_label="---",
+            empty_label="---", # make this into the "new" button?
             label="")
 
 class EditCognateSetForm(forms.Form):
