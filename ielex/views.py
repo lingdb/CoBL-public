@@ -663,54 +663,43 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     form = None
 
     if action: # actions are: edit, edit-citation, add-citation
-        redirect_url = '/lexeme/%s/' % lexeme_id
+        def get_redirect_url(form):
+            form_data = form.data["submit"].lower()
+            if "new lexeme" in form_data:
+                redirect_url = reverse("language-add-lexeme",
+                        args=[lexeme.language.ascii_name])
+            elif "back to language" in form_data:
+                redirect_url = '/language/%s/' % \
+                        lexeme.language.ascii_name
+            elif "back to meaning" in form_data:
+                redirect_url = '/meaning/%s/%s/#current' % \
+                        (lexeme.meaning.gloss, lexeme.id)
+            else:
+                redirect_url = '/lexeme/%s/' % lexeme_id
+            return redirect_url
 
         # Handle POST data
         if request.method == 'POST':
             if action == "edit":
                 form = EditLexemeForm(request.POST, instance=lexeme) ### 
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect(redirect_url)
-                if form.data["submit"] != "Submit":
-                    if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = reverse("language-add-lexeme",
-                                args=[lexeme.language.ascii_name])
-                    else:
-                        redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
-                                (lexeme.meaning.gloss, lexeme.id, lexeme.id)
+                    return HttpResponseRedirect(get_redirect_url(form))
                 if form.is_valid():
                     form.save()
-                    ## update_object_from_form(lexeme, form)
-                    return HttpResponseRedirect(redirect_url)
+                    return HttpResponseRedirect(get_redirect_url(form))
             elif action == "edit-citation":
                 form = EditCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect(redirect_url)
-                if form.data["submit"] != "Submit":
-                    if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = reverse("language-add-lexeme",
-                                args=[lexeme.language.ascii_name])
-                    else:
-                        # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
-                        redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
-                                (lexeme.meaning.gloss, lexeme.id, lexeme.id)
+                    return HttpResponseRedirect(get_redirect_url(form))
                 if form.is_valid():
                     citation = LexemeCitation.objects.get(id=citation_id)
                     update_object_from_form(citation, form)
                     request.session["previous_citation_id"] = citation.id
-                    return HttpResponseRedirect(redirect_url)
+                    return HttpResponseRedirect(get_redirect_url(form))
             elif action == "add-citation":
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
                     return HttpResponseRedirect(redirect_url)
-                if form.data["submit"] != "Submit":
-                    if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = reverse("language-add-lexeme",
-                                args=[lexeme.language.ascii_name])
-                    else:
-                        # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
-                        redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
-                                (lexeme.meaning.gloss, lexeme.id, lexeme.id)
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = LexemeCitation(
@@ -721,19 +710,11 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                             comment=cd["comment"])
                     citation.save()
                     request.session["previous_citation_id"] = citation.id
-                    return HttpResponseRedirect(redirect_url)
+                    return HttpResponseRedirect(get_redirect_url(form))
             elif action == "add-new-citation": # TODO
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect(redirect_url)
-                if form.data["submit"] != "Submit":
-                    if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = reverse("language-add-lexeme",
-                                args=[lexeme.language.ascii_name])
-                    else:
-                        # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
-                        redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
-                                (lexeme.meaning.gloss, lexeme.id, lexeme.id)
+                    return HttpResponseRedirect(get_redirect_url(form))
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = LexemeCitation(
@@ -744,7 +725,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                             comment=cd["comment"])
                     citation.save()
                     request.session["previous_citation_id"] = citation.id
-                    return HttpResponseRedirect(redirect_url)
+                    return HttpResponseRedirect(get_redirect_url(form))
             elif action == "delink-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
                 citation.delete()
@@ -752,42 +733,26 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "delink-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 citation.delete()
-                return HttpResponseRedirect(redirect_url)
+                return HttpResponseRedirect(get_redirect_url(form))
             elif action == "edit-cognate-citation":
                 form = EditCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect(redirect_url)
-                if form.data["submit"] != "Submit":
-                    if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = reverse("language-add-lexeme",
-                                args=[lexeme.language.ascii_name])
-                    else:
-                        # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
-                        redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
-                                (lexeme.meaning.gloss, lexeme.id, lexeme.id)
+                    return HttpResponseRedirect(get_redirect_url(form))
                 if form.is_valid():
                     citation = CognateJudgementCitation.objects.get(id=citation_id)
                     update_object_from_form(citation, form)
                     request.session["previous_cognate_citation_id"] = citation.id
-                    return HttpResponseRedirect(redirect_url)
+                    return HttpResponseRedirect(get_redirect_url(form))
             elif action == "add-cognate-citation": #
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data:
-                    return HttpResponseRedirect(redirect_url)
-                if form.data["submit"] != "Submit":
-                    if "new lexeme" in form.data["submit"].lower():
-                        redirect_url = reverse("language-add-lexeme",
-                                args=[lexeme.language.ascii_name])
-                    else:
-                        # redirect_url = '/meaning/%s/' % lexeme.meaning.gloss
-                        redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
-                                (lexeme.meaning.gloss, lexeme.id, lexeme.id)
+                    return HttpResponseRedirect(get_redirect_url(form))
                 if form.is_valid():
                     citation = CognateJudgementCitation.objects.create(
                             cognate_judgement=CognateJudgement.objects.get(
                             id=cogjudge_id), **form.cleaned_data)
                     request.session["previous_cognate_citation_id"] = citation.id
-                    return HttpResponseRedirect(redirect_url)
+                    return HttpResponseRedirect(get_redirect_url(form))
             elif action == "add-cognate":
                 redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
                         (lexeme.meaning.gloss, lexeme.id, lexeme.id)
@@ -797,6 +762,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
 
         # first visit, preload form with previous answer
         else:
+            redirect_url = '/lexeme/%s/' % lexeme_id
             if action == "edit":
                 form = EditLexemeForm(instance=lexeme)
                         # initial={"source_form":lexeme.source_form,

@@ -37,15 +37,15 @@ digraph g { // neato -Tpdf -O database_structure.dot
   judgement [pos="3,4.5!",
 	label="{Cognate\nJudgements |<id> id |<fid> lexeme_id |<cid> cog_set_id | modified }"];
   formsource [pos="5,3!",
-	label="{Lexeme sources |<fid> lexeme_id |<sid> source_id | pages | reliability | comment | modified }"];
+	label="{Lexeme citation |<fid> lexeme_id |<sid> source_id | pages | reliability | comment | modified }"];
   judgesource [pos="5,5!",
-	label="{Cognate Judgement\nsources |<jid> judgement_id |<sid> source_id | pages | reliability | comment | modified }"];
+	label="{Cognate Judgement\ncitation |<jid> judgement_id |<sid> source_id | pages | reliability | comment | modified }"];
   // cogsource [pos="5,4!",
   //	label="{Reconstruction\n sources |<cid> cog_set_id |<sid> source_id}"];
   semantic_extension [pos="3,2!",
-	label="{Semantic Extension\n(i.e. “lexeme can\n  refer to relation”) |<id> id |<fid> lexeme_id |<bid> bio_rel_id | pages | reliability | comment | modified }"];
+	label="{Semantic Extension\n(i.e. “lexeme can\n  refer to relation”) |<id> id |<fid> lexeme_id |<bid> sem_rel_id |  comment | modified }"];
   extension_source [pos="5,2!",
-	label="{Semantic Extension sources |<lid> link_id |<sid> source_id | pages | reliability | comment | modified }"];
+	label="{Semantic Extension\ncitation |<lid> link_id |<sid> source_id |  pages | reliability | description | modified }"];
   relation_sort_order [pos="5.5,1!", style=filled,
 	label="{Semantic Relation\nSort Order | list_id | name |<rid> relation_id_list | modified }"];
 
