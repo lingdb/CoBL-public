@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load lexicon_utils %}
+
+{% block title %}Reorder wordlist{% endblock %}
+
+{% block top %}<h1>Change order of items in wordlist ‘{{ wordlist.name }}’</h1>{% endblock %}
+
+{% block content %}
+<form action="" method="POST">{% csrf_token %}
+  <input type="submit" name="submit" value="Move up" /><br />
+  {{ form.meaning }}<br />
+  <input type="submit" name="submit" value="Move down" /><br />
+  <input type="submit" name="submit" value="Finish" />
+</form>
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
