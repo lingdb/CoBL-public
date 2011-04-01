@@ -1,5 +1,15 @@
 # -*- coding: utf-8 -*-
 
+# Development settings
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
+# Error messages
+ADMINS = (
+        # ('Your Name', 'your_email@domain.com'),
+        )
+MANAGERS = ADMINS
+
 ## Datetime formats
 ## These may be freely customized according to:
 ## http://docs.djangoproject.com/en/dev/ref/templates/builtins/#date

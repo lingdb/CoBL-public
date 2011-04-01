@@ -1,17 +1,15 @@
 # Django settings for ielex project.
 import os.path
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+# DEBUG = True
+# TEMPLATE_DEBUG = DEBUG
 
 VERSION = "0.4"
 ROOTDIR = os.path.abspath(os.path.dirname(__file__))
 
-ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
-)
-
-MANAGERS = ADMINS
+# set this in local_settings.py
+# ADMINS = ( ('Your Name', 'your_email@domain.com'),)
+# MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'sqlite3'
 DATABASE_NAME = os.path.join(ROOTDIR, 'db.sqlite3')

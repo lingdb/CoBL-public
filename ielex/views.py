@@ -141,9 +141,6 @@ def get_canonical_language(language):
             #   language = Language.objects.last_added()
     return language
 
-# def get_sort_order(request):
-#     return request.session.get("language_sort_order", "sort_key")
-
 def get_languages(request): # refactor this away XXX
     """Get all Language objects, respecting language_list selection; if no
     language list then all languages are selected"""

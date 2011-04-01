@@ -15,8 +15,12 @@ TODO
   anchors)
 
 - language lists and wordlists should have a single set order; if we want two
-  different orders we should simply save them as two distinct
-  language/meaning lists.
+  different orders we should simply save them as two distinct language/meaning
+  lists.
+
+  Currently there are two different ways of managing sort order: the sort key
+  attribute of Language objects and the integer list in LanguageList and
+  MeaningList. We should be using the latter, as it is customizable per list.
 
 - Describe grammar of urls::
 
