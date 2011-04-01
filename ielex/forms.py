@@ -210,6 +210,22 @@ class ReorderLanguageSortKeyForm(forms.Form):
             widget=forms.Select(attrs={"size":20}),
             empty_label=None)
 
+class ReorderMeaningListForm(forms.Form):
+
+    meaning = ChooseMeaningField(
+            queryset=Meaning.objects.all(), # dummy
+            widget=forms.Select(attrs={"size":20}),
+            empty_label=None)
+
+def make_ReorderMeaningListForm(queryset):
+    class ReorderMeaningListForm(forms.Form):
+        meaning = ChooseMeaningField(
+                queryset=queryset, # dummy
+                widget=forms.Select(attrs={"size":20}),
+                empty_label=None)
+    return ReorderMeaningListForm
+
+
 class EditSemanticDomainForm(forms.ModelForm):
 
     def clean_name(self):

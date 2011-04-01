@@ -96,6 +96,11 @@ class Meaning(models.Model):
         except ZeroDivisionError:
             return ""
 
+    def wordlist_index(self, wordlist):
+        """Calculate sorting index according to list of ids"""
+        # XXX NEEDS TESTING
+        return wordlist.meaning_id_list.index(self.id)
+
     def __unicode__(self):
         return self.gloss.upper()
 
@@ -320,7 +325,10 @@ def update_meaning_list_all(sender, instance, **kwargs):
         ml = MeaningList.objects.get(name=MeaningList.DEFAULT)
     except:
         ml = MeaningList.objects.create(name=MeaningList.DEFAULT)
-    if ml.meaning_id_list != list(Meaning.objects.values_list("id", flat=True)):
+    # recreate this if the membership has changed but not if just the
+    # order has changed
+    # TODO will this randomize the list every time an item is added?
+    if set(ml.meaning_id_list) != set(Meaning.objects.values_list("id", flat=True)):
         ml.meaning_id_list = [l.id for l in Meaning.objects.all()]
         ml.save(force_update=True)
     return

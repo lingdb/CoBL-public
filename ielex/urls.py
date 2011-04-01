@@ -34,8 +34,6 @@ urlpatterns = patterns('',
     url(r'^languages/reorder/$', language_reorder, name="languages-reorder"),
     url(r'^languages/add-new/$', language_add_new, name="language-add-new"),
     url(r'^languages/%(LANGUAGES)s/' % R, view_languages, name="view-languages"),
-    #url(r'^languages/sort/(?P<ordered_by>sort_key|utf8_name)/$', sort_languages,
-    #        name="language-sort"),
 
     # Language
     url(r'^language/%(LANGUAGE)s/$' % R, view_language_wordlist,
@@ -60,14 +58,15 @@ urlpatterns = patterns('',
     url(r'^wordlist/%(WORDLIST)s/$' % R, view_wordlist, name="view-wordlist"),
     url(r'^wordlist/%(WORDLIST)s/edit/$' % R, edit_wordlist,
             name="edit-wordlist"),
-    #url(r'^wordlist/%(WORDLIST)s/reorder/$' % R, reorder_wordlist,
-    #         name="reorder-wordlist"),
+    url(r'^wordlist/%(WORDLIST)s/reorder/$' % R, reorder_wordlist,
+             name="reorder-wordlist"),
     url(r'^meanings/$', view_wordlist, {"wordlist":"all"}, name="view-meanings"),
     url(r'^meanings/add-new/$', meaning_add_new, name="meaning-add-new"),
     url(r'^meaning/%(MEANING)s/edit/$' % R, edit_meaning,
             name="edit-meaning"),
 
     # Meaning
+    # XXX TODO refactor out remaining report_meaning calls
     url(r'^meaning/%(MEANING)s/lexeme/add/$' % R, lexeme_add,
             {"return_to":"/meaning/%(meaning)s/"},
             name="meaning-add-lexeme"),

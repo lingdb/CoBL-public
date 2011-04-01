@@ -153,8 +153,11 @@ def get_languages(request): # refactor this away XXX
         languages = Language.objects.all()
     return languages
 
-def get_current_language_list_name(request): # refactor this away XXX
-    """Get the name of the current language list from session."""
+def get_current_language_list_name(request): 
+    """Get the name of the current language list from session. This is
+    only be be used by navigation functions (e.g.
+    get_previous_and_next_languages) which don't take part in the RESTful url
+    scheme"""
     return request.session.get("language_list_name", LanguageList.DEFAULT)
 
 def get_prev_and_next_languages(request, current_language, language_list=None):
@@ -176,6 +179,7 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
 
 def get_prev_and_next_meanings(current_meaning):
     # XXX this should also know about wordlist
+    # We'll let this one use the session variable (kind of cheating...)
     meanings = Meaning.objects.all().extra(select={'lower_gloss':
             'lower(gloss)'}).order_by('lower_gloss')
     ids = [m.id for m in meanings]
@@ -453,6 +457,50 @@ def edit_wordlist(request, wordlist):
     return render_template(request, "edit_wordlist.html",
             {"wordlist":wordlist,
             "form":form})
+    return
+
+def reorder_wordlist(request, wordlist):
+    wordlist = MeaningList.objects.get(name=wordlist)
+    queryset = Meaning.objects.filter(id__in=wordlist.meaning_id_list)
+    # assert 0, queryset.ordered # XXX queryset has been reordered :-(
+    MyForm = make_ReorderMeaningListForm(queryset)
+    if request.method == "POST":
+        form = MyForm(request.POST)
+        # form = ReorderMeaningListForm(request.POST)
+        if form.is_valid():
+            meaning = form.cleaned_data["meaning"]
+            if form.data["submit"] == "Move up":
+                move_meaning(meaning, wordlist, -1)
+            elif form.data["submit"] == "Move down":
+                move_meaning(meaning, wordlist, 1)
+            else:
+                assert form.data["submit"] == "Finish"
+                return HttpResponseRedirect(reverse("view-wordlist",
+                    args=[wordlist.name]))
+        else: # pressed Finish without submitting changes
+            return HttpResponseRedirect(reverse("view-wordlist",
+                args=[wordlist.name]))
+    else: # first visit
+        form = MyForm()
+        #form = ReorderMeaningListForm()
+        #form.fields["meaning"].queryset = Meaning.objects.filter(
+        #        id__in=wordlist.meaning_id_list)
+    return render_template(request, "reorder_wordlist.html",
+            {"wordlist":wordlist, "form":form})
+
+def move_meaning(meaning, wordlist, direction):
+    assert direction in (-1, 1)
+    meaning_ids = wordlist.meaning_id_list[:] # copy
+    target_idx = meaning_ids.index(meaning.id)
+    target = meaning_ids.pop(target_idx)
+    target_idx += direction
+    if target_idx > len(meaning_ids):
+        target_idx = 0
+    elif target_idx < 0:
+        target_idx = len(meaning_ids) + 1
+    meaning_ids.insert(target_idx, target)
+    wordlist.meaning_id_list = meaning_ids
+    wordlist.save()
     return
 
 @login_required
