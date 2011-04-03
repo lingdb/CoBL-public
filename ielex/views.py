@@ -148,18 +148,6 @@ def get_ordered_languages(language_list):
     languages.sort(key=lambda m: m.order)
     return languages
 
-def get_languages(request): # refactor this away XXX
-    """Get all Language objects, respecting language_list selection; if no
-    language list then all languages are selected"""
-    language_list_name = get_current_language_list_name(request)
-    try:
-        languages = Language.objects.filter(
-                id__in=LanguageList.objects.get(
-                name=language_list_name).language_id_list).order_by("sort_key")
-    except LanguageList.DoesNotExist:
-        languages = Language.objects.all()
-    return languages
-
 def get_current_language_list_name(request):
     """Get the name of the current language list from session. This is
     only be be used by navigation functions (e.g.
@@ -184,14 +172,18 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
         next_language = Language.objects.get(id=ids[0])
     return (prev_language, next_language)
 
-def get_prev_and_next_meanings(request, current_meaning):
-    # We'll let this one use the session variable (kind of cheating...)
-    wordlist = request.session.get("current_wordlist_name", MeaningList.DEFAULT)
-    wordlist = MeaningList.objects.get(name=wordlist)
+def get_ordered_meanings(wordlist):
     WordlistManager = make_ordered_meaning_manager(wordlist)
     Meaning.wordlist = WordlistManager()
     meanings = Meaning.wordlist.with_order()
     meanings.sort(key=lambda m: m.order)
+    return meanings
+
+def get_prev_and_next_meanings(request, current_meaning):
+    # We'll let this one use the session variable (kind of cheating...)
+    wordlist = request.session.get("current_wordlist_name", MeaningList.DEFAULT)
+    wordlist = MeaningList.objects.get(name=wordlist)
+    meanings = get_ordered_meanings(wordlist)
 
     ids = [m.id for m in meanings]
     current_idx = ids.index(current_meaning.id)
@@ -438,15 +430,10 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
         form = ChooseMeaningListForm()
     form.fields["meaning_list"].initial = wordlist.id
 
-    WordlistManager = make_ordered_meaning_manager(wordlist)
-    Meaning.wordlist = WordlistManager()
-    meanings = Meaning.wordlist.with_order()
-    meanings.sort(key=lambda m: m.order)
-
-    response = render_template(request, "wordlist.html",
+    meanings = get_ordered_meanings(wordlist)
+    return render_template(request, "wordlist.html",
             {"meanings":meanings,
             "form":form})
-    return response
 
 @login_required
 def edit_wordlist(request, wordlist):
@@ -473,10 +460,7 @@ def edit_wordlist(request, wordlist):
 def reorder_wordlist(request, wordlist):
     meaning_id = request.session.get("current_meaning_id", None)
     wordlist = MeaningList.objects.get(name=wordlist)
-    WordlistManager = make_ordered_meaning_manager(wordlist)
-    Meaning.wordlist = WordlistManager()
-    meanings = Meaning.wordlist.with_order()
-    meanings.sort(key=lambda m: m.order)
+    meanings = get_ordered_meanings(wordlist)
 
     ReorderForm = make_reorder_meaninglist_form(meanings)
     if request.method == "POST":
