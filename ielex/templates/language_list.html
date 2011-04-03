@@ -59,8 +59,8 @@
 {# include "snippets/change_sort_order.html" #}
 <ul class="navigation">
 {% if user.is_superuser %}
-<li><a href="/languages/reorder/">edit sort order</a></li>
-<li><a href="/languages/add-new/">add/delete language</a></li>
+<li><a href="{% url reorder-languages current_language_list_name %}">edit sort order</a></li>
+<li><a href="{% url language-add-new current_language_list_name %}">add language</a></li>
 </ul>
 {% endif %}
 <h2>Controls</h2>

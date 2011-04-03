@@ -26,3 +26,10 @@ def configuration(request):
             "semantic_domains":local_settings.semantic_domains,
             "structural_features":local_settings.structural_features
             }
+
+def navigation(request):
+    return {"current_wordlist_name":
+                    request.session.get("current_wordlist_name", "CWN"),
+            "current_language_list_name":
+                    request.session.get("current_language_list_name", "CLLN"),
+            }

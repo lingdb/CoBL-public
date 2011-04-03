@@ -18,7 +18,7 @@ from ielex.forms import *
 from ielex.lexicon.models import *
 from ielex.extensional_semantics.views import *
 from ielex.shortcuts import render_template
-from ielex.utilities import next_alias, renumber_sort_keys, confirm_required
+from ielex.utilities import next_alias, confirm_required
 
 # Refactoring: 
 # - rename the functions which render to response with the format
@@ -141,6 +141,13 @@ def get_canonical_language(language):
             #   language = Language.objects.last_added()
     return language
 
+def get_ordered_languages(language_list):
+    LanguageListManager = make_ordered_language_manager(language_list)
+    Language.language_list = LanguageListManager()
+    languages = Language.language_list.with_order()
+    languages.sort(key=lambda m: m.order)
+    return languages
+
 def get_languages(request): # refactor this away XXX
     """Get all Language objects, respecting language_list selection; if no
     language list then all languages are selected"""
@@ -177,18 +184,25 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
         next_language = Language.objects.get(id=ids[0])
     return (prev_language, next_language)
 
-def get_prev_and_next_meanings(current_meaning):
-    # XXX this should also know about wordlist
+def get_prev_and_next_meanings(request, current_meaning):
     # We'll let this one use the session variable (kind of cheating...)
-    meanings = Meaning.objects.all().extra(select={'lower_gloss':
-            'lower(gloss)'}).order_by('lower_gloss')
+    wordlist = request.session.get("current_wordlist_name", MeaningList.DEFAULT)
+    wordlist = MeaningList.objects.get(name=wordlist)
+    WordlistManager = make_ordered_meaning_manager(wordlist)
+    Meaning.wordlist = WordlistManager()
+    meanings = Meaning.wordlist.with_order()
+    meanings.sort(key=lambda m: m.order)
+
     ids = [m.id for m in meanings]
     current_idx = ids.index(current_meaning.id)
-    prev_meaning = Meaning.objects.get(id=ids[current_idx-1])
+    prev_meaning = meanings[current_idx-1]
+    # prev_meaning = Meaning.objects.get(id=ids[current_idx-1])
     try:
-        next_meaning = Meaning.objects.get(id=ids[current_idx+1])
+        next_meaning = meanings[current_idx+1]
+        # next_meaning = Meaning.objects.get(id=ids[current_idx+1])
     except IndexError:
-        next_meaning = Meaning.objects.get(id=ids[0])
+        next_meaning = meanings[0]
+        # next_meaning = Meaning.objects.get(id=ids[0])
     return (prev_meaning, next_meaning)
 
 def update_object_from_form(model_object, form):
@@ -234,12 +248,15 @@ def get_canonical_languages(languages=None):
 
 def view_languages(request, languages=None):
     current_list = get_canonical_languages(languages)
-    languages = Language.objects.filter(id__in=current_list.language_id_list)
+    request.session["current_language_list_name"] = current_list.name
+    #languages = Language.objects.filter(id__in=current_list.language_id_list)
+    languages = get_ordered_languages(current_list)
 
     if request.method == 'POST':
         form = ChooseLanguageListForm(request.POST)
         if form.is_valid():
             current_list = form.cleaned_data["language_list"]
+            request.session["current_language_list_name"] = current_list.name
             msg = "Language list selection changed to '%s'" %\
                     current_list.name
             messages.add_message(request, messages.INFO, msg)
@@ -254,74 +271,53 @@ def view_languages(request, languages=None):
             "language_list_form":form,
             "current_list":current_list})
 
-@login_required
-def language_reorder(request):
+def reorder_languages(request, languages):
+    language_id = request.session.get("current_language_id", None)
+    language_list = LanguageList.objects.get(name=languages)
+    languages = get_ordered_languages(language_list)
+    ReorderForm = make_reorder_languagelist_form(languages)
     if request.method == "POST":
-        form = ReorderLanguageSortKeyForm(request.POST)
+        form = ReorderForm(request.POST, initial={"language": language_id})
         if form.is_valid():
-            language = form.cleaned_data["language"]
-            if form.data["submit"] == "Move up":
-                move_language_up_list(language)
-            elif form.data["submit"] == "Move down":
-                move_language_down_list(language)
+            language_id = int(form.cleaned_data["language"])
+            request.session["current_language_id"] = language_id
+            language = Language.objects.get(id=language_id)
+            if form.data["submit"] == "Finish":
+                return HttpResponseRedirect(reverse("view-languages",
+                    args=[language_list.name]))
             else:
-                assert form.data["submit"] == "Finish"
-                # renumbering is slow, and doesn't need to be done every time
-                # on the other hand, we hardly ever call this function ...
-                renumber_sort_keys()
-                return HttpResponseRedirect(reverse("view-all-languages"))
+                if form.data["submit"] == "Move up":
+                    move_language(language, language_list, -1)
+                elif form.data["submit"] == "Move down":
+                    move_language(language, language_list, 1)
+                else:
+                    assert False, "This shouldn't be able to happen"
+                return HttpResponseRedirect(reverse("reorder-languages",
+                    args=[language_list.name]))
         else: # pressed Finish without submitting changes
-            return HttpResponseRedirect(reverse("view-all-languages"))
+            # TODO might be good to zap the session variable once finished
+            # request.session["current_meaning_id"] = None
+            return HttpResponseRedirect(reverse("view-languages",
+                args=[language_list.name]))
     else: # first visit
-        renumber_sort_keys() # if new languages have been added, number them
-        form = ReorderLanguageSortKeyForm()
-    return render_template(request, "language_reorder.html",
-            {"form":form})
+        form = ReorderForm(initial={"language":language_id})
+    return render_template(request, "reorder_languages.html",
+            {"language_list":language_list, "form":form})
 
-def move_language_up_list(language):
-    """Called by reorder languages"""
-    try: # get two languages in front of this one
-        after = Language.objects.filter(
-                sort_key__lt=language.sort_key).latest("sort_key")
-        try:
-            before = Language.objects.filter(
-                    sort_key__lt=after.sort_key).latest("sort_key")
-            # set the sort key to halfway between them
-            language.sort_key = (after.sort_key+before.sort_key)/2
-        except Language.DoesNotExist:
-            # language is at index 1 => swap index 0 and index 1
-            after.sort_key, language.sort_key = language.sort_key,\
-                    after.sort_key
-            after.save()
-        language.save()
-    except Language.DoesNotExist:
-        pass # already first
+def move_language(language, language_list, direction):
+    assert direction in (-1, 1)
+    language_ids = language_list.language_id_list[:] # copy
+    target_idx = language_ids.index(language.id)
+    target = language_ids.pop(target_idx)
+    target_idx += direction
+    if target_idx > len(language_ids):
+        target_idx = 0
+    elif target_idx < 0:
+        target_idx = len(language_ids) + 1
+    language_ids.insert(target_idx, target)
+    language_list.language_id_list = language_ids
+    language_list.save()
     return
-
-def move_language_down_list(language):
-    """Called by reorder languages"""
-    try: # get two languages after this one
-        before = Language.objects.filter(
-                sort_key__gt=language.sort_key)[0]
-        try:
-            after = Language.objects.filter(
-                    sort_key__gt=before.sort_key)[0]
-            # set the sort key to halfway between them
-            language.sort_key = (after.sort_key+before.sort_key)/2
-        except IndexError:
-            before.sort_key, language.sort_key = language.sort_key,\
-                    before.sort_key
-            before.save()
-        language.save()
-    except IndexError:
-        pass # already last
-    return
-
-# def sort_languages(request, ordered_by):
-#     """Change the selected sort order via url"""
-#     referer = request.META.get("HTTP_REFERER", reverse("view-all-languages"))
-#     request.session["language_sort_order"] = ordered_by
-#     return HttpResponseRedirect(referer)
 
 def view_language_wordlist(request, language, wordlist):
     wordlist = MeaningList.objects.get(name=wordlist)
@@ -339,8 +335,8 @@ def view_language_wordlist(request, language, wordlist):
         form = ChooseMeaningListForm(request.POST)
         if form.is_valid():
             wordlist = form.cleaned_data["meaning_list"]
-            msg = u"Wordlist selection changed to '%s'" %\
-                    wordlist.name
+            request.session["current_wordlist_name"] = wordlist.name
+            msg = u"Wordlist selection changed to '%s'" % wordlist.name
             messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(reverse("view-language-wordlist",
                     args=[language.ascii_name, wordlist.name]))
@@ -363,15 +359,22 @@ def view_language_wordlist(request, language, wordlist):
             })
 
 @login_required
-def language_add_new(request):
+def language_add_new(request, languages):
+    language_list = LanguageList.objects.get(name=languages)
     if request.method == 'POST':
         form = EditLanguageForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
             return HttpResponseRedirect(reverse("view-all-languages"))
         if form.is_valid():
             form.save()
+            language = Language.objects.get(
+                    ascii_name=form.cleaned_data["ascii_name"])
+            language_id_list = language_list.language_id_list[:]
+            language_id_list.insert(0, language.id)
+            language_list.language_id_list = language_id_list
+            language_list.save()
             return HttpResponseRedirect(reverse("language-report",
-                args=[form.cleaned_data["ascii_name"]]))
+                args=[language.ascii_name]))
     else: # first visit
         form = EditLanguageForm()
     return render_template(request, "language_add_new.html",
@@ -420,21 +423,26 @@ def view_wordlists(request):
 
 def view_wordlist(request, wordlist=MeaningList.DEFAULT):
     wordlist = MeaningList.objects.get(name=wordlist)
+    request.session["current_wordlist_name"] = wordlist.name
     if request.method == 'POST':
         form = ChooseMeaningListForm(request.POST)
         if form.is_valid():
-            current_list = form.cleaned_data["meaning_list"]
-            wordlist_name = current_list.name
+            wordlist = form.cleaned_data["meaning_list"]
+            request.session["current_wordlist_name"] = wordlist.name
             msg = "Wordlist selection changed to '%s'" %\
-                    wordlist_name
+                    wordlist.name
             messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(reverse("view-wordlist",
-                    args=[wordlist_name]))
+                    args=[wordlist.name]))
     else:
         form = ChooseMeaningListForm()
     form.fields["meaning_list"].initial = wordlist.id
 
-    meanings = Meaning.objects.filter(id__in=wordlist.meaning_id_list)
+    WordlistManager = make_ordered_meaning_manager(wordlist)
+    Meaning.wordlist = WordlistManager()
+    meanings = Meaning.wordlist.with_order()
+    meanings.sort(key=lambda m: m.order)
+
     response = render_template(request, "wordlist.html",
             {"meanings":meanings,
             "form":form})
@@ -447,10 +455,12 @@ def edit_wordlist(request, wordlist):
     if request.method == 'POST':
         form = EditMeaningListForm(request.POST, instance=wordlist)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect(reverse("view-wordlists"))
+            return HttpResponseRedirect(reverse("view-wordlist"),
+                    args=[wordlist.name])
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("view-wordlists"))
+            return HttpResponseRedirect(reverse("view-wordlist"),
+                    args=[wordlist.name])
     else:
         form = EditMeaningListForm(instance=wordlist)
 
@@ -459,32 +469,41 @@ def edit_wordlist(request, wordlist):
             "form":form})
     return
 
+@login_required
 def reorder_wordlist(request, wordlist):
+    meaning_id = request.session.get("current_meaning_id", None)
     wordlist = MeaningList.objects.get(name=wordlist)
-    queryset = Meaning.objects.filter(id__in=wordlist.meaning_id_list)
-    # assert 0, queryset.ordered # XXX queryset has been reordered :-(
-    MyForm = make_ReorderMeaningListForm(queryset)
+    WordlistManager = make_ordered_meaning_manager(wordlist)
+    Meaning.wordlist = WordlistManager()
+    meanings = Meaning.wordlist.with_order()
+    meanings.sort(key=lambda m: m.order)
+
+    ReorderForm = make_reorder_meaninglist_form(meanings)
     if request.method == "POST":
-        form = MyForm(request.POST)
-        # form = ReorderMeaningListForm(request.POST)
+        form = ReorderForm(request.POST, initial={"meaning":meaning_id})
         if form.is_valid():
-            meaning = form.cleaned_data["meaning"]
-            if form.data["submit"] == "Move up":
-                move_meaning(meaning, wordlist, -1)
-            elif form.data["submit"] == "Move down":
-                move_meaning(meaning, wordlist, 1)
-            else:
-                assert form.data["submit"] == "Finish"
+            meaning_id = int(form.cleaned_data["meaning"])
+            request.session["current_meaning_id"] = meaning_id
+            meaning = Meaning.objects.get(id=meaning_id)
+            if form.data["submit"] == "Finish":
                 return HttpResponseRedirect(reverse("view-wordlist",
                     args=[wordlist.name]))
+            else:
+                if form.data["submit"] == "Move up":
+                    move_meaning(meaning, wordlist, -1)
+                elif form.data["submit"] == "Move down":
+                    move_meaning(meaning, wordlist, 1)
+                else:
+                    assert False, "This shouldn't be able to happen"
+                return HttpResponseRedirect(reverse("reorder-wordlist",
+                    args=[wordlist.name]))
         else: # pressed Finish without submitting changes
+            # TODO might be good to zap the session variable once finished
+            # request.session["current_meaning_id"] = None
             return HttpResponseRedirect(reverse("view-wordlist",
                 args=[wordlist.name]))
     else: # first visit
-        form = MyForm()
-        #form = ReorderMeaningListForm()
-        #form.fields["meaning"].queryset = Meaning.objects.filter(
-        #        id__in=wordlist.meaning_id_list)
+        form = ReorderForm(initial={"meaning":meaning_id})
     return render_template(request, "reorder_wordlist.html",
             {"wordlist":wordlist, "form":form})
 
@@ -545,6 +564,7 @@ def view_meaning(request, meaning, languages):
     # Normalize calling parameters
     canonical_gloss = get_canonical_meaning(meaning).gloss
     current_language_list = get_canonical_languages(languages)
+    request.session["current_language_list_name"] = current_language_list.name
     if meaning != canonical_gloss or languages != current_language_list.name:
         return HttpResponseRedirect(reverse("view-meaning-languages", 
             args=[canonical_gloss, current_language_list.name]))
@@ -559,6 +579,7 @@ def view_meaning(request, meaning, languages):
             msg = "Language list selection changed to '%s'" %\
                     current_language_list.name
             messages.add_message(request, messages.INFO, msg)
+            request.session["current_language_list_name"] = current_language_list.name
             return HttpResponseRedirect(reverse("view-meaning-languages",
                     args=[canonical_gloss, current_language_list.name]))
     else:
@@ -596,7 +617,7 @@ def view_meaning(request, meaning, languages):
     lexemes = Lexeme.objects.filter(meaning=meaning,
             language__id__in=current_language_list.language_id_list)
 
-    prev_meaning, next_meaning = get_prev_and_next_meanings(meaning)
+    prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
     return render_template(request, "view_meaning.html",
             {"meaning":meaning,
             "prev_meaning":prev_meaning,
@@ -661,7 +682,7 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
             add_cognate_judgement = lexeme_id
     elif action == "goto":
         current_lexeme = lexeme_id
-    prev_meaning, next_meaning = get_prev_and_next_meanings(meaning)
+    prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
     return render_template(request, "meaning_report.html",
             {"meaning":meaning,
             "prev_meaning":prev_meaning,
@@ -701,8 +722,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     citation_id = int(citation_id)
     cogjudge_id = int(cogjudge_id)
     lexeme = Lexeme.objects.get(id=lexeme_id)
-    lexeme_citations = lexeme.lexemecitation_set.all() # XXX not used?
-    sources = Source.objects.filter(lexeme=lexeme)  # XXX not used
+    # lexeme_citations = lexeme.lexemecitation_set.all() # XXX not used?
+    # sources = Source.objects.filter(lexeme=lexeme)  # XXX not used
     form = None
 
     if action: # actions are: edit, edit-citation, add-citation

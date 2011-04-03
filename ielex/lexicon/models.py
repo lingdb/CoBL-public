@@ -46,7 +46,8 @@ class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
     ascii_name = models.CharField(max_length=999, unique=True, validators=[suitable_for_url])
     utf8_name = models.CharField(max_length=999, unique=True)
-    sort_key = models.FloatField(null=True, blank=True, editable=False)
+    # sort key is deprecated: use ordered_manager instead
+    sort_key = models.FloatField(null=True, blank=True, editable=False) 
     description = models.TextField(blank=True, null=True)
 
     def get_absolute_url(self):
@@ -62,12 +63,33 @@ class Language(models.Model):
             return ""
 
     def __unicode__(self):
-        return self.ascii_name
+        return self.utf8_name
 
     class Meta:
-        ordering = ["sort_key", "ascii_name"]
+        ordering = ["ascii_name"]
 
 reversion.register(Language)
+
+def make_ordered_language_manager(language_list):
+    """Selects a set of languages according to a LanguageList object
+    (and annotates them with an order attribute).
+    Usage:
+        LanguageListManager = make_ordered_language_manager(language_list)
+        Language.language_list = LanguageListManager()
+        languages = Language.language_list.with_order()
+        languages.sort(key=lambda m: m.order)
+    """
+    class OrderedLanguageManager(models.Manager):
+        def get_query_set(self):
+            return Language.objects.filter(id__in=language_list.language_id_list)
+        def with_order(self):
+            languages = []
+            for language in Language.objects.filter(
+                    id__in=language_list.language_id_list):
+                language.order = language_list.language_id_list.index(language.id)
+                languages.append(language)
+            return languages
+    return OrderedLanguageManager
 
 class DyenName(models.Model):
     language = models.ForeignKey(Language)
@@ -96,11 +118,6 @@ class Meaning(models.Model):
         except ZeroDivisionError:
             return ""
 
-    def wordlist_index(self, wordlist):
-        """Calculate sorting index according to list of ids"""
-        # XXX NEEDS TESTING
-        return wordlist.meaning_id_list.index(self.id)
-
     def __unicode__(self):
         return self.gloss.upper()
 
@@ -108,6 +125,25 @@ class Meaning(models.Model):
         ordering = ["gloss"]
 
 reversion.register(Meaning)
+
+def make_ordered_meaning_manager(wordlist):
+    """Usage:
+        WordlistManager = make_ordered_meaning_manager(wordlist)
+        Meaning.wordlist = WordlistManager()
+        meanings = Meaning.wordlist.with_order()
+        meanings.sort(key=lambda m: m.order)
+    """
+    class OrderedMeaningManager(models.Manager):
+        def get_query_set(self):
+            return Meaning.objects.filter(id__in=wordlist.meaning_id_list)
+        def with_order(self):
+            meanings = []
+            for meaning in Meaning.objects.filter(
+                    id__in=wordlist.meaning_id_list):
+                meaning.order = wordlist.meaning_id_list.index(meaning.id)
+                meanings.append(meaning)
+            return meanings
+    return OrderedMeaningManager
 
 class CognateSet(models.Model):
     alias = models.CharField(max_length=3)
@@ -312,8 +348,9 @@ def update_language_list_all(sender, instance, **kwargs):
         ll = LanguageList.objects.get(name=LanguageList.DEFAULT)
     except:
         ll = LanguageList.objects.create(name=LanguageList.DEFAULT)
-    if ll.language_id_list != list(Language.objects.values_list("id", flat=True)):
-        ll.language_id_list = [l.id for l in Language.objects.all()]
+    missing_ids = set(Language.objects.values_list("id", flat=True)) - set(ll.language_id_list)
+    if missing_ids:
+        ll.language_id_list = sorted(missing_ids) + ll.language_id_list
         ll.save(force_update=True)
     return
 
@@ -328,8 +365,9 @@ def update_meaning_list_all(sender, instance, **kwargs):
     # recreate this if the membership has changed but not if just the
     # order has changed
     # TODO will this randomize the list every time an item is added?
-    if set(ml.meaning_id_list) != set(Meaning.objects.values_list("id", flat=True)):
-        ml.meaning_id_list = [l.id for l in Meaning.objects.all()]
+    missing_ids = set(Meaning.objects.values_list("id", flat=True)) - set(ml.meaning_id_list)
+    if missing_ids:
+        ml.meaning_id_list = sorted(missing_ids) + ml.meaning_id_list
         ml.save(force_update=True)
     return
 

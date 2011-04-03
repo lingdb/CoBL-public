@@ -27,7 +27,11 @@
 
     <div id="controls">
     {% block controls %}{% endblock %}
-    {{ request.session.previous_citation_id }}
+    <small>
+      Wordlist: ‘{{ current_wordlist_name }}’;
+      Languages: ‘{{ current_language_list_name }}’
+    </small>
+    {# {{ request.session.previous_citation_id }} XXX what's this intended to do? #}
     </div>
 
     <div id="content">
@@ -39,7 +43,7 @@
       {#   {% block sitemap %} {% endblock %} #}
       {# </div> #}
     {% block footer %}
-    <small>{{ project_long_name }} (LexDB version {{ version }})</small>
+    <center><small>{{ project_long_name }} (LexDB version {{ version }})</small></center>
     {% endblock %}
     </div>
   </div>
@@ -48,7 +52,6 @@
 
   {# == Floating messages == #}
   {% if messages %}
-  {# user.message_set.create(message="This is a test message") #}
   <div id="message">
     <ul>
     {% for message in messages %}

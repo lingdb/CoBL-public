@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load lexicon_utils %}
 
-{% block title %}Reorder languages{% endblock %}
+{% block title %}Reorder language list{% endblock %}
 
-{% block top %}<h1>Change default genealogical sort order</h1>{% endblock %}
+{% block top %}<h1>Change default order for language list ‘{{ language_list.name }}’</h1>{% endblock %}
 
 {% block content %}
 <form action="" method="POST">{% csrf_token %}
