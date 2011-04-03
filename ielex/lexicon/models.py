@@ -364,7 +364,6 @@ def update_meaning_list_all(sender, instance, **kwargs):
         ml = MeaningList.objects.create(name=MeaningList.DEFAULT)
     # recreate this if the membership has changed but not if just the
     # order has changed
-    # TODO will this randomize the list every time an item is added?
     missing_ids = set(Meaning.objects.values_list("id", flat=True)) - set(ml.meaning_id_list)
     if missing_ids:
         ml.meaning_id_list = sorted(missing_ids) + ml.meaning_id_list

@@ -160,7 +160,7 @@ def get_languages(request): # refactor this away XXX
         languages = Language.objects.all()
     return languages
 
-def get_current_language_list_name(request): 
+def get_current_language_list_name(request):
     """Get the name of the current language list from session. This is
     only be be used by navigation functions (e.g.
     get_previous_and_next_languages) which don't take part in the RESTful url

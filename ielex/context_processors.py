@@ -13,7 +13,7 @@ from ielex import local_settings
 from ielex.lexicon.models import *
 from ielex.extensional_semantics.models import *
 
-config = None # XXX what's this for?
+# config = None # XXX what's this for?
 
 def configuration(request):
     """Various things stored in local_settings.py"""

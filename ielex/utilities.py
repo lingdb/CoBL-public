@@ -28,15 +28,15 @@ def next_alias(l, ignore=[]):
             return alias
     return
 
-def renumber_sort_keys():
-    """Run this function from time to time to stop sort keys getting 'bunched'"""
-    languages = Language.objects.all().order_by("sort_key")
-    i = 1.0
-    for l in languages:
-        l.sort_key = i
-        l.save()
-        i += 1
-    return
+# def renumber_sort_keys():
+#     """Run this function from time to time to stop sort keys getting 'bunched'"""
+#     languages = Language.objects.all().order_by("sort_key")
+#     i = 1.0
+#     for l in languages:
+#         l.sort_key = i
+#         l.save()
+#         i += 1
+#     return
 
 def confirm_required(template_name, context_creator, key='__confirm__'):
     """

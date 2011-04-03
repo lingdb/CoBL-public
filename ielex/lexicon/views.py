@@ -37,8 +37,9 @@ def write_nexus(request):
 
     # get data together
     language_list = LanguageList.objects.get(id=language_list_id)
-    languages = Language.objects.filter(
-            id__in=language_list.language_id_list).order_by("sort_key")
+    languages = get_ordered_languages(language_list)
+    # languages = Language.objects.filter(
+    #         id__in=language_list.language_id_list).order_by("sort_key")
     language_names = ["'"+name+"'" for name in
             languages.values_list("ascii_name", flat=True)]
 

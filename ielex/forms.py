@@ -204,11 +204,11 @@ class ChooseCognateClassForm(forms.Form):
 class EditCognateSetForm(forms.Form):
     notes = forms.CharField(widget=forms.Textarea, required=False)
 
-class ReorderLanguageSortKeyForm(forms.Form):
-    language = ChooseLanguageField(
-            queryset=Language.objects.all().order_by("sort_key"),
-            widget=forms.Select(attrs={"size":20}),
-            empty_label=None)
+# class ReorderLanguageSortKeyForm(forms.Form):
+#     language = ChooseLanguageField(
+#             queryset=Language.objects.all().order_by("sort_key"),
+#             widget=forms.Select(attrs={"size":20}),
+#             empty_label=None)
 
 def make_reorder_languagelist_form(objlist):
     choices = [(e.id, e.ascii_name) for e in objlist]
