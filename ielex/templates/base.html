@@ -27,11 +27,12 @@
 
     <div id="controls">
     {% block controls %}{% endblock %}
-    <small>
-      Wordlist: ‘{{ current_wordlist_name }}’;
-      Languages: ‘{{ current_language_list_name }}’
-    </small>
-    {# {{ request.session.previous_citation_id }} XXX what's this intended to do? #}
+      <p align="right">
+        <small>
+          Language list: <strong>{{ current_language_list_name }}</strong><br />
+          Wordlist: <strong>{{ current_wordlist_name }}</strong>
+        </small>
+      </p>
     </div>
 
     <div id="content">

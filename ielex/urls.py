@@ -126,6 +126,11 @@ urlpatterns = patterns('',
     url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit)/$', cognate_report),
     url(r'^cognate/%(MEANING)s/(?P<code>[A-Z]+[0-9]*)/$' % R,
             cognate_report),
+    # TODO better url:
+    # url(r'^meaning/%(MEANING)s/cognate/(?P<code>[A-Z]+[0-9]*)/$' % R,
+    #        cognate_report),
+    # TODO allow cognate sets to be renamed (e.g. to give distinctive codes to
+    # loanwords)
 
     url(r'^revert/(?P<version_id>\d+)/$', revert_version),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),

@@ -1,26 +1,12 @@
 TODO
 ====
 
+- use session dictionaries to store "return to" and "#lexeme_XX" anchors
+  information (since this doesn't mess with the explicit, replicable) url
+  scheme.
+
 - rewrite templates so the database can handle startup from nothing (e.g.
   initially, only offer "create language", "create meaning" pages
-
-- Don't use LanguageList session variable, and put the info into urls
-  instead::
-
-    /languages/Dunn2011/meaning/ash/
-
-  Treat `/meaning/ash/` as an alias of `/languages/all/meaning/ash`
-
-  (session variable is still useful for 'return_to' pages and '#lexeme_XX'
-  anchors)
-
-- language lists and wordlists should have a single set order; if we want two
-  different orders we should simply save them as two distinct language/meaning
-  lists.
-
-  Currently there are two different ways of managing sort order: the sort key
-  attribute of Language objects and the integer list in LanguageList and
-  MeaningList. We should be using the latter, as it is customizable per list.
 
 - Describe grammar of urls::
 
@@ -107,9 +93,6 @@ TODO
 
   This is crying out for class-based views...
 
-- I can still use session dictionaries to store "return to" information, since
-  this needn't be part of the (explicit, replicable) url scheme.
-
 for Version 0.3
 ---------------
 
@@ -147,8 +130,6 @@ for Version 0.3
   we have general information about the reconstructed form
 
 - The Language.description field in (the sidebar of?) the /language/ view
-
-- Handle typos in url fields. **full 404 handling**
 
 - Add/edit meaning pages
 

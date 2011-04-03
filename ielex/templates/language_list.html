@@ -63,11 +63,10 @@
 <li><a href="{% url language-add-new current_language_list_name %}">add language</a></li>
 </ul>
 {% endif %}
-<h2>Controls</h2>
 <p>
 <form action="" method="post">{% csrf_token %}
 <fieldset>
-<legend>Language List<legend>
+<legend>Controls<legend>
 <table>
 {{ language_list_form.as_table }}
 </table>

@@ -614,8 +614,9 @@ def view_meaning(request, meaning, languages):
         cognate_form = ChooseCognateClassForm()
 
     # Get lexemes, respecting 'languages'
-    lexemes = Lexeme.objects.filter(meaning=meaning,
-            language__id__in=current_language_list.language_id_list)
+    # lexemes = Lexeme.objects.filter(meaning=meaning,
+    #         language__id__in=current_language_list.language_id_list)
+    lexemes = get_ordered_lexemes(meaning, current_language_list)
 
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
     return render_template(request, "view_meaning.html",
@@ -666,8 +667,9 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
     else:
         form = ChooseCognateClassForm()
 
-    lexemes = Lexeme.objects.select_related().filter(meaning=meaning,
-            language__in=get_languages(request)).order_by("sort_key")
+    # lexemes = Lexeme.objects.select_related().filter(meaning=meaning,
+    #         language__in=get_languages(request)).order_by("sort_key")
+    lexemes = get_ordered_lexemes(meaning, current_language_list)
     form.fields["cognate_class"].queryset = CognateSet.objects.filter(
             lexeme__in=lexemes).distinct()
     add_cognate_judgement = 0 # to lexeme
@@ -710,6 +712,13 @@ def delete_meaning(request, meaning):
     return HttpResponseRedirect(reverse("view-meanings"))
 
 # -- /lexeme/ -------------------------------------------------------------
+
+def get_ordered_lexemes(meaning, language_list):
+    LexemeListManager = make_ordered_lexeme_manager(meaning, language_list)
+    Lexeme.language_list = LexemeListManager()
+    lexemes = Lexeme.language_list.with_order()
+    lexemes.sort(key=lambda m: m.order)
+    return lexemes
 
 def view_lexeme(request, lexeme_id):
     """For un-logged-in users, view only"""
@@ -1024,8 +1033,7 @@ def lexeme_add(request,
 #@login_required
 def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
     if cognate_id:
-        cognate_id = int(cognate_id)
-        cognate_class = CognateSet.objects.get(id=cognate_id)
+        cognate_class = CognateSet.objects.get(id=int(cognate_id))
     else:
         assert meaning and code
         cognate_classes = CognateSet.objects.filter(alias=code, 
@@ -1043,14 +1051,22 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
         if request.method == 'POST':
             form = EditCognateSetForm(request.POST, instance=cognate_class)
             if "cancel" not in form.data and form.is_valid():
-                update_object_from_form(cognate_class, form)
+                update_object_from_form(cognate_class, form) # XXX refactor
             return HttpResponseRedirect('/cognate/%s/' % cognate_class.id)
         else:
             form = EditCognateSetForm(instance=cognate_class)
     else:
         form = None
-    cj_ordered = cognate_class.cognatejudgement_set.filter(
-            lexeme__language__in=get_languages(request)).order_by("sort_key")
+
+    # This is a clunky way of sorting; currently assumes LanguageList
+    # 'all' (maybe make this configurable?)
+    language_list = LanguageList.objects.get(name=LanguageList.DEFAULT)
+    cj_ordered = []
+    for language_id in language_list.language_id_list:
+        cj = cognate_class.cognatejudgement_set.filter(
+                lexeme__language__id=language_id)
+        cj_ordered.extend(list(cj))
+
     return render_template(request, "cognate_report.html",
             {"cognate_class":cognate_class,
             "cj_ordered":cj_ordered,

@@ -84,8 +84,7 @@ def make_ordered_language_manager(language_list):
             return Language.objects.filter(id__in=language_list.language_id_list)
         def with_order(self):
             languages = []
-            for language in Language.objects.filter(
-                    id__in=language_list.language_id_list):
+            for language in self.get_query_set():
                 language.order = language_list.language_id_list.index(language.id)
                 languages.append(language)
             return languages
@@ -138,8 +137,7 @@ def make_ordered_meaning_manager(wordlist):
             return Meaning.objects.filter(id__in=wordlist.meaning_id_list)
         def with_order(self):
             meanings = []
-            for meaning in Meaning.objects.filter(
-                    id__in=wordlist.meaning_id_list):
+            for meaning in self.get_query_set():
                 meaning.order = wordlist.meaning_id_list.index(meaning.id)
                 meanings.append(meaning)
             return meanings
@@ -196,6 +194,27 @@ class Lexeme(models.Model):
         order_with_respect_to = "language"
 
 reversion.register(Lexeme)
+
+def make_ordered_lexeme_manager(meaning, language_list):
+    """Selects a set of lexemes according to a LanguageList object sorted by
+    Language (and annotates them with an order attribute).
+    Usage:
+        LexemeListManager = make_ordered_lexeme_manager(meaning, language_list)
+        Lexeme.language_list = LexemeListManager()
+        lexemes = Lexeme.language_list.with_order()
+        lexemes.sort(key=lambda m: m.order)
+    """
+    class OrderedLexemeManager(models.Manager):
+        def get_query_set(self):
+            return Lexeme.objects.filter(meaning=meaning,
+                    language__id__in=language_list.language_id_list)
+        def with_order(self):
+            lexemes = []
+            for lexeme in self.get_query_set():
+                lexeme.order = language_list.language_id_list.index(lexeme.language.id)
+                lexemes.append(lexeme)
+            return lexemes
+    return OrderedLexemeManager
 
 class CognateJudgement(models.Model):
     lexeme = models.ForeignKey(Lexeme)
