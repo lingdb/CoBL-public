@@ -13,8 +13,6 @@ from ielex import local_settings
 from ielex.lexicon.models import *
 from ielex.extensional_semantics.models import *
 
-# config = None # XXX what's this for?
-
 def configuration(request):
     """Various things stored in local_settings.py"""
     return {"version":VERSION,
@@ -29,7 +27,9 @@ def configuration(request):
 
 def navigation(request):
     return {"current_wordlist_name":
-                    request.session.get("current_wordlist_name", "CWN"),
+                    request.session.get("current_wordlist_name",
+                    MeaningList.DEFAULT),
             "current_language_list_name":
-                    request.session.get("current_language_list_name", "CLLN"),
+                    request.session.get("current_language_list_name",
+                    LanguageList.DEFAULT),
             }
