@@ -338,7 +338,7 @@ def view_language_wordlist(request, language, wordlist):
 
     # collect data
     lexemes = Lexeme.objects.filter(language=language,
-            meaning__id__in=wordlist.meaning_id_list)
+            meaning__id__in=wordlist.meaning_id_list).order_by("meaning__gloss")
     prev_language, next_language = \
             get_prev_and_next_languages(request, language)
     return render_template(request, "language_wordlist.html",
@@ -651,8 +651,6 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
     else:
         form = ChooseCognateClassForm()
 
-    # lexemes = Lexeme.objects.select_related().filter(meaning=meaning,
-    #         language__in=get_languages(request)).order_by("sort_key")
     lexemes = get_ordered_lexemes(meaning, current_language_list)
     form.fields["cognate_class"].queryset = CognateSet.objects.filter(
             lexeme__in=lexemes).distinct()

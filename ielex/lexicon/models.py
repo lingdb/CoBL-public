@@ -316,8 +316,11 @@ class AbstractBaseCitation(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     def long_reliability(self):
-        descriptions = dict(RELIABILITY_CHOICES)
-        return descriptions[self.reliability]
+        try:
+            description = dict(RELIABILITY_CHOICES)[self.reliability]
+        except KeyError:
+            description = ""
+        return description
 
     class Meta:
         abstract = True
