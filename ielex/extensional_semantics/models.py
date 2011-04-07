@@ -35,6 +35,7 @@ class SemanticExtension(models.Model):
 reversion.register(SemanticExtension)
 
 class SemanticExtensionCitation(AbstractBaseCitation):
+    # TODO remove
     extension = models.ForeignKey(SemanticExtension)
     source = models.ForeignKey('lexicon.Source')
 

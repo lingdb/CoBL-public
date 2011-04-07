@@ -16,6 +16,7 @@ from reversion import revision
 from ielex.backup import backup
 from ielex.forms import *
 from ielex.lexicon.models import *
+from ielex.citations.models import *
 from ielex.extensional_semantics.views import *
 from ielex.shortcuts import render_template
 from ielex.utilities import next_alias, confirm_required

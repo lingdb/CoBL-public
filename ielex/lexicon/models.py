@@ -1,7 +1,7 @@
 from __future__ import division
-
-import re ###
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
 # from django.contrib import admin
 import reversion
 # from reversion.admin import VersionAdmin
@@ -23,7 +23,6 @@ RELIABILITY_CHOICES = ( # used by Citation classes
         )
 
 class Source(models.Model):
-
 
     citation_text = models.TextField(unique=True)
     type_code = models.CharField(max_length=1, choices=TYPE_CHOICES,
@@ -306,7 +305,33 @@ class MeaningList(models.Model):
     class Meta:
         ordering = ["name"]
 
+
+class GenericCitation(models.Model):
+    source = models.ForeignKey(Source)
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type',
+                    'object_id')
+    pages = models.CharField(max_length=999)
+    reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
+    comment = models.CharField(max_length=999)
+    modified = models.DateTimeField(auto_now=True)
+
+    def long_reliability(self):
+        try:
+            description = dict(RELIABILITY_CHOICES)[self.reliability]
+        except KeyError:
+            description = ""
+        return description
+
+    class Meta:
+        unique_together = (("content_type", "object_id", "source"),)
+        ## Can't use a "content_object" in a unique_together constraint
+
+# reversion.register(GenericCitation)
+
 class AbstractBaseCitation(models.Model):
+    # TODO remove
     """Abstract base class for citation models
     The source field has to be in the subclasses in order for the
     unique_together constraints to work properly"""
@@ -327,6 +352,7 @@ class AbstractBaseCitation(models.Model):
 
 
 class CognateJudgementCitation(AbstractBaseCitation):
+    # TODO remove
     cognate_judgement = models.ForeignKey(CognateJudgement)
     source = models.ForeignKey(Source)
 
@@ -345,6 +371,7 @@ class CognateJudgementCitation(AbstractBaseCitation):
 reversion.register(CognateJudgementCitation)
 
 class LexemeCitation(AbstractBaseCitation):
+    # TODO remove
     lexeme = models.ForeignKey(Lexeme)
     source = models.ForeignKey(Source)
 
