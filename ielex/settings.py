@@ -92,6 +92,7 @@ INSTALLED_APPS = (
     'reversion',
     'ielex.lexicon',
     'ielex.extensional_semantics',
+    #'ielex.citations',
 )
 
 # admin urls

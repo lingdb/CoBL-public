@@ -83,15 +83,25 @@ TODO
   These just need to take object, title_text, header_text arguments. This
   should then be easy to convert to class based views.
 
-  * edit_object 
-  * view_object
   * list_object
+  * view_object
+  * edit_object 
+  * cite_object
   * delete_object
   * link_object
   * delink_object
   * change_and_reorder_from list (for language lists, meaning lists, etc)
 
   This is crying out for class-based views...
+
+- Implement GenericCitation
+
+  * Get the class working
+  * Hook it up to Extensional Semantics objects and get it working on import of
+    Aslian data
+  * Copy all IE citations to new model
+  * Hook up GenericCitation to lexicon models and templates
+  * Drop old XxxCitation tables
 
 for Version 0.3
 ---------------
