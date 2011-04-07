@@ -10,46 +10,58 @@ digraph g { // neato -Tpdf -O database_structure.dot
   edge [arrowhead=dot];
 
   // 0
-  language_list [pos="0,4.5!", style=filled,
-	label="{Language\nList | list_id | name |<lid> language_id_list\n(ordered) | modified }"];
-  meaning_list [pos="0,2.5!", style=filled,
-	label="{Meaning\nList | list_id | name |<mid> meaning_id_list\n(ordered) | modified }"];
-  relation_list [pos="0,1!", style=filled,
-	label="{Semantic Relation\nList | list_id | name |<rid> relation_id_list\n(ordered) | modified }"];
+  feature_list [pos="0,3.5!", style=filled,
+	label="{Structural Feature\nList | list_id | name |<fid> feature_id_list\n(ordered) | modified }"];
+  language_list [pos="0,2!", style=filled,
+        label="{Language List | list_id | name |<lid> language_id_list\n(ordered) | modified }"];
+  meaning_list [pos="0,1!", style=filled,
+        label="{Meaning List | list_id | name |<mid> meaning_id_list\n(ordered) | modified }"];
+  relation_list [pos="0,0!", style=filled,
+    	   label="{Semantic Relation\nList | list_id | name |<rid> relation_id_list\n(ordered) | modified }"];
+  // object_list [pos="0,1!", style=filled,
+  //	label="{Ordered\n Object List | list_id | name |<oid> (object_id_list,\n  object_type) | modified }"];
 
   // 1
-  language [pos="1,4!",style=filled,
-	label="{LANGUAGES |<id> id | iso_code | ascii_name | utf8_name | sort_key }"];
-  meaning [pos="1,2.5!",style=filled,
-	label="{MEANINGS |<id> id | gloss | description |notes }"];
-  relation [pos="1.5,1!",style=filled,
-	label="{SEMANTIC\nRELATIONS | <id> id |{descriptor\n(kinship category\npronominal category\netc.) |{M | MZ | etc.}}}"];
+  feature [pos="1,3.5!",style=filled,
+	label="{STRUCTURAL FEATURE |<id> id | name | description | notes }"];
+  language [pos="1,2!",style=filled,
+	label="{LANGUAGE |<id> id | iso_code | ascii_name | utf8_name }"];
+  meaning [pos="1,1!",style=filled,
+	label="{MEANING |<id> id | gloss | description | notes }"];
+  relation [pos="1,0!",style=filled,
+	label="{SEMANTIC RELATION | <id> id |{descriptor\n(kinship category\npronominal category\netc.) |{M | MZ | etc.}}}"];
 
   // 2
-  lexeme [pos="2,3!",style=filled,
-	label="{LEXEMES |<id> id |<lid> language_id |<mid> meaning_id | source_form | phon_form | gloss | notes | modified }"];
+  feature_value [pos="2.5,4!",style=filled,
+	label="{FEATURE VALUE |<id> id |<fid> feature_id | code | description | modified }"];
+  lexeme [pos="2,1!",style=filled,
+	label="{LEXEME |<id> id |<lid> language_id |<mid> meaning_id | source_form | phon_form | gloss | notes | modified }"];
 
   // 3
-  judgement [pos="3,5!",
-	label="{Cognate\nJudgements |<id> id |<fid> lexeme_id |<cid> cog_set_id | modified }"];
-  semantic_extension [pos="3.5,2!",
+
+  judgement [pos="3,3!",
+	label="{Cognate\nJudgement |<id> id |<fid> lexeme_id |<cid> cog_set_id | modified }"];
+  semantic_extension [pos="3.5,0.5!",
 	label="{Semantic Extension\n(i.e. “lexeme can\n  refer to relation”) |<id> id |<fid> lexeme_id |<bid> sem_rel_id |  comment | modified }"];
 
   // 4
-  cogset [pos="4,4!",style=filled,
+
+  observed_value [pos="4,4!",
+	label="{OBSERVED\nVALUE |<id> id |<fid> feature_value_id |<lid> language_id | notes | modified }"];
+  cogset [pos="4,2!",style=filled,
 	label="{COGNATE\nSET |<id> id | reconstruction | notes | modified }"];
 
   // 5
-  citation [pos="5,3!",
-	label="{Citation |<oid> (object_id,\nobject_type) |<sid> source_id | pages | reliability | comment | modified}"];
+  citation [pos="5,1.5!",
+	label="{Citation |<oid> (object_id,\n  object_type) |<sid> source_id | pages | reliability | comment | modified}"];
 
   // 6
-  source [pos="6,3!",style=filled,
-	label="{SOURCES |<id> id |{type_code |{book | person | url}}|  citation | description | modified }"];
+  source [pos="6,1.5!",style=filled,
+	label="{SOURCE |<id> id |{type_code |{book | person | url}}|  citation | description | modified }"];
 
   // key
-  key1 [pos="4.5,1!", label="independent table", style=filled];
-  key2 [pos="6,1!", label="many-to-many table"];
+  key1 [pos="4.5,0!", label="independent table", style=filled];
+  key2 [pos="6,0!", label="many-to-many table"];
   key2 -> key1 [label="Foreign key"];
 
   // edges
@@ -59,17 +71,22 @@ digraph g { // neato -Tpdf -O database_structure.dot
   judgement:cid -> cogset:id [weight=8];
   semantic_extension:fid -> lexeme:id;
   semantic_extension:bid -> relation:id;
+  observed_value:lid -> language:id
+  observed_value:fid -> feature_value:id
+  feature_value:fid -> feature:id
 
   citation:oid -> lexeme:id;
-  citation:sid -> source:id;
   citation:oid -> judgement:id;
-  citation:sid -> source:id;
   citation:oid -> cogset:id;
-  citation:sid -> source:id;
   citation:oid -> semantic_extension:id;
-  citation:sid -> source:id [style=dashed];
+  citation:oid -> observed_value:id
+  citation:sid -> source:id;
 
+  // object_list:oid -> language:id;
+  // object_list:oid -> meaning:id;
+  // object_list:oid -> relation:id
   language_list:lid -> language:id;
   meaning_list:mid -> meaning:id;
   relation_list:rid -> relation:id
+  feature_list:fid -> feature:id
 }
