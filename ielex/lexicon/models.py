@@ -43,10 +43,11 @@ reversion.register(Source)
 
 class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
-    ascii_name = models.CharField(max_length=999, unique=True, validators=[suitable_for_url])
+    ascii_name = models.CharField(max_length=999, unique=True,
+            validators=[suitable_for_url])
     utf8_name = models.CharField(max_length=999, unique=True)
     # sort key is deprecated: use ordered_manager instead
-    sort_key = models.FloatField(null=True, blank=True, editable=False) 
+    sort_key = models.FloatField(null=True, blank=True, editable=False)
     description = models.TextField(blank=True, null=True)
 
     def get_absolute_url(self):
@@ -307,6 +308,9 @@ class MeaningList(models.Model):
 
 
 class GenericCitation(models.Model):
+    # This would have been a good way to do it, but it's going to be too
+    # difficult to convert the ManyToMany fields in the current models to use
+    # this instead of the old classes.
     source = models.ForeignKey(Source)
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()

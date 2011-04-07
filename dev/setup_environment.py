@@ -7,7 +7,6 @@ sys.path.append(os.path.abspath(".."))
 from ielex import settings
 setup_environ(settings)
 from ielex.lexicon.models import *
-from ielex.citations.models import *
 name = settings.project_short_name
 print "+%s+" % ("-" * (len(name) + 2))
 print "|", name, "|"
