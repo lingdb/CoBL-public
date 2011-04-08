@@ -16,7 +16,7 @@ from reversion import revision
 from ielex.backup import backup
 from ielex.forms import *
 from ielex.lexicon.models import *
-from ielex.citations.models import *
+# from ielex.citations.models import *
 from ielex.extensional_semantics.views import *
 from ielex.shortcuts import render_template
 from ielex.utilities import next_alias, confirm_required
@@ -443,19 +443,18 @@ def edit_wordlist(request, wordlist):
     if request.method == 'POST':
         form = EditMeaningListForm(request.POST, instance=wordlist)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect(reverse("view-wordlist"),
-                    args=[wordlist.name])
+            return HttpResponseRedirect(reverse("view-wordlist",
+                    args=[wordlist.name]))
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("view-wordlist"),
-                    args=[wordlist.name])
+            return HttpResponseRedirect(reverse("view-wordlist",
+                    args=[wordlist.name]))
     else:
         form = EditMeaningListForm(instance=wordlist)
 
     return render_template(request, "edit_wordlist.html",
             {"wordlist":wordlist,
             "form":form})
-    return
 
 @login_required
 def reorder_wordlist(request, wordlist):
