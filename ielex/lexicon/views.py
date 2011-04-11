@@ -6,8 +6,8 @@ from django.http import HttpResponse
 from ielex import settings
 from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
-#from ielex.views import get_sort_order
-from ielex.views import ChooseNexusOutputForm
+from ielex.forms import ChooseNexusOutputForm
+from ielex.views import get_ordered_languages
 
 def list_nexus(request):
     if request.method == "POST":
@@ -29,8 +29,6 @@ def write_nexus(request):
     meaning_list_id = request.POST["meaning_list"]
     exclude = set(request.POST.getlist("reliability"))
     dialect = request.POST.get("dialect", "NN")
-    # 0:19 included
-    # 0.17 excluded
 
     start_time = time.time()
     assert request.method == 'POST'
@@ -38,15 +36,11 @@ def write_nexus(request):
     # get data together
     language_list = LanguageList.objects.get(id=language_list_id)
     languages = get_ordered_languages(language_list)
-    # languages = Language.objects.filter(
-    #         id__in=language_list.language_id_list).order_by("sort_key")
-    language_names = ["'"+name+"'" for name in
-            languages.values_list("ascii_name", flat=True)]
+    language_names = [language.ascii_name for language in languages]
 
     meaning_list = MeaningList.objects.get(id=meaning_list_id)
     meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
     max_len = max([len(l) for l in language_names])
-
 
     cognate_class_ids = CognateSet.objects.all().values_list("id", flat=True)
 
