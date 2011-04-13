@@ -43,6 +43,8 @@ def write_nexus(request):
     max_len = max([len(l) for l in language_names])
 
     cognate_class_ids = CognateSet.objects.all().values_list("id", flat=True)
+    cognate_class_names = dict(CognateJudgement.objects.all().values_list(
+            "cognate_class__id", "lexeme__meaning__gloss").distinct())
 
     data = {}
     for cc in cognate_class_ids:
@@ -107,7 +109,15 @@ def write_nexus(request):
             begin characters;
               dimensions nchar=%s;
               format symbols="01";
-              matrix""" % len(data))
+              charstatelabels""" % len(data))
+            # TODO print the labels here
+        for i, cc in enumerate(sorted(data)):
+            try:
+                print>>response, "    %d %s_%d" % (i+1, cognate_class_names[cc], cc)
+            except KeyError:
+                # 
+                print>>response, "    %d Lexeme_%d" % (i+1, cc[1])
+        print>>response, "  ;\n  matrix"
     else:
         assert dialect == "BP"
         print>>response, dedent("""\
@@ -119,26 +129,33 @@ def write_nexus(request):
             """ % (len(languages), len(data), " ".join(language_names)))
 
     if LABEL_COGNATE_SETS:
-        def get_code(cc):
-            """Take a integer or tuple index and return a concatenated string"""
-            try:
-                code = "".join(str(e) for e in cc)
-            except TypeError:
-                code = str(cc)
-            return code
-        msg = "   %s [ Cognate class codes ]"  % (" "*max_len)
-        if INCLUDE_UNIQUE_STATES:
-            msg += " ['U' codes are lexeme ids representing unique states ]"
-        print>>response, msg
-        for i in range(max([len(get_code(i)) for i in data.keys()])):
-            row = []
-            for cc in sorted(data):
+        if dialect == "BP":
+            def get_code(cc):
+                """Take a integer or tuple index and return a concatenated string"""
                 try:
-                    row.append(get_code(cc)[i])
-                except IndexError:
-                    row.append(".")
+                    code = "".join(str(e) for e in cc)
+                except TypeError:
+                    code = str(cc)
+                return code
+            msg = "   %s [ Cognate class codes ]"  % (" "*max_len)
+            if INCLUDE_UNIQUE_STATES:
+                msg += " ['U' codes are lexeme ids representing unique states ]"
+            print>>response, msg
+            for i in range(max([len(get_code(i)) for i in data.keys()])):
+                row = []
+                for cc in sorted(data):
+                    try:
+                        row.append(get_code(cc)[i])
+                    except IndexError:
+                        row.append(".")
+                print>>response, "    %s[ %s ]" % (" "*max_len, "".join(row))
+            print>>response
+
+        else: # just number them
+            row = [" "*9] + [str(i).ljust(10) for i in range(len(data))[10::10]]
             print>>response, "    %s[ %s ]" % (" "*max_len, "".join(row))
-        print>>response
+            row = [" "*9] + [".         " for i in range(len(data))[10::10]]
+            print>>response, "    %s[ %s ]" % (" "*max_len, "".join(row))
 
     for language in languages:
         row = []
