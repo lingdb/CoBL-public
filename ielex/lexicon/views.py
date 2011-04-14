@@ -111,12 +111,14 @@ def write_nexus(request):
               format symbols="01";
               charstatelabels""" % len(data))
             # TODO print the labels here
+        labels = []
         for i, cc in enumerate(sorted(data)):
             try:
-                print>>response, "    %d %s_%d" % (i+1, cognate_class_names[cc], cc)
+                labels.append("    %d %s_%d" % (i+1, cognate_class_names[cc],
+                    cc))
             except KeyError:
-                # 
-                print>>response, "    %d Lexeme_%d" % (i+1, cc[1])
+                labels.append("    %d Lexeme_%d" % (i+1, cc[1]))
+        print>>response, ",\n".join(labels)
         print>>response, "  ;\n  matrix"
     else:
         assert dialect == "BP"
