@@ -17,7 +17,7 @@
   </tr>
   {% for lexeme in lexemes %}
   <tr class="{% cycle 'odd' 'even' %}">
-    <td>{{ lexeme.language.id }}{% ifequal current_lexeme lexeme.id %}<a id="current"></a>{# target for current_lexeme links #}{% endifequal %}</td>
+    <td>{{ lexeme.language.id }}<a id="lexeme_{{ lexeme.id }}"></a></td>
     <td><a href="{% url language-report lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
     <td>{{ lexeme.source_form }}</td>
     <td>{{ lexeme.phon_form }}</td>
@@ -33,19 +33,19 @@
       {% if lexeme.cognatejudgement_set.count %}
         {% for cj in lexeme.cognatejudgement_set.all %}
           {%if cj.is_loanword %}({% endif %}<a href="/cognate/{{ cj.cognate_class.id }}/">{{ cj.cognate_class.alias }}</a>{%if cj.is_loanword %}){% endif %}
-          <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/#current">
+          <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/#lexeme_{{ lexeme.id }}">
             <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
           </a>
           <br />
         {% endfor %}
       {% else %}
-        <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/#current">
+        <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/#lexeme_{{ lexeme.id }}">
           <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
         </a>
       {% endif %}
 
       {% ifequal add_cognate_judgement lexeme.id %}
-        <a id="current"></a> {# target for .../add/#current links #}
+      <a id="lexeme_{{ lexeme.id }}"></a> {# target for .../add/#lexeme_XXX links #}
         <form action="" method="post">{% csrf_token %}
           {{ form.cognate_class }}
         </form>

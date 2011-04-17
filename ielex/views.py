@@ -614,8 +614,12 @@ def view_meaning(request, meaning, languages):
 
 
 def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
+    # XXX there are still a couple of calls to this function in urls.py which
+    # have to be removed.
     lexeme_id = int(lexeme_id)
     cogjudge_id = int(cogjudge_id)
+    languages = request.session["current_language_list_name"]
+    current_language_list = get_canonical_languages(languages)
 
     # normalize meaning
     if meaning.isdigit():
@@ -727,7 +731,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 redirect_url = '/language/%s/' % \
                         lexeme.language.ascii_name
             elif "back to meaning" in form_data:
-                redirect_url = '/meaning/%s/%s/#current' % \
+                redirect_url = '/meaning/%s/#lexeme_%s' % \
                         (lexeme.meaning.gloss, lexeme.id)
             else:
                 redirect_url = '/lexeme/%s/' % lexeme_id
@@ -809,8 +813,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     request.session["previous_cognate_citation_id"] = citation.id
                     return HttpResponseRedirect(get_redirect_url(form))
             elif action == "add-cognate":
-                redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
-                        (lexeme.meaning.gloss, lexeme.id, lexeme.id)
+                redirect_url = '/meaning/%s/#lexeme_%s' % \
+                        (lexeme.meaning.gloss, lexeme.id)
                 return HttpResponseRedirect(redirect_url)
             else:
                 assert not action
@@ -865,8 +869,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     form = AddCitationForm()
                 # form = AddCitationForm()
             elif action == "add-cognate":
-                redirect_url = '/meaning/%s/%s/#lexeme_%s' % \
-                        (lexeme.meaning.gloss, lexeme.id, lexeme.id)
+                redirect_url = '/meaning/%s/#lexeme_%s' % \
+                        (lexeme.meaning.gloss, lexeme.id)
                 return HttpResponseRedirect(redirect_url)
             elif action == "delink-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
@@ -951,8 +955,8 @@ def lexeme_duplicate(request, lexeme_id):
         original_lexeme.source_form = original_source_form
         original_lexeme.phon_form = original_phon_form
         original_lexeme.save()
-    return HttpResponseRedirect("/meaning/%s/%s/#lexeme_%s" %
-            (original_lexeme.meaning.gloss, original_lexeme.id, original_lexeme.id))
+    return HttpResponseRedirect("/meaning/%s/#lexeme_%s" %
+            (original_lexeme.meaning.gloss, original_lexeme.id))
 
 @login_required
 def lexeme_add(request,
