@@ -882,9 +882,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 return HttpResponseRedirect(redirect_url)
             elif action == "add-new-cognate":
                 current_aliases = CognateSet.objects.filter(
-                        lexeme__in=Lexeme.objects.filter(
-                        meaning=lexeme.meaning).values_list(
-                        "id", flat=True)).distinct().values_list("alias", flat=True)
+                        lexeme__in=Lexeme.objects.filter(meaning=lexeme.meaning)
+                        ).distinct().values_list("alias", flat=True)
                 new_alias = next_alias(list(current_aliases))
                 cognate_class = CognateSet.objects.create(
                         alias=new_alias)
