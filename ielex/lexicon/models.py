@@ -16,7 +16,7 @@ TYPE_CHOICES = (
 RELIABILITY_CHOICES = ( # used by Citation classes
         #("X", "Unclassified"), # change "X" to "" will force users to make
         ("A", "High"),         # a selection upon seeing this form
-        ("B", "Good (e.g. but needs further checking)"),
+        ("B", "Good (e.g. should be double checked)"),
         ("C", "Doubtful"),
         ("L", "Loanword"),
         ("X", "Exclude (e.g. not the Swadesh term)"),
@@ -153,6 +153,9 @@ class CognateSet(models.Model):
 
     def __unicode__(self):
         return unicode(self.id)
+
+    class Meta:
+        ordering = ["alias"]
 
 reversion.register(CognateSet)
 
@@ -397,14 +400,19 @@ def update_language_list_all(sender, instance, **kwargs):
     deleted"""
     # it should just be when created or deleted, but the extra overhead is
     # tiny, since changes in the Language table are rare
-    try:
-        ll = LanguageList.objects.get(name=LanguageList.DEFAULT)
-    except:
-        ll = LanguageList.objects.create(name=LanguageList.DEFAULT)
+    ll, _ = LanguageList.objects.get_or_create(name=LanguageList.DEFAULT)
     missing_ids = set(Language.objects.values_list("id", flat=True)) - set(ll.language_id_list)
     if missing_ids:
         ll.language_id_list = sorted(missing_ids) + ll.language_id_list
         ll.save(force_update=True)
+
+    # make alphabetized list
+    default_alpha = LanguageList.DEFAULT+"-alpha"
+    ids = [i for n, i in sorted([(n.lower(), i) for n, i
+        in Language.objects.values_list("ascii_name", "id")])]
+    ll_alpha, _ = LanguageList.objects.get_or_create(name=default_alpha)
+    ll_alpha.language_id_list = ids
+    ll_alpha.save(force_update=True)
     return
 
 models.signals.post_save.connect(update_language_list_all, sender=Language)
