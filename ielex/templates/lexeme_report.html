@@ -43,6 +43,11 @@
 <tr><td class="rowname">Source form:</td><td>{{ lexeme.source_form }}</td></tr>
 <tr><td class="rowname">Phonological form:</td><td>{{ lexeme.phon_form }}</td></tr>
 <tr><td class="rowname">Gloss:</td><td>{{ lexeme.gloss }}</td></tr>
+{% if lexeme.semanticextension_set.count %}
+<tr><td class="rowname">Semantic extension/s:</td>
+  <td>{% for extension in lexeme.semanticextension_set.all %}{{ extension.relation.relation_code }}{% if not forloop.last %},{% endif %} {% endfor %}</td>
+</tr>
+{% endif %}
 <tr><td class="rowname">Notes:</td><td>{{ lexeme.notes|wikilink }}</td></tr>
 <tr><td class="rowname">Cognate codes:</td>
     <td>{% for cs in lexeme.cognate_class.all %}
