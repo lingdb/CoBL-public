@@ -26,6 +26,12 @@ class ChooseLanguageListField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.name
 
+class ChooseIncludedLanguagesField(ChooseLanguageField):
+    pass
+
+class ChooseExcludedLanguagesField(ChooseLanguageField):
+    pass
+
 class ChooseMeaningListField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.name
@@ -151,6 +157,28 @@ class ChooseLanguageListForm(forms.Form):
             queryset=LanguageList.objects.all(),
             empty_label=None,
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}))
+
+class EditLanguageListForm(forms.ModelForm):
+
+    def clean_name(self):
+        data = self.cleaned_data["name"]
+        clean_ascii_name(data)
+        return data
+
+    class Meta:
+        model = LanguageList
+        exclude = ["language_ids"]
+
+class EditLanguageListMembersForm(forms.Form):
+    included_languages = ChooseIncludedLanguagesField(
+            required=False, empty_label=None,
+            queryset=Language.objects.none(),
+            widget=forms.Select(attrs={"size":20, "onchange":"this.form.submit()"}))
+    excluded_languages = ChooseExcludedLanguagesField(
+            required=False, empty_label=None,
+            queryset=Language.objects.all(),
+            widget=forms.Select(attrs={"size":20, "onchange":"this.form.submit()"}))
+
 
 class ChooseMeaningListForm(forms.Form):
     meaning_list = ChooseMeaningListField(

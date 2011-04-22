@@ -57,10 +57,16 @@
 {% block controls %}
 {% include "snippets/go_to.html" %}
 {# include "snippets/change_sort_order.html" #}
-<ul class="navigation">
 {% if user.is_superuser %}
-<li><a href="{% url reorder-languages current_language_list_name %}">edit sort order</a></li>
-<li><a href="{% url language-add-new current_language_list_name %}">add language</a></li>
+<ul class="navigation">
+<li><a href="{% url language-add-new current_language_list_name %}">new language</a></li>
+</ul>
+<ul class="navigation">
+<li><a href="{% url add-language-list %}">new language list</a></li>
+<li><a href="{% url edit-language-list current_language_list_name %}">
+  edit language list ‘{{ current_language_list_name }}’</a></li>
+<li><a href="{% url reorder-languages current_language_list_name %}">
+  edit sort order ‘{{ current_language_list_name }}’</a></li>
 </ul>
 {% endif %}
 <p>

@@ -64,10 +64,10 @@ class SemanticDomain(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     def _get_list(self):
-        if not self.relation_ids: # i.e. fresh install
-            self.relation_ids = ",".join([str(i) for i in
-                SemanticRelation.objects.values_list("id", flat=True)])
-        return [int(i) for i in self.relation_ids.split(",")]
+        try:
+            return [int(i) for i in self.relation_ids.split(",")]
+        except ValueError:
+            return []
     def _set_list(self, listobj):
         self.relation_ids = ",".join([str(i) for i in listobj])
         return

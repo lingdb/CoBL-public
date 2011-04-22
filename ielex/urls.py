@@ -32,11 +32,13 @@ urlpatterns = patterns('',
 
     # Languages
     url(r'^languages/$', view_languages, name="view-all-languages"),
-    # url(r'^languages/reorder/$', language_reorder, name="languages-reorder"),
-    url(r'^languages/%(LANGUAGES)s/reorder/$' % R, reorder_languages,
-        name="reorder-languages"),
     url(r'^languages/%(LANGUAGES)s/add-new/$' % R, language_add_new, name="language-add-new"),
     url(r'^languages/%(LANGUAGES)s/$' % R, view_languages, name="view-languages"),
+    url(r'^languages/%(LANGUAGES)s/edit/$' % R, edit_language_list,
+            name="edit-language-list"),
+    url(r'^languages/%(LANGUAGES)s/reorder/$' % R, reorder_languages,
+            name="reorder-languages"),
+    url(r'^add-new/languages/$', edit_language_list, name="add-language-list"),
 
     # Language
     url(r'^language/%(LANGUAGE)s/$' % R, view_language_wordlist,

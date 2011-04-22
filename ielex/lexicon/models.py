@@ -261,10 +261,10 @@ class LanguageList(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     def _get_list(self):
-        if not self.language_ids: # i.e. fresh install
-            self.language_ids = ",".join([str(i) for i in
-                Language.objects.values_list("id", flat=True)])
-        return [int(i) for i in self.language_ids.split(",")]
+        try:
+            return [int(i) for i in self.language_ids.split(",")]
+        except ValueError:
+            return []
     def _set_list(self, listobj):
         self.language_ids = ",".join([str(i) for i in listobj])
         return
@@ -291,10 +291,10 @@ class MeaningList(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     def _get_list(self):
-        if not self.meaning_ids: # i.e. fresh install
-            self.meaning_ids = ",".join([str(i) for i in
-                Meaning.objects.values_list("id", flat=True)])
-        return [int(i) for i in self.meaning_ids.split(",")]
+        try:
+            return [int(i) for i in self.meaning_ids.split(",")]
+        except ValueError:
+            return []
     def _set_list(self, listobj):
         self.meaning_ids = ",".join([str(i) for i in listobj])
         return
