@@ -396,10 +396,7 @@ class LexemeCitation(AbstractBaseCitation):
 reversion.register(LexemeCitation)
 
 def update_language_list_all(sender, instance, **kwargs):
-    """Update the LanguageList 'all' whenever Language objects are saved or
-    deleted"""
-    # it should just be when created or deleted, but the extra overhead is
-    # tiny, since changes in the Language table are rare
+    """Update the LanguageList 'all' whenever Language table is changed"""
     ll, _ = LanguageList.objects.get_or_create(name=LanguageList.DEFAULT)
     missing_ids = set(Language.objects.values_list("id", flat=True)) - set(ll.language_id_list)
     if missing_ids:
