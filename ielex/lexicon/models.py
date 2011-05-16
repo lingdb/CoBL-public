@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 # from django.contrib import admin
 import reversion
+from reversion.errors import RegistrationError
 # from reversion.admin import VersionAdmin
 from ielex.lexicon.validators import *
 
@@ -39,8 +40,6 @@ class Source(models.Model):
     class Meta:
         ordering = ["type_code", "citation_text"]
 
-reversion.register(Source)
-
 class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
     ascii_name = models.CharField(max_length=999, unique=True,
@@ -68,7 +67,6 @@ class Language(models.Model):
     class Meta:
         ordering = ["ascii_name"]
 
-reversion.register(Language)
 
 def make_ordered_language_manager(language_list):
     """Selects a set of languages according to a LanguageList object
@@ -123,7 +121,6 @@ class Meaning(models.Model):
     class Meta:
         ordering = ["gloss"]
 
-reversion.register(Meaning)
 
 def make_ordered_meaning_manager(wordlist):
     """Usage:
@@ -157,7 +154,6 @@ class CognateSet(models.Model):
     class Meta:
         ordering = ["alias"]
 
-reversion.register(CognateSet)
 
 class DyenCognateSet(models.Model):
     cognate_class = models.ForeignKey(CognateSet)
@@ -196,7 +192,6 @@ class Lexeme(models.Model):
     class Meta:
         order_with_respect_to = "language"
 
-reversion.register(Lexeme)
 
 def make_ordered_lexeme_manager(meaning, language_list):
     """Selects a set of lexemes according to a LanguageList object sorted by
@@ -247,7 +242,6 @@ class CognateJudgement(models.Model):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
                 self.cognate_class.alias, self.id)
 
-reversion.register(CognateJudgement)
 
 class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A
@@ -279,7 +273,6 @@ class LanguageList(models.Model):
     class Meta:
         ordering = ["name"]
 
-reversion.register(LanguageList)
 
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
@@ -375,7 +368,6 @@ class CognateJudgementCitation(AbstractBaseCitation):
 
         unique_together = (("cognate_judgement", "source"),)
 
-reversion.register(CognateJudgementCitation)
 
 class LexemeCitation(AbstractBaseCitation):
     # TODO remove
@@ -393,7 +385,6 @@ class LexemeCitation(AbstractBaseCitation):
     class Meta:
         unique_together = (("lexeme", "source"),)
 
-reversion.register(LexemeCitation)
 
 def update_language_list_all(sender, instance, **kwargs):
     """Update the LanguageList 'all' whenever Language table is changed"""
@@ -441,4 +432,15 @@ models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 #         for meaning in meanings:
 #             # do something
 # 
+
+for modelclass in [Source, Language, Meaning, CognateSet, Lexeme,
+        CognateJudgement, LanguageList, CognateJudgementCitation,
+        LexemeCitation]:
+    try:
+        reversion.register(modelclass)
+    except RegistrationError, e:
+        if "has already been registered" in e.message:
+            pass
+        else:
+            raise
 
