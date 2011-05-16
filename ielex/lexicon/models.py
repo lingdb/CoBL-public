@@ -407,16 +407,19 @@ models.signals.post_save.connect(update_language_list_all, sender=Language)
 models.signals.post_delete.connect(update_language_list_all, sender=Language)
 
 def update_meaning_list_all(sender, instance, **kwargs):
-    try:
-        ml = MeaningList.objects.get(name=MeaningList.DEFAULT)
-    except:
-        ml = MeaningList.objects.create(name=MeaningList.DEFAULT)
-    # recreate this if the membership has changed but not if just the
-    # order has changed
+    ml, _ = MeaningList.objects.get_or_create(name=MeaningList.DEFAULT)
     missing_ids = set(Meaning.objects.values_list("id", flat=True)) - set(ml.meaning_id_list)
     if missing_ids:
         ml.meaning_id_list = sorted(missing_ids) + ml.meaning_id_list
         ml.save(force_update=True)
+
+    # make alphabetized list
+    default_alpha = MeaningList.DEFAULT+"-alpha"
+    ids = [i for n, i in sorted([(n.lower(), i) for n, i
+        in Meaning.objects.values_list("gloss", "id")])]
+    ml_alpha, _ = MeaningList.objects.get_or_create(name=default_alpha)
+    ml_alpha.meaning_id_list = ids
+    ml_alpha.save(force_update=True)
     return
 
 models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
