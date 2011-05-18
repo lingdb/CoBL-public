@@ -1,4 +1,5 @@
 from __future__ import division
+from string import uppercase, lowercase
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
@@ -145,11 +146,25 @@ class CognateSet(models.Model):
     notes = models.TextField()
     modified = models.DateTimeField(auto_now=True)
 
+    def update_alias(self, save=True):
+        """Reset alias to the first unused letter"""
+        codes = set(uppercase) | set([i+j for i in uppercase for j in
+            lowercase])
+        meanings = Meaning.objects.filter(lexeme__cognate_class=self).distinct()
+        current_aliases = CognateSet.objects.filter(
+                lexeme__meaning__in=meanings).distinct().exclude(
+                id=self.id).values_list("alias", flat=True)
+        codes -= set(current_aliases)
+        self.alias = sorted(codes, key=lambda i:(len(i), i))[0]
+        if save:
+            self.save()
+        return
+
     def get_absolute_url(self):
         return "/cognate/%s/" % self.id
 
     def __unicode__(self):
-        return unicode(self.id)
+        return "Cognate Set %s" % self.id
 
     class Meta:
         ordering = ["alias"]
@@ -265,7 +280,7 @@ class LanguageList(models.Model):
     language_id_list = property(_get_list, _set_list)
 
     def get_absolute_url(self):
-        return "/languages/"
+        return "/languages/%s/" % self.name
 
     def __unicode__(self):
         return self.name
@@ -294,7 +309,7 @@ class MeaningList(models.Model):
     meaning_id_list = property(_get_list, _set_list)
 
     def get_absolute_url(self):
-        return "/meanings/"
+        return "/meanings/%s/" % self.name
 
     def __unicode__(self):
         return self.name
@@ -438,7 +453,7 @@ models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
 for modelclass in [Source, Language, Meaning, CognateSet, Lexeme,
         CognateJudgement, LanguageList, CognateJudgementCitation,
-        LexemeCitation]:
+        LexemeCitation, MeaningList]:
     try:
         reversion.register(modelclass)
     except RegistrationError, e:

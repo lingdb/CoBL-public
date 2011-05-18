@@ -15,10 +15,13 @@
     {# <td>{{ version.field_dict.modified|date:"d-M-Y G:i" }}</td> #}
     <td>{# Date #}{{ version.revision.date_created|date:"d-M-Y G:i"  }}</td>
     <td>{{ version.content_type.name }}</td>
-    <td>{# Link to current object #}
+    <td><b>{{ version.get_type_display }}</b></td>
+    <td>{# Link to current object, if not deleted #}
+      {% if version.get_type_display != "Deletion" %}
       <a href="{{ version.get_object_version.object.get_absolute_url }}">
-         {{ version.get_object_version.object }}
+         {{ version.get_object_version.object.get_absolute_url }}
       </a>
+      {% endif %}
     </td>
     <td>{# User #}{{ version.revision.user.username }}</td>
     <td>{{ version.revision.comment|wikilink|truncatewords_html:1 }}</td>
