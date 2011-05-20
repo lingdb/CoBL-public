@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import *
+from django.views.generic import DetailView, UpdateView
 from ielex.views import *
 from ielex import settings
 from ielex.lexicon.views import *
@@ -135,7 +136,14 @@ urlpatterns = patterns('',
     #        cognate_report),
     # TODO allow cognate sets to be renamed (e.g. to give distinctive codes to
     # loanwords)
-
+    url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/$',
+            DetailView.as_view(model=CognateClassCitation,
+                    context_object_name="citation"),
+            name="cognate-class-citation-detail"),
+    url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/edit/$',
+            UpdateView.as_view(model=CognateClassCitation,
+                    template_name="generic_update.html"),
+            name="cognate-class-citation-update"),
     url(r'^revert/(?P<version_id>\d+)/$', revert_version),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
 

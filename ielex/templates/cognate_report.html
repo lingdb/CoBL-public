@@ -3,7 +3,7 @@
 
 {% block title %}Cognate report{% endblock %}
 
-{% block top %}<h1>Cognate set {{ cognate_class.id }}</h1>{% endblock %}
+{% block top %}<h1>Cognate Set {{ cognate_class.id }}</h1>{% endblock %}
 
 {% block content %}
 <fieldset>
@@ -25,10 +25,43 @@
   {{ cognate_class.notes|wikilink }}
   {% endif %}
 </fieldset>
+
+
+{% if cognate_class.cognateclasscitation_set.exists %}
+<table>
+  <tr>
+    <th>Source</th>
+    <th>Comment</th>
+    <th>Pages</th>
+    <th>Rating</th>
+  </tr>
+  {% for citation in cognate_class.cognateclasscitation_set.all %}
+  <tr class="{% cycle 'odd' 'even' %}">
+    <td>
+      <a href="/source/{{ citation.source.id }}/">
+      {{ citation.source.citation_text|truncatewords:10 }}
+      </a>
+    </td>
+    <td>{{ citation.comment|truncatewords:6 }}</td>
+    <td>{{ citation.pages }}</td>
+    <td>{{ citation.reliability }}</td>
+    <td>
+      <a href="/cognate/{{ cognate_class.id }}/citation/{{ citation.id }}/">
+        <img src="/media/buttons/view.png" alt="View" title="View the citation" />
+      </a>
+      <a href="/cognate/{{ cognate_class.id }}/citation/{{ citation.id }}/edit/">
+        <img src="/media/buttons/edit-pencil.png" alt="View" title="Edit the citation" />
+      </a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
 <table>
   <thead> {# handy for the print view #}
     <tr>
-      <th>Count</th>
+      <th>&nbsp;</th>
       <th>Language</th>
       <th>Lexeme</th>
       <th>Phonological</th>
@@ -71,6 +104,7 @@
 {% block controls %}
 {% include "snippets/go_to.html" %}
 {# include "snippets/change_sort_order.html" #}
+<ul class="navigation"><li><a href="/cognate/{{ cognate_class.id }}/add-citation/">add citation</a></li></ul>
 {% endblock %}
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

@@ -1,6 +1,7 @@
 from __future__ import division
 from string import uppercase, lowercase
 from django.db import models
+from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 # from django.contrib import admin
@@ -402,8 +403,12 @@ class CognateClassCitation(AbstractBaseCitation):
     source = models.ForeignKey(Source)
 
     def __unicode__(self):
-        return u"%s src=%s cit=%s" % (self.cognate_class.id, self.source.id,
-                self.id)
+        return u"%s cog=%s src=%s" % (self.id, self.cognate_class.id,
+                self.source.id)
+    def get_absolute_url(self):
+        return reverse("cognate-class-citation-detail", 
+                kwargs={"pk":self.id,
+                        "cognate_id":self.cognate_class.id})
 
     class Meta:
         unique_together = (("cognate_class", "source"),)
