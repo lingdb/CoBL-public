@@ -42,13 +42,13 @@ def write_nexus(request):
     meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
     max_len = max([len(l) for l in language_names])
 
-    cognate_class_ids = CognateSet.objects.all().values_list("id", flat=True)
+    cognate_class_ids = CognateClass.objects.all().values_list("id", flat=True)
     cognate_class_names = dict(CognateJudgement.objects.all().values_list(
             "cognate_class__id", "lexeme__meaning__gloss").distinct())
 
     data = {}
     for cc in cognate_class_ids:
-        # language_ids = CognateSet.objects.get(id=cc).lexeme_set.filter(
+        # language_ids = CognateClass.objects.get(id=cc).lexeme_set.filter(
         #         meaning__in=meanings).values_list('language', flat=True)
         ## this is much slower than the values_list version (probably from
         ## calculating the reliability ratings property

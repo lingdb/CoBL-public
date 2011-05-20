@@ -224,7 +224,7 @@ class AddCitationForm(forms.Form):
     comment = forms.CharField(widget=forms.Textarea, required=False)
 
 class ChooseCognateClassForm(forms.Form):
-    cognate_class = ChooseCognateClassField(queryset=CognateSet.objects.all(),
+    cognate_class = ChooseCognateClassField(queryset=CognateClass.objects.all(),
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}),
             empty_label="---", # make this into the "new" button?
             label="")

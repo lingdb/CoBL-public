@@ -141,7 +141,7 @@ def make_ordered_meaning_manager(wordlist):
             return meanings
     return OrderedMeaningManager
 
-class CognateSet(models.Model):
+class CognateClass(models.Model):
     alias = models.CharField(max_length=3)
     notes = models.TextField()
     modified = models.DateTimeField(auto_now=True)
@@ -151,7 +151,7 @@ class CognateSet(models.Model):
         codes = set(uppercase) | set([i+j for i in uppercase for j in
             lowercase])
         meanings = Meaning.objects.filter(lexeme__cognate_class=self).distinct()
-        current_aliases = CognateSet.objects.filter(
+        current_aliases = CognateClass.objects.filter(
                 lexeme__meaning__in=meanings).distinct().exclude(
                 id=self.id).values_list("alias", flat=True)
         codes -= set(current_aliases)
@@ -171,7 +171,7 @@ class CognateSet(models.Model):
 
 
 class DyenCognateSet(models.Model):
-    cognate_class = models.ForeignKey(CognateSet)
+    cognate_class = models.ForeignKey(CognateClass)
     name = models.CharField(max_length=8)
     doubtful = models.BooleanField(default=0)
 
@@ -185,7 +185,7 @@ class DyenCognateSet(models.Model):
 class Lexeme(models.Model):
     language = models.ForeignKey(Language)
     meaning = models.ForeignKey(Meaning, blank=True, null=True)
-    cognate_class = models.ManyToManyField(CognateSet,
+    cognate_class = models.ManyToManyField(CognateClass,
             through="CognateJudgement", blank=True)
     source_form = models.CharField(max_length=999)
     phon_form = models.CharField(max_length=999, blank=True)
@@ -231,7 +231,7 @@ def make_ordered_lexeme_manager(meaning, language_list):
 
 class CognateJudgement(models.Model):
     lexeme = models.ForeignKey(Lexeme)
-    cognate_class = models.ForeignKey(CognateSet)
+    cognate_class = models.ForeignKey(CognateClass)
     source = models.ManyToManyField(Source, through="CognateJudgementCitation")
     modified = models.DateTimeField(auto_now=True)
 
@@ -346,7 +346,6 @@ class GenericCitation(models.Model):
 # reversion.register(GenericCitation)
 
 class AbstractBaseCitation(models.Model):
-    # TODO remove
     """Abstract base class for citation models
     The source field has to be in the subclasses in order for the
     unique_together constraints to work properly"""
@@ -367,7 +366,6 @@ class AbstractBaseCitation(models.Model):
 
 
 class CognateJudgementCitation(AbstractBaseCitation):
-    # TODO remove
     cognate_judgement = models.ForeignKey(CognateJudgement)
     source = models.ForeignKey(Source)
 
@@ -385,13 +383,12 @@ class CognateJudgementCitation(AbstractBaseCitation):
 
 
 class LexemeCitation(AbstractBaseCitation):
-    # TODO remove
     lexeme = models.ForeignKey(Lexeme)
     source = models.ForeignKey(Source)
 
     def get_absolute_url(self):
         return "/lexeme/%s/edit-citation/%s/" % (self.lexeme.id, self.id)
-        # TODO "/citation/lexeme/%s/"
+        # TODO "/lexeme/%s/citation/%s/"
 
     def __unicode__(self):
         return u"%s src=%s cit=%s" % (self.lexeme.source_form, self.source.id,
@@ -400,6 +397,16 @@ class LexemeCitation(AbstractBaseCitation):
     class Meta:
         unique_together = (("lexeme", "source"),)
 
+class CognateClassCitation(AbstractBaseCitation):
+    cognate_class = models.ForeignKey(CognateClass)
+    source = models.ForeignKey(Source)
+
+    def __unicode__(self):
+        return u"%s src=%s cit=%s" % (self.cognate_class.id, self.source.id,
+                self.id)
+
+    class Meta:
+        unique_together = (("cognate_class", "source"),)
 
 def update_language_list_all(sender, instance, **kwargs):
     """Update the LanguageList 'all' whenever Language table is changed"""
@@ -451,9 +458,9 @@ models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 #             # do something
 # 
 
-for modelclass in [Source, Language, Meaning, CognateSet, Lexeme,
+for modelclass in [Source, Language, Meaning, CognateClass, Lexeme,
         CognateJudgement, LanguageList, CognateJudgementCitation,
-        LexemeCitation, MeaningList]:
+        CognateClassCitation, LexemeCitation, MeaningList]:
     try:
         reversion.register(modelclass)
     except RegistrationError, e:
