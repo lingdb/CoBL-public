@@ -215,6 +215,11 @@ class EditCitationForm(forms.Form):
             widget=forms.RadioSelect)
     comment = forms.CharField(widget=forms.Textarea, required=False)
 
+class EditCognateClassCitationForm(forms.ModelForm):
+    class Meta:
+        model = CognateClassCitation
+        exclude = ["cognate_class"]
+
 class AddCitationForm(forms.Form):
     source = ChooseOneSourceField(queryset=Source.objects.all(),
             help_text="")

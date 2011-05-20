@@ -4,6 +4,7 @@ from ielex.views import *
 from ielex import settings
 from ielex.lexicon.views import *
 from ielex.lexicon.models import *
+from ielex.forms import EditCitationForm
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -142,6 +143,7 @@ urlpatterns = patterns('',
             name="cognate-class-citation-detail"),
     url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/edit/$',
             UpdateView.as_view(model=CognateClassCitation,
+                    form_class=EditCognateClassCitationForm,
                     template_name="generic_update.html"),
             name="cognate-class-citation-update"),
     url(r'^revert/(?P<version_id>\d+)/$', revert_version),
