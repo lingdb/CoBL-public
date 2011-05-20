@@ -350,9 +350,9 @@ class AbstractBaseCitation(models.Model):
     """Abstract base class for citation models
     The source field has to be in the subclasses in order for the
     unique_together constraints to work properly"""
-    pages = models.CharField(max_length=999)
+    pages = models.CharField(max_length=999, null=True)
     reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
-    comment = models.CharField(max_length=999)
+    comment = models.CharField(max_length=999, null=True)
     modified = models.DateTimeField(auto_now=True)
 
     def long_reliability(self):
