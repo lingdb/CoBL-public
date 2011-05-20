@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Cognate class citation{% endblock %}
+
+{% block top %}
+<h1>
+  View citation: {{ citation.cognate_class.id }} 
+</h1>
+{% endblock %}
+
+{% block content %}
+<p>
+  {% with citation.cognate_class.cognateclasscitation_set.count as ncitations %}
+    {% if ncitations > 1 %}
+      One of {{ sec_count }} citations
+    {% endif %}
+  {% endwith %}
+</p>
+
+<table>
+  <tr>
+    <th>Source:</th>
+    <td><a href="{{ citation.source.get_absolute_url }}">{{ citation.source.citation_text }}</a></td>
+  </tr>
+  <tr>
+    <th>Pages:</th>
+    <td>{{ citation.pages }} </td>
+  </tr>
+  <tr>
+    <th>Reliability:</th>
+    <td>{{ citation.long_reliability }} </td>
+  </tr>
+  <tr>
+    <th>Comment:</th>
+    <td>{{ citation.comment }} </td>
+  </tr>
+</table>
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
