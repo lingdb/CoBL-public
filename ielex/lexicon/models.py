@@ -373,7 +373,9 @@ class CognateJudgementCitation(AbstractBaseCitation):
     def get_absolute_url(self):
         return "/lexeme/%s/edit-cognate-citation/%s/" % \
                 (self.cognate_judgement.lexeme.id, self.id)
-        # TODO "/citation/cognate/%s/"
+        # TODO
+        # return "/lexeme/%s/cognate/%s/citation/%s/" % \
+        #         (self.cognate_judgement.lexeme.id, self.cognate_class.id, self.id)
 
     def __unicode__(self):
         return u"CJC src=%s cit=%s" % (self.source.id, self.id)
@@ -388,12 +390,10 @@ class LexemeCitation(AbstractBaseCitation):
     source = models.ForeignKey(Source)
 
     def get_absolute_url(self):
-        return "/lexeme/%s/edit-citation/%s/" % (self.lexeme.id, self.id)
-        # TODO "/lexeme/%s/citation/%s/"
+        return "/lexeme/citation/%s/" % self.id
 
     def __unicode__(self):
-        return u"%s src=%s cit=%s" % (self.lexeme.source_form, self.source.id,
-                self.id)
+        return u"%s %s src:%s" % (self.id, self.lexeme.source_form, self.source.id)
 
     class Meta:
         unique_together = (("lexeme", "source"),)
@@ -453,16 +453,7 @@ def update_meaning_list_all(sender, instance, **kwargs):
 models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
 models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
-# def update_aliases(sender, instance, **kwargs):
-#     """In case a cognate set has cognate judgements relating to two or more
-#     meanings, make sure that the cognate set alias doesn't collide with any
-#     other the others"""
-#     meanings = cs.cognatejudgement_set.values_list("lexeme__meaning",
-#             flat=True).distinct()
-#     if meanings.count() > 1:
-#         for meaning in meanings:
-#             # do something
-# 
+# -- Reversion registration ----------------------------------------
 
 for modelclass in [Source, Language, Meaning, CognateClass, Lexeme,
         CognateJudgement, LanguageList, CognateJudgementCitation,
