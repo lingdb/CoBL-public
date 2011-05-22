@@ -405,6 +405,7 @@ class CognateClassCitation(AbstractBaseCitation):
     def __unicode__(self):
         return u"%s cog=%s src=%s" % (self.id, self.cognate_class.id,
                 self.source.id)
+
     def get_absolute_url(self):
         return reverse("cognate-class-citation-detail", 
                 kwargs={"pk":self.id,

@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
-from django.views.generic import DetailView, UpdateView
+from django.views.generic import DetailView, UpdateView, CreateView
 from ielex.views import *
 from ielex import settings
 from ielex.lexicon.views import *
@@ -142,10 +142,11 @@ urlpatterns = patterns('',
                     context_object_name="citation"),
             name="cognate-class-citation-detail"),
     url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/edit/$',
-            UpdateView.as_view(model=CognateClassCitation,
-                    form_class=EditCognateClassCitationForm,
-                    template_name="generic_update.html"),
+            CognateClassCitationUpdateView.as_view(),
             name="cognate-class-citation-update"),
+    url(r'^cognate/(?P<cognate_id>\d+)/add-citation/$',
+            CognateClassCitationCreateView.as_view(),
+            name="cognate-class-citation-create"),
     url(r'^revert/(?P<version_id>\d+)/$', revert_version),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
 
