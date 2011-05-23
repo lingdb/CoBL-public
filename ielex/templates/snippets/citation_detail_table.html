@@ -1,0 +1,20 @@
+{# Used by the various xxxcitation_detail.html templates #}
+<table>
+  <tr>
+    <th>Source:</th>
+    <td><a href="{{ citation.source.get_absolute_url }}">{{ citation.source.citation_text }}</a></td>
+  </tr>
+  <tr>
+    <th>Pages:</th>
+    <td>{{ citation.pages }} </td>
+  </tr>
+  <tr>
+    <th>Reliability:</th>
+    <td>{{ citation.long_reliability }} </td>
+  </tr>
+  <tr>
+    <th>Comment:</th>
+    <td>{{ citation.comment }} </td>
+  </tr>
+</table>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

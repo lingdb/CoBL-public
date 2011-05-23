@@ -216,6 +216,19 @@ class EditCitationForm(forms.Form):
     comment = forms.CharField(widget=forms.Textarea, required=False)
 
 class EditCognateClassCitationForm(forms.ModelForm):
+
+    def validate_unique(self):
+        """Calls the instance's validate_unique() method and updates the
+        form's validation errors if any were raised. See:
+        http://neillyons.co/articles/IntegrityError-with-djangos-unique-together-constraint/
+        """
+        exclude = self._get_validation_exclusions()
+        exclude.remove("cognate_class") # remove our previously excluded field from the list.
+        try:
+            self.instance.validate_unique(exclude=exclude)
+        except ValidationError, e:
+            self._update_errors(e.message_dict)
+
     class Meta:
         model = CognateClassCitation
         exclude = ["cognate_class"]

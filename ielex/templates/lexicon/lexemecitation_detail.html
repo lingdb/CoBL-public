@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}Cognate class citation{% endblock %}
+{% block title %}Lexeme citation{% endblock %}
 
 {% block top %}
 <h1>
-  View citation: {{ citation.cognate_class.id }} 
+  View citation: {{ citation.lexeme }} 
 </h1>
 {% endblock %}
 
 {% block content %}
 <p>
-  {% with citation.cognate_class.cognateclasscitation_set.count as ncitations %}
+  {% with citation.lexeme.lexemecitation_set.count as ncitations %}
     {% if ncitations > 1 %}
       One of {{ sec_count }} citations
     {% endif %}
@@ -25,12 +25,12 @@
 
 <ul class="navigation">
   <li>
-    <a href="/cognate/{{ citation.cognate_class.id }}/">
-      back to cognate class
+    <a href="/lexeme/{{ citation.lexeme.id }}/">
+      back to lexeme
     </a>
   </li>
   <li>
-    <a href="/cognate/{{ citation.cognate_class.id }}/citation/{{ citation.id }}/edit/">
+    <a href="/lexeme/{{ citation.lexeme.id }}/citation/{{ citation.id }}/edit/">
       edit this citation
     </a>
   </li>

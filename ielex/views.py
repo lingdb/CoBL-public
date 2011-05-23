@@ -1075,6 +1075,18 @@ def lexeme_add(request,
     return render_template(request, "lexeme_add.html",
             {"form":form})
 
+def redirect_lexeme_citation(request, lexeme_id):
+    """From a lexeme, redirect to the first citation"""
+    lexeme = Lexeme.objects.get(id=lexeme_id)
+    try:
+        first_citation = lexeme.lexemecitation_set.all()[0]
+        return HttpResponseRedirect("/lexeme/citation/%s/" % first_citation.id)
+    except IndexError:
+        msg = "Operation failed: this lexeme has no citations"
+        messages.add_message(request, messages.WARNING, msg)
+        return HttpResponseRedirect(lexeme.get_absolute_url())
+
+
 # -- /cognate/ ------------------------------------------------------------
 
 #@login_required

@@ -1,16 +1,19 @@
 {% extends "base.html" %}
 
-{% block title %}Cognate class citation{% endblock %}
+{% block title %}Cognate judgement citation{% endblock %}
 
 {% block top %}
 <h1>
-  View citation: {{ citation.cognate_class.id }} 
+  Citation to Cognate class  
+  {{ citation.cognate_judgement.cognate_class.id }}
+  ({{ citation.cognate_judgement.cognate_class.alias }}):
+  {{ citation.cognate_judgement.lexeme }}
 </h1>
 {% endblock %}
 
 {% block content %}
 <p>
-  {% with citation.cognate_class.cognateclasscitation_set.count as ncitations %}
+  {% with citation.cognate_judgement.cognatejudgementcitation_set.count as ncitations %}
     {% if ncitations > 1 %}
       One of {{ sec_count }} citations
     {% endif %}

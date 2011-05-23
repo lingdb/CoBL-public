@@ -2,12 +2,56 @@ from textwrap import dedent
 import time
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.views.generic import CreateView, UpdateView
 # from django.shortcuts import render_to_response
 from ielex import settings
 from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
-from ielex.forms import ChooseNexusOutputForm
+from ielex.forms import ChooseNexusOutputForm, EditCognateClassCitationForm
 from ielex.views import get_ordered_languages
+from ielex.lexicon.models import CognateClassCitation
+
+class CognateClassCitationUpdateView(UpdateView):
+    model=CognateClassCitation
+    form_class=EditCognateClassCitationForm
+    template_name="generic_update.html"
+
+    def get_context_data(self, **kwargs):
+        cc_id = int(self.kwargs["cognate_id"])
+        context = super(CognateClassCitationUpdateView,
+                self).get_context_data(**kwargs)
+        context["title"] = "New cognate class citation"
+        context["heading"] = "Citation to cognate class %s" % cc_id
+        context["cancel_dest"] = reverse("cognate-set",
+                kwargs={"cognate_id":cc_id})
+        return context
+
+class CognateClassCitationCreateView(CreateView):
+    form_class=EditCognateClassCitationForm
+    template_name="generic_update.html"
+
+    def get_context_data(self, **kwargs):
+        cc_id = int(self.kwargs["cognate_id"])
+        context = super(CognateClassCitationCreateView,
+                self).get_context_data(**kwargs)
+        context["title"] = "New cognate class citation"
+        context["heading"] = "Citation to cognate class %s" % cc_id
+        context["cancel_dest"] = reverse("cognate-set",
+                kwargs={"cognate_id":cc_id})
+        return context
+
+    def get_form_kwargs(self):
+        """Need to instantiate the object and set the cognate_class parameter
+        here, since fields in the Meta.exclude attribute of ModelForm classes
+        can't otherwise be set by forms.
+        """
+        #cc_id = int(self.kwargs.pop("cognate_id"))
+        cc_id = int(self.kwargs["cognate_id"])
+        self.object = CognateClassCitation()
+        self.object.cognate_class = CognateClass.objects.get(id=cc_id)
+        kwargs = super(CognateClassCitationCreateView,
+                self).get_form_kwargs()
+        return kwargs
 
 def list_nexus(request):
     if request.method == "POST":

@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
-from django.views.generic import DetailView, UpdateView
+from django.views.generic import DetailView, UpdateView, CreateView
 from ielex.views import *
 from ielex import settings
 from ielex.lexicon.views import *
@@ -118,6 +118,15 @@ urlpatterns = patterns('',
             lexeme_edit),
     url(r'^lexeme/%(LEXEME_ID)s/(?P<action>add-new-cognate)/$' % R, lexeme_edit),
     url(r'^lexeme/%(LEXEME_ID)s/(?P<action>delete)/$' % R, lexeme_edit),
+    # url(r'^lexeme/(?P<lexeme_id>\d+)/citation/(?P<pk>\d+)/$',
+    #         DetailView.as_view(model=LexemeCitation,
+    #                 context_object_name="citation"),
+    #         name="lexeme-citation-detail"),
+    url(r'^lexeme/citation/(?P<pk>\d+)/$',
+            DetailView.as_view(model=LexemeCitation,
+                    context_object_name="citation"),
+            name="lexeme-citation-detail"),
+    url(r'^lexeme/%(LEXEME_ID)s/citation/$' % R, redirect_lexeme_citation),
 
     # Sources
     url(r'^sources/$', source_list, name="view-sources"),
@@ -142,10 +151,19 @@ urlpatterns = patterns('',
                     context_object_name="citation"),
             name="cognate-class-citation-detail"),
     url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/edit/$',
-            UpdateView.as_view(model=CognateClassCitation,
-                    form_class=EditCognateClassCitationForm,
-                    template_name="generic_update.html"),
+            CognateClassCitationUpdateView.as_view(),
             name="cognate-class-citation-update"),
+    url(r'^cognate/(?P<cognate_id>\d+)/add-citation/$',
+            CognateClassCitationCreateView.as_view(),
+            name="cognate-class-citation-create"),
+
+    url(r'^cognate/judgement/(?P<pk>\d+)/$',
+            DetailView.as_view(model=CognateJudgement,
+                    context_object_name="judgement"),
+            name="cognate-judgement-detail"),
+
+
+
     url(r'^revert/(?P<version_id>\d+)/$', revert_version),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
 
