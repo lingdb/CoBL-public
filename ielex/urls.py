@@ -156,6 +156,14 @@ urlpatterns = patterns('',
     url(r'^cognate/(?P<cognate_id>\d+)/add-citation/$',
             CognateClassCitationCreateView.as_view(),
             name="cognate-class-citation-create"),
+
+    url(r'^cognate/judgement/(?P<pk>\d+)/$',
+            DetailView.as_view(model=CognateJudgement,
+                    context_object_name="judgement"),
+            name="cognate-judgement-detail"),
+
+
+
     url(r'^revert/(?P<version_id>\d+)/$', revert_version),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
 
