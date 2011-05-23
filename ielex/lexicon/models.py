@@ -371,11 +371,8 @@ class CognateJudgementCitation(AbstractBaseCitation):
     source = models.ForeignKey(Source)
 
     def get_absolute_url(self):
-        return "/lexeme/%s/edit-cognate-citation/%s/" % \
-                (self.cognate_judgement.lexeme.id, self.id)
-        # TODO
-        # return "/lexeme/%s/cognate/%s/citation/%s/" % \
-        #         (self.cognate_judgement.lexeme.id, self.cognate_class.id, self.id)
+        return reverse("cognate-judgement-citation-detail",
+                kwargs={"pk":self.id})
 
     def __unicode__(self):
         return u"CJC src=%s cit=%s" % (self.source.id, self.id)
@@ -407,9 +404,8 @@ class CognateClassCitation(AbstractBaseCitation):
                 self.source.id)
 
     def get_absolute_url(self):
-        return reverse("cognate-class-citation-detail", 
-                kwargs={"pk":self.id,
-                        "cognate_id":self.cognate_class.id})
+        return reverse("cognate-class-citation-detail",
+                kwargs={"pk":self.id})
 
     class Meta:
         unique_together = (("cognate_class", "source"),)

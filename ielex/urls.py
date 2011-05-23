@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 from django.views.generic import DetailView, UpdateView, CreateView
+from django.views.generic.simple import redirect_to
 from ielex.views import *
 from ielex import settings
 from ielex.lexicon.views import *
@@ -136,7 +137,7 @@ urlpatterns = patterns('',
     url(r'^source/(?P<action>add)/cognate-judgement/%(COGJUDGE_ID)s/$' % R, source_edit),
     url(r'^source/(?P<action>add)/lexeme/%(LEXEME_ID)s/$' % R, source_edit),
 
-    # Cognates
+    # Cognate
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report, name="cognate-set"),
     url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit)/$', cognate_report),
     url(r'^cognate/%(MEANING)s/(?P<code>[A-Z]+[0-9]*)/$' % R,
@@ -146,21 +147,35 @@ urlpatterns = patterns('',
     #        cognate_report),
     # TODO allow cognate sets to be renamed (e.g. to give distinctive codes to
     # loanwords)
-    url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/$',
+
+    # Cognate citation :: detail
+    url(r'^cognate/citation/(?P<pk>\d+)/$',
             DetailView.as_view(model=CognateClassCitation,
                     context_object_name="citation"),
             name="cognate-class-citation-detail"),
-    url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/edit/$',
+    url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/$', redirect_to,
+            {"url":"/cognate/citation/%(pk)s/"}),
+    # Cognate citation :: update
+    url(r'^cognate/citation/(?P<pk>\d+)/edit/$',
             CognateClassCitationUpdateView.as_view(),
             name="cognate-class-citation-update"),
+    url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/edit/$',
+            redirect_to, {"url":"/cognate/citation/%(pk)s/edit/"}),
+    # Cognate citation :: add
     url(r'^cognate/(?P<cognate_id>\d+)/add-citation/$',
             CognateClassCitationCreateView.as_view(),
             name="cognate-class-citation-create"),
 
+    # Cognate judgement :: detail
     url(r'^cognate/judgement/(?P<pk>\d+)/$',
             DetailView.as_view(model=CognateJudgement,
                     context_object_name="judgement"),
             name="cognate-judgement-detail"),
+    # Cognate judgement citation :: detail
+    url(r'^cognate/judgement/(?P<judgement_id>\d+)/citation/(?P<pk>\d+)/$',
+            DetailView.as_view(model=CognateJudgementCitation,
+                    context_object_name="citation"),
+            name="cognate-judgement-citation-detail"),
 
 
 

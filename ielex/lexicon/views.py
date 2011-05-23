@@ -17,9 +17,9 @@ class CognateClassCitationUpdateView(UpdateView):
     template_name="generic_update.html"
 
     def get_context_data(self, **kwargs):
-        cc_id = int(self.kwargs["cognate_id"])
         context = super(CognateClassCitationUpdateView,
                 self).get_context_data(**kwargs)
+        cc_id = context["object"].cognate_class.id
         context["title"] = "New cognate class citation"
         context["heading"] = "Citation to cognate class %s" % cc_id
         context["cancel_dest"] = reverse("cognate-set",
@@ -45,7 +45,6 @@ class CognateClassCitationCreateView(CreateView):
         here, since fields in the Meta.exclude attribute of ModelForm classes
         can't otherwise be set by forms.
         """
-        #cc_id = int(self.kwargs.pop("cognate_id"))
         cc_id = int(self.kwargs["cognate_id"])
         self.object = CognateClassCitation()
         self.object.cognate_class = CognateClass.objects.get(id=cc_id)

@@ -44,12 +44,12 @@
     </td>
     <td>{{ citation.comment|truncatewords:6 }}</td>
     <td>{{ citation.pages }}</td>
-    <td>{{ citation.reliability }}</td>
+    <td><span title="{{ citation.reliability }}: {{ citation.long_reliability }}">{{ citation.reliability }}</span></td>
     <td>
-      <a href="/cognate/{{ cognate_class.id }}/citation/{{ citation.id }}/">
+        <a href="{% url cognate-class-citation-detail citation.id %}">
         <img src="/media/buttons/view.png" alt="View" title="View the citation" />
       </a>
-      <a href="/cognate/{{ cognate_class.id }}/citation/{{ citation.id }}/edit/">
+        <a href="{% url cognate-class-citation-update citation.id %}">
         <img src="/media/buttons/edit-pencil.png" alt="View" title="Edit the citation" />
       </a>
     </td>
@@ -84,7 +84,7 @@
       <td><a href="/meaning/{{ cj.lexeme.meaning.gloss }}/">{{ cj.lexeme.meaning.gloss }}</a></td>
       <td>{{ cj.lexeme.notes|wikilink }}</td>
       <td>{% for rating, description in cj.long_reliability_ratings %}
-        <span title="{{ rating }}: {{ description }}">{{ description|truncatewords:1 }}</span>
+        <span title="{{ rating }}: {{ description }}">{{ rating }}</span>
           {% endfor %}
       </td>
       <td>
