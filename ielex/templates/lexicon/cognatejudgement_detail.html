@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Cognate judgement{% endblock %}
+
+{% block top %}
+<h1>
+  {{ judgement.lexeme }}: cognate class {{ judgement.cognate_class.alias }} 
+  ({{ judgement.cognate_class.id }})
+</h1>
+{% endblock %}
+
+{% block content %}
+<p>
+  {% if judgement.cognatejudgementcitation_set.exists %}
+  <h2>Citations</h2>
+  <ul>
+    {% for citation in judgement.cognatejudgementcitation_set.all %}
+    <li><a href="{{ citation.get_absolute_url }}">{{ citation.source.citation_text }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</p>
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+
+<ul class="navigation">
+  <li>
+    <a href="/cognate/{{ judgement.cognate_class.id }}/">
+      back to cognate class
+    </a>
+  </li>
+</ul>
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
