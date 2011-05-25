@@ -90,6 +90,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.admin',
     'reversion',
+    'south',
     'ielex.lexicon',
     'ielex.extensional_semantics',
 )
