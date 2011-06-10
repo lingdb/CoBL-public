@@ -1184,7 +1184,7 @@ def lexeme_search(request):
     if request.method == 'POST':
         form = SearchLexemeForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect(reverse("view-frontpage"))
         if form.is_valid():
             regex = form.cleaned_data["regex"]
             languages = form.cleaned_data["languages"]
