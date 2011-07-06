@@ -51,6 +51,8 @@ class Language(models.Model):
     sort_key = models.FloatField(null=True, blank=True, editable=False)
     description = models.TextField(blank=True, null=True)
 
+    language_list_name = None
+
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
 
@@ -63,6 +65,34 @@ class Language(models.Model):
         except ZeroDivisionError:
             return ""
 
+    @classmethod
+    def get_ordered_languages(cls, language_list):
+        """Selects a set of languages according to a LanguageList object
+        (and annotates them with an order attribute).
+        Usage:
+            LanguageListManager = make_ordered_language_manager(language_list)
+            Language.language_list = LanguageListManager()
+            languages = Language.language_list.with_order()
+            languages.sort(key=lambda m: m.order)
+        """
+        if Language.language_list_name != language_list.name:
+            class OrderedLanguageManager(models.Manager):
+                def get_query_set(self):
+                    return Language.objects.filter(
+                            id__in=language_list.language_id_list)
+                def with_order(self):
+                    languages = []
+                    for language in self.get_query_set():
+                        language.order = language_list.language_id_list.index(language.id)
+                        #languages.append(language)
+                    #return languages
+                    return self.get_query_set().order_by("order")
+            Language.language_list_name = language_list.name
+            Language.language_list = OrderedLanguageManager()
+            #Language.ordered_languages = Language.language_list.with_order()
+            #Language.ordered_languages.sort(key=lambda m: m.order)
+        return Language.language_list
+
     def __unicode__(self):
         return self.utf8_name
 
@@ -70,25 +100,6 @@ class Language(models.Model):
         ordering = ["ascii_name"]
 
 
-def make_ordered_language_manager(language_list):
-    """Selects a set of languages according to a LanguageList object
-    (and annotates them with an order attribute).
-    Usage:
-        LanguageListManager = make_ordered_language_manager(language_list)
-        Language.language_list = LanguageListManager()
-        languages = Language.language_list.with_order()
-        languages.sort(key=lambda m: m.order)
-    """
-    class OrderedLanguageManager(models.Manager):
-        def get_query_set(self):
-            return Language.objects.select_related().filter(id__in=language_list.language_id_list)
-        def with_order(self):
-            languages = []
-            for language in self.get_query_set():
-                language.order = language_list.language_id_list.index(language.id)
-                languages.append(language)
-            return languages
-    return OrderedLanguageManager
 
 class DyenName(models.Model):
     language = models.ForeignKey(Language)
@@ -210,6 +221,7 @@ class Lexeme(models.Model):
 
 
 def make_ordered_lexeme_manager(meaning, language_list):
+
     """Selects a set of lexemes according to a LanguageList object sorted by
     Language (and annotates them with an order attribute).
     Usage:

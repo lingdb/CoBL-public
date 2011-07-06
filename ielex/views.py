@@ -142,12 +142,12 @@ def get_canonical_language(language):
             #   language = Language.objects.last_added()
     return language
 
-def get_ordered_languages(language_list):
-    LanguageListManager = make_ordered_language_manager(language_list)
-    Language.language_list = LanguageListManager()
-    languages = Language.language_list.with_order()
-    languages.sort(key=lambda m: m.order)
-    return languages
+# def get_ordered_languages(language_list):
+#     LanguageListManager = make_ordered_language_manager(language_list)
+#     Language.language_list = LanguageListManager()
+#     languages = Language.language_list.with_order()
+#     languages.sort(key=lambda m: m.order)
+#     return languages
 
 def get_current_language_list_name(request):
     """Get the name of the current language list from session. This is
@@ -243,7 +243,7 @@ def view_languages(request, languages=None):
     current_list = get_canonical_languages(languages)
     request.session["current_language_list_name"] = current_list.name
     #languages = Language.objects.filter(id__in=current_list.language_id_list)
-    languages = get_ordered_languages(current_list)
+    languages = Language.get_ordered_languages(current_list)
 
     if request.method == 'POST':
         form = ChooseLanguageListForm(request.POST)
@@ -267,7 +267,7 @@ def view_languages(request, languages=None):
 def reorder_languages(request, languages):
     language_id = request.session.get("current_language_id", None)
     language_list = LanguageList.objects.get(name=languages)
-    languages = get_ordered_languages(language_list)
+    languages = Language.get_ordered_languages(language_list)
     ReorderForm = make_reorder_languagelist_form(languages)
     if request.method == "POST":
         form = ReorderForm(request.POST, initial={"language": language_id})

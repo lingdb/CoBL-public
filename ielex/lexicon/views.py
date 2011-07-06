@@ -9,7 +9,7 @@ from ielex import settings
 from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
 from ielex.forms import ChooseNexusOutputForm, EditCognateClassCitationForm
-from ielex.views import get_ordered_languages
+#from ielex.views import get_ordered_languages
 from ielex.lexicon.models import CognateClassCitation
 
 class CognateClassCitationUpdateView(UpdateView):
@@ -105,7 +105,7 @@ def write_nexus(fileobj,
 
     # get data together
     language_list = LanguageList.objects.get(name=language_list_name)
-    languages = get_ordered_languages(language_list)
+    languages = Language.get_ordered_languages(language_list)
     language_names = [language.ascii_name for language in languages]
 
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
