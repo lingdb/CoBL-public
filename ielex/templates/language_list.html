@@ -13,8 +13,6 @@
       <th>Name</th>
       <th>ISO-639-3</th>
       <th>Lexemes</th>
-      <th>% Coded</th>
-      <th>Include</th>
     </tr>
   </thead>
   <tbody>
@@ -38,15 +36,6 @@
       </td>
       <td>
         {{ language.lexeme_set.count }}
-      </td>
-      <td>
-        {{ language.percent_coded }}
-      </td>
-      <td>{% if language.id|in_list:current_list.language_id_list %}
-            <img src="/media/buttons/tick.png" alt="*" title="Included" />
-          {% else %}
-            <img src="/media/buttons/delete.png" alt="" title="Excluded" />
-          {% endif %}
       </td>
     </tr>
   {% endfor %}

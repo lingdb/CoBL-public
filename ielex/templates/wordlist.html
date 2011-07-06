@@ -8,10 +8,8 @@
 {% block content %}
 <table>
   <tr>
-    <th>ID</th>
     <th>Meaning</th>
     <th>Gloss</th>
-    <th>% Coded</th>
     {# <th>Count</th> #}
   </tr>
   {% for meaning in meanings %}
@@ -26,7 +24,6 @@
     </td>
     <td><a href="{% url meaning-report meaning.id %}">{{ meaning.gloss }}</a></td>
     {# <td>{{ meaning.lexeme_count }}</td> #}
-    <td>{{ meaning.percent_coded }}</td>
   </tr>
   {% endfor %}
 </table>

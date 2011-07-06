@@ -49,7 +49,7 @@ def view_frontpage(request):
 def view_changes(request):
     """Recent changes"""
     # XXX the view fails when an object has been deleted
-    recent_changes = Version.objects.all().order_by("id").reverse()
+    recent_changes = Version.objects.all().order_by("-id")
     paginator = Paginator(recent_changes, 100) # was 200
 
     try: # Make sure page request is an int. If not, deliver first page.
@@ -142,12 +142,13 @@ def get_canonical_language(language):
             #   language = Language.objects.last_added()
     return language
 
-# def get_ordered_languages(language_list):
-#     LanguageListManager = make_ordered_language_manager(language_list)
-#     Language.language_list = LanguageListManager()
-#     languages = Language.language_list.with_order()
-#     languages.sort(key=lambda m: m.order)
-#     return languages
+def get_ordered_languages(language_list):
+    def get_list_sorter(language_list):
+        def func(language):
+            return language_list.language_id_list.index(language.id)
+        return func
+    return sorted(Language.objects.filter(id__in=language_list.language_id_list),
+            key=get_list_sorter(language_list))# [:2]
 
 def get_current_language_list_name(request):
     """Get the name of the current language list from session. This is
@@ -174,11 +175,12 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
     return (prev_language, next_language)
 
 def get_ordered_meanings(wordlist):
-    WordlistManager = make_ordered_meaning_manager(wordlist)
-    Meaning.wordlist = WordlistManager()
-    meanings = Meaning.wordlist.with_order()
-    meanings.sort(key=lambda m: m.order)
-    return meanings
+    def get_list_sorter(wordlist):
+        def func(meaning):
+            return wordlist.meaning_id_list.index(meaning.id)
+        return func
+    return sorted(Meaning.objects.filter(id__in=wordlist.meaning_id_list),
+            key=get_list_sorter(wordlist))
 
 def get_prev_and_next_meanings(request, current_meaning):
     # We'll let this one use the session variable (kind of cheating...)
@@ -243,7 +245,7 @@ def view_languages(request, languages=None):
     current_list = get_canonical_languages(languages)
     request.session["current_language_list_name"] = current_list.name
     #languages = Language.objects.filter(id__in=current_list.language_id_list)
-    languages = Language.get_ordered_languages(current_list)
+    languages = get_ordered_languages(current_list)
 
     if request.method == 'POST':
         form = ChooseLanguageListForm(request.POST)
@@ -267,7 +269,7 @@ def view_languages(request, languages=None):
 def reorder_languages(request, languages):
     language_id = request.session.get("current_language_id", None)
     language_list = LanguageList.objects.get(name=languages)
-    languages = Language.get_ordered_languages(language_list)
+    languages = get_ordered_languages(language_list)
     ReorderForm = make_reorder_languagelist_form(languages)
     if request.method == "POST":
         form = ReorderForm(request.POST, initial={"language": language_id})
@@ -761,12 +763,21 @@ def delete_meaning(request, meaning):
 
 # -- /lexeme/ -------------------------------------------------------------
 
+# def get_ordered_lexemes(meaning, language_list):
+#     LexemeListManager = make_ordered_lexeme_manager(meaning, language_list)
+#     Lexeme.language_list = LexemeListManager()
+#     lexemes = Lexeme.language_list.with_order()
+#     lexemes.sort(key=lambda m: m.order)
+#     return lexemes
+
 def get_ordered_lexemes(meaning, language_list):
-    LexemeListManager = make_ordered_lexeme_manager(meaning, language_list)
-    Lexeme.language_list = LexemeListManager()
-    lexemes = Lexeme.language_list.with_order()
-    lexemes.sort(key=lambda m: m.order)
-    return lexemes
+    def get_lexeme_sorter(language_list):
+        def func(lexeme):
+            return language_list.language_id_list.index(lexeme.language.id)
+        return func
+    return sorted(Lexeme.objects.filter(meaning=meaning,
+        language__id__in=language_list.language_id_list),
+        key=get_lexeme_sorter(language_list))
 
 def view_lexeme(request, lexeme_id):
     """For un-logged-in users, view only"""

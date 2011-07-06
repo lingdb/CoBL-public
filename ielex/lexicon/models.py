@@ -1,5 +1,6 @@
 from __future__ import division
 from string import uppercase, lowercase
+from collections import Counter
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
@@ -47,7 +48,6 @@ class Language(models.Model):
     ascii_name = models.CharField(max_length=999, unique=True,
             validators=[suitable_for_url])
     utf8_name = models.CharField(max_length=999, unique=True)
-    # sort key is deprecated: use ordered_manager instead
     sort_key = models.FloatField(null=True, blank=True, editable=False)
     description = models.TextField(blank=True, null=True)
 
@@ -56,50 +56,11 @@ class Language(models.Model):
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
 
-    # @property
-    def percent_coded(self):
-        uncoded = self.lexeme_set.filter(cognate_class=None).count()
-        total = self.lexeme_set.all().count()
-        try:
-            return int(100.0 * (total - uncoded) / total)
-        except ZeroDivisionError:
-            return ""
-
-    @classmethod
-    def get_ordered_languages(cls, language_list):
-        """Selects a set of languages according to a LanguageList object
-        (and annotates them with an order attribute).
-        Usage:
-            LanguageListManager = make_ordered_language_manager(language_list)
-            Language.language_list = LanguageListManager()
-            languages = Language.language_list.with_order()
-            languages.sort(key=lambda m: m.order)
-        """
-        if Language.language_list_name != language_list.name:
-            class OrderedLanguageManager(models.Manager):
-                def get_query_set(self):
-                    return Language.objects.filter(
-                            id__in=language_list.language_id_list)
-                def with_order(self):
-                    languages = []
-                    for language in self.get_query_set():
-                        language.order = language_list.language_id_list.index(language.id)
-                        #languages.append(language)
-                    #return languages
-                    return self.get_query_set().order_by("order")
-            Language.language_list_name = language_list.name
-            Language.language_list = OrderedLanguageManager()
-            #Language.ordered_languages = Language.language_list.with_order()
-            #Language.ordered_languages.sort(key=lambda m: m.order)
-        return Language.language_list
-
     def __unicode__(self):
         return self.utf8_name
 
     class Meta:
         ordering = ["ascii_name"]
-
-
 
 class DyenName(models.Model):
     language = models.ForeignKey(Language)
@@ -134,25 +95,6 @@ class Meaning(models.Model):
     class Meta:
         ordering = ["gloss"]
 
-
-def make_ordered_meaning_manager(wordlist):
-    """Usage:
-        WordlistManager = make_ordered_meaning_manager(wordlist)
-        Meaning.wordlist = WordlistManager()
-        meanings = Meaning.wordlist.with_order()
-        meanings.sort(key=lambda m: m.order)
-    """
-    class OrderedMeaningManager(models.Manager):
-        def get_query_set(self):
-            return Meaning.objects.filter(id__in=wordlist.meaning_id_list)
-        def with_order(self):
-            meanings = []
-            for meaning in self.get_query_set():
-                meaning.order = wordlist.meaning_id_list.index(meaning.id)
-                meanings.append(meaning)
-            return meanings
-    return OrderedMeaningManager
-
 class CognateClass(models.Model):
     alias = models.CharField(max_length=3)
     notes = models.TextField()
@@ -180,7 +122,6 @@ class CognateClass(models.Model):
 
     class Meta:
         ordering = ["alias"]
-
 
 class DyenCognateSet(models.Model):
     cognate_class = models.ForeignKey(CognateClass)
@@ -219,29 +160,6 @@ class Lexeme(models.Model):
     class Meta:
         order_with_respect_to = "language"
 
-
-def make_ordered_lexeme_manager(meaning, language_list):
-
-    """Selects a set of lexemes according to a LanguageList object sorted by
-    Language (and annotates them with an order attribute).
-    Usage:
-        LexemeListManager = make_ordered_lexeme_manager(meaning, language_list)
-        Lexeme.language_list = LexemeListManager()
-        lexemes = Lexeme.language_list.with_order()
-        lexemes.sort(key=lambda m: m.order)
-    """
-    class OrderedLexemeManager(models.Manager):
-        def get_query_set(self):
-            return Lexeme.objects.filter(meaning=meaning,
-                    language__id__in=language_list.language_id_list)
-        def with_order(self):
-            lexemes = []
-            for lexeme in self.get_query_set():
-                lexeme.order = language_list.language_id_list.index(lexeme.language.id)
-                lexemes.append(lexeme)
-            return lexemes
-    return OrderedLexemeManager
-
 class CognateJudgement(models.Model):
     lexeme = models.ForeignKey(Lexeme)
     cognate_class = models.ForeignKey(CognateClass)
@@ -269,7 +187,6 @@ class CognateJudgement(models.Model):
     def __unicode__(self):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
                 self.cognate_class.alias, self.id)
-
 
 class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A
@@ -300,7 +217,6 @@ class LanguageList(models.Model):
 
     class Meta:
         ordering = ["name"]
-
 
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
