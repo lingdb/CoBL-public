@@ -81,7 +81,7 @@ def make_ordered_language_manager(language_list):
     """
     class OrderedLanguageManager(models.Manager):
         def get_query_set(self):
-            return Language.objects.filter(id__in=language_list.language_id_list)
+            return Language.objects.select_related().filter(id__in=language_list.language_id_list)
         def with_order(self):
             languages = []
             for language in self.get_query_set():
