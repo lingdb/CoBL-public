@@ -13,4 +13,18 @@ After a clean install,
 
   * Customize ``local_settings.py`` with name of database etc.
 
+To get it going with ``south`` for the first time (i.e. *not* a clean install)
+
+ 1. Make sure 'south' is in the INSTALLED_APPS setting.
+ 2. Run ./manage.py syncdb
+
+You then need to run the following two commands to complete the
+migration:
+
+   ./manage.py migrate reversion 0001 --fake
+   ./manage.py migrate lexicon 0001 --fake
+   ./manage.py migrate semantic_extension 0001 --fake
+   ./manage.py migrate --no-initial-data
+
+
 .. vim:ft=rst:nospell

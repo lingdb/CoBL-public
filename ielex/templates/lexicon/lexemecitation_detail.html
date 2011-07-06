@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Lexeme citation{% endblock %}
+
+{% block top %}
+<h1>
+  View citation: {{ citation.lexeme }} 
+</h1>
+{% endblock %}
+
+{% block content %}
+<p>
+  {% with citation.lexeme.lexemecitation_set.count as ncitations %}
+    {% if ncitations > 1 %}
+      One of {{ sec_count }} citations
+    {% endif %}
+  {% endwith %}
+</p>
+
+{% include "snippets/citation_detail_table.html" %}
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+
+<ul class="navigation">
+  <li>
+    <a href="/lexeme/{{ citation.lexeme.id }}/">
+      back to lexeme
+    </a>
+  </li>
+  <li>
+    <a href="/lexeme/{{ citation.lexeme.id }}/citation/{{ citation.id }}/edit/">
+      edit this citation
+    </a>
+  </li>
+</ul>
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

@@ -41,7 +41,7 @@ def make_backup(request):
 def view_frontpage(request):
     return render_template(request, "frontpage.html",
             {"lexemes":Lexeme.objects.count(),
-            "cognate_classes":CognateSet.objects.count(),
+            "cognate_classes":CognateClass.objects.count(),
             "languages":Language.objects.count(),
             "meanings":Meaning.objects.count(),
             "coded_characters":CognateJudgement.objects.count()})
@@ -718,7 +718,7 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
         form = ChooseCognateClassForm()
 
     lexemes = get_ordered_lexemes(meaning, current_language_list)
-    form.fields["cognate_class"].queryset = CognateSet.objects.filter(
+    form.fields["cognate_class"].queryset = CognateClass.objects.filter(
             lexeme__in=lexemes).distinct()
     add_cognate_judgement = 0 # to lexeme
     current_lexeme = 0
@@ -943,11 +943,11 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 citation.delete()
                 return HttpResponseRedirect(redirect_url)
             elif action == "add-new-cognate":
-                current_aliases = CognateSet.objects.filter(
+                current_aliases = CognateClass.objects.filter(
                         lexeme__in=Lexeme.objects.filter(meaning=lexeme.meaning)
                         ).distinct().values_list("alias", flat=True)
                 new_alias = next_alias(list(current_aliases))
-                cognate_class = CognateSet.objects.create(
+                cognate_class = CognateClass.objects.create(
                         alias=new_alias)
                 cj = CognateJudgement.objects.create(lexeme=lexeme,
                         cognate_class=cognate_class)
@@ -1075,15 +1075,27 @@ def lexeme_add(request,
     return render_template(request, "lexeme_add.html",
             {"form":form})
 
+def redirect_lexeme_citation(request, lexeme_id):
+    """From a lexeme, redirect to the first citation"""
+    lexeme = Lexeme.objects.get(id=lexeme_id)
+    try:
+        first_citation = lexeme.lexemecitation_set.all()[0]
+        return HttpResponseRedirect("/lexeme/citation/%s/" % first_citation.id)
+    except IndexError:
+        msg = "Operation failed: this lexeme has no citations"
+        messages.add_message(request, messages.WARNING, msg)
+        return HttpResponseRedirect(lexeme.get_absolute_url())
+
+
 # -- /cognate/ ------------------------------------------------------------
 
 #@login_required
 def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
     if cognate_id:
-        cognate_class = CognateSet.objects.get(id=int(cognate_id))
+        cognate_class = CognateClass.objects.get(id=int(cognate_id))
     else:
         assert meaning and code
-        cognate_classes = CognateSet.objects.filter(alias=code, 
+        cognate_classes = CognateClass.objects.filter(alias=code, 
                 cognatejudgement__lexeme__meaning__gloss=meaning).distinct()
         try:
             assert len(cognate_classes) == 1
