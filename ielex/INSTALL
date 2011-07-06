@@ -19,12 +19,15 @@ To get it going with ``south`` for the first time (i.e. *not* a clean install)
  2. Run ./manage.py syncdb
 
 You then need to run the following two commands to complete the
-migration:
+migration::
 
    ./manage.py migrate reversion 0001 --fake
    ./manage.py migrate lexicon 0001 --fake
-   ./manage.py migrate semantic_extension 0001 --fake
+   ./manage.py migrate extensional_semantics 0001 --fake
    ./manage.py migrate --no-initial-data
 
+For later updates (where there has been a schema change), do::
+
+   ./manage.py migrate --no-initial-data
 
 .. vim:ft=rst:nospell

@@ -193,7 +193,7 @@ urlpatterns += patterns('',
 
 urlpatterns += patterns('',
         (r'^nexus/$', 'ielex.lexicon.views.list_nexus'),
-        (r'^nexus-data/$', 'ielex.lexicon.views.write_nexus'),
+        (r'^nexus-data/$', 'ielex.lexicon.views.write_nexus_view'),
         )
 
 urlpatterns += patterns('django.contrib.auth',

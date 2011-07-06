@@ -1,5 +1,6 @@
 from textwrap import dedent
 import time
+import sys
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.views.generic import CreateView, UpdateView
@@ -63,25 +64,51 @@ def list_nexus(request):
     return render_template(request, "nexus_list.html", {"form":form})
 
 @login_required
-def write_nexus(request):
+def write_nexus_view(request):
+    """A wrapper to call the `write_nexus` function from a view"""
     # TODO 
     #   - contributor and sources list
     LABEL_COGNATE_SETS = True
     INCLUDE_UNIQUE_STATES = bool(request.POST.get("unique", 0))
-    language_list_id = request.POST["language_list"]
-    meaning_list_id = request.POST["meaning_list"]
+    language_list = LanguageList.objects.get(id=request.POST["language_list"])
+    meaning_list = MeaningList.objects.get(id=request.POST["meaning_list"])
     exclude = set(request.POST.getlist("reliability"))
     dialect = request.POST.get("dialect", "NN")
-
-    start_time = time.time()
+    msg = "Warning: nexus export can be very slow"
+    messages.add_message(request, messages.INFO, msg)
     assert request.method == 'POST'
 
+    # Create the HttpResponse object with the appropriate header.
+    filename = "%s-%s-%s.nex" % (settings.project_short_name,
+            language_list.name, meaning_list.name)
+    response = HttpResponse(mimetype='text/plain')
+    response['Content-Disposition'] = 'attachment; filename=%s' % \
+            filename.replace(" ", "_")
+
+    response = write_nexus(response,
+            language_list.name,
+            meaning_list.name,
+            exclude,
+            dialect,
+            LABEL_COGNATE_SETS,
+            INCLUDE_UNIQUE_STATES)
+    return response
+
+def write_nexus(fileobj,
+            language_list_name,
+            meaning_list_name,
+            exclude,
+            dialect,
+            LABEL_COGNATE_SETS,
+            INCLUDE_UNIQUE_STATES):
+    start_time = time.time()
+
     # get data together
-    language_list = LanguageList.objects.get(id=language_list_id)
+    language_list = LanguageList.objects.get(name=language_list_name)
     languages = get_ordered_languages(language_list)
     language_names = [language.ascii_name for language in languages]
 
-    meaning_list = MeaningList.objects.get(id=meaning_list_id)
+    meaning_list = MeaningList.objects.get(name=meaning_list_name)
     meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
     max_len = max([len(l) for l in language_names])
 
@@ -96,10 +123,10 @@ def write_nexus(request):
 
     data, data_missing = {}, {}
     for cc in cognate_class_ids:
+        ## Faster way: (doesn't do reliability ratings properly)
         # language_ids = CognateClass.objects.get(id=cc).lexeme_set.filter(
         #         meaning__in=meanings).values_list('language', flat=True)
-        ## this is much slower than the values_list version (probably from
-        ## calculating the reliability ratings property
+        ## Slower way:
         # TODO look at LexemeCitation reliablity ratings here too
         language_ids = [cj.lexeme.language.id for cj in
                 CognateJudgement.objects.filter(cognate_class=cc,
@@ -107,6 +134,12 @@ def write_nexus(request):
                         if not (cj.reliability_ratings & exclude)]
         if language_ids:
             data[cc] = language_ids
+            meaning = set(CognateClass.objects.get(id=cc).lexeme_set.values_list(
+                    "meaning", flat=True)).pop()
+            try:
+                data_missing[cc] = missing[meaning]
+            except KeyError:
+                data_missing[cc] = []
 
     if INCLUDE_UNIQUE_STATES:
         # adds a cc code for all the lexemes which are not registered as
@@ -120,16 +153,13 @@ def write_nexus(request):
         for language_id, lexeme_id in uniques:
             cc = ("U", lexeme_id)
             data[cc] = [language_id]
-
-    # Create the HttpResponse object with the appropriate header.
-    filename = "%s-%s-%s.nex" % (settings.project_short_name, 
-            language_list.name, meaning_list.name)
-    response = HttpResponse(mimetype='text/plain')
-    response['Content-Disposition'] = 'attachment; filename=%s' % \
-            filename.replace(" ", "_")
+            try:
+                data_missing[cc] = missing[Lexeme.objects.get(id=lexeme_id).meaning]
+            except KeyError:
+                data_missing[cc] = []
 
     # print out response
-    print>>response, dedent("""\
+    print>>fileobj, dedent("""\
         #NEXUS
 
         [ Citation:                                                        ]
@@ -137,23 +167,21 @@ def write_nexus(request):
         [   Lexicon) Database. Max Planck Institute for Psycholinguistics, ]
         [   Nijmegen.                                                      ]
         """)
-    print>>response, "[ Language list: %s ]" % LanguageList.objects.get(
-            id=language_list_id).name
-    print>>response, "[ Meaning list: %s ]" % MeaningList.objects.get(
-            id=meaning_list_id).name
-    print>>response, "[ Exclude rating/s: %s ]" % ", ".join(sorted(exclude))
-    print>>response, "[ Include unique states: %s ]" % INCLUDE_UNIQUE_STATES
-    print>>response, "[ File generated: %s ]\n" % \
+    print>>fileobj, "[ Language list: %s ]" % language_list_name
+    print>>fileobj, "[ Meaning list: %s ]" % meaning_list_name
+    print>>fileobj, "[ Exclude rating/s: %s ]" % ", ".join(sorted(exclude))
+    print>>fileobj, "[ Include unique states: %s ]" % INCLUDE_UNIQUE_STATES
+    print>>fileobj, "[ File generated: %s ]\n" % \
             time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
     if dialect in ("NN", "MB"):
-        print>>response, dedent("""\
+        print>>fileobj, dedent("""\
             begin taxa;
               dimensions ntax=%s;
               taxlabels %s;
             end;
             """ % (len(languages), " ".join(language_names)))
-        print>>response, dedent("""\
+        print>>fileobj, dedent("""\
             begin characters;
               dimensions nchar=%s;
               format symbols="01";
@@ -166,11 +194,11 @@ def write_nexus(request):
                     cc))
             except KeyError:
                 labels.append("    %d Lexeme_%d" % (i+1, cc[1]))
-        print>>response, ",\n".join(labels)
-        print>>response, "  ;\n  matrix"
+        print>>fileobj, ",\n".join(labels)
+        print>>fileobj, "  ;\n  matrix"
     else:
         assert dialect == "BP"
-        print>>response, dedent("""\
+        print>>fileobj, dedent("""\
             begin data;
               dimensions ntax=%s nchar=%s;
               taxlabels %s;
@@ -190,7 +218,7 @@ def write_nexus(request):
             msg = "   %s [ Cognate class codes ]"  % (" "*max_len)
             if INCLUDE_UNIQUE_STATES:
                 msg += " ['U' codes are lexeme ids representing unique states ]"
-            print>>response, msg
+            print>>fileobj, msg
             for i in range(max([len(get_code(i)) for i in data.keys()])):
                 row = []
                 for cc in sorted(data):
@@ -198,28 +226,30 @@ def write_nexus(request):
                         row.append(get_code(cc)[i])
                     except IndexError:
                         row.append(".")
-                print>>response, "    %s[ %s ]" % (" "*max_len, "".join(row))
-            print>>response
+                print>>fileobj, "    %s[ %s ]" % (" "*max_len, "".join(row))
+            print>>fileobj
 
         else: # just number them
             row = [" "*9] + [str(i).ljust(10) for i in range(len(data))[10::10]]
-            print>>response, "    %s[ %s ]" % (" "*max_len, "".join(row))
+            print>>fileobj, "    %s[ %s ]" % (" "*max_len, "".join(row))
             row = [" "*9] + [".         " for i in range(len(data))[10::10]]
-            print>>response, "    %s[ %s ]" % (" "*max_len, "".join(row))
+            print>>fileobj, "    %s[ %s ]" % (" "*max_len, "".join(row))
 
     for language in languages:
         row = []
         for cc in sorted(data):
             if language.id in data[cc]:
                 row.append("1")
+            elif language.id in data_missing[cc]:
+                row.append("?")
             else:
                 row.append("0")
-        print>>response, "    '%s'%s%s" % (language.ascii_name,
+        print>>fileobj, "    '%s'%s%s" % (language.ascii_name,
                 " "*(max_len - len(language.ascii_name)), "".join(row))
-    print>>response, "  ;\nend;\n"
+    print>>fileobj, "  ;\nend;\n"
 
     if dialect == "BP":
-        print>>response, dedent("""\
+        print>>fileobj, dedent("""\
             begin BayesPhylogenies;
                 Chains 1;
                 it 12000000;
@@ -241,5 +271,5 @@ def write_nexus(request):
     seconds = int(time.time() - start_time)
     minutes = seconds // 60
     seconds %= 60
-    print>>response, "[ Processing time: %02d:%02d ]" % (minutes, seconds)
-    return response
+    print>>fileobj, "[ Processing time: %02d:%02d ]" % (minutes, seconds)
+    return fileobj
