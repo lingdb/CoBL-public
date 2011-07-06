@@ -46,7 +46,12 @@ def write_nexus(request):
     cognate_class_names = dict(CognateJudgement.objects.all().values_list(
             "cognate_class__id", "lexeme__meaning__gloss").distinct())
 
-    data = {}
+    missing = {}
+    for meaning in meanings:
+        missing[meaning] = [language.id for language in languages if not
+                language.lexeme_set.filter(meaning=meaning).exists()]
+
+    data, data_missing = {}, {}
     for cc in cognate_class_ids:
         # language_ids = CognateSet.objects.get(id=cc).lexeme_set.filter(
         #         meaning__in=meanings).values_list('language', flat=True)
