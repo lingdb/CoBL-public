@@ -4,6 +4,8 @@ Dependencies:
 
   * Recent ``reversion`` middleware (``easy_install django-reversion``;
     currently using 1.3.2)
+
+  * `south`
   
 After a clean install, 
 
@@ -16,9 +18,9 @@ After a clean install,
 To get it going with ``south`` for the first time (i.e. *not* a clean install)
 
  1. Make sure 'south' is in the INSTALLED_APPS setting.
- 2. Run ./manage.py syncdb
+ 2. Run `./manage.py syncdb`
 
-You then need to run the following two commands to complete the
+You then need to run the following commands to complete the
 migration::
 
    ./manage.py migrate reversion 0001 --fake
@@ -29,5 +31,13 @@ migration::
 For later updates (where there has been a schema change), do::
 
    ./manage.py migrate --no-initial-data
+
+To make a new migration (e.g. after adding or changing a model) to the
+`lexicon` app, do::
+
+   ./manage.py schemamigration lexicon [MIGRATION_NAME]
+   ./manage.py migrate --no-initial-data
+
+
 
 .. vim:ft=rst:nospell

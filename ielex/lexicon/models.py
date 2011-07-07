@@ -196,6 +196,7 @@ class LanguageList(models.Model):
 
     name = models.CharField(max_length=999, validators=[suitable_for_url])
     description = models.TextField(blank=True, null=True)
+    languages = models.ManyToManyField(Language, through="LanguageListOrder")
     language_ids = models.CommaSeparatedIntegerField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
 
@@ -217,6 +218,17 @@ class LanguageList(models.Model):
 
     class Meta:
         ordering = ["name"]
+
+class LanguageListOrder(models.Model):
+
+    language = models.ForeignKey(Language)
+    language_list = models.ForeignKey(LanguageList)
+    order = models.IntegerField()
+
+    class Meta:
+        ordering = ["order"]
+        unique_together = (("language_list", "language"),
+                ("language_list", "order"))
 
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
