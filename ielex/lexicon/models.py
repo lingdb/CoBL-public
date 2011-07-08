@@ -2,6 +2,7 @@ from __future__ import division
 from string import uppercase, lowercase
 from collections import Counter
 from django.db import models
+from django.db.models import Max
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
@@ -191,24 +192,68 @@ class CognateJudgement(models.Model):
 class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A
     default list, named 'all' is (re)created on save/delete of the Language
-    table (cf. ielex.models.update_language_list_all)"""
+    table (cf. ielex.models.update_language_list_all)
+
+    To get an order list of language from LanguageList `ll`::
+
+        ll.languages.all().order_by("languagelistorder")
+
+    # TODO how can I make this the default ordering?
+    """
     DEFAULT = "all"
 
     name = models.CharField(max_length=999, validators=[suitable_for_url])
     description = models.TextField(blank=True, null=True)
     languages = models.ManyToManyField(Language, through="LanguageListOrder")
-    language_ids = models.CommaSeparatedIntegerField(max_length=999)
     modified = models.DateTimeField(auto_now=True)
 
-    def _get_list(self):
+    def append(self, language):
+        """Add another language to the end of a LanguageList ordering"""
         try:
-            return [int(i) for i in self.language_ids.split(",")]
+            N = LanguageListOrder.objects.filter(
+                language_list=self).aggregate(Max("order")).values()[0]
         except ValueError:
-            return []
-    def _set_list(self, listobj):
-        self.language_ids = ",".join([str(i) for i in listobj])
+            N = 0
+        LanguageListOrder.objects.create(
+                language=language,
+                language_list=self,
+                order=N)
         return
-    language_id_list = property(_get_list, _set_list)
+
+    def insert(self, N, language):
+        """Insert another language into a LanguageList ordering at position N"""
+        increment = self.languagelistorder_set.filter(
+                order__gte=N).order_by("-order")
+        for llo in increment:
+            llo.order += 1
+            llo.save()
+        LanguageListOrder.objects.create(
+                language=language,
+                language_list=self,
+                order=N)
+        return
+
+    def sequentialize(self):
+        """Sequentialize the order fields of a LanguageListOrder set"""
+        for i, llo in enumerate(self.languagelistorder_set.all()):
+            if llo.order != i:
+                llo.order = i
+                llo.save()
+        return
+
+    def swap(self, languageA, languageB):
+        """Swap the order of two languages"""
+        orderA = LanguageListOrder.objects.get(
+                language=languageA,
+                language_list=self)
+        orderB = LanguageListOrder.objects.get(
+                language=languageB,
+                language_list=self)
+        orderB.delete()
+        orderA.order, orderB.order = orderB.order, orderA.order
+        orderA.save()
+        orderB.save()
+        return
 
     def get_absolute_url(self):
         return "/languages/%s/" % self.name
@@ -224,6 +269,11 @@ class LanguageListOrder(models.Model):
     language = models.ForeignKey(Language)
     language_list = models.ForeignKey(LanguageList)
     order = models.IntegerField()
+
+    def __unicode__(self):
+        return u"%s:%s(%s)" % (self.language_list.name, 
+                self.order,
+                self.language.ascii_name)
 
     class Meta:
         ordering = ["order"]
@@ -353,18 +403,22 @@ class CognateClassCitation(AbstractBaseCitation):
 def update_language_list_all(sender, instance, **kwargs):
     """Update the LanguageList 'all' whenever Language table is changed"""
     ll, _ = LanguageList.objects.get_or_create(name=LanguageList.DEFAULT)
-    missing_ids = set(Language.objects.values_list("id", flat=True)) - set(ll.language_id_list)
-    if missing_ids:
-        ll.language_id_list = sorted(missing_ids) + ll.language_id_list
-        ll.save(force_update=True)
+    ll.sequentialize()
+
+    missing_langs = set(Language.objects.all()) - set(ll.languages.all())
+    for language in missing_langs:
+        ll.append(language)
 
     # make alphabetized list
     default_alpha = LanguageList.DEFAULT+"-alpha"
-    ids = [i for n, i in sorted([(n.lower(), i) for n, i
-        in Language.objects.values_list("ascii_name", "id")])]
-    ll_alpha, _ = LanguageList.objects.get_or_create(name=default_alpha)
-    ll_alpha.language_id_list = ids
-    ll_alpha.save(force_update=True)
+    try: # zap the old one
+        ll_alpha = LanguageList.objects.get(name=default_alpha)
+        ll_alpha.delete()
+    except LanguageList.DoesNotExist:
+        pass
+    ll_alpha = LanguageList.objects.create(name=default_alpha)
+    for language in Language.objects.all().order_by("ascii_name"):
+        ll_alpha.append(language)
     return
 
 models.signals.post_save.connect(update_language_list_all, sender=Language)
@@ -392,8 +446,9 @@ models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 # -- Reversion registration ----------------------------------------
 
 for modelclass in [Source, Language, Meaning, CognateClass, Lexeme,
-        CognateJudgement, LanguageList, CognateJudgementCitation,
-        CognateClassCitation, LexemeCitation, MeaningList]:
+        CognateJudgement, LanguageList, LanguageListOrder,
+        CognateJudgementCitation, CognateClassCitation, LexemeCitation,
+        MeaningList]:
     try:
         reversion.register(modelclass)
     except RegistrationError, e:

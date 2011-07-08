@@ -30,7 +30,7 @@
       {% endif %}
     </td>  
     <td> 
-      {% if lexeme.cognatejudgement_set.count %}
+      {% if lexeme.cognatejudgement_set.exists %}
         {% for cj in lexeme.cognatejudgement_set.all %}
           {%if cj.is_loanword %}({% endif %}<a href="/cognate/{{ cj.cognate_class.id }}/">{{ cj.cognate_class.alias }}</a>{%if cj.is_loanword %}){% endif %}
           <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/#lexeme_{{ lexeme.id }}">

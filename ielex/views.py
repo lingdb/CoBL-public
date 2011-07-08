@@ -7,7 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
-from django.db.models import Q
+from django.db import IntegrityError
+from django.db.models import Q, Max
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.template.loader import get_template
@@ -142,14 +143,6 @@ def get_canonical_language(language):
             #   language = Language.objects.last_added()
     return language
 
-def get_ordered_languages(language_list):
-    def get_list_sorter(language_list):
-        def func(language):
-            return language_list.language_id_list.index(language.id)
-        return func
-    return sorted(Language.objects.filter(id__in=language_list.language_id_list),
-            key=get_list_sorter(language_list))# [:2]
-
 def get_current_language_list_name(request):
     """Get the name of the current language list from session. This is
     only be be used by navigation functions (e.g.
@@ -158,11 +151,14 @@ def get_current_language_list_name(request):
     return request.session.get("language_list_name", LanguageList.DEFAULT)
 
 def get_prev_and_next_languages(request, current_language, language_list=None):
-    # XXX language_list argument is not currently used
+    # XXX language_list argument is not currently dispatched to this function
     if language_list:
-        ids = LanguageList.objects.get(name=language_list).language_id_list
+        language_list = LanguageList.objects.get(name=language_list)
     else:
-        ids = list(Language.objects.values_list("id", flat=True))
+        language_list = LanguageList.objects.get(name=LanguageList.DEFAULT)
+
+    ids = list(language_list.languages.values_list(
+            "id", flat=True).order_by("languagelistorder"))
     try:
         current_idx = ids.index(current_language.id)
     except ValueError:
@@ -244,8 +240,7 @@ def get_canonical_languages(languages=None):
 def view_languages(request, languages=None):
     current_list = get_canonical_languages(languages)
     request.session["current_language_list_name"] = current_list.name
-    #languages = Language.objects.filter(id__in=current_list.language_id_list)
-    languages = get_ordered_languages(current_list)
+    languages = current_list.languages.all().order_by("languagelistorder")
 
     if request.method == 'POST':
         form = ChooseLanguageListForm(request.POST)
@@ -269,7 +264,7 @@ def view_languages(request, languages=None):
 def reorder_languages(request, languages):
     language_id = request.session.get("current_language_id", None)
     language_list = LanguageList.objects.get(name=languages)
-    languages = get_ordered_languages(language_list)
+    languages = language_list.languages.all().order_by("languagelistorder")
     ReorderForm = make_reorder_languagelist_form(languages)
     if request.method == "POST":
         form = ReorderForm(request.POST, initial={"language": language_id})
@@ -301,17 +296,30 @@ def reorder_languages(request, languages):
 
 def move_language(language, language_list, direction):
     assert direction in (-1, 1)
-    language_ids = language_list.language_id_list[:] # copy
-    target_idx = language_ids.index(language.id)
-    target = language_ids.pop(target_idx)
-    target_idx += direction
-    if target_idx > len(language_ids):
-        target_idx = 0
-    elif target_idx < 0:
-        target_idx = len(language_ids) + 1
-    language_ids.insert(target_idx, target)
-    language_list.language_id_list = language_ids
-    language_list.save()
+    def get_orderobj_and_neighbour(language, language_list):
+        order_obj = LanguageListOrder.objects.get(
+                language=language,
+                language_list=language_list)
+        max_order = LanguageListOrder.objects.filter(
+                language_list=language_list).aggregate(Max("order")).values()[0]
+        neighbour_idx = order_obj.order + direction
+        # XXX swapping opposite-end items isn't the right treatment...
+        if neighbour_idx < 0:
+            neighbour_idx = max_order
+        elif neighbour_idx > max_order:
+            neighbour_idx = 0
+        neighbour_obj = LanguageListOrder.objects.get(
+                language_list=language_list,
+                order=neighbour_idx)
+        return order_obj, neighbour_obj
+    try:
+        order_obj, neighbour_obj = get_orderobj_and_neighbour(
+                language, language_list)
+    except LanguageListOrder.DoesNotExist:
+        language_list.sequentialize()
+        order_obj, neighbour_obj = get_orderobj_and_neighbour(
+                language, language_list)
+    language_list.swap(order_obj.language, neighbour_obj.language)
     return
 
 def view_language_wordlist(request, language, wordlist):
@@ -426,10 +434,10 @@ def language_add_new(request, languages):
             form.save()
             language = Language.objects.get(
                     ascii_name=form.cleaned_data["ascii_name"])
-            language_id_list = language_list.language_id_list[:]
-            language_id_list.insert(0, language.id)
-            language_list.language_id_list = language_id_list
-            language_list.save()
+            try:
+                language_list.insert(0, language)
+            except IntegrityError:
+                pass # automatically inserted into LanguageList.DEFAULT
             return HttpResponseRedirect(reverse("language-report",
                 args=[language.ascii_name]))
     else: # first visit
@@ -771,13 +779,12 @@ def delete_meaning(request, meaning):
 #     return lexemes
 
 def get_ordered_lexemes(meaning, language_list):
-    def get_lexeme_sorter(language_list):
-        def func(lexeme):
-            return language_list.language_id_list.index(lexeme.language.id)
-        return func
-    return sorted(Lexeme.objects.filter(meaning=meaning,
-        language__id__in=language_list.language_id_list),
-        key=get_lexeme_sorter(language_list))
+    lexemes = Lexeme.objects.filter(
+            meaning=meaning,
+            language__in=language_list.languages.all(
+            )).filter(language__languagelistorder__language_list=language_list
+            ).select_related().order_by("language__languagelistorder")
+    return lexemes
 
 def view_lexeme(request, lexeme_id):
     """For un-logged-in users, view only"""

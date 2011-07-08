@@ -105,7 +105,7 @@ def write_nexus(fileobj,
 
     # get data together
     language_list = LanguageList.objects.get(name=language_list_name)
-    languages = Language.get_ordered_languages(language_list)
+    languages = language_list.languages.all().order_by("languagelistorder")
     language_names = [language.ascii_name for language in languages]
 
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
