@@ -300,8 +300,8 @@ def move_language(language, language_list, direction):
         order_obj = LanguageListOrder.objects.get(
                 language=language,
                 language_list=language_list)
-        max_order = LanguageListOrder.objects.filter(
-                language_list=language_list).aggregate(Max("order")).values()[0]
+        max_order = language_list.languagelistorder_set.aggregate(
+                Max("order")).values()[0]
         neighbour_idx = order_obj.order + direction
         # XXX swapping opposite-end items isn't the right treatment...
         if neighbour_idx < 0:

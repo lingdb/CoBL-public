@@ -30,7 +30,8 @@ migration::
 
 For later updates (where there has been a schema change), do::
 
-   ./manage.py migrate --no-initial-data
+   ./manage.py migrate --list # to see what will change
+   ./manage.py migrate --no-initial-data # to do it
 
 To make a new migration (e.g. after adding or changing a model) to the
 `lexicon` app, do::

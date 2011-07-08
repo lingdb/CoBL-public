@@ -2,10 +2,11 @@ from __future__ import division
 from string import uppercase, lowercase
 from collections import Counter
 from django.db import models
-from django.db.models import Max
+from django.db.models import Max, F
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+from django.db import connection, transaction ### testing
 # from django.contrib import admin
 import reversion
 from reversion.errors import RegistrationError
@@ -209,10 +210,11 @@ class LanguageList(models.Model):
 
     def append(self, language):
         """Add another language to the end of a LanguageList ordering"""
+        N = self.languagelistorder_set.aggregate(Max("order")).values()[0]
         try:
-            N = LanguageListOrder.objects.filter(
-                language_list=self).aggregate(Max("order")).values()[0]
-        except ValueError:
+            N += 1
+        except TypeError:
+            assert N is None
             N = 0
         LanguageListOrder.objects.create(
                 language=language,
@@ -222,11 +224,16 @@ class LanguageList(models.Model):
 
     def insert(self, N, language):
         """Insert another language into a LanguageList ordering at position N"""
-        increment = self.languagelistorder_set.filter(
-                order__gte=N).order_by("-order")
-        for llo in increment:
-            llo.order += 1
-            llo.save()
+        # increment = self.languagelistorder_set.filter(
+        #         order__gte=N).order_by("-order")
+        # for llo in increment:
+        #     llo.order += 1
+        #     llo.save()
+        cursor = connection.cursor()
+        cursor.execute( # note that "order" is a reserved word in sql
+                """UPDATE lexicon_languagelistorder SET "order" = "order" + 1
+                WHERE (language_list_id = %s AND "order" >= %s)""", [self.id, N])
+        transaction.commit_unless_managed()
         LanguageListOrder.objects.create(
                 language=language,
                 language_list=self,
@@ -234,11 +241,17 @@ class LanguageList(models.Model):
         return
 
     def sequentialize(self):
-        """Sequentialize the order fields of a LanguageListOrder set"""
-        for i, llo in enumerate(self.languagelistorder_set.all()):
-            if llo.order != i:
-                llo.order = i
-                llo.save()
+        """Sequentialize the order fields of a LanguageListOrder set.
+        This is slow, so check first to see if it is necessary."""
+        count = self.languagelistorder_set.count()
+        if count:
+            max_id = self.languagelistorder_set.aggregate(Max("order")).values()[0]
+            # zero indexed, so the maximum id should be one less than the count
+            if count != max_id + 1:
+                for i, llo in enumerate(self.languagelistorder_set.all()):
+                    if llo.order != i:
+                        llo.order = i
+                        llo.save()
         return
 
     def swap(self, languageA, languageB):

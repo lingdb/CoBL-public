@@ -10,11 +10,17 @@ class Migration(DataMigration):
     def forwards(self, orm):
         """For each LanguageList object, create a series of
         LanguageListOrder objects in order of the
-        LanguageList.language_id_list attribute"""
-        for ll in LanguageList.objects.all():
-            if ll.language_id_list:
+        LanguageList.language_id_list attribute.
+
+        Note that with updated version of the model there are the model field
+        `.language_ids` and the property `.language_id_list` are no longer
+        availaible: use raw sql select to get `language_ids`.
+        """
+        for ll in LanguageList.objects.raw("select * from lexicon_languagelist"):
+            if ll.language_ids:
                 i = 0
-                for language_id in ll.language_id_list:
+                for language_id in ll.language_ids.split(","):
+                    language_id = int(language_id)
                     try:
                         l = Language.objects.get(id=language_id)
                         i += 1
@@ -22,7 +28,7 @@ class Migration(DataMigration):
                                 order=i)
                     except Language.DoesNotExist:
                         print "NOTE: LanguageList", ll, \
-                                "--> Contains non-existent language id:", i
+                                "--> Contained non-existent language id:", i
 
 
     def backwards(self, orm):
