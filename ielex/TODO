@@ -6,7 +6,9 @@ TODO
   scheme.
 
 - rewrite templates so the database can handle startup from nothing (e.g.
-  initially, only offer "create language", "create meaning" pages
+  initially, only offer "create language", "create meaning" pages) -- then zap
+  the fixtures (which are annoying when you syncdb or migrate and forget to
+  suppress them)
 
 - Describe grammar of urls::
 
@@ -94,7 +96,7 @@ TODO
 
   This is crying out for class-based views...
 
-- Implement GenericCitation
+- Implement GenericCitation **DEFER**
 
   * Get the class working
   * Hook it up to Extensional Semantics objects and get it working on import of
@@ -102,6 +104,8 @@ TODO
   * Copy all IE citations to new model
   * Hook up GenericCitation to lexicon models and templates
   * Drop old XxxCitation tables
+
+  **This causes problems**
 
 for Version 0.3
 ---------------
@@ -183,10 +187,6 @@ Development
 
 - Make a developer site on e.g. google code
 
-- Make another database with the Aslian materials (so we can keep up with
-  whether the addition of the kinship module has broken anything of the basic
-  db).
-
 - Do there need to be any import functions?
 
 
@@ -197,5 +197,3 @@ Stack Overflow
 
 - How can I add extra choices to a selection drop down otherwise based on a
   query?
-
-- Django reversion: retrospectively adding my models to the reversion table...
