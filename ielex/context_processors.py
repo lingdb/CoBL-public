@@ -11,7 +11,7 @@ TEMPLATE_CONTEXT_PROCESSORS setting."""
 from ielex.settings import VERSION
 from ielex import local_settings
 from ielex.lexicon.models import *
-from ielex.extensional_semantics.models import *
+#from ielex.extensional_semantics.models import *
 
 def configuration(request):
     """Various things stored in local_settings.py"""

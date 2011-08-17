@@ -184,7 +184,7 @@ def write_nexus(fileobj,
         print>>fileobj, dedent("""\
             begin characters;
               dimensions nchar=%s;
-              format symbols="01";
+              format symbols="01" missing="?";
               charstatelabels""" % len(data))
             # TODO print the labels here
         labels = []

@@ -4,7 +4,7 @@ import os.path
 # DEBUG = True
 # TEMPLATE_DEBUG = DEBUG
 
-VERSION = "0.4"
+VERSION = "0.5"
 ROOTDIR = os.path.abspath(os.path.dirname(__file__))
 
 # set this in local_settings.py
