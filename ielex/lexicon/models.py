@@ -1,6 +1,5 @@
 from __future__ import division
 from string import uppercase, lowercase
-from collections import Counter
 from django.db import models
 from django.db.models import Max, F
 from django.core.urlresolvers import reverse
