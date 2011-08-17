@@ -1,4 +1,5 @@
 from optparse import make_option
+from os.path import expanduser, expandvars
 from django.core.management.base import NoArgsCommand, CommandError
 from ielex.lexicon.views import write_nexus
 
@@ -17,12 +18,12 @@ class Command(NoArgsCommand):
                 help="Include unique cognate sets [False]"),
             make_option("--outfile", dest="filename",
                 action="store", default=None,
-                help="Name of meaning list [all]"),
+                help="Name of destinate filename"),
             )
 
     def handle(self, **options):
         if options["filename"]:
-            fileobj = open(options["filename"], "w")
+            fileobj = open(expanduser(expandvars(options["filename"])), "w")
         else:
             fileobj = self.stdout
         fileobj = write_nexus(fileobj,

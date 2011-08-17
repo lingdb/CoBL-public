@@ -4,7 +4,7 @@ import os.path
 # DEBUG = True
 # TEMPLATE_DEBUG = DEBUG
 
-VERSION = "0.4"
+VERSION = "0.5"
 ROOTDIR = os.path.abspath(os.path.dirname(__file__))
 
 # set this in local_settings.py
@@ -123,6 +123,7 @@ if DEBUG:
         MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
         INTERNAL_IPS = ('127.0.0.1',)
         INSTALLED_APPS += ('debug_toolbar',)
+        DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS':False}
     except ImportError:
         pass
 

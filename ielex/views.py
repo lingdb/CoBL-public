@@ -1139,9 +1139,10 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
     # 'all' (maybe make this configurable?)
     language_list = LanguageList.objects.get(name=LanguageList.DEFAULT)
     cj_ordered = []
-    for language_id in language_list.language_id_list:
+    # for language_id in language_list.language_id_list:
+    for language in language_list.languages.all().order_by("languagelistorder"):
         cj = cognate_class.cognatejudgement_set.filter(
-                lexeme__language__id=language_id)
+                lexeme__language=language)
         cj_ordered.extend(list(cj))
 
     return render_template(request, "cognate_report.html",
