@@ -51,7 +51,7 @@ def view_changes(request):
     """Recent changes"""
     # XXX the view fails when an object has been deleted
     recent_changes = Version.objects.all().order_by("-id")
-    paginator = Paginator(recent_changes, 100) # was 200
+    paginator = Paginator(recent_changes, 50) # was 200
 
     try: # Make sure page request is an int. If not, deliver first page.
         page = int(request.GET.get('page', '1'))
