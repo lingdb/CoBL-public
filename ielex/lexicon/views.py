@@ -162,10 +162,10 @@ def write_nexus(fileobj,
     print>>fileobj, dedent("""\
         #NEXUS
 
-        [ Citation:                                                        ]
-        [   Dunn, Michael; Ludewig, Julia. 2009. IELex (Indo-European      ]
-        [   Lexicon) Database. Max Planck Institute for Psycholinguistics, ]
-        [   Nijmegen.                                                      ]
+        [ Citation:                                                          ]
+        [   Dunn, Michael; Ludewig, Julia; et al. 2011. IELex (Indo-European ]
+        [ Lexicon) Database. Max Planck Institute for Psycholinguistics,     ]
+        [ Nijmegen.                                                          ]
         """)
     print>>fileobj, "[ Language list: %s ]" % language_list_name
     print>>fileobj, "[ Meaning list: %s ]" % meaning_list_name
@@ -184,9 +184,8 @@ def write_nexus(fileobj,
         print>>fileobj, dedent("""\
             begin characters;
               dimensions nchar=%s;
-              format symbols="01" missing="?";
+              format symbols="01" missing=?;
               charstatelabels""" % len(data))
-            # TODO print the labels here
         labels = []
         for i, cc in enumerate(sorted(data)):
             try:
