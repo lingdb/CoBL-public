@@ -116,6 +116,10 @@ class CognateClass(models.Model):
             self.save()
         return
 
+    def get_meanings(self):
+        meanings = Meaning.objects.filter(lexeme__cognate_class=self).distinct()
+        return meanings
+
     def get_absolute_url(self):
         return "/cognate/%s/" % self.id
 

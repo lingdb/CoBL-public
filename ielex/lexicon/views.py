@@ -1,16 +1,14 @@
 from textwrap import dedent
 import time
 import sys
+# import logging
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.views.generic import CreateView, UpdateView
-# from django.shortcuts import render_to_response
 from ielex import settings
 from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
 from ielex.forms import ChooseNexusOutputForm, EditCognateClassCitationForm
-#from ielex.views import get_ordered_languages
-from ielex.lexicon.models import CognateClassCitation
 
 class CognateClassCitationUpdateView(UpdateView):
     model=CognateClassCitation
@@ -112,14 +110,19 @@ def write_nexus(fileobj,
     meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
     max_len = max([len(l) for l in language_names])
 
+    # all cognate classes
     cognate_class_ids = CognateClass.objects.all().values_list("id", flat=True)
     cognate_class_names = dict(CognateJudgement.objects.all().values_list(
             "cognate_class__id", "lexeme__meaning__gloss").distinct())
+    #logging.info("len cognate_class_ids = %s" % len(cognate_class_ids))
 
+    # make a list for each meaning of the languages lacking any lexeme with that meaning
     missing = {}
+    #logging.info("=== missing data MEANING: [LANGUAGE_IDS] ===")
     for meaning in meanings:
         missing[meaning] = [language.id for language in languages if not
                 language.lexeme_set.filter(meaning=meaning).exists()]
+        #logging.info("%s: %s" % (meaning, missing[meaning]))
 
     data, data_missing = {}, {}
     for cc in cognate_class_ids:
@@ -134,10 +137,15 @@ def write_nexus(fileobj,
                         if not (cj.reliability_ratings & exclude)]
         if language_ids:
             data[cc] = language_ids
-            meaning = set(CognateClass.objects.get(id=cc).lexeme_set.values_list(
-                    "meaning", flat=True)).pop()
+            #meaning = set(CognateClass.objects.get(id=cc).lexeme_set.values_list(
+            #        "meaning", flat=True)).pop()
+            cc_meanings = CognateClass.objects.get(id=cc).get_meanings()
+            assert len(cc_meanings) == 1
+            meaning = cc_meanings[0]
             try:
                 data_missing[cc] = missing[meaning]
+                # if data_missing[cc]:
+                #     logging.info("missing data '%s': %s %s" % (meaning, cc, data_missing[cc]))
             except KeyError:
                 data_missing[cc] = []
 
@@ -151,21 +159,32 @@ def write_nexus(fileobj,
                 cognate_class__isnull=True,
                 meaning__in=meanings).values_list("language", "id")
         for language_id, lexeme_id in uniques:
+            meaning = Lexeme.objects.get(id=lexeme_id).meaning
             cc = ("U", lexeme_id)
             data[cc] = [language_id]
+            cognate_class_names[cc] = meaning.gloss
             try:
-                data_missing[cc] = missing[Lexeme.objects.get(id=lexeme_id).meaning]
+                data_missing[cc] = missing[meaning]
+                # if data_missing[cc]:
+                #     logging.info("missing data '%s': %s %s" % (meaning, cc, data_missing[cc]))
             except KeyError:
                 data_missing[cc] = []
 
-    # print out response
+    def cognate_class_name_formatter(cc):
+        gloss = cognate_class_names[cc]
+        if type(cc) == int:
+            return "%s_cogset_%s" % (gloss, cc)
+        else:
+            assert type(cc) == tuple
+            return "%s_lexeme_%s" % (gloss, cc[1])
+
     print>>fileobj, dedent("""\
         #NEXUS
 
         [ Citation:                                                          ]
         [   Dunn, Michael; Ludewig, Julia; et al. 2011. IELex (Indo-European ]
-        [ Lexicon) Database. Max Planck Institute for Psycholinguistics,     ]
-        [ Nijmegen.                                                          ]
+        [   Lexicon) Database. Max Planck Institute for Psycholinguistics,   ]
+        [   Nijmegen.                                                        ]
         """)
     print>>fileobj, "[ Language list: %s ]" % language_list_name
     print>>fileobj, "[ Meaning list: %s ]" % meaning_list_name
@@ -187,12 +206,15 @@ def write_nexus(fileobj,
               format symbols="01" missing=?;
               charstatelabels""" % len(data))
         labels = []
-        for i, cc in enumerate(sorted(data)):
-            try:
-                labels.append("    %d %s_%d" % (i+1, cognate_class_names[cc],
-                    cc))
-            except KeyError:
-                labels.append("    %d Lexeme_%d" % (i+1, cc[1]))
+
+        for i, cc in enumerate(sorted(data, key=lambda cc:
+                (cognate_class_names[cc], cc))):
+            labels.append("    %d %s" % (i+1, cognate_class_name_formatter(cc)))
+            # try:
+            #     labels.append("    %d %s_%d" % (i+1, cognate_class_names[cc],
+            #         cc))
+            # except KeyError:
+            #     labels.append("    %d Lexeme_%d" % (i+1, cc[1]))
         print>>fileobj, ",\n".join(labels)
         print>>fileobj, "  ;\n  matrix"
     else:
@@ -206,37 +228,14 @@ def write_nexus(fileobj,
             """ % (len(languages), len(data), " ".join(language_names)))
 
     if LABEL_COGNATE_SETS:
-        if dialect == "BP":
-            def get_code(cc):
-                """Take a integer or tuple index and return a concatenated string"""
-                try:
-                    code = "".join(str(e) for e in cc)
-                except TypeError:
-                    code = str(cc)
-                return code
-            msg = "   %s [ Cognate class codes ]"  % (" "*max_len)
-            if INCLUDE_UNIQUE_STATES:
-                msg += " ['U' codes are lexeme ids representing unique states ]"
-            print>>fileobj, msg
-            for i in range(max([len(get_code(i)) for i in data.keys()])):
-                row = []
-                for cc in sorted(data):
-                    try:
-                        row.append(get_code(cc)[i])
-                    except IndexError:
-                        row.append(".")
-                print>>fileobj, "    %s[ %s ]" % (" "*max_len, "".join(row))
-            print>>fileobj
-
-        else: # just number them
-            row = [" "*9] + [str(i).ljust(10) for i in range(len(data))[10::10]]
-            print>>fileobj, "    %s[ %s ]" % (" "*max_len, "".join(row))
-            row = [" "*9] + [".         " for i in range(len(data))[10::10]]
-            print>>fileobj, "    %s[ %s ]" % (" "*max_len, "".join(row))
+        row = [" "*9] + [str(i).ljust(10) for i in range(len(data))[10::10]]
+        print>>fileobj, "    %s[ %s ]" % (" "*max_len, "".join(row))
+        row = [" "*9] + [".         " for i in range(len(data))[10::10]]
+        print>>fileobj, "    %s[ %s ]" % (" "*max_len, "".join(row))
 
     for language in languages:
         row = []
-        for cc in sorted(data):
+        for cc in sorted(data, key=lambda cc: (cognate_class_names[cc], cc)):
             if language.id in data[cc]:
                 row.append("1")
             elif language.id in data_missing[cc]:

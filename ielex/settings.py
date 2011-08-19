@@ -1,5 +1,6 @@
 # Django settings for ielex project.
 import os.path
+#import logging
 
 # DEBUG = True
 # TEMPLATE_DEBUG = DEBUG
@@ -102,6 +103,12 @@ INSTALLED_APPS = (
 LOGIN_URL = '/accounts/login/'
 LOGOUT_URL = '/accounts/logout/'
 LOGIN_REDIRECT_URL = '/accounts/profile/'
+
+## -- setup logger ------------------------------------------------
+#logging.basicConfig(level=logging.INFO,
+#     format='%(asctime)s %(levelname)s %(message)s',
+#     filename=os.path.join(os.path.dirname(ROOTDIR), 'django.log'),
+#     filemode='a+')
 
 # -- local settings file, overrides settings.py ------------------
 local_settings_path = os.path.join(ROOTDIR, "local_settings.py")
