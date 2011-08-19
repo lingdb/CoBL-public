@@ -117,8 +117,18 @@ class CognateClass(models.Model):
         return
 
     def get_meanings(self):
+        # some cognate classes have more than one meaning, e.g. "right" ~
+        # "rightside", "in" ~ "at"
         meanings = Meaning.objects.filter(lexeme__cognate_class=self).distinct()
         return meanings
+
+    def get_meaning(self):
+        # for nexus files it doesn't matter what gloss we use, so long as there
+        # is only one per cognate set
+        try:
+            return self.get_meanings().order_by("gloss")[0]
+        except IndexError:
+            return None
 
     def get_absolute_url(self):
         return "/cognate/%s/" % self.id

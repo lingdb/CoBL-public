@@ -139,11 +139,8 @@ def write_nexus(fileobj,
             data[cc] = language_ids
             #meaning = set(CognateClass.objects.get(id=cc).lexeme_set.values_list(
             #        "meaning", flat=True)).pop()
-            cc_meanings = CognateClass.objects.get(id=cc).get_meanings()
-            assert len(cc_meanings) == 1
-            meaning = cc_meanings[0]
             try:
-                data_missing[cc] = missing[meaning]
+                data_missing[cc] = missing[CognateClass.objects.get(id=cc).get_meaning()]
                 # if data_missing[cc]:
                 #     logging.info("missing data '%s': %s %s" % (meaning, cc, data_missing[cc]))
             except KeyError:
