@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import textwrap
+import bisect
 import re
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -273,6 +274,7 @@ def reorder_languages(request, languages):
             request.session["current_language_id"] = language_id
             language = Language.objects.get(id=language_id)
             if form.data["submit"] == "Finish":
+                language_list.sequentialize()
                 return HttpResponseRedirect(reverse("view-languages",
                     args=[language_list.name]))
             else:
@@ -296,30 +298,36 @@ def reorder_languages(request, languages):
 
 def move_language(language, language_list, direction):
     assert direction in (-1, 1)
-    def get_orderobj_and_neighbour(language, language_list):
-        order_obj = LanguageListOrder.objects.get(
-                language=language,
-                language_list=language_list)
-        max_order = language_list.languagelistorder_set.aggregate(
-                Max("order")).values()[0]
-        neighbour_idx = order_obj.order + direction
-        # XXX swapping opposite-end items isn't the right treatment...
-        if neighbour_idx < 0:
-            neighbour_idx = max_order
-        elif neighbour_idx > max_order:
-            neighbour_idx = 0
-        neighbour_obj = LanguageListOrder.objects.get(
-                language_list=language_list,
-                order=neighbour_idx)
-        return order_obj, neighbour_obj
+    order_obj = LanguageListOrder.objects.get(
+            language=language,
+            language_list=language_list)
+    order_values = list(language_list.languagelistorder_set.values_list("order",
+            flat=True))
+    current_idx = order_values.index(order_obj.order)
     try:
-        order_obj, neighbour_obj = get_orderobj_and_neighbour(
-                language, language_list)
-    except LanguageListOrder.DoesNotExist:
-        language_list.sequentialize()
-        order_obj, neighbour_obj = get_orderobj_and_neighbour(
-                language, language_list)
-    language_list.swap(order_obj.language, neighbour_obj.language)
+        neighbour = order_values[current_idx + direction]
+    except IndexError:
+        # boundary, move to other end of list
+        if direction == -1:
+            order_obj.order = max(order_values) + 0.5
+        else:
+            order_obj.order = min(order_values) - 0.5
+        order_obj.save()
+        return
+    try:
+        second_neighbour = order_values[current_idx + (direction * 2)]
+    except IndexError:
+        # one place away from boundary, move to end
+        if direction == -1:
+            order_obj.order = min(order_values) - 0.5
+        else:
+            order_obj.order = max(order_values) + 0.5
+        order_obj.save()
+        return
+    # mid list value, move to between neighbour and second_neighbour
+    order_obj.order = min([neighbour, second_neighbour]) + 0.5 * abs(neighbour
+            - second_neighbour)
+    order_obj.save()
     return
 
 def view_language_wordlist(request, language, wordlist):
