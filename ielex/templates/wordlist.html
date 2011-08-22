@@ -22,7 +22,7 @@
       {% endif %}
       {{ meaning.description }}
     </td>
-    <td><a href="{% url meaning-report meaning.id %}">{{ meaning.gloss }}</a></td>
+    <td><a href="{% url view-meaning-languages meaning.gloss current_language_list %}">{{ meaning.gloss }}</a></td>
     {# <td>{{ meaning.lexeme_count }}</td> #}
   </tr>
   {% endfor %}

@@ -512,9 +512,12 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
     form.fields["meaning_list"].initial = wordlist.id
 
     meanings = get_ordered_meanings(wordlist)
+    current_language_list = request.session.get("current_language_list_name",
+            LanguageList.DEFAULT)
     return render_template(request, "wordlist.html",
             {"meanings":meanings,
-            "form":form})
+            "form":form,
+            "current_language_list":current_language_list})
 
 @login_required
 def edit_wordlist(request, wordlist):
