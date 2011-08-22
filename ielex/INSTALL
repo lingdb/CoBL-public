@@ -36,7 +36,7 @@ For later updates (where there has been a schema change), do::
 To make a new migration (e.g. after adding or changing a model) to the
 `lexicon` app, do::
 
-   ./manage.py schemamigration lexicon [MIGRATION_NAME]
+   ./manage.py schemamigration lexicon --auto [MIGRATION_NAME]
    ./manage.py migrate --no-initial-data
 
 

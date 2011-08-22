@@ -134,7 +134,7 @@ class CognateClass(models.Model):
         return "/cognate/%s/" % self.id
 
     def __unicode__(self):
-        return "Cognate Set %s" % self.id
+        return "CognateClass %s" % self.id
 
     class Meta:
         ordering = ["alias"]
@@ -246,34 +246,34 @@ class LanguageList(models.Model):
 
     def insert(self, N, language):
         """Insert another language into a LanguageList ordering at position N"""
-        # increment = self.languagelistorder_set.filter(
-        #         order__gte=N).order_by("-order")
-        # for llo in increment:
-        #     llo.order += 1
-        #     llo.save()
-        cursor = connection.cursor()
-        cursor.execute( # note that "order" is a reserved word in sql
-                """UPDATE lexicon_languagelistorder SET "order" = "order" + 1
-                WHERE (language_list_id = %s AND "order" >= %s)""", [self.id, N])
-        transaction.commit_unless_managed()
-        LanguageListOrder.objects.create(
+        llo = LanguageListOrder.objects.get(
                 language=language,
-                language_list=self,
-                order=N)
+                language_list=self)
+        target = self.languagelistorder_set.all()[N]
+        llo.order = target.order - 0.0001
+        llo.save()
         return
 
     def sequentialize(self):
-        """Sequentialize the order fields of a LanguageListOrder set.
-        This is slow, so check first to see if it is necessary."""
+        """Sequentialize the order fields of a LanguageListOrder set
+        with a separation of approximately 1.0.  This is a bit slow, so
+        it should only be done from time to time."""
         count = self.languagelistorder_set.count()
+        def jitter(N, N_list):
+            """Return a number close to N such that N is not in N_list"""
+            while True:
+                try:
+                    assert N not in N_list
+                    return N
+                except AssertionError:
+                    N += 0.0001
+            return
         if count:
-            max_id = self.languagelistorder_set.aggregate(Max("order")).values()[0]
-            # zero indexed, so the maximum id should be one less than the count
-            if count != max_id + 1:
-                for i, llo in enumerate(self.languagelistorder_set.all()):
-                    if llo.order != i:
-                        llo.order = i
-                        llo.save()
+            order_floats = self.languagelistorder_set.values_list("order", flat=True)
+            for i, llo in enumerate(self.languagelistorder_set.all()):
+                if i != llo.order:
+                    llo.order = jitter(i, order_floats)
+                    llo.save()
         return
 
     def swap(self, languageA, languageB):
@@ -303,7 +303,7 @@ class LanguageListOrder(models.Model):
 
     language = models.ForeignKey(Language)
     language_list = models.ForeignKey(LanguageList)
-    order = models.IntegerField()
+    order = models.FloatField()
 
     def __unicode__(self):
         return u"%s:%s(%s)" % (self.language_list.name, 
