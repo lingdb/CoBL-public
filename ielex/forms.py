@@ -6,6 +6,7 @@ from ielex.extensional_semantics.models import *
 
 def clean_ascii_name(data):
     """Check that a string is suitable to be part of a url (ascii, no spaces)"""
+    # TODO use the suitable_for_url validator here
     illegal_chars = re.findall(r"[^a-zA-Z0-9$\-_\.+!*'(),]", data)
     try:
         assert not illegal_chars
@@ -13,6 +14,10 @@ def clean_ascii_name(data):
         raise forms.ValidationError("Invalid character/s for an ascii label:"\
                 " '%s'" % "', '".join(illegal_chars))
     return data
+
+def clean_whitespace(data):
+    # TODO use me in all forms
+    return data.strip()
 
 class ChooseLanguageField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
