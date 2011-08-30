@@ -1,7 +1,7 @@
 from textwrap import dedent
 import time
 import sys
-# import logging
+import logging
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.views.generic import CreateView, UpdateView
@@ -101,6 +101,11 @@ def write_nexus(fileobj,
             INCLUDE_UNIQUE_STATES):
     start_time = time.time()
 
+    # MAX_1_SINGLETON: True|False
+    # only allow zero or one singletons per language per meaning (zero
+    # if there is another lexeme coded for that meaning, one if not).
+    MAX_1_SINGLETON = True
+
     # get data together
     language_list = LanguageList.objects.get(name=language_list_name)
     languages = language_list.languages.all().order_by("languagelistorder")
@@ -153,19 +158,42 @@ def write_nexus(fileobj,
         # note that registered cognate classes with one member will NOT be
         # ignored when INCLUDE_UNIQUE_STATES = False
         uniques = Lexeme.objects.filter(
-                cognate_class__isnull=True,
-                meaning__in=meanings).values_list("language", "id")
-        for language_id, lexeme_id in uniques:
-            meaning = Lexeme.objects.get(id=lexeme_id).meaning
-            cc = ("U", lexeme_id)
-            data[cc] = [language_id]
-            cognate_class_names[cc] = meaning.gloss
-            try:
-                data_missing[cc] = missing[meaning]
-                # if data_missing[cc]:
-                #     logging.info("missing data '%s': %s %s" % (meaning, cc, data_missing[cc]))
-            except KeyError:
-                data_missing[cc] = []
+                language__in=languages,
+                meaning__in=meanings,
+                cognate_class__isnull=True).values_list(
+                        "language__id",
+                        "meaning__id",
+                        "id")
+
+        if MAX_1_SINGLETON:
+            # only allow one singleton per language-meaning, and only if there
+            # are not already any lexemes in that language-meaning cell
+            # coded as part of a cognate set
+            suppress_singleton = set()
+            for language in languages:
+                for meaning in meanings:
+                    if Lexeme.objects.filter(language=language,
+                            meaning=meaning, cognate_class__isnull=False):
+                        suppress_singleton.add((language.id, meaning.id))
+                        logging.info("Suppress singleton %s %s" % (language,
+                            meaning))
+
+        for language_id, meaning_id, lexeme_id in uniques:
+            if not MAX_1_SINGLETON or (language_id, meaning_id) not in \
+                    suppress_singleton:
+                meaning = Meaning.objects.get(id=meaning_id)
+                cc = ("U", lexeme_id)
+                data[cc] = [language_id]
+                cognate_class_names[cc] = meaning.gloss
+                try:
+                    data_missing[cc] = missing[meaning]
+                    # if data_missing[cc]:
+                    #     logging.info("missing data '%s': %s %s" % (meaning, cc, data_missing[cc]))
+                except KeyError:
+                    data_missing[cc] = []
+            else:
+                if MAX_1_SINGLETON:
+                    logging.info("Suppressed %s %s" % (language_id, meaning_id))
 
     def cognate_class_name_formatter(cc):
         gloss = cognate_class_names[cc]
