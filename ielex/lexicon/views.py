@@ -1,7 +1,7 @@
 from textwrap import dedent
 import time
 import sys
-import logging
+# import logging
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.views.generic import CreateView, UpdateView
@@ -175,8 +175,8 @@ def write_nexus(fileobj,
                     if Lexeme.objects.filter(language=language,
                             meaning=meaning, cognate_class__isnull=False):
                         suppress_singleton.add((language.id, meaning.id))
-                        logging.info("Suppress singleton %s %s" % (language,
-                            meaning))
+                        #logging.info("Suppress singleton %s %s" % (language,
+                        #    meaning))
 
         for language_id, meaning_id, lexeme_id in uniques:
             if not MAX_1_SINGLETON or (language_id, meaning_id) not in \
@@ -191,9 +191,9 @@ def write_nexus(fileobj,
                     #     logging.info("missing data '%s': %s %s" % (meaning, cc, data_missing[cc]))
                 except KeyError:
                     data_missing[cc] = []
-            else:
-                if MAX_1_SINGLETON:
-                    logging.info("Suppressed %s %s" % (language_id, meaning_id))
+            # else:
+            #     if MAX_1_SINGLETON:
+            #         logging.info("Suppressed %s %s" % (language_id, meaning_id))
 
     def cognate_class_name_formatter(cc):
         gloss = cognate_class_names[cc]
@@ -295,4 +295,5 @@ def write_nexus(fileobj,
     minutes = seconds // 60
     seconds %= 60
     print>>fileobj, "[ Processing time: %02d:%02d ]" % (minutes, seconds)
+    print>>fileobj, "[ %s ]" % " ".join(sys.argv)
     return fileobj
