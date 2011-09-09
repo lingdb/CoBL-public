@@ -215,6 +215,8 @@ def write_nexus(fileobj,
     print>>fileobj, "[ Meaning list: %s ]" % meaning_list_name
     print>>fileobj, "[ Exclude rating/s: %s ]" % ", ".join(sorted(exclude))
     print>>fileobj, "[ Include unique states: %s ]" % INCLUDE_UNIQUE_STATES
+    if INCLUDE_UNIQUE_STATES:
+        print>>fileobj, "[ Limit of one singleton per language/meaning: %s ]" % MAX_1_SINGLETON
     print>>fileobj, "[ File generated: %s ]\n" % \
             time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
