@@ -6,6 +6,7 @@ from ielex.lexicon.views import write_nexus
 class Command(NoArgsCommand):
     help="""Export a nexus file from the database"""
     requires_model_validation = False
+    unique_choices = ["all", "limited", "none"]
     option_list = NoArgsCommand.option_list + (
             make_option("--language-list", dest="language_list",
                 action="store", default="all",
@@ -14,8 +15,10 @@ class Command(NoArgsCommand):
                 action="store", default="all",
                 help="Name of meaning list [all]"),
             make_option("--unique", dest="unique",
-                action="store_true", default=False,
-                help="Include unique cognate sets [False]"),
+                action="store", type="choice", default=None,
+                choices=unique_choices ,
+                help=("Include unique cognate sets. Choices: %s" %
+                ", ".join(unique_choices))),
             make_option("--outfile", dest="filename",
                 action="store", default=None,
                 help="Name of destinate filename"),
@@ -26,6 +29,8 @@ class Command(NoArgsCommand):
             fileobj = open(expanduser(expandvars(options["filename"])), "w")
         else:
             fileobj = self.stdout
+        if options["unique"] == 'none':
+            options["unique"] = False
         fileobj = write_nexus(fileobj,
             options["language_list"],
             options["meaning_list"],

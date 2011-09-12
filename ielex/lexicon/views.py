@@ -98,13 +98,21 @@ def write_nexus(fileobj,
             exclude,
             dialect,
             LABEL_COGNATE_SETS,
-            INCLUDE_UNIQUE_STATES):
+            singletons):
     start_time = time.time()
 
     # MAX_1_SINGLETON: True|False
     # only allow zero or one singletons per language per meaning (zero
     # if there is another lexeme coded for that meaning, one if not).
-    MAX_1_SINGLETON = True
+    if singletons:
+        INCLUDE_UNIQUE_STATES = True
+        if singletons == "all":
+            MAX_1_SINGLETON = False
+        else:
+            assert singletons == "limited"
+            MAX_1_SINGLETON = True
+    else:
+        INCLUDE_UNIQUE_STATES = False
 
     # get data together
     language_list = LanguageList.objects.get(name=language_list_name)
