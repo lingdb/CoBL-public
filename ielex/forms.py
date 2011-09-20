@@ -221,6 +221,7 @@ class EditCitationForm(forms.Form):
     comment = forms.CharField(widget=forms.Textarea, required=False)
 
 class EditCognateClassCitationForm(forms.ModelForm):
+    comment = forms.CharField(widget=forms.Textarea, required=False)
 
     def validate_unique(self):
         """Calls the instance's validate_unique() method and updates the
@@ -236,7 +237,7 @@ class EditCognateClassCitationForm(forms.ModelForm):
 
     class Meta:
         model = CognateClassCitation
-        exclude = ["cognate_class"]
+        fields = ["source", "pages", "reliability", "comment"]
 
 class AddCitationForm(forms.Form):
     source = ChooseOneSourceField(queryset=Source.objects.all(),

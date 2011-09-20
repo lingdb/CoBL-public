@@ -1220,6 +1220,13 @@ def source_list(request):
     return render_template(request, "source_list.html",
             {"grouped_sources":grouped_sources})
 
+# -- key value pairs ------------------------------------------------------
+
+def set_key_value(request, key, value):
+    msg = "set key '%s' to '%s'" % (key, value)
+    messages.add_message(request, messages.INFO, msg)
+    return HttpResponseRedirect(reverse("view-frontpage"))
+
 # -- search ---------------------------------------------------------------
 
 def lexeme_search(request):

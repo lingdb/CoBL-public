@@ -24,6 +24,7 @@ R = {
     "MEANING":r"(?P<meaning>[a-zA-Z0-9_]+)",
     "RELATION":r"(?P<relation>[a-zA-Z0-9_.-]+)",
     "WORDLIST":r"(?P<wordlist>[a-zA-Z0-9_.-]+)",
+    "identifier":r"[a-zA-Z_][a-zA-Z0-9_]*",
     }
 
 urlpatterns = patterns('',
@@ -177,7 +178,8 @@ urlpatterns = patterns('',
                     context_object_name="citation"),
             name="cognate-judgement-citation-detail"),
 
-
+    url(r'^set/(?P<key>%(identifier)s)/(?P<value>%(identifier)s)/$' % R,
+            set_key_value),
 
     url(r'^revert/(?P<version_id>\d+)/$', revert_version),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
