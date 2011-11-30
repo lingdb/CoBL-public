@@ -14,7 +14,7 @@
   <tr class="{% cycle 'odd' 'even' %}">
     <td>{{ version.revision.date_created|date:"d-M-Y G:i"  }}</td>
     <td>{{ version.content_type.name }}</td>
-    <td>{# Link to current object, if not deleted #}                         
+    <td>
       {% if version.get_type_display != "Deletion" %}                        
       {% with version.get_object_version.object.get_absolute_url as obj_url %}
       {% if obj_url %}
