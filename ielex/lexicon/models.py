@@ -3,7 +3,7 @@ from string import uppercase, lowercase
 from django.db import models
 from django.db.models import Max, F
 from django.core.urlresolvers import reverse
-from django.core.cache import cache
+## from django.core.cache import cache
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.db import connection, transaction ### testing
@@ -196,13 +196,15 @@ class CognateJudgement(models.Model):
     @property
     def is_loanword(self):
         # only calculate this value if it hasn't been worked out recently
-        key = "is_loanword_%s" % self.lexeme.id
-        is_loanword = cache.get(key)
-        try:
-            assert is_loanword is not None
-        except AssertionError:
-            is_loanword = "L" in self.reliability_ratings
-            cache.set(key, is_loanword, 300)
+        ## -- disable cache
+        ## key = "is_loanword_%s" % self.lexeme.id
+        ## is_loanword = cache.get(key)
+        ## try:
+        ##     assert is_loanword is not None
+        ## except AssertionError:
+        ##     is_loanword = "L" in self.reliability_ratings
+        ##     cache.set(key, is_loanword, 300)
+        is_loanword = "L" in self.reliability_ratings
         return is_loanword
 
     def __unicode__(self):
