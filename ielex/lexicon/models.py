@@ -167,9 +167,6 @@ class Lexeme(models.Model):
     def get_absolute_url(self):
         return "/lexeme/%s/" % self.id
 
-    def get_absolute_url(self):
-        return "/lexeme/%s/" % self.id
-
     def __unicode__(self):
         return self.phon_form or self.source_form or ("Lexeme %s" % self.id)
 

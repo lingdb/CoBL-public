@@ -358,6 +358,11 @@ def view_language_wordlist(request, language, wordlist):
     # collect data
     lexemes = Lexeme.objects.filter(language=language,
             meaning__id__in=wordlist.meaning_id_list).order_by("meaning__gloss")
+    # decorate (with a temporary attribute)
+    for lexeme in lexemes:
+        lexeme.temporary_sort_order = wordlist.meaning_id_list.index(lexeme.meaning.id)
+    lexemes = sorted(lexemes, key=lambda l:l.temporary_sort_order)
+
     prev_language, next_language = \
             get_prev_and_next_languages(request, language)
     return render_template(request, "language_wordlist.html",
@@ -1219,6 +1224,13 @@ def source_list(request):
                 Source.objects.filter(type_code=type_code)))
     return render_template(request, "source_list.html",
             {"grouped_sources":grouped_sources})
+
+# -- key value pairs ------------------------------------------------------
+
+def set_key_value(request, key, value):
+    msg = "set key '%s' to '%s'" % (key, value)
+    messages.add_message(request, messages.INFO, msg)
+    return HttpResponseRedirect(reverse("view-frontpage"))
 
 # -- search ---------------------------------------------------------------
 
