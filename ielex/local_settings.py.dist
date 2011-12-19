@@ -20,7 +20,7 @@ MANAGERS = ADMINS
 
 # Project customization
 project_long_name = u"Test Lexical Cognacy Database"
-project_short_name = u"TestLex"
+project_short_name = u"TestLex" # should be different from all other projects
 project_description = u"""Description for the front page"""
 acknowledgements = u"" # may include html markup
 

@@ -13,6 +13,9 @@ from reversion.errors import RegistrationError
 # from reversion.admin import VersionAdmin
 from ielex.lexicon.validators import *
 
+## TODO: reinstate the cache stuff, but using a site specific key prefix (maybe
+## the short name of the database
+
 TYPE_CHOICES = (
         ("P", "Publication"),
         ("U", "URL"),
