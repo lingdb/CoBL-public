@@ -84,6 +84,7 @@ class Meaning(models.Model):
         return "/meaning/%s/" % self.gloss
 
     def set_percent_coded(self):
+        """called by a post_save signal on CognateJudgement"""
         uncoded = self.lexeme_set.filter(cognate_class=None).count()
         total = self.lexeme_set.filter().count()
         try:
