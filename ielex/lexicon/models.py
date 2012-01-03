@@ -78,18 +78,20 @@ class Meaning(models.Model):
     gloss = models.CharField(max_length=64, validators=[suitable_for_url])
     description = models.CharField(max_length=64, blank=True) # show name
     notes = models.TextField(blank=True)
+    percent_coded = models.FloatField(editable=False)
 
     def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
 
-    @property
-    def percent_coded(self):
-        uncoded = self.lexeme_set.filter(meaning=self, cognate_class=None).count()
-        total = self.lexeme_set.filter(meaning=self).count()
+    def set_percent_coded(self):
+        uncoded = self.lexeme_set.filter(cognate_class=None).count()
+        total = self.lexeme_set.filter().count()
         try:
-            return int(100.0 * (total - uncoded) / total)
+            self.percent_coded = 100.0 * (total - uncoded) / total
         except ZeroDivisionError:
-            return ""
+            self.percent_coded = 0
+        self.save()
+        return
 
     def __unicode__(self):
         return self.gloss.upper()
@@ -210,6 +212,13 @@ class CognateJudgement(models.Model):
     def __unicode__(self):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
                 self.cognate_class.alias, self.id)
+
+def update_meaning_percent_coded(sender, instance, **kwargs):
+    instance.lexeme.meaning.set_percent_coded()
+    return
+
+models.signals.post_save.connect(update_meaning_percent_coded,
+        sender=CognateJudgement)
 
 class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A

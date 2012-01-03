@@ -10,7 +10,9 @@
   <tr>
     <th>Meaning</th>
     <th>Gloss</th>
-    {# <th>Count</th> #}
+    {% if user.is_superuser %}
+      <th>% coded</th>
+    {% endif %}
   </tr>
   {% for meaning in meanings %}
   <tr class="{% cycle 'odd' 'even' %}">
@@ -23,7 +25,9 @@
       {{ meaning.description }}
     </td>
     <td><a href="{% url view-meaning-languages meaning.gloss current_language_list %}">{{ meaning.gloss }}</a></td>
-    {# <td>{{ meaning.lexeme_count }}</td> #}
+    {% if user.is_superuser %}
+    <td>{{ meaning.percent_coded|floatformat:1 }}</td>
+    {% endif %}
   </tr>
   {% endfor %}
 </table>

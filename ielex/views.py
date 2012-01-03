@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
-from django.db.models import Q, Max
+from django.db.models import Q, Max, Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.template.loader import get_template
@@ -172,12 +172,15 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
     return (prev_language, next_language)
 
 def get_ordered_meanings(wordlist):
+    # TODO change this to the same ordering setup used by LangaugeList (returns
+    # a queryset), after which it will be possible to annotate the meanings
+    # with e.g. Count()s
     def get_list_sorter(wordlist):
         def func(meaning):
             return wordlist.meaning_id_list.index(meaning.id)
         return func
-    return sorted(Meaning.objects.filter(id__in=wordlist.meaning_id_list),
-            key=get_list_sorter(wordlist))
+    queryset = Meaning.objects.filter(id__in=wordlist.meaning_id_list)
+    return sorted(queryset, key=get_list_sorter(wordlist))
 
 def get_prev_and_next_meanings(request, current_meaning):
     # We'll let this one use the session variable (kind of cheating...)
@@ -242,6 +245,7 @@ def view_languages(request, languages=None):
     current_list = get_canonical_languages(languages)
     request.session["current_language_list_name"] = current_list.name
     languages = current_list.languages.all().order_by("languagelistorder")
+    languages = languages.annotate(lexeme_count=Count("lexeme"))
 
     if request.method == 'POST':
         form = ChooseLanguageListForm(request.POST)
