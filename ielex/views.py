@@ -1147,10 +1147,13 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
     if action in ["edit-notes", "edit-name"]:
         if request.method == 'POST':
             form = EditCognateSetForm(request.POST, instance=cognate_class)
-            if "cancel" not in form.data and form.is_valid():
+            if "cancel" in form.data:
+                return HttpResponseRedirect('/cognate/%s/' % cognate_class.id)
+            if form.is_valid():
                 #update_object_from_form(cognate_class, form) # XXX refactor
                 form.save()
-            return HttpResponseRedirect('/cognate/%s/' % cognate_class.id)
+                return HttpResponseRedirect('/cognate/%s/' % cognate_class.id)
+            # else: send form with errors back to render_template
         else:
             form = EditCognateSetForm(instance=cognate_class)
     else:

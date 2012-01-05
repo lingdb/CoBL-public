@@ -20,8 +20,9 @@ def suitable_for_url(value):
     regex = re.compile(r"^[a-zA-Z0-9_.~-]+$")
     match = regex.match(value)
     if not match:
-        raise ValidationError("Meaning.gloss does not match %s" %
-                repr(regex.pattern))
+        raise ValidationError("""This field can only include characters
+                which are legal in a url: letters, digits and - . _ ~""")
     if value in reserved_names:
-        raise ValidationError("Meaning.gloss is a reserved name")
+        raise ValidationError("""This name is reserved for
+                system-internal use. Please choose another.""")
     return

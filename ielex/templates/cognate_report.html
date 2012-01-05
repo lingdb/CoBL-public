@@ -95,6 +95,7 @@
 {% block controls %}
 {% if action == 'edit-name' %}
   <form action="" method="POST">{% csrf_token %}
+    {{ form.name.errors }}
     Cognate class name:<br />{{ form.name }}
     <input type="submit" name="submit" value="Submit" /> 
     <input type="submit" name="cancel" value="Cancel" /> 
@@ -115,7 +116,7 @@
 <ul class="navigation">
   <li><a href="/cognate/{{ cognate_class.id }}/add-citation/">add citation</a></li>
   {% if not cognate_class.name %}
-  <li><a href="/cognate/{{ cognate_class.id }}/edit-name">name cognate class</a></li>
+  <li><a href="/cognate/{{ cognate_class.id }}/edit-name">name this cognate class</a></li>
   {% endif %}
   {% for meaning in cognate_class.get_meanings %}
   <li><a href="/meaning/{{ meaning.gloss }}/">return to ‘{{ meaning.gloss }}’</a></li>
