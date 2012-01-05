@@ -7,7 +7,7 @@
 
 {% block content %}
 <fieldset>
-  {% if form %}
+  {% if action == 'edit-notes' %}
   <legend>
     <strong>Notes</strong>
   </legend>
@@ -18,7 +18,7 @@
   </form>
   {% else %}
   <legend>
-    <strong>Notes</strong><a href="/cognate/{{ cognate_class.id }}/edit">
+    <strong>Notes</strong><a href="/cognate/{{ cognate_class.id }}/edit-notes">
       <img src="/media/buttons/edit-pencil.png" />
     </a>
   </legend>
@@ -93,10 +93,30 @@
 {% endblock %}
 
 {% block controls %}
+{% if action == 'edit-name' %}
+  <form action="" method="POST">{% csrf_token %}
+    Cognate class name:<br />{{ form.name }}
+    <input type="submit" name="submit" value="Submit" /> 
+    <input type="submit" name="cancel" value="Cancel" /> 
+  </form>
+{% else %}
+  {% if cognate_class.name %}
+  <p align="right">
+    Cognate class name: <strong>{{ cognate_class.name }}</strong>
+    <a href="/cognate/{{ cognate_class.id }}/edit-name">
+      <img src="/media/buttons/edit-pencil.png" />
+    </a>
+  </p>
+  {% endif %}
+{% endif %}
+
 {% include "snippets/go_to.html" %}
 {# include "snippets/change_sort_order.html" #}
 <ul class="navigation">
   <li><a href="/cognate/{{ cognate_class.id }}/add-citation/">add citation</a></li>
+  {% if not cognate_class.name %}
+  <li><a href="/cognate/{{ cognate_class.id }}/edit-name">name cognate class</a></li>
+  {% endif %}
   {% for meaning in cognate_class.get_meanings %}
   <li><a href="/meaning/{{ meaning.gloss }}/">return to ‘{{ meaning.gloss }}’</a></li>
   {% endfor %}

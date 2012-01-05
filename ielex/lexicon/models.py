@@ -28,6 +28,23 @@ RELIABILITY_CHOICES = ( # used by Citation classes
         ("X", "Exclude (e.g. not the Swadesh term)"),
         )
 
+class CharNullField(models.CharField):
+	"""CharField that stores NULL but returns ''
+    This is important for uniqueness checks where multiple null values
+    are allowed (following ANSI SQL standard)"""
+	def to_python(self, value):
+		if isinstance(value, models.CharField):
+			return value 
+		if value==None:
+			return ""
+		else:
+			return value
+	def get_db_prep_value(self, value):
+		if value=="":
+			return None
+		else:
+			return value
+
 class Source(models.Model):
 
     citation_text = models.TextField(unique=True)
@@ -105,7 +122,7 @@ class CognateClass(models.Model):
     alias = models.CharField(max_length=3)
     notes = models.TextField(blank=True)
     modified = models.DateTimeField(auto_now=True)
-    name = models.CharField(max_length=128, blank=True,
+    name = CharNullField(max_length=128, blank=True, null=True, unique=True,
             validators=[suitable_for_url])
 
     def update_alias(self, save=True):

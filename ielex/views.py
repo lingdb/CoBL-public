@@ -1144,11 +1144,12 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
             msg = textwrap.fill(msg, 9999)
             messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect('/meaning/%s/' % meaning)
-    if action == "edit":
+    if action in ["edit-notes", "edit-name"]:
         if request.method == 'POST':
             form = EditCognateSetForm(request.POST, instance=cognate_class)
             if "cancel" not in form.data and form.is_valid():
-                update_object_from_form(cognate_class, form) # XXX refactor
+                #update_object_from_form(cognate_class, form) # XXX refactor
+                form.save()
             return HttpResponseRedirect('/cognate/%s/' % cognate_class.id)
         else:
             form = EditCognateSetForm(instance=cognate_class)
@@ -1168,7 +1169,8 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
     return render_template(request, "cognate_report.html",
             {"cognate_class":cognate_class,
             "cj_ordered":cj_ordered,
-             "form":form})
+            "action":action,
+            "form":form})
 
 # -- /source/ -------------------------------------------------------------
 

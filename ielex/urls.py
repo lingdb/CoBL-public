@@ -140,7 +140,8 @@ urlpatterns = patterns('',
 
     # Cognate
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report, name="cognate-set"),
-    url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit)/$', cognate_report),
+    url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit-name)/$', cognate_report),
+    url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit-notes)/$', cognate_report),
     url(r'^cognate/%(MEANING)s/(?P<code>[A-Z]+[0-9]*)/$' % R,
             cognate_report),
     # TODO better url:
