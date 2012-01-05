@@ -15,7 +15,7 @@ def suitable_for_url(value):
 
     TODO: reserved names 'all', 'none' # put this list somewhere
     """
-    reserved_names =["all"]
+    reserved_names =["all", "all-alpha"]
     # cf also clean_ascii_name function in forms.py
     regex = re.compile(r"[a-zA-Z0-9_.~-]+")
     match = regex.match(value)

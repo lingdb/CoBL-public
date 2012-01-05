@@ -1,2 +1,0 @@
-[{"pk": 0, "model": "lexicon.language", "fields": {"utf8_name": "Test Language", "iso_code": "xxx", "sort_key": 10.0, "description": "This can be deleted once the database contains real language data.", "ascii_name": "Test_Language"}}, {"pk": 0, "model": "lexicon.meaning", "fields": {"notes": "Initial value. Delete once the database contains some real data.", "gloss": "Test_Meaning", "description": "TEST"}}]
-
