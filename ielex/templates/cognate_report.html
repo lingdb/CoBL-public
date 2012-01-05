@@ -28,34 +28,30 @@
 
 
 {% if cognate_class.cognateclasscitation_set.exists %}
-<table>
-  <tr>
-    <th>Source</th>
-    <th>Comment</th>
-    <th>Pages</th>
-    <th>Rating</th>
-  </tr>
   {% for citation in cognate_class.cognateclasscitation_set.all %}
-  <tr class="{% cycle 'odd' 'even' %}">
-    <td>
-      <a href="/source/{{ citation.source.id }}/">
-      {{ citation.source.citation_text|truncatewords:10 }}
-      </a>
-    </td>
-    <td>{{ citation.comment|truncatewords:6 }}</td>
-    <td>{{ citation.pages }}</td>
-    <td><span title="{{ citation.reliability }}: {{ citation.long_reliability }}">{{ citation.reliability }}</span></td>
-    <td>
+  <frameset>
+  <table>
+    <tr class="odd">
+      <td>
+        <a href="/source/{{ citation.source.id }}/">
+        {{ citation.source.citation_text|truncatewords:10 }}
+        </a>
+      </td>
+      <td>{{ citation.pages }}</td>
+      <td><span title="{{ citation.reliability }}: {{ citation.long_reliability }}">{{ citation.reliability }}</span></td>
+      <td>
         <a href="{% url cognate-class-citation-detail citation.id %}">
-        <img src="/media/buttons/view.png" alt="View" title="View the citation" />
-      </a>
+          <img src="/media/buttons/view.png" alt="View" title="View the citation" />
+        </a>
         <a href="{% url cognate-class-citation-update citation.id %}">
-        <img src="/media/buttons/edit-pencil.png" alt="View" title="Edit the citation" />
-      </a>
-    </td>
-  </tr>
+          <img src="/media/buttons/edit-pencil.png" alt="View" title="Edit the citation" />
+        </a>
+      </td>
+    </tr>
+  </table>
+  {{ citation.comment }}
+  </frameset>
   {% endfor %}
-</table>
 {% endif %}
 
 <table>
