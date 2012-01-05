@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load lexicon_utils %}
 
-{% block title %}Cognate {{ cognate_class.id }}{% endblock %}
+{% block title %}Cognate {% firstof cognate_class.name cognate_class.id %}{% endblock %}
 
-{% block top %}<h1>Cognate Set {{ cognate_class.id }}</h1>{% endblock %}
+{% block top %}<h1>Cognate class {% firstof cognate_class.name cognate_class.id %}</h1>{% endblock %}
 
 {% block content %}
 <fieldset>
-  {% if form %}
+  {% if action == 'edit-notes' %}
   <legend>
     <strong>Notes</strong>
   </legend>
@@ -18,7 +18,7 @@
   </form>
   {% else %}
   <legend>
-    <strong>Notes</strong><a href="/cognate/{{ cognate_class.id }}/edit">
+    <strong>Notes</strong><a href="/cognate/{{ cognate_class.id }}/edit-notes">
       <img src="/media/buttons/edit-pencil.png" />
     </a>
   </legend>
@@ -28,34 +28,26 @@
 
 
 {% if cognate_class.cognateclasscitation_set.exists %}
-<table>
-  <tr>
-    <th>Source</th>
-    <th>Comment</th>
-    <th>Pages</th>
-    <th>Rating</th>
-  </tr>
   {% for citation in cognate_class.cognateclasscitation_set.all %}
-  <tr class="{% cycle 'odd' 'even' %}">
-    <td>
-      <a href="/source/{{ citation.source.id }}/">
-      {{ citation.source.citation_text|truncatewords:10 }}
-      </a>
-    </td>
-    <td>{{ citation.comment|truncatewords:6 }}</td>
-    <td>{{ citation.pages }}</td>
-    <td><span title="{{ citation.reliability }}: {{ citation.long_reliability }}">{{ citation.reliability }}</span></td>
-    <td>
-        <a href="{% url cognate-class-citation-detail citation.id %}">
+  <fieldset>
+    <legend>
+      <strong>Citation:
+        <a href="/source/{{ citation.source.id }}/">
+        {{ citation.source.citation_text|truncatewords:10 }}
+        </a>
+        Pages:
+      </strong>
+      {{ citation.pages }}
+      <a href="{% url cognate-class-citation-detail citation.id %}">
         <img src="/media/buttons/view.png" alt="View" title="View the citation" />
       </a>
-        <a href="{% url cognate-class-citation-update citation.id %}">
+      <a href="{% url cognate-class-citation-update citation.id %}">
         <img src="/media/buttons/edit-pencil.png" alt="View" title="Edit the citation" />
       </a>
-    </td>
-  </tr>
+    </legend>
+  {{ citation.comment }}
+  </fieldset>
   {% endfor %}
-</table>
 {% endif %}
 
 <table>
@@ -102,9 +94,35 @@
 {% endblock %}
 
 {% block controls %}
+{% if action == 'edit-name' %}
+  <form action="" method="POST">{% csrf_token %}
+    {{ form.name.errors }}
+    <strong>Cognate class name:</strong><br />{{ form.name }}
+    <input type="submit" name="submit" value="Submit" /> 
+    <input type="submit" name="cancel" value="Cancel" /> 
+  </form>
+{% else %}
+  {% if cognate_class.name %}
+  <p align="right">
+    Cognate class name: <strong>{{ cognate_class.name }}</strong>
+    <a href="/cognate/{{ cognate_class.id }}/edit-name">
+      <img src="/media/buttons/edit-pencil.png" />
+    </a>
+  {% endif %}
+  </p>
+{% endif %}
+
 {% include "snippets/go_to.html" %}
 {# include "snippets/change_sort_order.html" #}
-<ul class="navigation"><li><a href="/cognate/{{ cognate_class.id }}/add-citation/">add citation</a></li></ul>
+<ul class="navigation">
+  <li><a href="/cognate/{{ cognate_class.id }}/add-citation/">add citation</a></li>
+  {% if not cognate_class.name %}
+  <li><a href="/cognate/{{ cognate_class.id }}/edit-name">name this cognate class</a></li>
+  {% endif %}
+  {% for meaning in cognate_class.get_meanings %}
+  <li><a href="/meaning/{{ meaning.gloss }}/">return to ‘{{ meaning.gloss }}’</a></li>
+  {% endfor %}
+</ul>
 {% endblock %}
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
