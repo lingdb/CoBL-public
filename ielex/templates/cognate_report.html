@@ -29,28 +29,23 @@
 
 {% if cognate_class.cognateclasscitation_set.exists %}
   {% for citation in cognate_class.cognateclasscitation_set.all %}
-  <frameset>
-  <table>
-    <tr class="odd">
-      <td>
+  <fieldset>
+    <legend>
+      <strong>
         <a href="/source/{{ citation.source.id }}/">
         {{ citation.source.citation_text|truncatewords:10 }}
         </a>
-      </td>
-      <td>{{ citation.pages }}</td>
-      <td><span title="{{ citation.reliability }}: {{ citation.long_reliability }}">{{ citation.reliability }}</span></td>
-      <td>
-        <a href="{% url cognate-class-citation-detail citation.id %}">
-          <img src="/media/buttons/view.png" alt="View" title="View the citation" />
-        </a>
-        <a href="{% url cognate-class-citation-update citation.id %}">
-          <img src="/media/buttons/edit-pencil.png" alt="View" title="Edit the citation" />
-        </a>
-      </td>
-    </tr>
-  </table>
+      </strong>
+      {{ citation.pages }}
+      <a href="{% url cognate-class-citation-detail citation.id %}">
+        <img src="/media/buttons/view.png" alt="View" title="View the citation" />
+      </a>
+      <a href="{% url cognate-class-citation-update citation.id %}">
+        <img src="/media/buttons/edit-pencil.png" alt="View" title="Edit the citation" />
+      </a>
+    </legend>
   {{ citation.comment }}
-  </frameset>
+  </fieldset>
   {% endfor %}
 {% endif %}
 

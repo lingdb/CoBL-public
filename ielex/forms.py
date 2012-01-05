@@ -218,10 +218,10 @@ class EditCitationForm(forms.Form):
     pages = forms.CharField(required=False)
     reliability = forms.ChoiceField(choices=RELIABILITY_CHOICES,
             widget=forms.RadioSelect)
-    comment = forms.CharField(widget=forms.Textarea, required=False)
+    comment = forms.CharField(widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}), required=False)
 
 class EditCognateClassCitationForm(forms.ModelForm):
-    comment = forms.CharField(widget=forms.Textarea, required=False)
+    comment = forms.CharField(widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}), required=False)
 
     def validate_unique(self):
         """Calls the instance's validate_unique() method and updates the
@@ -245,7 +245,7 @@ class AddCitationForm(forms.Form):
     pages = forms.CharField(required=False)
     reliability = forms.ChoiceField(choices=RELIABILITY_CHOICES,
             widget=forms.RadioSelect)
-    comment = forms.CharField(widget=forms.Textarea, required=False)
+    comment = forms.CharField(widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}), required=False)
 
 class ChooseCognateClassForm(forms.Form):
     cognate_class = ChooseCognateClassField(queryset=CognateClass.objects.all(),
@@ -254,7 +254,7 @@ class ChooseCognateClassForm(forms.Form):
             label="")
 
 class EditCognateSetForm(forms.ModelForm):
-    notes = forms.CharField(widget=forms.Textarea, required=False)
+    notes = forms.CharField(widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}), required=False)
 
 def make_reorder_languagelist_form(objlist):
     choices = [(e.id, e.ascii_name) for e in objlist]
@@ -311,7 +311,7 @@ class MultipleSemanticExtensionCitationForm(forms.ModelForm):
         exclude = ["extension"]
         model = SemanticExtensionCitation
         widgets = {
-                "comment":forms.Textarea(),
+                "comment":forms.Textarea(attrs={'cols': 78, 'rows': 20}),
                 }
 
 class ChooseSemanticRelationsForm(forms.Form):
