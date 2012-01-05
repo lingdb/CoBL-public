@@ -16,6 +16,7 @@ admin.autodiscover()
 # standard regexes for urls
 R = {
     "COGJUDGE_ID":r"(?P<cogjudge_id>\d+)",
+    "COGNATE_NAME":r"(?P<cognate_name>[a-zA-Z0-9_.~-]+)",
     "DOMAIN":r"(?P<domain>[a-zA-Z0-9_.-]+)",
     "LANGUAGE":r"(?P<language>[a-zA-Z0-9_-]+)",
     "LANGUAGES":r"(?P<languages>[a-zA-Z0-9_-]+)",
@@ -142,7 +143,8 @@ urlpatterns = patterns('',
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report, name="cognate-set"),
     url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit-name)/$', cognate_report),
     url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit-notes)/$', cognate_report),
-    url(r'^cognate/%(MEANING)s/(?P<code>[A-Z]+[0-9]*)/$' % R,
+    url(r'^cognate/%(COGNATE_NAME)s/$' % R, cognate_report),
+    url(r'^meaning/%(MEANING)s/cognate/(?P<code>[A-Z]+[0-9]*)/$' % R,
             cognate_report),
     # TODO better url:
     # url(r'^meaning/%(MEANING)s/cognate/(?P<code>[A-Z]+[0-9]*)/$' % R,

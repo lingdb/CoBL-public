@@ -253,8 +253,10 @@ class ChooseCognateClassForm(forms.Form):
             empty_label="---", # make this into the "new" button?
             label="")
 
-class EditCognateSetForm(forms.ModelForm):
+class EditCognateClassNameForm(forms.ModelForm):
     name = forms.CharField(required=False)
+
+class EditCognateClassNotesForm(forms.ModelForm):
     notes = forms.CharField(widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}), required=False)
 
 def make_reorder_languagelist_form(objlist):

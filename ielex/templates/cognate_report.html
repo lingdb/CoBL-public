@@ -35,6 +35,7 @@
         <a href="/source/{{ citation.source.id }}/">
         {{ citation.source.citation_text|truncatewords:10 }}
         </a>
+        Pages:
       </strong>
       {{ citation.pages }}
       <a href="{% url cognate-class-citation-detail citation.id %}">
@@ -96,7 +97,7 @@
 {% if action == 'edit-name' %}
   <form action="" method="POST">{% csrf_token %}
     {{ form.name.errors }}
-    Cognate class name:<br />{{ form.name }}
+    <strong>Cognate class name:</strong><br />{{ form.name }}
     <input type="submit" name="submit" value="Submit" /> 
     <input type="submit" name="cancel" value="Cancel" /> 
   </form>
@@ -107,8 +108,8 @@
     <a href="/cognate/{{ cognate_class.id }}/edit-name">
       <img src="/media/buttons/edit-pencil.png" />
     </a>
-  </p>
   {% endif %}
+  </p>
 {% endif %}
 
 {% include "snippets/go_to.html" %}

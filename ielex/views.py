@@ -1128,9 +1128,16 @@ def redirect_lexeme_citation(request, lexeme_id):
 # -- /cognate/ ------------------------------------------------------------
 
 #@login_required
-def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
+def cognate_report(request, cognate_id=0, meaning=None, code=None,
+        cognate_name=None, action=""):
+    form_dict = {
+            "edit-name":EditCognateClassNameForm,
+            "edit-notes":EditCognateClassNotesForm
+            }
     if cognate_id:
         cognate_class = CognateClass.objects.get(id=int(cognate_id))
+    elif cognate_name:
+        cognate_class = CognateClass.objects.get(name=cognate_name)
     else:
         assert meaning and code
         cognate_classes = CognateClass.objects.filter(alias=code, 
@@ -1146,16 +1153,15 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None, action=""):
             return HttpResponseRedirect('/meaning/%s/' % meaning)
     if action in ["edit-notes", "edit-name"]:
         if request.method == 'POST':
-            form = EditCognateSetForm(request.POST, instance=cognate_class)
+            form = form_dict[action](request.POST, instance=cognate_class)
             if "cancel" in form.data:
                 return HttpResponseRedirect('/cognate/%s/' % cognate_class.id)
             if form.is_valid():
-                #update_object_from_form(cognate_class, form) # XXX refactor
                 form.save()
                 return HttpResponseRedirect('/cognate/%s/' % cognate_class.id)
             # else: send form with errors back to render_template
         else:
-            form = EditCognateSetForm(instance=cognate_class)
+            form = form_dict[action](instance=cognate_class)
     else:
         form = None
 
