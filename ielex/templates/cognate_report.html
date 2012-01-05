@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load lexicon_utils %}
 
-{% block title %}Cognate {{ cognate_class.id }}{% endblock %}
+{% block title %}Cognate {% firstof cognate_class.name cognate_class.id %}{% endblock %}
 
-{% block top %}<h1>Cognate Set {{ cognate_class.id }}</h1>{% endblock %}
+{% block top %}<h1>Cognate class {% firstof cognate_class.name cognate_class.id %}</h1>{% endblock %}
 
 {% block content %}
 <fieldset>
@@ -31,7 +31,7 @@
   {% for citation in cognate_class.cognateclasscitation_set.all %}
   <fieldset>
     <legend>
-      <strong>
+      <strong>Citation:
         <a href="/source/{{ citation.source.id }}/">
         {{ citation.source.citation_text|truncatewords:10 }}
         </a>
@@ -95,7 +95,12 @@
 {% block controls %}
 {% include "snippets/go_to.html" %}
 {# include "snippets/change_sort_order.html" #}
-<ul class="navigation"><li><a href="/cognate/{{ cognate_class.id }}/add-citation/">add citation</a></li></ul>
+<ul class="navigation">
+  <li><a href="/cognate/{{ cognate_class.id }}/add-citation/">add citation</a></li>
+  {% for meaning in cognate_class.get_meanings %}
+  <li><a href="/meaning/{{ meaning.gloss }}/">return to ‘{{ meaning.gloss }}’</a></li>
+  {% endfor %}
+</ul>
 {% endblock %}
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

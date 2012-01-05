@@ -101,9 +101,12 @@ class Meaning(models.Model):
         ordering = ["gloss"]
 
 class CognateClass(models.Model):
+    """`name` field is optional, for manually given names"""
     alias = models.CharField(max_length=3)
-    notes = models.TextField()
+    notes = models.TextField(blank=True)
     modified = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=128, blank=True,
+            validators=[suitable_for_url])
 
     def update_alias(self, save=True):
         """Reset alias to the first unused letter"""
