@@ -3,17 +3,21 @@ import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
+from django.db.utils import DatabaseError
 
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Removing unique constraint on 'GenericCitation', fields ['content_type', 'object_id', 'source']
-        db.delete_unique('lexicon_genericcitation', ['content_type_id', 'object_id', 'source_id'])
+        try:
+            # Removing unique constraint on 'GenericCitation', fields ['content_type', 'object_id', 'source']
+            db.delete_unique('lexicon_genericcitation', ['content_type_id', 'object_id', 'source_id'])
 
-        # Deleting model 'GenericCitation'
-        db.delete_table('lexicon_genericcitation')
+            # Deleting model 'GenericCitation'
+            db.delete_table('lexicon_genericcitation')
+        except DatabaseError:
+            pass # migrating from a version which never had genericcitation
 
         # Changing field 'LanguageList.name'
         db.alter_column('lexicon_languagelist', 'name', self.gf('django.db.models.fields.CharField')(max_length=128))
