@@ -10,10 +10,10 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Removing unique constraint on 'GenericCitation', fields ['content_type', 'object_id', 'source']
-        db.delete_unique('lexicon_genericcitation', ['content_type_id', 'object_id', 'source_id'])
+        #db.delete_unique('lexicon_genericcitation', ['content_type_id', 'object_id', 'source_id'])
 
         # Deleting model 'GenericCitation'
-        db.delete_table('lexicon_genericcitation')
+        #db.delete_table('lexicon_genericcitation')
 
         # Changing field 'LanguageList.name'
         db.alter_column('lexicon_languagelist', 'name', self.gf('django.db.models.fields.CharField')(max_length=128))
@@ -54,20 +54,20 @@ class Migration(SchemaMigration):
     def backwards(self, orm):
         
         # Adding model 'GenericCitation'
-        db.create_table('lexicon_genericcitation', (
-            ('comment', self.gf('django.db.models.fields.CharField')(max_length=999)),
-            ('source', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['lexicon.Source'])),
-            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'])),
-            ('pages', self.gf('django.db.models.fields.CharField')(max_length=999)),
-            ('reliability', self.gf('django.db.models.fields.CharField')(max_length=1)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-        ))
-        db.send_create_signal('lexicon', ['GenericCitation'])
+        # db.create_table('lexicon_genericcitation', (
+        #     ('comment', self.gf('django.db.models.fields.CharField')(max_length=999)),
+        #     ('source', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['lexicon.Source'])),
+        #     ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'])),
+        #     ('pages', self.gf('django.db.models.fields.CharField')(max_length=999)),
+        #     ('reliability', self.gf('django.db.models.fields.CharField')(max_length=1)),
+        #     ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+        #     ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')()),
+        #     ('modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+        # ))
+        # db.send_create_signal('lexicon', ['GenericCitation'])
 
         # Adding unique constraint on 'GenericCitation', fields ['content_type', 'object_id', 'source']
-        db.create_unique('lexicon_genericcitation', ['content_type_id', 'object_id', 'source_id'])
+        # db.create_unique('lexicon_genericcitation', ['content_type_id', 'object_id', 'source_id'])
 
         # Changing field 'LanguageList.name'
         db.alter_column('lexicon_languagelist', 'name', self.gf('django.db.models.fields.CharField')(max_length=999))
