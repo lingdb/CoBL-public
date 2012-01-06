@@ -15,13 +15,14 @@ def suitable_for_url(value):
 
     TODO: reserved names 'all', 'none' # put this list somewhere
     """
-    reserved_names =["all"]
+    reserved_names =["all", "all-alpha"]
     # cf also clean_ascii_name function in forms.py
-    regex = re.compile(r"[a-zA-Z0-9_.~-]+")
+    regex = re.compile(r"^[a-zA-Z0-9_.~-]+$")
     match = regex.match(value)
-    if match.start() > 0 or match.end() < len(value):
-        raise ValidationError("Meaning.gloss does not match %s" %
-                repr(regex.pattern))
+    if not match:
+        raise ValidationError("""This field can only include characters
+                which are legal in a url: letters, digits and - . _ ~""")
     if value in reserved_names:
-        raise ValidationError("Meaning.gloss is a reserved name")
+        raise ValidationError("""This name is reserved for
+                system-internal use. Please choose another.""")
     return

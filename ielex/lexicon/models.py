@@ -31,6 +31,23 @@ RELIABILITY_CHOICES = ( # used by Citation classes
         ("X", "Exclude (e.g. not the Swadesh term)"),
         )
 
+class CharNullField(models.CharField):
+	"""CharField that stores NULL but returns ''
+    This is important for uniqueness checks where multiple null values
+    are allowed (following ANSI SQL standard)"""
+	def to_python(self, value):
+		if isinstance(value, models.CharField):
+			return value 
+		if value==None:
+			return ""
+		else:
+			return value
+	def get_db_prep_value(self, value):
+		if value=="":
+			return None
+		else:
+			return value
+
 class Source(models.Model):
 
     citation_text = models.TextField(unique=True)
@@ -50,9 +67,9 @@ class Source(models.Model):
 
 class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
-    ascii_name = models.CharField(max_length=999, unique=True,
+    ascii_name = models.CharField(max_length=128, unique=True,
             validators=[suitable_for_url])
-    utf8_name = models.CharField(max_length=999, unique=True)
+    utf8_name = models.CharField(max_length=128, unique=True)
     sort_key = models.FloatField(null=True, blank=True, editable=False)
     description = models.TextField(blank=True, null=True)
 
@@ -69,7 +86,7 @@ class Language(models.Model):
 
 class DyenName(models.Model):
     language = models.ForeignKey(Language)
-    name = models.CharField(max_length=999)
+    name = models.CharField(max_length=128)
 
     def __unicode__(self):
         return self.name
@@ -81,18 +98,21 @@ class Meaning(models.Model):
     gloss = models.CharField(max_length=64, validators=[suitable_for_url])
     description = models.CharField(max_length=64, blank=True) # show name
     notes = models.TextField(blank=True)
+    percent_coded = models.FloatField(editable=False)
 
     def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
 
-    @property
-    def percent_coded(self):
-        uncoded = self.lexeme_set.filter(meaning=self, cognate_class=None).count()
-        total = self.lexeme_set.filter(meaning=self).count()
+    def set_percent_coded(self):
+        """called by a post_save signal on CognateJudgement"""
+        uncoded = self.lexeme_set.filter(cognate_class=None).count()
+        total = self.lexeme_set.filter().count()
         try:
-            return int(100.0 * (total - uncoded) / total)
+            self.percent_coded = 100.0 * (total - uncoded) / total
         except ZeroDivisionError:
-            return ""
+            self.percent_coded = 0
+        self.save()
+        return
 
     def __unicode__(self):
         return self.gloss.upper()
@@ -101,9 +121,12 @@ class Meaning(models.Model):
         ordering = ["gloss"]
 
 class CognateClass(models.Model):
+    """`name` field is optional, for manually given names"""
     alias = models.CharField(max_length=3)
-    notes = models.TextField()
+    notes = models.TextField(blank=True)
     modified = models.DateTimeField(auto_now=True)
+    name = CharNullField(max_length=128, blank=True, null=True, unique=True,
+            validators=[suitable_for_url])
 
     def update_alias(self, save=True):
         """Reset alias to the first unused letter"""
@@ -159,9 +182,9 @@ class Lexeme(models.Model):
     meaning = models.ForeignKey(Meaning, blank=True, null=True)
     cognate_class = models.ManyToManyField(CognateClass,
             through="CognateJudgement", blank=True)
-    source_form = models.CharField(max_length=999)
-    phon_form = models.CharField(max_length=999, blank=True)
-    gloss = models.CharField(max_length=999, blank=True)
+    source_form = models.CharField(max_length=128)
+    phon_form = models.CharField(max_length=128, blank=True)
+    gloss = models.CharField(max_length=128, blank=True)
     notes = models.TextField(blank=True)
     source = models.ManyToManyField(Source, through="LexemeCitation",
             blank=True)
@@ -214,6 +237,13 @@ class CognateJudgement(models.Model):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
                 self.cognate_class.alias, self.id)
 
+def update_meaning_percent_coded(sender, instance, **kwargs):
+    instance.lexeme.meaning.set_percent_coded()
+    return
+
+models.signals.post_save.connect(update_meaning_percent_coded,
+        sender=CognateJudgement)
+
 class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A
     default list, named 'all' is (re)created on save/delete of the Language
@@ -227,7 +257,7 @@ class LanguageList(models.Model):
     """
     DEFAULT = "all"
 
-    name = models.CharField(max_length=999, validators=[suitable_for_url])
+    name = models.CharField(max_length=128, validators=[suitable_for_url])
     description = models.TextField(blank=True, null=True)
     languages = models.ManyToManyField(Language, through="LanguageListOrder")
     modified = models.DateTimeField(auto_now=True)
@@ -321,9 +351,9 @@ class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
     DEFAULT = "all"
 
-    name = models.CharField(max_length=999, validators=[suitable_for_url])
+    name = models.CharField(max_length=128, validators=[suitable_for_url])
     description = models.TextField(blank=True, null=True)
-    meaning_ids = models.CommaSeparatedIntegerField(max_length=999)
+    meaning_ids = models.CommaSeparatedIntegerField(max_length=128)
     modified = models.DateTimeField(auto_now=True)
 
     def _get_list(self):
@@ -346,40 +376,40 @@ class MeaningList(models.Model):
         ordering = ["name"]
 
 
-class GenericCitation(models.Model):
-    # This would have been a good way to do it, but it's going to be too
-    # difficult to convert the ManyToMany fields in the current models to use
-    # this instead of the old classes.
-    source = models.ForeignKey(Source)
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type',
-                    'object_id')
-    pages = models.CharField(max_length=999)
-    reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
-    comment = models.CharField(max_length=999)
-    modified = models.DateTimeField(auto_now=True)
-
-    def long_reliability(self):
-        try:
-            description = dict(RELIABILITY_CHOICES)[self.reliability]
-        except KeyError:
-            description = ""
-        return description
-
-    class Meta:
-        unique_together = (("content_type", "object_id", "source"),)
-        ## Can't use a "content_object" in a unique_together constraint
-
-# reversion.register(GenericCitation)
+# class GenericCitation(models.Model):
+#     # This would have been a good way to do it, but it's going to be too
+#     # difficult to convert the ManyToMany fields in the current models to use
+#     # this instead of the old classes.
+#     source = models.ForeignKey(Source)
+#     content_type = models.ForeignKey(ContentType)
+#     object_id = models.PositiveIntegerField()
+#     content_object = generic.GenericForeignKey('content_type',
+#                     'object_id')
+#     pages = models.CharField(max_length=128, blank=True)
+#     reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
+#     comment = models.TextField(blank=True)
+#     modified = models.DateTimeField(auto_now=True)
+# 
+#     def long_reliability(self):
+#         try:
+#             description = dict(RELIABILITY_CHOICES)[self.reliability]
+#         except KeyError:
+#             description = ""
+#         return description
+# 
+#     class Meta:
+#         unique_together = (("content_type", "object_id", "source"),)
+#         ## Can't use a "content_object" in a unique_together constraint
+# 
+# # reversion.register(GenericCitation)
 
 class AbstractBaseCitation(models.Model):
     """Abstract base class for citation models
     The source field has to be in the subclasses in order for the
     unique_together constraints to work properly"""
-    pages = models.CharField(max_length=999, blank=True)
+    pages = models.CharField(max_length=128, blank=True)
     reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
-    comment = models.CharField(max_length=999, blank=True)
+    comment = models.TextField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     def long_reliability(self):

@@ -23,10 +23,10 @@ TODO
 Major features
 --------------
 
-* Authentication
-* Reversion
-* Kinship system
-* Registration
+* Authentication -- DONE
+* Reversion -- DONE
+* Kinship system -- DONE
+* Registration -- PARTIALLY DONE
 * Comments
 * Tagging/issue tracking system (maybe integrated with comment system, but
   probably not)
