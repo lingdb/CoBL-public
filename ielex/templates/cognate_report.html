@@ -7,7 +7,7 @@
 
 {% block content %}
 <fieldset>
-  {% if action == 'edit-notes' %}
+  {% if action == 'edit-notes' and user.is_superuser %}
   <legend>
     <strong>Notes</strong>
   </legend>
@@ -41,9 +41,11 @@
       <a href="{% url cognate-class-citation-detail citation.id %}">
         <img src="/media/buttons/view.png" alt="View" title="View the citation" />
       </a>
+      {% if user.is_superuser %}
       <a href="{% url cognate-class-citation-update citation.id %}">
         <img src="/media/buttons/edit-pencil.png" alt="View" title="Edit the citation" />
       </a>
+      {% endif %}
     </legend>
   {{ citation.comment }}
   </fieldset>
@@ -94,7 +96,7 @@
 {% endblock %}
 
 {% block controls %}
-{% if action == 'edit-name' %}
+{% if action == 'edit-name' and user.is_superuser %}
   <form action="" method="POST">{% csrf_token %}
     {{ form.name.errors }}
     <strong>Cognate class name:</strong><br />{{ form.name }}
@@ -105,9 +107,11 @@
   {% if cognate_class.name %}
   <p align="right">
     Cognate class name: <strong>{{ cognate_class.name }}</strong>
-    <a href="/cognate/{{ cognate_class.id }}/edit-name">
-      <img src="/media/buttons/edit-pencil.png" />
-    </a>
+    {% if user.is_superuser %}
+      <a href="/cognate/{{ cognate_class.id }}/edit-name">
+        <img src="/media/buttons/edit-pencil.png" />
+      </a>
+    {% endif %}
   {% endif %}
   </p>
 {% endif %}
@@ -116,7 +120,7 @@
 {# include "snippets/change_sort_order.html" #}
 <ul class="navigation">
   <li><a href="/cognate/{{ cognate_class.id }}/add-citation/">add citation</a></li>
-  {% if not cognate_class.name %}
+  {% if not cognate_class.name and user.is_superuser %}
   <li><a href="/cognate/{{ cognate_class.id }}/edit-name">name this cognate class</a></li>
   {% endif %}
   {% for meaning in cognate_class.get_meanings %}
