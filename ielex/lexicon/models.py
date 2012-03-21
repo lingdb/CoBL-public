@@ -9,7 +9,8 @@ from django.contrib.contenttypes import generic
 from django.db import connection, transaction ### testing
 # from django.contrib import admin
 import reversion
-from reversion.errors import RegistrationError
+#from reversion.errors import RegistrationError
+from reversion.revisions import RegistrationError
 # from reversion.admin import VersionAdmin
 from ielex.lexicon.validators import *
 
@@ -519,11 +520,6 @@ for modelclass in [Source, Language, Meaning, CognateClass, Lexeme,
         CognateJudgement, LanguageList, LanguageListOrder,
         CognateJudgementCitation, CognateClassCitation, LexemeCitation,
         MeaningList]:
-    try:
+    if not reversion.is_registered(modelclass):
         reversion.register(modelclass)
-    except RegistrationError, e:
-        if "has already been registered" in e.message:
-            pass
-        else:
-            raise
 
