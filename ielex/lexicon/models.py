@@ -34,7 +34,9 @@ RELIABILITY_CHOICES = ( # used by Citation classes
 class CharNullField(models.CharField):
 	"""CharField that stores NULL but returns ''
     This is important for uniqueness checks where multiple null values
-    are allowed (following ANSI SQL standard)"""
+    are allowed (following ANSI SQL standard). For example, if
+    CognateClass objects have an explicit name, it must be unique, but
+    having a name is optional."""
 	def to_python(self, value):
 		if isinstance(value, models.CharField):
 			return value 
