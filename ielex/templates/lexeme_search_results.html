@@ -32,7 +32,7 @@ Querying {{ language_names|length }} language{{ language_names|pluralize }}:
       {{ lexeme.notes|wikilink|truncatewords_html:5 }}
       {% if lexeme.notes|is_truncated:5 %}
       <a href="/lexeme/{{ lexeme.id }}" title="{{ lexeme.notes }}">
-        <img src="/media/buttons/view.png/" title="{{ lexeme.notes }}" />
+        <img src="/media/buttons/view.png" title="{{ lexeme.notes }}" />
       </a>
       {% endif %}
     </td>  
