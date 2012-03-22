@@ -32,6 +32,8 @@ tr.even { background: #cf9 }
 
 tr.odd { background: #ccc }
 
+tr.selected { background: #fc6 }
+
 td.rightalign { text-align: right }
 
 td.rowname {

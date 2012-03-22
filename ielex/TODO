@@ -1,6 +1,10 @@
 TODO
 ====
 
+- rather than jumping to anchor text (e.g. when selecting add cognate class "+"
+  button on the meaning list page), give the target row a "selected" class, and
+  change the background colour in the CSS
+
 - use session dictionaries to store "return to" and "#lexeme_XX" anchors
   information (since this doesn't mess with the explicit, replicable) url
   scheme.
@@ -160,8 +164,6 @@ for Version 0.4
 
 General
 -------
-
-- change language names to something better for e.g. "English St"
 
 - add a url ``/lexeme/XX/view-citation/YY/`` (and ``view-cognate-citation``,
   ``view-cognate``) equivalent to ``edit-citation`` etc., but just highlighting
