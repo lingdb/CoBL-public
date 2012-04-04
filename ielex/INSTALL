@@ -5,7 +5,7 @@ Dependencies:
   * Recent ``reversion`` middleware (``easy_install django-reversion``;
     currently using 1.3.2)
 
-  * `south`
+  * The ``south`` schema migration package
   
 After a clean install, 
 
@@ -15,29 +15,12 @@ After a clean install,
 
   * Customize ``local_settings.py`` with name of database etc.
 
-To get it going with ``south`` for the first time (i.e. *not* a clean install)
+  * Run ``python manage.py migrate`` to update all the database schemas etc to
+    the most current version
 
- 1. Make sure 'south' is in the INSTALLED_APPS setting.
- 2. Run `./manage.py syncdb`
-
-You then need to run the following commands to complete the
-migration::
-
-   ./manage.py migrate reversion 0001 --fake
-   ./manage.py migrate lexicon 0001 --fake
-   ./manage.py migrate extensional_semantics 0001 --fake
-   ./manage.py migrate --no-initial-data
-
-For later updates (where there has been a schema change), do::
-
-   ./manage.py migrate --list # to see what will change
-   ./manage.py migrate --no-initial-data # to do it
-
-To make a new migration (e.g. after adding or changing a model) to the
-`lexicon` app, do::
-
-   ./manage.py schemamigration lexicon --auto [MIGRATION_NAME]
-   ./manage.py migrate --no-initial-data
+  * Run ``python manage.py loaddata clean_install_data`` to load some dummy
+    data into the database (IELex will crash if e.g. there are no languages in
+    the database) **TODO**
 
 
 

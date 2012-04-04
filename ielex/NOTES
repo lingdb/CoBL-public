@@ -279,5 +279,35 @@ Permissions for anonymous users¶
 
 If you provide a custom authentication backend with the attribute supports_anonymous_user set to True, the AnonymousUser class will check the backend for permissions, just as the normal User does. This is intended to help centralize permission handling; apps can always delegate the question of whether something is allowed or not to the authorization/authentication system. See the authentication docs for more details.
 
+Integration with south
+----------------------
+
+(this is no longer necessary as I have no longer have any instances of the
+database running without south)
+
+To get it going with ``south`` for the first time (i.e. *not* a clean install)
+
+ 1. Make sure 'south' is in the INSTALLED_APPS setting.
+ 2. Run `./manage.py syncdb`
+
+You then need to run the following commands to complete the
+migration::
+
+   ./manage.py migrate reversion 0001 --fake
+   ./manage.py migrate lexicon 0001 --fake
+   ./manage.py migrate extensional_semantics 0001 --fake
+   ./manage.py migrate
+
+For later updates (where there has been a schema change), do::
+
+   ./manage.py migrate --list # to see what will change
+   ./manage.py migrate
+
+To make a new migration (e.g. after adding or changing a model) to the
+`lexicon` app, do::
+
+   ./manage.py schemamigration lexicon --auto [MIGRATION_NAME]
+   ./manage.py migrate
+
 
 .. vim:ft=rst
