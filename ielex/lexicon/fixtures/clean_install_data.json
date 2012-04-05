@@ -4,10 +4,21 @@
         "model": "lexicon.language", 
         "fields": {
             "utf8_name": "Dummy Language", 
-            "iso_code": "", 
+            "iso_code": "xxx", 
             "sort_key": null, 
             "description": "Database doesn't function without at least one Lanauge object defined", 
             "ascii_name": "Dummy_language"
         }
+    },
+    {
+        "pk": 1, 
+        "model": "lexicon.meaning", 
+        "fields": {
+            "notes": "Database doesn't function without at least one Meaning object defined", 
+            "gloss": "DUMMY", 
+            "description": "", 
+            "percent_coded": 0
+        }
     }
+
 ]
