@@ -18,7 +18,7 @@ After a clean install,
   * Run ``python manage.py migrate`` to update all the database schemas etc to
     the most current version
 
-  * Run ``python manage.py loaddata clean_install_data`` to load some dummy
+  * Run ``python manage.py loaddata clean_install_data.json`` to load some dummy
     data into the database (IELex will crash if e.g. there are no languages in
     the database) **TODO**
 
