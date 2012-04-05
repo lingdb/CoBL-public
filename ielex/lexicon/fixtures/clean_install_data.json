@@ -4,7 +4,7 @@
         "model": "lexicon.language", 
         "fields": {
             "utf8_name": "Dummy Language", 
-            "iso_code": "xxx", 
+            "iso_code": "", 
             "sort_key": null, 
             "description": "Database doesn't function without at least one Lanauge object defined", 
             "ascii_name": "Dummy_language"
