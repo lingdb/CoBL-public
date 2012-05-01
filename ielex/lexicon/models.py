@@ -77,7 +77,7 @@ class Language(models.Model):
     sort_key = models.FloatField(null=True, blank=True, editable=False)
     description = models.TextField(blank=True, null=True)
 
-    language_list_name = None
+    language_list_name = None ## XXX does this do anything?
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name

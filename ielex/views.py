@@ -153,6 +153,7 @@ def get_current_language_list_name(request):
 
 def get_prev_and_next_languages(request, current_language, language_list=None):
     # XXX language_list argument is not currently dispatched to this function
+    # TODO this needs to be fixed
     if language_list:
         language_list = LanguageList.objects.get(name=language_list)
     else:
@@ -172,7 +173,7 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
     return (prev_language, next_language)
 
 def get_ordered_meanings(wordlist):
-    # TODO change this to the same ordering setup used by LangaugeList (returns
+    # TODO change this to the same ordering setup used by LanguageList (returns
     # a queryset), after which it will be possible to annotate the meanings
     # with e.g. Count()s
     def get_list_sorter(wordlist):
@@ -199,6 +200,29 @@ def get_prev_and_next_meanings(request, current_meaning):
         next_meaning = meanings[0]
         # next_meaning = Meaning.objects.get(id=ids[0])
     return (prev_meaning, next_meaning)
+
+def get_prev_and_next_lexemes(request, current_lexeme):
+    """Get the previous and next lexeme from the same language, ordered
+    by meaning and then alphabetically by form"""
+    current_meaning = current_lexeme.meaning
+    prev_meaning, next_meaning = get_prev_and_next_meanings(request,
+            current_meaning)
+
+    prev_lexemes = Lexeme.objects.filter(language=current_lexeme.language,
+            meaning=prev_meaning).order_by("phon_form", "source_form", "id")
+    current_lexemes = Lexeme.objects.filter(language=current_lexeme.language,
+            meaning=current_meaning).order_by("phon_form", "source_form", "id")
+    next_lexemes = Lexeme.objects.filter(language=current_lexeme.language,
+            meaning=next_meaning).order_by("phon_form", "source_form", "id")
+
+    lexemes = list(prev_lexemes)
+    lexemes.extend(current_lexemes)
+    lexemes.extend(next_lexemes)
+    ids = [l.id for l in lexemes]
+    current_idx = ids.index(current_lexeme.id)
+    prev_lexeme = lexemes[current_idx-1]
+    next_lexeme = lexemes[current_idx+1]
+    return (prev_lexeme, next_lexeme)
 
 def update_object_from_form(model_object, form):
     """Update an object with data from a form."""
@@ -809,8 +833,11 @@ def get_ordered_lexemes(meaning, language_list):
 def view_lexeme(request, lexeme_id):
     """For un-logged-in users, view only"""
     lexeme = Lexeme.objects.get(id=lexeme_id)
+    prev_lexeme, next_lexeme = get_prev_and_next_lexemes(request, lexeme)
     return render_template(request, "lexeme_report.html",
-            {"lexeme":lexeme})
+            {"lexeme":lexeme,
+            "prev_lexeme":prev_lexeme,
+            "next_lexeme":next_lexeme})
 
 @login_required
 def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
@@ -998,8 +1025,11 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             else:
                 assert not action
 
+    prev_lexeme, next_lexeme = get_prev_and_next_lexemes(request, lexeme)
     return render_template(request, "lexeme_report.html",
             {"lexeme":lexeme,
+            "prev_lexeme":prev_lexeme,
+            "next_lexeme":next_lexeme,
             "action":action,
             "form":form,
             "active_citation_id":citation_id,

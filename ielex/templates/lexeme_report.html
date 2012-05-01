@@ -246,6 +246,7 @@
 {% endblock %}
 
 {% block controls %}
+{% include "snippets/prev_next_lexeme.html" %}
 {% include "snippets/go_to.html" %}
 <ul class="navigation">
   {% if lexeme.meaning %}
