@@ -25,6 +25,20 @@ class Command(NoArgsCommand):
                 help="Name of destinate filename"),
             )
 
+    def run_from_argv(self, argv):
+        """
+        A version of the method from 
+        Django-1.3-py2.7.egg/django/core/management/base.py
+        with call to handle_default_options disabled
+        """
+        parser = self.create_parser(argv[0], argv[1])
+        options, args = parser.parse_args(argv[2:])
+        # handle_default_options(options)
+        assert not hasattr(options, "settings")
+        assert not hasattr(options, "pythonpath")
+        self.execute(*args, **options.__dict__)
+        return
+
     def handle(self, **options):
         if options["filename"]:
             fileobj = open(expanduser(expandvars(options["filename"])), "w")
