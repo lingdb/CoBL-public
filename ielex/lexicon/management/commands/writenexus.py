@@ -7,7 +7,8 @@ class Command(NoArgsCommand):
     help="""Export a nexus file from the database"""
     requires_model_validation = False
     unique_choices = ["all", "limited", "none"]
-    option_list = NoArgsCommand.option_list + (
+    # option_list = NoArgsCommand.option_list + (
+    option_list = (
             make_option("--language-list", dest="language_list",
                 action="store", default="all",
                 help="Name of language list [all]"),
