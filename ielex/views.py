@@ -205,23 +205,15 @@ def get_prev_and_next_lexemes(request, current_lexeme):
     """Get the previous and next lexeme from the same language, ordered
     by meaning and then alphabetically by form"""
     current_meaning = current_lexeme.meaning
-    prev_meaning, next_meaning = get_prev_and_next_meanings(request,
-            current_meaning)
-
-    prev_lexemes = Lexeme.objects.filter(language=current_lexeme.language,
-            meaning=prev_meaning).order_by("phon_form", "source_form", "id")
-    current_lexemes = Lexeme.objects.filter(language=current_lexeme.language,
-            meaning=current_meaning).order_by("phon_form", "source_form", "id")
-    next_lexemes = Lexeme.objects.filter(language=current_lexeme.language,
-            meaning=next_meaning).order_by("phon_form", "source_form", "id")
-
-    lexemes = list(prev_lexemes)
-    lexemes.extend(current_lexemes)
-    lexemes.extend(next_lexemes)
+    lexemes = list(Lexeme.objects.filter(language=current_lexeme.language).order_by(
+            "meaning", "phon_form", "source_form", "id"))
     ids = [l.id for l in lexemes]
     current_idx = ids.index(current_lexeme.id)
     prev_lexeme = lexemes[current_idx-1]
-    next_lexeme = lexemes[current_idx+1]
+    try:
+        next_lexeme = lexemes[current_idx+1]
+    except IndexError:
+        next_lexeme = lexemes[0]
     return (prev_lexeme, next_lexeme)
 
 def update_object_from_form(model_object, form):
