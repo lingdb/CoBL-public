@@ -12,6 +12,7 @@ import reversion
 #from reversion.errors import RegistrationError
 from reversion.revisions import RegistrationError
 # from reversion.admin import VersionAdmin
+from south.modelsinspector import add_introspection_rules
 from ielex.lexicon.validators import *
 
 ## TODO: reinstate the cache stuff, but using a site specific key prefix (maybe
@@ -31,6 +32,9 @@ RELIABILITY_CHOICES = ( # used by Citation classes
         ("L", "Loanword"),
         ("X", "Exclude (e.g. not the Swadesh term)"),
         )
+
+# http://south.aeracode.org/docs/customfields.html#extending-introspection
+add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])
 
 class CharNullField(models.CharField):
 	"""CharField that stores NULL but returns ''
