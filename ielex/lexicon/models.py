@@ -15,6 +15,7 @@ from reversion.revisions import RegistrationError
 from south.modelsinspector import add_introspection_rules
 from ielex.lexicon.validators import *
 
+
 ## TODO: reinstate the cache stuff, but using a site specific key prefix (maybe
 ## the short name of the database
 
@@ -263,9 +264,9 @@ class LanguageList(models.Model):
 
     # TODO how can I make this the default ordering?
     """
-    DEFAULT = "all"
+    DEFAULT = "all" # all languages
 
-    name = models.CharField(max_length=128, validators=[suitable_for_url])
+    name = models.CharField(max_length=128, unique=True, validators=[suitable_for_url])
     description = models.TextField(blank=True, null=True)
     languages = models.ManyToManyField(Language, through="LanguageListOrder")
     modified = models.DateTimeField(auto_now=True)
@@ -292,6 +293,13 @@ class LanguageList(models.Model):
         target = self.languagelistorder_set.all()[N]
         llo.order = target.order - 0.0001
         llo.save()
+        return
+
+    def remove(self, language):
+        llo = LanguageListOrder.objects.get(
+                language=language,
+                language_list=self)
+        llo.delete()
         return
 
     def sequentialize(self):

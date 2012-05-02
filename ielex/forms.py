@@ -163,6 +163,16 @@ class ChooseLanguageListForm(forms.Form):
             empty_label=None,
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}))
 
+class AddLanguageListForm(forms.ModelForm):
+    language_list = ChooseLanguageListField(
+            queryset=LanguageList.objects.all(),
+            empty_label=None,
+            widget=forms.Select())
+
+    class Meta:
+        model = LanguageList
+        exclude = ["languages"]
+
 class EditLanguageListForm(forms.ModelForm):
 
     def clean_name(self):
@@ -172,7 +182,7 @@ class EditLanguageListForm(forms.ModelForm):
 
     class Meta:
         model = LanguageList
-        exclude = ["language_ids"]
+        exclude = ["languages"]
 
 class EditLanguageListMembersForm(forms.Form):
     included_languages = ChooseIncludedLanguagesField(

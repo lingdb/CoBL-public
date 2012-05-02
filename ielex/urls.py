@@ -45,7 +45,7 @@ urlpatterns = patterns('',
             name="delete-language-list"),
     url(r'^languages/%(LANGUAGES)s/reorder/$' % R, reorder_languages,
             name="reorder-languages"),
-    url(r'^add-new/languages/$', edit_language_list, name="add-language-list"),
+    url(r'^add-new/languages/$', add_language_list, name="add-language-list"),
 
     # Language
     url(r'^language/%(LANGUAGE)s/$' % R, view_language_wordlist,

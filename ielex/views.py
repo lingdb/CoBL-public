@@ -229,6 +229,8 @@ def update_object_from_form(model_object, form):
 # -- /language(s)/ ----------------------------------------------------------
 
 def get_canonical_languages(languages=None):
+    """Returns a LanguageList object; presumes LanguageList.DEFAULT
+    includes is all languages"""
     try:
         if languages is None:
             languages = LanguageList.objects.get(name=LanguageList.DEFAULT)
@@ -395,58 +397,67 @@ def view_language_wordlist(request, language, wordlist):
             })
 
 @login_required
-def edit_language_list(request, languages=None):
-    current_languages = get_canonical_languages(
-            request.session.get("current_language_list_name", None))
-    if languages:
-        # languages = LanguageList.objects.get(name=languages)
-        languages = get_canonical_languages(languages)
+def add_language_list(request):
+    """Start a new language list by cloning an old one"""
     if request.method == "POST":
-        if languages:
-            name_form = EditLanguageListForm(request.POST, instance=languages)
-            new_list, changed = languages.language_id_list, False
-        else:
-            name_form = EditLanguageListForm(request.POST)
-            languages = current_languages
-            new_list, changed = languages.language_id_list, True
+        form = AddLanguageListForm(request.POST)
+        if "cancel" in form.data: # has to be tested before data is cleaned
+            return HttpResponseRedirect(reverse("view-all-languages"))
+        if form.is_valid():
+            form.save()
+            new_list = LanguageList.objects.get(name=form.cleaned_data["name"])
+            other_list = LanguageList.objects.get(name=form.cleaned_data["language_list"])
+            for language in other_list.languages.all().order_by("languagelistorder"):
+                new_list.append(language)
+            edit_language_list(request, languages=form.cleaned_data["name"])
+    else:
+        form = AddLanguageListForm()
+    return render_template(request, "add_language_list.html",
+            {"form":form})
+
+@login_required
+def edit_language_list(request, languages=None):
+    # current_languages = get_canonical_languages(
+    #         request.session.get("current_language_list_name", None))
+    # if languages:
+        # languages = LanguageList.objects.get(name=languages)
+    languages = get_canonical_languages(languages) # a language list object
+    language_list_all = get_canonical_languages()  # a language list object
+    included_languages = languages.languages.all().order_by("languagelistorder")
+    excluded_languages = language_list_all.languages.exclude(
+                        id__in=languages.languages.values_list("id", flat=True)
+                        ).order_by("languagelistorder")
+    if request.method == "POST":
+        name_form = EditLanguageListForm(request.POST, instance=languages)
         if "cancel" in name_form.data: # has to be tested before data is cleaned
             return HttpResponseRedirect(reverse('view-languages',
-                args=[current_languages]))
+                args=[languages.name]))
         list_form = EditLanguageListMembersForm(request.POST)
-        list_form.fields["included_languages"].queryset = \
-                Language.objects.filter(id__in=languages.language_id_list)
-        list_form.fields["excluded_languages"].queryset = \
-                Language.objects.exclude(id__in=languages.language_id_list)
+        list_form.fields["included_languages"].queryset = included_languages
+        list_form.fields["excluded_languages"].queryset = excluded_languages
         if name_form.is_valid() and list_form.is_valid():
-            name_form.save()
-            languages = LanguageList.objects.get(name=name_form.cleaned_data["name"])
+            changed_members = False
             exclude = list_form.cleaned_data["excluded_languages"]
             include = list_form.cleaned_data["included_languages"]
-            #new_list, changed = languages.language_id_list, False
             if include:
-                new_list.remove(include.id)
-                changed = True
+                languages.remove(include)
+                changed_members = True
             if exclude:
-                new_list.append(exclude.id)
-                changed = True
-            if changed:
-                languages.language_id_list = new_list
+                languages.append(exclude)
+                changed_members = True
+            if changed_members:
                 languages.save()
                 return HttpResponseRedirect(reverse('edit-language-list',
                     args=[languages.name]))
-            return HttpResponseRedirect(reverse('view-languages',
-                args=[name_form.cleaned_data["name"]]))
+            else: # changed name
+                name_form.save()
+                return HttpResponseRedirect(reverse('view-languages',
+                    args=[name_form.cleaned_data["name"]]))
     else:
-        if languages:
-            name_form = EditLanguageListForm(instance=languages)
-        else:
-            name_form = EditLanguageListForm()
-            languages = current_languages
+        name_form = EditLanguageListForm(instance=languages)
         list_form = EditLanguageListMembersForm()
-        list_form.fields["included_languages"].queryset = \
-                Language.objects.filter(id__in=languages.language_id_list)
-        list_form.fields["excluded_languages"].queryset = \
-                Language.objects.exclude(id__in=languages.language_id_list)
+        list_form.fields["included_languages"].queryset = included_languages
+        list_form.fields["excluded_languages"].queryset = excluded_languages
     return render_template(request, "edit_language_list.html",
             {"name_form":name_form, "list_form":list_form})
 
