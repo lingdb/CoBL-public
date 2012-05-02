@@ -167,7 +167,8 @@ class AddLanguageListForm(forms.ModelForm):
     language_list = ChooseLanguageListField(
             queryset=LanguageList.objects.all(),
             empty_label=None,
-            widget=forms.Select())
+            widget=forms.Select(),
+            help_text="The new language list will start as a clone of this one")
 
     class Meta:
         model = LanguageList
