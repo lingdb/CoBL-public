@@ -13,8 +13,8 @@
   </table>
   <table>
     <tr>
-      <th>Excluded</th>
-      <th>Included</th>
+      <th>Excluded ({{ n_excluded }})</th>
+      <th>Included ({{ n_included }})</th>
     </tr>
     <tr>
       <td>{{ list_form.excluded_languages }}</td>
@@ -22,7 +22,8 @@
     </tr> 
     <tr>
       <td><input type="submit" name="cancel" value="Cancel" /></td>
-    <td><a class="button" href="{% url reorder-languages current_language_list_name %}"><input type="submit" name="sort" value="Change Sort Order" /></a></td>
+      <td><a class="button" href="{% url reorder-languages current_language_list_name %}">
+          <input type="submit" name="sort" value="Change Sort Order" /></a></td>
     </tr>
     <tr>
       <td><input type="submit" name="cancel" value="Finish" /></td>

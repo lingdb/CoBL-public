@@ -417,10 +417,6 @@ def add_language_list(request):
 
 @login_required
 def edit_language_list(request, languages=None):
-    # current_languages = get_canonical_languages(
-    #         request.session.get("current_language_list_name", None))
-    # if languages:
-        # languages = LanguageList.objects.get(name=languages)
     languages = get_canonical_languages(languages) # a language list object
     language_list_all = get_canonical_languages()  # a language list object
     included_languages = languages.languages.all().order_by("languagelistorder")
@@ -447,6 +443,7 @@ def edit_language_list(request, languages=None):
                 changed_members = True
             if changed_members:
                 languages.save()
+                name_form.save()
                 return HttpResponseRedirect(reverse('edit-language-list',
                     args=[languages.name]))
             else: # changed name
@@ -459,7 +456,11 @@ def edit_language_list(request, languages=None):
         list_form.fields["included_languages"].queryset = included_languages
         list_form.fields["excluded_languages"].queryset = excluded_languages
     return render_template(request, "edit_language_list.html",
-            {"name_form":name_form, "list_form":list_form})
+            {"name_form":name_form,
+            "list_form":list_form,
+            "n_included":included_languages.count(),
+            "n_excluded":excluded_languages.count(),
+            })
 
 @login_required
 def delete_language_list(request, languages):
