@@ -98,7 +98,8 @@ def write_nexus(fileobj,
             exclude,
             dialect,
             LABEL_COGNATE_SETS,
-            singletons):
+            singletons,
+            exclude_invariant):
     start_time = time.time()
 
     # MAX_1_SINGLETON: True|False
@@ -118,7 +119,7 @@ def write_nexus(fileobj,
     language_list = LanguageList.objects.get(name=language_list_name)
     languages = language_list.languages.all().order_by("languagelistorder")
     language_names = [language.ascii_name for language in languages]
-    include_language_ids = [language.id for language in languages]
+    n_languages = len(language_names)
 
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
     meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
@@ -147,19 +148,25 @@ def write_nexus(fileobj,
         # TODO look at LexemeCitation reliablity ratings here too
         language_ids = [cj.lexeme.language.id for cj in
                 CognateJudgement.objects.filter(cognate_class=cc,
-                        lexeme__meaning__in=meanings)
-                        if cj.lexeme.language.id in include_language_ids
-                        and not (cj.reliability_ratings & exclude)]
+                lexeme__meaning__in=meanings)
+                if cj.lexeme.language in languages
+                and not (cj.reliability_ratings & exclude)]
         if language_ids:
-            data[cc] = language_ids
-            #meaning = set(CognateClass.objects.get(id=cc).lexeme_set.values_list(
-            #        "meaning", flat=True)).pop()
             try:
-                data_missing[cc] = missing[CognateClass.objects.get(id=cc).get_meaning()]
-                # if data_missing[cc]:
-                #     logging.info("missing data '%s': %s %s" % (meaning, cc, data_missing[cc]))
-            except KeyError:
-                data_missing[cc] = []
+                if exclude_invariant:
+                    assert len(language_ids) < n_languages
+                data[cc] = language_ids
+                #meaning = set(CognateClass.objects.get(id=cc).lexeme_set.values_list(
+                #        "meaning", flat=True)).pop()
+                try:
+                    data_missing[cc] = missing[CognateClass.objects.get(id=cc).get_meaning()]
+                    # if data_missing[cc]:
+                    #     logging.info("missing data '%s': %s %s" % (meaning, cc, data_missing[cc]))
+                except KeyError:
+                    data_missing[cc] = []
+            except AssertionError:
+                print "excluded cogset", cc, len(language_ids), n_languages
+                pass
 
     if INCLUDE_UNIQUE_STATES:
         # adds a cc code for all the lexemes which are not registered as
@@ -308,4 +315,6 @@ def write_nexus(fileobj,
     seconds %= 60
     print>>fileobj, "[ Processing time: %02d:%02d ]" % (minutes, seconds)
     print>>fileobj, "[ %s ]" % " ".join(sys.argv)
+    print "Processed %s cognate sets from %s languages" % (len(data),
+            n_languages)
     return fileobj

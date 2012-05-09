@@ -16,10 +16,14 @@ class Command(NoArgsCommand):
                 action="store", default="all",
                 help="Name of meaning list [all]"),
             make_option("--unique", dest="unique",
-                action="store", type="choice", default=None,
+                action="store", type="choice", default=unique_choices[0],
                 choices=unique_choices ,
                 help=("Include unique cognate sets. Choices: %s" %
                 ", ".join(unique_choices))),
+            make_option("--suppress-invariant", dest="exclude_invariant",
+                action="store_true", default=False,
+                help="Don't include invariant cognate sets (i.e."\
+                "cognate sets with a reflex present in all languages"),
             make_option("--outfile", dest="filename",
                 action="store", default=None,
                 help="Name of destinate filename"),
@@ -52,7 +56,8 @@ class Command(NoArgsCommand):
             set(["L","X"]), # exclude
             "NN", # dialect
             True, # label cognate sets
-            options["unique"])
+            options["unique"],
+            options["exclude_invariant"])
         fileobj.close()
         return
 
