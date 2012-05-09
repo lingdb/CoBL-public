@@ -28,7 +28,7 @@ class Command(NoArgsCommand):
                 " evidence of variation) [don't suppress]"),
             make_option("--outfile", dest="filename",
                 action="store", default=None,
-                help="Name of destinate filename [output to screen]"),
+                help="Name of destination file [output to screen]"),
             )
 
     def run_from_argv(self, argv):
