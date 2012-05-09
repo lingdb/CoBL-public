@@ -118,6 +118,7 @@ def write_nexus(fileobj,
     language_list = LanguageList.objects.get(name=language_list_name)
     languages = language_list.languages.all().order_by("languagelistorder")
     language_names = [language.ascii_name for language in languages]
+    include_language_ids = [language.id for language in languages]
 
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
     meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
@@ -147,7 +148,8 @@ def write_nexus(fileobj,
         language_ids = [cj.lexeme.language.id for cj in
                 CognateJudgement.objects.filter(cognate_class=cc,
                         lexeme__meaning__in=meanings)
-                        if not (cj.reliability_ratings & exclude)]
+                        if cj.lexeme.language.id in include_language_ids
+                        and not (cj.reliability_ratings & exclude)]
         if language_ids:
             data[cc] = language_ids
             #meaning = set(CognateClass.objects.get(id=cc).lexeme_set.values_list(
