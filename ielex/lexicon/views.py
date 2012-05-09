@@ -153,19 +153,20 @@ def write_nexus(fileobj,
                 and not (cj.reliability_ratings & exclude)]
         if language_ids:
             try:
+                meaning = CognateClass.objects.get(id=cc).get_meaning()
                 if exclude_invariant:
-                    assert len(language_ids) < n_languages
+                    assert (len(language_ids) + len(missing[meaning])) < n_languages
                 data[cc] = language_ids
                 #meaning = set(CognateClass.objects.get(id=cc).lexeme_set.values_list(
                 #        "meaning", flat=True)).pop()
                 try:
-                    data_missing[cc] = missing[CognateClass.objects.get(id=cc).get_meaning()]
+                    data_missing[cc] = missing[meaning]
                     # if data_missing[cc]:
                     #     logging.info("missing data '%s': %s %s" % (meaning, cc, data_missing[cc]))
                 except KeyError:
                     data_missing[cc] = []
             except AssertionError:
-                print "excluded cogset", cc, len(language_ids), n_languages
+                # print "excluded cogset", cc, len(language_ids), n_languages
                 pass
 
     if INCLUDE_UNIQUE_STATES:
