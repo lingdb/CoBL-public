@@ -23,7 +23,8 @@ class Command(NoArgsCommand):
             make_option("--suppress-invariant", dest="exclude_invariant",
                 action="store_true", default=False,
                 help="Don't include invariant cognate sets (i.e."\
-                "cognate sets with a reflex present in all languages"),
+                "cognate sets with a reflex present in all languages;"\
+                " missing data is not treated as evidence of variation)"),
             make_option("--outfile", dest="filename",
                 action="store", default=None,
                 help="Name of destinate filename"),
@@ -31,9 +32,10 @@ class Command(NoArgsCommand):
 
     def run_from_argv(self, argv):
         """
-        A version of the method from 
+        A version of the method from
         Django-1.3-py2.7.egg/django/core/management/base.py
-        with call to handle_default_options disabled
+        with call to `handle_default_options` disabled in order to
+        suppress unwanted default options.
         """
         parser = self.create_parser(argv[0], argv[1])
         options, args = parser.parse_args(argv[2:])
