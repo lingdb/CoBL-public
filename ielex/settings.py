@@ -78,6 +78,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'ielex.middleware.NoBlankLinesMiddleware', # does this cost much speed?
     'reversion.middleware.RevisionMiddleware',
 )
 
