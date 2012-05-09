@@ -277,7 +277,7 @@ def write_nexus(fileobj,
                 row.append("?")
             else:
                 row.append("0")
-        print>>fileobj, "    '%s'%s%s" % (language.ascii_name,
+        print>>fileobj, "    '%s' %s%s" % (language.ascii_name,
                 " "*(max_len - len(language.ascii_name)), "".join(row))
     print>>fileobj, "  ;\nend;\n"
 
