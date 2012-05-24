@@ -1,6 +1,9 @@
 TODO
 ====
 
+- remove the split/duplicate button (but leave it accessible from the url, like
+  delete)
+
 - rather than jumping to anchor text (e.g. when selecting add cognate class "+"
   button on the meaning list page), give the target row a "selected" class, and
   change the background colour in the CSS
@@ -12,7 +15,7 @@ TODO
 - rewrite templates so the database can handle startup from nothing (e.g.
   initially, only offer "create language", "create meaning" pages) -- then zap
   the fixtures (which are annoying when you syncdb or migrate and forget to
-  suppress them)
+  suppress them) **DONE?**
 
 - Describe grammar of urls::
 
@@ -33,7 +36,7 @@ TODO
     /wordlists/                   # list defined wordlists *
     /domain/.../                  # relation names in a domain *
 
-    * DONE
+  **DONE**
   
   Reserved names for sets 'all' (for languages, meanings), 'none' (for
   meanings, domains)
@@ -58,6 +61,8 @@ TODO
   (it's used as a target for 'add cognate'). It should be::
 
     /lexeme/.../add-cognate/
+
+  **TODO**
 
 - lexeme actions. Most of these could be handled on separate pages with
   separate view logic rather than on a monster combined page::
@@ -148,12 +153,13 @@ for Version 0.3
   we have general information about the reconstructed form
 
 - The Language.description field in (the sidebar of?) the /language/ view
+  **DONE**
 
-- Add/edit meaning pages
+- Add/edit meaning pages; Allow e.g. addition of canonical context information 
 
 - check all ModelForm edit functions that the instance is specified when these
   are intended to edit an existing object rather than create a new one (see
-  view.py edit_language.py).
+  view.py edit_language.py). **DONE?**
 
 for Version 0.4
 ---------------
@@ -187,15 +193,6 @@ General
 Development
 -----------
 
-- Make a developer site on e.g. google code
+- Make a developer site: bitbucket.org seems the most suitable.
 
 - Do there need to be any import functions?
-
-
-Stack Overflow
---------------
-
-- Why must I install the Sites app to use the flatpages app?
-
-- How can I add extra choices to a selection drop down otherwise based on a
-  query?
