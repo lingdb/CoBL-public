@@ -107,7 +107,7 @@ class Meaning(models.Model):
     gloss = models.CharField(max_length=64, validators=[suitable_for_url])
     description = models.CharField(max_length=64, blank=True) # show name
     notes = models.TextField(blank=True)
-    percent_coded = models.FloatField(editable=False)
+    percent_coded = models.FloatField(editable=False, default=0)
 
     def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
