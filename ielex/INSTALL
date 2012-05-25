@@ -24,10 +24,16 @@ After a clean install,
   * Run ``python manage.py migrate`` to update all the database schemas etc to
     the most current version
 
-  * If you want to test the database, download ``dravidian_wordlists.json``
-    from the BitBucket site, and run::
+  * If you want to test the database with some sample data, download
+    ``dravidian_wordlists.json`` from the BitBucket site, and run::
     
       python manage.py loaddata dravidian_wordlists.json
+
+  * If you want to start working in an empty database (i.e. for adding your own
+    data), finalize the setup by running::
+
+      python manage.py lexdb_init
+
 
 **TODO**
 
