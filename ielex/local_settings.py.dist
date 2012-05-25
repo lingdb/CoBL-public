@@ -39,7 +39,7 @@ project_description = u"""Description for the front page"""
 acknowledgements = u"" # may include html markup
 
 # Which modules to use (True or False)
-semantic_domains = True
+semantic_domains = False
 structural_features = False # NotImplemented
 
 # Automatically generated secret key

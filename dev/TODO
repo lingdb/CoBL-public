@@ -12,11 +12,6 @@ TODO
   information (since this doesn't mess with the explicit, replicable) url
   scheme.
 
-- rewrite templates so the database can handle startup from nothing (e.g.
-  initially, only offer "create language", "create meaning" pages) -- then zap
-  the fixtures (which are annoying when you syncdb or migrate and forget to
-  suppress them) **DONE?**
-
 - Describe grammar of urls::
 
     /language/...(/wordlist/...)/ # list of words in a language *
