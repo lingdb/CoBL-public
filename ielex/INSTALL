@@ -1,11 +1,17 @@
 Dependencies:
 
-  * Recent Django (tested on 1.2.3)
+  * Recent Django (tested on 1.3)
 
   * Recent ``reversion`` middleware (``easy_install django-reversion``;
-    currently using 1.3.2)
+    currently using 1.4)
 
-  * The ``south`` schema migration package
+  * The ``south`` schema migration package (``easy_install South``; currently
+    using 0.7.4)
+
+  * If you're going to do any work on the code, it is useful to install
+    ``debug_toolbar`` (``easy_install django-debug-toolbar``). If debug toolbar
+    is available it will be activated when ``DEBUG`` is set to ``True`` in the
+    local_settings.py file; see below.
   
 After a clean install, 
 
@@ -18,10 +24,13 @@ After a clean install,
   * Run ``python manage.py migrate`` to update all the database schemas etc to
     the most current version
 
-  * Run ``python manage.py loaddata clean_install_data.json`` to load some dummy
-    data into the database (IELex will crash if e.g. there are no languages in
-    the database)
+  * If you want to test the database, download ``dravidian_wordlists.json``
+    from the BitBucket site, and run::
+    
+      python manage.py loaddata dravidian_wordlists.json
 
+**TODO**
 
+  - prepare and upload the sample wordlists.
 
 .. vim:ft=rst:nospell
