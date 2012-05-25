@@ -1,8 +1,21 @@
 # -*- coding: utf-8 -*-
+from settings import ROOTDIR
 
 # Development settings
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+
+# Database backend
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(ROOTDIR, 'db.sqlite3'),
+        'USER': '',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
+        'HOST': '',                      # Not used with sqlite3.
+        'PORT': '',                      # Not used with sqlite3.
+    }
+}
 
 # Error messages
 ADMINS = (
