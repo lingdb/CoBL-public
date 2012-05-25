@@ -107,7 +107,7 @@ class Meaning(models.Model):
     gloss = models.CharField(max_length=64, validators=[suitable_for_url])
     description = models.CharField(max_length=64, blank=True) # show name
     notes = models.TextField(blank=True)
-    percent_coded = models.FloatField(editable=False)
+    percent_coded = models.FloatField(editable=False, default=0)
 
     def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
@@ -369,7 +369,7 @@ class MeaningList(models.Model):
 
     name = models.CharField(max_length=128, validators=[suitable_for_url])
     description = models.TextField(blank=True, null=True)
-    meaning_ids = models.CommaSeparatedIntegerField(max_length=128)
+    meaning_ids = models.CommaSeparatedIntegerField(max_length=4096)
     modified = models.DateTimeField(auto_now=True)
 
     def _get_list(self):
@@ -504,8 +504,8 @@ def update_language_list_all(sender, instance, **kwargs):
         ll_alpha.append(language)
     return
 
-models.signals.post_save.connect(update_language_list_all, sender=Language)
-models.signals.post_delete.connect(update_language_list_all, sender=Language)
+#models.signals.post_save.connect(update_language_list_all, sender=Language)
+#models.signals.post_delete.connect(update_language_list_all, sender=Language)
 
 def update_meaning_list_all(sender, instance, **kwargs):
     ml, _ = MeaningList.objects.get_or_create(name=MeaningList.DEFAULT)
@@ -523,8 +523,8 @@ def update_meaning_list_all(sender, instance, **kwargs):
     ml_alpha.save(force_update=True)
     return
 
-models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
-models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
+#models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
+#models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
 # -- Reversion registration ----------------------------------------
 
