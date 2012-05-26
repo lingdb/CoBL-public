@@ -1,4 +1,5 @@
 # Django settings for ielex project.
+import sys
 import os.path
 # import logging
 
@@ -113,6 +114,14 @@ if not os.path.exists(local_settings_path):
             secret_key)
 from local_settings import *
 # ----------------------------------------------------------------
+
+if "test" in sys.argv:
+    # use sqlite in-memory database for tests
+    try:
+        from test_settings import *
+    except ImportError:
+        pass
+
 
 if DEBUG:
     try:
