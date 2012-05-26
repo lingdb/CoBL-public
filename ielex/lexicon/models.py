@@ -504,8 +504,8 @@ def update_language_list_all(sender, instance, **kwargs):
         ll_alpha.append(language)
     return
 
-#models.signals.post_save.connect(update_language_list_all, sender=Language)
-#models.signals.post_delete.connect(update_language_list_all, sender=Language)
+models.signals.post_save.connect(update_language_list_all, sender=Language)
+models.signals.post_delete.connect(update_language_list_all, sender=Language)
 
 def update_meaning_list_all(sender, instance, **kwargs):
     ml, _ = MeaningList.objects.get_or_create(name=MeaningList.DEFAULT)
@@ -523,8 +523,8 @@ def update_meaning_list_all(sender, instance, **kwargs):
     ml_alpha.save(force_update=True)
     return
 
-#models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
-#models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
+models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
+models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
 # -- Reversion registration ----------------------------------------
 
