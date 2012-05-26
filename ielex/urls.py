@@ -88,7 +88,10 @@ urlpatterns = patterns('',
             name="edit-meaning"),
 
     # Meaning
-    # XXX TODO refactor out remaining report_meaning calls
+    # TODO 
+    # - refactor out remaining report_meaning calls
+    # - the view_meaning template is very slow (since all the cognatejudgements
+    #   have to be queried at the same time.
     url(r'^meaning/%(MEANING)s/lexeme/add/$' % R, lexeme_add,
             {"return_to":"/meaning/%(meaning)s/"},
             name="meaning-add-lexeme"),
@@ -96,14 +99,15 @@ urlpatterns = patterns('',
             name="view-meaning-languages"),
     url(r'^meaning/%(MEANING)s/$' % R, view_meaning, {"language_list":None},
             name="meaning-report"),
-    url(r'^meaning/%(MEANING)s/add/$' % R, report_meaning,
-            name="meaning-add"),
+    # url(r'^meaning/%(MEANING)s/add/$' % R, report_meaning,
+    #         name="meaning-add"),
     url(r'^meaning/%(MEANING)s/delete/$' % R, delete_meaning,
             name="delete-meaning"), # XXX needs confirm dialog
     url(r'^meaning/%(MEANING)s/%(LEXEME_ID)s/$' % R,
             report_meaning, {"action":"goto"}),
     url(r'^meaning/%(MEANING)s/%(LEXEME_ID)s/add/$' % R,
-            report_meaning, {"action":"add"}),
+            report_meaning, {"action":"add"},
+            name="meaning-lexeme-add-cogjudgement"),
     url(r'^meaning/%(MEANING)s/%(LEXEME_ID)s/%(COGJUDGE_ID)s/$' % R,
             report_meaning),
     url(r'^meaning/%(MEANING)s/language/%(LANGUAGE)s/lexeme/add/' % R,

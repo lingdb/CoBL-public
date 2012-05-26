@@ -1,10 +1,10 @@
 <center>
 <a href="/meaning/{{ prev_meaning.gloss }}">
-  <strong>«{{ prev_meaning.gloss }}</strong>
+  <strong>«{% url meaning-report prev_meaning.gloss %}</strong>
 </a>
 <small>(prev) ― {{ meaning.id }} ― (next)</small>
 <a href="/meaning/{{ next_meaning.gloss }}">
-  <strong>{{ next_meaning.gloss }}»</strong>
+  <strong>{% url meaning-report next_meaning.gloss %}»</strong>
 </a>
 <br />
 <small>wordlist: <strong>‘{{ current_wordlist_name }}’</strong></small>

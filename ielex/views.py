@@ -717,7 +717,8 @@ def view_meaning(request, meaning, language_list):
     # Get lexemes, respecting 'languages'
     # lexemes = Lexeme.objects.filter(meaning=meaning,
     #         language__id__in=current_language_list.language_id_list)
-    lexemes = get_ordered_lexemes(meaning, current_language_list)
+    lexemes = get_ordered_lexemes(meaning, current_language_list,
+            "language", "meaning", "cognatejudgement_set")
 
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
     return render_template(request, "view_meaning.html",
@@ -823,12 +824,13 @@ def delete_meaning(request, meaning):
 #     lexemes.sort(key=lambda m: m.order)
 #     return lexemes
 
-def get_ordered_lexemes(meaning, language_list):
+def get_ordered_lexemes(meaning, language_list, *select_related_fields):
     lexemes = Lexeme.objects.filter(
             meaning=meaning,
             language__in=language_list.languages.all(
             )).filter(language__languagelistorder__language_list=language_list
-            ).select_related().order_by("language__languagelistorder")
+            ).select_related(*select_related_fields).order_by(
+            "language__languagelistorder")
     return lexemes
 
 def view_lexeme(request, lexeme_id):
