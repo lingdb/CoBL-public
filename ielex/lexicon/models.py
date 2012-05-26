@@ -197,7 +197,7 @@ class Lexeme(models.Model):
     source = models.ManyToManyField(Source, through="LexemeCitation",
             blank=True)
     modified = models.DateTimeField(auto_now=True)
-    #cognate_coded = models.BooleanField(editable=False, default=False)
+    number_cognate_coded = models.IntegerField(editable=False, default=0)
 
     def get_absolute_url(self):
         return "/lexeme/%s/" % self.id
@@ -207,6 +207,7 @@ class Lexeme(models.Model):
 
     class Meta:
         order_with_respect_to = "language"
+
 
 class CognateJudgement(models.Model):
     lexeme = models.ForeignKey(Lexeme)
@@ -525,6 +526,14 @@ def update_meaning_list_all(sender, instance, **kwargs):
 
 models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
 models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
+
+def update_lexeme_number_cognate_coded(sender, instance, **kwargs):
+    instance.number_cognate_coded = instance.cognate_class.count()
+    instance.save()
+    return
+
+models.signals.post_save.connect(update_lexeme_number_cognate_coded,
+        sender=CognateJudgement)
 
 # -- Reversion registration ----------------------------------------
 

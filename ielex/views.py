@@ -374,7 +374,8 @@ def view_language_wordlist(request, language, wordlist):
 
     # collect data
     lexemes = Lexeme.objects.filter(language=language,
-            meaning__id__in=wordlist.meaning_id_list).order_by("meaning__gloss")
+            meaning__id__in=wordlist.meaning_id_list
+            ).select_related("meaning__gloss").order_by("meaning__gloss")
     # decorate (with a temporary attribute)
     for lexeme in lexemes:
         lexeme.temporary_sort_order = wordlist.meaning_id_list.index(lexeme.meaning.id)
