@@ -255,7 +255,7 @@
   {% if lexeme.semanticextension_set.exists %}
   <li><a href="{% url lexeme-domains-list lexeme.id  %}">view semantic exensions</a></li>
   {% endif %}
-  <li><a href="/language/{{ lexeme.language.ascii_name }}">back to language list ‘{{ lexeme.language.utf8_name }}’</a></li>
+  <li><a href="/language/{{ lexeme.language.ascii_name }}">back to ‘{{ lexeme.language.utf8_name }}’ wordlist</a></li>
   {% if user.is_authenticated %}
     <li><a href="{% url language-add-lexeme lexeme.language.ascii_name %}">add a new lexeme to ‘{{ lexeme.language.utf8_name }}’</a></li>
       {% if lexeme.meaning %}

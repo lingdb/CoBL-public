@@ -13,7 +13,7 @@
     <th>Phonological Form</th>
     <th alt="Language specific">Gloss</th>
     <th>Notes</th>
-    <th>Cognate coded?</th>
+    <th alt="Number of cognate classes">nCog</th>
   </tr>
   {% for lexeme in lexemes %}
   {# if lexeme.meaning #}
@@ -24,20 +24,11 @@
       <td>{{ lexeme.phon_form }}</td>
       <td>{{ lexeme.gloss }}</td>
       <td><a href="/lexeme/{{ lexeme.id }}" title="{{ lexeme.notes }}">{{ lexeme.notes|truncatewords:5 }}</a></td>
-      <td>{% for cogset in lexeme.cognate_class.all %}
-        <a href="{% url cognate-set cogset.id %}">
-          <img src="/media/buttons/star-blue.png" alt="*" title="Cognate set {{ cogset.id }}" />
-        </a>
-        {% endfor %}
-      </td>
       <td>
-       <a href="{% url view-lexeme lexeme.id %}">
-         <img src="/media/buttons/view.png" alt="View" title="View detailed information on lexeme" /><a>
-        {% if user.is_authenticated %}
-        <a href="/lexeme/{{ lexeme.id }}/duplicate">
-            <img src="/media/buttons/duplicate_lexeme.png" alt="Duplicate" title="Duplicate lexical entry" />
-        </a>
-        {% endif %}
+        <a href="{% url view-lexeme lexeme.id %}">
+          <img src="/media/buttons/view.png" alt="View" title="View detailed information on lexeme" />
+          <a>
+        {{ lexeme.cognate_class.count }}
       </td>
     </tr>
     {# endif #}

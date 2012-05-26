@@ -15,7 +15,6 @@ from reversion.revisions import RegistrationError
 from south.modelsinspector import add_introspection_rules
 from ielex.lexicon.validators import *
 
-
 ## TODO: reinstate the cache stuff, but using a site specific key prefix (maybe
 ## the short name of the database
 
@@ -198,6 +197,7 @@ class Lexeme(models.Model):
     source = models.ManyToManyField(Source, through="LexemeCitation",
             blank=True)
     modified = models.DateTimeField(auto_now=True)
+    #cognate_coded = models.BooleanField(editable=False, default=False)
 
     def get_absolute_url(self):
         return "/lexeme/%s/" % self.id
