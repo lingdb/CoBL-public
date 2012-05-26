@@ -24,7 +24,9 @@
   <h2>Permissions</h2>
   <ul>
   {% for permission in the_user.get_all_permissions %}
-    <li>{{ permission.name }}</li>
+    {% if permission.name %}
+      <li>{{ permission.name }}</li>
+    {% endif %}
   {% endfor %}
   </ul>
 {% endblock %}

@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
-from django.views.generic import DetailView, UpdateView, CreateView
+from django.views.generic import DetailView, UpdateView, CreateView, ListView
 from django.views.generic.simple import redirect_to
 from ielex.views import *
 from ielex import settings
@@ -46,6 +46,11 @@ urlpatterns = patterns('',
     url(r'^languages/%(LANGUAGES)s/reorder/$' % R, reorder_languages,
             name="reorder-languages"),
     url(r'^add-new/languages/$', add_language_list, name="add-language-list"),
+    url(r'^languagelists/$', 
+            ListView.as_view(
+                queryset=LanguageList.objects.all(),
+                context_object_name="language_lists"),
+            name="view-language-lists"),
 
     # Language
     url(r'^language/%(LANGUAGE)s/$' % R, view_language_wordlist,
@@ -192,9 +197,11 @@ urlpatterns = patterns('',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     )
 
-urlpatterns += patterns('',
-        ('', include('ielex.extensional_semantics.urls')),
-        )
+# urls to include iff the extensional semantic module is activated
+if settings.semantic_domains:
+    urlpatterns += patterns('',
+            ('', include('ielex.extensional_semantics.urls')),
+            )
 
 urlpatterns += patterns('',
         (r'^nexus/$', 'ielex.lexicon.views.list_nexus'),

@@ -84,7 +84,7 @@ TODO
     /lexeme/.../edit-cognate-citation/COGCITE_ID    "edit-cognate-citation"
         => /lexeme/.../cognate/.../citation/.../edit/
 
-- refactor base templates:
+- refactor base templates and rationalize names:
 
   These just need to take object, title_text, header_text arguments. This
   should then be easy to convert to class based views.
@@ -187,7 +187,5 @@ General
 
 Development
 -----------
-
-- Make a developer site: bitbucket.org seems the most suitable.
 
 - Do there need to be any import functions?
