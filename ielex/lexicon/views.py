@@ -4,11 +4,19 @@ import sys
 # import logging
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, TemplateView
 from ielex import settings
 from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
 from ielex.forms import ChooseNexusOutputForm, EditCognateClassCitationForm
+
+class FrontpageView(TemplateView):
+    template_name = "frontpage.html"
+    lexemes = Lexeme.objects.count(),
+    cognate_classes = CognateClass.objects.count(),
+    languages = Language.objects.count(),
+    meanings = Meaning.objects.count(),
+    coded_characters = CognateJudgement.objects.count()
 
 class CognateClassCitationUpdateView(UpdateView):
     model=CognateClassCitation

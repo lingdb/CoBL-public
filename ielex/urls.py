@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
-from django.views.generic import DetailView, UpdateView, CreateView, ListView
+from django.views.generic import DetailView, UpdateView,\
+        CreateView, ListView, TemplateView
 from django.views.generic.simple import redirect_to
 from ielex.views import *
 from ielex import settings
@@ -30,7 +31,8 @@ R = {
 
 urlpatterns = patterns('',
     # Front Page
-    url(r'^$', view_frontpage, name="view-frontpage"),
+    url(r'^$', FrontpageView.as_view(), name="view-frontpage"),
+    #url(r'^$', view_frontpage, name="view-frontpage"),
     url(r'^backup/$', make_backup), # XXX only in dev mode?
     url(r'^changes/$', view_changes, name="view-changes"),
     # url(r'^touch/(?P<model_name>[a-zA-Z0-9_ ]+)/(?P<model_id>\d+)/', touch),

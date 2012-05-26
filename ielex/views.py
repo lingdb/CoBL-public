@@ -40,14 +40,6 @@ def make_backup(request):
     messages.add_message(request, messages.INFO, msg)
     return HttpResponseRedirect(referer)
 
-def view_frontpage(request):
-    return render_template(request, "frontpage.html",
-            {"lexemes":Lexeme.objects.count(),
-            "cognate_classes":CognateClass.objects.count(),
-            "languages":Language.objects.count(),
-            "meanings":Meaning.objects.count(),
-            "coded_characters":CognateJudgement.objects.count()})
-
 def view_changes(request):
     """Recent changes"""
     # XXX the view fails when an object has been deleted
