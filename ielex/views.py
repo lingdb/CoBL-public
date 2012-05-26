@@ -11,6 +11,7 @@ from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models import Q, Max, Count
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template.loader import get_template
 from reversion.models import Version
@@ -220,19 +221,18 @@ def update_object_from_form(model_object, form):
 
 # -- /language(s)/ ----------------------------------------------------------
 
-def get_canonical_languages(languages=None):
-    """Returns a LanguageList object; presumes LanguageList.DEFAULT
-    includes is all languages"""
+def get_canonical_language_list(language_list=None):
+    """Returns a LanguageList object"""
     try:
-        if languages is None:
-            languages = LanguageList.objects.get(name=LanguageList.DEFAULT)
-        elif languages.isdigit():
-            languages = LanguageList.objects.get(id=languages)
+        if language_list is None:
+            language_list = LanguageList.objects.get(name=LanguageList.DEFAULT)
+        elif language_list.isdigit():
+            language_list = LanguageList.objects.get(id=language_list)
         else:
-            languages = LanguageList.objects.get(name=languages)
+            language_list = LanguageList.objects.get(name=language_list)
     except LanguageList.DoesNotExist:
-        languages = LanguageList.objects.get(name=LanguageList.DEFAULT)
-    return languages
+        language_list = LanguageList.objects.get(name=LanguageList.DEFAULT)
+    return language_list
 
 # def get_language_list_form(request):
 #     language_list_name = get_current_language_list_name(request)
@@ -251,8 +251,11 @@ def get_canonical_languages(languages=None):
 #     return form
 
 
-def view_languages(request, languages=None):
-    current_list = get_canonical_languages(languages)
+def view_language_list(request, language_list=None):
+    if not language_list:
+        return(redirect("view-language-list",
+            language_list=LanguageList.DEFAULT))
+    current_list = get_canonical_language_list(language_list)
     request.session["current_language_list_name"] = current_list.name
     languages = current_list.languages.all().order_by("languagelistorder")
     languages = languages.annotate(lexeme_count=Count("lexeme"))
@@ -265,7 +268,7 @@ def view_languages(request, languages=None):
             msg = "Language list selection changed to '%s'" %\
                     current_list.name
             messages.add_message(request, messages.INFO, msg)
-            return HttpResponseRedirect(reverse("view-languages",
+            return HttpResponseRedirect(reverse("view-language-list",
                     args=[current_list.name]))
     else:
         form = ChooseLanguageListForm()
@@ -276,9 +279,9 @@ def view_languages(request, languages=None):
             "language_list_form":form,
             "current_list":current_list})
 
-def reorder_languages(request, languages):
+def reorder_languages(request, language_list):
     language_id = request.session.get("current_language_id", None)
-    language_list = LanguageList.objects.get(name=languages)
+    language_list = LanguageList.objects.get(name=language_list)
     languages = language_list.languages.all().order_by("languagelistorder")
     ReorderForm = make_reorder_languagelist_form(languages)
     if request.method == "POST":
@@ -289,7 +292,7 @@ def reorder_languages(request, languages):
             language = Language.objects.get(id=language_id)
             if form.data["submit"] == "Finish":
                 language_list.sequentialize()
-                return HttpResponseRedirect(reverse("view-languages",
+                return HttpResponseRedirect(reverse("view-language-list",
                     args=[language_list.name]))
             else:
                 if form.data["submit"] == "Move up":
@@ -303,7 +306,7 @@ def reorder_languages(request, languages):
         else: # pressed Finish without submitting changes
             # TODO might be good to zap the session variable once finished
             # request.session["current_meaning_id"] = None
-            return HttpResponseRedirect(reverse("view-languages",
+            return HttpResponseRedirect(reverse("view-language-list",
                 args=[language_list.name]))
     else: # first visit
         form = ReorderForm(initial={"language":language_id})
@@ -401,25 +404,25 @@ def add_language_list(request):
             other_list = LanguageList.objects.get(name=form.cleaned_data["language_list"])
             for language in other_list.languages.all().order_by("languagelistorder"):
                 new_list.append(language)
-            edit_language_list(request, languages=form.cleaned_data["name"])
+            edit_language_list(request, language_list=form.cleaned_data["name"])
     else:
         form = AddLanguageListForm()
     return render_template(request, "add_language_list.html",
             {"form":form})
 
 @login_required
-def edit_language_list(request, languages=None):
-    languages = get_canonical_languages(languages) # a language list object
-    language_list_all = get_canonical_languages()  # a language list object
-    included_languages = languages.languages.all().order_by("languagelistorder")
+def edit_language_list(request, language_list=None):
+    language_list = get_canonical_language_list(language_list) # a language list object
+    language_list_all = get_canonical_language_list()  # a language list object
+    included_languages = language_list.languages.all().order_by("languagelistorder")
     excluded_languages = language_list_all.languages.exclude(
-                        id__in=languages.languages.values_list("id", flat=True)
+                        id__in=language_list.languages.values_list("id", flat=True)
                         ).order_by("languagelistorder")
     if request.method == "POST":
-        name_form = EditLanguageListForm(request.POST, instance=languages)
+        name_form = EditLanguageListForm(request.POST, instance=language_list)
         if "cancel" in name_form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect(reverse('view-languages',
-                args=[languages.name]))
+            return HttpResponseRedirect(reverse('view-language-list',
+                args=[language_list.name]))
         list_form = EditLanguageListMembersForm(request.POST)
         list_form.fields["included_languages"].queryset = included_languages
         list_form.fields["excluded_languages"].queryset = excluded_languages
@@ -428,22 +431,22 @@ def edit_language_list(request, languages=None):
             exclude = list_form.cleaned_data["excluded_languages"]
             include = list_form.cleaned_data["included_languages"]
             if include:
-                languages.remove(include)
+                language_list.remove(include)
                 changed_members = True
             if exclude:
-                languages.append(exclude)
+                language_list.append(exclude)
                 changed_members = True
             if changed_members:
-                languages.save()
+                language_list.save()
                 name_form.save()
                 return HttpResponseRedirect(reverse('edit-language-list',
-                    args=[languages.name]))
+                    args=[language_list.name]))
             else: # changed name
                 name_form.save()
-                return HttpResponseRedirect(reverse('view-languages',
+                return HttpResponseRedirect(reverse('view-language-list',
                     args=[name_form.cleaned_data["name"]]))
     else:
-        name_form = EditLanguageListForm(instance=languages)
+        name_form = EditLanguageListForm(instance=language_list)
         list_form = EditLanguageListMembersForm()
         list_form.fields["included_languages"].queryset = included_languages
         list_form.fields["excluded_languages"].queryset = excluded_languages
@@ -455,18 +458,19 @@ def edit_language_list(request, languages=None):
             })
 
 @login_required
-def delete_language_list(request, languages):
-    languages = LanguageList.objects.get(name=languages)
-    languages.delete()
+def delete_language_list(request, language_list):
+    language_list = LanguageList.objects.get(name=language_list)
+    language_list.delete()
     return HttpResponseRedirect(reverse("view-all-languages"))
 
 @login_required
-def language_add_new(request, languages):
-    language_list = LanguageList.objects.get(name=languages)
+def language_add_new(request, language_list):
+    language_list = LanguageList.objects.get(name=language_list)
     if request.method == 'POST':
         form = EditLanguageForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
-            return HttpResponseRedirect(reverse("view-all-languages"))
+            return HttpResponseRedirect(reverse("view-language-list",
+                    args=[language_list.name]))
         if form.is_valid():
             form.save()
             language = Language.objects.get(
@@ -659,7 +663,7 @@ def view_meaning(request, meaning, languages):
 
     # Normalize calling parameters
     canonical_gloss = get_canonical_meaning(meaning).gloss
-    current_language_list = get_canonical_languages(languages)
+    current_language_list = get_canonical_language_list(languages)
     request.session["current_language_list_name"] = current_language_list.name
     if meaning != canonical_gloss or languages != current_language_list.name:
         return HttpResponseRedirect(reverse("view-meaning-languages", 
@@ -731,7 +735,7 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
     lexeme_id = int(lexeme_id)
     cogjudge_id = int(cogjudge_id)
     languages = request.session["current_language_list_name"]
-    current_language_list = get_canonical_languages(languages)
+    current_language_list = get_canonical_language_list(languages)
 
     # normalize meaning
     if meaning.isdigit():

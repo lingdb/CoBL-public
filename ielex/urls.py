@@ -20,7 +20,7 @@ R = {
     "COGNATE_NAME":r"(?P<cognate_name>[a-zA-Z0-9_.~-]+)",
     "DOMAIN":r"(?P<domain>[a-zA-Z0-9_.-]+)",
     "LANGUAGE":r"(?P<language>[a-zA-Z0-9_-]+)",
-    "LANGUAGES":r"(?P<languages>[a-zA-Z0-9_-]+)",
+    "LANGUAGELIST":r"(?P<language_list>[a-zA-Z0-9_-]+)",
     "LEXEME_ID":r"(?P<lexeme_id>\d+)",
     "MEANING_ID":r"(?P<meaning_id>\d+)",
     "MEANING":r"(?P<meaning>[a-zA-Z0-9_]+)",
@@ -32,23 +32,23 @@ R = {
 urlpatterns = patterns('',
     # Front Page
     url(r'^$', FrontpageView.as_view(), name="view-frontpage"),
-    #url(r'^$', view_frontpage, name="view-frontpage"),
     url(r'^backup/$', make_backup), # XXX only in dev mode?
     url(r'^changes/$', view_changes, name="view-changes"),
-    # url(r'^touch/(?P<model_name>[a-zA-Z0-9_ ]+)/(?P<model_id>\d+)/', touch),
 
-    # Languages
-    url(r'^languages/$', view_languages, name="view-all-languages"),
-    url(r'^languages/%(LANGUAGES)s/add-new/$' % R, language_add_new, name="language-add-new"),
-    url(r'^languages/%(LANGUAGES)s/$' % R, view_languages, name="view-languages"),
-    url(r'^languages/%(LANGUAGES)s/edit/$' % R, edit_language_list,
+    # Language list
+    url(r'^languages/$', view_language_list),
+    url(r'^languagelist/%s$' % LanguageList.DEFAULT, view_language_list, 
+            name="view-all-languages"),
+    url(r'^languagelist/add-new/$', add_language_list, name="add-language-list"),
+    url(r'^languagelist/%(LANGUAGELIST)s/$' % R, view_language_list,
+            name="view-language-list"),
+    url(r'^languagelist/%(LANGUAGELIST)s/edit/$' % R, edit_language_list,
             name="edit-language-list"),
-    url(r'^languages/%(LANGUAGES)s/delete/$' % R, delete_language_list,
-            name="delete-language-list"),
-    url(r'^languages/%(LANGUAGES)s/reorder/$' % R, reorder_languages,
+    url(r'^languagelist/%(LANGUAGELIST)s/reorder/$' % R, reorder_languages,
             name="reorder-languages"),
-    url(r'^add-new/languages/$', add_language_list, name="add-language-list"),
-    url(r'^languagelists/$', 
+    url(r'^languagelist/%(LANGUAGELIST)s/delete/$' % R, delete_language_list,
+            name="delete-language-list"),
+    url(r'^languagelist/$', # view all language lists
             ListView.as_view(
                 queryset=LanguageList.objects.all(),
                 context_object_name="language_lists"),
@@ -71,6 +71,9 @@ urlpatterns = patterns('',
     url(r'^language/%(LANGUAGE)s/meaning/%(MEANING)s/lexeme/add/' % R,
             lexeme_add, {"return_to":"/language/%(language)s/"},
             name="language-meaning-add-lexeme"),
+    # add new language to a language list # XXX do we need this?
+    url(r'^languagelist/%(LANGUAGELIST)s/add-new/$' % R, language_add_new,
+            name="language-add-new"),
 
     # Meanings (aka wordlist)
     url(r'^wordlists/$', view_wordlists, name="view-wordlists"),
@@ -89,7 +92,7 @@ urlpatterns = patterns('',
     url(r'^meaning/%(MEANING)s/lexeme/add/$' % R, lexeme_add,
             {"return_to":"/meaning/%(meaning)s/"},
             name="meaning-add-lexeme"),
-    url(r'^meaning/%(MEANING)s/languages/%(LANGUAGES)s/$' % R, view_meaning,
+    url(r'^meaning/%(MEANING)s/languages/%(LANGUAGELIST)s/$' % R, view_meaning,
             name="view-meaning-languages"),
     url(r'^meaning/%(MEANING)s/$' % R, view_meaning, {"languages":None},
             name="meaning-report"),
