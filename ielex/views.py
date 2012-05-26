@@ -279,7 +279,7 @@ def view_language_list(request, language_list=None):
             "language_list_form":form,
             "current_list":current_list})
 
-def reorder_languages(request, language_list):
+def reorder_language_list(request, language_list):
     language_id = request.session.get("current_language_id", None)
     language_list = LanguageList.objects.get(name=language_list)
     languages = language_list.languages.all().order_by("languagelistorder")
@@ -301,7 +301,7 @@ def reorder_languages(request, language_list):
                     move_language(language, language_list, 1)
                 else:
                     assert False, "This shouldn't be able to happen"
-                return HttpResponseRedirect(reverse("reorder-languages",
+                return HttpResponseRedirect(reverse("reorder-language-list",
                     args=[language_list.name]))
         else: # pressed Finish without submitting changes
             # TODO might be good to zap the session variable once finished
@@ -310,7 +310,7 @@ def reorder_languages(request, language_list):
                 args=[language_list.name]))
     else: # first visit
         form = ReorderForm(initial={"language":language_id})
-    return render_template(request, "reorder_languages.html",
+    return render_template(request, "reorder_language_list.html",
             {"language_list":language_list, "form":form})
 
 def move_language(language, language_list, direction):
@@ -658,14 +658,14 @@ def edit_meaning(request, meaning):
             {"meaning":meaning,
             "form":form})
 
-def view_meaning(request, meaning, languages):
+def view_meaning(request, meaning, language_list):
     # XXX a refactored version of report_meaning
 
     # Normalize calling parameters
     canonical_gloss = get_canonical_meaning(meaning).gloss
-    current_language_list = get_canonical_language_list(languages)
+    current_language_list = get_canonical_language_list(language_list)
     request.session["current_language_list_name"] = current_language_list.name
-    if meaning != canonical_gloss or languages != current_language_list.name:
+    if meaning != canonical_gloss or language_list != current_language_list.name:
         return HttpResponseRedirect(reverse("view-meaning-languages", 
             args=[canonical_gloss, current_language_list.name]))
     else:
@@ -734,8 +734,8 @@ def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
     # have to be removed.
     lexeme_id = int(lexeme_id)
     cogjudge_id = int(cogjudge_id)
-    languages = request.session["current_language_list_name"]
-    current_language_list = get_canonical_language_list(languages)
+    language_list = request.session["current_language_list_name"]
+    current_language_list = get_canonical_language_list(language_list)
 
     # normalize meaning
     if meaning.isdigit():
