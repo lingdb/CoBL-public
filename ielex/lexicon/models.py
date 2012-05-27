@@ -78,7 +78,7 @@ class Language(models.Model):
     ascii_name = models.CharField(max_length=128, unique=True,
             validators=[suitable_for_url])
     utf8_name = models.CharField(max_length=128, unique=True)
-    sort_key = models.FloatField(null=True, blank=True, editable=False)
+    sort_key = models.FloatField(null=True, blank=True, editable=False) ## rm
     description = models.TextField(blank=True, null=True)
 
     language_list_name = None ## XXX does this do anything?
@@ -528,8 +528,9 @@ models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
 models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
 def update_lexeme_number_cognate_coded(sender, instance, **kwargs):
-    instance.number_cognate_coded = instance.cognate_class.count()
-    instance.save()
+    lexeme = instance.lexeme
+    lexeme.number_cognate_coded = lexeme.cognate_class.count()
+    lexeme.save()
     return
 
 models.signals.post_save.connect(update_lexeme_number_cognate_coded,
