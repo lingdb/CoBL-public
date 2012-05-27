@@ -30,7 +30,9 @@
     <td><b>{{ version.get_type_display }}</b></td>
     <td>{{ version.revision.user.username }}</td>
     <td>{{ version.revision.comment|wikilink|truncatewords_html:1 }}</td>
+    {% if user.is_authenticated %}
     <td><small><a href="/revert/{{ version.id }}">undo</a></small></td>
+    {% endif %}
   </tr>
 {% endfor %}
 </table>

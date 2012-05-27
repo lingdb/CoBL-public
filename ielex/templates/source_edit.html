@@ -19,6 +19,7 @@
 <table>
   <tr>
     <th>Citation:</th><td>{{ source.citation_text }}</td>
+    {% if user.is_authenticated %}
     <td>
       <a href="/source/{{ source.id }}/edit/">
         <img src="/media/buttons/edit.png" alt="Edit" title="Edit" />
@@ -27,6 +28,7 @@
         <img src="/media/buttons/delete.png" alt="Delete" title="Delete" />
       </a>
     </td>
+    {% endif %}
   </tr>
   <tr><th>Type:</th><td>{{ source.get_type_code_display }}</td></tr>
   <tr><th>Description:</th><td>{{ source.description }}</td></tr>

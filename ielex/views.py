@@ -1216,6 +1216,13 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
 
 # -- /source/ -------------------------------------------------------------
 
+def source_view(request, source_id):
+    source = Source.objects.get(id=source_id)
+    return render_template(request, 'source_edit.html', {
+            "form": None,
+            "source": source,
+            "action": ""})
+
 @login_required
 def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
     source_id = int(source_id)

@@ -147,7 +147,7 @@ urlpatterns = patterns('',
 
     # Sources
     url(r'^sources/$', source_list, name="view-sources"),
-    url(r'^source/(?P<source_id>\d+)/$', source_edit),
+    url(r'^source/(?P<source_id>\d+)/$', source_view),
     url(r'^source/(?P<source_id>\d+)/(?P<action>edit|delete)/$', source_edit),
     url(r'^source/(?P<action>add)/$', source_edit),
     url(r'^source/(?P<action>add)/cognate-judgement/%(COGJUDGE_ID)s/$' % R, source_edit),

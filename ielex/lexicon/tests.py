@@ -16,18 +16,20 @@ class ViewTests(TestCase):
 
     def setUp(self):
         self.client = Client()
-        source = Source.objects.create(citation_text="Source")
-        language = Language.objects.create(ascii_name="Language", utf8_name="Language")
-        meaning = Meaning.objects.create(gloss="Meaning")
-        lexeme = Lexeme.objects.create(source_form="Lexeme", language=language,
+        source = Source.objects.create(citation_text="SOURCE")
+        language = Language.objects.create(ascii_name="LANGUAGE", utf8_name="LANGUAGE")
+        meaning = Meaning.objects.create(gloss="MEANING")
+        lexeme = Lexeme.objects.create(source_form="LEXEME", language=language,
                 meaning=meaning)
-        cogclass = CognateClass.objects.create(alias="CognateClass")
-        cogjudge = CognateJudgement.objects.create(lexeme=lexeme, cognate_class=cogclass)
+        cogclass = CognateClass.objects.create(alias="X")
+        cogjudge = CognateJudgement.objects.create(lexeme=lexeme,
+                cognate_class=cogclass)
         CognateJudgementCitation.objects.create(cognate_judgement=cogjudge,
-                source=source)
-        LexemeCitation.objects.create(lexeme=lexeme, source=source)
+                source=source, reliability="A")
+        LexemeCitation.objects.create(lexeme=lexeme, source=source,
+                reliability="A")
         CognateClassCitation.objects.create(cognate_class=cogclass,
-                source=source)
+                source=source, reliability="A")
 
     def test_frontpage(self):
         logger.info("tested /")
@@ -42,14 +44,14 @@ class ViewTests(TestCase):
     #     self.assertEqual(response.status_code, 200)
 
     def test_unlogged_walk(self):
-        "Walk though every link of the database to see that it renders"
+        "Test that an unlogged-in user can follow every link"
         root = "/"
         seen_links = set()
         def walk_page(path, parent):
             if path not in seen_links:
                 seen_links.add(path)
-                response = self.client.get(path)
-                logger.info("CHECKING: %s %s < %s" % (path,
+                response = self.client.get(path, follow=True)
+                logger.info("CHECKING: %s [%s] < %s" % (path,
                     response.status_code, parent))
                 self.assertEqual(response.status_code, 200)
                 dom = lxml.html.fromstring(response.content)
