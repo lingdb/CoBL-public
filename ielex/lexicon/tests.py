@@ -79,7 +79,8 @@ class ViewTests(TestCase):
         def walk_page(path, parent):
             if path not in seen_links:
                 if not path.endswith("/"):
-                    lacking_slash.append((path, parent))
+                    if not path.split("/")[-1].startswith("#"): # anchor
+                        lacking_slash.append((path, parent))
                 seen_links.add(path)
                 response = self.client.get(path, follow=True)
                 dom = lxml.html.fromstring(response.content)

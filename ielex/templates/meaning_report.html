@@ -54,11 +54,8 @@
       {% endifequal %}
     </td>
     <td>
-      <a href="/lexeme/{{ lexeme.id }}">
+      <a href="{% url view-lexeme lexeme.id %}">
         <img src="/media/buttons/view.png" alt="View" title="View/edit the lexical entry" />
-      </a>
-      <a href="/lexeme/{{ lexeme.id }}/duplicate/">
-        <img src="/media/buttons/duplicate_lexeme.png" alt="Duplicate" title="Duplicate lexical entry" />
       </a>
     </td>
   {% endfor %}
@@ -71,10 +68,12 @@
 {# include "snippets/change_sort_order.html" #}
 <ul class="navigation">
   {% if add_cognate_judgement  %}
-  <li><a href="/meaning/{{ meaning.gloss }}/">return to normal view</a></li>
+  <li><a href="{% url meaning-report meaning.gloss %}">return to normal view</a></li>
   {% endif %}
-  <li><a href="/lexeme/search/">search lexemes</a></li>
+  <li><a href="{% url lexeme-search %}">search lexemes</a></li>
+  {% if user.is_authenticated %}
   <li><a href="{% url meaning-add-lexeme meaning.gloss %}">add a new lexeme</a></li>
+  {% endif %}
 </ul>
 <p>Cognate judgements are added on this page, but deleted by the lexeme view (use the <img src="/media/buttons/view.png" alt="" title="View/Edit the lexical entry" /> button)</p>
 

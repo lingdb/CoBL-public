@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import *
+from django.contrib.auth.decorators import login_required
 from django.views.generic import DetailView, UpdateView,\
         CreateView, ListView, TemplateView
 from django.views.generic.simple import redirect_to
@@ -37,11 +38,11 @@ urlpatterns = patterns('',
 
     # Language list
     url(r'^languages/$', view_language_list),
-    url(r'^languagelist/%s$' % LanguageList.DEFAULT, view_language_list, 
-            name="view-all-languages"),
     url(r'^languagelist/add-new/$', add_language_list, name="add-language-list"),
     url(r'^languagelist/%(LANGUAGELIST)s/$' % R, view_language_list,
             name="view-language-list"),
+    url(r'^languagelist/%s/$' % LanguageList.DEFAULT, view_language_list, 
+            name="view-all-languages"),
     url(r'^languagelist/%(LANGUAGELIST)s/edit/$' % R, edit_language_list,
             name="edit-language-list"),
     url(r'^languagelist/%(LANGUAGELIST)s/reorder/$' % R, reorder_language_list,
@@ -147,7 +148,7 @@ urlpatterns = patterns('',
 
     # Sources
     url(r'^sources/$', source_list, name="view-sources"),
-    url(r'^source/(?P<source_id>\d+)/$', source_view),
+    url(r'^source/(?P<source_id>\d+)/$', source_view, name="view-source"),
     url(r'^source/(?P<source_id>\d+)/(?P<action>edit|delete)/$', source_edit),
     url(r'^source/(?P<action>add)/$', source_edit),
     url(r'^source/(?P<action>add)/cognate-judgement/%(COGJUDGE_ID)s/$' % R, source_edit),
@@ -155,8 +156,10 @@ urlpatterns = patterns('',
 
     # Cognate
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report, name="cognate-set"),
-    url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit-name)/$', cognate_report),
-    url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit-notes)/$', cognate_report),
+    url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit-name)/$',
+            login_required(cognate_report), name="edit-cognate-name"),
+    url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit-notes)/$',
+            login_required(cognate_report)), name="edit-cognate-notes",
     url(r'^cognate/%(COGNATE_NAME)s/$' % R, cognate_report),
     url(r'^meaning/%(MEANING)s/cognate/(?P<code>[A-Z]+[0-9]*)/$' % R,
             cognate_report),
