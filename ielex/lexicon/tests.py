@@ -71,4 +71,28 @@ class ViewTests(TestCase):
         walk_page(root, None)
         logger.info(" === end WALK SITE ===\n")
 
+    def test_trailing_slash(self):
+        "test that all internal urls have a trailing slash"
+        root = "/"
+        seen_links = set()
+        lacking_slash = []
+        def walk_page(path, parent):
+            if path not in seen_links:
+                if not path.endswith("/"):
+                    lacking_slash.append((path, parent))
+                seen_links.add(path)
+                response = self.client.get(path, follow=True)
+                dom = lxml.html.fromstring(response.content)
+                for element, attribute, link, pos in dom.iterlinks():
+                    if element.tag == "a" and link.startswith("/"):
+                        if link not in seen_links:
+                            walk_page(link, path)
+            return
+        walk_page(root, None)
+        if lacking_slash:
+            logger.info("\n === LACKING SLASH ===")
+            for link, parent in lacking_slash:
+                logger.info("%s : %s" % (parent, link))
+            logger.info(" === end LACKING SLASH ===\n")
+        #self.assertEmpty(lacking_slash)
 
