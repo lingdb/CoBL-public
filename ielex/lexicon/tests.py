@@ -95,5 +95,5 @@ class ViewTests(TestCase):
             for link, parent in lacking_slash:
                 logger.info("%s : %s" % (parent, link))
             logger.info(" === end LACKING SLASH ===\n")
-        #self.assertEmpty(lacking_slash)
+        self.assertFalse(lacking_slash)
 
