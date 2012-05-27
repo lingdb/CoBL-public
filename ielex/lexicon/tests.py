@@ -16,6 +16,7 @@ class ViewTests(TestCase):
 
     def setUp(self):
         self.client = Client()
+        # put one of each kind of object into the database
         source = Source.objects.create(citation_text="SOURCE")
         language = Language.objects.create(ascii_name="LANGUAGE", utf8_name="LANGUAGE")
         meaning = Meaning.objects.create(gloss="MEANING")
@@ -44,10 +45,12 @@ class ViewTests(TestCase):
     #     self.assertEqual(response.status_code, 200)
 
     def test_unlogged_walk(self):
-        "Test that an unlogged-in user can follow every link"
+        "Test that an unauthenticated user can follow every link"
+        logger.info("\n === WALK SITE (for unauthenticated user) ===")
         root = "/"
         seen_links = set()
         def walk_page(path, parent):
+            new_links = []
             if path not in seen_links:
                 seen_links.add(path)
                 response = self.client.get(path, follow=True)
@@ -61,8 +64,11 @@ class ViewTests(TestCase):
                             logger.info(" - CONTAINS (seen): %s" % link)
                         else:
                             logger.info(" - CONTAINS (new) : %s" % link)
-                        walk_page(link, path)
+                            new_links.append(link)
+                for link in new_links:
+                    walk_page(link, path)
             return
         walk_page(root, None)
+        logger.info(" === end WALK SITE ===\n")
 
 
