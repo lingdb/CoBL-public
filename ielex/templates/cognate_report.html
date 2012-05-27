@@ -124,7 +124,7 @@
   <li><a href="{% url edit-cognate-name cognate_class.id %}">name this cognate class</a></li>
   {% endif %}
   {% for meaning in cognate_class.get_meanings %}
-  <li><a href="{% url meaning-report meaning.gloss %}/">return to ‘{{ meaning.gloss }}’</a></li>
+  <li><a href="{% url meaning-report meaning.gloss %}">return to ‘{{ meaning.gloss }}’</a></li>
   {% endfor %}
 </ul>
 {% endblock %}
