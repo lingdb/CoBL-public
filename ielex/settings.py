@@ -116,11 +116,17 @@ from local_settings import *
 # ----------------------------------------------------------------
 
 if "test" in sys.argv:
-    # use sqlite in-memory database for tests
-    try:
-        from test_settings import *
-    except ImportError:
-        pass
+    # overwrite DATABASES with sqlite in-memory database for tests
+    DATABASES = {
+        'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': ':memory:',
+                'USER': '',
+                'PASSWORD': '',
+                'HOST': '',
+                'PORT': '',
+        }
+    }
 
 
 if DEBUG:
