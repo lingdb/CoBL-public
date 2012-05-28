@@ -24,7 +24,7 @@ class SemanticExtension(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     def reliability_ratings(self):
-        return set(self.kinmappingcitation_set.values_list("reliability", flat=True))
+        return set(self.semanticextensioncitation_set.values_list("reliability", flat=True))
 
     def get_absolute_url(self):
         return "/extension/%s/" % self.id
@@ -35,7 +35,6 @@ class SemanticExtension(models.Model):
 reversion.register(SemanticExtension)
 
 class SemanticExtensionCitation(AbstractBaseCitation):
-    # TODO remove
     extension = models.ForeignKey(SemanticExtension)
     source = models.ForeignKey('lexicon.Source')
 

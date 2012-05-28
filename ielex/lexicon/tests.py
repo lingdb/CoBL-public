@@ -17,6 +17,8 @@ class ViewTests(TestCase):
     def setUp(self):
         self.client = Client()
         # put one of each kind of object into the database
+        # TODO move this to a separate function so that other tests can
+        # use or build upon it.
         source = Source.objects.create(citation_text="SOURCE")
         language = Language.objects.create(ascii_name="LANGUAGE", utf8_name="LANGUAGE")
         meaning = Meaning.objects.create(gloss="MEANING")
