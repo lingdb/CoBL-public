@@ -88,6 +88,7 @@ INSTALLED_APPS = (
     'south',
     'ielex.lexicon',
     'ielex.extensional_semantics',
+    'ielex.tests',
 )
 
 # admin urls

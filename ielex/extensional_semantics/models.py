@@ -24,7 +24,7 @@ class SemanticExtension(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     def reliability_ratings(self):
-        return set(self.semanticextensioncitation_set.values_list("reliability", flat=True))
+        return set(self.semanticextensioncitation.values_list("reliability", flat=True))
 
     def get_absolute_url(self):
         return "/extension/%s/" % self.id
