@@ -4,8 +4,6 @@ from django.db import models
 from django.db.models import Max, F
 from django.core.urlresolvers import reverse
 ## from django.core.cache import cache
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
 from django.db import connection, transaction ### testing
 # from django.contrib import admin
 import reversion
@@ -78,10 +76,7 @@ class Language(models.Model):
     ascii_name = models.CharField(max_length=128, unique=True,
             validators=[suitable_for_url])
     utf8_name = models.CharField(max_length=128, unique=True)
-    sort_key = models.FloatField(null=True, blank=True, editable=False) ## rm
     description = models.TextField(blank=True, null=True)
-
-    language_list_name = None ## XXX does this do anything?
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
