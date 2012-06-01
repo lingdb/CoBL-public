@@ -8,20 +8,27 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
 
-        def set_percent_coded(meaning):
+        def do_denormalization(lexeme):
             """Can't use the method in models.py: http://stackoverflow.com/a/3315547/188595"""
-            uncoded = meaning.lexeme_set.filter(cognate_class=None).count()
-            total = meaning.lexeme_set.filter().count()
-            try:
-                meaning.percent_coded = 100.0 * (total - uncoded) / total
-            except ZeroDivisionError:
-                meaning.percent_coded = 0
-            meaning.save()
+            data = []
+            for cc in lexeme.cognate_class.all():
+                data.append(cc.id)
+                reliability = orm.CognateJudgement.objects.get(lexeme=lexeme,
+                        cognate_class=cc).cognatejudgementcitation_set.values_list(
+                        "reliability", flat=True)
+                if "L" in reliability:
+                    data.append("(%s)" % cc.alias)
+                else:
+                    data.append(cc.alias)
+            lexeme.denormalized_cognate_classes = ",".join(str(e) for e in data)
+            lexeme.number_cognate_coded = lexeme.cognate_class.count()
+            lexeme.save()
             return
 
-        for meaning in orm.Meaning.objects.all():
-            set_percent_coded(meaning)
+        for lexeme in orm.Lexeme.objects.all():
+            do_denormalization(lexeme)
         return
+
 
     def backwards(self, orm):
         "no need for backwards migration of data denormalization"

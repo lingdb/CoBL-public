@@ -200,7 +200,8 @@ class Lexeme(models.Model):
         data = []
         for cc in self.cognate_class.all():
             data.append(cc.id)
-            if cc.is_loanword:
+            if CognateJudgement.objects.get(lexeme=self,
+                    cognate_class=cc).is_loanword:
                 data.append("(%s)" % cc.alias)
             else:
                 data.append(cc.alias)
@@ -208,7 +209,7 @@ class Lexeme(models.Model):
         self.save()
 
     def set_number_cognate_coded(self):
-        self.number_cognate_coded = lexeme.cognate_class.count()
+        self.number_cognate_coded = self.cognate_class.count()
         self.save()
 
     def get_cognate_class_links(self):
