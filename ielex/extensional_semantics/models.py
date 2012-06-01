@@ -15,7 +15,6 @@ class SemanticRelation(models.Model):
     def __unicode__(self):
         return unicode("%s (%s)" % (self.relation_code, self.long_name))
 
-reversion.register(SemanticRelation)
 
 class SemanticExtension(models.Model):
     lexeme = models.ForeignKey('lexicon.Lexeme')
@@ -32,7 +31,6 @@ class SemanticExtension(models.Model):
     def __unicode__(self):
         return u"%s" % (self.id)
 
-reversion.register(SemanticExtension)
 
 class SemanticExtensionCitation(AbstractBaseCitation):
     extension = models.ForeignKey(SemanticExtension)
@@ -47,7 +45,6 @@ class SemanticExtensionCitation(AbstractBaseCitation):
     class Meta:
         unique_together = (("extension", "source"),)
 
-reversion.register(SemanticExtensionCitation)
 
 class SemanticDomain(models.Model):
     """A named, ordered list of semantic relations (referred to as a 'domain'
@@ -78,7 +75,6 @@ class SemanticDomain(models.Model):
     class Meta:
         ordering = ["name"]
 
-reversion.register(SemanticDomain)
 
 def update_semantic_domain_all(sender, instance, **kwargs):
     try:
@@ -94,3 +90,9 @@ def update_semantic_domain_all(sender, instance, **kwargs):
 models.signals.post_save.connect(update_semantic_domain_all, sender=SemanticRelation)
 models.signals.post_delete.connect(update_semantic_domain_all, sender=SemanticRelation)
 
+for modelclass in [SemanticRelation,
+        SemanticExtension,
+        SemanticExtensionCitation,
+        SemanticDomain]:
+    if not reversion.is_registered(modelclass):
+        reversion.register(modelclass)
