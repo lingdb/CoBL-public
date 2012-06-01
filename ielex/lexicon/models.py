@@ -11,6 +11,7 @@ import reversion
 from reversion.revisions import RegistrationError
 # from reversion.admin import VersionAdmin
 from south.modelsinspector import add_introspection_rules
+from ielex.utilities import pairwise
 from ielex.lexicon.validators import *
 
 ## TODO: reinstate the cache stuff, but using a site specific key prefix (maybe
@@ -193,6 +194,33 @@ class Lexeme(models.Model):
             blank=True)
     modified = models.DateTimeField(auto_now=True)
     number_cognate_coded = models.IntegerField(editable=False, default=0)
+    denormalized_cognate_classes = models.TextField(editable=False, blank=True)
+
+    def set_denormalized_cognate_classes(self):
+        data = []
+        for cc in self.cognate_class.all():
+            data.append(cc.id)
+            if cc.is_loanword:
+                data.append("(%s)" % cc.alias)
+            else:
+                data.append(cc.alias)
+        self.denormalized_cognate_classes = ",".join(str(e) for e in data)
+        self.save()
+
+    def set_number_cognate_coded(self):
+        self.number_cognate_coded = lexeme.cognate_class.count()
+        self.save()
+
+    def get_cognate_class_links(self):
+        def format_link(cc_id, alias):
+            if alias.startswith("(") and alias.endswith(")"):
+                template = '(<a href="/cognate/%s/">%s</a>)'
+                alias = alias[1:-1]
+            else:
+                template = '<a href="/cognate/%s/">%s</a>'
+            return template % (cc_id, alias)
+        return ", ".join(format_link(cc_id, alias) for cc_id, alias in
+                pairwise(self.denormalized_cognate_classes.split(",")))
 
     def get_absolute_url(self):
         return "/lexeme/%s/" % self.id
@@ -242,12 +270,12 @@ class CognateJudgement(models.Model):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
                 self.cognate_class.alias, self.id)
 
-def update_meaning_percent_coded(sender, instance, **kwargs):
-    instance.lexeme.meaning.set_percent_coded()
-    return
-
-models.signals.post_save.connect(update_meaning_percent_coded,
-        sender=CognateJudgement)
+# def update_meaning_percent_coded(sender, instance, **kwargs):
+#     instance.lexeme.meaning.set_percent_coded()
+#     return
+# 
+# models.signals.post_save.connect(update_meaning_percent_coded,
+#         sender=CognateJudgement)
 
 class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A
@@ -522,13 +550,15 @@ def update_meaning_list_all(sender, instance, **kwargs):
 models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
 models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
-def update_lexeme_number_cognate_coded(sender, instance, **kwargs):
-    lexeme = instance.lexeme
-    lexeme.number_cognate_coded = lexeme.cognate_class.count()
-    lexeme.save()
+def update_denormalized_data(sender, instance, **kwargs):
+    # update lexeme
+    instance.lexeme.set_number_cognate_coded()
+    instance.lexeme.set_denormalized_cognate_classes()
+    # update meaning
+    instance.lexeme.meaning.set_percent_coded()
     return
 
-models.signals.post_save.connect(update_lexeme_number_cognate_coded,
+models.signals.post_save.connect(update_denormalized_data,
         sender=CognateJudgement)
 
 # -- Reversion registration ----------------------------------------

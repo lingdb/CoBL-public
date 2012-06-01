@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from string import uppercase, lowercase
-from ielex.lexicon.models import Language
+from itertools import tee, izip
+#from ielex.lexicon.models import Language
 try:
     from functools import wraps
 except ImportError:
@@ -27,6 +28,12 @@ def next_alias(l, ignore=[]):
         if alias not in l+ignore:
             return alias
     return
+
+def pairwise(iterable):
+    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
+    a, b = tee(iterable)
+    next(b, None)
+    return izip(a, b)
 
 def confirm_required(template_name, context_creator, key='__confirm__'):
     """
