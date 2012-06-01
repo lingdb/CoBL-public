@@ -7,7 +7,7 @@ from lexicon.models import *
 
 logger = logging.getLogger("unittest")
 logger.setLevel(logging.INFO)
-fh = logging.FileHandler("tests/unittest.log", mode="w")
+fh = logging.FileHandler("website/unittest.log", mode="w")
 formatter = logging.Formatter('%(message)s')
 fh.setFormatter(formatter)
 logger.addHandler(fh)
