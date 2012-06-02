@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
+from django.core.urlresolvers import RegexURLResolver, RegexURLPattern, Resolve
 import logging
 import lxml.html
 from lexicon.models import *

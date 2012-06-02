@@ -849,8 +849,6 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     citation_id = int(citation_id)
     cogjudge_id = int(cogjudge_id)
     lexeme = Lexeme.objects.get(id=lexeme_id)
-    # lexeme_citations = lexeme.lexemecitation_set.all() # XXX not used?
-    # sources = Source.objects.filter(lexeme=lexeme)  # XXX not used
     form = None
 
     if action: # actions are: edit, edit-citation, add-citation

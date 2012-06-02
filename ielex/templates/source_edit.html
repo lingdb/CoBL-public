@@ -24,9 +24,8 @@
       <a href="{% url edit-source source.id %}">
         <img src="/media/buttons/edit.png" alt="Edit" title="Edit" />
       </a>
-      <a href="{% url delete-source source.id %}">
-        <img src="/media/buttons/delete.png" alt="Delete" title="Delete" />
-      </a>
+      <img src="/media/buttons/delete.png" alt="{% url delete-source source.id %} to delete"
+          title="{% url delete-source source.id %} to delete" />
     </td>
     {% endif %}
   </tr>
