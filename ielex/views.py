@@ -405,7 +405,9 @@ def add_language_list(request):
             other_list = LanguageList.objects.get(name=form.cleaned_data["language_list"])
             for language in other_list.languages.all().order_by("languagelistorder"):
                 new_list.append(language)
-            edit_language_list(request, language_list=form.cleaned_data["name"])
+            #edit_language_list(request, language_list=form.cleaned_data["name"])
+            return HttpResponseRedirect(reverse("edit-language-list",
+                    args=[form.cleaned_data["name"]]))
     else:
         form = AddLanguageListForm()
     return render_template(request, "add_language_list.html",
@@ -847,8 +849,6 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     citation_id = int(citation_id)
     cogjudge_id = int(cogjudge_id)
     lexeme = Lexeme.objects.get(id=lexeme_id)
-    # lexeme_citations = lexeme.lexemecitation_set.all() # XXX not used?
-    # sources = Source.objects.filter(lexeme=lexeme)  # XXX not used
     form = None
 
     if action: # actions are: edit, edit-citation, add-citation
@@ -1260,7 +1260,6 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
         if action == "add":
             form = EditSourceForm()
         elif action == "edit":
-            #form = EditSourceForm(source.__dict__)
             form = EditSourceForm(instance=source)
         elif action == "delete":
             source.delete()

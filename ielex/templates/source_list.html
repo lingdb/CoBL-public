@@ -13,7 +13,7 @@
 <p>
   <table>
   {% for source in sources %}
-    <tr class="odd"><td><a href="/source/{{ source.id }}/">
+    <tr class="odd"><td><a href="{% url view-source source.id %}">
       <img src="/media/buttons/view.png" alt="Edit" title="Edit this source"/></a></td>
       <td>{{ source.citation_text }}</td></tr>
     <tr><td></td><td><em>{{ source.description }}</em></td></tr>

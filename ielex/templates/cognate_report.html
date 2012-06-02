@@ -45,7 +45,7 @@
         <img src="/media/buttons/view.png" alt="View" title="View the citation" />
       </a>
       {% if user.is_authenticated %}
-      <a href="{% url cognate-class-citation-update citation.id %}">
+      <a href="{% url cognate-citation-edit citation.id %}">
         <img src="/media/buttons/edit-pencil.png" alt="View" title="Edit the citation" />
       </a>
       {% endif %}

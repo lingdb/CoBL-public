@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
+from django.core.urlresolvers import RegexURLResolver, RegexURLPattern, Resolve
 import logging
 import lxml.html
 from lexicon.models import *
@@ -61,7 +62,7 @@ class ViewTests(TestCase):
             self.seen_links.add(path)
             response = self.client.get(path, follow=True)
             logger.info("CHECKING: %s [%s] < %s" % (path,
-                response.status_code, parent))
+                response.status_code, parent)) # want to include parent html
             self.assertEqual(response.status_code, 200)
             dom = lxml.html.fromstring(response.content)
             for element, attribute, link, pos in dom.iterlinks():

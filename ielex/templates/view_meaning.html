@@ -30,8 +30,17 @@
       {% endif %}
     </td>  
     <td> 
-      {{ lexeme.get_cognate_class_links|safe }}
-          <a href="{% url meaning-lexeme-add-cogjudgement meaning.gloss lexeme.id %}#lexeme_{{ lexeme.id }}">
+      {% with lexeme.cognatejudgement_set.all as cogjudgeset %}
+        {% if cogjudgeset %}
+          {% for cj in cogjudgeset %}
+              {% if cj.is_loanword %}({% endif %}<a href="{% url cognate-set cj.cognate_class.id %}">{{ cj.cognate_class.alias }}</a>{%if cj.is_loanword %}){% endif %}
+            <a href="{% url meaning-lexeme-add-cogjudge meaning.gloss lexeme.id %}#lexeme_{{ lexeme.id }}">
+              <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
+            </a>
+            <br />
+          {% endfor %}
+        {% else %}
+          <a href="{% url meaning-lexeme-add-cogjudge meaning.gloss lexeme.id %}#lexeme_{{ lexeme.id }}">
             <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
           </a>
       {% ifequal add_cognate_judgement lexeme.id %}

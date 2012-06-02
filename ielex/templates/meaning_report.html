@@ -30,10 +30,22 @@
       {% endif %}
     </td>  
     <td> 
-      {{ lexeme.get_cognate_class_links }}
-      <a href="/meaning/{{ meaning.gloss }}/{{ lexeme.id }}/add/#lexeme_{{ lexeme.id }}">
-        <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
-      </a>
+      {% with lexeme.cognatejudgement_set.all as cogjudgeset %}
+        {% if cogjudgeset %}
+          {% for cj in cogjudgeset %}
+            {%if cj.is_loanword %}({% endif %}<a href="{% url cognate-set cj.cognate_class.id %}">{{ cj.cognate_class.alias }}</a>{%if cj.is_loanword %}){% endif %}
+            <a href="{% url meaning-lexeme-add-cogjudge meaning.gloss lexeme.id %}#lexeme_{{ lexeme.id }}">
+              <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
+            </a>
+            <br />
+          {% endfor %}
+        {% else %}
+        <a href="{% url meaning-lexeme-add-cogjudge meaning.gloss lexeme.id %}#lexeme_{{ lexeme.id }}">
+            <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
+          </a>
+        {% endif %}
+      {% endwith %}
+
       {% ifequal add_cognate_judgement lexeme.id %}
       <a id="lexeme_{{ lexeme.id }}"></a> {# target for .../add/#lexeme_XXX links #}
         <form action="" method="post">{% csrf_token %}

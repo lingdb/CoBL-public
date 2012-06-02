@@ -1,4 +1,6 @@
 from django.conf.urls.defaults import *
+# after django version 1.4 (and definitely by version 1.6) change "from
+# django.conf.urls.defaults import *" to "from django.conf.urls import *"
 from django.contrib.auth.decorators import login_required
 from django.views.generic import DetailView, UpdateView,\
         CreateView, ListView, TemplateView
@@ -33,7 +35,7 @@ R = {
 urlpatterns = patterns('',
     # Front Page
     url(r'^$', FrontpageView.as_view(), name="view-frontpage"),
-    url(r'^backup/$', make_backup), # XXX only in dev mode?
+    # url(r'^backup/$', make_backup), # XXX only in dev mode?
     url(r'^changes/$', view_changes, name="view-changes"),
 
     # Language list
@@ -64,12 +66,12 @@ urlpatterns = patterns('',
             name="language-edit"),
     url(r'^language/%(LANGUAGE)s/delete/$' % R, delete_language,
             name="language-delete"),
-    url(r'^language/%(LANGUAGE)s/lexeme/add/' % R,
+    url(r'^language/%(LANGUAGE)s/add-lexeme/' % R,
             lexeme_add, {"return_to":"/language/%(language)s/"},
             name="language-add-lexeme"),
     # this should be
     # url(r'^language/%(LANGUAGE)s/meaning/%(MEANING)s/add/' % R,
-    url(r'^language/%(LANGUAGE)s/meaning/%(MEANING)s/lexeme/add/' % R,
+    url(r'^language/%(LANGUAGE)s/meaning/%(MEANING)s/add-lexeme/' % R,
             lexeme_add, {"return_to":"/language/%(language)s/"},
             name="language-meaning-add-lexeme"),
     # add new language to a language list # XXX do we need this?
@@ -93,7 +95,7 @@ urlpatterns = patterns('',
     # - refactor out remaining report_meaning calls
     # - the view_meaning template is very slow (since all the cognatejudgements
     #   have to be queried at the same time.
-    url(r'^meaning/%(MEANING)s/lexeme/add/$' % R, lexeme_add,
+    url(r'^meaning/%(MEANING)s/add-lexeme/$' % R, lexeme_add,
             {"return_to":"/meaning/%(meaning)s/"},
             name="meaning-add-lexeme"),
     url(r'^meaning/%(MEANING)s/languagelist/%(LANGUAGELIST)s/$' % R, view_meaning,
@@ -105,13 +107,13 @@ urlpatterns = patterns('',
     url(r'^meaning/%(MEANING)s/delete/$' % R, delete_meaning,
             name="delete-meaning"), # XXX needs confirm dialog
     url(r'^meaning/%(MEANING)s/%(LEXEME_ID)s/$' % R,
-            report_meaning, {"action":"goto"}),
+            report_meaning, {"action":"goto"}, name="view-meaning-lexeme"),
     url(r'^meaning/%(MEANING)s/%(LEXEME_ID)s/add/$' % R,
             report_meaning, {"action":"add"},
-            name="meaning-lexeme-add-cogjudgement"),
+            name="meaning-lexeme-add-cogjudge"),
     url(r'^meaning/%(MEANING)s/%(LEXEME_ID)s/%(COGJUDGE_ID)s/$' % R,
             report_meaning),
-    url(r'^meaning/%(MEANING)s/language/%(LANGUAGE)s/lexeme/add/' % R,
+    url(r'^meaning/%(MEANING)s/language/%(LANGUAGE)s/add-lexeme/' % R,
             lexeme_add, {"return_to":"/meaning/%(meaning)s/"},
             name="meaning-language-add-lexeme"),
 
@@ -122,20 +124,30 @@ urlpatterns = patterns('',
     url(r'^lexeme/%(LEXEME_ID)s/duplicate/$' % R, lexeme_duplicate),
     url(r'^lexeme/%(LEXEME_ID)s/$' % R,
             view_lexeme, name="view-lexeme"),
-    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>add-citation|edit|add-cognate|add-new-citation)/$' % R,
+    url(r'^lexeme/%(LEXEME_ID)s/edit/$' % R,
+            lexeme_edit, {"action":"edit"}, name="edit-lexeme"),
+    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>add-cognate|add-new-citation)/$' % R,
             lexeme_edit),
-    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>edit-citation|delink-citation)/(?P<citation_id>\d+)/$' % R,
-            lexeme_edit),
-    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>delink-cognate)/%(COGJUDGE_ID)s/$' % R,
-            lexeme_edit),
-    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>edit-cognate-citation)/(?P<citation_id>\d+)/$' % R,
-            lexeme_edit), # just use <cogjudge_id>
-    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>delink-cognate-citation)/(?P<citation_id>\d+)/$' % R,
-            lexeme_edit),
-    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>add-cognate-citation|add-new-cognate-citation)/%(COGJUDGE_ID)s/$' % R,
-            lexeme_edit),
-    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>add-new-cognate)/$' % R, lexeme_edit),
-    url(r'^lexeme/%(LEXEME_ID)s/(?P<action>delete)/$' % R, lexeme_edit),
+    url(r'^lexeme/%(LEXEME_ID)s/add-citation/$' % R,
+            lexeme_edit, {"action":"add-citation"}, name="lexeme-add-citation"),
+    url(r'^lexeme/%(LEXEME_ID)s/edit-citation/(?P<citation_id>\d+)/$' % R,
+            lexeme_edit, {"action":"edit-citation"}, name="lexeme-edit-citation"),
+    url(r'^lexeme/%(LEXEME_ID)s/delink-citation/(?P<citation_id>\d+)/$' % R,
+            lexeme_edit, {"action":"delink-citation"}, name="lexeme-delink-citation"),
+    url(r'^lexeme/%(LEXEME_ID)s/delink-cognate/%(COGJUDGE_ID)s/$' % R,
+            lexeme_edit, {"action":"delink-cognate"}, name="lexeme-delink-cognate"),
+    url(r'^lexeme/%(LEXEME_ID)s/edit-cognate-citation/(?P<citation_id>\d+)/$' % R,
+            lexeme_edit, {"action":"edit-cognate-citation"},
+            name="lexeme-edit-cognate-citation"), # just use <cogjudge_id>
+    url(r'^lexeme/%(LEXEME_ID)s/delink-cognate-citation/(?P<citation_id>\d+)/$' % R,
+            lexeme_edit, {"action":"delink-cognate-citation"}, name="lexeme-delink-cognate-citation"),
+    url(r'^lexeme/%(LEXEME_ID)s/add-cognate-citation/%(COGJUDGE_ID)s/$' % R,
+            lexeme_edit, {"action":"add-cognate-citation"}, name="lexeme-add-cognate-citation"),
+    url(r'^lexeme/%(LEXEME_ID)s/add-new-cognate-citation/%(COGJUDGE_ID)s/$' % R,
+            lexeme_edit, {"action":"add-new-cognate-citation"}),
+    url(r'^lexeme/%(LEXEME_ID)s/add-new-cognate/$' % R,
+            lexeme_edit, {"action":"add-new-cognate"}, name="lexeme-add-new-cognate"),
+    url(r'^lexeme/%(LEXEME_ID)s/delete/$' % R, lexeme_edit, {"action":"delete"}),
     # url(r'^lexeme/(?P<lexeme_id>\d+)/citation/(?P<pk>\d+)/$',
     #         DetailView.as_view(model=LexemeCitation,
     #                 context_object_name="citation"),
@@ -149,17 +161,22 @@ urlpatterns = patterns('',
     # Sources
     url(r'^sources/$', source_list, name="view-sources"),
     url(r'^source/(?P<source_id>\d+)/$', source_view, name="view-source"),
-    url(r'^source/(?P<source_id>\d+)/(?P<action>edit|delete)/$', source_edit),
-    url(r'^source/(?P<action>add)/$', source_edit),
-    url(r'^source/(?P<action>add)/cognate-judgement/%(COGJUDGE_ID)s/$' % R, source_edit),
-    url(r'^source/(?P<action>add)/lexeme/%(LEXEME_ID)s/$' % R, source_edit),
+    url(r'^source/(?P<source_id>\d+)/edit/$', source_edit, {"action":"edit"},
+            name="edit-source"),
+    url(r'^source/(?P<source_id>\d+)/delete/$', source_edit, {"action":"delete"},
+            name="delete-source"),
+    url(r'^source/add/$', source_edit, {"action":"add"}),
+    url(r'^source/add/cognate-judgement/%(COGJUDGE_ID)s/$' % R,
+            source_edit, {"action":"add"}, name="cogjudge-add-new-source"),
+    url(r'^source/add/lexeme/%(LEXEME_ID)s/$' % R, source_edit, {"action":"add"},
+            name="lexeme-add-new-source"),
 
     # Cognate
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report, name="cognate-set"),
-    url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit-name)/$',
-            login_required(cognate_report), name="edit-cognate-name"),
-    url(r'^cognate/(?P<cognate_id>\d+)/(?P<action>edit-notes)/$',
-            login_required(cognate_report), name="edit-cognate-notes"),
+    url(r'^cognate/(?P<cognate_id>\d+)/edit-name/$',
+            login_required(cognate_report), {"action":"edit-name"}, name="edit-cognate-name"),
+    url(r'^cognate/(?P<cognate_id>\d+)/edit-notes/$',
+            login_required(cognate_report), {"action":"edit-notes"}, name="edit-cognate-notes"),
     url(r'^cognate/%(COGNATE_NAME)s/$' % R, cognate_report),
     url(r'^meaning/%(MEANING)s/cognate/(?P<code>[A-Z]+[0-9]*)/$' % R,
             cognate_report),
@@ -174,14 +191,18 @@ urlpatterns = patterns('',
             DetailView.as_view(model=CognateClassCitation,
                     context_object_name="citation"),
             name="cognate-class-citation-detail"),
+    # handle redundant cognate_id
     url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/$', redirect_to,
-            {"url":"/cognate/citation/%(pk)s/"}),
+            {"url":"/cognate/citation/%(pk)s/"},
+            name="cognate-class-citation-view"),
     # Cognate citation :: update
     url(r'^cognate/citation/(?P<pk>\d+)/edit/$',
             CognateClassCitationUpdateView.as_view(),
-            name="cognate-class-citation-update"),
+            name="cognate-citation-edit"),
+    # handle redundant cognate_id
     url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/edit/$',
-            redirect_to, {"url":"/cognate/citation/%(pk)s/edit/"}),
+            redirect_to, {"url":"/cognate/citation/%(pk)s/edit/"},
+            name="cognate-class-citation-edit"),
     # Cognate citation :: add
     url(r'^cognate/(?P<cognate_id>\d+)/add-citation/$',
             CognateClassCitationCreateView.as_view(),
@@ -201,7 +222,7 @@ urlpatterns = patterns('',
     url(r'^set/(?P<key>%(identifier)s)/(?P<value>%(identifier)s)/$' % R,
             set_key_value),
 
-    url(r'^revert/(?P<version_id>\d+)/$', revert_version),
+    url(r'^revert/(?P<version_id>\d+)/$', revert_version, name="revert-item"),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs'

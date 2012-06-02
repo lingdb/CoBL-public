@@ -43,7 +43,7 @@
 {% include "snippets/go_to.html" %}
 <strong>{{ language.utf8_name }}:</strong>
 <ul class="navigation">
-  <li><a href="/language/{{ language.ascii_name }}/edit/">edit language entry</a></li>
+  <li><a href="{% url language-edit language.ascii_name %}">edit language entry</a></li>
   <li><a href="{% url language-add-lexeme language.ascii_name %}">add a new lexeme</a></li>
   {% if semantic_domains %}
     <li><a href="{% url language-domains-list language.ascii_name %}">view semantic domains</a></li>

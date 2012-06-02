@@ -19,7 +19,7 @@
   <tr class="{% cycle 'odd' 'even' %}">
     {% for item in version %}
       {% if forloop.last %}
-        <td><a href="/revert/{{ item }}/">revert</a></td
+      <td><a href="{% url revert-item item %}">revert</a></td
       {% else %}
         <td>{{ item }}</td>
       {% endif %}
@@ -33,7 +33,6 @@
 {% block controls %}
 {% include "snippets/prev_next_meaning.html" %}
 {% include "snippets/go_to.html" %}
-{# include "snippets/change_sort_order.html" #}
 {% endblock %}
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
