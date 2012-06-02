@@ -25,12 +25,12 @@
 
 <ul class="navigation">
   <li>
-    <a href="/cognate/{{ citation.cognate_class.id }}/">
+    <a href="{% url cognate-set citation.cognate_class.id %}">
       back to cognate class
     </a>
   </li>
   <li>
-    <a href="/cognate/{{ citation.cognate_class.id }}/citation/{{ citation.id }}/edit/">
+    <a href="{% url cognate-class-citation-edit citation.cognate_class.id citation.id %}">
       edit this citation
     </a>
   </li>

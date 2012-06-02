@@ -1260,7 +1260,6 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
         if action == "add":
             form = EditSourceForm()
         elif action == "edit":
-            #form = EditSourceForm(source.__dict__)
             form = EditSourceForm(instance=source)
         elif action == "delete":
             source.delete()

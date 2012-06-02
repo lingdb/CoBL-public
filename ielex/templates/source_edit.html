@@ -21,10 +21,10 @@
     <th>Citation:</th><td>{{ source.citation_text }}</td>
     {% if user.is_authenticated %}
     <td>
-      <a href="/source/{{ source.id }}/edit/">
+      <a href="{% url edit-source source.id %}">
         <img src="/media/buttons/edit.png" alt="Edit" title="Edit" />
       </a>
-      <a href="/source/{{ source.id }}/delete/">
+      <a href="{% url delete-source source.id %}">
         <img src="/media/buttons/delete.png" alt="Delete" title="Delete" />
       </a>
     </td>
