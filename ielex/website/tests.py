@@ -5,6 +5,8 @@ import logging
 import lxml.html
 from lexicon.models import *
 
+# TODO make sure settings has DEBUG set to False
+
 logger = logging.getLogger("unittest")
 logger.setLevel(logging.INFO)
 fh = logging.FileHandler("website/unittest.log", mode="w")

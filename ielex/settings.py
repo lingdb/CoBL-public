@@ -118,6 +118,7 @@ from local_settings import *
 
 if "test" in sys.argv:
     # overwrite DATABASES with sqlite in-memory database for tests
+    DEBUG = TEMPLATE_DEBUG = False
     DATABASES = {
         'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
