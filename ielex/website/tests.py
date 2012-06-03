@@ -151,6 +151,12 @@ class LanguageListTests(TestCase):
         self.assertEqual(self.languages[1:],
                 list(self.language_list.languages.all().order_by("languagelistorder")))
 
+    def test_insert_to_language_list(self):
+        language = self.languages[-1]
+        self.language_list.insert(0, language)
+        self.assertEqual([self.languages[i] for i in (3,0,1,2)],
+                list(self.language_list.languages.all().order_by("languagelistorder")))
+
     def test_swap_languages(self):
         l1 = self.languages[1]
         l2 = self.languages[2]
@@ -163,23 +169,25 @@ class LanguageListTests(TestCase):
 
     def test_reorder_view_down(self):
         from ielex.views import move_language
+        language = self.languages[0]
         orders =[(1,0,2,3),
                 (1,2,0,3),
                 (1,2,3,0),
                 (0,1,2,3)]
-        for order in orders:
-            move_language(self.languages[0], self.language_list, 1)
+        for i, order in enumerate(orders):
+            move_language(language, self.language_list, 1)
             self.assertEqual([self.languages[i] for i in order],
                     list(self.language_list.languages.all().order_by("languagelistorder")))
 
     def test_reorder_view_up(self):
         from ielex.views import move_language
+        language = self.languages[0]
         orders =[(1,2,3,0),
                 (1,2,0,3),
                 (1,0,2,3),
                 (0,1,2,3)]
         for order in orders:
-            move_language(self.languages[0], self.language_list, -1)
+            move_language(language, self.language_list, -1)
             self.assertEqual([self.languages[i] for i in order],
                     list(self.language_list.languages.all().order_by("languagelistorder")))
 

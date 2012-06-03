@@ -314,7 +314,7 @@ class LanguageList(models.Model):
         return
 
     def insert(self, N, language):
-        """Insert another language into a LanguageList ordering at position N"""
+        """Insert another language into a LanguageList ordering before the object position N"""
         llo = LanguageListOrder.objects.get(
                 language=language,
                 language_list=self)

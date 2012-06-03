@@ -315,36 +315,17 @@ def reorder_language_list(request, language_list):
 
 def move_language(language, language_list, direction):
     assert direction in (-1, 1)
-    order_obj = LanguageListOrder.objects.get(
-            language=language,
-            language_list=language_list)
-    order_values = list(language_list.languagelistorder_set.values_list("order",
-            flat=True))
-    current_idx = order_values.index(order_obj.order)
-    try:
-        neighbour = order_values[current_idx + direction]
-    except IndexError:
-        # boundary, move to other end of list
-        if direction == -1:
-            order_obj.order = max(order_values) + 0.5
-        else:
-            order_obj.order = min(order_values) - 0.5
-        order_obj.save()
-        return
-    try:
-        second_neighbour = order_values[current_idx + (direction * 2)]
-    except IndexError:
-        # one place away from boundary, move to end
-        if direction == -1:
-            order_obj.order = min(order_values) - 0.5
-        else:
-            order_obj.order = max(order_values) + 0.5
-        order_obj.save()
-        return
-    # mid list value, move to between neighbour and second_neighbour
-    order_obj.order = min([neighbour, second_neighbour]) + 0.5 * abs(neighbour
-            - second_neighbour)
-    order_obj.save()
+    languages = list(language_list.languages.order_by( "languagelistorder"))
+    index = languages.index(language)
+    if index == 0 and direction == -1:
+        language_list.remove(language)
+        language_list.append(language)
+    else:
+        try:
+            neighbour = languages[index+direction]
+            language_list.swap(language, neighbour)
+        except IndexError:
+            language_list.insert(0, language)
     return
 
 def view_language_wordlist(request, language, wordlist):
