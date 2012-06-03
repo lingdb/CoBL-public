@@ -565,6 +565,13 @@ def update_denormalized_data(sender, instance, **kwargs):
 models.signals.post_save.connect(update_denormalized_data,
         sender=CognateJudgement)
 
+def update_denormalized_from_lexeme(sender, instance, **kwargs):
+    instance.meaning.set_percent_coded()
+    return
+
+models.signals.post_save.connect(update_denormalized_from_lexeme,
+        sender=Lexeme)
+
 # -- Reversion registration ----------------------------------------
 
 for modelclass in [Source, Language, Meaning, CognateClass, Lexeme,
