@@ -199,8 +199,8 @@ def language_domains_list(request, language):
         language = Language.objects.get(ascii_name=language)
     except(Language.DoesNotExist):
         language = get_canonical_language(language)
-        return HttpResponseRedirect("/language/%s/domains/" %
-                (language.ascii_name))
+        return HttpResponseRedirect(reverse("language-domains-list",
+                args=[language.ascii_name]))
     domain_ids = set(SemanticExtension.objects.filter(
             lexeme__language=language).values_list("relation_id", flat=True))
     domains = []

@@ -164,7 +164,10 @@ class CognateClass(models.Model):
         return "/cognate/%s/" % self.id
 
     def __unicode__(self):
-        return "CognateClass %s" % self.id
+        if self.alias:
+            return "%s (%s)" % (self.id, self.alias)
+        else:
+            return "%s" % self.id
 
     class Meta:
         ordering = ["alias"]

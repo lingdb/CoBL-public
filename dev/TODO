@@ -2,7 +2,7 @@ TODO
 ====
 
 - remove the split/duplicate button (but leave it accessible from the url, like
-  delete)
+  delete) **DONE**
 
 - rather than jumping to anchor text (e.g. when selecting add cognate class "+"
   button on the meaning list page), give the target row a "selected" class, and
@@ -43,11 +43,11 @@ TODO
 
   Adding lexemes, with different amounts of prespecified info::
 
-    /language/.../lexeme/add/
-    /meaning/.../lexeme/add/
-    /language/.../meaning/.../lexeme/add/ # return to language
-    /meaning/.../language/.../lexeme/add/ # return to meaning
-    /lexeme/add/
+    /language/.../add-lexeme/
+    /meaning/.../add-lexeme/
+    /language/.../meaning/.../add-lexeme/ # return to language
+    /meaning/.../language/.../add-lexeme/ # return to meaning
+    /add-lexeme/
 
   What is this for?::
 
