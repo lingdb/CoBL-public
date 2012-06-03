@@ -3,6 +3,7 @@ import time
 import sys
 # import logging
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.views.generic import CreateView, UpdateView, TemplateView
 from ielex import settings
@@ -62,7 +63,7 @@ class CognateClassCitationCreateView(CreateView):
 def list_nexus(request):
     if request.method == "POST":
         form =  ChooseNexusOutputForm(request.POST)
-        return HttpResponseRedirect("/nexus-data/")
+        return HttpResponseRedirect(reverse("nexus-data"))
     else:
         defaults = {"unique":1, "reliability":["L","X"], "language_list":1,
                 "meaning_list":1, "dialect":"NN"}

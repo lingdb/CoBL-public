@@ -25,9 +25,7 @@ def alter_profile(request, username=None):
     else:
         the_user = request.user
     if request.method == 'POST':
-        redirect_url = "/accounts/profile/"
-        if the_user != request.user:
-            redirect_url += the_user.username + "/"
+        redirect_url = reverse("view-profile-user", args=[the_user.username])
         form = UserAlterDetailsForm(request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
             return HttpResponseRedirect(redirect_url)
@@ -48,7 +46,7 @@ def alter_profile(request, username=None):
 @login_required
 def change_password(request):
     if request.method == 'POST':
-        redirect_url = "/accounts/profile/"
+        redirect_url = reverse("view-profile")
         form = PasswordChangeForm(request.user, request.POST)
         if "cancel" in form.data: # has to be tested before data is cleaned
             return HttpResponseRedirect(redirect_url)

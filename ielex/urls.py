@@ -93,8 +93,6 @@ urlpatterns = patterns('',
     # Meaning
     # TODO 
     # - refactor out remaining report_meaning calls
-    # - the view_meaning template is very slow (since all the cognatejudgements
-    #   have to be queried at the same time.
     url(r'^meaning/%(MEANING)s/add-lexeme/$' % R, lexeme_add,
             {"return_to":"/meaning/%(meaning)s/"},
             name="meaning-add-lexeme"),
@@ -238,23 +236,24 @@ if settings.semantic_domains:
 
 urlpatterns += patterns('',
         (r'^nexus/$', 'ielex.lexicon.views.list_nexus'),
-        (r'^nexus-data/$', 'ielex.lexicon.views.write_nexus_view'),
+        url(r'^nexus-data/$', 'ielex.lexicon.views.write_nexus_view', name="nexus-data"),
         )
 
 urlpatterns += patterns('django.contrib.auth',
-    (r'^accounts/login/$','views.login', {'template_name':
-        'profiles/login.html'}),
-    (r'^accounts/logout/$','views.logout', {'template_name':
-        'profiles/logout.html'}),
+    url(r'^accounts/login/$','views.login', {'template_name':
+        'profiles/login.html'}, name="login"),
+    url(r'^accounts/logout/$','views.logout', {'template_name':
+        'profiles/logout.html'}, name="logout"),
     )
 
 urlpatterns += patterns('',
     (r'^admin/', include(admin.site.urls)),
-    (r'^accounts/profile/$', 'ielex.profiles.views.view_profile'),
+    url(r'^accounts/profile/$', 'ielex.profiles.views.view_profile',
+            name="view-profile"),
     (r'^accounts/alter/profile/$', 'ielex.profiles.views.alter_profile'),
     (r'^accounts/change-password/$', 'ielex.profiles.views.change_password'),
-    (r'^accounts/profile/(?P<username>.+)/$',
-        'ielex.profiles.views.view_profile'),
+    url(r'^accounts/profile/(?P<username>.+)/$',
+        'ielex.profiles.views.view_profile', name="view-profile-user"),
     (r'^accounts/alter/profile/(?P<username>.+)/$',
         'ielex.profiles.views.alter_profile'),
     )

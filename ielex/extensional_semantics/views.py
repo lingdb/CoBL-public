@@ -218,8 +218,8 @@ def add_semantic_domain(request):
             return HttpResponseRedirect(reverse('view-domains'))
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect("/domain/%s/edit/" %
-                    form.cleaned_data["name"])
+            return HttpResponseRedirect(reverse("edit-semantic-domain",
+                    args=[form.cleaned_data["name"]]))
     else:
         form = EditSemanticDomainForm()
     return render_template(request, "semantic_domain_edit.html",
@@ -270,9 +270,9 @@ def edit_semantic_domain(request, domain=SemanticDomain.DEFAULT):
             sd.save()
             name_form.save()
             if "cancel" in request.POST:
-                return HttpResponseRedirect("/domains/")
+                return HttpResponseRedirect(reverse("view-domains"))
             else:
-                return HttpResponseRedirect("/domain/%s/edit/" % sd.name)
+                return HttpResponseRedirect(reverse("edit-semantic-domain", args=[sd.name]))
         else:
             assert False, "Shouldn't get to here"
     else:
@@ -295,4 +295,4 @@ def delete_semantic_domain(request, domain):
     sd = SemanticDomain.objects.get(name=domain)
     sd.delete()
     messages.warning(request, "Semantic domain '%s' deleted" % domain)
-    return HttpResponseRedirect("/domains/")
+    return HttpResponseRedirect(reverse("view-domains"))
