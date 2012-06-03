@@ -13,11 +13,16 @@ from ielex.forms import ChooseNexusOutputForm, EditCognateClassCitationForm
 
 class FrontpageView(TemplateView):
     template_name = "frontpage.html"
-    lexemes = Lexeme.objects.count(),
-    cognate_classes = CognateClass.objects.count(),
-    languages = Language.objects.count(),
-    meanings = Meaning.objects.count(),
-    coded_characters = CognateJudgement.objects.count()
+
+    def get_context_data(self, **kwargs):
+        context = super(FrontpageView,
+                self).get_context_data(**kwargs)
+        context["lexemes"] = Lexeme.objects.count()
+        context["cognate_classes"] = CognateClass.objects.count()
+        context["languages"] = Language.objects.count()
+        context["meanings"] = Meaning.objects.count()
+        context["coded_characters"] = CognateJudgement.objects.count()
+        return context
 
 class CognateClassCitationUpdateView(UpdateView):
     model=CognateClassCitation
