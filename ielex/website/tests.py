@@ -129,3 +129,57 @@ class UrlTests(TestCase):
             except(AttributeError,AssertionError):
                 pass 
         self.assertEqual(len(names), len(set(names)))
+
+class LanguageListTests(TestCase):
+
+    def setUp(self):
+        self.languages = []
+        for NAME in "abcd":
+            language = Language.objects.create(ascii_name=NAME, utf8_name=NAME)
+            self.languages.append(language)
+        self.language_list = LanguageList.objects.create(name="LanguageListTests")
+        for i in range(4):
+            self.language_list.append(self.languages[i])
+
+    def test_append_to_language_list(self):
+        self.assertEqual(self.languages,
+                list(self.language_list.languages.all().order_by("languagelistorder")))
+
+    def test_remove_from_language_list(self):
+        language = self.languages[0]
+        self.language_list.remove(language)
+        self.assertEqual(self.languages[1:],
+                list(self.language_list.languages.all().order_by("languagelistorder")))
+
+    def test_swap_languages(self):
+        l1 = self.languages[1]
+        l2 = self.languages[2]
+        self.language_list.swap(l1, l2)
+        self.assertEqual([self.languages[0],self.languages[2],self.languages[1],self.languages[3]],
+                list(self.language_list.languages.all().order_by("languagelistorder")))
+        self.language_list.swap(l1, l2)
+        self.assertEqual(self.languages,
+                list(self.language_list.languages.all().order_by("languagelistorder")))
+
+    def test_reorder_view_down(self):
+        from ielex.views import move_language
+        orders =[(1,0,2,3),
+                (1,2,0,3),
+                (1,2,3,0),
+                (0,1,2,3)]
+        for order in orders:
+            move_language(self.languages[0], self.language_list, 1)
+            self.assertEqual([self.languages[i] for i in order],
+                    list(self.language_list.languages.all().order_by("languagelistorder")))
+
+    def test_reorder_view_up(self):
+        from ielex.views import move_language
+        orders =[(1,2,3,0),
+                (1,2,0,3),
+                (1,0,2,3),
+                (0,1,2,3)]
+        for order in orders:
+            move_language(self.languages[0], self.language_list, -1)
+            self.assertEqual([self.languages[i] for i in order],
+                    list(self.language_list.languages.all().order_by("languagelistorder")))
+
