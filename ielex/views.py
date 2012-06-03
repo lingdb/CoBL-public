@@ -714,76 +714,6 @@ def view_meaning(request, meaning, language_list):
             })
 
 
-def report_meaning(request, meaning, lexeme_id=0, cogjudge_id=0, action=None):
-    # XXX there are still a couple of calls to this function in urls.py which
-    # have to be removed.
-    lexeme_id = int(lexeme_id)
-    cogjudge_id = int(cogjudge_id)
-    language_list = request.session["current_language_list_name"]
-    current_language_list = get_canonical_language_list(language_list)
-
-    # normalize meaning
-    if meaning.isdigit():
-        meaning = Meaning.objects.get(id=int(meaning))
-        # if there are actions and lexeme_ids these should be preserved too
-        return HttpResponseRedirect(reverse("meaning-report",
-            args=[meaning.gloss]))
-    else:
-        meaning = Meaning.objects.get(gloss=meaning)
-
-    # cognate class judgement button
-    if request.method == 'POST':
-        form = ChooseCognateClassForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            if not cogjudge_id: # new cognate judgement
-                lexeme = Lexeme.objects.get(id=lexeme_id)
-                cognate_class = cd["cognate_class"]
-                if cognate_class not in lexeme.cognate_class.all():
-                    cj = CognateJudgement.objects.create(
-                            lexeme=lexeme,
-                            cognate_class=cognate_class)
-                else:
-                    cj = CognateJudgement.objects.get(
-                            lexeme=lexeme,
-                            cognate_class=cognate_class)
-            else:
-                cj = CognateJudgement.objects.get(id=cogjudge_id)
-                cj.cognate_class = cd["cognate_class"]
-                cj.save()
-
-            return HttpResponseRedirect(reverse("lexeme-add-cognate-citation",
-                    args=[lexeme_id, cj.id]))
-    else:
-        form = ChooseCognateClassForm()
-
-    lexemes = get_ordered_lexemes(meaning, current_language_list)
-    form.fields["cognate_class"].queryset = CognateClass.objects.filter(
-            lexeme__in=lexemes).distinct()
-    add_cognate_judgement = 0 # to lexeme
-    current_lexeme = 0
-    if action == "add":
-        if cogjudge_id:
-            # note that initial values have to be set using id 
-            # rather than the object itself
-            form.fields["cognate_class"].initial = CognateJudgement.objects.get(
-                  id=cogjudge_id).cognate_class.id
-        else:
-            add_cognate_judgement = lexeme_id
-    elif action == "goto":
-        current_lexeme = lexeme_id
-    prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
-    return render_template(request, "meaning_report.html",
-            {"meaning":meaning,
-            "prev_meaning":prev_meaning,
-            "next_meaning":next_meaning,
-            "lexemes": lexemes,
-            "add_cognate_judgement":add_cognate_judgement,
-            "edit_cognate_judgement":cogjudge_id,
-            "current_lexeme":current_lexeme,
-            "language_list_name":get_current_language_list_name(request),
-            #"language_list_form":get_language_list_form(request),
-            "form":form})
 
 @login_required
 def delete_meaning(request, meaning):
@@ -801,13 +731,6 @@ def delete_meaning(request, meaning):
     return HttpResponseRedirect(reverse("view-meanings"))
 
 # -- /lexeme/ -------------------------------------------------------------
-
-# def get_ordered_lexemes(meaning, language_list):
-#     LexemeListManager = make_ordered_lexeme_manager(meaning, language_list)
-#     Lexeme.language_list = LexemeListManager()
-#     lexemes = Lexeme.language_list.with_order()
-#     lexemes.sort(key=lambda m: m.order)
-#     return lexemes
 
 def get_ordered_lexemes(meaning, language_list, *select_related_fields):
     lexemes = Lexeme.objects.filter(
@@ -1025,9 +948,10 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
 
 @login_required
 def lexeme_duplicate(request, lexeme_id):
+    """Useful for processing imported data; currently only available
+    through direct url input, e.g. /lexeme/0000/duplicate/"""
     original_lexeme = Lexeme.objects.get(id=int(lexeme_id))
     SPLIT_RE = re.compile("[,;]")   # split on these characters 
-                                    # XXX get this from settings.SPLIT_CHARS ?
     done_split = False
 
     if SPLIT_RE.search(original_lexeme.source_form):

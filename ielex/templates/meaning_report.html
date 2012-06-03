@@ -34,13 +34,13 @@
         {% if cogjudgeset %}
           {% for cj in cogjudgeset %}
             {%if cj.is_loanword %}({% endif %}<a href="{% url cognate-set cj.cognate_class.id %}">{{ cj.cognate_class.alias }}</a>{%if cj.is_loanword %}){% endif %}
-            <a href="{% url meaning-lexeme-add-cogjudge meaning.gloss lexeme.id %}#lexeme_{{ lexeme.id }}">
+            <a href="{% url lexeme-add-cognate lexeme.id %}#lexeme_{{ lexeme.id }}">
               <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
             </a>
             <br />
           {% endfor %}
         {% else %}
-        <a href="{% url meaning-lexeme-add-cogjudge meaning.gloss lexeme.id %}#lexeme_{{ lexeme.id }}">
+        <a href="{% url lexeme-add-cognate lexeme.id %}#lexeme_{{ lexeme.id }}">
             <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
           </a>
         {% endif %}

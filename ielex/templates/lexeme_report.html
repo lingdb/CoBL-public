@@ -39,7 +39,7 @@
           </legend>
 <table>
   <tr><td class="rowname">Language:</td><td><a href="{% url language-report lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td></tr>
-  <tr><td class="rowname">Meaning:</td><td><a href="{% url view-meaning-lexeme lexeme.meaning.gloss lexeme.id %}#lexeme_{{ lexeme.id }}">{{ lexeme.meaning.gloss }}</a></td></tr>
+  <tr><td class="rowname">Meaning:</td><td><a href="{% url meaning-report lexeme.meaning.gloss %}#lexeme_{{ lexeme.id }}">{{ lexeme.meaning.gloss }}</a></td></tr>
 <tr><td class="rowname">Source form:</td><td>{{ lexeme.source_form }}</td></tr>
 <tr><td class="rowname">Phonological form:</td><td>{{ lexeme.phon_form }}</td></tr>
 <tr><td class="rowname">Gloss:</td><td>{{ lexeme.gloss }}</td></tr>
@@ -223,7 +223,7 @@
 <fieldset>
   <legend>
     <strong>Add link to cognate class</strong>
-    <a href="{% url meaning-lexeme-add-cogjudge lexeme.meaning.gloss lexeme.id %}#lexeme_{{ lexeme.id }}">
+    <a href="{% url lexeme-add-cognate lexeme.id %}#lexeme_{{ lexeme.id }}">
       <img src="/media/buttons/add-link.png" alt="Add new cognate judgement" title="Add new cognate judgement" />
     </a>
   </legend>
