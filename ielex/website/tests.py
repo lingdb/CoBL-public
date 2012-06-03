@@ -130,16 +130,16 @@ class UrlTests(TestCase):
                 pass 
         self.assertEqual(len(names), len(set(names)))
 
+
 class LanguageListTests(TestCase):
 
     def setUp(self):
         self.languages = []
+        self.language_list = LanguageList.objects.create(name="LanguageListTests")
         for NAME in "abcd":
             language = Language.objects.create(ascii_name=NAME, utf8_name=NAME)
             self.languages.append(language)
-        self.language_list = LanguageList.objects.create(name="LanguageListTests")
-        for i in range(4):
-            self.language_list.append(self.languages[i])
+            self.language_list.append(language)
 
     def test_append_to_language_list(self):
         self.assertEqual(self.languages,
