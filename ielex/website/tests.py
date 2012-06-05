@@ -193,3 +193,14 @@ class LanguageListTests(TestCase):
             self.assertEqual([self.languages[i] for i in order],
                     list(self.language_list.languages.all().order_by("languagelistorder")))
 
+
+class LoginTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        make_basic_objects()
+
+    def test_unauthenticated_edit(self):
+        r = c.get("/lexeme/1234/edit/", follow=True)
+        # parse r.content to find the <input> buttons
+

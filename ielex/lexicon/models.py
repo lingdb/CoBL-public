@@ -14,6 +14,24 @@ from south.modelsinspector import add_introspection_rules
 from ielex.utilities import pairwise
 from ielex.lexicon.validators import *
 
+### from https://code.djangoproject.com/ticket/8399
+try:
+    from functools import wraps
+except ImportError:
+    from django.utils.functional import wraps
+import inspect
+
+def disable_for_loaddata(signal_handler):
+    """The signals to update denormalized data should not be called
+    during loaddata management command (can raise an IntegrityError)"""
+    def wrapper(*args, **kwargs):
+        for fr in inspect.stack():
+            if inspect.getmodulename(fr[1]) == 'loaddata':
+                return
+        signal_handler(*args, **kwargs)
+    return wrapper
+### end
+
 ## TODO: reinstate the cache stuff, but using a site specific key prefix (maybe
 ## the short name of the database
 
@@ -511,6 +529,7 @@ class CognateClassCitation(AbstractBaseCitation):
     class Meta:
         unique_together = (("cognate_class", "source"),)
 
+@disable_for_loaddata
 def update_language_list_all(sender, instance, **kwargs):
     """Update the LanguageList 'all' whenever Language table is changed"""
     ll, _ = LanguageList.objects.get_or_create(name=LanguageList.DEFAULT)
@@ -535,6 +554,7 @@ def update_language_list_all(sender, instance, **kwargs):
 models.signals.post_save.connect(update_language_list_all, sender=Language)
 models.signals.post_delete.connect(update_language_list_all, sender=Language)
 
+@disable_for_loaddata
 def update_meaning_list_all(sender, instance, **kwargs):
     ml, _ = MeaningList.objects.get_or_create(name=MeaningList.DEFAULT)
     missing_ids = set(Meaning.objects.values_list("id", flat=True)) - set(ml.meaning_id_list)
@@ -554,6 +574,7 @@ def update_meaning_list_all(sender, instance, **kwargs):
 models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
 models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
+@disable_for_loaddata
 def update_denormalized_data(sender, instance, **kwargs):
     # update lexeme
     instance.lexeme.set_number_cognate_coded()
@@ -565,6 +586,7 @@ def update_denormalized_data(sender, instance, **kwargs):
 models.signals.post_save.connect(update_denormalized_data,
         sender=CognateJudgement)
 
+@disable_for_loaddata
 def update_denormalized_from_lexeme(sender, instance, **kwargs):
     instance.meaning.set_percent_coded()
     return
