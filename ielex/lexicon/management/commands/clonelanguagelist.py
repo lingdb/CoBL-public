@@ -17,7 +17,7 @@ class Command(NoArgsCommand):
 
     def run_from_argv(self, argv):
         """
-        A version of the method from 
+        A version of the method from
         Django-1.3-py2.7.egg/django/core/management/base.py
         with call to handle_default_options disabled
         """
