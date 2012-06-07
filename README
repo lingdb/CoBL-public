@@ -2,7 +2,7 @@ LexDB is a lexical cognate tracking database. It stores the full provenance of
 all lexemes and cognate judgements, and allows export into a number of nexus
 dialects. The database is written in the flexible python/django web framework.
 
-LexDB is used for the [[http://ielex.mpi.nl|Indo-European Lexical Database 
-(IELex)]]. For more information please see
-[[https://bitbucket.org/evoling/lexdb/wiki/Home|the project wiki]] on the 
-[[https://bitbucket.org/evoling/lexdb|development site]].
+LexDB is used for the Indo-European Lexical Database (IELex) at
+http://ielex.mpi.nl. For more information please see the project wiki
+(https://bitbucket.org/evoling/lexdb/wiki/Home) on the BitBucket development
+site (https://bitbucket.org/evoling/lexdb)
