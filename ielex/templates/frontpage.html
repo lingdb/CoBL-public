@@ -9,7 +9,7 @@
 
 {% block content %}
 {% if project_description %}
-<p>{{ project_description }}</p>
+{{ project_description|safe }}
 {% endif %}
 
 {% cache 500 frontpage_stats %}
