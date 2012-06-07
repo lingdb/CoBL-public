@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 import logging
 import lxml.html
 from lexicon.models import *
@@ -193,14 +194,31 @@ class LanguageListTests(TestCase):
             self.assertEqual([self.languages[i] for i in order],
                     list(self.language_list.languages.all().order_by("languagelistorder")))
 
+def is_login_page(response):
+    dom = lxml.html.fromstring(response.content)
+    # assert len(dom.forms) == 1
+    form = dom.forms[0]
+    # for key in ["username", "password"]:
+    #     assert key in form.inputs.keys()
+    return form.get("id") == "login-form"
+
 
 class LoginTests(TestCase):
 
     def setUp(self):
         self.client = Client()
-        make_basic_objects()
+        self.objects = make_basic_objects()
 
-    def test_unauthenticated_edit(self):
-        r = c.get("/lexeme/1234/edit/", follow=True)
-        # parse r.content to find the <input> buttons
+    def test_unauthenticated_edit_lexeme(self):
+        lexeme = self.objects[Lexeme]
+        response = self.client.get(reverse("edit-lexeme", args=[lexeme.id]),
+                follow=True)
+        self.assertTrue(is_login_page(response))
 
+    def test_authenticated_edit_lexeme(self):
+        "Test that an authenticated user isn't asked to login"
+        self.client.login(username='testuser', password='secret')
+        lexeme = self.objects[Lexeme]
+        response = self.client.get(reverse("edit-lexeme", args=[lexeme.id]),
+                follow=True)
+        self.assertFalse(is_login_page(response))
