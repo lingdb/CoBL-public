@@ -210,6 +210,7 @@ class LoginTests(TestCase):
         self.objects = make_basic_objects()
 
     def test_unauthenticated_edit_lexeme(self):
+        "Test that an unauthenticated user is asked to login"
         lexeme = self.objects[Lexeme]
         response = self.client.get(reverse("edit-lexeme", args=[lexeme.id]),
                 follow=True)
