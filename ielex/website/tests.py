@@ -55,7 +55,7 @@ class ViewTests(TestCase):
     def setUp(self):
         self.client = Client()
         make_basic_objects()
-        self.seen_links = set()
+        # self.seen_links = set()
 
     def walk_page(self, path, parent=None):
         new_links = []
@@ -200,7 +200,12 @@ class LoginTests(TestCase):
         self.client = Client()
         make_basic_objects()
 
-    def test_unauthenticated_edit(self):
-        r = c.get("/lexeme/1234/edit/", follow=True)
+    def test_unauthenticated_edit(self): # proof of concept
+        r = self.client.get("/lexeme/1234/edit/", follow=True)
         # parse r.content to find the <input> buttons
+        doc = lxml.html.fromstring(r.content)
+        inputs = doc.cssselect("input")
+        names = set(i.name for i in inputs)
+        self.assertTrue("username" in names)
+        self.assertTrue("password" in names)
 
