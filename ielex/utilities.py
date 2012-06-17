@@ -8,6 +8,7 @@ except ImportError:
     from django.utils.functional import wraps
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.core.management.base import NoArgsCommand
 
 codes = list(uppercase) + [i+j for i in uppercase for j in lowercase]
 
@@ -81,6 +82,24 @@ def confirm_required(template_name, context_creator, key='__confirm__'):
                 return render_to_response(template_name, context)
         return wraps(func)(inner)
     return decorator
+
+class LexDBCommandMixin:
+    """Suppress Django default options from Management commands"""
+
+    def run_from_argv(self, argv):
+        """
+        A version of the method from
+        Django-1.3-py2.7.egg/django/core/management/base.py
+        with call to `handle_default_options` disabled in order to
+        suppress unwanted default options.
+        """
+        parser = self.create_parser(argv[0], argv[1])
+        options, args = parser.parse_args(argv[2:])
+        # handle_default_options(options)
+        assert not hasattr(options, "settings")
+        assert not hasattr(options, "pythonpath")
+        self.execute(*args, **options.__dict__)
+        return
 
 if __name__ == "__main__":
     snip_flag = True
