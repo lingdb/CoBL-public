@@ -83,7 +83,7 @@ def write_nexus_view(request):
     INCLUDE_UNIQUE_STATES = bool(request.POST.get("unique", 0))
     language_list = LanguageList.objects.get(id=request.POST["language_list"])
     meaning_list = MeaningList.objects.get(id=request.POST["meaning_list"])
-    exclude = set(request.POST.getlist("reliability"))
+    exclude_ratings = set(request.POST.getlist("reliability"))
     dialect = request.POST.get("dialect", "NN")
     msg = "Warning: nexus export can be very slow"
     messages.add_message(request, messages.INFO, msg)
@@ -96,10 +96,12 @@ def write_nexus_view(request):
     response['Content-Disposition'] = 'attachment; filename=%s' % \
             filename.replace(" ", "_")
 
-    response = write_nexus(response,
+    # This was ``response = write_nexus(...)``, but I don't think that
+    # should work. This needs to be tested. TODO
+    write_nexus(response,
             language_list.name,
             meaning_list.name,
-            exclude,
+            exclude_ratings,
             dialect,
             LABEL_COGNATE_SETS,
             INCLUDE_UNIQUE_STATES)
@@ -108,7 +110,7 @@ def write_nexus_view(request):
 def write_nexus(fileobj,
             language_list_name,
             meaning_list_name,
-            exclude,
+            exclude_ratings,
             dialect,
             LABEL_COGNATE_SETS,
             singletons,
@@ -132,99 +134,14 @@ def write_nexus(fileobj,
     language_list = LanguageList.objects.get(name=language_list_name)
     languages = language_list.languages.all().order_by("languagelistorder")
     language_names = [language.ascii_name for language in languages]
-    n_languages = len(language_names)
 
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
     meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
     max_len = max([len(l) for l in language_names])
 
-    # all cognate classes
-    cognate_class_ids = CognateClass.objects.all().values_list("id", flat=True)
-    cognate_class_names = dict(CognateJudgement.objects.all().values_list(
-            "cognate_class__id", "lexeme__meaning__gloss").distinct())
-    #logging.info("len cognate_class_ids = %s" % len(cognate_class_ids))
-
-    # make a list for each meaning of the languages lacking any lexeme with that meaning
-    missing = {}
-    #logging.info("=== missing data MEANING: [LANGUAGE_IDS] ===")
-    for meaning in meanings:
-        missing[meaning] = [language.id for language in languages if not
-                language.lexeme_set.filter(meaning=meaning).exists()]
-        #logging.info("%s: %s" % (meaning, missing[meaning]))
-
-    data, data_missing = {}, {}
-    for cc in cognate_class_ids:
-        ## Faster way: (doesn't do reliability ratings properly)
-        # language_ids = CognateClass.objects.get(id=cc).lexeme_set.filter(
-        #         meaning__in=meanings).values_list('language', flat=True)
-        ## Slower way:
-        # TODO look at LexemeCitation reliablity ratings here too
-        language_ids = [cj.lexeme.language.id for cj in
-                CognateJudgement.objects.filter(cognate_class=cc,
-                lexeme__meaning__in=meanings)
-                if cj.lexeme.language in languages
-                and not (cj.reliability_ratings & exclude)]
-        if language_ids:
-            try:
-                meaning = CognateClass.objects.get(id=cc).get_meaning()
-                if exclude_invariant:
-                    assert (len(language_ids) + len(missing[meaning])) < n_languages
-                data[cc] = language_ids
-                #meaning = set(CognateClass.objects.get(id=cc).lexeme_set.values_list(
-                #        "meaning", flat=True)).pop()
-                try:
-                    data_missing[cc] = missing[meaning]
-                    # if data_missing[cc]:
-                    #     logging.info("missing data '%s': %s %s" % (meaning, cc, data_missing[cc]))
-                except KeyError:
-                    data_missing[cc] = []
-            except AssertionError:
-                # print "excluded cogset", cc, len(language_ids), n_languages
-                pass
-
-    if INCLUDE_UNIQUE_STATES:
-        # adds a cc code for all the lexemes which are not registered as
-        # belonging to a cognate class
-        # TODO look at LexemeCitation reliablity ratings here too
-        # note that registered cognate classes with one member will NOT be
-        # ignored when INCLUDE_UNIQUE_STATES = False
-        uniques = Lexeme.objects.filter(
-                language__in=languages,
-                meaning__in=meanings,
-                cognate_class__isnull=True).values_list(
-                        "language__id",
-                        "meaning__id",
-                        "id")
-
-        if MAX_1_SINGLETON:
-            # only allow one singleton per language-meaning, and only if there
-            # are not already any lexemes in that language-meaning cell
-            # coded as part of a cognate set
-            suppress_singleton = set()
-            for language in languages:
-                for meaning in meanings:
-                    if Lexeme.objects.filter(language=language,
-                            meaning=meaning, cognate_class__isnull=False):
-                        suppress_singleton.add((language.id, meaning.id))
-                        #logging.info("Suppress singleton %s %s" % (language,
-                        #    meaning))
-
-        for language_id, meaning_id, lexeme_id in uniques:
-            if not MAX_1_SINGLETON or (language_id, meaning_id) not in \
-                    suppress_singleton:
-                meaning = Meaning.objects.get(id=meaning_id)
-                cc = ("U", lexeme_id)
-                data[cc] = [language_id]
-                cognate_class_names[cc] = meaning.gloss
-                try:
-                    data_missing[cc] = missing[meaning]
-                    # if data_missing[cc]:
-                    #     logging.info("missing data '%s': %s %s" % (meaning, cc, data_missing[cc]))
-                except KeyError:
-                    data_missing[cc] = []
-            # else:
-            #     if MAX_1_SINGLETON:
-            #         logging.info("Suppressed %s %s" % (language_id, meaning_id))
+    matrix, cognate_class_names = construct_matrix(languages,
+            meanings, exclude_ratings, exclude_invariant, INCLUDE_UNIQUE_STATES,
+            MAX_1_SINGLETON)
 
     def cognate_class_name_formatter(cc):
         gloss = cognate_class_names[cc]
@@ -244,7 +161,7 @@ def write_nexus(fileobj,
         """)
     print>>fileobj, "[ Language list: %s ]" % language_list_name
     print>>fileobj, "[ Meaning list: %s ]" % meaning_list_name
-    print>>fileobj, "[ Exclude rating/s: %s ]" % ", ".join(sorted(exclude))
+    print>>fileobj, "[ Exclude rating/s: %s ]" % ", ".join(sorted(exclude_ratings))
     print>>fileobj, "[ Include unique states: %s ]" % INCLUDE_UNIQUE_STATES
     if INCLUDE_UNIQUE_STATES:
         print>>fileobj, "[ Limit of one singleton per language/meaning: %s ]" % MAX_1_SINGLETON
@@ -262,17 +179,11 @@ def write_nexus(fileobj,
             begin characters;
               dimensions nchar=%s;
               format symbols="01" missing=?;
-              charstatelabels""" % len(data))
+              charstatelabels""" % len(cognate_class_names))
         labels = []
 
-        for i, cc in enumerate(sorted(data, key=lambda cc:
-                (cognate_class_names[cc], cc))):
+        for i, cc in enumerate(sorted((cognate_class_names))):
             labels.append("    %d %s" % (i+1, cognate_class_name_formatter(cc)))
-            # try:
-            #     labels.append("    %d %s_%d" % (i+1, cognate_class_names[cc],
-            #         cc))
-            # except KeyError:
-            #     labels.append("    %d Lexeme_%d" % (i+1, cc[1]))
         print>>fileobj, ",\n".join(labels)
         print>>fileobj, "  ;\n  matrix"
     else:
@@ -283,25 +194,20 @@ def write_nexus(fileobj,
               taxlabels %s;
               format symbols="01";
               matrix
-            """ % (len(languages), len(data), " ".join(language_names)))
+            """ % (len(languages), len(cognate_class_names), " ".join(language_names)))
 
     if LABEL_COGNATE_SETS:
-        row = [" "*9] + [str(i).ljust(10) for i in range(len(data))[10::10]]
+        row = [" "*9] + [str(i).ljust(10) for i in
+                range(len(cognate_class_names))[10::10]]
         print>>fileobj, "    %s[ %s ]" % (" "*max_len, "".join(row))
-        row = [" "*9] + [".         " for i in range(len(data))[10::10]]
+        row = [" "*9] + [".         " for i in range(len(cognate_class_names))[10::10]]
         print>>fileobj, "    %s[ %s ]" % (" "*max_len, "".join(row))
 
-    for language in languages:
-        row = []
-        for cc in sorted(data, key=lambda cc: (cognate_class_names[cc], cc)):
-            if language.id in data[cc]:
-                row.append("1")
-            elif language.id in data_missing[cc]:
-                row.append("?")
-            else:
-                row.append("0")
-        print>>fileobj, "    '%s' %s%s" % (language.ascii_name,
-                " "*(max_len - len(language.ascii_name)), "".join(row))
+    # write matrix
+    for row in matrix:
+        language_name, row = row[0], row[1:]
+        print>>fileobj, "    '%s' %s%s" % (language_name,
+                " "*(max_len - len(language_name)), "".join(row))
     print>>fileobj, "  ;\nend;\n"
 
     if dialect == "BP":
@@ -329,6 +235,113 @@ def write_nexus(fileobj,
     seconds %= 60
     print>>fileobj, "[ Processing time: %02d:%02d ]" % (minutes, seconds)
     print>>fileobj, "[ %s ]" % " ".join(sys.argv)
-    print "Processed %s cognate sets from %s languages" % (len(data),
-            n_languages)
+    print ("Processed %s cognate sets from %s languages" %
+            (len(cognate_class_names), len(language_names)))
     return fileobj
+
+def write_delim(fileobj,
+            language_list_name,
+            meaning_list_name,
+            exclude_ratings,
+            dialect,
+            LABEL_COGNATE_SETS,
+            singletons,
+            exclude_invariant):
+    return fileobj
+
+def construct_matrix(
+    languages,
+    meanings,
+    exclude_ratings,
+    exclude_invariant,
+    INCLUDE_UNIQUE_STATES,
+    MAX_1_SINGLETON):
+
+        matrix = []
+        # all cognate classes
+        cognate_class_ids = CognateClass.objects.all().values_list("id", flat=True)
+        cognate_class_names = dict(CognateJudgement.objects.all().values_list(
+                "cognate_class__id", "lexeme__meaning__gloss").distinct())
+        #logging.info("len cognate_class_ids = %s" % len(cognate_class_ids))
+
+        # make a list for each meaning of the languages lacking any lexeme with that meaning
+        missing = {}
+        for meaning in meanings:
+            missing[meaning] = [language.id for language in languages if not
+                    language.lexeme_set.filter(meaning=meaning).exists()]
+
+        data, data_missing = {}, {}
+        for cc in cognate_class_ids:
+            ## Faster way: (doesn't do reliability ratings properly)
+            # language_ids = CognateClass.objects.get(id=cc).lexeme_set.filter(
+            #         meaning__in=meanings).values_list('language', flat=True)
+            ## Slower way:
+            # TODO look at LexemeCitation reliablity ratings here too
+            language_ids = [cj.lexeme.language.id for cj in
+                    CognateJudgement.objects.filter(cognate_class=cc,
+                    lexeme__meaning__in=meanings)
+                    if cj.lexeme.language in languages
+                    and not (cj.reliability_ratings & exclude_ratings)]
+            if language_ids:
+                try:
+                    meaning = CognateClass.objects.get(id=cc).get_meaning()
+                    if exclude_invariant:
+                        assert (len(language_ids) + len(missing[meaning])) < len(language_names)
+                    data[cc] = language_ids
+                    try:
+                        data_missing[cc] = missing[meaning]
+                    except KeyError:
+                        data_missing[cc] = []
+                except AssertionError:
+                    pass
+
+        if INCLUDE_UNIQUE_STATES:
+            # adds a cc code for all the lexemes which are not registered as
+            # belonging to a cognate class
+            # TODO look at LexemeCitation reliablity ratings here too
+            # note that registered cognate classes with one member will NOT be
+            # ignored when INCLUDE_UNIQUE_STATES = False
+            uniques = Lexeme.objects.filter(
+                    language__in=languages,
+                    meaning__in=meanings,
+                    cognate_class__isnull=True).values_list(
+                            "language__id",
+                            "meaning__id",
+                            "id")
+
+            if MAX_1_SINGLETON:
+                # only allow one singleton per language-meaning, and only if there
+                # are not already any lexemes in that language-meaning cell
+                # coded as part of a cognate set
+                suppress_singleton = set()
+                for language in languages:
+                    for meaning in meanings:
+                        if Lexeme.objects.filter(language=language,
+                                meaning=meaning, cognate_class__isnull=False):
+                            suppress_singleton.add((language.id, meaning.id))
+
+            for language_id, meaning_id, lexeme_id in uniques:
+                if not MAX_1_SINGLETON or (language_id, meaning_id) not in \
+                        suppress_singleton:
+                    meaning = Meaning.objects.get(id=meaning_id)
+                    cc = ("U", lexeme_id)
+                    data[cc] = [language_id]
+                    cognate_class_names[cc] = meaning.gloss
+                    try:
+                        data_missing[cc] = missing[meaning]
+                    except KeyError:
+                        data_missing[cc] = []
+
+        # make matrix
+        for language in languages:
+            row = [language.ascii_name]
+            for cc in sorted(data, key=lambda cc: (cognate_class_names[cc], cc)):
+                if language.id in data[cc]:
+                    row.append("1")
+                elif language.id in data_missing[cc]:
+                    row.append("?")
+                else:
+                    row.append("0")
+            matrix.append(row)
+
+        return matrix, cognate_class_names

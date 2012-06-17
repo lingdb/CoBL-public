@@ -1,9 +1,9 @@
 from optparse import make_option, SUPPRESS_HELP
 from django.core.management.base import NoArgsCommand, CommandError
 from ielex.lexicon.models import LanguageList, LanguageListOrder
-from ielex.utilities import LexDBCommandMixin
+from ielex.utilities import LexDBManagementCommand
 
-class Command(NoArgsCommand,LexDBCommandMixin):
+class Command(LexDBManagementCommand):
     help="""Export a nexus file from the database"""
     requires_model_validation = False
     unique_choices = ["all", "limited", "none"]

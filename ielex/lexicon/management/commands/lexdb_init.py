@@ -1,8 +1,8 @@
 from django.core.management.base import NoArgsCommand
 from ielex.lexicon.models import LanguageList, MeaningList
-from ielex.utilities import LexDBCommandMixin
+from ielex.utilities import LexDBManagementCommand
 
-class Command(NoArgsCommand,LexDBCommandMixin):
+class Command(LexDBManagementCommand):
     help="Create LanguageList and MeaningList objects in an empty database"
     option_list = tuple()
 
