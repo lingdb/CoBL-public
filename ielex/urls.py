@@ -230,7 +230,7 @@ if settings.semantic_domains:
             )
 
 urlpatterns += patterns('',
-        url(r'^nexus/$', NexusExportView.as_view(), name="nexus"),
+        url(r'^nexus/$', login_required(NexusExportView.as_view()), name="nexus"),
         )
 
 urlpatterns += patterns('django.contrib.auth',
