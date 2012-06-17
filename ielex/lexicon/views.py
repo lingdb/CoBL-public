@@ -143,14 +143,6 @@ def write_nexus(fileobj,
             meanings, exclude_ratings, exclude_invariant, INCLUDE_UNIQUE_STATES,
             MAX_1_SINGLETON)
 
-    def cognate_class_name_formatter(cc):
-        gloss = cognate_class_names[cc]
-        if type(cc) == int:
-            return "%s_cogset_%s" % (gloss, cc)
-        else:
-            assert type(cc) == tuple
-            return "%s_lexeme_%s" % (gloss, cc[1])
-
     print>>fileobj, dedent("""\
         #NEXUS
 
@@ -183,7 +175,7 @@ def write_nexus(fileobj,
         labels = []
 
         for i, cc in enumerate(sorted((cognate_class_names))):
-            labels.append("    %d %s" % (i+1, cognate_class_name_formatter(cc)))
+            labels.append("    %d %s" % (i+1, cc))
         print>>fileobj, ",\n".join(labels)
         print>>fileobj, "  ;\n  matrix"
     else:
@@ -233,20 +225,51 @@ def write_nexus(fileobj,
     seconds = int(time.time() - start_time)
     minutes = seconds // 60
     seconds %= 60
-    print>>fileobj, "[ Processing time: %02d:%02d ]" % (minutes, seconds)
-    print>>fileobj, "[ %s ]" % " ".join(sys.argv)
-    print ("Processed %s cognate sets from %s languages" %
-            (len(cognate_class_names), len(language_names)))
+    print>>fileobj, "# Processing time: %02d:%02d" % (minutes, seconds)
+    print>>fileobj, "# %s" % " ".join(sys.argv)
+    print ("# Processed %s cognate sets from %s languages" %
+            (len(cognate_class_names), len(matrix)))
     return fileobj
 
-def write_delim(fileobj,
+def write_delimited(fileobj,
             language_list_name,
             meaning_list_name,
             exclude_ratings,
-            dialect,
             LABEL_COGNATE_SETS,
             singletons,
             exclude_invariant):
+    start_time = time.time()
+    # MAX_1_SINGLETON: True|False
+    # only allow zero or one singletons per language per meaning (zero
+    # if there is another lexeme coded for that meaning, one if not).
+    if singletons:
+        INCLUDE_UNIQUE_STATES = True
+        if singletons == "all":
+            MAX_1_SINGLETON = False
+        else:
+            assert singletons == "limited"
+            MAX_1_SINGLETON = True
+    else:
+        INCLUDE_UNIQUE_STATES = False
+
+    language_list = LanguageList.objects.get(name=language_list_name)
+    languages = language_list.languages.all().order_by("languagelistorder")
+    meaning_list = MeaningList.objects.get(name=meaning_list_name)
+    meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
+    matrix, cognate_class_names = construct_matrix(languages,
+            meanings, exclude_ratings, exclude_invariant, INCLUDE_UNIQUE_STATES,
+            MAX_1_SINGLETON)
+    print>>fileobj, "\t" + "\t".join(cognate_class_names)
+    for row in matrix:
+        print>>fileobj, "\t".join(row)
+
+    seconds = int(time.time() - start_time)
+    minutes = seconds // 60
+    seconds %= 60
+    print>>sys.stderr, "[ Processing time: %02d:%02d ]" % (minutes, seconds)
+    print>>sys.stderr, "[ %s ]" % " ".join(sys.argv)
+    print>>sys.stderr, ("[ Processed %s cognate sets from %s languages ]" %
+            (len(cognate_class_names), len(matrix)))
     return fileobj
 
 def construct_matrix(
@@ -260,7 +283,7 @@ def construct_matrix(
         matrix = []
         # all cognate classes
         cognate_class_ids = CognateClass.objects.all().values_list("id", flat=True)
-        cognate_class_names = dict(CognateJudgement.objects.all().values_list(
+        cognate_class_dict = dict(CognateJudgement.objects.all().values_list(
                 "cognate_class__id", "lexeme__meaning__gloss").distinct())
         #logging.info("len cognate_class_ids = %s" % len(cognate_class_ids))
 
@@ -321,21 +344,34 @@ def construct_matrix(
                             suppress_singleton.add((language.id, meaning.id))
 
             for language_id, meaning_id, lexeme_id in uniques:
+                # add singleton ids to cognate_class_dict
                 if not MAX_1_SINGLETON or (language_id, meaning_id) not in \
                         suppress_singleton:
                     meaning = Meaning.objects.get(id=meaning_id)
                     cc = ("U", lexeme_id)
                     data[cc] = [language_id]
-                    cognate_class_names[cc] = meaning.gloss
+                    cognate_class_dict[cc] = meaning.gloss
                     try:
                         data_missing[cc] = missing[meaning]
                     except KeyError:
                         data_missing[cc] = []
 
         # make matrix
+        def cognate_class_name_formatter(cc):
+            gloss = cognate_class_dict[cc]
+            if type(cc) == int:
+                return "%s_cogset_%s" % (gloss, cc)
+            else:
+                assert type(cc) == tuple
+                return "%s_lexeme_%s" % (gloss, cc[1])
+
+        cognate_class_names = []
+        for cc in sorted(data, key=lambda cc: (cognate_class_dict[cc], cc)):
+            cognate_class_names.append(cognate_class_name_formatter(cc))
+
         for language in languages:
             row = [language.ascii_name]
-            for cc in sorted(data, key=lambda cc: (cognate_class_names[cc], cc)):
+            for cc in sorted(data, key=lambda cc: (cognate_class_dict[cc], cc)):
                 if language.id in data[cc]:
                     row.append("1")
                 elif language.id in data_missing[cc]:
