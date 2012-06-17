@@ -9,7 +9,7 @@ from ielex.views import *
 from ielex import settings
 from ielex.lexicon.views import *
 from ielex.lexicon.models import *
-from ielex.forms import EditCitationForm
+# from ielex.forms import EditCitationForm
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -230,8 +230,7 @@ if settings.semantic_domains:
             )
 
 urlpatterns += patterns('',
-        (r'^nexus/$', 'ielex.lexicon.views.list_nexus'),
-        url(r'^nexus-data/$', 'ielex.lexicon.views.write_nexus_view', name="nexus-data"),
+        url(r'^nexus/$', NexusExportView.as_view(), name="nexus"),
         )
 
 urlpatterns += patterns('django.contrib.auth',

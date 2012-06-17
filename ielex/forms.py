@@ -202,26 +202,6 @@ class ChooseMeaningListForm(forms.Form):
             empty_label=None,
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}))
 
-class ChooseNexusOutputForm(forms.Form):
-    DIALECT = (("BP", "BayesPhylogenies"),
-            ("NN", "NeighborNet"),
-            ("MB", "MrBayes"))
-    language_list = ChooseLanguageListField(
-            queryset=LanguageList.objects.all(),
-            empty_label=None,
-            widget=forms.Select())
-    meaning_list = ChooseMeaningListField(
-            queryset=MeaningList.objects.all(),
-            empty_label=None,
-            widget=forms.Select())
-    reliability = forms.MultipleChoiceField(choices=RELIABILITY_CHOICES,
-            widget=forms.CheckboxSelectMultiple,
-            label="Exclude ratings")
-    unique = forms.BooleanField(label="Include unique states")
-    dialect = forms.ChoiceField(choices=DIALECT,
-            widget=forms.RadioSelect,
-            label="NEXUS dialect")
-
 class ChooseSourceForm(forms.Form):
     source = ChooseSourcesField(queryset=Source.objects.all())
 

@@ -3,12 +3,15 @@ import time
 import sys
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+# from django.core.urlresolvers import reverse_lazy # avail Django 1.4
 from django.http import HttpResponse
 from django.views.generic import CreateView, UpdateView, TemplateView
+from django.contrib import messages
 from ielex import settings
 from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
-from ielex.forms import ChooseNexusOutputForm, EditCognateClassCitationForm
+from ielex.forms import EditCognateClassCitationForm
+from ielex.lexicon.forms import ChooseNexusOutputForm
 
 class FrontpageView(TemplateView):
     template_name = "frontpage.html"
@@ -64,48 +67,46 @@ class CognateClassCitationCreateView(CreateView):
                 self).get_form_kwargs()
         return kwargs
 
-def list_nexus(request):
-    if request.method == "POST":
-        form =  ChooseNexusOutputForm(request.POST)
-        return HttpResponseRedirect(reverse("nexus-data"))
-    else:
+class NexusExportView(TemplateView):
+    template_name = "nexus_list.html"
+
+    def get(self, request):
         defaults = {"unique":1, "reliability":["L","X"], "language_list":1,
-                "meaning_list":1, "dialect":"NN"}
+                "meaning_list":1, "dialect":"NN", "singletons":"all",
+                "exclude_invariant":0}
         form =  ChooseNexusOutputForm(defaults)
-    return render_template(request, "nexus_list.html", {"form":form})
+        return self.render_to_response({"form":form})
 
-@login_required
-def write_nexus_view(request):
-    """A wrapper to call the `write_nexus` function from a view"""
-    # TODO 
-    #   - contributor and sources list
-    LABEL_COGNATE_SETS = True
-    INCLUDE_UNIQUE_STATES = bool(request.POST.get("unique", 0))
-    language_list = LanguageList.objects.get(id=request.POST["language_list"])
-    meaning_list = MeaningList.objects.get(id=request.POST["meaning_list"])
-    exclude_ratings = set(request.POST.getlist("reliability"))
-    dialect = request.POST.get("dialect", "NN")
-    msg = "Warning: nexus export can be very slow"
-    messages.add_message(request, messages.INFO, msg)
-    assert request.method == 'POST'
+    def post(self, request):
+        form =  ChooseNexusOutputForm(request.POST)
+        if form.is_valid():
+            #return HttpResponseRedirect(reverse("nexus-data"))
+            return self.write_nexus_view(form)
+        return self.render_to_response({"form":form})
 
-    # Create the HttpResponse object with the appropriate header.
-    filename = "%s-%s-%s.nex" % (settings.project_short_name,
-            language_list.name, meaning_list.name)
-    response = HttpResponse(mimetype='text/plain')
-    response['Content-Disposition'] = 'attachment; filename=%s' % \
-            filename.replace(" ", "_")
+    def write_nexus_view(self, form):
+        """A wrapper to call the `write_nexus` function from a view"""
+        # TODO: contributor and sources list
 
-    # This was ``response = write_nexus(...)``, but I don't think that
-    # should work. This needs to be tested. TODO
-    write_nexus(response,
-            language_list.name,
-            meaning_list.name,
-            exclude_ratings,
-            dialect,
-            LABEL_COGNATE_SETS,
-            INCLUDE_UNIQUE_STATES)
-    return response
+        # Create the HttpResponse object with the appropriate header.
+        filename = "%s-%s-%s.nex" % (settings.project_short_name,
+                form.cleaned_data["language_list"].name,
+                form.cleaned_data["meaning_list"].name)
+        response = HttpResponse(mimetype='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=%s' % \
+                filename.replace(" ", "_")
+
+        write_nexus(response,
+                form.cleaned_data["language_list"],
+                form.cleaned_data["meaning_list"],
+                set(form.cleaned_data["reliability"]),
+                form.cleaned_data["dialect"],
+                True,
+                form.cleaned_data["singletons"],
+                form.cleaned_data["exclude_invariant"]
+                )
+        return response
+
 
 def write_nexus(fileobj,
             language_list_name,
@@ -225,8 +226,8 @@ def write_nexus(fileobj,
     seconds = int(time.time() - start_time)
     minutes = seconds // 60
     seconds %= 60
-    print>>fileobj, "# Processing time: %02d:%02d" % (minutes, seconds)
-    print>>fileobj, "# %s" % " ".join(sys.argv)
+    print>>fileobj, "[ Processing time: %02d:%02d ]" % (minutes, seconds)
+    print>>fileobj, "[ %s ]" % " ".join(sys.argv)
     print ("# Processed %s cognate sets from %s languages" %
             (len(cognate_class_names), len(matrix)))
     return fileobj
@@ -266,9 +267,9 @@ def write_delimited(fileobj,
     seconds = int(time.time() - start_time)
     minutes = seconds // 60
     seconds %= 60
-    print>>sys.stderr, "[ Processing time: %02d:%02d ]" % (minutes, seconds)
-    print>>sys.stderr, "[ %s ]" % " ".join(sys.argv)
-    print>>sys.stderr, ("[ Processed %s cognate sets from %s languages ]" %
+    print>>sys.stderr, "# Processing time: %02d:%02d" % (minutes, seconds)
+    print>>sys.stderr, "# %s" % " ".join(sys.argv)
+    print>>sys.stderr, ("# Processed %s cognate sets from %s languages" %
             (len(cognate_class_names), len(matrix)))
     return fileobj
 
