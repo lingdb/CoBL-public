@@ -18,6 +18,10 @@ DATABASES = {
     }
 }
 
+# Meta tags for the front page (<meta name=... /> format)
+# e.g. the Google site verification tag could go here
+META_TAGS = ""
+
 # Error messages
 ADMINS = (
         # ('Your Name', 'your_email@domain.com'),
