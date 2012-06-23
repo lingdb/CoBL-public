@@ -24,6 +24,10 @@ class FrontpageView(TemplateView):
         context["languages"] = Language.objects.count()
         context["meanings"] = Meaning.objects.count()
         context["coded_characters"] = CognateJudgement.objects.count()
+        try:
+            context["google_site_verification"] = settings.META_TAGS
+        except AttributeError:
+            pass
         return context
 
 class CognateClassCitationUpdateView(UpdateView):

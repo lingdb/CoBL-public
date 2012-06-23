@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <title>{{ project_short_name }} :: {% block title %}{% endblock %}</title>
-    <link rel="stylesheet" type="text/css" href="/media/css/ielex.css" />
-    <link rel="stylesheet" type="text/css" media="print" href="/media/css/print.css" />
+  <link rel="stylesheet" type="text/css" href="/media/css/ielex.css" />
+  <link rel="stylesheet" type="text/css" media="print" href="/media/css/print.css" />
+  {% block meta %}{% endblock %}
 </head>
 <body>
   <div id="container">
