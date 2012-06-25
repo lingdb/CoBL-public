@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from string import uppercase, lowercase
-from itertools import tee, izip
+from itertools import izip
 #from ielex.lexicon.models import Language
 try:
     from functools import wraps
@@ -30,11 +30,13 @@ def next_alias(l, ignore=[]):
             return alias
     return
 
-def pairwise(iterable):
-    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
-    a, b = tee(iterable)
-    next(b, None)
-    return izip(a, b)
+def two_by_two(I):
+    """Return an iterable two-by-two, e.g.:
+        [1,2,3,4,5,6] -> (1,2), (3,4), (5,6)
+    This is used in formatting the denormalized [id, alias] field of
+    the Lexeme model"""
+    args = [iter(I)] * 2
+    return izip(*args)
 
 def confirm_required(template_name, context_creator, key='__confirm__'):
     """

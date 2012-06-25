@@ -11,7 +11,7 @@ import reversion
 from reversion.revisions import RegistrationError
 # from reversion.admin import VersionAdmin
 from south.modelsinspector import add_introspection_rules
-from ielex.utilities import pairwise
+from ielex.utilities import two_by_two
 from ielex.lexicon.validators import *
 
 ### from https://code.djangoproject.com/ticket/8399
@@ -242,7 +242,7 @@ class Lexeme(models.Model):
                 template = '<a href="/cognate/%s/">%s</a>'
             return template % (cc_id, alias)
         return ", ".join(format_link(cc_id, alias) for cc_id, alias in
-                pairwise(self.denormalized_cognate_classes.split(",")))
+                two_by_two(self.denormalized_cognate_classes.split(",")))
 
     def get_absolute_url(self):
         return "/lexeme/%s/" % self.id
