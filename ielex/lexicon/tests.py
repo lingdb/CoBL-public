@@ -3,6 +3,8 @@ from django.test import TestCase
 from lexicon.models import *
 
 class LexemeGetCognateClassLinksTest(TestCase):
+    """Functions to test the string formatting of denormalized cognate
+    class information"""
 
     template = '<a href="/cognate/%s/">%s</a>'
 
@@ -28,7 +30,7 @@ class LexemeGetCognateClassLinksTest(TestCase):
         self.assertEqual(lexeme.denormalized_cognate_classes, denorm)
 
     def test_formatting_one_cognate_class(self):
-        # test that CC links for lexemes with one CC are correctly formatted
+        # CC links for lexemes with one CC are correctly formatted
         link = self.template % (self.cognate_class_A.id,
                 self.cognate_class_A.alias)
         lexeme = Lexeme.objects.create(source_form="a",
@@ -55,7 +57,7 @@ class LexemeGetCognateClassLinksTest(TestCase):
         self.assertEqual(lexeme.denormalized_cognate_classes, denorm)
 
     def test_two_cognate_classes(self):
-        # test that CC links for lexemes with two CC are correctly formatted
+        # CC links for lexemes with two CC are correctly formatted
         link_A = self.template % (self.cognate_class_A.id,
                 self.cognate_class_A.alias)
         link_B = self.template % (self.cognate_class_B.id,
