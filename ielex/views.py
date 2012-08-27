@@ -91,7 +91,7 @@ def revert_version(request, version_id):
     messages.add_message(request, messages.INFO, msg)
     return HttpResponseRedirect(referer)
 
-# login?
+# login? # TODO
 def view_object_history(request, version_id):
     version = Version.objects.get(pk=version_id)
     obj = version.content_type.get_object_for_this_type(id=version.object_id)
