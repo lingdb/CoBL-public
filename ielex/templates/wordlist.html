@@ -9,7 +9,7 @@
 <table>
   <tr>
     <th>Meaning</th>
-    <th>Gloss</th>
+    <th>Description</th>
     {% if user.is_authenticated %}
       <th>% coded</th>
     {% endif %}
@@ -22,9 +22,9 @@
           <img src="/media/buttons/edit.png" alt="edit" title="Edit ‘{{ meaning.gloss }}’ metadata" />
         </a>
       {% endif %}
-      {{ meaning.description }}
+      <a href="{% url view-meaning-languages meaning.gloss current_language_list %}">{{ meaning.gloss }}</a>
     </td>
-    <td><a href="{% url view-meaning-languages meaning.gloss current_language_list %}">{{ meaning.gloss }}</a></td>
+    <td>{{ meaning.description|truncatewords:10 }}</td>
     {% if user.is_authenticated %}
     <td>{{ meaning.percent_coded|floatformat:1 }}</td>
     {% endif %}

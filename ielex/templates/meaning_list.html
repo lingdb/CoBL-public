@@ -10,9 +10,9 @@
   <tr>
     <th>ID</th>
     <th>Meaning</th>
-    <th>Gloss</th>
-    <th>% Coded</th>
+    <th>Description</th>
     {# <th>Count</th> #}
+    {# <th>% Coded</th> #}
   </tr>
   {% for meaning in meanings %}
   <tr class="{% cycle 'odd' 'even' %}">
@@ -22,9 +22,9 @@
           <img src="/media/buttons/edit.png" alt="edit" title="Edit ‘{{ meaning.gloss }}’ metadata" />
         </a>
       {% endif %}
-      {{ meaning.description }}
+      <a href="{% url meaning-report meaning.id %}">{{ meaning.gloss }}</a>
     </td>
-    <td><a href="{% url meaning-report meaning.id %}">{{ meaning.gloss }}</a></td>
+    <td>{{ meaning.description|truncatewords:10 }}</td>
     {# <td>{{ meaning.lexeme_count }}</td> #}
     {# <td>{{ meaning.percent_coded }}</td> #}
   </tr>

@@ -3,7 +3,7 @@
 
 {% block title %}{{ meaning.gloss }}{% endblock %}
 
-{% block top %}<h1>{{ meaning.description }}</h1>{% endblock %}
+{% block top %}<h1>{{ meaning.gloss }}</h1>{% endblock %}
 
 {% block content %}
 <table>
@@ -69,6 +69,9 @@
   <li><a href="{% url meaning-add-lexeme meaning.gloss %}">add a new lexeme</a></li>
 </ul>
 <p>Cognate judgements are added on this page, but deleted by the lexeme view (use the <img src="/media/buttons/view.png" alt="" title="View/Edit the lexical entry" /> button)</p>
+
+<h3>Description</h3>
+{{ meaning.description|linebreaksbr }}
 {% endblock %}
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
