@@ -218,6 +218,8 @@ class Lexeme(models.Model):
     denormalized_cognate_classes = models.TextField(editable=False, blank=True)
 
     def set_denormalized_cognate_classes(self):
+        """Create a sequence of 'cc1.id, cc1.alias, cc2.id, cc2.alias'
+        as a string and store"""
         data = []
         for cc in self.cognate_class.all():
             data.append(cc.id)
@@ -585,6 +587,8 @@ def update_denormalized_data(sender, instance, **kwargs):
 
 models.signals.post_save.connect(update_denormalized_data,
         sender=CognateJudgement)
+models.signals.post_delete.connect(update_denormalized_data,
+        sender=CognateJudgement)
 
 @disable_for_loaddata
 def update_denormalized_from_lexeme(sender, instance, **kwargs):
@@ -592,6 +596,8 @@ def update_denormalized_from_lexeme(sender, instance, **kwargs):
     return
 
 models.signals.post_save.connect(update_denormalized_from_lexeme,
+        sender=Lexeme)
+models.signals.post_delete.connect(update_denormalized_from_lexeme,
         sender=Lexeme)
 
 # -- Reversion registration ----------------------------------------
