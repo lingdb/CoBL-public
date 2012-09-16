@@ -204,15 +204,17 @@ class CognateClassCodeDenormalizationTests(TestCase):
                 "1,X")
 
     def test_delete_cognate_judgement(self):
+        "Test that post_delete hook updates denormalized data"
         self.db[CognateJudgement].delete()
         self.assertEqual(self.db[Lexeme].denormalized_cognate_classes,
                 "")
 
     def test_add_cognate_judgement(self):
+        "Test that post_save hook updates denormalized data"
         cogclass = CognateClass.objects.create(alias="Y")
         cogjudge = CognateJudgement.objects.create(lexeme=self.db[Lexeme],
                 cognate_class=cogclass)
-        cogjudgecit = CognateJudgementCitation.objects.create(
+        CognateJudgementCitation.objects.create(
                 cognate_judgement=cogjudge,
                 source=self.db[Source], reliability="A")
         self.assertEqual(self.db[Lexeme].denormalized_cognate_classes,
