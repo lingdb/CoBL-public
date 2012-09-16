@@ -24,7 +24,7 @@
       {% endif %}
       <a href="{% url view-meaning-languages meaning.gloss current_language_list %}">{{ meaning.gloss }}</a>
     </td>
-    {# <td>{{ meaning.description|linebreaksbr|truncatewords:20 }}</td> #}
+    {# <td>{{ meaning.notes|linebreaksbr|truncatewords:20 }}</td> #}
     {% if user.is_authenticated %}
     <td>{{ meaning.percent_coded|floatformat:1 }}</td>
     {% endif %}
