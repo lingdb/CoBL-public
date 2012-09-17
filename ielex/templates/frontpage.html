@@ -43,7 +43,7 @@
 
 {% block controls %}
 {% include "snippets/go_to.html" %}
-{% if user.is_superuser %} {# TODO #}
+{% if user.is_authenticated %} {# TODO #}
 <ul class="navigation">
   <li><a href="/nexus/">Export NEXUS file</a></li>
 </ul>

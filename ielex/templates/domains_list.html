@@ -21,7 +21,7 @@
       <a href="{% url view-semantic-domain domain.name %}">{{ domain.name }}</a>
     </td>
     <td>{{ domain.description|truncatewords_html:10 }}</td>
-    {% if user.is_superuser and domain.name != domain.DEFAULT %}
+    {% if user.is_authenticated and domain.name != domain.DEFAULT %}
     <td>
       <a href="{% url edit-semantic-domain domain.name %}">
         <img src="/media/buttons/edit.png" alt="edit" title="Edit {{ domain.name }} metadata" />

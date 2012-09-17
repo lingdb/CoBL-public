@@ -46,7 +46,7 @@
 {% block controls %}
 {% include "snippets/go_to.html" %}
 {# include "snippets/change_sort_order.html" #}
-{% if user.is_superuser %}
+{% if user.is_authenticated %}
 <ul class="navigation">
 <li><a href="{% url language-add-new current_language_list_name %}">new language</a></li>
 </ul>
