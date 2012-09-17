@@ -96,7 +96,7 @@
 {% endblock %}
 
 {% block controls %}
-{% if action == 'edit-name' and user.is_superuser %}
+{% if action == 'edit-name' and user.is_authenticated %}
   <form action="" method="POST">{% csrf_token %}
     {{ form.name.errors }}
     <strong>Cognate class name:</strong><br />{{ form.name }}
@@ -107,7 +107,7 @@
   {% if cognate_class.name %}
   <p align="right">
     Cognate class name: <strong>{{ cognate_class.name }}</strong>
-    {% if user.is_superuser %}
+    {% if user.is_authenticated %}
       <a href="{% url edit-cognate-name cognate_class.id %}">
         <img src="/media/buttons/edit-pencil.png" />
       </a>
@@ -120,7 +120,7 @@
 {# include "snippets/change_sort_order.html" #}
 <ul class="navigation">
   <li><a href="{% url cognate-class-citation-create cognate_class.id %}">add citation</a></li>
-  {% if not cognate_class.name and user.is_superuser %}
+  {% if not cognate_class.name and user.is_authenticated %}
   <li><a href="{% url edit-cognate-name cognate_class.id %}">name this cognate class</a></li>
   {% endif %}
   {% for meaning in cognate_class.get_meanings %}

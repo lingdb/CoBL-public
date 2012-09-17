@@ -17,7 +17,7 @@
       <a href="{% url view-wordlist wordlist.name %}">{{ wordlist.name }}</a>
     </td>
     <td>{{ wordlist.description|truncatewords_html:10 }}</td>
-    {% if user.is_superuser and wordlist.name != wordlist.DEFAULT %}
+    {% if user.is_authenticated and wordlist.name != wordlist.DEFAULT %}
     <td>
       <a href="{% url edit-wordlist wordlist.name %}">
         <img src="/media/buttons/edit.png" alt="edit" title="Edit {{ wordlist.name }} metadata" />
