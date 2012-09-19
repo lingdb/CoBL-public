@@ -1,0 +1,33 @@
+TO make a local copy of a running, online instance of the database
+
+1. Run ``./manage.py dumpdata --all | bzip2 > data.dump.json.bz2`` in the
+   online instance
+
+2. Make the local instance, create a version of local_settings.py using sqlite3
+
+3. Initialize the local database::
+
+    ./manage.py syncdb
+    ./manage.py migrate``
+
+4. Flush the database (i.e. generate the sql commands to delete all the rows of
+   data in the tables of the database)::
+
+    ./manage.py sqlflush > flush.sql
+    ./manage.py dbshell
+
+   Then from within the database shell::
+
+    .read flush.sql
+    .quit
+
+5. Read in the dump data::
+
+    ./manage.py loaddata data.dump.json.bz2
+
+   and wait a long, long time.
+
+
+
+
+.. vim:ft=rst

@@ -16,7 +16,6 @@ from django.template import RequestContext
 from django.template.loader import get_template
 from reversion.models import Version
 from reversion import revision
-from ielex.backup import backup
 from ielex.forms import *
 from ielex.lexicon.models import *
 # from ielex.citations.models import *
