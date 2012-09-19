@@ -31,15 +31,17 @@
     </td>  
     <td> 
       {{ lexeme.get_cognate_class_links|safe }}
-      <a href="{% url lexeme-add-cognate lexeme.id %}#lexeme_{{ lexeme.id }}">
-        <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
-      </a>
-      {% ifequal add_cognate_judgement lexeme.id %}
-        <a id="lexeme_{{ lexeme.id }}"></a> {# target for #ANCHOR links #}
+      {% if user.is_authenticated %}
+        {% ifnotequal add_cognate_judgement|asint lexeme.id|asint %}
+        <a href="{% url lexeme-add-cognate lexeme.id %}#lexeme_{{ lexeme.id }}">
+          <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
+        </a>
+        {% else %}
         <form action="" method="post">{% csrf_token %}
-          {{ cognate_form.cognate_class }}
+            {{ cognate_form.cognate_class }}
         </form>
-      {% endifequal %}
+        {% endifnotequal %}
+      {% endif %}
     </td>
     <td>
       <a href="{% url view-lexeme lexeme.id %}">

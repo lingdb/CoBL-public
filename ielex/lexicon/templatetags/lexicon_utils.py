@@ -26,3 +26,11 @@ def wikilink(value):
         link = match_obj.groups(1)[0]
         return '<a href="%s">%s</a>' % (escape(link), escape(link))
     return mark_safe(WIKILINK_RE.sub(wikilink_sub_callback, value))
+
+@register.filter
+def asint(value):
+    """Try to convert the value to an iteger"""
+    try:
+        return int(value)
+    except TypeError:
+        return value

@@ -641,7 +641,7 @@ def edit_meaning(request, meaning):
             {"meaning":meaning,
             "form":form})
 
-def view_meaning(request, meaning, language_list):
+def view_meaning(request, meaning, language_list, lexeme_id=None):
     # XXX a refactored version of report_meaning
 
     # Normalize calling parameters
@@ -674,21 +674,21 @@ def view_meaning(request, meaning, language_list):
         cognate_form = ChooseCognateClassForm(request.POST)
         if cognate_form.is_valid():
             cd = cognate_form.cleaned_data
-            if not cogjudge_id: # new cognate judgement
-                lexeme = Lexeme.objects.get(id=lexeme_id)
-                cognate_class = cd["cognate_class"]
-                if cognate_class not in lexeme.cognate_class.all():
-                    cj = CognateJudgement.objects.create(
-                            lexeme=lexeme,
-                            cognate_class=cognate_class)
-                else:
-                    cj = CognateJudgement.objects.get(
-                            lexeme=lexeme,
-                            cognate_class=cognate_class)
+            cognate_class = cd["cognate_class"]
+            #if not cogjudge_id: # new cognate judgement
+            lexeme = Lexeme.objects.get(id=lexeme_id)
+            if cognate_class not in lexeme.cognate_class.all():
+                cj = CognateJudgement.objects.create(
+                        lexeme=lexeme,
+                        cognate_class=cognate_class)
             else:
-                cj = CognateJudgement.objects.get(id=cogjudge_id)
-                cj.cognate_class = cd["cognate_class"]
-                cj.save()
+                cj = CognateJudgement.objects.get(
+                        lexeme=lexeme,
+                        cognate_class=cognate_class)
+                    # else:
+                    #     cj = CognateJudgement.objects.get(id=cogjudge_id)
+                    #     cj.cognate_class = cd["cognate_class"]
+                    #     cj.save()
 
             # change this to a reverse() pattern
             return HttpResponseRedirect(reverse("lexeme-add-cognate-citation",
@@ -701,6 +701,8 @@ def view_meaning(request, meaning, language_list):
     #         language__id__in=current_language_list.language_id_list)
     lexemes = get_ordered_lexemes(meaning, current_language_list,
             "language", "meaning", "cognatejudgement_set")
+    cognate_form.fields["cognate_class"].queryset = CognateClass.objects.filter(
+            lexeme__in=lexemes).distinct()
 
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
     return render_template(request, "view_meaning.html",
@@ -710,6 +712,7 @@ def view_meaning(request, meaning, language_list):
             "lexemes": lexemes,
             "language_form":language_form,
             "cognate_form":cognate_form,
+            "add_cognate_judgement":lexeme_id,
             })
 
 
@@ -848,8 +851,10 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     request.session["previous_cognate_citation_id"] = citation.id
                     return HttpResponseRedirect(get_redirect_url(form))
             elif action == "add-cognate":
-                redirect_url = '%s#lexeme_%s' % (reverse("meaning-report",
-                        args=[lexeme.meaning.gloss]), lexeme.id)
+                languagelist = get_canonical_language_list(get_current_language_list_name(request))
+                redirect_url = '%s#lexeme_%s' % (
+                        reverse("view-meaning-languages-add-cognate",
+                        args=[lexeme.meaning.gloss, languagelist, lexeme.id]), lexeme.id)
                 return HttpResponseRedirect(redirect_url)
             else:
                 assert not action
@@ -904,9 +909,14 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     form = AddCitationForm()
                 # form = AddCitationForm()
             elif action == "add-cognate":
-                redirect_url = '%s#lexeme_%s' % (reverse("meaning-report",
-                        args=[lexeme.meaning.gloss]), lexeme.id)
+                languagelist = get_canonical_language_list(get_current_language_list_name(request))
+                redirect_url = '%s#lexeme_%s' % (
+                        reverse("view-meaning-languages-add-cognate",
+                        args=[lexeme.meaning.gloss, languagelist, lexeme.id]), lexeme.id)
                 return HttpResponseRedirect(redirect_url)
+                # redirect_url = '%s#lexeme_%s' % (reverse("meaning-report",
+                #        args=[lexeme.meaning.gloss]), lexeme.id)
+                # return HttpResponseRedirect(redirect_url)
             elif action == "delink-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
                 citation.delete()
