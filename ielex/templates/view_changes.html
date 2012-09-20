@@ -59,7 +59,7 @@
 <table>
 {% for contributor, count in contributors %}
 <tr class="{% cycle 'odd' 'even' %}">
-  <td>{{ contributor.username }}</td>
+  <td><a href="{% url view-changes-user contributor.username %}">{{ contributor.username }}</a></td>
   <td>{{ count }}</td>
 </tr>
 {% endfor %}

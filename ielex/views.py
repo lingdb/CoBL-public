@@ -40,10 +40,14 @@ def make_backup(request):
     messages.add_message(request, messages.INFO, msg)
     return HttpResponseRedirect(referer)
 
-def view_changes(request):
+def view_changes(request, username=None):
     """Recent changes"""
     # XXX the view fails when an object has been deleted
-    recent_changes = Version.objects.all().order_by("-id")
+    if not username:
+        recent_changes = Version.objects.all().order_by("-id")
+    else:
+        recent_changes = Version.objects.filter(
+                revision__user__username=username).order_by("-id")
     paginator = Paginator(recent_changes, 50) # was 200
 
     try: # Make sure page request is an int. If not, deliver first page.
