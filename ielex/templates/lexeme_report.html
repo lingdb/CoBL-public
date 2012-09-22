@@ -12,7 +12,7 @@
 <h2>Lexeme data</h2>
 
 {% ifequal action "edit" %} 
-<form action="" method="post" id="active-form">{% csrf_token %}
+<form action="" method="post" id="active">{% csrf_token %}
 <fieldset>
 <table>
   {{ form.as_table }}
@@ -66,7 +66,7 @@
 {% for citation in lexeme.lexemecitation_set.all %}
   {% ifequal citation.id active_citation_id %}
     {% ifequal action "edit-citation" %}
-      <form action="" method="post" id="active-form">{% csrf_token %}
+      <form action="" method="post" id="active">{% csrf_token %}
       <fieldset>
       <table>
       {{ citation.source.citation_text }}
@@ -104,7 +104,7 @@
 {% endfor %}
 
 {% ifequal action "add-citation" %}
-  <form action="" method="post" id="active-form">{% csrf_token %}
+  <form action="" method="post" id="active">{% csrf_token %}
   <fieldset>
     <table>
     {{ form.as_table }}
@@ -145,7 +145,7 @@
     {% for citation in cj.cognatejudgementcitation_set.all %}
     {% ifequal action "edit-cognate-citation" %}
       {% ifequal citation.id active_citation_id %}
-        <form action="" method="post" id="active-form">{% csrf_token %}
+        <form action="" method="post" id="active">{% csrf_token %}
         <fieldset>
         <table>
         {{ citation.source.citation_text }}
@@ -190,7 +190,7 @@
     {% endifequal %}
     {% endfor %}
   {% ifequal active_cogjudge_citation_id cj.id %}
-    <form action="" method="post" id="active-form">{% csrf_token %}
+    <form action="" method="post" id="active">{% csrf_token %}
     <fieldset>
       <table>
       {{ form.as_table }}

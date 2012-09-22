@@ -85,6 +85,9 @@ def confirm_required(template_name, context_creator, key='__confirm__'):
         return wraps(func)(inner)
     return decorator
 
+def anchored(url):
+    return "%s#active" % url
+
 class LexDBManagementCommand(NoArgsCommand):
     """Suppress Django default options from Management commands"""
 

@@ -22,7 +22,7 @@ from ielex.lexicon.models import *
 # from ielex.citations.models import *
 from ielex.extensional_semantics.views import *
 from ielex.shortcuts import render_template
-from ielex.utilities import next_alias, confirm_required
+from ielex.utilities import next_alias, confirm_required, anchored
 
 # Refactoring: 
 # - rename the functions which render to response with the format
@@ -1218,8 +1218,6 @@ def source_list(request):
     return render_template(request, "source_list.html",
             {"grouped_sources":grouped_sources})
 
-def anchored(url):
-    return "%s#active-form" % url
 # -- key value pairs ------------------------------------------------------
 
 def set_key_value(request, key, value):
