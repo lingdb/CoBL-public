@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
+# from django.db import transaction
 from django.db.models import Q, Max, Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
@@ -646,7 +647,6 @@ def edit_meaning(request, meaning):
             "form":form})
 
 def view_meaning(request, meaning, language_list, lexeme_id=None):
-    # XXX a refactored version of report_meaning
 
     # Normalize calling parameters
     canonical_gloss = get_canonical_meaning(meaning).gloss
@@ -666,7 +666,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             msg = "Language list selection changed to '%s'" %\
                     current_language_list.name
             messages.add_message(request, messages.INFO, msg)
-            request.session["current_language_list_name"] = current_language_list.name
+            request.session["current_language_list_name"] =\
+                    current_language_list.name
             return HttpResponseRedirect(reverse("view-meaning-languages",
                     args=[canonical_gloss, current_language_list.name]))
     else:
@@ -695,8 +696,9 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                     #     cj.save()
 
             # change this to a reverse() pattern
-            return HttpResponseRedirect(reverse("lexeme-add-cognate-citation",
-                    args=[lexeme_id, cj.id]))
+            return HttpResponseRedirect(anchored(
+                    reverse("lexeme-add-cognate-citation",
+                    args=[lexeme_id, cj.id])))
     else:
         cognate_form = ChooseCognateClassForm()
 
@@ -847,7 +849,15 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "add-cognate-citation": #
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data:
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    if CognateJudgementCitation.objects.filter(
+                            cognate_judgement__lexeme=lexeme).count() == 0:
+                        msg = """Lexeme %s has been left with cognate
+                        judgements lacking citations. Please fix this.
+                        """ % lexeme.get_absolute_url()
+                        messages.add_message(request, messages.WARNING, msg)
+                    # XXX make this a link to the make cognate citation link
+                    return HttpResponseRedirect(reverse("view-lexeme",
+                            args=[lexeme.id]))
                 if form.is_valid():
                     citation = CognateJudgementCitation.objects.create(
                             cognate_judgement=CognateJudgement.objects.get(
@@ -1208,6 +1218,8 @@ def source_list(request):
     return render_template(request, "source_list.html",
             {"grouped_sources":grouped_sources})
 
+def anchored(url):
+    return "%s#active-form" % url
 # -- key value pairs ------------------------------------------------------
 
 def set_key_value(request, key, value):

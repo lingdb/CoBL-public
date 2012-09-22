@@ -7,9 +7,8 @@ from django.core.urlresolvers import reverse
 from django.db import connection, transaction ### testing
 # from django.contrib import admin
 import reversion
-#from reversion.errors import RegistrationError
 from reversion.revisions import RegistrationError
-# from reversion.admin import VersionAdmin
+# from reversion.admin import VersionAdmin # reinstate?
 from south.modelsinspector import add_introspection_rules
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import *
@@ -602,6 +601,7 @@ models.signals.post_delete.connect(update_denormalized_from_lexeme,
 
 # -- Reversion registration ----------------------------------------
 
+# once we're upgraded to 1.5.1 this might not be necessary anymore
 for modelclass in [Source, Language, Meaning, CognateClass, Lexeme,
         CognateJudgement, LanguageList, LanguageListOrder,
         CognateJudgementCitation, CognateClassCitation, LexemeCitation,
