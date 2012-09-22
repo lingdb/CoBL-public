@@ -14,7 +14,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template.loader import get_template
-from reversion.models import Version
+from reversion.models import Revision, Version
 from reversion import revision
 from ielex.forms import *
 from ielex.lexicon.models import *
@@ -42,12 +42,12 @@ def make_backup(request):
 
 def view_changes(request, username=None):
     """Recent changes"""
-    # XXX the view fails when an object has been deleted
     if not username:
-        recent_changes = Version.objects.all().order_by("-id")
+        # recent_changes = Version.objects.all().order_by("-id")
+        recent_changes = Revision.objects.all().order_by("-id")
     else:
-        recent_changes = Version.objects.filter(
-                revision__user__username=username).order_by("-id")
+        recent_changes = Revision.objects.filter(
+                user__username=username).order_by("-id")
     paginator = Paginator(recent_changes, 50) # was 200
 
     try: # Make sure page request is an int. If not, deliver first page.
@@ -70,8 +70,8 @@ def view_changes(request, username=None):
     # changes.object_list = [version for version in changes.object_list if object_exists(version)]
 
     contributors = sorted([(User.objects.get(id=user_id),
-            Version.objects.filter(revision__user=user_id).count())
-            for user_id in Version.objects.values_list("revision__user",
+            Revision.objects.filter(user=user_id).count())
+            for user_id in Revision.objects.values_list("user",
             flat=True).distinct() if user_id is not None],
             lambda x, y: -cmp(x[1], y[1])) # reverse sort by second element in tuple
             # TODO user_id should never be None
