@@ -14,6 +14,7 @@ from django.db.models import Q, Max, Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.template import RequestContext
+from django.template import Template
 from django.template.loader import get_template
 from reversion.models import Version
 from reversion import revision
@@ -22,7 +23,7 @@ from ielex.lexicon.models import *
 # from ielex.citations.models import *
 from ielex.extensional_semantics.views import *
 from ielex.shortcuts import render_template
-from ielex.utilities import next_alias, confirm_required, anchored
+from ielex.utilities import next_alias, confirm_required, anchored, oneline
 
 # Refactoring: 
 # - rename the functions which render to response with the format
@@ -849,13 +850,21 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "add-cognate-citation": #
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data:
-                    if CognateJudgementCitation.objects.filter(
-                            cognate_judgement__lexeme=lexeme).count() == 0:
-                        msg = """Lexeme %s has been left with cognate
-                        judgements lacking citations. Please fix this.
-                        """ % lexeme.get_absolute_url()
-                        messages.add_message(request, messages.WARNING, msg)
-                    # XXX make this a link to the make cognate citation link
+                    for cognate_judgement in CognateJudgement.objects.filter(
+                            lexeme=lexeme):
+                        if CognateJudgementCitation.objects.filter(
+                                cognate_judgement=cognate_judgement).count() == 0:
+                            msg = Template(oneline("""<a 
+                            href="{% url lexeme-add-cognate-citation lexeme_id
+                            cogjudge_id %}#active">Lexeme has been left with
+                            cognate judgements lacking citations for cognate
+                            class {{ alias }}.  Please fix this.</a>"""))
+                            context = RequestContext(request)
+                            context["lexeme_id"] = lexeme.id
+                            context["cogjudge_id"] = cognate_judgement.id
+                            context["alias"] = cognate_judgement.cognate_class.alias
+                            messages.add_message(request, messages.WARNING, 
+                                    msg.render(context))
                     return HttpResponseRedirect(reverse("view-lexeme",
                             args=[lexeme.id]))
                 if form.is_valid():
@@ -948,8 +957,9 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         alias=new_alias)
                 cj = CognateJudgement.objects.create(lexeme=lexeme,
                         cognate_class=cognate_class)
-                return HttpResponseRedirect(reverse('lexeme-add-cognate-citation',
-                        args=[lexeme_id, cj.id]))
+                return HttpResponseRedirect(anchored(
+                        reverse('lexeme-add-cognate-citation',
+                        args=[lexeme_id, cj.id])))
             elif action == "delete":
                 redirect_url = reverse("meaning-report",
                         args=[lexeme.meaning.gloss])
@@ -1114,9 +1124,9 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
             assert len(cognate_classes) == 1
             cognate_class = cognate_classes[0]
         except AssertionError:
-            msg = """error: meaning='%s', cognate code='%s' identifies %s cognate
-            sets""" % (meaning, code, len(cognate_classes))
-            msg = textwrap.fill(msg, 9999)
+            msg = """error: meaning='%s', cognate code='%s' identifies %s
+            cognate sets""" % (meaning, code, len(cognate_classes))
+            msg = oneline(msg)
             messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(reverse('meaning-report',
                 args=[meaning]))

@@ -21,6 +21,9 @@ def alpha2int(a):
     """Indexes start at 1!"""
     return codes.index(a)+1
 
+def oneline(s):
+    return " ".join(s.split()).strip()
+
 def next_alias(l, ignore=[]):
     """Find the next unused alias from a list of aliases"""
     for alias in l:

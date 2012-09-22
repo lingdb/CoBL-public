@@ -58,7 +58,11 @@
   <div id="message">
     <ul>
     {% for message in messages %}
+    {% if message.tags == "info" %}{# clicking on info level messages dismisses them #}
     <li><a href="{{ current_url }}">{{ message }}</a></li>
+    {% else %}{# otherwise include the link as part of the message text #}
+    <li>{{ message|safe }}</li>
+    {% endif %}
     {% endfor %}
     </ul>
   </div>
