@@ -81,20 +81,19 @@ def view_changes(request, username=None):
             "contributors":contributors})
 
 @login_required
-def revert_version(request, version_id):
+def revert_version(request, revision_id):
     """Roll back the object saved in a Version to the previous Version"""
+    # TODO
+    # - redirect this to somewhere more useful
+    # - get the rollback revision and add a useful comment
     referer = request.META.get("HTTP_REFERER", "/")
-    latest = Version.objects.get(pk=version_id)
-    versions = Version.objects.get_for_object(
-            latest.content_type.get_object_for_this_type(
-            id=latest.object_id)).filter(id__lt=version_id).reverse()
-    previous = versions[0]
-    previous.revision.revert() # revert all associated objects too
-    msg = "Rolled back version %s to version %s" % (latest.id, previous.id)
+    revision_obj = Revision.objects.get(pk=revision_id)
+    revision_obj.revert() # revert all associated objects too
+    msg = "Rolled back revision %s" % (revision_obj.id)
     messages.add_message(request, messages.INFO, msg)
     return HttpResponseRedirect(referer)
 
-# login? # TODO
+# TODO
 def view_object_history(request, version_id):
     version = Version.objects.get(pk=version_id)
     obj = version.content_type.get_object_for_this_type(id=version.object_id)

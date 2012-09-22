@@ -219,7 +219,7 @@ urlpatterns = patterns('',
     url(r'^set/(?P<key>%(identifier)s)/(?P<value>%(identifier)s)/$' % R,
             set_key_value),
 
-    url(r'^revert/(?P<version_id>\d+)/$', revert_version, name="revert-item"),
+    url(r'^revert/(?P<revision_id>\d+)/$', revert_version, name="revert-item"),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
