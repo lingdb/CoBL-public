@@ -148,7 +148,7 @@ def get_current_language_list_name(request):
 
 def get_prev_and_next_languages(request, current_language, language_list=None):
     # XXX language_list argument is not currently dispatched to this function
-    # TODO this needs to be fixed
+    # TODO this needs to be fixed (solution: get it from session variable)
     if language_list:
         language_list = LanguageList.objects.get(name=language_list)
     else:
