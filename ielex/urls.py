@@ -35,7 +35,6 @@ R = {
 urlpatterns = patterns('',
     # Front Page
     url(r'^$', FrontpageView.as_view(), name="view-frontpage"),
-    # url(r'^backup/$', make_backup), # XXX only in dev mode?
     url(r'^changes/$', view_changes, name="view-changes"),
     url(r'^changes/(?P<username>[a-zA-Z]+)/$', view_changes,
             name="view-changes-user"),

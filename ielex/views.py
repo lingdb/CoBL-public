@@ -32,16 +32,6 @@ from ielex.utilities import next_alias, confirm_required, anchored, oneline
 
 # -- Database input, output and maintenance functions ------------------------
 
-@login_required
-def make_backup(request):
-    try:
-        referer = request.META["HTTP_REFERER"]
-    except KeyError:
-        referer = "/"
-    msg=backup()
-    messages.add_message(request, messages.INFO, msg)
-    return HttpResponseRedirect(referer)
-
 def view_changes(request, username=None):
     """Recent changes"""
     # XXX the view fails when an object has been deleted
