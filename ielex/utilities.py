@@ -21,6 +21,9 @@ def alpha2int(a):
     """Indexes start at 1!"""
     return codes.index(a)+1
 
+def oneline(s):
+    return " ".join(s.split()).strip()
+
 def next_alias(l, ignore=[]):
     """Find the next unused alias from a list of aliases"""
     for alias in l:
@@ -84,6 +87,9 @@ def confirm_required(template_name, context_creator, key='__confirm__'):
                 return render_to_response(template_name, context)
         return wraps(func)(inner)
     return decorator
+
+def anchored(url):
+    return "%s#active" % url
 
 class LexDBManagementCommand(NoArgsCommand):
     """Suppress Django default options from Management commands"""

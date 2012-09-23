@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
+from django.db import transaction
+from django.db import IntegrityError
 import logging
 import lxml.html
 from lexicon.models import *
@@ -235,3 +237,37 @@ class LoginTests(TestCase):
         self.assertTrue("username" in names)
         self.assertTrue("password" in names)
 
+class ObligatoryCogJudgeCitationTests(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.db = make_basic_objects()
+        self.new_cogclass = CognateClass.objects.create(alias="Y")
+        self.new_source = Source.objects.create(citation_text="NEW SOURCE")
+
+    @transaction.commit_manually
+    def test_cogjudge_with_citation_succeeds(self):
+        def make_new_cognate_judgement(lexeme):
+            cogjudge = CognateJudgement.objects.create(
+                    lexeme=lexeme,
+                    cognate_class=self.new_cogclass)
+            CognateJudgementCitation.objects.create(
+                    cognate_judgement=cogjudge,
+                    source=self.new_source,
+                    reliability="A")
+            transaction.commit()
+            return True
+        self.assertTrue(make_new_cognate_judgement(self.db[Lexeme]))
+        
+    def test_cogjudge_without_citation_fails(self):
+        def make_uncited_cognate_judgement(lexeme):
+            cogjudge = CognateJudgement.objects.create(
+                    lexeme=lexeme,
+                    cognate_class=self.new_cogclass)
+            return 
+        self.assertRaises(IntegrityError, 
+                make_uncited_cognate_judgement,
+                self.db[Lexeme])
+
+
+    
