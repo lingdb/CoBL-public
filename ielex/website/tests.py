@@ -5,13 +5,13 @@ from django.db import transaction
 from django.db import IntegrityError
 import logging
 import lxml.html
-from lexicon.models import *
+from ielex.lexicon.models import *
 
 # TODO make sure settings has DEBUG set to False
 
 logger = logging.getLogger("unittest")
 logger.setLevel(logging.INFO)
-fh = logging.FileHandler("website/unittest.log", mode="w")
+fh = logging.FileHandler("ielex/website/unittest.log", mode="w")
 formatter = logging.Formatter('%(message)s')
 fh.setFormatter(formatter)
 logger.addHandler(fh)

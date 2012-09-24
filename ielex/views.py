@@ -16,7 +16,7 @@ from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template import Template
 from django.template.loader import get_template
-from reversion.models import Version
+from reversion.models import Revision, Version
 from reversion import revision
 from ielex.forms import *
 from ielex.lexicon.models import *
@@ -34,12 +34,12 @@ from ielex.utilities import next_alias, confirm_required, anchored, oneline
 
 def view_changes(request, username=None):
     """Recent changes"""
-    # XXX the view fails when an object has been deleted
     if not username:
-        recent_changes = Version.objects.all().order_by("-id")
+        # recent_changes = Version.objects.all().order_by("-id")
+        recent_changes = Revision.objects.all().order_by("-id")
     else:
-        recent_changes = Version.objects.filter(
-                revision__user__username=username).order_by("-id")
+        recent_changes = Revision.objects.filter(
+                user__username=username).order_by("-id")
     paginator = Paginator(recent_changes, 50) # was 200
 
     try: # Make sure page request is an int. If not, deliver first page.
@@ -62,8 +62,8 @@ def view_changes(request, username=None):
     # changes.object_list = [version for version in changes.object_list if object_exists(version)]
 
     contributors = sorted([(User.objects.get(id=user_id),
-            Version.objects.filter(revision__user=user_id).count())
-            for user_id in Version.objects.values_list("revision__user",
+            Revision.objects.filter(user=user_id).count())
+            for user_id in Revision.objects.values_list("user",
             flat=True).distinct() if user_id is not None],
             lambda x, y: -cmp(x[1], y[1])) # reverse sort by second element in tuple
             # TODO user_id should never be None
@@ -73,20 +73,19 @@ def view_changes(request, username=None):
             "contributors":contributors})
 
 @login_required
-def revert_version(request, version_id):
+def revert_version(request, revision_id):
     """Roll back the object saved in a Version to the previous Version"""
+    # TODO
+    # - redirect this to somewhere more useful
+    # - get the rollback revision and add a useful comment
     referer = request.META.get("HTTP_REFERER", "/")
-    latest = Version.objects.get(pk=version_id)
-    versions = Version.objects.get_for_object(
-            latest.content_type.get_object_for_this_type(
-            id=latest.object_id)).filter(id__lt=version_id).reverse()
-    previous = versions[0]
-    previous.revision.revert() # revert all associated objects too
-    msg = "Rolled back version %s to version %s" % (latest.id, previous.id)
+    revision_obj = Revision.objects.get(pk=revision_id)
+    revision_obj.revert() # revert all associated objects too
+    msg = "Rolled back revision %s" % (revision_obj.id)
     messages.add_message(request, messages.INFO, msg)
     return HttpResponseRedirect(referer)
 
-# login? # TODO
+# TODO
 def view_object_history(request, version_id):
     version = Version.objects.get(pk=version_id)
     obj = version.content_type.get_object_for_this_type(id=version.object_id)
@@ -141,7 +140,7 @@ def get_current_language_list_name(request):
 
 def get_prev_and_next_languages(request, current_language, language_list=None):
     # XXX language_list argument is not currently dispatched to this function
-    # TODO this needs to be fixed
+    # TODO this needs to be fixed (solution: get it from session variable)
     if language_list:
         language_list = LanguageList.objects.get(name=language_list)
     else:
@@ -756,6 +755,23 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     lexeme = Lexeme.objects.get(id=lexeme_id)
     form = None
 
+    def warn_if_lacking_cognate_judgement_citation():
+        for cognate_judgement in CognateJudgement.objects.filter(
+                lexeme=lexeme):
+            if CognateJudgementCitation.objects.filter(
+                    cognate_judgement=cognate_judgement).count() == 0:
+                msg = Template(oneline("""<a 
+                href="{% url lexeme-add-cognate-citation lexeme_id
+                cogjudge_id %}#active">Lexeme has been left with
+                cognate judgements lacking citations for cognate
+                class {{ alias }}.  Please fix this.</a>"""))
+                context = RequestContext(request)
+                context["lexeme_id"] = lexeme.id
+                context["cogjudge_id"] = cognate_judgement.id
+                context["alias"] = cognate_judgement.cognate_class.alias
+                messages.add_message(request, messages.WARNING, 
+                        msg.render(context))
+
     if action: # actions are: edit, edit-citation, add-citation
         def get_redirect_url(form):
             form_data = form.data["submit"].lower()
@@ -777,14 +793,14 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             if action == "edit":
                 form = EditLexemeForm(request.POST, instance=lexeme) ### 
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    return HttpResponseRedirect(lexeme.get_absolute_url())
                 if form.is_valid():
                     form.save()
                     return HttpResponseRedirect(get_redirect_url(form))
             elif action == "edit-citation":
                 form = EditCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    return HttpResponseRedirect(lexeme.get_absolute_url())
                 if form.is_valid():
                     citation = LexemeCitation.objects.get(id=citation_id)
                     update_object_from_form(citation, form)
@@ -793,7 +809,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "add-citation":
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    return HttpResponseRedirect(lexeme.get_absolute_url())
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = LexemeCitation(
@@ -808,7 +824,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "add-new-citation": # TODO
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    return HttpResponseRedirect(lexeme.get_absolute_url())
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = LexemeCitation(
@@ -827,11 +843,12 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "delink-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 citation.delete()
+                warn_if_lacking_cognate_judgement_citation()
                 return HttpResponseRedirect(get_redirect_url(form))
             elif action == "edit-cognate-citation":
                 form = EditCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    return HttpResponseRedirect(lexeme.get_absolute_url())
                 if form.is_valid():
                     citation = CognateJudgementCitation.objects.get(id=citation_id)
                     update_object_from_form(citation, form)
@@ -840,23 +857,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "add-cognate-citation": #
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data:
-                    for cognate_judgement in CognateJudgement.objects.filter(
-                            lexeme=lexeme):
-                        if CognateJudgementCitation.objects.filter(
-                                cognate_judgement=cognate_judgement).count() == 0:
-                            msg = Template(oneline("""<a 
-                            href="{% url lexeme-add-cognate-citation lexeme_id
-                            cogjudge_id %}#active">Lexeme has been left with
-                            cognate judgements lacking citations for cognate
-                            class {{ alias }}.  Please fix this.</a>"""))
-                            context = RequestContext(request)
-                            context["lexeme_id"] = lexeme.id
-                            context["cogjudge_id"] = cognate_judgement.id
-                            context["alias"] = cognate_judgement.cognate_class.alias
-                            messages.add_message(request, messages.WARNING, 
-                                    msg.render(context))
-                    return HttpResponseRedirect(reverse("view-lexeme",
-                            args=[lexeme.id]))
+                    warn_if_lacking_cognate_judgement_citation()
+                    return HttpResponseRedirect(lexeme.get_absolute_url())
                 if form.is_valid():
                     citation = CognateJudgementCitation.objects.create(
                             cognate_judgement=CognateJudgement.objects.get(
@@ -937,6 +939,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "delink-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 citation.delete()
+                warn_if_lacking_cognate_judgement_citation()
                 return HttpResponseRedirect(redirect_url)
             elif action == "add-new-cognate":
                 current_aliases = CognateClass.objects.filter(

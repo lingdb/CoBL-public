@@ -10,30 +10,36 @@
 {% block content %}
 
 <table>
-{% for version in changes.object_list %}
-  <tr class="{% cycle 'odd' 'even' %}">
-    <td>{{ version.revision.date_created|date:"d-M-Y G:i"  }}</td>
-    <td>{{ version.content_type.name }}</td>
-    <td>
-      {% if version.get_type_display != "Deletion" %}                        
-      {% with version.get_object_version.object.get_absolute_url as obj_url %}
-      {% if obj_url %}
-      <a href="{{ obj_url }}">
-         {{ version.get_object_version.object }}
-      </a>                                                                   
-      {% else %} 
-      &lt;{{ version.get_object_version.object }}&gt;
-      {% endif %}
-      {% endwith %}
-      {% endif %}                                                            
-    </td>                                                                    
-    <td><b>{{ version.get_type_display }}</b></td>
-    <td>{{ version.revision.user.username }}</td>
-    <td>{{ version.revision.comment|wikilink|truncatewords_html:1 }}</td>
-    {% if user.is_authenticated %}
-    <td><small><a href="/revert/{{ version.id }}">undo</a></small></td>
-    {% endif %}
-  </tr>
+{% for revision in changes.object_list %}
+<tr>
+  <td><b>{{ revision.date_created|date:"d-M-Y G:i"  }}</b></td>
+  <td><b>{{ revision.user.username }}</b></td>
+  {% if user.is_authenticated %}
+  <td><small><a href="/revert/{{ revision.id }}">revert</a></small></td>
+  {% else %}
+  <td>&nbsp;</td>
+  {% endif %}
+  <td>{{ version.revision.comment|wikilink|truncatewords_html:1 }}</td>
+</tr>
+  {% for version in revision.version_set.all %}
+    <tr class="{% cycle 'odd' 'even' %}">
+      <td>{{ version.content_type.name }}</td>
+      <td>
+        {% if version.get_type_display != "Deletion" %}                        
+        {% with version.object.get_absolute_url as obj_url %}
+        {% if obj_url %}
+        <a href="{{ obj_url }}">
+           {{ version.object }}
+        </a>                                                                   
+        {% else %} 
+        &lt;{{ version.object }}&gt;
+        {% endif %}
+        {% endwith %}
+        {% endif %}                                                            
+      </td>                                                                    
+      <td><i>{{ version.get_type_display }}</i></td>
+    </tr>
+  {% endfor %}
 {% endfor %}
 </table>
 {% endblock %}
