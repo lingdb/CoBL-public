@@ -765,6 +765,23 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     lexeme = Lexeme.objects.get(id=lexeme_id)
     form = None
 
+    def warn_if_lacking_cognate_judgement_citation():
+        for cognate_judgement in CognateJudgement.objects.filter(
+                lexeme=lexeme):
+            if CognateJudgementCitation.objects.filter(
+                    cognate_judgement=cognate_judgement).count() == 0:
+                msg = Template(oneline("""<a 
+                href="{% url lexeme-add-cognate-citation lexeme_id
+                cogjudge_id %}#active">Lexeme has been left with
+                cognate judgements lacking citations for cognate
+                class {{ alias }}.  Please fix this.</a>"""))
+                context = RequestContext(request)
+                context["lexeme_id"] = lexeme.id
+                context["cogjudge_id"] = cognate_judgement.id
+                context["alias"] = cognate_judgement.cognate_class.alias
+                messages.add_message(request, messages.WARNING, 
+                        msg.render(context))
+
     if action: # actions are: edit, edit-citation, add-citation
         def get_redirect_url(form):
             form_data = form.data["submit"].lower()
@@ -836,6 +853,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "delink-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 citation.delete()
+                warn_if_lacking_cognate_judgement_citation()
                 return HttpResponseRedirect(get_redirect_url(form))
             elif action == "edit-cognate-citation":
                 form = EditCitationForm(request.POST)
@@ -849,21 +867,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "add-cognate-citation": #
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data:
-                    for cognate_judgement in CognateJudgement.objects.filter(
-                            lexeme=lexeme):
-                        if CognateJudgementCitation.objects.filter(
-                                cognate_judgement=cognate_judgement).count() == 0:
-                            msg = Template(oneline("""<a 
-                            href="{% url lexeme-add-cognate-citation lexeme_id
-                            cogjudge_id %}#active">Lexeme has been left with
-                            cognate judgements lacking citations for cognate
-                            class {{ alias }}.  Please fix this.</a>"""))
-                            context = RequestContext(request)
-                            context["lexeme_id"] = lexeme.id
-                            context["cogjudge_id"] = cognate_judgement.id
-                            context["alias"] = cognate_judgement.cognate_class.alias
-                            messages.add_message(request, messages.WARNING, 
-                                    msg.render(context))
+                    warn_if_lacking_cognate_judgement_citation()
                     return HttpResponseRedirect(lexeme.get_absolute_url())
                 if form.is_valid():
                     citation = CognateJudgementCitation.objects.create(
@@ -945,6 +949,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "delink-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 citation.delete()
+                warn_if_lacking_cognate_judgement_citation()
                 return HttpResponseRedirect(redirect_url)
             elif action == "add-new-cognate":
                 current_aliases = CognateClass.objects.filter(
