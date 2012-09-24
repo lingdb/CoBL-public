@@ -1,6 +1,6 @@
 # tests specific to lexicon module
 from django.test import TestCase
-from lexicon.models import *
+from ielex.lexicon.models import *
 
 class LexemeGetCognateClassLinksTest(TestCase):
     """Functions to test the string formatting of denormalized cognate
