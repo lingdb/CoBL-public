@@ -786,14 +786,14 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             if action == "edit":
                 form = EditLexemeForm(request.POST, instance=lexeme) ### 
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    return HttpResponseRedirect(lexeme.get_absolute_url())
                 if form.is_valid():
                     form.save()
                     return HttpResponseRedirect(get_redirect_url(form))
             elif action == "edit-citation":
                 form = EditCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    return HttpResponseRedirect(lexeme.get_absolute_url())
                 if form.is_valid():
                     citation = LexemeCitation.objects.get(id=citation_id)
                     update_object_from_form(citation, form)
@@ -802,7 +802,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "add-citation":
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    return HttpResponseRedirect(lexeme.get_absolute_url())
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = LexemeCitation(
@@ -817,7 +817,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "add-new-citation": # TODO
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    return HttpResponseRedirect(lexeme.get_absolute_url())
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = LexemeCitation(
@@ -840,7 +840,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "edit-cognate-citation":
                 form = EditCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    return HttpResponseRedirect(lexeme.get_absolute_url())
                 if form.is_valid():
                     citation = CognateJudgementCitation.objects.get(id=citation_id)
                     update_object_from_form(citation, form)
@@ -864,8 +864,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                             context["alias"] = cognate_judgement.cognate_class.alias
                             messages.add_message(request, messages.WARNING, 
                                     msg.render(context))
-                    return HttpResponseRedirect(reverse("view-lexeme",
-                            args=[lexeme.id]))
+                    return HttpResponseRedirect(lexeme.get_absolute_url())
                 if form.is_valid():
                     citation = CognateJudgementCitation.objects.create(
                             cognate_judgement=CognateJudgement.objects.get(
