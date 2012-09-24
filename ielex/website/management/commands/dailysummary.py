@@ -64,13 +64,15 @@ class Command(LexDBManagementCommand):
             user = revision.user
             print_report(timestamp, user)
             for version in revision.version_set.all():
-                if version.content_type.model_class() not in boring_models:
+                model = version.content_type.model_class() 
+                if model not in boring_models:
                     try:
-                        print_report(" ", version.get_type_display(),
-                                repr(version.get_object_version().object))
+                        print_report(" %s %s#%s <%s>" % (version.get_type_display(),
+                                model.__name__, version.object_id,
+                                version.object_repr))
                     except:
-                        print_report(" ", version.get_type_display(),
-                                "OBJECT UNAVAILABLE")
+                        print_report(" %s OBJECT UNAVAILABLE",
+                                version.get_type_display())
                     activity_flag = True
 
         # Send email
