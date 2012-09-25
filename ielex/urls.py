@@ -216,8 +216,8 @@ urlpatterns = patterns('',
                     context_object_name="citation"),
             name="cognate-judgement-citation-detail"),
 
-    url(r'^set/(?P<key>%(identifier)s)/(?P<value>%(identifier)s)/$' % R,
-            set_key_value),
+    # url(r'^set/(?P<key>%(identifier)s)/(?P<value>%(identifier)s)/$' % R,
+    #         set_key_value),
 
     url(r'^revert/(?P<revision_id>\d+)/$', revert_version, name="revert-item"),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
