@@ -344,8 +344,10 @@ def view_language_wordlist(request, language, wordlist):
         except Language.DoesNotExist:
             msg = u"The language ‘%s’ does not exist" % language
             messages.add_message(request, messages.INFO, msg)
+            language_list = request.session.get("current_language_list_name",
+                    LanguageList.DEFAULT)
             return HttpResponseRedirect(reverse('view-language-list',
-                args=[language_list.name]))
+                args=[language_list]))
         return HttpResponseRedirect(reverse("view-language-wordlist",
             args=[language.ascii_name, wordlist.name]))
 
