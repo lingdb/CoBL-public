@@ -259,7 +259,7 @@ def view_language_list(request, language_list=None):
         if form.is_valid():
             current_list = form.cleaned_data["language_list"]
             request.session["current_language_list_name"] = current_list.name
-            msg = "Language list selection changed to '%s'" %\
+            msg = u"Language list selection changed to ‘%s’" %\
                     current_list.name
             messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(reverse("view-language-list",
@@ -328,8 +328,16 @@ def view_language_wordlist(request, language, wordlist):
     # clean language name
     try:
         language = Language.objects.get(ascii_name=language)
-    except(Language.DoesNotExist):
-        language = get_canonical_language(language)
+    except Language.DoesNotExist:
+        try:
+            language = get_canonical_language(language)
+        except Language.DoesNotExist:
+            msg = u"The language ‘%s’ does not exist" % language
+            messages.add_message(request, messages.INFO, msg)
+            language_list = request.session.get("current_language_list_name",
+                    LanguageList.DEFAULT)
+            return HttpResponseRedirect(reverse('view-language-list',
+                args=[language_list]))
         return HttpResponseRedirect(reverse("view-language-wordlist",
             args=[language.ascii_name, wordlist.name]))
 
@@ -339,7 +347,7 @@ def view_language_wordlist(request, language, wordlist):
         if form.is_valid():
             wordlist = form.cleaned_data["meaning_list"]
             request.session["current_wordlist_name"] = wordlist.name
-            msg = u"Wordlist selection changed to '%s'" % wordlist.name
+            msg = u"Wordlist selection changed to ‘%s’" % wordlist.name
             messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(reverse("view-language-wordlist",
                     args=[language.ascii_name, wordlist.name]))
@@ -513,7 +521,7 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
         if form.is_valid():
             wordlist = form.cleaned_data["meaning_list"]
             request.session["current_wordlist_name"] = wordlist.name
-            msg = "Wordlist selection changed to '%s'" %\
+            msg = u"Wordlist selection changed to ‘%s’" %\
                     wordlist.name
             messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(reverse("view-wordlist",
@@ -653,7 +661,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         language_form = ChooseLanguageListForm(request.POST)
         if language_form.is_valid():
             current_language_list = language_form.cleaned_data["language_list"]
-            msg = "Language list selection changed to '%s'" %\
+            msg = u"Language list selection changed to ‘%s’" %\
                     current_language_list.name
             messages.add_message(request, messages.INFO, msg)
             request.session["current_language_list_name"] =\
@@ -1117,7 +1125,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
             assert len(cognate_classes) == 1
             cognate_class = cognate_classes[0]
         except AssertionError:
-            msg = """error: meaning='%s', cognate code='%s' identifies %s
+            msg = u"""error: meaning=‘%s’, cognate code=‘%s’ identifies %s
             cognate sets""" % (meaning, code, len(cognate_classes))
             msg = oneline(msg)
             messages.add_message(request, messages.INFO, msg)
@@ -1223,10 +1231,10 @@ def source_list(request):
 
 # -- key value pairs ------------------------------------------------------
 
-def set_key_value(request, key, value):
-    msg = "set key '%s' to '%s'" % (key, value)
-    messages.add_message(request, messages.INFO, msg)
-    return HttpResponseRedirect(reverse("view-frontpage"))
+# def set_key_value(request, key, value):
+#     msg = "set key '%s' to '%s'" % (key, value)
+#     messages.add_message(request, messages.INFO, msg)
+#     return HttpResponseRedirect(reverse("view-frontpage"))
 
 # -- search ---------------------------------------------------------------
 
