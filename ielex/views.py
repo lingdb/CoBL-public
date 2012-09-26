@@ -914,8 +914,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     form = AddCitationForm(
                                 initial={"source":citation.source.id,
                                 "pages":citation.pages,
-                                "reliability":citation.reliability,
-                                "comment":citation.comment})
+                                "reliability":citation.reliability})
+                                # "comment":citation.comment})
                 except LexemeCitation.DoesNotExist:
                     form = AddCitationForm()
             # elif action == "add-new-citation":# XXX
@@ -936,8 +936,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     form = AddCitationForm(
                                 initial={"source":citation.source.id,
                                 "pages":citation.pages,
-                                "reliability":citation.reliability,
-                                "comment":citation.comment})
+                                "reliability":citation.reliability})
+                                # "comment":citation.comment})
                 except CognateJudgementCitation.DoesNotExist:
                     form = AddCitationForm()
                 # form = AddCitationForm()
