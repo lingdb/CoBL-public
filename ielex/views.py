@@ -772,7 +772,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 href="{% url lexeme-add-cognate-citation lexeme_id
                 cogjudge_id %}#active">Lexeme has been left with
                 cognate judgements lacking citations for cognate
-                class {{ alias }}.  Please fix this.</a>"""))
+                class {{ alias }}.  Please fix this [click this message].</a>"""))
                 context = RequestContext(request)
                 context["lexeme_id"] = lexeme.id
                 context["cogjudge_id"] = cognate_judgement.id

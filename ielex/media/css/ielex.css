@@ -189,7 +189,7 @@ a.button:hover { text-decoration: none }
 
 #message li {
   color: #333;
-  background-color: #c00; /* # fc6 */
+  background-color: #fc6;
   font-weight: bold;
   padding: 3pt;
   border: 1px solid #f60;
@@ -199,6 +199,6 @@ a.button:hover { text-decoration: none }
   color: #333;
   background-color: #c00;
   font-weight: bold;
-  padding: 13pt;
+  padding: 10pt;
   border: 1px solid #f60;
   }
