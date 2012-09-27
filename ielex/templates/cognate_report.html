@@ -81,7 +81,7 @@
       <td><a href="{% url meaning-report cj.lexeme.meaning.gloss %}">{{ cj.lexeme.meaning.gloss }}</a></td>
       <td>{{ cj.lexeme.notes|wikilink }}</td>
       <td>{% for rating, description in cj.long_reliability_ratings %}
-        <span title="{{ rating }}: {{ description }}">{{ rating }}</span>
+        <span title="{{ description }}">{{ rating|starrating }}</span>
           {% endfor %}
       </td>
       <td>

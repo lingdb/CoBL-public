@@ -1,3 +1,4 @@
+# encoding: utf-8
 from django import template
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
@@ -34,3 +35,13 @@ def asint(value):
         return int(value)
     except TypeError:
         return value
+
+@register.filter
+def starrating(key):
+    """Convert the A|B|C|X|L reliability rating to an image"""
+    ratings = {"A":u"★★★",
+            "B":u"★★",
+            "C":u"★",
+            "X":"X",
+            "L":"L"}
+    return ratings[key]
