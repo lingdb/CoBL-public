@@ -245,8 +245,18 @@ class Lexeme(models.Model):
         return ", ".join(format_link(cc_id, alias) for cc_id, alias in
                 two_by_two(self.denormalized_cognate_classes.split(",")))
 
-    def get_absolute_url(self):
-        return "/lexeme/%s/" % self.id
+    def get_absolute_url(self, anchor=None):
+        """The absolute urls of LexemeCitation, CognateJudgement and
+        CognateJudgementCitation are also on the Lexeme page, but with
+        anchors of the format:
+            #lexemecitation_ID
+            #cognatejudgement_ID
+            #cognatejudgementcitation_ID
+        """
+        if anchor:
+            return "/lexeme/%s/#%s" % (self.id, anchor.strip("#"))
+        else:
+            return "/lexeme/%s/" % self.id
 
     def __unicode__(self):
         return self.phon_form or self.source_form or ("Lexeme %s" % self.id)
@@ -261,9 +271,13 @@ class CognateJudgement(models.Model):
     source = models.ManyToManyField(Source, through="CognateJudgementCitation")
     modified = models.DateTimeField(auto_now=True)
 
+    # def get_absolute_url(self):
+    #     return "/meaning/%s/%s/%s/" % (self.lexeme.meaning.gloss,
+    #             self.lexeme.id, self.id)
+
     def get_absolute_url(self):
-        return "/meaning/%s/%s/%s/" % (self.lexeme.meaning.gloss,
-                self.lexeme.id, self.id)
+        anchor = "cognatejudgement_%s" % self.id
+        return self.lexeme.get_absolute_url(anchor)
 
     @property
     def reliability_ratings(self):
@@ -490,9 +504,13 @@ class CognateJudgementCitation(AbstractBaseCitation):
     cognate_judgement = models.ForeignKey(CognateJudgement)
     source = models.ForeignKey(Source)
 
+    # def get_absolute_url(self):
+    #     return reverse("cognate-judgement-citation-detail",
+    #             kwargs={"pk":self.id})
+
     def get_absolute_url(self):
-        return reverse("cognate-judgement-citation-detail",
-                kwargs={"pk":self.id})
+        anchor = "cognatejudgementcitation_%s" % self.id
+        return self.cognate_judgement.lexeme.get_absolute_url(anchor)
 
     def __unicode__(self):
         return u"CJC src=%s cit=%s" % (self.source.id, self.id)
@@ -506,8 +524,12 @@ class LexemeCitation(AbstractBaseCitation):
     lexeme = models.ForeignKey(Lexeme)
     source = models.ForeignKey(Source)
 
+    # def get_absolute_url(self):
+    #     return "/lexeme/citation/%s/" % self.id
+
     def get_absolute_url(self):
-        return "/lexeme/citation/%s/" % self.id
+        anchor = "lexemecitation_%s" % self.id
+        return self.lexeme.get_absolute_url(anchor)
 
     def __unicode__(self):
         return u"%s %s src:%s" % (self.id, self.lexeme.source_form, self.source.id)

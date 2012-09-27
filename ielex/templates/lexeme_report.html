@@ -76,7 +76,7 @@
       </fieldset>
     </form>
     {% else %}
-      <fieldset>
+    <fieldset>
         <legend>
           <a href="{% url lexeme-edit-citation lexeme.id citation.id %}">
             <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit citation details" /></a>
@@ -87,7 +87,7 @@
       </fieldset>
     {% endifequal %}
   {% else %}
-  <fieldset>
+  <fieldset id="lexemecitation_{{ citation.id}}">
     <legend>
         {% if user.is_authenticated %}
         <a href="{% url lexeme-edit-citation lexeme.id citation.id %}">
@@ -133,7 +133,7 @@
 <h2>Cognate coding</h2>
 {% if lexeme.cognatejudgement_set.count %}
 {% for cj in lexeme.cognatejudgement_set.all %}
-<fieldset>
+<fieldset id="cognatejudgement_{{ cj.id }}">
     <legend>
       <strong>Cognate Class {{ cj.cognate_class.alias }}</strong>
       {% if user.is_authenticated %}
@@ -172,7 +172,7 @@
         </fieldset>
       {% endifequal %}
     {% else %}
-      <fieldset>
+      <fieldset id="cognatejudgementcitation_{{ citation.id }}">
         <legend>
           {% if user.is_authenticated %}
           <a href="{% url lexeme-edit-cognate-citation lexeme.id citation.id %}">

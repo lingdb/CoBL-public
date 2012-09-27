@@ -781,7 +781,9 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         msg.render(context))
 
     if action: # actions are: edit, edit-citation, add-citation
-        def get_redirect_url(form):
+        def get_redirect_url(form, anchor=None):
+            """Pass citation objects to anchor the view in the lexeme
+            page"""
             form_data = form.data["submit"].lower()
             if "new lexeme" in form_data:
                 redirect_url = reverse("language-add-lexeme",
@@ -792,8 +794,10 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif "back to meaning" in form_data:
                 redirect_url = '%s#lexeme_%s' % (reverse("meaning-report",
                     args=[lexeme.meaning.gloss]), lexeme.id)
+            elif citation:
+                redirect_url = citation.get_absolute_url()
             else:
-                redirect_url = reverse('view-lexeme', args=[lexeme_id])
+                redirect_url = lexeme.get_absolute_url()
             return redirect_url
 
         # Handle POST data
@@ -813,7 +817,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     citation = LexemeCitation.objects.get(id=citation_id)
                     update_object_from_form(citation, form)
                     request.session["previous_citation_id"] = citation.id
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    return HttpResponseRedirect(get_redirect_url(form, citation))
             elif action == "add-citation":
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
@@ -828,7 +832,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                             comment=cd["comment"])
                     citation.save()
                     request.session["previous_citation_id"] = citation.id
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    return HttpResponseRedirect(get_redirect_url(form, citation))
             elif action == "add-new-citation": # TODO
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data: # has to be tested before data is cleaned
@@ -843,7 +847,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                             comment=cd["comment"])
                     citation.save()
                     request.session["previous_citation_id"] = citation.id
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    return HttpResponseRedirect(get_redirect_url(form, citation))
             elif action == "delink-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
                 citation.delete()
@@ -859,9 +863,9 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     return HttpResponseRedirect(lexeme.get_absolute_url())
                 if form.is_valid():
                     citation = CognateJudgementCitation.objects.get(id=citation_id)
-                    update_object_from_form(citation, form)
+                    update_object_from_form(citation, form) # XXX refactor
                     request.session["previous_cognate_citation_id"] = citation.id
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    return HttpResponseRedirect(get_redirect_url(form, citation))
             elif action == "add-cognate-citation": #
                 form = AddCitationForm(request.POST)
                 if "cancel" in form.data:
@@ -872,7 +876,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                             cognate_judgement=CognateJudgement.objects.get(
                             id=cogjudge_id), **form.cleaned_data)
                     request.session["previous_cognate_citation_id"] = citation.id
-                    return HttpResponseRedirect(get_redirect_url(form))
+                    return HttpResponseRedirect(get_redirect_url(form, citation))
             elif action == "add-cognate":
                 languagelist = get_canonical_language_list(get_current_language_list_name(request))
                 redirect_url = '%s#lexeme_%s' % (

@@ -196,7 +196,7 @@ a.button:hover { text-decoration: none }
   }
 
 #message li.prominent {
-  color: #333;
+  color: black;
   background-color: #c00;
   font-weight: bold;
   padding: 10pt;
