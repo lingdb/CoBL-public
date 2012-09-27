@@ -781,7 +781,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         msg.render(context))
 
     if action: # actions are: edit, edit-citation, add-citation
-        def get_redirect_url(form, anchor=None):
+        def get_redirect_url(form, citation=None):
             """Pass citation objects to anchor the view in the lexeme
             page"""
             form_data = form.data["submit"].lower()
