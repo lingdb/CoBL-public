@@ -332,7 +332,7 @@ def view_language_wordlist(request, language, wordlist):
         try:
             language = get_canonical_language(language)
         except Language.DoesNotExist:
-            msg = u"The language ‘%s’ does not exist" % language
+            msg = u"There is not language named ‘%s’ in the database" % language
             messages.add_message(request, messages.INFO, msg)
             language_list = request.session.get("current_language_list_name",
                     LanguageList.DEFAULT)
