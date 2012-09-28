@@ -1,6 +1,35 @@
 # tests specific to lexicon module
 from django.test import TestCase
 from ielex.lexicon.models import *
+from ielex.lexicon.templatetags.lexicon_utils import wikilink
+
+class WikilinkTest(TestCase):
+    """Test internal links of the format /lexeme/1234/"""
+
+    def setUp(self):
+        self.src1 = "/lexeme/123/"
+        self.dst1 = '<a href="/lexeme/123/">/lexeme/123/</a>'
+        self.src2 = "/cognate/456/"
+        self.dst2 = '<a href="/cognate/456/">/cognate/456/</a>'
+
+    def test_make_link(self):
+        self.assertEqual(wikilink(self.src1), self.dst1)
+        self.assertEqual(wikilink(self.src2), self.dst2)
+
+    def test_dont_link_date(self):
+        DATE = "21/10/2012"
+        self.assertEqual(wikilink(DATE), DATE)
+
+    def test_make_embedded_link(self):
+        src = "asdf %s asdf" % self.src1
+        dst = "asdf %s asdf" % self.dst1
+        self.assertEqual(wikilink(src), dst)
+
+    def test_two_embedded_links(self):
+        src = "asdf %s asdf %s asdf" % (self.src1, self.src2)
+        dst = "asdf %s asdf %s asdf" % (self.dst1, self.dst2)
+        self.assertEqual(wikilink(src), dst)
+
 
 class LexemeGetCognateClassLinksTest(TestCase):
     """Functions to test the string formatting of denormalized cognate

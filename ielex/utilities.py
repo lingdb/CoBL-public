@@ -109,6 +109,10 @@ class LexDBManagementCommand(NoArgsCommand):
         self.execute(*args, **options.__dict__)
         return
 
+
+
+
+
 if __name__ == "__main__":
     snip_flag = True
     for i in range(1,703):
