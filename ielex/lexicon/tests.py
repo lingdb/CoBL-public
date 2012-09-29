@@ -1,7 +1,43 @@
 # tests specific to lexicon module
 from django.test import TestCase
+from django.contrib.auth.models import User
 from ielex.lexicon.models import *
 from ielex.lexicon.templatetags.lexicon_utils import wikilink
+
+def make_basic_objects():
+    """Make a basic website with one of each kind of object and return a
+    dictionary keying classes to instances, e.g.::
+
+        {..., Language:language_instance, ...}
+    """
+    User.objects.create_user('testuser', 'test@example.com', 'secret')
+    user = User.objects.get(username='testuser')
+    source = Source.objects.create(citation_text="SOURCE")
+    language = Language.objects.create(ascii_name="LANGUAGE",
+            utf8_name="LANGUAGE")
+    meaning = Meaning.objects.create(gloss="MEANING")
+    lexeme = Lexeme.objects.create(source_form="LEXEME", language=language,
+            meaning=meaning)
+    cogclass = CognateClass.objects.create(alias="X")
+    cogjudge = CognateJudgement.objects.create(lexeme=lexeme,
+            cognate_class=cogclass)
+    cogjudgecit = CognateJudgementCitation.objects.create(
+            cognate_judgement=cogjudge,
+            source=source, reliability="A")
+    lexemecit = LexemeCitation.objects.create(lexeme=lexeme, source=source,
+            reliability="A")
+    cogclasscit = CognateClassCitation.objects.create(cognate_class=cogclass,
+            source=source, reliability="A")
+    return {User: user,
+            Source: source,
+            Language: language,
+            Meaning: meaning,
+            Lexeme: lexeme,
+            CognateClass: cogclass,
+            CognateJudgement: cogjudge,
+            CognateJudgementCitation: cogjudgecit,
+            LexemeCitation: lexemecit,
+            CognateClassCitation: cogclasscit}
 
 class WikilinkTest(TestCase):
     """Test internal links of the format /lexeme/1234/"""

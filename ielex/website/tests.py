@@ -1,11 +1,11 @@
 from django.test import TestCase
 from django.test.client import Client
-from django.contrib.auth.models import User
 from django.db import transaction
 from django.db import IntegrityError
 import logging
 import lxml.html
 from ielex.lexicon.models import *
+from ielex.lexicon.tests import make_basic_objects
 
 # TODO make sure settings has DEBUG set to False
 
@@ -15,41 +15,6 @@ fh = logging.FileHandler("ielex/website/unittest.log", mode="w")
 formatter = logging.Formatter('%(message)s')
 fh.setFormatter(formatter)
 logger.addHandler(fh)
-
-def make_basic_objects():
-    """Make a basic website with one of each kind of object and return a
-    dictionary keying classes to instances, e.g.::
-
-        {..., Language:language_instance, ...}
-    """
-    User.objects.create_user('testuser', 'test@example.com', 'secret')
-    user = User.objects.get(username='testuser')
-    source = Source.objects.create(citation_text="SOURCE")
-    language = Language.objects.create(ascii_name="LANGUAGE",
-            utf8_name="LANGUAGE")
-    meaning = Meaning.objects.create(gloss="MEANING")
-    lexeme = Lexeme.objects.create(source_form="LEXEME", language=language,
-            meaning=meaning)
-    cogclass = CognateClass.objects.create(alias="X")
-    cogjudge = CognateJudgement.objects.create(lexeme=lexeme,
-            cognate_class=cogclass)
-    cogjudgecit = CognateJudgementCitation.objects.create(
-            cognate_judgement=cogjudge,
-            source=source, reliability="A")
-    lexemecit = LexemeCitation.objects.create(lexeme=lexeme, source=source,
-            reliability="A")
-    cogclasscit = CognateClassCitation.objects.create(cognate_class=cogclass,
-            source=source, reliability="A")
-    return {User: user,
-            Source: source,
-            Language: language,
-            Meaning: meaning,
-            Lexeme: lexeme,
-            CognateClass: cogclass,
-            CognateJudgement: cogjudge,
-            CognateJudgementCitation: cogjudgecit,
-            LexemeCitation: lexemecit,
-            CognateClassCitation: cogclasscit}
 
 
 class ViewTests(TestCase):
@@ -207,7 +172,8 @@ class CognateClassCodeDenormalizationTests(TestCase):
 
     def test_delete_cognate_judgement(self):
         "Test that post_delete hook updates denormalized data"
-        self.db[CognateJudgement].delete()
+        cj = self.db[CognateJudgement]
+        cj.delete()
         self.assertEqual(self.db[Lexeme].denormalized_cognate_classes,
                 "")
 
