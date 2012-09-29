@@ -312,13 +312,6 @@ class CognateJudgement(models.Model):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
                 self.cognate_class.alias, self.id)
 
-# def update_meaning_percent_coded(sender, instance, **kwargs):
-#     instance.lexeme.meaning.set_percent_coded()
-#     return
-# 
-# models.signals.post_save.connect(update_meaning_percent_coded,
-#         sender=CognateJudgement)
-
 class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A
     default list, named 'all' is (re)created on save/delete of the Language
