@@ -127,13 +127,15 @@ class Meaning(models.Model):
 
     def set_percent_coded(self):
         """called by a post_save signal on CognateJudgement"""
+        old_value = self.percent_coded
         uncoded = self.lexeme_set.filter(cognate_class=None).count()
         total = self.lexeme_set.count()
         try:
             self.percent_coded = 100.0 * (total - uncoded) / total
         except ZeroDivisionError:
             self.percent_coded = 0
-        self.save()
+        if self.percent_coded != old_value:
+            self.save()
         return
 
     def __unicode__(self):
@@ -220,6 +222,7 @@ class Lexeme(models.Model):
     def set_denormalized_cognate_classes(self):
         """Create a sequence of 'cc1.id, cc1.alias, cc2.id, cc2.alias'
         as a string and store"""
+        old_value = self.denormalized_cognate_classes 
         data = []
         for cc in self.cognate_class.all():
             data.append(cc.id)
@@ -229,11 +232,16 @@ class Lexeme(models.Model):
             else:
                 data.append(cc.alias)
         self.denormalized_cognate_classes = ",".join(str(e) for e in data)
-        self.save()
+        if self.denormalized_cognate_classes != old_value:
+            self.save()
+        return
 
     def set_number_cognate_coded(self):
+        old_number = self.number_cognate_coded 
         self.number_cognate_coded = self.cognate_class.count()
-        self.save()
+        if self.number_cognate_coded != old_number:
+            self.save()
+        return
 
     def get_cognate_class_links(self):
         def format_link(cc_id, alias):
