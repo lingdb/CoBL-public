@@ -128,7 +128,7 @@ class Meaning(models.Model):
     def set_percent_coded(self):
         """called by a post_save signal on CognateJudgement"""
         uncoded = self.lexeme_set.filter(cognate_class=None).count()
-        total = self.lexeme_set.filter().count()
+        total = self.lexeme_set.count()
         try:
             self.percent_coded = 100.0 * (total - uncoded) / total
         except ZeroDivisionError:
@@ -598,8 +598,6 @@ models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 def update_denormalized_data(sender, instance, **kwargs):
     if sender == CognateJudgement:
         lexeme = instance.lexeme
-        # update meaning
-        lexeme.meaning.set_percent_coded()
     elif sender == CognateJudgementCitation:
         lexeme = instance.cognate_judgement.lexeme
     # update lexeme

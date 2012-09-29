@@ -107,3 +107,36 @@ class LexemeGetCognateClassLinksTest(TestCase):
                 cognate_judgement=cognate_judgement, 
                 reliability="L")
         self.assertEqual(self.lexeme.get_cognate_class_links(), link)
+
+class SignalsTest(TestCase):
+    
+    def setUp(self):
+        self.language = Language.objects.create(
+                ascii_name="Test_Language",
+                utf8_name="Test Language")
+        self.meaning = Meaning.objects.create(
+                gloss="test meaning")
+        self.source = Source.objects.create(citation_text="a")
+        self.cognate_class_A = CognateClass.objects.create(alias="A")
+
+    def test_meaning_zero_percent_coded(self):
+        self.assertEqual(self.meaning.percent_coded, 0)
+
+    def test_update_denormalized_from_lexeme(self):
+        self.meaning.percent_coded = 999
+        Lexeme.objects.create(source_form="a",
+                meaning=self.meaning,
+                language=self.language)
+        self.assertEqual(self.meaning.percent_coded, 0)
+
+    def test_cognate_judgement_signal_triggers_lexeme_signal(self):
+        # i.e. that saving a CognateJudgement also triggers
+        # the signal to update_denormalized_from_lexeme
+        lexeme = Lexeme.objects.create(source_form="a",
+                meaning=self.meaning,
+                language=self.language)
+        self.meaning.percent_coded = 999
+        CognateJudgement.objects.create(
+                lexeme=lexeme,
+                cognate_class=self.cognate_class_A)
+        self.assertEqual(self.meaning.percent_coded, 100)
