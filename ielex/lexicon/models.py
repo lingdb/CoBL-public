@@ -596,17 +596,26 @@ models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
 @disable_for_loaddata
 def update_denormalized_data(sender, instance, **kwargs):
+    if sender == CognateJudgement:
+        lexeme = instance.lexeme
+        # update meaning
+        lexeme.meaning.set_percent_coded()
+    elif sender == CognateJudgementCitation:
+        lexeme = instance.cognate_judgement.lexeme
     # update lexeme
-    instance.lexeme.set_number_cognate_coded()
-    instance.lexeme.set_denormalized_cognate_classes()
-    # update meaning
-    instance.lexeme.meaning.set_percent_coded()
+    lexeme.set_number_cognate_coded()
+    lexeme.set_denormalized_cognate_classes()
     return
 
 models.signals.post_save.connect(update_denormalized_data,
         sender=CognateJudgement)
 models.signals.post_delete.connect(update_denormalized_data,
         sender=CognateJudgement)
+
+models.signals.post_save.connect(update_denormalized_data,
+        sender=CognateJudgementCitation)
+models.signals.post_delete.connect(update_denormalized_data,
+        sender=CognateJudgementCitation)
 
 @disable_for_loaddata
 def update_denormalized_from_lexeme(sender, instance, **kwargs):
