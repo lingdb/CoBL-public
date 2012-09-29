@@ -39,7 +39,7 @@ def make_basic_objects():
             LexemeCitation: lexemecit,
             CognateClassCitation: cogclasscit}
 
-class WikilinkTest(TestCase):
+class WikilinkTestss(TestCase):
     """Test internal links of the format /lexeme/1234/"""
 
     def setUp(self):
@@ -66,8 +66,7 @@ class WikilinkTest(TestCase):
         dst = "asdf %s asdf %s asdf" % (self.dst1, self.dst2)
         self.assertEqual(wikilink(src), dst)
 
-
-class LexemeGetCognateClassLinksTest(TestCase):
+class LexemeGetCognateClassLinksTests(TestCase):
     """Functions to test the string formatting of denormalized cognate
     class information"""
 
@@ -144,8 +143,35 @@ class LexemeGetCognateClassLinksTest(TestCase):
                 reliability="L")
         self.assertEqual(self.lexeme.get_cognate_class_links(), link)
 
-class SignalsTest(TestCase):
-    
+class CognateClassCodeDenormalizationTests(TestCase):
+
+    def setUp(self):
+        self.db = make_basic_objects()
+
+    def test_denormalized_cognate_classes_present(self):
+        self.assertEqual(self.db[Lexeme].denormalized_cognate_classes,
+                "1,X")
+
+    def test_delete_cognate_judgement(self):
+        "Test that post_delete hook updates denormalized data"
+        cj = self.db[CognateJudgement]
+        cj.delete()
+        self.assertEqual(self.db[Lexeme].denormalized_cognate_classes,
+                "")
+
+    def test_add_cognate_judgement(self):
+        "Test that post_save hook updates denormalized data"
+        cogclass = CognateClass.objects.create(alias="Y")
+        cogjudge = CognateJudgement.objects.create(lexeme=self.db[Lexeme],
+                cognate_class=cogclass)
+        CognateJudgementCitation.objects.create(
+                cognate_judgement=cogjudge,
+                source=self.db[Source], reliability="A")
+        self.assertEqual(self.db[Lexeme].denormalized_cognate_classes,
+                "1,X,2,Y")
+
+class SignalsTests(TestCase):
+
     def setUp(self):
         self.language = Language.objects.create(
                 ascii_name="Test_Language",

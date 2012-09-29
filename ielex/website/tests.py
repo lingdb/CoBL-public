@@ -161,33 +161,6 @@ class LanguageListTests(TestCase):
                     list(self.language_list.languages.all().order_by("languagelistorder")))
 
 
-class CognateClassCodeDenormalizationTests(TestCase):
-
-    def setUp(self):
-        self.db = make_basic_objects()
-
-    def test_denormalized_cognate_classes_present(self):
-        self.assertEqual(self.db[Lexeme].denormalized_cognate_classes,
-                "1,X")
-
-    def test_delete_cognate_judgement(self):
-        "Test that post_delete hook updates denormalized data"
-        cj = self.db[CognateJudgement]
-        cj.delete()
-        self.assertEqual(self.db[Lexeme].denormalized_cognate_classes,
-                "")
-
-    def test_add_cognate_judgement(self):
-        "Test that post_save hook updates denormalized data"
-        cogclass = CognateClass.objects.create(alias="Y")
-        cogjudge = CognateJudgement.objects.create(lexeme=self.db[Lexeme],
-                cognate_class=cogclass)
-        CognateJudgementCitation.objects.create(
-                cognate_judgement=cogjudge,
-                source=self.db[Source], reliability="A")
-        self.assertEqual(self.db[Lexeme].denormalized_cognate_classes,
-                "1,X,2,Y")
-
 class LoginTests(TestCase):
 
     def setUp(self):

@@ -601,12 +601,10 @@ def update_denormalized_data(sender, instance, **kwargs):
     elif sender == CognateJudgementCitation:
         try:
             lexeme = instance.cognate_judgement.lexeme
-        except CognateJudgement.DoesNotExist:
-            # e.g. if the cognate judgement citation is deleted
-            # automatically because the cognate judgement has been
-            # deleted
+        except CognateJudgement.DoesNotExist: # e.g. if the cognate judgement
+            # citation is deleted automatically because the cognate
+            # judgement has been deleted
             return
-    # update lexeme
     lexeme.set_number_cognate_coded()
     lexeme.set_denormalized_cognate_classes()
     return
