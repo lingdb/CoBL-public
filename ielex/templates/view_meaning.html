@@ -30,7 +30,7 @@
       {% endif %}
     </td>  
     <td> 
-      {{ lexeme.get_cognate_class_links|safe }}
+      {{ lexeme.get_cognate_class_links }}
       {% if user.is_authenticated %}
         {% ifnotequal add_cognate_judgement|asint lexeme.id|asint %}
         <a href="{% url lexeme-add-cognate lexeme.id %}#lexeme_{{ lexeme.id }}">

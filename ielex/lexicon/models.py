@@ -5,6 +5,7 @@ from django.db.models import Max, F
 from django.core.urlresolvers import reverse
 ## from django.core.cache import cache
 from django.db import connection, transaction ### testing
+from django.utils.safestring import SafeString
 # from django.contrib import admin
 import reversion
 from reversion.revisions import RegistrationError
@@ -242,8 +243,9 @@ class Lexeme(models.Model):
             else:
                 template = '<a href="/cognate/%s/">%s</a>'
             return template % (cc_id, alias)
-        return ", ".join(format_link(cc_id, alias) for cc_id, alias in
-                two_by_two(self.denormalized_cognate_classes.split(",")))
+        return  SafeString(", ".join(format_link(cc_id, alias) for cc_id, alias in
+                        two_by_two(self.denormalized_cognate_classes.split(","))))
+    # get_cognate_class_links.allow_tags = True # this is only for admin
 
     def get_absolute_url(self, anchor=None):
         """The absolute urls of LexemeCitation, CognateJudgement and

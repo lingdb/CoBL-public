@@ -16,11 +16,9 @@
 <fieldset>
 <table>
   {{ form.as_table }}
-  <tr><td class="rowname">Cognate codes:</td>
-      <td>{% for cs in lexeme.cognate_class.all %}
-        <a href="{% url cognate-set cs.id %}/">{{ cs.alias }}</a>
-        {% if forloop.last %}{% else %}, {% endif %}
-          {% endfor %}</td>
+  <tr>
+    <td class="rowname">Cognate codes:</td>
+    <td>{{ lexeme.get_cognate_class_links }}</td>
   </tr>
 </table>
 {% include "buttons/submit-gloss-cancel.html" %}
@@ -49,12 +47,7 @@
 </tr>
 {% endif %}
 <tr><td class="rowname">Notes:</td><td>{{ lexeme.notes|wikilink }}</td></tr>
-<tr><td class="rowname">Cognate codes:</td>
-    <td>{% for cs in lexeme.cognate_class.all %}
-      <a href="{% url cognate-set cs.id %}">{{ cs.alias }}</a>
-      {% if forloop.last %}{% else %}, {% endif %}
-        {% endfor %}</td>
-</tr>
+<tr><td class="rowname">Cognate codes:</td><td>{{ lexeme.get_cognate_class_links }}</td></tr>
 </table>
 </fieldset>
 {% endifequal %}
