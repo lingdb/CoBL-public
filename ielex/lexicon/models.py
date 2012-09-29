@@ -224,7 +224,7 @@ class Lexeme(models.Model):
         for cc in self.cognate_class.all():
             data.append(cc.id)
             if CognateJudgement.objects.get(lexeme=self,
-                    cognate_class=cc).is_loanword:
+                    cognate_class=cc).is_excluded:
                 data.append("(%s)" % cc.alias)
             else:
                 data.append(cc.alias)
@@ -293,17 +293,12 @@ class CognateJudgement(models.Model):
 
     @property
     def is_loanword(self):
-        # only calculate this value if it hasn't been worked out recently
-        ## -- disable cache
-        ## key = "is_loanword_%s" % self.lexeme.id
-        ## is_loanword = cache.get(key)
-        ## try:
-        ##     assert is_loanword is not None
-        ## except AssertionError:
-        ##     is_loanword = "L" in self.reliability_ratings
-        ##     cache.set(key, is_loanword, 300)
         is_loanword = "L" in self.reliability_ratings
         return is_loanword
+
+    @property
+    def is_excluded(self):
+        return bool(set(["X","L"]).intersection(self.reliability_ratings))
 
     def __unicode__(self):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
