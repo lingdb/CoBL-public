@@ -14,11 +14,11 @@
 <tr>
   <td><b>{{ revision.date_created|date:"d-M-Y G:i"  }}</b></td>
   <td><b>{{ revision.user.username }}</b></td>
-  {% if user.is_authenticated %}
+  {# {% if user.is_authenticated %} #}
   {# <td><small><a href="/revert/{{ revision.id }}">revert</a></small></td> #}
-  {% else %}
+  {# {% else %} #}
   <td>&nbsp;</td>
-  {% endif %}
+  {# {% endif %} #}
   <td>{{ version.revision.comment|wikilink|truncatewords_html:1 }}</td>
 </tr>
   {% for version in revision.version_set.all %}
