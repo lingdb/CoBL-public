@@ -15,7 +15,7 @@
   <td><b>{{ revision.date_created|date:"d-M-Y G:i"  }}</b></td>
   <td><b>{{ revision.user.username }}</b></td>
   {% if user.is_authenticated %}
-  <td><small><a href="/revert/{{ revision.id }}">revert</a></small></td>
+  {# <td><small><a href="/revert/{{ revision.id }}">revert</a></small></td> #}
   {% else %}
   <td>&nbsp;</td>
   {% endif %}
