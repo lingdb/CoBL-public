@@ -35,7 +35,7 @@ from ielex.utilities import next_alias, confirm_required, anchored, oneline
 
 def view_changes(request, username=None, revision_id=None, object_id=None):
     """Recent changes"""
-    boring_models = [LanguageListOrder]
+    boring_models = [LanguageListOrder, LanguageList, MeaningList]
     boring_model_ids = [ContentType.objects.get_for_model(m).id for m in
             boring_models]
     def interesting_versions(self):
