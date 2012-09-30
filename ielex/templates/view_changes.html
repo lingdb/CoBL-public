@@ -11,6 +11,7 @@
 
 <table>
 {% for revision in changes.object_list %}
+{% if revision.interesting_versions %}
 <tr>
   <td><b>{{ revision.date_created|date:"d-M-Y G:i"  }}</b></td>
   <td><b>{{ revision.user.username }}</b></td>
@@ -19,9 +20,9 @@
   {# {% else %} #}
   <td>&nbsp;</td>
   {# {% endif %} #}
-  <td>{{ version.revision.comment|wikilink|truncatewords_html:1 }}</td>
+  <td>{{ revision.comment|wikilink|truncatewords_html:1 }}</td>
 </tr>
-  {% for version in revision.version_set.all %}
+  {% for version in revision.interesting_versions %}
     <tr class="{% cycle 'odd' 'even' %}">
       <td>{{ version.content_type.name }}</td>
       <td>
@@ -40,6 +41,7 @@
       <td><i>{{ version.get_type_display }}</i></td>
     </tr>
   {% endfor %}
+{% endif %}
 {% endfor %}
 </table>
 {% endblock %}

@@ -6,6 +6,7 @@ import re
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
@@ -32,10 +33,16 @@ from ielex.utilities import next_alias, confirm_required, anchored, oneline
 
 # -- Database input, output and maintenance functions ------------------------
 
-def view_changes(request, username=None):
+def view_changes(request, username=None, revision_id=None, object_id=None):
     """Recent changes"""
+    boring_models = [LanguageListOrder]
+    boring_model_ids = [ContentType.objects.get_for_model(m).id for m in
+            boring_models]
+    def interesting_versions(self):
+        return self.version_set.exclude(content_type_id__in=boring_model_ids)
+    Revision.add_to_class("interesting_versions", interesting_versions)
+
     if not username:
-        # recent_changes = Version.objects.all().order_by("-id")
         recent_changes = Revision.objects.all().order_by("-id")
     else:
         recent_changes = Revision.objects.filter(
@@ -51,15 +58,6 @@ def view_changes(request, username=None):
         changes = paginator.page(page)
     except (EmptyPage, InvalidPage):
         changes = paginator.page(paginator.num_pages)
-
-    # def object_exists(version):
-    #     try:
-    #         version.object_version.object
-    #         return version
-    #     except Version.DoesNotExist:
-    #         return None
-
-    # changes.object_list = [version for version in changes.object_list if object_exists(version)]
 
     contributors = sorted([(User.objects.get(id=user_id),
             Revision.objects.filter(user=user_id).count())
