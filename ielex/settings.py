@@ -6,8 +6,8 @@ import os.path
 # DEBUG = True
 # TEMPLATE_DEBUG = DEBUG
 
-VERSION = "0.9"
 ROOTDIR = os.path.abspath(os.path.dirname(__file__))
+VERSION = "0.9"
 
 # set this in local_settings.py
 # ADMINS = ( ('Your Name', 'your_email@domain.com'),)
