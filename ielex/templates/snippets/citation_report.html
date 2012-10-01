@@ -23,7 +23,7 @@
 {% if citation.comment %}
   <tr>
     <td class="rowname">Comment:</td>
-    <td>{{ citation.comment }}</td>
+    <td>{{ citation.comment|wikilink }}</td>
   </tr>
 {% endif %}
 
