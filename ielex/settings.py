@@ -6,7 +6,7 @@ import os.path
 # DEBUG = True
 # TEMPLATE_DEBUG = DEBUG
 
-VERSION = "0.5"
+VERSION = "0.9"
 ROOTDIR = os.path.abspath(os.path.dirname(__file__))
 
 # set this in local_settings.py
@@ -55,6 +55,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
+    'django.core.context_processors.static',
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
     'ielex.context_processors.configuration',
