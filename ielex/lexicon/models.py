@@ -301,13 +301,13 @@ class CognateJudgement(models.Model):
 
     @property
     def is_loanword(self):
-        is_loanword = "L" in self.reliability_ratings
+        is_loanword = "L" in self.reliability
         return is_loanword
 
     @property
     def is_excluded(self):
-        return bool(set(["X","L"]).intersection(self.reliability_ratings)) or \
-                bool(set(["X","L"]).intersection(self.lexeme.reliability_ratings))
+        return bool(set(["X","L"]).intersection(self.reliability)) or \
+                bool(set(["X","L"]).intersection(self.lexeme.reliability))
 
     def __unicode__(self):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
