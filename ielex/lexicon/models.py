@@ -306,7 +306,8 @@ class CognateJudgement(models.Model):
 
     @property
     def is_excluded(self):
-        return bool(set(["X","L"]).intersection(self.reliability_ratings))
+        return bool(set(["X","L"]).intersection(self.reliability_ratings)) or \
+                bool(set(["X","L"]).intersection(self.lexeme.reliability_ratings))
 
     def __unicode__(self):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
