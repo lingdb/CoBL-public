@@ -255,6 +255,10 @@ class Lexeme(models.Model):
                         two_by_two(self.denormalized_cognate_classes.split(","))))
     # get_cognate_class_links.allow_tags = True # this is only for admin
 
+    @property
+    def reliability_ratings(self):
+        return set(self.lexemecitation_set.values_list("reliability", flat=True))
+
     def get_absolute_url(self, anchor=None):
         """The absolute urls of LexemeCitation, CognateJudgement and
         CognateJudgementCitation are also on the Lexeme page, but with
@@ -301,13 +305,13 @@ class CognateJudgement(models.Model):
 
     @property
     def is_loanword(self):
-        is_loanword = "L" in self.reliability
+        is_loanword = "L" in self.reliability_ratings
         return is_loanword
 
     @property
     def is_excluded(self):
-        return bool(set(["X","L"]).intersection(self.reliability)) or \
-                bool(set(["X","L"]).intersection(self.lexeme.reliability))
+        return bool(set(["X","L"]).intersection(self.reliability_ratings)) or \
+                bool(set(["X","L"]).intersection(self.lexeme.reliability_ratings))
 
     def __unicode__(self):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
