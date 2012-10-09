@@ -29,6 +29,7 @@ R = {
     "MEANING":r"(?P<meaning>[a-zA-Z0-9_]+)",
     "RELATION":r"(?P<relation>[a-zA-Z0-9_.-]+)",
     "WORDLIST":r"(?P<wordlist>[a-zA-Z0-9_.-]+)",
+    "USERNAME":r"(?P<username>[a-zA-Z0-9@.+_-]+)",
     "identifier":r"[a-zA-Z_][a-zA-Z0-9_]*",
     }
 
@@ -36,7 +37,7 @@ urlpatterns = patterns('',
     # Front Page
     url(r'^$', FrontpageView.as_view(), name="view-frontpage"),
     url(r'^changes/$', view_changes, name="view-changes"),
-    url(r'^changes/(?P<username>[a-zA-Z]+)/$', view_changes,
+    url(r'^changes/%(USERNAME)s/$' % R, view_changes,
             name="view-changes-user"),
 
     # Language list

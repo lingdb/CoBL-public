@@ -1,4 +1,6 @@
 {# Used by the various xxxcitation_detail.html templates #}
+{% load lexicon_utils %}
+
 <table>
   <tr>
     <th>Source:</th>
@@ -14,7 +16,7 @@
   </tr>
   <tr>
     <th>Comment:</th>
-    <td>{{ citation.comment }} </td>
+    <td>{{ citation.comment|wikilink }} </td>
   </tr>
 </table>
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

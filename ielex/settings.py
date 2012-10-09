@@ -6,8 +6,8 @@ import os.path
 # DEBUG = True
 # TEMPLATE_DEBUG = DEBUG
 
-VERSION = "0.9"
 ROOTDIR = os.path.abspath(os.path.dirname(__file__))
+VERSION = "0.9"
 
 # set this in local_settings.py
 # ADMINS = ( ('Your Name', 'your_email@domain.com'),)
@@ -42,7 +42,9 @@ MEDIA_URL = '/media/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-STATIC_URL = '/admin_media/'
+
+# STATIC_ROOT is defined in local_settings.py
+STATIC_URL = '/static/'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -55,6 +57,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
+    'django.core.context_processors.static',
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
     'ielex.context_processors.configuration',
@@ -83,6 +86,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.staticfiles',
     'django.contrib.admin',
     'reversion',
     'south',
