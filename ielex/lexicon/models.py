@@ -602,16 +602,16 @@ models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
 @disable_for_loaddata
 def update_denormalized_data(sender, instance, **kwargs):
-    if sender == CognateJudgement:
+    if sender in [CognateJudgement, LexemeCitation]:
         lexeme = instance.lexeme
     elif sender == CognateJudgementCitation:
         try:
             lexeme = instance.cognate_judgement.lexeme
         except CognateJudgement.DoesNotExist: # e.g. if the cognate judgement
-            # citation is deleted automatically because the cognate
-            # judgement has been deleted
-            return
-    lexeme.set_number_cognate_coded()
+            return      # citation is deleted automatically because the cognate
+                        # judgement has been deleted
+    if sender in [CognateJudgement, CognateJudgementCitation]:
+        lexeme.set_number_cognate_coded()
     lexeme.set_denormalized_cognate_classes()
     return
 
@@ -624,6 +624,11 @@ models.signals.post_save.connect(update_denormalized_data,
         sender=CognateJudgementCitation)
 models.signals.post_delete.connect(update_denormalized_data,
         sender=CognateJudgementCitation)
+
+models.signals.post_save.connect(update_denormalized_data,
+        sender=LexemeCitation)
+models.signals.post_delete.connect(update_denormalized_data,
+        sender=LexemeCitation)
 
 @disable_for_loaddata
 def update_denormalized_from_lexeme(sender, instance, **kwargs):
