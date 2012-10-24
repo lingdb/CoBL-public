@@ -194,7 +194,7 @@ urlpatterns = patterns('',
             name="cognate-class-citation-view"),
     # Cognate citation :: update
     url(r'^cognate/citation/(?P<pk>\d+)/edit/$',
-            CognateClassCitationUpdateView.as_view(),
+            login_required(CognateClassCitationUpdateView.as_view()),
             name="cognate-citation-edit"),
     # handle redundant cognate_id
     url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/edit/$',
@@ -202,8 +202,13 @@ urlpatterns = patterns('',
             name="cognate-class-citation-edit"),
     # Cognate citation :: add
     url(r'^cognate/(?P<cognate_id>\d+)/add-citation/$',
-            CognateClassCitationCreateView.as_view(),
+            login_required(CognateClassCitationCreateView.as_view()),
             name="cognate-class-citation-create"),
+    # Cognate citation :: delete
+    url(r'^cognate/citation/(?P<pk>\d+)/delete/$',
+            login_required(cognate_class_citation_delete),
+            name="cognate-citation-delete"),
+
 
     # Cognate judgement :: detail
     url(r'^cognate/judgement/(?P<pk>\d+)/$',

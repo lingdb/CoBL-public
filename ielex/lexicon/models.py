@@ -545,8 +545,16 @@ class CognateClassCitation(AbstractBaseCitation):
     source = models.ForeignKey(Source)
 
     def __unicode__(self):
-        return u"%s cog=%s src=%s" % (self.id, self.cognate_class.id,
-                self.source.id)
+        try:
+            cog = self.cognate_class.id
+        except CognateClass.DoesNotExist:
+            cog = None
+        try:
+            src = self.source.id
+        except Source.DoesNotExist:
+            src = None
+        return u"%s cog=%s src=%s" % (self.id, cog, src)
+                # self.cognate_class.id, self.source.id)
 
     def get_absolute_url(self):
         return reverse("cognate-class-citation-detail",

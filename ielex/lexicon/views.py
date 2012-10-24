@@ -2,9 +2,10 @@ from textwrap import dedent
 import time
 import sys
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse
 # from django.core.urlresolvers import reverse_lazy # avail Django 1.4
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.views.generic import CreateView, UpdateView, TemplateView
 from django.contrib import messages
 from ielex import settings
@@ -70,6 +71,13 @@ class CognateClassCitationCreateView(CreateView):
         kwargs = super(CognateClassCitationCreateView,
                 self).get_form_kwargs()
         return kwargs
+
+def cognate_class_citation_delete(request, pk):
+    cognate_class_citation = CognateClassCitation.objects.get(id=pk)
+    cognate_class_id = cognate_class_citation.cognate_class.id
+    cognate_class_citation.delete()
+    return HttpResponseRedirect(reverse('cognate-set',
+        args=[cognate_class_id]))
 
 class NexusExportView(TemplateView):
     template_name = "nexus_list.html"
