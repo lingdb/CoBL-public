@@ -2,7 +2,7 @@ from textwrap import dedent
 import time
 import sys
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
+# from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse
 # from django.core.urlresolvers import reverse_lazy # avail Django 1.4
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -72,6 +72,7 @@ class CognateClassCitationCreateView(CreateView):
                 self).get_form_kwargs()
         return kwargs
 
+@login_required
 def cognate_class_citation_delete(request, pk):
     cognate_class_citation = CognateClassCitation.objects.get(id=pk)
     cognate_class_id = cognate_class_citation.cognate_class.id
