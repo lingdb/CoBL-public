@@ -103,10 +103,13 @@ def view_object_history(request, version_id):
 
 def get_canonical_meaning(meaning):
     """Identify meaning from id number or partial name"""
-    if meaning.isdigit():
-        meaning = Meaning.objects.get(id=meaning)
-    else:
-        meaning = Meaning.objects.get(gloss=meaning)
+    try:
+        if meaning.isdigit():
+            meaning = Meaning.objects.get(id=meaning)
+        else:
+            meaning = Meaning.objects.get(gloss=meaning)
+    except Meaning.DoesNotExist:
+        raise Http404("Meaning '%s' does not exist" % meaning)
     return meaning
 
 def get_canonical_language(language, request=None):
@@ -232,7 +235,7 @@ def get_canonical_language_list(language_list=None, request=None):
     except LanguageList.DoesNotExist:
         if request:
             messages.add_message(request, messages.INFO,
-                    ("There is not language list matching"\
+                    ("There is no language list matching"\
                     " '%s' in the database") % language_list)
         raise Http404
     return language_list
