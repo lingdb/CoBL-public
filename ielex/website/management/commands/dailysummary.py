@@ -75,8 +75,11 @@ class Command(LexDBManagementCommand):
         print_report("== Activity report ==")
         for revision in recent_changes:
             timestamp = strftime(revision.date_created)
-            user = revision.user
-            print_report(timestamp, user)
+            try:
+                user = revision.user
+                print_report(timestamp, user)
+            except User.DoesNotExist:
+                print_report(timestamp, "** UNAUTHENTICATED USER **")
             for version in revision.version_set.all():
                 model = version.content_type.model_class() 
                 if model not in boring_models:
