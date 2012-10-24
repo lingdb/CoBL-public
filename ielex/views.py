@@ -12,7 +12,7 @@ from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 # from django.db import transaction
 from django.db.models import Q, Max, Count
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template import Template
@@ -747,7 +747,12 @@ def get_ordered_lexemes(meaning, language_list, *select_related_fields):
 
 def view_lexeme(request, lexeme_id):
     """For un-logged-in users, view only"""
-    lexeme = Lexeme.objects.get(id=lexeme_id)
+    try:
+        lexeme = Lexeme.objects.get(id=lexeme_id)
+    except Lexeme.DoesNotExist:
+        messages.add_message(request, messages.INFO,
+                "There is no lexeme with id=%s" % lexeme_id)
+        raise Http404
     prev_lexeme, next_lexeme = get_prev_and_next_lexemes(request, lexeme)
     return render_template(request, "lexeme_report.html",
             {"lexeme":lexeme,
@@ -756,9 +761,14 @@ def view_lexeme(request, lexeme_id):
 
 @login_required
 def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
+    try:
+        lexeme = Lexeme.objects.get(id=lexeme_id)
+    except Lexeme.DoesNotExist:
+        messages.add_message(request, messages.INFO,
+                "There is no lexeme with id=%s" % lexeme_id)
+        raise Http404
     citation_id = int(citation_id)
     cogjudge_id = int(cogjudge_id)
-    lexeme = Lexeme.objects.get(id=lexeme_id)
     form = None
 
     def warn_if_lacking_cognate_judgement_citation():
