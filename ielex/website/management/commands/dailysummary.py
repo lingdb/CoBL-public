@@ -61,10 +61,10 @@ class Command(LexDBManagementCommand):
         user_ids = set(recent_changes.values_list("user", flat=True))
         if None in user_ids:
             print_report(dedent("""\
-            *****************************************************
-            ** WARNING: revisions made by unauthenticated user **
-            ** (indicates a missing login_required constraint) **
-            *****************************************************"""))
+            ***********************************************
+            WARNING: revisions made by unauthenticated user
+            (indicates a missing login_required constraint)
+            ***********************************************"""))
         for user in User.objects.filter(
                 id__in=user_ids):
             print_report(strftime(user.last_login), strfuser(user))
@@ -75,10 +75,10 @@ class Command(LexDBManagementCommand):
         print_report("== Activity report ==")
         for revision in recent_changes:
             timestamp = strftime(revision.date_created)
-            try:
-                user = revision.user
+            user = revision.user
+            if user:
                 print_report(timestamp, user)
-            except User.DoesNotExist:
+            else:
                 print_report(timestamp, "** UNAUTHENTICATED USER **")
             for version in revision.version_set.all():
                 model = version.content_type.model_class() 
