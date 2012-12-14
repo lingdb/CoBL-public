@@ -386,3 +386,34 @@ def construct_matrix(
             matrix.append(row)
 
         return matrix, cognate_class_names
+
+def dump_cognate_data(
+            language_list_name,
+            meaning_list_name): #,
+            # exclude_ratings,
+            # dialect,
+            # LABEL_COGNATE_SETS,
+            # singletons,
+            # exclude_invariant):
+
+    language_list = LanguageList.objects.get(name=language_list_name)
+    languages = language_list.languages.all().order_by("languagelistorder")
+    meaning_list = MeaningList.objects.get(name=meaning_list_name)
+    meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
+
+    cognate_judgements = CognateJudgement.objects.filter(
+            lexeme__language__in=languages,
+            lexeme__meaning__in=meanings
+            ).order_by("lexeme__meaning", "cognate_class__alias", "lexeme__language")
+
+    print cognate_judgements.count()
+    print "\t".join(["cc_alias", "cc_id", "language", "lexeme", "loan"])
+    for cj in cognate_judgements:
+        if ("L" in cj.reliability_ratings) or ("L" in cj.lexeme.reliability_ratings):
+            loanword_flag = "LOAN"
+        else:
+            loanword_flag = ""
+        print "\t".join([cj.lexeme.meaning.gloss+"-"+cj.cognate_class.alias,
+                str(cj.cognate_class.id), cj.lexeme.language.ascii_name,
+                unicode(cj.lexeme), loanword_flag])
+    return
