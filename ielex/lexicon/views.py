@@ -116,11 +116,11 @@ class NexusExportView(TemplateView):
 def write_nexus(fileobj,
             language_list_name,
             meaning_list_name,
-            exclude_ratings,
-            dialect,
-            LABEL_COGNATE_SETS,
-            singletons,
-            exclude_invariant):
+            exclude_ratings, # set
+            dialect, # string
+            LABEL_COGNATE_SETS, # bool
+            singletons, # string
+            exclude_invariant): # bool
     start_time = time.time()
 
     # MAX_1_SINGLETON: True|False
@@ -183,7 +183,7 @@ def write_nexus(fileobj,
 
         for i, cc in enumerate(sorted((cognate_class_names))):
             labels.append("    %d %s" % (i+1, cc))
-        print(labels, sep=",\n", file=fileobj)
+        print(*labels, sep=",\n", file=fileobj)
         print("  ;\n  matrix", file=fileobj)
     else:
         assert dialect == "BP"
@@ -208,7 +208,7 @@ def write_nexus(fileobj,
         language_name, row = row[0], row[1:]
         print("    '%s' %s%s" % (language_name,
                 " "*(max_len - len(language_name)), "".join(row)), file=fileobj)
-    print>>fileobj, "  ;\nend;\n"
+    print("  ;\nend;\n", file=fileobj)
 
     if dialect == "BP":
         print(dedent("""\
@@ -269,7 +269,7 @@ def write_delimited(fileobj,
             MAX_1_SINGLETON)
     print("\t" + "\t".join(cognate_class_names), file=fileobj)
     for row in matrix:
-        print(row, sep="\t", file=fileobj)
+        print(*row, sep="\t", file=fileobj)
 
     seconds = int(time.time() - start_time)
     minutes = seconds // 60
@@ -411,7 +411,7 @@ def dump_cognate_data(
 
     print("Processed", cognate_judgements.count(), "cognate judgements",
             file=sys.stderr)
-    print("cc_alias", "cc_id", "language", "lexeme", "loan", sep="\t",
+    print("cc_alias", "cc_id", "language", "lexeme", "status", sep="\t",
             file=fileobj)
     for cj in cognate_judgements:
         if ("L" in cj.reliability_ratings) or ("L" in cj.lexeme.reliability_ratings):
@@ -421,4 +421,4 @@ def dump_cognate_data(
         print(cj.lexeme.meaning.gloss+"-"+cj.cognate_class.alias,
                 str(cj.cognate_class.id), cj.lexeme.language.ascii_name,
                 unicode(cj.lexeme), loanword_flag, sep="\t", file=fileobj)
-    return
+    return fileobj
