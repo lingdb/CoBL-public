@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from ielex.lexicon.models import *
 from ielex.lexicon.templatetags.lexicon_utils import wikilink
+from ielex.lexicon.forms import ChooseNexusOutputForm
 
 def make_basic_objects():
     """Make a basic website with one of each kind of object and return a
@@ -28,6 +29,7 @@ def make_basic_objects():
             reliability="A")
     cogclasscit = CognateClassCitation.objects.create(cognate_class=cogclass,
             source=source, reliability="A")
+
     return {User: user,
             Source: source,
             Language: language,
@@ -39,7 +41,7 @@ def make_basic_objects():
             LexemeCitation: lexemecit,
             CognateClassCitation: cogclasscit}
 
-class WikilinkTestss(TestCase):
+class WikilinkTests(TestCase):
     """Test internal links of the format /lexeme/1234/"""
 
     def setUp(self):
@@ -202,3 +204,11 @@ class SignalsTests(TestCase):
                 lexeme=lexeme,
                 cognate_class=self.cognate_class_A)
         self.assertEqual(self.meaning.percent_coded, 100)
+
+class NexusExportFormTests(TestCase):
+
+    def setUp(self):
+        self.form = ChooseNexusOutputForm()
+
+    def test_defaults(self):
+        self.assertTrue(self.form.is_valid())

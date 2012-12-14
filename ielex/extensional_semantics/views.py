@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.template.loader import get_template
-from ielex.forms import *
+from ielex.extensional_semantics.forms import *
 from ielex.extensional_semantics.models import *
 from ielex.shortcuts import render_template
 from ielex.utilities import confirm_required

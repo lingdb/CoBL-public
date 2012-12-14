@@ -2,7 +2,7 @@
 import re
 from django import forms
 from ielex.lexicon.models import *
-from ielex.extensional_semantics.models import *
+# from ielex.extensional_semantics.models import *
 
 def clean_ascii_name(data):
     """Check that a string is suitable to be part of a url (ascii, no spaces)"""
@@ -67,17 +67,6 @@ class ChooseOneSourceField(forms.ModelChoiceField):
                 return s[:l-4]+" ..."
         return truncate(obj.citation_text, 124)
 
-class ChooseSemanticRelationsField(forms.ModelChoiceField):
-
-    def label_from_instance(self, obj):
-        return obj.relation_code
-
-class ChooseIncludedRelationsField(ChooseSemanticRelationsField):
-    pass
-
-class ChooseExcludedRelationsField(ChooseSemanticRelationsField):
-    pass
-
 class AddLexemeForm(forms.ModelForm):
 
     language = ChooseLanguageField(queryset=Language.objects.all())
@@ -140,16 +129,6 @@ class EditMeaningListForm(forms.ModelForm):
     class Meta:
         model = MeaningList
         exclude = ["meaning_ids"]
-
-class EditRelationForm(forms.ModelForm):
-
-    def clean_relation_code(self):
-        data = self.cleaned_data["relation_code"]
-        clean_ascii_name(data)
-        return data
-
-    class Meta:
-        model = SemanticRelation
 
 class ChooseLanguageForm(forms.Form):
     # Need to think about the default sort order of the Language objects here
@@ -265,58 +244,6 @@ def make_reorder_meaninglist_form(objlist):
                 choices=choices,
                 widget=forms.Select(attrs={"size":20}))
     return ReorderMeaningListForm
-
-class EditSemanticDomainForm(forms.ModelForm):
-
-    def clean_name(self):
-        data = self.cleaned_data["name"]
-        clean_ascii_name(data)
-        return data
-
-    class Meta:
-        model = SemanticDomain
-        exclude = ["relation_ids"]
-
-class AddSemanticExtensionForm(forms.Form):
-    relations = forms.MultipleChoiceField(
-            required=False,
-            widget=forms.CheckboxSelectMultiple(),
-            choices=SemanticRelation.objects.values_list("id", "relation_code"),
-            )
-
-class SemanticExtensionCitationForm(forms.ModelForm):
-
-    # overridden to ensure no "-----" choice
-    reliability = forms.ChoiceField(choices=RELIABILITY_CHOICES,
-            widget=forms.RadioSelect) 
-
-    class Meta:
-        #exclude = ["extension"]
-        model = SemanticExtensionCitation
-
-class MultipleSemanticExtensionCitationForm(forms.ModelForm):
-    """Hides the extension value; will be applied to multiple objects"""
-
-    # overridden to ensure no "-----" choice
-    reliability = forms.ChoiceField(choices=RELIABILITY_CHOICES,
-            widget=forms.RadioSelect) 
-
-    class Meta:
-        exclude = ["extension"]
-        model = SemanticExtensionCitation
-        widgets = {
-                "comment":forms.Textarea(attrs={'cols': 78, 'rows': 20}),
-                }
-
-class ChooseSemanticRelationsForm(forms.Form):
-    included_relations = ChooseIncludedRelationsField(
-            required=False, empty_label=None,
-            queryset=SemanticRelation.objects.none(),
-            widget=forms.Select(attrs={"size":20, "onchange":"this.form.submit()"}))
-    excluded_relations = ChooseExcludedRelationsField(
-            required=False, empty_label=None,
-            queryset=SemanticRelation.objects.all(),
-            widget=forms.Select(attrs={"size":20, "onchange":"this.form.submit()"}))
 
 class SearchLexemeForm(forms.Form):
     SEARCH_FIELD_CHOICES = [("L", "Search phonological and source form"),

@@ -3,7 +3,8 @@ from django.test.client import Client
 from ielex.website.tests import make_basic_objects
 from ielex.website.tests import ViewTests
 from ielex.extensional_semantics.models import *
-from ielex.lexicon.models import Lexeme, Source
+from ielex.lexicon.models import * #Lexeme, Source
+#from ielex.lexicon.models import Lexeme, Source
 
 class ExtensionalSemanticsViewTests(ViewTests):
 
