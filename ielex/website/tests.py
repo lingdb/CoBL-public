@@ -16,13 +16,18 @@ formatter = logging.Formatter('%(message)s')
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 
+class ViewBaseMethods:
+    """
+    Must be subclassed along with TestCase in order to be run as part of the
+    test suite. The setUp method has to be in the subclass (for some reason)
 
-class ViewTests(TestCase):
+        class ViewTests(TestCase,ViewBaseMethods):
 
-    def setUp(self):
-        self.client = Client()
-        make_basic_objects()
-        # self.seen_links = set()
+            def setUp(self):
+                self.client = Client()
+                make_basic_objects()
+                # self.seen_links = set()
+    """
 
     def walk_page(self, path, parent=None):
         new_links = []
@@ -85,6 +90,15 @@ class ViewTests(TestCase):
                 logger.info("%s : %s" % (parent, link))
             logger.info(" === end LACKING SLASH ===\n")
         self.assertFalse(lacking_slash)
+
+
+
+class ViewTests(TestCase,ViewBaseMethods):
+
+    def setUp(self):
+        self.client = Client()
+        make_basic_objects()
+        # self.seen_links = set()
 
 
 class UrlTests(TestCase):

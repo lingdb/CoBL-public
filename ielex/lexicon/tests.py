@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from ielex.lexicon.models import *
 from ielex.lexicon.templatetags.lexicon_utils import wikilink
-from ielex.lexicon.forms import ChooseNexusOutputForm
+#from ielex.lexicon.forms import ChooseNexusOutputForm
 
 def make_basic_objects():
     """Make a basic website with one of each kind of object and return a
@@ -205,10 +205,10 @@ class SignalsTests(TestCase):
                 cognate_class=self.cognate_class_A)
         self.assertEqual(self.meaning.percent_coded, 100)
 
-class NexusExportFormTests(TestCase):
-
-    def setUp(self):
-        self.form = ChooseNexusOutputForm()
-
-    def test_defaults(self):
-        self.assertTrue(self.form.is_valid())
+# class NexusExportFormTests(TestCase):
+# 
+#     def setUp(self):
+#         self.form = ChooseNexusOutputForm()
+# 
+#     def test_defaults(self):
+#         self.assertTrue(self.form.is_valid())
