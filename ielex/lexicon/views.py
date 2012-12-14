@@ -12,7 +12,7 @@ from ielex import settings
 from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
 from ielex.forms import EditCognateClassCitationForm
-from ielex.lexicon.forms import ChooseNexusOutputForm
+from ielex.lexicon.forms import ChooseNexusOutputForm, DumpSnapshotForm
 
 class FrontpageView(TemplateView):
     template_name = "frontpage.html"
@@ -112,6 +112,42 @@ class NexusExportView(TemplateView):
                 )
         return response
 
+class DumpRawDataView(TemplateView):
+    template_name = "dump_data.html"
+
+    def get(self, request):
+        defaults = {"language_list":1, "meaning_list":1,
+                "reliability":["L","X"], "singletons":"all",
+                "exclude_invariant":0}
+        form =  DumpSnapshotForm(defaults)
+        return self.render_to_response({"form":form})
+
+    def post(self, request):
+        form =  DumpSnapshotForm(request.POST)
+        if form.is_valid():
+            #return HttpResponseRedirect(reverse("nexus-data"))
+            return self.dump_cognate_data_view(form)
+        return self.render_to_response({"form":form})
+
+    def dump_cognate_data_view(self, form):
+        """A wrapper to call the `dump_cognate_data` function from a view"""
+
+        # Create the HttpResponse object with the appropriate header.
+        filename = "%s-%s-%s-data.csv" % (settings.project_short_name,
+                form.cleaned_data["language_list"].name,
+                form.cleaned_data["meaning_list"].name)
+        response = HttpResponse(mimetype='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=%s' % \
+                filename.replace(" ", "_")
+
+        dump_cognate_data(response,
+                form.cleaned_data["language_list"],
+                form.cleaned_data["meaning_list"]
+                # set(form.cleaned_data["reliability"]),
+                # form.cleaned_data["singletons"],
+                # form.cleaned_data["exclude_invariant"]
+                )
+        return response
 
 def write_nexus(fileobj,
             language_list_name,
@@ -391,6 +427,7 @@ def construct_matrix(
         return matrix, cognate_class_names
 
 def dump_cognate_data(
+            fileobj,
             language_list_name,
             meaning_list_name): #,
             # exclude_ratings,
@@ -398,7 +435,6 @@ def dump_cognate_data(
             # LABEL_COGNATE_SETS,
             # singletons,
             # exclude_invariant):
-    fileobj = sys.stdout
     language_list = LanguageList.objects.get(name=language_list_name)
     languages = language_list.languages.all().order_by("languagelistorder")
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
