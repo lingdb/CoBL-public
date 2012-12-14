@@ -16,6 +16,7 @@ class ChooseOutputBaseForm(forms.Form):
             widget=forms.Select())
     reliability = forms.MultipleChoiceField(choices=RELIABILITY_CHOICES,
             widget=forms.CheckboxSelectMultiple,
+            required=False,
             label="Exclude ratings")
     # unique = forms.BooleanField(label="Include unique states")
     exclude_invariant = forms.BooleanField(required=False,
