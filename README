@@ -5,6 +5,6 @@ dialects. The database is written in the flexible python/django web framework.
 LexDB is used for the Indo-European Lexical Database (IELex) at
 http://ielex.mpi.nl. For more information please see the project wiki
 (https://bitbucket.org/evoling/lexdb/wiki/Home) on the BitBucket development
-site (https://bitbucket.org/evoling/lexdb)
+site (https://bitbucket.org/evoling/lexdb).
 
-For installation details and sample data see the wiki (https://bitbucket.org/evoling/lexdb/wiki/Home)
+For installation details and sample data see the wiki (https://bitbucket.org/evoling/lexdb/wiki/Home).
