@@ -1,3 +1,4 @@
+from __future__ import print_function
 from textwrap import dedent
 import time
 import sys
@@ -12,7 +13,7 @@ from ielex import settings
 from ielex.lexicon.models import *
 from ielex.shortcuts import render_template
 from ielex.forms import EditCognateClassCitationForm
-from ielex.lexicon.forms import ChooseNexusOutputForm
+from ielex.lexicon.forms import ChooseNexusOutputForm, DumpSnapshotForm
 
 class FrontpageView(TemplateView):
     template_name = "frontpage.html"
@@ -120,15 +121,51 @@ class NexusExportView(TemplateView):
                 )
         return response
 
+class DumpRawDataView(TemplateView):
+    template_name = "dump_data.html"
+
+    def get(self, request):
+        defaults = {"language_list":1, "meaning_list":1,
+                "reliability":["L","X"], "singletons":"all",
+                "exclude_invariant":0}
+        form =  DumpSnapshotForm(defaults)
+        return self.render_to_response({"form":form})
+
+    def post(self, request):
+        form =  DumpSnapshotForm(request.POST)
+        if form.is_valid():
+            #return HttpResponseRedirect(reverse("nexus-data"))
+            return self.dump_cognate_data_view(form)
+        return self.render_to_response({"form":form})
+
+    def dump_cognate_data_view(self, form):
+        """A wrapper to call the `dump_cognate_data` function from a view"""
+
+        # Create the HttpResponse object with the appropriate header.
+        filename = "%s-%s-%s-data.csv" % (settings.project_short_name,
+                form.cleaned_data["language_list"].name,
+                form.cleaned_data["meaning_list"].name)
+        response = HttpResponse(mimetype='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=%s' % \
+                filename.replace(" ", "_")
+
+        dump_cognate_data(response,
+                form.cleaned_data["language_list"],
+                form.cleaned_data["meaning_list"]
+                # set(form.cleaned_data["reliability"]),
+                # form.cleaned_data["singletons"],
+                # form.cleaned_data["exclude_invariant"]
+                )
+        return response
 
 def write_nexus(fileobj,
             language_list_name,
             meaning_list_name,
-            exclude_ratings,
-            dialect,
-            LABEL_COGNATE_SETS,
-            singletons,
-            exclude_invariant):
+            exclude_ratings, # set
+            dialect, # string
+            LABEL_COGNATE_SETS, # bool
+            singletons, # string
+            exclude_invariant): # bool
     start_time = time.time()
 
     # MAX_1_SINGLETON: True|False
@@ -157,67 +194,69 @@ def write_nexus(fileobj,
             meanings, exclude_ratings, exclude_invariant, INCLUDE_UNIQUE_STATES,
             MAX_1_SINGLETON)
 
-    print>>fileobj, dedent("""\
+    print(dedent("""\
         #NEXUS
 
         [ Citation:                                                          ]
         [   Dunn, Michael; Ludewig, Julia; et al. 2011. IELex (Indo-European ]
         [   Lexicon) Database. Max Planck Institute for Psycholinguistics,   ]
         [   Nijmegen.                                                        ]
-        """)
-    print>>fileobj, "[ Language list: %s ]" % language_list_name
-    print>>fileobj, "[ Meaning list: %s ]" % meaning_list_name
-    print>>fileobj, "[ Exclude rating/s: %s ]" % ", ".join(sorted(exclude_ratings))
-    print>>fileobj, "[ Include unique states: %s ]" % INCLUDE_UNIQUE_STATES
+        """), file=fileobj)
+    print("[ Language list: %s ]" % language_list_name, file=fileobj)
+    print("[ Meaning list: %s ]" % meaning_list_name, file=fileobj)
+    print("[ Exclude rating/s: %s ]" % ", ".join(sorted(exclude_ratings)), file=fileobj)
+    print("[ Include unique states: %s ]" % INCLUDE_UNIQUE_STATES, file=fileobj)
     if INCLUDE_UNIQUE_STATES:
-        print>>fileobj, "[ Limit of one singleton per language/meaning: %s ]" % MAX_1_SINGLETON
-    print>>fileobj, "[ File generated: %s ]\n" % \
-            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        print("[ Limit of one singleton per language/meaning: %s ]" %
+                MAX_1_SINGLETON, file=fileobj)
+    print("[ File generated: %s ]\n" % time.strftime("%Y-%m-%d %H:%M:%S",
+            time.localtime()), file=fileobj)
 
     if dialect in ("NN", "MB"):
-        print>>fileobj, dedent("""\
+        print(dedent("""\
             begin taxa;
               dimensions ntax=%s;
               taxlabels %s;
             end;
-            """ % (len(languages), " ".join(language_names)))
-        print>>fileobj, dedent("""\
+            """ % (len(languages), " ".join(language_names))), file=fileobj)
+        print(dedent("""\
             begin characters;
               dimensions nchar=%s;
               format symbols="01" missing=?;
-              charstatelabels""" % len(cognate_class_names))
+              charstatelabels""" % len(cognate_class_names)), file=fileobj)
         labels = []
 
         for i, cc in enumerate(sorted((cognate_class_names))):
             labels.append("    %d %s" % (i+1, cc))
-        print>>fileobj, ",\n".join(labels)
-        print>>fileobj, "  ;\n  matrix"
+        print(*labels, sep=",\n", file=fileobj)
+        print("  ;\n  matrix", file=fileobj)
     else:
         assert dialect == "BP"
-        print>>fileobj, dedent("""\
+        print(dedent("""\
             begin data;
               dimensions ntax=%s nchar=%s;
               taxlabels %s;
               format symbols="01";
               matrix
-            """ % (len(languages), len(cognate_class_names), " ".join(language_names)))
+            """ % (len(languages), len(cognate_class_names), " ".join(language_names))),
+                    file=fileobj)
 
     if LABEL_COGNATE_SETS:
         row = [" "*9] + [str(i).ljust(10) for i in
                 range(len(cognate_class_names))[10::10]]
-        print>>fileobj, "    %s[ %s ]" % (" "*max_len, "".join(row))
+        print("    %s[ %s ]" % (" "*max_len, "".join(row)), file=fileobj)
         row = [" "*9] + [".         " for i in range(len(cognate_class_names))[10::10]]
-        print>>fileobj, "    %s[ %s ]" % (" "*max_len, "".join(row))
+        print("    %s[ %s ]" % (" "*max_len, "".join(row)), file=fileobj)
 
     # write matrix
     for row in matrix:
         language_name, row = row[0], row[1:]
-        print>>fileobj, "    '%s' %s%s" % (language_name,
-                " "*(max_len - len(language_name)), "".join(row))
-    print>>fileobj, "  ;\nend;\n"
+        print("    '%s' %s%s" % (language_name,
+                " "*(max_len - len(language_name)), "".join(row)), file=fileobj)
+    print("  ;\nend;\n", file=fileobj)
 
     if dialect == "BP":
-        print>>fileobj, dedent("""\
+        print(dedent("""\
             begin BayesPhylogenies;
                 Chains 1;
                 it 12000000;
@@ -227,7 +266,7 @@ def write_nexus(fileobj,
                 pf 10000;
                 autorun;
             end;
-            """)
+            """), file=fileobj)
 
     # get contributor list:
     # lexical sources
@@ -239,10 +278,10 @@ def write_nexus(fileobj,
     seconds = int(time.time() - start_time)
     minutes = seconds // 60
     seconds %= 60
-    print>>fileobj, "[ Processing time: %02d:%02d ]" % (minutes, seconds)
-    print>>fileobj, "[ %s ]" % " ".join(sys.argv)
-    print ("# Processed %s cognate sets from %s languages" %
-            (len(cognate_class_names), len(matrix)))
+    print("[ Processing time: %02d:%02d ]" % (minutes, seconds), file=fileobj)
+    print("[ %s ]" % " ".join(sys.argv), file=fileobj)
+    print("# Processed %s cognate sets from %s languages" %
+            (len(cognate_class_names), len(matrix)), file=sys.stderr)
     return fileobj
 
 def write_delimited(fileobj,
@@ -273,17 +312,17 @@ def write_delimited(fileobj,
     matrix, cognate_class_names = construct_matrix(languages,
             meanings, exclude_ratings, exclude_invariant, INCLUDE_UNIQUE_STATES,
             MAX_1_SINGLETON)
-    print>>fileobj, "\t" + "\t".join(cognate_class_names)
+    print("\t" + "\t".join(cognate_class_names), file=fileobj)
     for row in matrix:
-        print>>fileobj, "\t".join(row)
+        print(*row, sep="\t", file=fileobj)
 
     seconds = int(time.time() - start_time)
     minutes = seconds // 60
     seconds %= 60
-    print>>sys.stderr, "# Processing time: %02d:%02d" % (minutes, seconds)
-    print>>sys.stderr, "# %s" % " ".join(sys.argv)
-    print>>sys.stderr, ("# Processed %s cognate sets from %s languages" %
-            (len(cognate_class_names), len(matrix)))
+    print("# Processing time: %02d:%02d" % (minutes, seconds), file=sys.stderr)
+    print("# %s" % " ".join(sys.argv), file=sys.stderr)
+    print("# Processed %s cognate sets from %s languages" %
+            (len(cognate_class_names), len(matrix)), file=sys.stderr)
     return fileobj
 
 def construct_matrix(
@@ -395,3 +434,36 @@ def construct_matrix(
             matrix.append(row)
 
         return matrix, cognate_class_names
+
+def dump_cognate_data(
+            fileobj,
+            language_list_name,
+            meaning_list_name): #,
+            # exclude_ratings,
+            # dialect,
+            # LABEL_COGNATE_SETS,
+            # singletons,
+            # exclude_invariant):
+    language_list = LanguageList.objects.get(name=language_list_name)
+    languages = language_list.languages.all().order_by("languagelistorder")
+    meaning_list = MeaningList.objects.get(name=meaning_list_name)
+    meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
+
+    cognate_judgements = CognateJudgement.objects.filter(
+            lexeme__language__in=languages,
+            lexeme__meaning__in=meanings
+            ).order_by("lexeme__meaning", "cognate_class__alias", "lexeme__language")
+
+    print("Processed", cognate_judgements.count(), "cognate judgements",
+            file=sys.stderr)
+    print("cc_alias", "cc_id", "language", "lexeme", "status", sep="\t",
+            file=fileobj)
+    for cj in cognate_judgements:
+        if ("L" in cj.reliability_ratings) or ("L" in cj.lexeme.reliability_ratings):
+            loanword_flag = "LOAN"
+        else:
+            loanword_flag = ""
+        print(cj.lexeme.meaning.gloss+"-"+cj.cognate_class.alias,
+                str(cj.cognate_class.id), cj.lexeme.language.ascii_name,
+                unicode(cj.lexeme), loanword_flag, sep="\t", file=fileobj)
+    return fileobj

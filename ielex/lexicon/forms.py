@@ -2,10 +2,7 @@ from django import forms
 from ielex.forms import ChooseLanguageListField, ChooseMeaningListField
 from ielex.lexicon.models import LanguageList, MeaningList, RELIABILITY_CHOICES
 
-class ChooseNexusOutputForm(forms.Form):
-    DIALECT = (("BP", "BayesPhylogenies"),
-            ("NN", "NeighborNet"),
-            ("MB", "MrBayes"))
+class ChooseOutputBaseForm(forms.Form):
     SINGLETON = (("all", "All singletons"),
             ("limited", "Maximum one singleton per language"),
             ("none", "No singletons"))
@@ -19,6 +16,7 @@ class ChooseNexusOutputForm(forms.Form):
             widget=forms.Select())
     reliability = forms.MultipleChoiceField(choices=RELIABILITY_CHOICES,
             widget=forms.CheckboxSelectMultiple,
+            required=False,
             label="Exclude ratings")
     # unique = forms.BooleanField(label="Include unique states")
     exclude_invariant = forms.BooleanField(required=False,
@@ -26,7 +24,14 @@ class ChooseNexusOutputForm(forms.Form):
     singletons = forms.ChoiceField(choices=SINGLETON,
             widget=forms.RadioSelect,
             label="Singletons")
+
+class ChooseNexusOutputForm(ChooseOutputBaseForm):
+    DIALECT = (("BP", "BayesPhylogenies"),
+            ("NN", "NeighborNet"),
+            ("MB", "MrBayes"))
     dialect = forms.ChoiceField(choices=DIALECT,
             widget=forms.RadioSelect,
             label="NEXUS dialect")
 
+class DumpSnapshotForm(ChooseOutputBaseForm):
+    pass

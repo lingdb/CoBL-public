@@ -240,6 +240,7 @@ if settings.semantic_domains:
 
 urlpatterns += patterns('',
         url(r'^nexus/$', login_required(NexusExportView.as_view()), name="nexus"),
+        url(r'^dump/$', login_required(DumpRawDataView.as_view()), name="dump"),
         )
 
 urlpatterns += patterns('django.contrib.auth',
