@@ -8,7 +8,7 @@ TO make a local copy of a running, online instance of the database
 3. Initialize the local database::
 
     ./manage.py syncdb
-    ./manage.py migrate``
+    ./manage.py migrate
 
 4. Flush the database (i.e. generate the sql commands to delete all the rows of
    data in the tables of the database)::
