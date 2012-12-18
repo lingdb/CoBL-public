@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from ielex.lexicon.models import *
 from ielex.lexicon.templatetags.lexicon_utils import wikilink
+from StringIO import StringIO
 
 def make_basic_objects():
     """Make a basic website with one of each kind of object and return a

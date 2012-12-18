@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}IE Lexicon Dump Raw Data{% endblock %}
+
+{% block top %}
+<h1>Dump Raw Data</h1>
+{% endblock %}
+
+{% block content %}
+<form action="" method="POST">{% csrf_token %}
+  <fieldset>
+    <legend>Dump raw data</legend>
+    <table>
+      {{ form.as_table }}
+    </table>
+    {% include "buttons/submit-cancel.html" %}
+  </fieldset>
+</form>
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+{# include "snippets/change_sort_order.html" #}
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
