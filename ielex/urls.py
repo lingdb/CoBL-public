@@ -45,7 +45,7 @@ urlpatterns = patterns('',
     url(r'^languagelist/add-new/$', add_language_list, name="add-language-list"),
     url(r'^languagelist/%(LANGUAGELIST)s/$' % R, view_language_list,
             name="view-language-list"),
-    url(r'^languagelist/%s/$' % LanguageList.DEFAULT, view_language_list, 
+    url(r'^languagelist/%s/$' % LanguageList.DEFAULT, view_language_list,
             name="view-all-languages"),
     url(r'^languagelist/%(LANGUAGELIST)s/edit/$' % R, edit_language_list,
             name="edit-language-list"),
@@ -194,7 +194,7 @@ urlpatterns = patterns('',
             name="cognate-class-citation-view"),
     # Cognate citation :: update
     url(r'^cognate/citation/(?P<pk>\d+)/edit/$',
-            CognateClassCitationUpdateView.as_view(),
+            login_required(CognateClassCitationUpdateView.as_view()),
             name="cognate-citation-edit"),
     # handle redundant cognate_id
     url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/edit/$',
@@ -202,8 +202,13 @@ urlpatterns = patterns('',
             name="cognate-class-citation-edit"),
     # Cognate citation :: add
     url(r'^cognate/(?P<cognate_id>\d+)/add-citation/$',
-            CognateClassCitationCreateView.as_view(),
+            login_required(CognateClassCitationCreateView.as_view()),
             name="cognate-class-citation-create"),
+    # Cognate citation :: delete
+    url(r'^cognate/citation/(?P<pk>\d+)/delete/$',
+            login_required(cognate_class_citation_delete),
+            name="cognate-citation-delete"),
+
 
     # Cognate judgement :: detail
     url(r'^cognate/judgement/(?P<pk>\d+)/$',
@@ -235,6 +240,7 @@ if settings.semantic_domains:
 
 urlpatterns += patterns('',
         url(r'^nexus/$', login_required(NexusExportView.as_view()), name="nexus"),
+        url(r'^dump/$', login_required(DumpRawDataView.as_view()), name="dump"),
         )
 
 urlpatterns += patterns('django.contrib.auth',

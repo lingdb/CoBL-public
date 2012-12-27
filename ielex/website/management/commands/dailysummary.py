@@ -2,6 +2,7 @@ from __future__ import print_function
 from optparse import make_option
 from datetime import datetime, timedelta
 import sys
+from textwrap import dedent
 from django.core.management.base import NoArgsCommand, CommandError
 from django.core.mail import mail_admins
 from django.contrib.auth.models import User
@@ -45,6 +46,9 @@ class Command(LexDBManagementCommand):
         print_report("  End:", strftime(end_date))
         print_report()
 
+        recent_changes = Revision.objects.filter(
+                date_created__gt=start_date).order_by("date_created")
+
         # Report logins
         print_report("== Logins ==")
         for user in User.objects.filter(
@@ -53,16 +57,29 @@ class Command(LexDBManagementCommand):
             activity_flag = True
         print_report()
 
+        print_report("== Active editors ==")
+        user_ids = set(recent_changes.values_list("user", flat=True))
+        if None in user_ids:
+            print_report(dedent("""\
+            ***********************************************
+            WARNING: revisions made by unauthenticated user
+            (indicates a missing login_required constraint)
+            ***********************************************"""))
+        for user in User.objects.filter(
+                id__in=user_ids):
+            print_report(strftime(user.last_login), strfuser(user))
+        print_report()
 
         # Report database changes
         boring_models = [LanguageListOrder]
-        recent_changes = Revision.objects.filter(
-                date_created__gt=start_date).order_by("date_created")
         print_report("== Activity report ==")
         for revision in recent_changes:
             timestamp = strftime(revision.date_created)
             user = revision.user
-            print_report(timestamp, user)
+            if user:
+                print_report(timestamp, user)
+            else:
+                print_report(timestamp, "** UNAUTHENTICATED USER **")
             for version in revision.version_set.all():
                 model = version.content_type.model_class() 
                 if model not in boring_models:

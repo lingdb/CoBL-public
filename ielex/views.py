@@ -12,7 +12,7 @@ from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 # from django.db import transaction
 from django.db.models import Q, Max, Count
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template import Template
@@ -103,13 +103,16 @@ def view_object_history(request, version_id):
 
 def get_canonical_meaning(meaning):
     """Identify meaning from id number or partial name"""
-    if meaning.isdigit():
-        meaning = Meaning.objects.get(id=meaning)
-    else:
-        meaning = Meaning.objects.get(gloss=meaning)
+    try:
+        if meaning.isdigit():
+            meaning = Meaning.objects.get(id=meaning)
+        else:
+            meaning = Meaning.objects.get(gloss=meaning)
+    except Meaning.DoesNotExist:
+        raise Http404("Meaning '%s' does not exist" % meaning)
     return meaning
 
-def get_canonical_language(language):
+def get_canonical_language(language, request=None):
     """Identify language from id number or partial name"""
     if not language:
         raise Language.DoesNotExist
@@ -123,10 +126,17 @@ def get_canonical_language(language):
                 language = Language.objects.get(
                     ascii_name__istartswith=language)
             except Language.MultipleObjectsReturned:
-                language = Language.objects.filter(
-                    ascii_name__istartswith=language).order_by("ascii_name")[0]
-            # except Language.DoesNotExist # still! XXX
-            #   language = Language.objects.last_added()
+                if request:
+                    messages.add_message(request, messages.INFO,
+                            ("There are multiple languages matching"\
+                            " '%s' in the database") % language)
+                raise Http404
+            except Language.DoesNotExist:
+                if request:
+                    messages.add_message(request, messages.INFO,
+                            ("There is no language named or starting"\
+                            " with '%s' in the database") % language)
+                raise Http404
     return language
 
 def get_current_language_list_name(request):
@@ -213,7 +223,7 @@ def update_object_from_form(model_object, form):
 
 # -- /language(s)/ ----------------------------------------------------------
 
-def get_canonical_language_list(language_list=None):
+def get_canonical_language_list(language_list=None, request=None):
     """Returns a LanguageList object"""
     try:
         if language_list is None:
@@ -223,7 +233,11 @@ def get_canonical_language_list(language_list=None):
         else:
             language_list = LanguageList.objects.get(name=language_list)
     except LanguageList.DoesNotExist:
-        language_list = LanguageList.objects.get(name=LanguageList.DEFAULT)
+        if request:
+            messages.add_message(request, messages.INFO,
+                    ("There is no language list matching"\
+                    " '%s' in the database") % language_list)
+        raise Http404
     return language_list
 
 # def get_language_list_form(request):
@@ -244,10 +258,7 @@ def get_canonical_language_list(language_list=None):
 
 
 def view_language_list(request, language_list=None):
-    if not language_list:
-        return(redirect("view-language-list",
-            language_list=LanguageList.DEFAULT))
-    current_list = get_canonical_language_list(language_list)
+    current_list = get_canonical_language_list(language_list, request)
     request.session["current_language_list_name"] = current_list.name
     languages = current_list.languages.all().order_by("languagelistorder")
     languages = languages.annotate(lexeme_count=Count("lexeme"))
@@ -327,15 +338,7 @@ def view_language_wordlist(request, language, wordlist):
     try:
         language = Language.objects.get(ascii_name=language)
     except Language.DoesNotExist:
-        try:
-            language = get_canonical_language(language)
-        except Language.DoesNotExist:
-            msg = u"There is not language named ‘%s’ in the database" % language
-            messages.add_message(request, messages.INFO, msg)
-            language_list = request.session.get("current_language_list_name",
-                    LanguageList.DEFAULT)
-            return HttpResponseRedirect(reverse('view-language-list',
-                args=[language_list]))
+        language = get_canonical_language(language, request)
         return HttpResponseRedirect(reverse("view-language-wordlist",
             args=[language.ascii_name, wordlist.name]))
 
@@ -396,7 +399,7 @@ def add_language_list(request):
 
 @login_required
 def edit_language_list(request, language_list=None):
-    language_list = get_canonical_language_list(language_list) # a language list object
+    language_list = get_canonical_language_list(language_list, request) # a language list object
     language_list_all = get_canonical_language_list()  # a language list object
     included_languages = language_list.languages.all().order_by("languagelistorder")
     excluded_languages = language_list_all.languages.exclude(
@@ -475,7 +478,7 @@ def edit_language(request, language):
     try:
         language = Language.objects.get(ascii_name=language)
     except Language.DoesNotExist:
-        language = get_canonical_language(language)
+        language = get_canonical_language(language, request)
         return HttpResponseRedirect(reverse("language-edit",
                 args=[language.ascii_name]))
 
@@ -497,7 +500,7 @@ def delete_language(request, language):
     try:
         language = Language.objects.get(ascii_name=language)
     except Language.DoesNotExist:
-        language = get_canonical_language(language)
+        language = get_canonical_language(language, request)
         return HttpResponseRedirect(reverse("language-delete"),
                 args=[language.ascii_name])
 
@@ -646,7 +649,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
     # Normalize calling parameters
     canonical_gloss = get_canonical_meaning(meaning).gloss
-    current_language_list = get_canonical_language_list(language_list)
+    current_language_list = get_canonical_language_list(language_list, request)
     request.session["current_language_list_name"] = current_language_list.name
     if meaning != canonical_gloss or language_list != current_language_list.name:
         return HttpResponseRedirect(reverse("view-meaning-languages", 
@@ -747,7 +750,12 @@ def get_ordered_lexemes(meaning, language_list, *select_related_fields):
 
 def view_lexeme(request, lexeme_id):
     """For un-logged-in users, view only"""
-    lexeme = Lexeme.objects.get(id=lexeme_id)
+    try:
+        lexeme = Lexeme.objects.get(id=lexeme_id)
+    except Lexeme.DoesNotExist:
+        messages.add_message(request, messages.INFO,
+                "There is no lexeme with id=%s" % lexeme_id)
+        raise Http404
     prev_lexeme, next_lexeme = get_prev_and_next_lexemes(request, lexeme)
     return render_template(request, "lexeme_report.html",
             {"lexeme":lexeme,
@@ -756,9 +764,14 @@ def view_lexeme(request, lexeme_id):
 
 @login_required
 def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
+    try:
+        lexeme = Lexeme.objects.get(id=lexeme_id)
+    except Lexeme.DoesNotExist:
+        messages.add_message(request, messages.INFO,
+                "There is no lexeme with id=%s" % lexeme_id)
+        raise Http404
     citation_id = int(citation_id)
     cogjudge_id = int(cogjudge_id)
-    lexeme = Lexeme.objects.get(id=lexeme_id)
     form = None
 
     def warn_if_lacking_cognate_judgement_citation():
@@ -876,7 +889,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     request.session["previous_cognate_citation_id"] = citation.id
                     return HttpResponseRedirect(get_redirect_url(form, citation))
             elif action == "add-cognate":
-                languagelist = get_canonical_language_list(get_current_language_list_name(request))
+                languagelist = get_canonical_language_list(
+                        get_current_language_list_name(request), request)
                 redirect_url = '%s#lexeme_%s' % (
                         reverse("view-meaning-languages-add-cognate",
                         args=[lexeme.meaning.gloss, languagelist, lexeme.id]), lexeme.id)
@@ -934,7 +948,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     form = AddCitationForm()
                 # form = AddCitationForm()
             elif action == "add-cognate":
-                languagelist = get_canonical_language_list(get_current_language_list_name(request))
+                languagelist = get_canonical_language_list(
+                        get_current_language_list_name(request), request)
                 redirect_url = '%s#lexeme_%s' % (
                         reverse("view-meaning-languages-add-cognate",
                         args=[lexeme.meaning.gloss, languagelist, lexeme.id]), lexeme.id)
@@ -1046,7 +1061,7 @@ def lexeme_add(request,
     # with cognate coding and everything (include a #current tag too)
     initial_data = {}
     if language:
-        initial_data["language"] = get_canonical_language(language)
+        initial_data["language"] = get_canonical_language(language, request)
     if meaning:
         initial_data["meaning"] = get_canonical_meaning(meaning)
     # if lexeme_id:

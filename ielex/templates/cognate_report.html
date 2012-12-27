@@ -119,7 +119,9 @@
 {% include "snippets/go_to.html" %}
 {# include "snippets/change_sort_order.html" #}
 <ul class="navigation">
+  {% if user.is_authenticated %}
   <li><a href="{% url cognate-class-citation-create cognate_class.id %}">add citation</a></li>
+  {% endif %}
   {% if not cognate_class.name and user.is_authenticated %}
   <li><a href="{% url edit-cognate-name cognate_class.id %}">name this cognate class</a></li>
   {% endif %}
