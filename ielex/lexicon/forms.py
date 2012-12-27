@@ -3,9 +3,6 @@ from ielex.forms import ChooseLanguageListField, ChooseMeaningListField
 from ielex.lexicon.models import LanguageList, MeaningList, RELIABILITY_CHOICES
 
 class ChooseOutputBaseForm(forms.Form):
-    SINGLETON = (("all", "All singletons"),
-            ("limited", "Maximum one singleton per language"),
-            ("none", "No singletons"))
     language_list = ChooseLanguageListField(
             queryset=LanguageList.objects.all(),
             empty_label=None,
@@ -14,6 +11,17 @@ class ChooseOutputBaseForm(forms.Form):
             queryset=MeaningList.objects.all(),
             empty_label=None,
             widget=forms.Select())
+
+class ChooseNexusOutputForm(ChooseOutputBaseForm):
+    SINGLETON = (("all", "All singletons"),
+            ("limited", "Maximum one singleton per language"),
+            ("none", "No singletons"))
+    DIALECT = (("BP", "BayesPhylogenies"),
+            ("NN", "NeighborNet"),
+            ("MB", "MrBayes"))
+    dialect = forms.ChoiceField(choices=DIALECT,
+            widget=forms.RadioSelect,
+            label="NEXUS dialect")
     reliability = forms.MultipleChoiceField(choices=RELIABILITY_CHOICES,
             widget=forms.CheckboxSelectMultiple,
             required=False,
@@ -24,14 +32,6 @@ class ChooseOutputBaseForm(forms.Form):
     singletons = forms.ChoiceField(choices=SINGLETON,
             widget=forms.RadioSelect,
             label="Singletons")
-
-class ChooseNexusOutputForm(ChooseOutputBaseForm):
-    DIALECT = (("BP", "BayesPhylogenies"),
-            ("NN", "NeighborNet"),
-            ("MB", "MrBayes"))
-    dialect = forms.ChoiceField(choices=DIALECT,
-            widget=forms.RadioSelect,
-            label="NEXUS dialect")
 
 class DumpSnapshotForm(ChooseOutputBaseForm):
     pass
