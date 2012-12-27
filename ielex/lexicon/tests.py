@@ -203,3 +203,12 @@ class SignalsTests(TestCase):
                 lexeme=lexeme,
                 cognate_class=self.cognate_class_A)
         self.assertEqual(self.meaning.percent_coded, 100)
+
+# class ExportNexusFormTests(TestCase):
+#     
+#     def setUp(self):
+#         self.db = make_basic_objects()
+# 
+#     def test_default_form(self):
+#         form = ChooseNexusOutputForm()
+#         self.assertTrue(form.is_valid())
