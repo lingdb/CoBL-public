@@ -464,7 +464,11 @@ def dump_cognate_data(
         else:
             loanword_flag = ""
         if ("X" in cj.reliability_ratings) or ("X" in cj.lexeme.reliability_ratings):
-            loanword_flag += ",EXCLUDE"
+            if loanword_flag:
+                loanword_flag += ",EXCLUDE"
+            else:
+                loanword_flag += "EXCLUDE"
+
         print(cj.lexeme.meaning.gloss+"-"+cj.cognate_class.alias,
                 str(cj.cognate_class.id), cj.lexeme.language.ascii_name,
                 unicode(cj.lexeme), loanword_flag, sep="\t", file=fileobj)
