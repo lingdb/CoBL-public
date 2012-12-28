@@ -456,8 +456,8 @@ def dump_cognate_data(
 
     print("Processed", cognate_judgements.count(), "cognate judgements",
             file=sys.stderr)
-    print("cc_alias", "cc_id", "language", "lexeme", "status", sep="\t",
-            file=fileobj)
+    print("cc_alias", "cc_id", "language", "lexeme", "lexeme_id", "status",
+            sep="\t", file=fileobj)
     for cj in cognate_judgements:
         if ("L" in cj.reliability_ratings) or ("L" in cj.lexeme.reliability_ratings):
             loanword_flag = "LOAN"
@@ -470,6 +470,27 @@ def dump_cognate_data(
                 loanword_flag += "EXCLUDE"
 
         print(cj.lexeme.meaning.gloss+"-"+cj.cognate_class.alias,
-                str(cj.cognate_class.id), cj.lexeme.language.ascii_name,
-                unicode(cj.lexeme), loanword_flag, sep="\t", file=fileobj)
+                cj.cognate_class.id, cj.lexeme.language.ascii_name,
+                unicode(cj.lexeme), cj.lexeme.id,
+                loanword_flag, sep="\t", file=fileobj)
+    lexemes = Lexeme.objects.filter(
+            language__in=languages,
+            meaning__in=meanings,
+            cognate_class=None
+            ).order_by("meaning", "language")
+    for lexeme in lexemes:
+        if ("L" in lexeme.reliability_ratings):
+            loanword_flag = "LOAN"
+        else:
+            loanword_flag = ""
+        if ("X" in lexeme.reliability_ratings):
+            if loanword_flag:
+                loanword_flag += ",EXCLUDE"
+            else:
+                loanword_flag += "EXCLUDE"
+        print(lexeme.meaning.gloss,
+                "", lexeme.language.ascii_name,
+                unicode(lexeme), lexeme.id,
+                loanword_flag, sep="\t", file=fileobj)
+
     return fileobj
