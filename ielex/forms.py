@@ -75,6 +75,14 @@ class AddLexemeForm(forms.ModelForm):
     gloss = forms.CharField(required=False, help_text="""The actual gloss of
             this lexeme, may be different to 'meaning'""")
 
+    def clean_source_form(self):
+        source_form = self.cleaned_data["source_form"]
+        return source_form.strip()
+
+    def clean_phon_form(self):
+        phon_form = self.cleaned_data["phon_form"]
+        return phon_form.strip()
+
     class Meta:
         model = Lexeme
         exclude = ["cognate_class", "source"]

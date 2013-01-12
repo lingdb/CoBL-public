@@ -212,3 +212,29 @@ class SignalsTests(TestCase):
 # 
 #     def test_defaults(self):
 #         self.assertTrue(self.form.is_valid())
+
+class CleanLexemeFormTests(TestCase):
+
+    def setUp(self):
+        self.db = make_basic_objects()
+
+    def test_required_source_form(self):
+        from ielex.forms import AddLexemeForm
+        form = AddLexemeForm({
+            "source_form":"AAA",
+            "language":self.db[Language].id,
+            "meaning":self.db[Meaning].id})
+        self.assertTrue(form.is_valid())
+
+    def test_stripped_whitespace(self):
+        from ielex.forms import AddLexemeForm
+        form = AddLexemeForm({
+            "source_form":"\tAAA\n",
+            "phon_form":" BBB\t",
+            "language":self.db[Language].id,
+            "meaning":self.db[Meaning].id})
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data["source_form"], "AAA")
+        self.assertEqual(form.cleaned_data["phon_form"], "BBB")
+
+
