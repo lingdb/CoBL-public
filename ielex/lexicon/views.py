@@ -471,7 +471,7 @@ def dump_cognate_data(
 
         print(cj.lexeme.meaning.gloss+"-"+cj.cognate_class.alias,
                 cj.cognate_class.id, cj.lexeme.language.ascii_name,
-                unicode(cj.lexeme), cj.lexeme.id,
+                unicode(cj.lexeme.strip()), cj.lexeme.id,
                 loanword_flag, sep="\t", file=fileobj)
     lexemes = Lexeme.objects.filter(
             language__in=languages,
