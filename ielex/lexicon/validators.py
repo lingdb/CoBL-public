@@ -14,17 +14,21 @@ def suitable_for_url(value):
     unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
 
     """
-    # TODO: reserved names 'all', 'none' (put this list somewhere)
-    # n.b. that 'all' and 'none' are valid names for e.g. glosses
-
-    reserved_names =["all", "all-alpha"]
-    # cf also clean_ascii_name function in forms.py
+    # also used by the clean_value_for_url function in forms.py
     regex = re.compile(r"^[a-zA-Z0-9_.~-]+$")
     match = regex.match(value)
     if not match:
         raise ValidationError("""This field can only include characters
                 which are legal in a url: letters, digits and - . _ ~""")
-    if value in reserved_names:
-        raise ValidationError("""This name is reserved for
-                system-internal use. Please choose another.""")
     return
+
+def reserved_names(*names):
+    # reserved_names =["all", "all-alpha"]
+    def test_reserved_names(value):
+        if value in names:
+            raise ValidationError(
+            "The name `%s' is reserved for system-internal use. Please choose another."
+            % value)
+        return
+    return test_reserved_names
+

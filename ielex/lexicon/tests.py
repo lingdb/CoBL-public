@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # tests specific to lexicon module
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -253,12 +254,17 @@ class LanguageFormTests(TestCase):
         self.assertEqual(form.cleaned_data["utf8_name"], "BBB")
 
     def test_invalid_for_url(self):
-        form = self.EditLanguageForm({
-            "ascii_name":"A/A",
-            "utf8_name":" BB"})
-        self.assertFalse(form.is_valid())
+        for name in ["A/A", u"əŋ", "A A"]:
+            form = self.EditLanguageForm({
+                "ascii_name":name,
+                "utf8_name":"BB"})
+            self.assertFalse(form.is_valid())
 
 
+class ValidatorTests(TestCase):
 
-class FormFunctionTests(TestCase):
-    """Test utility etc. functions in forms.py"""
+    def test_reserved_names_validator(self):
+        validator = reserved_names("all", "all-alpha")
+        for name in ["all", "all-alpha"]:
+            self.assertRaises(ValidationError, lambda: validator(name))
+

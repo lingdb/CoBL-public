@@ -330,7 +330,8 @@ class LanguageList(models.Model):
     """
     DEFAULT = "all" # all languages
 
-    name = models.CharField(max_length=128, unique=True, validators=[suitable_for_url])
+    name = models.CharField(max_length=128, unique=True, 
+            validators=[suitable_for_url, reserved_names("all", "all-alpha")])
     description = models.TextField(blank=True, null=True)
     languages = models.ManyToManyField(Language, through="LanguageListOrder")
     modified = models.DateTimeField(auto_now=True)
@@ -431,7 +432,8 @@ class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
     DEFAULT = "all"
 
-    name = models.CharField(max_length=128, validators=[suitable_for_url])
+    name = models.CharField(max_length=128,
+            validators=[suitable_for_url, reserved_names("all", "all-alpha")])
     description = models.TextField(blank=True, null=True)
     meaning_ids = models.CommaSeparatedIntegerField(max_length=4096)
     modified = models.DateTimeField(auto_now=True)

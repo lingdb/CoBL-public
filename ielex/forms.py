@@ -3,22 +3,25 @@ import re
 from django import forms
 from django.forms import ValidationError
 from ielex.lexicon.models import *
+from ielex.lexicon.validators import suitable_for_url
 # from ielex.extensional_semantics.models import *
 
 def clean_value_for_url(instance, field_label):
-    """Check that a string is suitable to be part of a url (ascii, no spaces)"""
+    """Check that a string in a form field is suitable to be part of a url"""
+    # TODO compare the suitable_for_url validator 
     data = instance.cleaned_data[field_label]
     data = data.strip()
-    # TODO use the suitable_for_url validator here
-    illegal_chars = re.findall(r"[^a-zA-Z0-9$\-_\.+!*'(),]", data)
-    try:
-        assert not illegal_chars
-    except AssertionError:
-        raise ValidationError("Invalid character/s for an ascii label:"\
-                " '%s'" % "', '".join(illegal_chars))
+    suitable_for_url(data)
+    # illegal_chars = re.findall(r"[^a-zA-Z0-9$\-_\.+!*'(),]", data)
+    # try:
+    #     assert not illegal_chars
+    # except AssertionError:
+    #     raise ValidationError("Invalid character/s for an ascii label:"\
+    #             " '%s'" % "', '".join(illegal_chars))
     return data
 
 def strip_whitespace(instance, field_label):
+    """Strip the whitespace from around a form field before validation"""
     data = instance.cleaned_data[field_label]
     return data.strip()
 
