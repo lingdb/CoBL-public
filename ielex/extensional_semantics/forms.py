@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
-from ielex.forms import clean_ascii_name
+from ielex.forms import clean_value_for_url
 from ielex.extensional_semantics.models import *
 from ielex.lexicon.models import RELIABILITY_CHOICES
 
@@ -19,9 +19,7 @@ class ChooseExcludedRelationsField(ChooseSemanticRelationsField):
 class EditRelationForm(forms.ModelForm):
 
     def clean_relation_code(self):
-        data = self.cleaned_data["relation_code"]
-        clean_ascii_name(data)
-        return data
+        return clean_value_for_url(self, "relation_code")
 
     class Meta:
         model = SemanticRelation
@@ -29,9 +27,7 @@ class EditRelationForm(forms.ModelForm):
 class EditSemanticDomainForm(forms.ModelForm):
 
     def clean_name(self):
-        data = self.cleaned_data["name"]
-        clean_ascii_name(data)
-        return data
+        return clean_value_for_url(self, "name")
 
     class Meta:
         model = SemanticDomain

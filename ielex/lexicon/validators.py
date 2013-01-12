@@ -13,8 +13,10 @@ def suitable_for_url(value):
 
     unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
 
-    TODO: reserved names 'all', 'none' # put this list somewhere
     """
+    # TODO: reserved names 'all', 'none' (put this list somewhere)
+    # n.b. that 'all' and 'none' are valid names for e.g. glosses
+
     reserved_names =["all", "all-alpha"]
     # cf also clean_ascii_name function in forms.py
     regex = re.compile(r"^[a-zA-Z0-9_.~-]+$")

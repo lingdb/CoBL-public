@@ -4,8 +4,10 @@ from django import forms
 from ielex.lexicon.models import *
 # from ielex.extensional_semantics.models import *
 
-def clean_ascii_name(data):
+def clean_value_for_url(instance, field_label):
     """Check that a string is suitable to be part of a url (ascii, no spaces)"""
+    data = instance.cleaned_data[field_label]
+    data = data.strip()
     # TODO use the suitable_for_url validator here
     illegal_chars = re.findall(r"[^a-zA-Z0-9$\-_\.+!*'(),]", data)
     try:
@@ -15,8 +17,8 @@ def clean_ascii_name(data):
                 " '%s'" % "', '".join(illegal_chars))
     return data
 
-def clean_whitespace(data):
-    # TODO use me in all forms
+def strip_whitespace(instance, field_label):
+    data = instance.cleaned_data[field_label]
     return data.strip()
 
 class ChooseLanguageField(forms.ModelChoiceField):
@@ -76,12 +78,10 @@ class AddLexemeForm(forms.ModelForm):
             this lexeme, may be different to 'meaning'""")
 
     def clean_source_form(self):
-        source_form = self.cleaned_data["source_form"]
-        return source_form.strip()
+        return strip_whitespace(self, "source_form")
 
     def clean_phon_form(self):
-        phon_form = self.cleaned_data["phon_form"]
-        return phon_form.strip()
+        return strip_whitespace(self, "phon_form")
 
     class Meta:
         model = Lexeme
@@ -110,9 +110,7 @@ class EditSourceForm(forms.ModelForm):
 class EditLanguageForm(forms.ModelForm):
 
     def clean_ascii_name(self):
-        data = self.cleaned_data["ascii_name"]
-        clean_ascii_name(data)
-        return data
+        return clean_value_for_url(self, "ascii_name")
 
     class Meta:
         model = Language
@@ -120,9 +118,7 @@ class EditLanguageForm(forms.ModelForm):
 class EditMeaningForm(forms.ModelForm):
 
     def clean_gloss(self):
-        data = self.cleaned_data["gloss"]
-        clean_ascii_name(data)
-        return data
+        return clean_value_for_url(self, "gloss")
 
     class Meta:
         model = Meaning
@@ -130,9 +126,7 @@ class EditMeaningForm(forms.ModelForm):
 class EditMeaningListForm(forms.ModelForm):
 
     def clean_gloss(self):
-        data = self.cleaned_data["name"]
-        clean_ascii_name(data)
-        return data
+        return clean_value_for_url(self, "name")
 
     class Meta:
         model = MeaningList
@@ -164,9 +158,7 @@ class AddLanguageListForm(forms.ModelForm):
 class EditLanguageListForm(forms.ModelForm):
 
     def clean_name(self):
-        data = self.cleaned_data["name"]
-        clean_ascii_name(data)
-        return data
+        return clean_value_for_url(self, "name")
 
     class Meta:
         model = LanguageList

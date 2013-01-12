@@ -217,10 +217,11 @@ class CleanLexemeFormTests(TestCase):
 
     def setUp(self):
         self.db = make_basic_objects()
+        from ielex.forms import AddLexemeForm
+        self.AddLexemeForm = AddLexemeForm
 
     def test_required_source_form(self):
-        from ielex.forms import AddLexemeForm
-        form = AddLexemeForm({
+        form = self.AddLexemeForm({
             "source_form":"AAA",
             "language":self.db[Language].id,
             "meaning":self.db[Meaning].id})
@@ -228,7 +229,7 @@ class CleanLexemeFormTests(TestCase):
 
     def test_stripped_whitespace(self):
         from ielex.forms import AddLexemeForm
-        form = AddLexemeForm({
+        form = self.AddLexemeForm({
             "source_form":"\tAAA\n",
             "phon_form":" BBB\t",
             "language":self.db[Language].id,
@@ -237,4 +238,10 @@ class CleanLexemeFormTests(TestCase):
         self.assertEqual(form.cleaned_data["source_form"], "AAA")
         self.assertEqual(form.cleaned_data["phon_form"], "BBB")
 
+#class LanguageFormTests(TestCase):
 
+    # test validation and cleaning of names
+
+
+class FormFunctionTests(TestCase):
+    """Test utility etc. functions in forms.py"""
