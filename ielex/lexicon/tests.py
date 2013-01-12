@@ -1,6 +1,7 @@
 # tests specific to lexicon module
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.core.validators import ValidationError
 from ielex.lexicon.models import *
 from ielex.lexicon.templatetags.lexicon_utils import wikilink
 #from ielex.lexicon.forms import ChooseNexusOutputForm
@@ -228,7 +229,6 @@ class CleanLexemeFormTests(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_stripped_whitespace(self):
-        from ielex.forms import AddLexemeForm
         form = self.AddLexemeForm({
             "source_form":"\tAAA\n",
             "phon_form":" BBB\t",
@@ -238,9 +238,26 @@ class CleanLexemeFormTests(TestCase):
         self.assertEqual(form.cleaned_data["source_form"], "AAA")
         self.assertEqual(form.cleaned_data["phon_form"], "BBB")
 
-#class LanguageFormTests(TestCase):
+class LanguageFormTests(TestCase):
 
-    # test validation and cleaning of names
+    def setUp(self):
+        from ielex.forms import EditLanguageForm
+        self.EditLanguageForm = EditLanguageForm
+
+    def test_stripped_whitespace(self):
+        form = self.EditLanguageForm({
+            "ascii_name":"\tAAA\n",
+            "utf8_name":" BBB\t"})
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data["ascii_name"], "AAA")
+        self.assertEqual(form.cleaned_data["utf8_name"], "BBB")
+
+    def test_invalid_for_url(self):
+        form = self.EditLanguageForm({
+            "ascii_name":"A/A",
+            "utf8_name":" BB"})
+        self.assertFalse(form.is_valid())
+
 
 
 class FormFunctionTests(TestCase):

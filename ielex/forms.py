@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 from django import forms
+from django.forms import ValidationError
 from ielex.lexicon.models import *
 # from ielex.extensional_semantics.models import *
 
@@ -13,7 +14,7 @@ def clean_value_for_url(instance, field_label):
     try:
         assert not illegal_chars
     except AssertionError:
-        raise forms.ValidationError("Invalid character/s for an ascii label:"\
+        raise ValidationError("Invalid character/s for an ascii label:"\
                 " '%s'" % "', '".join(illegal_chars))
     return data
 
@@ -111,6 +112,9 @@ class EditLanguageForm(forms.ModelForm):
 
     def clean_ascii_name(self):
         return clean_value_for_url(self, "ascii_name")
+
+    def clean_utf8_name(self):
+        return strip_whitespace(self, "utf8_name")
 
     class Meta:
         model = Language
