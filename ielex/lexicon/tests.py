@@ -260,11 +260,17 @@ class LanguageFormTests(TestCase):
                 "utf8_name":"BB"})
             self.assertFalse(form.is_valid())
 
-
 class ValidatorTests(TestCase):
 
     def test_reserved_names_validator(self):
         validator = reserved_names("all", "all-alpha")
-        for name in ["all", "all-alpha"]:
-            self.assertRaises(ValidationError, lambda: validator(name))
+        for name in ["foo", "bar"]: # good names
+            self.assertIsNone(validator(name))
+        for name in ["all", "all-alpha"]: # bad names
+            self.assertRaises(ValidationError, validator, name)
 
+    def test_suitable_for_url_validator(self):
+        for name in ["aaa", "a-a", "a_a", "a~"]: # good names
+            self.assertIsNone(suitable_for_url(name))
+        for name in ["A/A", u"əŋ", "A A"]: # bad names
+            self.assertRaises(ValidationError, suitable_for_url, name)
