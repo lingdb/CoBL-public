@@ -490,7 +490,7 @@ def dump_cognate_data(
                 loanword_flag += "EXCLUDE"
         print(lexeme.meaning.gloss,
                 "", lexeme.language.ascii_name,
-                unicode(lexeme), lexeme.id,
-                loanword_flag, sep="\t", file=fileobj)
+                unicode(cj.lexeme.phon_form or cj.lexeme.source_form).strip(), 
+                lexeme.id, loanword_flag, sep="\t", file=fileobj)
 
     return fileobj
