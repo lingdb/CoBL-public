@@ -471,8 +471,9 @@ def dump_cognate_data(
 
         print(cj.lexeme.meaning.gloss+"-"+cj.cognate_class.alias,
                 cj.cognate_class.id, cj.lexeme.language.ascii_name,
-                unicode(cj.lexeme.phon_form or cj.lexeme.source_form).strip(),
-                cj.lexeme.id, loanword_flag, sep="\t", file=fileobj)
+                unicode(cj.lexeme.phon_form.strip() or
+                cj.lexeme.source_form.strip()), cj.lexeme.id,
+                loanword_flag, sep="\t", file=fileobj)
     lexemes = Lexeme.objects.filter(
             language__in=languages,
             meaning__in=meanings,
@@ -490,7 +491,8 @@ def dump_cognate_data(
                 loanword_flag += "EXCLUDE"
         print(lexeme.meaning.gloss,
                 "", lexeme.language.ascii_name,
-                unicode(cj.lexeme.phon_form or cj.lexeme.source_form).strip(), 
-                lexeme.id, loanword_flag, sep="\t", file=fileobj)
+                unicode(cj.lexeme.phon_form.strip() or
+                cj.lexeme.source_form.strip()), lexeme.id, loanword_flag,
+                sep="\t", file=fileobj)
 
     return fileobj
