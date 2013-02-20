@@ -274,3 +274,21 @@ class ValidatorTests(TestCase):
             self.assertIsNone(suitable_for_url(name))
         for name in ["A/A", u"əŋ", "A A"]: # bad names
             self.assertRaises(ValidationError, suitable_for_url, name)
+
+class FunctionsTests(TestCase):
+
+    def setUp(self):
+        from ielex.lexicon.functions import local_iso_code_generator
+        self.generator = local_iso_code_generator()
+
+    def test_basic_generator_function(self):
+        codes = ["qaa", "qab", "qac"]
+        for code in codes:
+            self.assertEqual(code, self.generator.next())
+
+    def test_exclude_known_codes(self):
+        Language.objects.create(ascii_name="Qab", utf8_name="Qab", iso_code="qab")
+        Language.objects.create(ascii_name="Qad", utf8_name="Qad", iso_code="qad")
+        codes = ["qaa", "qac", "qae"]
+        for code in codes:
+            self.assertEqual(code, self.generator.next())

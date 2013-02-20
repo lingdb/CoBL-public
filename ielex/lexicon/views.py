@@ -11,6 +11,7 @@ from django.views.generic import CreateView, UpdateView, TemplateView
 from django.contrib import messages
 from ielex import settings
 from ielex.lexicon.models import *
+from ielex.lexicon.functions import local_iso_code_generator
 from ielex.shortcuts import render_template
 from ielex.forms import EditCognateClassCitationForm
 from ielex.lexicon.forms import ChooseNexusOutputForm, DumpSnapshotForm
@@ -159,13 +160,14 @@ class DumpRawDataView(TemplateView):
         return response
 
 def write_nexus(fileobj,
-            language_list_name,
-            meaning_list_name,
-            exclude_ratings, # set
-            dialect, # string
+            language_list_name, # string
+            meaning_list_name,  # string
+            exclude_ratings,    # set
+            dialect,            # string
             LABEL_COGNATE_SETS, # bool
-            singletons, # string
-            exclude_invariant): # bool
+            singletons,         # string
+            exclude_invariant,  # bool
+            use_iso_codes):     # bool
     start_time = time.time()
 
     # MAX_1_SINGLETON: True|False
@@ -184,7 +186,22 @@ def write_nexus(fileobj,
     # get data together
     language_list = LanguageList.objects.get(name=language_list_name)
     languages = language_list.languages.all().order_by("languagelistorder")
-    language_names = [language.ascii_name for language in languages]
+    if use_iso_codes:
+        iso_codes_and_names = []
+        code_generator = local_iso_code_generator()
+        language_names = []
+        for language in languages:
+            if language.iso_code and language.iso_code not in language_names:
+                language_names.append(language.iso_code)
+                iso_codes_and_names.append((language.iso_code,
+                    language.ascii_name))
+            else:
+                iso_code = code_generator.next()
+                language_names.append(iso_code)
+                iso_codes_and_names.append((iso_code,
+                    language.ascii_name))
+    else:
+        language_names = [language.ascii_name for language in languages]
 
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
     meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
@@ -254,6 +271,11 @@ def write_nexus(fileobj,
         print("    '%s' %s%s" % (language_name,
                 " "*(max_len - len(language_name)), "".join(row)), file=fileobj)
     print("  ;\nend;\n", file=fileobj)
+
+    if use_iso_codes:
+        print("[ Local (one-off for this file) ISO codes: ]", file=fileobj)
+        for iso_code, name in sorted(iso_codes_and_names):
+            print("[ %s: %s ]" % (iso_code, name.ljust(50)), file=fileobj)
 
     if dialect == "BP":
         print(dedent("""\
