@@ -27,6 +27,9 @@ class Command(LexDBManagementCommand):
                 help="Suppress cognate sets with a reflex present"\
                 " in all languages (missing data is not treated as"\
                 " evidence of variation) [don't suppress]"),
+            make_option("--use-iso-codes", dest="use_iso_codes",
+                action="store_true", default=False,
+                help="Use ISO codes instead of language names"),
             make_option("--outfile", dest="filename",
                 action="store", default=None,
                 help="Name of destination file [output to screen]"),
@@ -46,7 +49,8 @@ class Command(LexDBManagementCommand):
             "NN", # dialect
             True, # label cognate sets
             options["unique"],
-            options["exclude_invariant"])
+            options["exclude_invariant"],
+            options["use_iso_codes"])
         fileobj.close()
         return
 

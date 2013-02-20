@@ -187,19 +187,18 @@ def write_nexus(fileobj,
     language_list = LanguageList.objects.get(name=language_list_name)
     languages = language_list.languages.all().order_by("languagelistorder")
     if use_iso_codes:
-        iso_codes_and_names = []
+        names_and_iso_codes = []
         code_generator = local_iso_code_generator()
         language_names = []
         for language in languages:
             if language.iso_code and language.iso_code not in language_names:
                 language_names.append(language.iso_code)
-                iso_codes_and_names.append((language.iso_code,
-                    language.ascii_name))
+                names_and_iso_codes.append((language.ascii_name,
+                    language.iso_code))
             else:
                 iso_code = code_generator.next()
                 language_names.append(iso_code)
-                iso_codes_and_names.append((iso_code,
-                    language.ascii_name))
+                names_and_iso_codes.append((language.ascii_name, iso_code))
     else:
         language_names = [language.ascii_name for language in languages]
 
@@ -266,16 +265,19 @@ def write_nexus(fileobj,
         print("    %s[ %s ]" % (" "*max_len, "".join(row)), file=fileobj)
 
     # write matrix
+    name2iso_code = dict(names_and_iso_codes)
     for row in matrix:
         language_name, row = row[0], row[1:]
+        if use_iso_codes:
+            language_name = name2iso_code[language_name]
         print("    '%s' %s%s" % (language_name,
                 " "*(max_len - len(language_name)), "".join(row)), file=fileobj)
     print("  ;\nend;\n", file=fileobj)
 
     if use_iso_codes:
-        print("[ Local (one-off for this file) ISO codes: ]", file=fileobj)
-        for iso_code, name in sorted(iso_codes_and_names):
-            print("[ %s: %s ]" % (iso_code, name.ljust(50)), file=fileobj)
+        print("[ ISO code: name (may include local codes) ]", file=fileobj)
+        for name, iso_code in sorted(names_and_iso_codes, key=lambda e:e[1]):
+            print("[ %s: %s ]" % (iso_code, name.ljust(35)), file=fileobj)
 
     if dialect == "BP":
         print(dedent("""\
