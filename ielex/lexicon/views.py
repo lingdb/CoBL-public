@@ -118,7 +118,8 @@ class NexusExportView(TemplateView):
                 form.cleaned_data["dialect"],
                 True,
                 form.cleaned_data["singletons"],
-                form.cleaned_data["exclude_invariant"]
+                form.cleaned_data["exclude_invariant"],
+                form.cleaned_data["use_iso_codes"]
                 )
         return response
 
