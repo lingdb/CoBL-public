@@ -40,7 +40,7 @@ class Command(LexDBManagementCommand):
                     language_list=target_list)
             llt.order = LanguageListOrder.objects.get(
                     language=language,
-                    language_list=source_list).order + 0.1
+                    language_list=source_list).order + 0.1 # avoid collisions
             llt.save()
         return
 
