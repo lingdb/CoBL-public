@@ -266,7 +266,8 @@ def write_nexus(fileobj,
         print("    %s[ %s ]" % (" "*max_len, "".join(row)), file=fileobj)
 
     # write matrix
-    name2iso_code = dict(names_and_iso_codes)
+    if use_iso_codes:
+        name2iso_code = dict(names_and_iso_codes)
     for row in matrix:
         language_name, row = row[0], row[1:]
         if use_iso_codes:
