@@ -32,6 +32,9 @@ class ChooseNexusOutputForm(ChooseOutputBaseForm):
     singletons = forms.ChoiceField(choices=SINGLETON,
             widget=forms.RadioSelect,
             label="Singletons")
+    use_iso_codes = forms.BooleanField(
+            required=False,
+            label="Use ISO codes instead of language names")
 
 class DumpSnapshotForm(ChooseOutputBaseForm):
     pass

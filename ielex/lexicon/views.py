@@ -11,6 +11,7 @@ from django.views.generic import CreateView, UpdateView, TemplateView
 from django.contrib import messages
 from ielex import settings
 from ielex.lexicon.models import *
+from ielex.lexicon.functions import local_iso_code_generator
 from ielex.shortcuts import render_template
 from ielex.forms import EditCognateClassCitationForm
 from ielex.lexicon.forms import ChooseNexusOutputForm, DumpSnapshotForm
@@ -117,7 +118,8 @@ class NexusExportView(TemplateView):
                 form.cleaned_data["dialect"],
                 True,
                 form.cleaned_data["singletons"],
-                form.cleaned_data["exclude_invariant"]
+                form.cleaned_data["exclude_invariant"],
+                form.cleaned_data["use_iso_codes"]
                 )
         return response
 
@@ -159,13 +161,14 @@ class DumpRawDataView(TemplateView):
         return response
 
 def write_nexus(fileobj,
-            language_list_name,
-            meaning_list_name,
-            exclude_ratings, # set
-            dialect, # string
+            language_list_name, # string
+            meaning_list_name,  # string
+            exclude_ratings,    # set
+            dialect,            # string
             LABEL_COGNATE_SETS, # bool
-            singletons, # string
-            exclude_invariant): # bool
+            singletons,         # string
+            exclude_invariant,  # bool
+            use_iso_codes):     # bool
     start_time = time.time()
 
     # MAX_1_SINGLETON: True|False
@@ -184,7 +187,21 @@ def write_nexus(fileobj,
     # get data together
     language_list = LanguageList.objects.get(name=language_list_name)
     languages = language_list.languages.all().order_by("languagelistorder")
-    language_names = [language.ascii_name for language in languages]
+    if use_iso_codes:
+        names_and_iso_codes = []
+        code_generator = local_iso_code_generator()
+        language_names = []
+        for language in languages:
+            if language.iso_code and language.iso_code not in language_names:
+                language_names.append(language.iso_code)
+                names_and_iso_codes.append((language.ascii_name,
+                    language.iso_code))
+            else:
+                iso_code = code_generator.next()
+                language_names.append(iso_code)
+                names_and_iso_codes.append((language.ascii_name, iso_code))
+    else:
+        language_names = [language.ascii_name for language in languages]
 
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
     meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
@@ -249,11 +266,20 @@ def write_nexus(fileobj,
         print("    %s[ %s ]" % (" "*max_len, "".join(row)), file=fileobj)
 
     # write matrix
+    if use_iso_codes:
+        name2iso_code = dict(names_and_iso_codes)
     for row in matrix:
         language_name, row = row[0], row[1:]
+        if use_iso_codes:
+            language_name = name2iso_code[language_name]
         print("    '%s' %s%s" % (language_name,
                 " "*(max_len - len(language_name)), "".join(row)), file=fileobj)
     print("  ;\nend;\n", file=fileobj)
+
+    if use_iso_codes:
+        print("[ ISO code: name (may include local codes) ]", file=fileobj)
+        for name, iso_code in sorted(names_and_iso_codes, key=lambda e:e[1]):
+            print("[ %s: %s ]" % (iso_code, name.ljust(35)), file=fileobj)
 
     if dialect == "BP":
         print(dedent("""\
@@ -471,7 +497,8 @@ def dump_cognate_data(
 
         print(cj.lexeme.meaning.gloss+"-"+cj.cognate_class.alias,
                 cj.cognate_class.id, cj.lexeme.language.ascii_name,
-                unicode(cj.lexeme.strip()), cj.lexeme.id,
+                unicode(cj.lexeme.phon_form.strip() or
+                cj.lexeme.source_form.strip()), cj.lexeme.id,
                 loanword_flag, sep="\t", file=fileobj)
     lexemes = Lexeme.objects.filter(
             language__in=languages,
@@ -490,7 +517,8 @@ def dump_cognate_data(
                 loanword_flag += "EXCLUDE"
         print(lexeme.meaning.gloss,
                 "", lexeme.language.ascii_name,
-                unicode(lexeme), lexeme.id,
-                loanword_flag, sep="\t", file=fileobj)
+                unicode(lexeme.phon_form.strip() or
+                lexeme.source_form.strip()), lexeme.id, loanword_flag,
+                sep="\t", file=fileobj)
 
     return fileobj
