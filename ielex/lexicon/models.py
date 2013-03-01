@@ -5,6 +5,9 @@ from django.db.models import Max, F
 from django.core.urlresolvers import reverse
 ## from django.core.cache import cache
 from django.db import connection, transaction ### testing
+from django.db import IntegrityError
+from django.dispatch import receiver
+from django.db.models.signals import pre_delete, post_delete
 from django.utils.safestring import SafeString
 # from django.contrib import admin
 import reversion
@@ -565,6 +568,15 @@ class CognateClassCitation(AbstractBaseCitation):
     class Meta:
         unique_together = (("cognate_class", "source"),)
 
+@receiver(post_delete, sender=CognateJudgementCitation)
+def check_cognate_judgement_has_citation(sender, instance, **kwargs):
+    try:
+        if instance.cognate_judgement.source.count() == 0:
+            raise IntegrityError(
+                    "This deletion would leave parent without citations")
+    except CognateJudgement.DoesNotExist:
+        pass # parent has been deleted
+
 @disable_for_loaddata
 def update_language_list_all(sender, instance, **kwargs):
     """Update the LanguageList 'all' whenever Language table is changed"""
@@ -649,6 +661,8 @@ models.signals.post_save.connect(update_denormalized_from_lexeme,
         sender=Lexeme)
 models.signals.post_delete.connect(update_denormalized_from_lexeme,
         sender=Lexeme)
+
+
 
 # -- Reversion registration ----------------------------------------
 

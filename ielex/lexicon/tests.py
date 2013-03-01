@@ -215,6 +215,65 @@ class SignalsTests(TestCase):
 #     def test_defaults(self):
 #         self.assertTrue(self.form.is_valid())
 
+class CognateCitationValidityTests(TestCase):
+
+    def setUp(self):
+        self.language = Language.objects.create(
+                ascii_name="Test_Language",
+                utf8_name="Test Language")
+        self.meaning = Meaning.objects.create(
+                gloss="test meaning")
+        self.source = Source.objects.create(citation_text="a")
+        self.cognate_class = CognateClass.objects.create(alias="A")
+        self.lexeme = Lexeme.objects.create(source_form="a",
+                meaning=self.meaning,
+                language=self.language)
+        self.delete = lambda obj: obj.delete()
+
+    def test_cant_delete_final_citation(self):
+        # can't delete final citation without deleting CognateClass itself
+        cognate_judgement = CognateJudgement.objects.create(
+                lexeme=self.lexeme,
+                cognate_class=self.cognate_class)
+        citation = CognateJudgementCitation.objects.create(
+                source=self.source,
+                cognate_judgement=cognate_judgement,
+                reliability="B")
+        self.failUnlessRaises(IntegrityError, self.delete, citation)
+
+    def test_can_delete_penultimate_citation_(self):
+        # can't delete final citation without deleting CognateClass itself
+        cognate_judgement = CognateJudgement.objects.create(
+                lexeme=self.lexeme,
+                cognate_class=self.cognate_class)
+        citation_1 = CognateJudgementCitation.objects.create(
+                source=self.source,
+                cognate_judgement=cognate_judgement,
+                reliability="B")
+        citation_2 = CognateJudgementCitation.objects.create(
+                source=Source.objects.create(citation_text="B"),
+                cognate_judgement=cognate_judgement,
+                reliability="X")
+        self.assertEqual(cognate_judgement.source.count(), 2)
+        citation_2.delete()
+        self.assertEqual(cognate_judgement.source.count(), 1)
+        self.failUnlessRaises(IntegrityError, self.delete, citation_1)
+
+    def test_can_still_delete_on_cascade(self):
+        cognate_judgement = CognateJudgement.objects.create(
+                lexeme=self.lexeme,
+                cognate_class=self.cognate_class)
+        citation = CognateJudgementCitation.objects.create(
+                source=self.source,
+                cognate_judgement=cognate_judgement,
+                reliability="B")
+        try:
+            cognate_judgement.delete()
+        except IntegrityError:
+            self.fail("Should be able to delete final citation via cascade")
+
+
+
 class CleanLexemeFormTests(TestCase):
 
     def setUp(self):
