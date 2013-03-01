@@ -865,8 +865,15 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 return HttpResponseRedirect(redirect_url)
             elif action == "delink-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
-                citation.delete()
-                warn_if_lacking_cognate_judgement_citation()
+                try:
+                    citation.delete()
+                except IntegrityError:
+                    messages.add_message(request,
+                            messages.WARNING,
+                            """Deletion of final cognate citation is not
+                            allowed (Delete the cognate class itself instead,
+                            if that's what you mean)""")
+                # warn_if_lacking_cognate_judgement_citation()
                 return HttpResponseRedirect(get_redirect_url(form))
             elif action == "edit-cognate-citation":
                 form = EditCitationForm(request.POST)
@@ -963,8 +970,15 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 return HttpResponseRedirect(redirect_url)
             elif action == "delink-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
-                citation.delete()
-                warn_if_lacking_cognate_judgement_citation()
+                try:
+                    citation.delete()
+                except IntegrityError:
+                    messages.add_message(request,
+                            messages.WARNING,
+                            """Deletion of final cognate citation is not
+                            allowed (Delete the cognate class itself instead,
+                            if that's what you mean)""")
+                # warn_if_lacking_cognate_judgement_citation()
                 return HttpResponseRedirect(redirect_url)
             elif action == "add-new-cognate":
                 current_aliases = CognateClass.objects.filter(
