@@ -774,6 +774,25 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     cogjudge_id = int(cogjudge_id)
     form = None
 
+    def DELETE_CITATION_WARNING_MSG():
+        messages.add_message(
+                request,
+                messages.WARNING,
+                oneline("""Deletion of the final citation is not allowed. If
+                you need to, add a new one before deleting the current
+                one."""))
+
+    def DELETE_COGJUDGE_WARNING_MSG(citation):
+        msg = Template(oneline("""Deletion of final cognate citation is not
+            allowed (Delete the cognate class {{ alias }} itself
+            instead, if that's what you mean)"""))
+        context = RequestContext(request)
+        context["alias"] = citation.cognate_judgement.cognate_class.alias
+        messages.add_message(
+                request,
+                messages.WARNING,
+                msg.render(context))
+
     def warn_if_lacking_cognate_judgement_citation():
         for cognate_judgement in CognateJudgement.objects.filter(
                 lexeme=lexeme):
@@ -861,18 +880,17 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     return HttpResponseRedirect(get_redirect_url(form, citation))
             elif action == "delink-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
-                citation.delete()
+                try:
+                    citation.delete()
+                except IntegrityError:
+                    DELETE_CITATION_WARNING_MSG()
                 return HttpResponseRedirect(redirect_url)
             elif action == "delink-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 try:
                     citation.delete()
                 except IntegrityError:
-                    messages.add_message(request,
-                            messages.WARNING,
-                            """Deletion of final cognate citation is not
-                            allowed (Delete the cognate class itself instead,
-                            if that's what you mean)""")
+                    DELETE_COGJUDGE_WARNING_MSG(citation)
                 # warn_if_lacking_cognate_judgement_citation()
                 return HttpResponseRedirect(get_redirect_url(form))
             elif action == "edit-cognate-citation":
@@ -966,18 +984,17 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 # return HttpResponseRedirect(redirect_url)
             elif action == "delink-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
-                citation.delete()
+                try:
+                    citation.delete()
+                except IntegrityError:
+                    DELETE_CITATION_WARNING_MSG()
                 return HttpResponseRedirect(redirect_url)
             elif action == "delink-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 try:
                     citation.delete()
                 except IntegrityError:
-                    messages.add_message(request,
-                            messages.WARNING,
-                            """Deletion of final cognate citation is not
-                            allowed (Delete the cognate class itself instead,
-                            if that's what you mean)""")
+                    DELETE_COGJUDGE_WARNING_MSG(citation)
                 # warn_if_lacking_cognate_judgement_citation()
                 return HttpResponseRedirect(redirect_url)
             elif action == "add-new-cognate":

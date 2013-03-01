@@ -242,7 +242,7 @@ class CognateCitationValidityTests(TestCase):
         self.failUnlessRaises(IntegrityError, self.delete, citation)
         self.assertEqual(cognate_judgement.source.count(), 1)
 
-    def test_can_delete_penultimate_citation_(self):
+    def test_can_delete_penultimate_citation(self):
         # can't delete final citation without deleting CognateClass itself
         cognate_judgement = CognateJudgement.objects.create(
                 lexeme=self.lexeme,
@@ -270,6 +270,60 @@ class CognateCitationValidityTests(TestCase):
                 reliability="B")
         try:
             cognate_judgement.delete()
+        except IntegrityError:
+            self.fail("Should be able to delete final citation via cascade")
+
+
+class LexemeCitationValidityTests(TestCase):
+
+    def setUp(self):
+        self.language = Language.objects.create(
+                ascii_name="Test_Language",
+                utf8_name="Test Language")
+        self.meaning = Meaning.objects.create(
+                gloss="test meaning")
+        self.source = Source.objects.create(citation_text="a")
+        self.delete = lambda obj: obj.delete()
+
+    def test_cant_delete_final_citation(self):
+        lexeme = Lexeme.objects.create(source_form="a",
+                meaning=self.meaning,
+                language=self.language)
+        citation = LexemeCitation.objects.create(
+                lexeme=lexeme,
+                source=self.source,
+                reliability="B")
+        self.failUnlessRaises(IntegrityError, self.delete, citation)
+        self.assertEqual(lexeme.source.count(), 1)
+
+    def test_can_delete_penultimate_citation(self):
+        lexeme = Lexeme.objects.create(source_form="a",
+                meaning=self.meaning,
+                language=self.language)
+        citation_1 = LexemeCitation.objects.create(
+                lexeme=lexeme,
+                source=self.source,
+                reliability="B")
+        citation_2 = LexemeCitation.objects.create(
+                lexeme=lexeme,
+                source=Source.objects.create(citation_text="B"),
+                reliability="X")
+        self.assertEqual(lexeme.source.count(), 2)
+        citation_2.delete()
+        self.assertEqual(lexeme.source.count(), 1)
+        self.failUnlessRaises(IntegrityError, self.delete, citation_1)
+
+    def test_can_still_delete_on_cascade(self):
+        lexeme = Lexeme.objects.create(
+                source_form="a",
+                meaning=self.meaning,
+                language=self.language)
+        citation = LexemeCitation.objects.create(
+                lexeme=lexeme,
+                source=self.source,
+                reliability="B")
+        try:
+            lexeme.delete()
         except IntegrityError:
             self.fail("Should be able to delete final citation via cascade")
 

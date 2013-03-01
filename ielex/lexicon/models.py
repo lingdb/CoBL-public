@@ -578,6 +578,16 @@ def check_cognate_judgement_has_citation(sender, instance, **kwargs):
     except CognateJudgement.DoesNotExist:
         pass # parent has been deleted
 
+@receiver(post_delete, sender=LexemeCitation)
+def check_lexeme_has_citation(sender, instance, **kwargs):
+    try:
+        if instance.lexeme.source.count() == 0:
+            instance.save() # reinstate object
+            raise IntegrityError(
+                    "This deletion would leave parent without citations")
+    except Lexeme.DoesNotExist:
+        pass # parent has been deleted
+
 @disable_for_loaddata
 def update_language_list_all(sender, instance, **kwargs):
     """Update the LanguageList 'all' whenever Language table is changed"""
@@ -625,17 +635,20 @@ models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
 @disable_for_loaddata
 def update_denormalized_data(sender, instance, **kwargs):
-    if sender in [CognateJudgement, LexemeCitation]:
-        lexeme = instance.lexeme
-    elif sender == CognateJudgementCitation:
-        try:
-            lexeme = instance.cognate_judgement.lexeme
-        except CognateJudgement.DoesNotExist: # e.g. if the cognate judgement
-            return      # citation is deleted automatically because the cognate
-                        # judgement has been deleted
-    if sender in [CognateJudgement, CognateJudgementCitation]:
-        lexeme.set_number_cognate_coded()
-    lexeme.set_denormalized_cognate_classes()
+    try:
+        if sender in [CognateJudgement, LexemeCitation]:
+            lexeme = instance.lexeme
+        elif sender == CognateJudgementCitation:
+            try:
+                lexeme = instance.cognate_judgement.lexeme
+            except CognateJudgement.DoesNotExist: # e.g. if the cognate judgement
+                return      # citation is deleted automatically because the cognate
+                            # judgement has been deleted
+        if sender in [CognateJudgement, CognateJudgementCitation]:
+            lexeme.set_number_cognate_coded()
+        lexeme.set_denormalized_cognate_classes()
+    except Lexeme.DoesNotExist:
+        pass # must have been deleted
     return
 
 models.signals.post_save.connect(update_denormalized_data,
