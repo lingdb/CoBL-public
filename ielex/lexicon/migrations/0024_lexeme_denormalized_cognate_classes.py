@@ -13,8 +13,15 @@ class Migration(DataMigration):
             data = []
             for cc in lexeme.cognate_class.all():
                 data.append(cc.id)
-                reliability = orm.CognateJudgement.objects.get(lexeme=lexeme,
-                        cognate_class=cc).cognatejudgementcitation_set.values_list(
+                # reliability = orm.CognateJudgement.objects.get(lexeme=lexeme,
+                #         cognate_class=cc).cognatejudgementcitation_set.values_list(
+                #         "reliability", flat=True)
+                ## Handle pathological cases where more than one
+                ## CognateJudgement links the same Lexeme to the same CognateClass
+                ## (as soon as this changed the denormalization is updated)
+                cj = orm.CognateJudgement.objects.filter(lexeme=lexeme,
+                        cognate_class=cc)[0]
+                reliability = cj.cognatejudgementcitation_set.values_list(
                         "reliability", flat=True)
                 if "L" in reliability:
                     data.append("(%s)" % cc.alias)
