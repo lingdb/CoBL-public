@@ -240,6 +240,7 @@ class CognateCitationValidityTests(TestCase):
                 cognate_judgement=cognate_judgement,
                 reliability="B")
         self.failUnlessRaises(IntegrityError, self.delete, citation)
+        self.assertEqual(cognate_judgement.source.count(), 1)
 
     def test_can_delete_penultimate_citation_(self):
         # can't delete final citation without deleting CognateClass itself

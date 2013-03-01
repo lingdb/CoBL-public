@@ -572,6 +572,7 @@ class CognateClassCitation(AbstractBaseCitation):
 def check_cognate_judgement_has_citation(sender, instance, **kwargs):
     try:
         if instance.cognate_judgement.source.count() == 0:
+            instance.save() # reinstate object
             raise IntegrityError(
                     "This deletion would leave parent without citations")
     except CognateJudgement.DoesNotExist:
