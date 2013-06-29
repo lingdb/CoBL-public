@@ -438,18 +438,8 @@ class MeaningList(models.Model):
     name = models.CharField(max_length=128,
             validators=[suitable_for_url, reserved_names("all", "all-alpha")])
     description = models.TextField(blank=True, null=True)
-    meaning_ids = models.CommaSeparatedIntegerField(max_length=4096)
+    meanings = models.ManyToManyField(Meaning, through="MeaningListOrder")
     modified = models.DateTimeField(auto_now=True)
-
-    def _get_list(self):
-        try:
-            return [int(i) for i in self.meaning_ids.split(",")]
-        except ValueError:
-            return []
-    def _set_list(self, listobj):
-        self.meaning_ids = ",".join([str(i) for i in listobj])
-        return
-    meaning_id_list = property(_get_list, _set_list)
 
     def get_absolute_url(self):
         return "/meanings/%s/" % self.name
@@ -631,18 +621,22 @@ models.signals.post_delete.connect(update_language_list_all, sender=Language)
 @disable_for_loaddata
 def update_meaning_list_all(sender, instance, **kwargs):
     ml, _ = MeaningList.objects.get_or_create(name=MeaningList.DEFAULT)
-    missing_ids = set(Meaning.objects.values_list("id", flat=True)) - set(ml.meaning_id_list)
-    if missing_ids:
-        ml.meaning_id_list = sorted(missing_ids) + ml.meaning_id_list
-        ml.save(force_update=True)
+    ml.sequentialize()
+
+    missing_meanings = set(Meaning.objects.all()) - set(ml.meanings.all())
+    for meaning in missing_meanings:
+        ml.append(meaning)
 
     # make alphabetized list
     default_alpha = MeaningList.DEFAULT+"-alpha"
-    ids = [i for n, i in sorted([(n.lower(), i) for n, i
-        in Meaning.objects.values_list("gloss", "id")])]
-    ml_alpha, _ = MeaningList.objects.get_or_create(name=default_alpha)
-    ml_alpha.meaning_id_list = ids
-    ml_alpha.save(force_update=True)
+    try:
+        ml_alpha = MeaningList.objects.get(name=default_alpha)
+        ml_alpha.delete()
+    except MeaningList.DoesNotExist:
+        pass
+    ml_alpha = MeaningList.objects.create(name=default_alpha)
+    for meaning in Meaning.objects.all().order_by("gloss"):
+        ml_alpha.append(meaning)
     return
 
 models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
