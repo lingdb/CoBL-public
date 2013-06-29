@@ -51,6 +51,7 @@ except Source.DoesNotExist:
 
 dummy = [None] * 4
 gloss = None
+meaning_list = MeaningList.objects.get(name=MeaningList.DEFAULT)
 for line in data:
     row = [elem.strip() for elem in line.rstrip().split("\t")] + dummy
     if row[1]:
@@ -60,7 +61,7 @@ for line in data:
     meaning, created = Meaning.objects.get_or_create(gloss=gloss,
             description=gloss)
     if created:
-        meaning_ids.append(meaning.id)
+        meaning_list.append(meaning)
     alias = get_next_alias(meaning)
     cognate_class = CognateClass.objects.create(alias=alias)
     for language, form in zip(languages, row[2:]):
@@ -82,6 +83,3 @@ for line in data:
                     reliability=reliability)
             print (meaning, language, lexeme, cognate_judgement)
 
-meaning_list = MeaningList.objects.get(name=MeaningList.DEFAULT)
-meaning_list.meaning_id_list = meaning_ids
-meaning_list.save()

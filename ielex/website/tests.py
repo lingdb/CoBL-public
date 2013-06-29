@@ -113,6 +113,53 @@ class UrlTests(TestCase):
                 pass 
         self.assertEqual(len(names), len(set(names)))
 
+class MeaningListTests(TestCase):
+
+    def setUp(self):
+        self.meanings = []
+        self.meaning_list = MeaningList.objects.create(name="MeaningListTests")
+        for NAME in "abcd":
+            meaning = Meaning.objects.create(gloss=NAME)
+            self.meanings.append(meaning)
+            self.meaning_list.append(meaning)
+
+    def test_append_to_meaning_list(self):
+        self.assertEqual(self.meanings,
+                list(self.meaning_list.meanings.all().order_by("meaninglistorder")))
+
+    def test_remove_from_meaning_list(self):
+        meaning = self.meanings[0]
+        self.meaning_list.remove(meaning)
+        self.assertEqual(self.meanings[1:],
+                list(self.meaning_list.meanings.all().order_by("meaninglistorder")))
+
+    def test_insert_to_meaning_list(self):
+        meaning = self.meanings[-1]
+        self.meaning_list.insert(0, meaning)
+        self.assertEqual([self.meanings[i] for i in (3,0,1,2)],
+                list(self.meaning_list.meanings.all().order_by("meaninglistorder")))
+
+    def test_swap_meanings(self):
+        l1 = self.meanings[1]
+        l2 = self.meanings[2]
+        self.meaning_list.swap(l1, l2)
+        self.assertEqual([self.meanings[0],self.meanings[2],self.meanings[1],self.meanings[3]],
+                list(self.meaning_list.meanings.all().order_by("meaninglistorder")))
+        self.meaning_list.swap(l1, l2)
+        self.assertEqual(self.meanings,
+                list(self.meaning_list.meanings.all().order_by("meaninglistorder")))
+
+    def test_reorder_view_down(self):
+        from ielex.views import move_meaning
+        meaning = self.meanings[0]
+        orders =[(1,0,2,3),
+                (1,2,0,3),
+                (1,2,3,0),
+                (0,1,2,3)]
+        for i, order in enumerate(orders):
+            move_meaning(meaning, self.meaning_list, 1)
+            self.assertEqual([self.meanings[i] for i in order],
+                    list(self.meaning_list.meanings.all().order_by("meaninglistorder")))
 
 class LanguageListTests(TestCase):
 

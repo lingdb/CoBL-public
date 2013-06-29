@@ -204,7 +204,7 @@ def write_nexus(fileobj,
         language_names = [language.ascii_name for language in languages]
 
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
-    meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
+    meanings = meaning_list.meanings.all().order_by("meaninglistorder")
     max_len = max([len(l) for l in language_names])
 
     matrix, cognate_class_names = construct_matrix(languages,
@@ -334,7 +334,7 @@ def write_delimited(fileobj,
     language_list = LanguageList.objects.get(name=language_list_name)
     languages = language_list.languages.all().order_by("languagelistorder")
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
-    meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
+    meanings = meaning_list.meanings.all().order_by("meaninglistorder")
     matrix, cognate_class_names = construct_matrix(languages,
             meanings, exclude_ratings, exclude_invariant, INCLUDE_UNIQUE_STATES,
             MAX_1_SINGLETON)
@@ -473,7 +473,7 @@ def dump_cognate_data(
     language_list = LanguageList.objects.get(name=language_list_name)
     languages = language_list.languages.all().order_by("languagelistorder")
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
-    meanings = Meaning.objects.filter(id__in=meaning_list.meaning_id_list)
+    meanings = meaning_list.meanings.all().order_by("meaninglistorder")
 
     cognate_judgements = CognateJudgement.objects.filter(
             lexeme__language__in=languages,

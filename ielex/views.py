@@ -167,22 +167,11 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
         next_language = Language.objects.get(id=ids[0])
     return (prev_language, next_language)
 
-def get_ordered_meanings(wordlist):
-    # TODO change this to the same ordering setup used by LanguageList (returns
-    # a queryset), after which it will be possible to annotate the meanings
-    # with e.g. Count()s
-    def get_list_sorter(wordlist):
-        def func(meaning):
-            return wordlist.meaning_id_list.index(meaning.id)
-        return func
-    queryset = Meaning.objects.filter(id__in=wordlist.meaning_id_list)
-    return sorted(queryset, key=get_list_sorter(wordlist))
-
 def get_prev_and_next_meanings(request, current_meaning):
     # We'll let this one use the session variable (kind of cheating...)
-    wordlist = request.session.get("current_wordlist_name", MeaningList.DEFAULT)
-    wordlist = MeaningList.objects.get(name=wordlist)
-    meanings = get_ordered_meanings(wordlist)
+    meaning_list = request.session.get("current_wordlist_name", MeaningList.DEFAULT)
+    meaning_list = MeaningList.objects.get(name=meaning_list)
+    meanings = meaning_list.meanings.all().order_by("meaninglistorder")
 
     ids = [m.id for m in meanings]
     current_idx = ids.index(current_meaning.id)
@@ -358,11 +347,13 @@ def view_language_wordlist(request, language, wordlist):
 
     # collect data
     lexemes = Lexeme.objects.filter(language=language,
-            meaning__id__in=wordlist.meaning_id_list
+            meaning__in=wordlist.meanings.all()
             ).select_related("meaning__gloss").order_by("meaning__gloss")
     # decorate (with a temporary attribute)
     for lexeme in lexemes:
-        lexeme.temporary_sort_order = wordlist.meaning_id_list.index(lexeme.meaning.id)
+        lexeme.temporary_sort_order = MeaningListOrder.objects.get(
+                meaning_list=wordlist,
+                meaning=lexeme.meaning).order
     lexemes = sorted(lexemes, key=lambda l:l.temporary_sort_order)
 
     prev_language, next_language = \
@@ -531,7 +522,7 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
         form = ChooseMeaningListForm()
     form.fields["meaning_list"].initial = wordlist.id
 
-    meanings = get_ordered_meanings(wordlist)
+    meanings = wordlist.meanings.all().order_by("meaninglistorder")
     current_language_list = request.session.get("current_language_list_name",
             LanguageList.DEFAULT)
     return render_template(request, "wordlist.html",
@@ -563,7 +554,7 @@ def edit_wordlist(request, wordlist):
 def reorder_wordlist(request, wordlist):
     meaning_id = request.session.get("current_meaning_id", None)
     wordlist = MeaningList.objects.get(name=wordlist)
-    meanings = get_ordered_meanings(wordlist)
+    meanings = wordlist.meanings.all().order_by("meaninglistorder")
 
     ReorderForm = make_reorder_meaninglist_form(meanings)
     if request.method == "POST":
@@ -596,17 +587,17 @@ def reorder_wordlist(request, wordlist):
 
 def move_meaning(meaning, wordlist, direction):
     assert direction in (-1, 1)
-    meaning_ids = wordlist.meaning_id_list[:] # copy
-    target_idx = meaning_ids.index(meaning.id)
-    target = meaning_ids.pop(target_idx)
-    target_idx += direction
-    if target_idx > len(meaning_ids):
-        target_idx = 0
-    elif target_idx < 0:
-        target_idx = len(meaning_ids) + 1
-    meaning_ids.insert(target_idx, target)
-    wordlist.meaning_id_list = meaning_ids
-    wordlist.save()
+    meanings = list(wordlist.meanings.all().order_by("meaninglistorder"))
+    index = meanings.index(meaning)
+    if index == 0 and direction == -1:
+        wordlist.remove(meaning)
+        wordlist.append(meaning)
+    else:
+        try:
+            neighbour = meanings[index+direction]
+            wordlist.swap(meaning, neighbour)
+        except IndexError:
+            wordlist.insert(0, meaning)
     return
 
 @login_required

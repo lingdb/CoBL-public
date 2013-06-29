@@ -441,6 +441,73 @@ class MeaningList(models.Model):
     meanings = models.ManyToManyField(Meaning, through="MeaningListOrder")
     modified = models.DateTimeField(auto_now=True)
 
+    def append(self, meaning):
+        """Add another meaning to the end of a MeaningList ordering"""
+        N = self.meaninglistorder_set.aggregate(Max("order")).values()[0]
+        try:
+            N += 1
+        except TypeError:
+            assert N is None
+            N = 0
+        MeaningListOrder.objects.create(
+                meaning=meaning,
+                meaning_list=self,
+                order=N)
+        return
+
+    def insert(self, N, meaning):
+        """Insert another meaning into a MeaningList ordering before the object position N"""
+        llo = MeaningListOrder.objects.get(
+                meaning=meaning,
+                meaning_list=self)
+        target = self.meaninglistorder_set.all()[N]
+        llo.order = target.order - 0.0001
+        llo.save()
+        return
+
+    def remove(self, meaning):
+        llo = MeaningListOrder.objects.get(
+                meaning=meaning,
+                meaning_list=self)
+        llo.delete()
+        return
+
+    def sequentialize(self):
+        """Sequentialize the order fields of a MeaningListOrder set
+        with a separation of approximately 1.0.  This is a bit slow, so
+        it should only be done from time to time."""
+        count = self.meaninglistorder_set.count()
+        def jitter(N, N_list):
+            """Return a number close to N such that N is not in N_list"""
+            while True:
+                try:
+                    assert N not in N_list
+                    return N
+                except AssertionError:
+                    N += 0.0001
+            return
+        if count:
+            order_floats = self.meaninglistorder_set.values_list("order", flat=True)
+            for i, llo in enumerate(self.meaninglistorder_set.all()):
+                if i != llo.order:
+                    llo.order = jitter(i, order_floats)
+                    llo.save()
+        return
+
+    def swap(self, meaningA, meaningB):
+        """Swap the order of two meanings"""
+        orderA = MeaningListOrder.objects.get(
+                meaning=meaningA,
+                meaning_list=self)
+        orderB = MeaningListOrder.objects.get(
+                meaning=meaningB,
+                meaning_list=self)
+        orderB.delete()
+        orderA.order, orderB.order = orderB.order, orderA.order
+        orderA.save()
+        orderB.save()
+        return
+
     def get_absolute_url(self):
         return "/meanings/%s/" % self.name
 

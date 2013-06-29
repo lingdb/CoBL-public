@@ -14,6 +14,6 @@ class Command(LexDBManagementCommand):
             print("  %s [%s]" % (ll.name, ll.languages.count()))
         print("Meaning lists:")
         for ml in MeaningList.objects.all():
-            print("  %s [%s]" % (ml.name, len(ml.meaning_id_list)))
+            print("  %s [%s]" % (ml.name, ml.meanings.count()))
         return
 

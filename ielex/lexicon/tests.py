@@ -327,8 +327,6 @@ class LexemeCitationValidityTests(TestCase):
         except IntegrityError:
             self.fail("Should be able to delete final citation via cascade")
 
-
-
 class CleanLexemeFormTests(TestCase):
 
     def setUp(self):
