@@ -460,6 +460,21 @@ class MeaningList(models.Model):
     class Meta:
         ordering = ["name"]
 
+class MeaningListOrder(models.Model):
+
+    meaning = models.ForeignKey(Meaning)
+    meaning_list = models.ForeignKey(MeaningList)
+    order = models.FloatField()
+
+    def __unicode__(self):
+        return u"%s:%s(%s)" % (self.meaning_list.name,
+                self.order,
+                self.meaning.gloss)
+
+    class Meta:
+        ordering = ["order"]
+        unique_together = (("meaning_list", "meaning"),
+                ("meaning_list", "order"))
 
 # class GenericCitation(models.Model):
 #     # This would have been a good way to do it, but it's going to be too
