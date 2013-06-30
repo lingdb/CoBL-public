@@ -258,16 +258,17 @@ class ObligatoryCogJudgeCitationTests(TestCase):
             transaction.commit()
             return True
         self.assertTrue(make_new_cognate_judgement(self.db[Lexeme]))
-        
+
     def test_cogjudge_without_citation_fails(self):
         def make_uncited_cognate_judgement(lexeme):
             cogjudge = CognateJudgement.objects.create(
                     lexeme=lexeme,
                     cognate_class=self.new_cogclass)
-            return 
-        self.assertRaises(IntegrityError, 
+            cogjudge.save()
+            return
+        self.assertRaises(IntegrityError,
                 make_uncited_cognate_judgement,
                 self.db[Lexeme])
 
 
-    
+
