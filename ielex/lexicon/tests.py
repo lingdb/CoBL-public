@@ -322,10 +322,18 @@ class LexemeCitationValidityTests(TestCase):
                 lexeme=lexeme,
                 source=self.source,
                 reliability="B")
+        # sanity check
+        self.failUnlessRaises(IntegrityError, self.delete, citation)
+        self.assertEqual(Lexeme.objects.count(), 1)
+        self.assertEqual(LexemeCitation.objects.count(), 1)
+        # delete tests
         try:
             lexeme.delete()
         except IntegrityError:
             self.fail("Should be able to delete final citation via cascade")
+        self.assertEqual(Lexeme.objects.count(), 0)
+        self.assertEqual(LexemeCitation.objects.count(), 0)
+
 
 class CleanLexemeFormTests(TestCase):
 
@@ -404,3 +412,4 @@ class FunctionsTests(TestCase):
         codes = ["qaa", "qac", "qae"]
         for code in codes:
             self.assertEqual(code, self.generator.next())
+

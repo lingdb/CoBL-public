@@ -652,6 +652,7 @@ def check_cognate_judgement_has_citation(sender, instance, **kwargs):
 
 @receiver(post_delete, sender=LexemeCitation)
 def check_lexeme_has_citation(sender, instance, **kwargs):
+    #_delete = getattr(instance.lexeme, "_delete", False)
     try:
         if instance.lexeme.source.count() == 0:
             instance.save() # reinstate object
