@@ -124,6 +124,7 @@ if "test" in sys.argv:
     # overwrite DATABASES with sqlite in-memory database for tests
     DEBUG = TEMPLATE_DEBUG = False
     SOUTH_TESTS_MIGRATE = False
+    SKIP_SOUTH_TESTS = True
     semantic_domains = True
     DATABASES = {
         'default': {
