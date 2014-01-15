@@ -2,7 +2,7 @@
 ## manage.py script (which sets up the full django environment)
 ##
 ## 0. From a clean copy of LexDB, run './manage.py syncdb' and
-##    './manage.py migrate' (from the ielex directory)
+##    './manage.py migrate' (from the LexDB directory)
 ## 1. Open the shell using './manage.py shell'
 ## 2. Change the working directory of the ipython shell:
 ##    %cd ../dev/andronov
@@ -13,6 +13,8 @@
 ## 4. Exit ipython (with 'exit')
 ## 5. Run the test server using './manage.py runserver' then open
 ##    http://127.0.0.1:8000/ in a browser
+## 6. Go and customise project_long_name, project_short_name in the
+##    ielex/local_settings.py file, and look at the test server again.
 
 import sys
 import codecs

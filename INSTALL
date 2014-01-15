@@ -5,13 +5,22 @@ Installation Guide
 
   * `Python <http://python.org>`_ from the 2.x series (not the 3.x series)
 
-  * Recent `Django <https://www.djangoproject.com/>`_ (tested on 1.4.1)
+  * All requirements can be installed using the REQUIREMENTS file::
 
-  * Recent `reversion <https://github.com/etianen/django-reversion>`_
-    middleware (``pip install django-reversion``; currently using 1.6.3)
+      pip install -r REQUIREMENTS
 
-  * The `south <http://south.aeracode.org/>`_ schema migration package
-    (``pip install South``; currently using 0.7.6)
+    This will ensure that the same versions are installed as the database has
+    been tested on.
+
+    If you want to install them individually:
+
+    - Recent `Django <https://www.djangoproject.com/>`_ (tested on 1.4.1)
+
+    - Recent `reversion <https://github.com/etianen/django-reversion>`_
+      middleware (``pip install django-reversion``; currently using 1.6.3)
+
+    - The `south <http://south.aeracode.org/>`_ schema migration package
+      (``pip install South``; currently using 0.7.6)
 
   * If you're going to do any work on the code, it is useful to install
     `debug_toolbar 
