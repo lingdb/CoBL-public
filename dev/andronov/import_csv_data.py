@@ -51,7 +51,7 @@ except Source.DoesNotExist:
 
 dummy = [None] * 4
 gloss = None
-meaning_list = MeaningList.objects.get(name=MeaningList.DEFAULT)
+meaning_list = MeaningList.objects.create(name="Andronov-1964")
 for line in data:
     row = [elem.strip() for elem in line.rstrip().split("\t")] + dummy
     if row[1]:
