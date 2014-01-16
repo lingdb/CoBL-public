@@ -1,10 +1,10 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 # after django version 1.4 (and definitely by version 1.6) change "from
 # django.conf.urls.defaults import *" to "from django.conf.urls import *"
 from django.contrib.auth.decorators import login_required
 from django.views.generic import DetailView, UpdateView,\
-        CreateView, ListView, TemplateView
-from django.views.generic.simple import redirect_to
+        CreateView, ListView, TemplateView, RedirectView
+#from django.views.generic.simple import redirect_to
 from ielex.views import *
 from ielex import settings
 from ielex.lexicon.views import *
@@ -189,8 +189,8 @@ urlpatterns = patterns('',
                     context_object_name="citation"),
             name="cognate-class-citation-detail"),
     # handle redundant cognate_id
-    url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/$', redirect_to,
-            {"url":"/cognate/citation/%(pk)s/"},
+    url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/$',
+            RedirectView.as_view(url="/cognate/citation/%(pk)s/"),
             name="cognate-class-citation-view"),
     # Cognate citation :: update
     url(r'^cognate/citation/(?P<pk>\d+)/edit/$',
@@ -198,7 +198,7 @@ urlpatterns = patterns('',
             name="cognate-citation-edit"),
     # handle redundant cognate_id
     url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/edit/$',
-            redirect_to, {"url":"/cognate/citation/%(pk)s/edit/"},
+            RedirectView.as_view(url="/cognate/citation/%(pk)s/edit/"),
             name="cognate-class-citation-edit"),
     # Cognate citation :: add
     url(r'^cognate/(?P<cognate_id>\d+)/add-citation/$',

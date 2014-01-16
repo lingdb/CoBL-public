@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 # from django.core.urlresolvers import reverse_lazy # avail Django 1.4
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.views.generic import CreateView, UpdateView, TemplateView
+#from django.views.generic import RedirectView
 from django.contrib import messages
 from ielex import settings
 from ielex.lexicon.models import *
@@ -73,6 +74,8 @@ class CognateClassCitationCreateView(CreateView):
         kwargs = super(CognateClassCitationCreateView,
                 self).get_form_kwargs()
         return kwargs
+
+#class CognateClassRedirectView(RedirectView):
 
 @login_required
 def cognate_class_citation_delete(request, pk):
