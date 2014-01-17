@@ -4,5 +4,3 @@ South
 django-reversion
 psycopg2
 django-debug-toolbar
-ipython
-wsgiref
