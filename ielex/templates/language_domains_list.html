@@ -11,13 +11,13 @@
 {% block content %}
 {% if not domains %}
   {{ language.utf8_name }} does not have any lexemes registered as extensions of 
-  <a href="{% url view-domains %}">semantic domains</a>
+  <a href="{% url 'view-domains' %}">semantic domains</a>
 {% else %}
   {{ language.utf8_name }} has lexemes registered as extensions of the following
-  <a href="{% url view-domains %}">semantic domains</a>:
+  <a href="{% url 'view-domains' %}">semantic domains</a>:
   <ul>
     {% for domain in domains %}
-    <li><a href="{% url language-domain-view language.ascii_name domain.name %}">
+    <li><a href="{% url 'language-domain-view' language.ascii_name domain.name %}">
       {{ domain.name }}</a>
     </li>
     {% endfor %}
@@ -28,7 +28,7 @@
 {% block controls %}
 {% include "snippets/go_to.html" %}
 <ul class="navigation">
-  <li><a href="{% url language-report language.ascii_name %}">Back to language list ‘{{ language.utf8_name }}’</a></li>
+  <li><a href="{% url 'language-report' language.ascii_name %}">Back to language list ‘{{ language.utf8_name }}’</a></li>
 </ul>
 
 {% endblock %}

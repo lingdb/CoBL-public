@@ -22,10 +22,10 @@
         <small>{{ forloop.counter }}</small>
     </td>
       <td>
-        <a href="{% url language-edit language.ascii_name %}">
+        <a href="{% url 'language-edit' language.ascii_name %}">
           <img src="/media/buttons/edit.png" alt="edit" title="Edit {{ language.utf8_name }} metadata" />
         </a>
-        <a href="{% url language-report language.ascii_name %}" alt="view lexeme list" title="View wordlist list for {{ language.utf8_name }}">
+        <a href="{% url 'language-report' language.ascii_name %}" alt="view lexeme list" title="View wordlist list for {{ language.utf8_name }}">
           {{ language.utf8_name }}
         </a>
       </td>
@@ -48,13 +48,13 @@
 {# include "snippets/change_sort_order.html" #}
 {% if user.is_authenticated %}
 <ul class="navigation">
-<li><a href="{% url language-add-new current_language_list_name %}">new language</a></li>
+<li><a href="{% url 'language-add-new' current_language_list_name %}">new language</a></li>
 </ul>
 <ul class="navigation">
-<li><a href="{% url add-language-list %}">new language list</a></li>
-<li><a href="{% url edit-language-list current_language_list_name %}">
+<li><a href="{% url 'add-language-list' %}">new language list</a></li>
+<li><a href="{% url 'edit-language-list' current_language_list_name %}">
   edit language list ‘{{ current_language_list_name }}’</a></li>
-<li><a href="{% url reorder-language-list current_language_list_name %}">
+<li><a href="{% url 'reorder-language-list' current_language_list_name %}">
   edit sort order ‘{{ current_language_list_name }}’</a></li>
 </ul>
 {% endif %}

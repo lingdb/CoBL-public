@@ -23,7 +23,7 @@ Querying {{ language_names|length }} language{{ language_names|pluralize }}:
   </tr>
   {% for lexeme in lexemes %}
   <tr class="{% cycle 'odd' 'even' %}">
-    <td><a href="{% url language-report lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
+    <td><a href="{% url 'language-report' lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
     <td>{{ lexeme.source_form }}</td>
     <td>{{ lexeme.phon_form }}</td>
     <td>{{ lexeme.meaning.gloss }}</td>
@@ -37,7 +37,7 @@ Querying {{ language_names|length }} language{{ language_names|pluralize }}:
       {% endif %}
     </td>  
     <td>
-      <a href="{% url view-lexeme lexeme.id %}">
+      <a href="{% url 'view-lexeme' lexeme.id %}">
         <img src="/media/buttons/view.png" alt="View" title="View lexeme" />
       <a>
     </td>

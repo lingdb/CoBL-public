@@ -11,6 +11,6 @@ Delete a named semantic domain (individual semantic relations are preserved).
 <form method="POST" action="">{% csrf_token %}
     <input type="hidden" name="__confirm__" value="1" />
     <input type="submit" value="delete"/> 
-    <a href="{% url view-domain-name domain_name %}/" class="button"><input type="submit" value="cancel" /></a>
+    <a href="{% url 'view-domain-name' domain_name %}/" class="button"><input type="submit" value="cancel" /></a>
 </form>
 {% endblock %}

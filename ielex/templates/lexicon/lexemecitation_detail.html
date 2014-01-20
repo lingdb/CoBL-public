@@ -25,12 +25,12 @@
 
 <ul class="navigation">
   <li>
-    <a href="{% url view-lexeme citation.lexeme.id %}">
+    <a href="{% url 'view-lexeme' citation.lexeme.id %}">
       back to lexeme
     </a>
   </li>
   <li>
-    <a href="{% url lexeme-edit-citation citation.lexeme.id citation.id %}">
+    <a href="{% url 'lexeme-edit-citation' citation.lexeme.id citation.id %}">
       edit this citation
     </a>
   </li>

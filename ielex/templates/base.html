@@ -9,18 +9,18 @@
 <body>
   <div id="container">
       <div id="logo">
-        <a href="{% url view-frontpage %}"><img src="/media/logo_50px.png" /></a>
+        <a href="{% url 'view-frontpage' %}"><img src="/media/logo_50px.png" /></a>
       </div>
 
     <div id="top">
       <div id="login">
         {% if user.is_authenticated %}
-        <a href="{% url view-profile %}">{{ user.username }}</a> <small>[<a href="{% url logout %}">logout</a>]</small>
+        <a href="{% url 'view-profile' %}">{{ user.username }}</a> <small>[<a href="{% url 'logout' %}">logout</a>]</small>
           {% if user.is_staff %}
             <a href="/admin/"><img src="/media/buttons/save-backup.png" alt="Admin site" title="Go to the admin site" /></a>
           {% endif %}
         {% else %}
-        <a href="{% url login %}">login</a>
+        <a href="{% url 'login' %}">login</a>
         {% endif %}
       </div>
     <small>{{ project_short_name }}</small>

@@ -37,8 +37,8 @@
 {% block controls %}
 {% include "snippets/go_to.html" %}
 <ul class="navigation">
-  <li><a href="{% url add-semantic-domain %}">add new semantic domain</a></li>
-  <li><a href="{% url edit-semantic-domain semantic_domain.name %}">
+  <li><a href="{% url 'add-semantic-domain' %}">add new semantic domain</a></li>
+  <li><a href="{% url 'edit-semantic-domain' semantic_domain.name %}">
     edit semantic domain: {{ semantic_domain.name }}</a>
   </li>
 </ul>

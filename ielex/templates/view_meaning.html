@@ -18,13 +18,13 @@
   {% for lexeme in lexemes %}
   <tr class="{% cycle 'odd' 'even' %}">
     <td id="lexeme_{{ lexeme.id }}">{{ lexeme.language.id }}</td>
-    <td><a href="{% url language-report lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
+    <td><a href="{% url 'language-report' lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
     <td>{{ lexeme.source_form }}</td>
     <td>{{ lexeme.phon_form }}</td>
     <td>
       {{ lexeme.notes|wikilink|truncatewords_html:5 }}
       {% if lexeme.notes|is_truncated:5 %}
-      <a href="{% url view-lexeme lexeme.id %}" title="{{ lexeme.notes }}">
+      <a href="{% url 'view-lexeme' lexeme.id %}" title="{{ lexeme.notes }}">
         <img src="/media/buttons/view.png" title="{{ lexeme.notes }}" />
       </a>
       {% endif %}
@@ -33,7 +33,7 @@
       {{ lexeme.get_cognate_class_links }}
       {% if user.is_authenticated %}
         {% ifnotequal add_cognate_judgement|asint lexeme.id|asint %}
-        <a href="{% url lexeme-add-cognate lexeme.id %}#lexeme_{{ lexeme.id }}">
+        <a href="{% url 'lexeme-add-cognate' lexeme.id %}#lexeme_{{ lexeme.id }}">
           <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
         </a>
         {% else %}
@@ -44,7 +44,7 @@
       {% endif %}
     </td>
     <td>
-      <a href="{% url view-lexeme lexeme.id %}">
+      <a href="{% url 'view-lexeme' lexeme.id %}">
         <img src="/media/buttons/view.png" alt="View" title="View/edit the lexical entry" />
       </a>
     </td>
@@ -65,10 +65,10 @@
 </p>
 <ul class="navigation">
   {% if add_cognate_judgement  %}
-  <li><a href="{% url meaning-report meaning.gloss %}/">return to normal view</a></li>
+  <li><a href="{% url 'meaning-report' meaning.gloss %}/">return to normal view</a></li>
   {% endif %}
-  <li><a href="{% url lexeme-search %}">search lexemes</a></li>
-  <li><a href="{% url meaning-add-lexeme meaning.gloss %}">add a new lexeme</a></li>
+  <li><a href="{% url 'lexeme-search' %}">search lexemes</a></li>
+  <li><a href="{% url 'meaning-add-lexeme' meaning.gloss %}">add a new lexeme</a></li>
 </ul>
 <p>Cognate judgements are added on this page, but deleted by the lexeme view (use the <img src="/media/buttons/view.png" alt="" title="View/Edit the lexical entry" /> button)</p>
 

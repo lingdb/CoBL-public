@@ -1,10 +1,10 @@
 <center>
-« <a href="{% url view-lexeme prev_lexeme.id %}">
+« <a href="{% url 'view-lexeme' prev_lexeme.id %}">
   <strong> {{ prev_lexeme }}</strong>
 </a>
   ({{ prev_lexeme.meaning.gloss }})
 <small>―</small>
-<a href="{%  url view-lexeme next_lexeme.id %}">
+<a href="{%  url 'view-lexeme' next_lexeme.id %}">
   <strong>{{ next_lexeme }}</strong>
 </a>
   ({{ next_lexeme.meaning.gloss }}) »

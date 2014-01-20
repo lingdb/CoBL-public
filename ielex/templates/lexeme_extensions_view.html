@@ -27,7 +27,7 @@
         [{{ citation.source.id }}]
       </a>
       {% endfor %}
-      <a href="{% url extension-add-citation extension.id %}">
+      <a href="{% url 'extension-add-citation' extension.id %}">
         <img src="/media/buttons/add.png" alt="Add citation" title="Add citation" /> 
       </a>
     </td>
@@ -39,14 +39,14 @@
 {% block controls %}
 {% include "snippets/go_to.html" %}
 <ul class="navigation">
-  <li><a href="{% url view-lexeme lexeme.id %}">Back to lexeme ‘{{ lexeme }}’</a>
+  <li><a href="{% url 'view-lexeme' lexeme.id %}">Back to lexeme ‘{{ lexeme }}’</a>
   </li>
   {% if lexeme.meaning %}
-  <li><a href="{% url meaning-report lexeme.meaning.gloss %}">
+  <li><a href="{% url 'meaning-report' lexeme.meaning.gloss %}">
     Back to meaning list ‘{{ lexeme.meaning.gloss }}’</a>
   </li>
   {% endif %}
-  <li><a href="{% url language-report lexeme.language.ascii_name %}">
+  <li><a href="{% url 'language-report' lexeme.language.ascii_name %}">
     Back to language list ‘{{ lexeme.language.utf8_name }}’</a></li>
 </ul>
 {% endblock %}

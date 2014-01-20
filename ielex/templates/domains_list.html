@@ -18,17 +18,17 @@
   {% for domain in domains %}
   <tr class="{% cycle 'odd' 'even' %}">
     <td>
-      <a href="{% url view-semantic-domain domain.name %}">{{ domain.name }}</a>
+      <a href="{% url 'view-semantic-domain' domain.name %}">{{ domain.name }}</a>
     </td>
     <td>{{ domain.description|truncatewords_html:10 }}</td>
     {% if user.is_authenticated and domain.name != domain.DEFAULT %}
     <td>
-      <a href="{% url edit-semantic-domain domain.name %}">
+      <a href="{% url 'edit-semantic-domain' domain.name %}">
         <img src="/media/buttons/edit.png" alt="edit" title="Edit {{ domain.name }} metadata" />
       </a>
     </td>
     <td>
-      <a href="{% url delete-semantic-domain domain.name %}">
+      <a href="{% url 'delete-semantic-domain' domain.name %}">
         <img src="/media/buttons/delete.png" alt="edit" title="Delete list {{ domain.name }}" />
       </a>
     </td>
@@ -42,7 +42,7 @@
 {# prev-next lexeme by domain #}
 {% include "snippets/go_to.html" %}
 <ul class="navigation">
-  <li><a href="{% url add-semantic-domain %}">Add new semantic domain</a></li>
+  <li><a href="{% url 'add-semantic-domain' %}">Add new semantic domain</a></li>
 </ul>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

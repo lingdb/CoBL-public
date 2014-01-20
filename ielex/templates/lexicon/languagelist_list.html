@@ -14,12 +14,12 @@
   {% for language_list in language_lists %}
   <tr class="{% cycle 'odd' 'even' %}">
     <td>
-      <a href="{% url view-language-list language_list.name %}">{{ language_list.name }}</a>
+      <a href="{% url 'view-language-list' language_list.name %}">{{ language_list.name }}</a>
     </td>
     <td>{{ language_list.description|truncatewords_html:10 }}</td>
     {% if user.is_authenticated and language_list.name != language_list.DEFAULT %}
     <td>
-      <a href="{% url edit-language-list language_list.name %}">
+      <a href="{% url 'edit-language-list' language_list.name %}">
         <img src="/media/buttons/edit.png" alt="edit" title="Edit {{ language_list.name }} metadata" />
       </a>
     </td>

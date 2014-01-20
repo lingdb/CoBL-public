@@ -27,7 +27,7 @@
 {% else %}
 <fieldset><legend>
             {% if user.is_authenticated %}
-            <a href="{% url edit-lexeme lexeme.id %}">
+            <a href="{% url 'edit-lexeme' lexeme.id %}">
               <img src="/media/buttons/edit-pencil.png" alt="Edit" title="Edit" />
             </a>
             <img src="/media/buttons/delete.png" 
@@ -36,8 +36,8 @@
             {% endif %}
           </legend>
 <table>
-  <tr><td class="rowname">Language:</td><td><a href="{% url language-report lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td></tr>
-  <tr><td class="rowname">Meaning:</td><td><a href="{% url meaning-report lexeme.meaning.gloss %}#lexeme_{{ lexeme.id }}">{{ lexeme.meaning.gloss }}</a></td></tr>
+  <tr><td class="rowname">Language:</td><td><a href="{% url 'language-report' lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td></tr>
+  <tr><td class="rowname">Meaning:</td><td><a href="{% url 'meaning-report' lexeme.meaning.gloss %}#lexeme_{{ lexeme.id }}">{{ lexeme.meaning.gloss }}</a></td></tr>
 <tr><td class="rowname">Source form:</td><td>{{ lexeme.source_form }}</td></tr>
 <tr><td class="rowname">Phonological form:</td><td>{{ lexeme.phon_form }}</td></tr>
 <tr><td class="rowname">Gloss:</td><td>{{ lexeme.gloss }}</td></tr>
@@ -71,9 +71,9 @@
     {% else %}
     <fieldset>
         <legend>
-          <a href="{% url lexeme-edit-citation lexeme.id citation.id %}">
+          <a href="{% url 'lexeme-edit-citation' lexeme.id citation.id %}">
             <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit citation details" /></a>
-          <a href="{% url lexeme-delink-citation lexeme.id citation.id %}">
+          <a href="{% url 'lexeme-delink-citation' lexeme.id citation.id %}">
             <img src="/media/buttons/delink.png" alt="Delink" title="Delink citation" /></a>
         </legend>
         {% include "snippets/citation_report.html" %}
@@ -83,12 +83,12 @@
   <fieldset id="lexemecitation_{{ citation.id}}">
     <legend>
         {% if user.is_authenticated %}
-        <a href="{% url lexeme-edit-citation lexeme.id citation.id %}">
+        <a href="{% url 'lexeme-edit-citation' lexeme.id citation.id %}">
           <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit citation details" /></a>
-        <a href="{% url lexeme-delink-citation lexeme.id citation.id %}">
+        <a href="{% url 'lexeme-delink-citation' lexeme.id citation.id %}">
           <img src="/media/buttons/delink.png" alt="Delink" title="Delink citation" /></a>
         {% endif %}
-        <a href="{% url view-source citation.source.id %}">
+        <a href="{% url 'view-source' citation.source.id %}">
           <img src="/media/buttons/view-big.png", alt="View source", title="View source" /></a>
     </legend>
     {% include "snippets/citation_report.html" %}
@@ -108,12 +108,12 @@
 {% else %}
   {% if user.is_authenticated %}
   <fieldset><legend><strong>Add link to source</strong>
-      <a href="{% url lexeme-add-citation lexeme.id %}">
+      <a href="{% url 'lexeme-add-citation' lexeme.id %}">
               <img src="/media/buttons/add-link.png" alt="Add" title="Add link to citation" /></a>
             </legend>     
       <small>Add a link to a source already in the database</small><br />
       <strong>Add link to new Source</strong> 
-      <a href="{% url lexeme-add-new-source lexeme.id %}">
+      <a href="{% url 'lexeme-add-new-source' lexeme.id %}">
         <img src="/media/buttons/add.png" alt="Add new source" title="Add citation to new source" />
       </a><br />
       <small>Add a new source to the database and link to it</small>
@@ -130,7 +130,7 @@
     <legend>
       <strong>Cognate Class {{ cj.cognate_class.alias }}</strong>
       {% if user.is_authenticated %}
-      <a href="{% url lexeme-delink-cognate lexeme.id cj.id %}">
+      <a href="{% url 'lexeme-delink-cognate' lexeme.id cj.id %}">
         <img src="/media/buttons/delink.png" alt="Delink" title="Delink cognate from this lexeme" />
       </a>
       {% endif %}
@@ -151,14 +151,14 @@
         <fieldset>
           <legend>
             {% if user.is_authenticated %}
-            <a href="{% url lexeme-edit-cognate-citation lexeme.id citation.id %}">
+            <a href="{% url 'lexeme-edit-cognate-citation' lexeme.id citation.id %}">
               <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit cognate citation details" />
             </a>
-            <a href="{% url lexeme-delink-cognate-citation lexeme.id citation.id %}">
+            <a href="{% url 'lexeme-delink-cognate-citation' lexeme.id citation.id %}">
               <img src="/media/buttons/delink.png" alt="Delink" title="Delink cognate citation" />
             </a>
             {% endif %}
-            <a href="{% url view-source citation.source.id %}">
+            <a href="{% url 'view-source' citation.source.id %}">
               <img src="/media/buttons/view-big.png", alt="View source", title="View source" /></a>
           </legend>
           {% include "snippets/citation_report.html" %}
@@ -168,14 +168,14 @@
       <fieldset id="cognatejudgementcitation_{{ citation.id }}">
         <legend>
           {% if user.is_authenticated %}
-          <a href="{% url lexeme-edit-cognate-citation lexeme.id citation.id %}">
+          <a href="{% url 'lexeme-edit-cognate-citation' lexeme.id citation.id %}">
             <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit cognate citation details" />
           </a>
-          <a href="{% url lexeme-delink-cognate-citation lexeme.id citation.id %}">
+          <a href="{% url 'lexeme-delink-cognate-citation' lexeme.id citation.id %}">
             <img src="/media/buttons/delink.png" alt="Delink" title="Delink cognate citation" />
           </a>
           {% endif %}
-          <a href="{% url view-source citation.source.id %}">
+          <a href="{% url 'view-source' citation.source.id %}">
             <img src="/media/buttons/view-big.png", alt="View source", title="View source" /></a>
         </legend>
         {% include "snippets/citation_report.html" %}
@@ -195,13 +195,13 @@
     {% if user.is_authenticated %}
     <fieldset>
       <legend><strong>Add link to source</strong>
-        <a href="{% url lexeme-add-cognate-citation lexeme.id cj.id %}#active">
+        <a href="{% url 'lexeme-add-cognate-citation' lexeme.id cj.id %}#active">
           <img src="/media/buttons/add-link.png" alt="Add" title="Add link to citation" /></a></legend>
         </a>
       </legend>
     <small>Add a link to a source already in the database</small><br />
     <strong>Add link to new Source</strong> 
-      <a href="{% url cogjudge-add-new-source cj.id %}">
+      <a href="{% url 'cogjudge-add-new-source' cj.id %}">
         <img src="/media/buttons/add.png" alt="Add new source" title="Add citation to new source" /> 
       </a><br />
       <small>Add a new source to the database and link to it</small>
@@ -216,7 +216,7 @@
 <fieldset>
   <legend>
     <strong>Add link to cognate class</strong>
-    <a href="{% url lexeme-add-cognate lexeme.id %}#lexeme_{{ lexeme.id }}">
+    <a href="{% url 'lexeme-add-cognate' lexeme.id %}#lexeme_{{ lexeme.id }}">
       <img src="/media/buttons/add-link.png" alt="Add new cognate judgement" title="Add new cognate judgement" />
     </a>
   </legend>
@@ -227,7 +227,7 @@
         class, but usually shouldn't)</li>
       </ul></small>
     <strong>Add link to new cognate class</strong> 
-    <a href="{% url lexeme-add-new-cognate lexeme.id %}">
+    <a href="{% url 'lexeme-add-new-cognate' lexeme.id %}">
       <img src="/media/buttons/add-link.png" alt="Add new cognate judgement" title="Add cognate judgement to new cognate class" />
     </a>
       <small><ul>
@@ -242,16 +242,16 @@
 {% include "snippets/go_to.html" %}
 <ul class="navigation">
   {% if lexeme.meaning %}
-    <li><a href="{% url meaning-report lexeme.meaning.gloss %}">back to meaning list ‘{{ lexeme.meaning.gloss }}’</a></li>
+    <li><a href="{% url 'meaning-report' lexeme.meaning.gloss %}">back to meaning list ‘{{ lexeme.meaning.gloss }}’</a></li>
   {% endif %}
   {% if lexeme.semanticextension_set.exists %}
-  <li><a href="{% url lexeme-domains-list lexeme.id  %}">view semantic exensions</a></li>
+  <li><a href="{% url 'lexeme-domains-list' lexeme.id  %}">view semantic exensions</a></li>
   {% endif %}
-  <li><a href="{% url language-report lexeme.language.ascii_name %}">back to ‘{{ lexeme.language.utf8_name }}’ wordlist</a></li>
+  <li><a href="{% url 'language-report' lexeme.language.ascii_name %}">back to ‘{{ lexeme.language.utf8_name }}’ wordlist</a></li>
   {% if user.is_authenticated %}
-    <li><a href="{% url language-add-lexeme lexeme.language.ascii_name %}">add a new lexeme to ‘{{ lexeme.language.utf8_name }}’</a></li>
+    <li><a href="{% url 'language-add-lexeme' lexeme.language.ascii_name %}">add a new lexeme to ‘{{ lexeme.language.utf8_name }}’</a></li>
       {% if lexeme.meaning %}
-      <li><a href="{% url meaning-add-lexeme lexeme.meaning.gloss %}">add a new lexeme to ‘{{ lexeme.meaning.gloss }}’</a></li>
+      <li><a href="{% url 'meaning-add-lexeme' lexeme.meaning.gloss %}">add a new lexeme to ‘{{ lexeme.meaning.gloss }}’</a></li>
   {% endif %}
   {% endif %}
 </ul>
