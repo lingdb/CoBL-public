@@ -15,12 +15,22 @@ DATABASES = {
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Not used with sqlite3.
         'PORT': '',                      # Not used with sqlite3.
+        'ATOMIC_REQUESTS':True,          # Required by sqlite3 (only)
     }
 }
 
-# Need to define a place to keep static files (use ./manage collectstatic to
-# put them there)
-STATIC_ROOT =""
+# Need to define a place to keep static files (use ./manage
+# collectstatic to put them there)
+STATIC_ROOT = ""
+
+# A list of strings representing the host/domain names that this Django
+# site can serve
+ALLOWED_HOSTS = [
+        # ".example.com",  # allow domain and subdomains of 'example.com'
+        # ".example.com.", # required by Django 1.5 and 1.6 for fully qualified
+                           # domain name, which some browsers send in HOST
+                           # header (1.7+ strips final '.' before validation)
+        ]
 
 # Meta tags for the front page (<meta name=... /> format)
 # e.g. the Google site verification tag could go here
