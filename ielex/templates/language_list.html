@@ -22,9 +22,11 @@
         <small>{{ forloop.counter }}</small>
     </td>
       <td>
-        <a href="{% url 'language-edit' language.ascii_name %}">
-          <img src="/media/buttons/edit.png" alt="edit" title="Edit {{ language.utf8_name }} metadata" />
-        </a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'language-edit' language.ascii_name %}">
+            <img src="/media/buttons/edit.png" alt="edit" title="Edit {{ language.utf8_name }} metadata" />
+          </a>
+        {% endif %}
         <a href="{% url 'language-report' language.ascii_name %}" alt="view lexeme list" title="View wordlist list for {{ language.utf8_name }}">
           {{ language.utf8_name }}
         </a>
