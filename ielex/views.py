@@ -171,7 +171,7 @@ def get_prev_and_next_meanings(request, current_meaning):
     # We'll let this one use the session variable (kind of cheating...)
     meaning_list = request.session.get("current_wordlist_name", MeaningList.DEFAULT)
     meaning_list = MeaningList.objects.get(name=meaning_list)
-    meanings = meaning_list.meanings.all().order_by("meaninglistorder")
+    meanings = list(meaning_list.meanings.all().order_by("meaninglistorder"))
 
     ids = [m.id for m in meanings]
     current_idx = ids.index(current_meaning.id)
