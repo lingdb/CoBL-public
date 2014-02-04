@@ -9,6 +9,7 @@ class Command(LexDBManagementCommand):
     help="""Export a nexus file from the database"""
     requires_model_validation = False
     unique_choices = ["all", "limited", "none"]
+    dialects = ["MB", "BP", "NN"]
     # option_list = NoArgsCommand.option_list + (
     option_list = (
             make_option("--language-list", dest="language_list",
@@ -22,6 +23,11 @@ class Command(LexDBManagementCommand):
                 action="store", type="choice", default=unique_choices[0],
                 choices=unique_choices ,
                 help=("Include unique cognate sets [%s]" % unique_choices[0])),
+            make_option("--dialect", dest="dialect", choices=dialects,
+                action="store", default="NN",
+                metavar=("{%s}" % "|".join(dialects)),
+                help=("NEXUS dialect: MrBayes, BayesPhylogenies, NeighborNet"
+                " [NN]")),
             make_option("--suppress-invariant", dest="exclude_invariant",
                 action="store_true", default=False,
                 help="Suppress cognate sets with a reflex present"\
@@ -46,7 +52,7 @@ class Command(LexDBManagementCommand):
             options["language_list"],
             options["meaning_list"],
             set(["L","X"]), # exclude
-            "NN", # dialect
+            options["dialect"], # dialect
             True, # label cognate sets
             options["unique"],
             options["exclude_invariant"],

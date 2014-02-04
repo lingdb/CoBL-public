@@ -232,7 +232,7 @@ def write_nexus(fileobj,
     print("[ File generated: %s ]\n" % time.strftime("%Y-%m-%d %H:%M:%S",
             time.localtime()), file=fileobj)
 
-    if dialect in ("NN", "MB"):
+    if dialect == "NN":
         print(dedent("""\
             begin taxa;
               dimensions ntax=%s;
@@ -250,6 +250,21 @@ def write_nexus(fileobj,
             labels.append("    %d %s" % (i+1, cc))
         print(*labels, sep=",\n", file=fileobj)
         print("  ;\n  matrix", file=fileobj)
+
+    elif dialect == "MB":
+        print(dedent("""\
+            begin taxa;
+              dimensions ntax=%s;
+              taxlabels %s;
+            end;
+
+            begin characters;
+              dimensions nchar=%s;
+              format missing=? datatype=restriction;
+              matrix
+            """ % (len(languages), " ".join(language_names),
+                len(cognate_class_names))), file=fileobj)
+
     else:
         assert dialect == "BP"
         print(dedent("""\
@@ -273,10 +288,14 @@ def write_nexus(fileobj,
         name2iso_code = dict(names_and_iso_codes)
     for row in matrix:
         language_name, row = row[0], row[1:]
+        if dialect == "NN":
+            quoted = lambda s: "'%s'" % s
+        else:
+            quoted = lambda s: s
         if use_iso_codes:
             language_name = name2iso_code[language_name]
-        print("    '%s' %s%s" % (language_name,
-                " "*(max_len - len(language_name)), "".join(row)), file=fileobj)
+        print("    %s %s%s" % (quoted(language_name),
+                " "*(max_len - len(quoted(language_name))), "".join(row)), file=fileobj)
     print("  ;\nend;\n", file=fileobj)
 
     if use_iso_codes:
