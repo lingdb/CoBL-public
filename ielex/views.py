@@ -951,6 +951,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "delink-cognate":
                 cj = CognateJudgement.objects.get(id=cogjudge_id)
                 cj.delete()
+                return HttpResponseRedirect(redirect_url)
             elif action == "add-cognate-citation":
                 previous_citation_id = request.session.get("previous_cognate_citation_id")
                 try:
