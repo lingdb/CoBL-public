@@ -73,8 +73,12 @@
         <legend>
           <a href="{% url 'lexeme-edit-citation' lexeme.id citation.id %}">
             <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit citation details" /></a>
+          {% if lexeme.lexemecitation_set.count == 1 %}
+            <img src="/media/buttons/delink.png" alt="Can't delink" title="Can't delink final citation" /></a>
+          {% else %}
           <a href="{% url 'lexeme-delink-citation' lexeme.id citation.id %}">
             <img src="/media/buttons/delink.png" alt="Delink" title="Delink citation" /></a>
+          {% endif %}
         </legend>
         {% include "snippets/citation_report.html" %}
       </fieldset>
@@ -85,8 +89,12 @@
         {% if user.is_authenticated %}
         <a href="{% url 'lexeme-edit-citation' lexeme.id citation.id %}">
           <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit citation details" /></a>
-        <a href="{% url 'lexeme-delink-citation' lexeme.id citation.id %}">
-          <img src="/media/buttons/delink.png" alt="Delink" title="Delink citation" /></a>
+          {% if lexeme.lexemecitation_set.count == 1 %}
+            <img src="/media/buttons/delink.png" alt="Can't delink" title="Can't delink final citation" /></a>
+          {% else %}
+          <a href="{% url 'lexeme-delink-citation' lexeme.id citation.id %}">
+            <img src="/media/buttons/delink.png" alt="Delink" title="Delink citation" /></a>
+          {% endif %}
         {% endif %}
         <a href="{% url 'view-source' citation.source.id %}">
           <img src="/media/buttons/view-big.png", alt="View source", title="View source" /></a>
@@ -154,9 +162,13 @@
             <a href="{% url 'lexeme-edit-cognate-citation' lexeme.id citation.id %}">
               <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit cognate citation details" />
             </a>
+            {% if cj.cognatejudgementcitation_set.count == 1 %}
+              <img src="/media/buttons/delink.png" alt="Can't delink" title="Can't delink final citation" /></a>
+            {% else %}
             <a href="{% url 'lexeme-delink-cognate-citation' lexeme.id citation.id %}">
               <img src="/media/buttons/delink.png" alt="Delink" title="Delink cognate citation" />
             </a>
+            {% endif %}
             {% endif %}
             <a href="{% url 'view-source' citation.source.id %}">
               <img src="/media/buttons/view-big.png", alt="View source", title="View source" /></a>
@@ -171,9 +183,13 @@
           <a href="{% url 'lexeme-edit-cognate-citation' lexeme.id citation.id %}">
             <img src="/media/buttons/edit-link.png" alt="Edit" title="Edit cognate citation details" />
           </a>
+          {% if cj.cognatejudgementcitation_set.count == 1 %}
+            <img src="/media/buttons/delink.png" alt="Can't delink" title="Can't delink final citation" /></a>
+          {% else %}
           <a href="{% url 'lexeme-delink-cognate-citation' lexeme.id citation.id %}">
             <img src="/media/buttons/delink.png" alt="Delink" title="Delink cognate citation" />
           </a>
+          {% endif %}
           {% endif %}
           <a href="{% url 'view-source' citation.source.id %}">
             <img src="/media/buttons/view-big.png", alt="View source", title="View source" /></a>
