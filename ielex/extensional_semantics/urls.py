@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from ielex.extensional_semantics.views import *
 from ielex.urls import R
 
