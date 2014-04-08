@@ -790,7 +790,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             if CognateJudgementCitation.objects.filter(
                     cognate_judgement=cognate_judgement).count() == 0:
                 msg = Template(oneline("""<a 
-                href="{% url lexeme-add-cognate-citation lexeme_id
+                href="{% url 'lexeme-add-cognate-citation' lexeme_id
                 cogjudge_id %}#active">Lexeme has been left with
                 cognate judgements lacking citations for cognate
                 class {{ alias }}.  Please fix this [click this message].</a>"""))
