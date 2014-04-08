@@ -8,6 +8,7 @@ from django.db import connection, transaction ### testing
 from django.db import IntegrityError
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_delete
+from django.db.backends.signals import connection_created
 from django.utils.safestring import SafeString
 # from django.contrib import admin
 import reversion
@@ -671,16 +672,17 @@ def update_language_list_all(sender, instance, **kwargs):
     for language in missing_langs:
         ll.append(language)
 
-    # make alphabetized list
-    default_alpha = LanguageList.DEFAULT+"-alpha"
-    try: # zap the old one
-        ll_alpha = LanguageList.objects.get(name=default_alpha)
-        ll_alpha.delete()
-    except LanguageList.DoesNotExist:
-        pass
-    ll_alpha = LanguageList.objects.create(name=default_alpha)
-    for language in Language.objects.all().order_by("ascii_name"):
-        ll_alpha.append(language)
+    if missing_langs:
+        # make a new alphabetized list
+        default_alpha = LanguageList.DEFAULT+"-alpha"
+        try: # zap the old one
+            ll_alpha = LanguageList.objects.get(name=default_alpha)
+            ll_alpha.delete()
+        except LanguageList.DoesNotExist:
+            pass
+        ll_alpha = LanguageList.objects.create(name=default_alpha)
+        for language in Language.objects.all().order_by("ascii_name"):
+            ll_alpha.append(language)
     return
 
 models.signals.post_save.connect(update_language_list_all, sender=Language)
@@ -695,16 +697,17 @@ def update_meaning_list_all(sender, instance, **kwargs):
     for meaning in missing_meanings:
         ml.append(meaning)
 
-    # make alphabetized list
-    default_alpha = MeaningList.DEFAULT+"-alpha"
-    try:
-        ml_alpha = MeaningList.objects.get(name=default_alpha)
-        ml_alpha.delete()
-    except MeaningList.DoesNotExist:
-        pass
-    ml_alpha = MeaningList.objects.create(name=default_alpha)
-    for meaning in Meaning.objects.all().order_by("gloss"):
-        ml_alpha.append(meaning)
+    if missing_meanings:
+        # make a new alphabetized list
+        default_alpha = MeaningList.DEFAULT+"-alpha"
+        try:
+            ml_alpha = MeaningList.objects.get(name=default_alpha)
+            ml_alpha.delete()
+        except MeaningList.DoesNotExist:
+            pass
+        ml_alpha = MeaningList.objects.create(name=default_alpha)
+        for meaning in Meaning.objects.all().order_by("gloss"):
+            ml_alpha.append(meaning)
     return
 
 models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
@@ -752,8 +755,6 @@ models.signals.post_save.connect(update_denormalized_from_lexeme,
         sender=Lexeme)
 models.signals.post_delete.connect(update_denormalized_from_lexeme,
         sender=Lexeme)
-
-
 
 # -- Reversion registration ----------------------------------------
 
