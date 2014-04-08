@@ -29,12 +29,6 @@ After a clean install,
     
       python manage.py loaddata dravidian_wordlists.json
 
-  * If you want to start working in an empty database (i.e. for adding your own
-    data), finalize the setup by running::
-
-      python manage.py lexdb_init
-
-
 **TODO**
 
   - prepare and upload the sample wordlists.

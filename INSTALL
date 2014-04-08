@@ -58,9 +58,6 @@ Installation Guide
       ``import_csv_data.py`` (this script is explained in the documentation for
       `importing data <https://bitbucket.org/evoling/lexdb/wiki/import_data>`_).
 
-    - If you want to start working in an empty database (i.e. for adding your
-      own data), finalize the setup by running ``python manage.py lexdb_init``
-
   To inspect the database you can use the development server. Run ``./manage.py
   runserver`` and open a browser at http://127.0.0.1:8000/
 
