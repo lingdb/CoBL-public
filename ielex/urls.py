@@ -19,7 +19,7 @@ admin.autodiscover()
 
 # standard regexes for urls
 # url_char = "a-zA-Z0-9$_.+!*'(),-" # unreserved 
-url_char = "A-Za-z0-9_.-~" # unreserved
+url_char = "A-Za-z0-9_.~-" # unreserved
 # http://tools.ietf.org/html/rfc3986#section-2.3
 R = {
     "COGJUDGE_ID":r"(?P<cogjudge_id>\d+)",
@@ -32,7 +32,7 @@ R = {
     "MEANING":r"(?P<meaning>[{}]+)".format(url_char),
     "RELATION":r"(?P<relation>[{}]+)".format(url_char),
     "WORDLIST":r"(?P<wordlist>[{}]+)".format(url_char),
-    "USERNAME":r"(?P<username>[{}@]+)".format(url_char),
+    "USERNAME":r"(?P<username>[a-zA-Z0-9@.+_-]+)",
     "identifier":r"[a-zA-Z_][a-zA-Z0-9_]*",
     }
 
