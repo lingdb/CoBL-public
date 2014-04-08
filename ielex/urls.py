@@ -18,18 +18,21 @@ admin.autodiscover()
 # additional arguments can be passed with a dictionary
 
 # standard regexes for urls
+# url_char = "a-zA-Z0-9$_.+!*'(),-" # unreserved 
+url_char = "A-Za-z0-9_.-~" # unreserved
+# http://tools.ietf.org/html/rfc3986#section-2.3
 R = {
     "COGJUDGE_ID":r"(?P<cogjudge_id>\d+)",
-    "COGNATE_NAME":r"(?P<cognate_name>[a-zA-Z0-9_.~-]+)",
-    "DOMAIN":r"(?P<domain>[a-zA-Z0-9_.-]+)",
-    "LANGUAGE":r"(?P<language>[a-zA-Z0-9_-]+)",
-    "LANGUAGELIST":r"(?P<language_list>[a-zA-Z0-9_-]+)",
+    "COGNATE_NAME":r"(?P<cognate_name>[{}]+)".format(url_char),
+    "DOMAIN":r"(?P<domain>[{}]+)".format(url_char),
+    "LANGUAGE":r"(?P<language>[{}]+)".format(url_char),
+    "LANGUAGELIST":r"(?P<language_list>[{}]+)".format(url_char),
     "LEXEME_ID":r"(?P<lexeme_id>\d+)",
     "MEANING_ID":r"(?P<meaning_id>\d+)",
-    "MEANING":r"(?P<meaning>[a-zA-Z0-9_]+)",
-    "RELATION":r"(?P<relation>[a-zA-Z0-9_.-]+)",
-    "WORDLIST":r"(?P<wordlist>[a-zA-Z0-9_.-]+)",
-    "USERNAME":r"(?P<username>[a-zA-Z0-9@.+_-]+)",
+    "MEANING":r"(?P<meaning>[{}]+)".format(url_char),
+    "RELATION":r"(?P<relation>[{}]+)".format(url_char),
+    "WORDLIST":r"(?P<wordlist>[{}]+)".format(url_char),
+    "USERNAME":r"(?P<username>[{}@]+)".format(url_char),
     "identifier":r"[a-zA-Z_][a-zA-Z0-9_]*",
     }
 
