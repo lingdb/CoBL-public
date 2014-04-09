@@ -34,9 +34,9 @@ Installation Guide
   
 2. After a clean install, 
 
-  * Run ``python manage.py syncdb`` from the ``ielex`` and add superuser when
-    prompted (this will copy ``local_settings.py.dist`` to
-    ``local_settings.py`` and generate a secret key) 
+  * Run ``python manage.py syncdb`` and add superuser when prompted (this will
+    copy ``local_settings.py.dist`` to ``local_settings.py`` and generate a
+    secret key) 
     
   * Customize ``local_settings.py`` with name of database etc. If you're doing
     a test then everything can be left at the default values.
