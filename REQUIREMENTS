@@ -1,7 +1,6 @@
 # usage: pip install -r REQUIREMENTS
-'Django>=1.6.1'
-'South>=0.8.1'
-'django-reversion>=1.8.0'
-'psycopg2>=2.5.2'
-'django-debug-toolbar>=1.0.1'
-# note requirements need to be quoted when using >=
+Django>=1.6.1
+South>=0.8.1
+django-reversion>=1.8.0
+psycopg2>=2.5.2
+django-debug-toolbar>=1.0.1
