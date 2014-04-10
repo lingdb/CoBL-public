@@ -51,15 +51,23 @@ Installation Guide
   * Run ``python manage.py migrate`` to update all the database schemas to the
     most current version.
 
-  * Finally, do _one_ of the following:
+3. Finally, if you want to test the database with some sample data, open the
+   django shell using::
+   
+      ./manage.py shell
 
-    - If you want to test the database with some sample data go to the
-      ``../dev`` directory and follow the instructions in the top of the
-      ``import_csv_data.py`` (this script is explained in the documentation for
-      `importing data <https://bitbucket.org/evoling/lexdb/wiki/import_data>`_).
+   and then from within the shell run (this uses ipython magic functions
+   ``%cd`` and ``%run``; without ipython this won't work)::
 
-  To inspect the database you can use the development server. Run ``./manage.py
-  runserver`` and open a browser at http://127.0.0.1:8000/
+      # change the working directory of the shell
+      %cd dev
+      # run the script there
+      %run import_csv_data.py
+      # and once it's ready
+      exit()
+
+   To inspect the database you can use the development server. Run
+   ``./manage.py runserver`` and open a browser at http://127.0.0.1:8000/
 
 3. Development
 
@@ -68,5 +76,7 @@ Installation Guide
      other dependencies:
 
      - `lxml <http://pypi.python.org/pypi/lxml/2.3.4#downloads>`_
+     - cssselect (``pip install cssselect``); used to be part of lxml, now a
+       separate project
 
 .. vim:ft=rst
