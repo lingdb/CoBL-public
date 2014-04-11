@@ -851,7 +851,19 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                             pages=cd["pages"],
                             reliability=cd["reliability"],
                             comment=cd["comment"])
-                    citation.save()
+                    try:
+                        citation.save()
+                        # messages.add_message(
+                        #         request,
+                        #         messages.INFO,
+                        #         oneline("Citation successfully added"))
+                    except IntegrityError:
+                        messages.add_message(
+                                request,
+                                messages.WARNING,
+                                oneline("""Lexeme citations must be unique.
+                                    This source is already cited for this
+                                    lexeme."""))
                     request.session["previous_citation_id"] = citation.id
                     return HttpResponseRedirect(get_redirect_url(form, citation))
             elif action == "add-new-citation": # TODO

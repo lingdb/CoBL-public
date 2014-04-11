@@ -14,29 +14,29 @@ Installation Guide
 
     If you want to install them individually:
 
-    - Recent `Django <https://www.djangoproject.com/>`_ (tested on 1.4.1)
+    - Recent `Django <https://www.djangoproject.com/>`_ (currently testing on 1.6.1)
 
     - Recent `reversion <https://github.com/etianen/django-reversion>`_
-      middleware (``pip install django-reversion``; currently using 1.6.3)
+      middleware (``pip install django-reversion``; currently using 1.8.0)
 
     - The `south <http://south.aeracode.org/>`_ schema migration package
-      (``pip install South``; currently using 0.7.6)
+      (``pip install South``; currently using 0.8.4)
 
   * If you're going to do any work on the code, it is useful to install
     `debug_toolbar 
     <https://github.com/django-debug-toolbar/django-debug-toolbar>`_
-    (``pip install django-debug-toolbar``). If debug toolbar is available it
-    will be activated when `DEBUG` is set to `True` in the `local_settings.py`
-    file; see below.
+    (``pip install django-debug-toolbar``; currently using 0.9.4). If debug
+    toolbar is available it will be activated when `DEBUG` is set to `True` in
+    the `local_settings.py` file; see below.A
 
   * If you're going to work with the console (e.g. to import data) then is is
     highly desirable to install the `ipython` shell (``pip install ipython``).
   
 2. After a clean install, 
 
-  * Run ``python manage.py syncdb`` from the ``ielex`` and add superuser when
-    prompted (this will copy ``local_settings.py.dist`` to
-    ``local_settings.py`` and generate a secret key) 
+  * Run ``python manage.py syncdb`` and add superuser when prompted (this will
+    copy ``local_settings.py.dist`` to ``local_settings.py`` and generate a
+    secret key) 
     
   * Customize ``local_settings.py`` with name of database etc. If you're doing
     a test then everything can be left at the default values.
@@ -51,15 +51,23 @@ Installation Guide
   * Run ``python manage.py migrate`` to update all the database schemas to the
     most current version.
 
-  * Finally, do _one_ of the following:
+3. Finally, if you want to test the database with some sample data, open the
+   django shell using::
+   
+      ./manage.py shell
 
-    - If you want to test the database with some sample data go to the
-      ``../dev`` directory and follow the instructions in the top of the
-      ``import_csv_data.py`` (this script is explained in the documentation for
-      `importing data <https://bitbucket.org/evoling/lexdb/wiki/import_data>`_).
+   and then from within the shell run (this uses ipython magic functions
+   ``%cd`` and ``%run``; without ipython this won't work)::
 
-  To inspect the database you can use the development server. Run ``./manage.py
-  runserver`` and open a browser at http://127.0.0.1:8000/
+      # change the working directory of the shell
+      %cd dev
+      # run the script there
+      %run import_csv_data.py
+      # and once it's ready
+      exit()
+
+   To inspect the database you can use the development server. Run
+   ``./manage.py runserver`` and open a browser at http://127.0.0.1:8000/
 
 3. Development
 
@@ -68,5 +76,7 @@ Installation Guide
      other dependencies:
 
      - `lxml <http://pypi.python.org/pypi/lxml/2.3.4#downloads>`_
+     - cssselect (``pip install cssselect``); used to be part of lxml, now a
+       separate project
 
 .. vim:ft=rst

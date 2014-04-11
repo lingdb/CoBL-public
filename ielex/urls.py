@@ -23,15 +23,15 @@ url_char = "A-Za-z0-9_.~-" # unreserved
 # http://tools.ietf.org/html/rfc3986#section-2.3
 R = {
     "COGJUDGE_ID":r"(?P<cogjudge_id>\d+)",
-    "COGNATE_NAME":r"(?P<cognate_name>[{}]+)".format(url_char),
-    "DOMAIN":r"(?P<domain>[{}]+)".format(url_char),
-    "LANGUAGE":r"(?P<language>[{}]+)".format(url_char),
-    "LANGUAGELIST":r"(?P<language_list>[{}]+)".format(url_char),
+    "COGNATE_NAME":r"(?P<cognate_name>[{0}]+)".format(url_char),
+    "DOMAIN":r"(?P<domain>[{0}]+)".format(url_char),
+    "LANGUAGE":r"(?P<language>[{0}]+)".format(url_char),
+    "LANGUAGELIST":r"(?P<language_list>[{0}]+)".format(url_char),
     "LEXEME_ID":r"(?P<lexeme_id>\d+)",
     "MEANING_ID":r"(?P<meaning_id>\d+)",
-    "MEANING":r"(?P<meaning>[{}]+)".format(url_char),
-    "RELATION":r"(?P<relation>[{}]+)".format(url_char),
-    "WORDLIST":r"(?P<wordlist>[{}]+)".format(url_char),
+    "MEANING":r"(?P<meaning>[{0}]+)".format(url_char),
+    "RELATION":r"(?P<relation>[{0}]+)".format(url_char),
+    "WORDLIST":r"(?P<wordlist>[{0}]+)".format(url_char),
     "USERNAME":r"(?P<username>[a-zA-Z0-9@.+_-]+)",
     "identifier":r"[a-zA-Z_][a-zA-Z0-9_]*",
     }

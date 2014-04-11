@@ -21,8 +21,10 @@ import codecs
 import os
 from ielex.lexicon.models import *
 
-assert os.path.exists(sys.argv[0]) and sys.argv[0].endswith("import_csv_data.py")
-assert os.path.exists(sys.argv[1]) and sys.argv[1].endswith("data.csv")
+DATAFILE = "data.csv"
+
+# assert os.path.exists(sys.argv[0]) and sys.argv[0].endswith("import_csv_data.py")
+# assert os.path.exists(sys.argv[1]) and sys.argv[1].endswith("data.csv")
 
 def get_next_alias(meaning):
     current_aliases = CognateClass.objects.filter(
@@ -33,12 +35,14 @@ def get_next_alias(meaning):
     raise ValueError
     return
 
-data = codecs.open(sys.argv[1], "rU", "utf-8")
+data = codecs.open(DATAFILE, "rU", "utf-8")
 header = data.next().rstrip().split("\t")
 
 languages, meaning_ids  = [], []
-print header[2:]
+
+print("Creating languages")
 for full_name in header[2:]:
+    print("-->", full_name)
     language, created = Language.objects.get_or_create(ascii_name=full_name,
             utf8_name=full_name)
     languages.append(language)
@@ -50,6 +54,7 @@ except Source.DoesNotExist:
             "of disintegration of proto-Dravidian. Indo-Iranian Journal 7, "\
             "no. 2: 170-186."
     andronov = Source.objects.create(citation_text=text, type_code="P")
+print("Created source:", andronov)
 
 dummy = [None] * 4
 gloss = None
@@ -83,5 +88,5 @@ for line in data:
                     cognate_judgement=cognate_judgement,
                     source=andronov,
                     reliability=reliability)
-            print (meaning, language, lexeme, cognate_judgement)
+            print("--> Added", meaning, language, lexeme, cognate_judgement)
 
