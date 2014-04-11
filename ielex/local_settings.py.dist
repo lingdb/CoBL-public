@@ -3,7 +3,8 @@ import os
 from settings import ROOTDIR
 
 # Development settings
-DEBUG = True
+# IMPORTANT: do not change DEBUG to True until after the first syncdb
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 # Database backend
