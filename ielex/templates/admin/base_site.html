@@ -1,10 +1,10 @@
 {% extends "admin/base.html" %}
 {% load i18n %}
 
-{% block title %}{{ title }} | {% trans 'IELex site admin' %}{% endblock %}
+{% block title %}{{ title }} | {{ project_short_name }} site admin' {% endblock %}
 
 {% block branding %}
-<h1 id="site-name">{% trans 'IELex administration' %}</h1>
+<h1 id="site-name">{{ project_short_name }} administration</h1>
 {% endblock %}
 
 {% block nav-global %}{% endblock %}

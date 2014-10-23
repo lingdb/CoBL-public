@@ -55,6 +55,7 @@ MANAGERS = ADMINS
 project_long_name = u"Test Lexical Cognacy Database"
 project_short_name = u"TestLex" # should be different from all other projects
 project_description = u"""Description for the front page"""
+project_citation = u"""Reference for data exported from project"""
 acknowledgements = u"" # may include html markup
 
 # Which modules to use (True or False)

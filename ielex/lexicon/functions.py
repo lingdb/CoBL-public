@@ -10,3 +10,8 @@ def local_iso_code_generator():
             if code not in known_iso_codes:
                 yield code
 
+def nexus_comment(s):
+    lines = s.split("\n")
+    maxlen = max(len(e) for e in lines)
+    return "\n".join("[ "+e.ljust(maxlen)+" ]" for e in lines)
+
