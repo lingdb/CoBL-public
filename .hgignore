@@ -6,3 +6,4 @@ ielex/db.sqlite3
 ielex/db.dump
 ielex/local_settings.py
 unittest.log
+htmlcov

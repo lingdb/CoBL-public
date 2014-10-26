@@ -413,3 +413,12 @@ class FunctionsTests(TestCase):
         for code in codes:
             self.assertEqual(code, self.generator.next())
 
+    def test_nexus_comment_conversion(self):
+        from ielex.lexicon.functions import nexus_comment
+        text = "foo\nbar\nbaz"
+        converted = nexus_comment(text)
+        for line in converted.split("\n"):
+            self.assertEqual(line[0], "[")
+            self.assertEqual(line[-1], "]")
+
+
