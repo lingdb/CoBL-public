@@ -207,6 +207,75 @@ class SignalsTests(TestCase):
                 cognate_class=self.cognate_class_A)
         self.assertEqual(self.meaning.percent_coded, 100)
 
+class LanguageListTests(TestCase):
+
+    def setUp(self):
+        self.db = make_basic_objects()
+
+    def make_language_list(self):
+        self.languagelist = LanguageList.objects.create(name="Test")
+
+    def append_languages(self, lg_names):
+        for name in lg_names:
+            self.languagelist.append(Language.objects.create(ascii_name=name,
+                utf8_name=name))
+
+    def setup_language_list(self, lg_names):
+        self.make_language_list()
+        self.append_languages(lg_names)
+
+    def test_create_list(self):
+        lg_names = ["Ccc", "Bbb", "Aaa"]
+        self.make_language_list()
+        self.assertEqual(self.languagelist.languages.count(), 0)
+        self.append_languages(lg_names)
+        self.assertEqual(self.languagelist.languages.count(), 3)
+        list_names = [l.ascii_name for l in
+                self.languagelist.languages.all().order_by("languagelistorder")]
+        self.assertEqual(list_names, lg_names)
+
+    def test_move_list_element(self):
+        lg_names = ["Ccc", "Bbb", "Aaa"]
+        self.setup_language_list(lg_names)
+        lang_A = Language.objects.get(ascii_name="Aaa")
+        self.languagelist.insert(1, lang_A)
+        self.assertEqual(self.languagelist.languages.count(), len(lg_names))
+        self.assertEqual(lang_A,
+                self.languagelist.languages.all().order_by("languagelistorder")[1])
+
+    def test_delete_list_element(self):
+        lg_names = ["Ccc", "Bbb", "Aaa"]
+        self.setup_language_list(lg_names)
+        lang_A = Language.objects.get(ascii_name="Aaa")
+        self.languagelist.remove(lang_A)
+        self.assertEqual(self.languagelist.languages.count(), len(lg_names)-1)
+        self.assertNotIn(lang_A, self.languagelist.languages.all())
+
+    def test_default_list_exists(self):
+        self.assertEqual(LanguageList.objects.filter(name="all").count(), 1)
+
+    def test_default_list_updates(self):
+        self.assertEqual(LanguageList.objects.filter(
+                name=LanguageList.DEFAULT).count(), 1)
+        lg_names = ["Ccc", "Bbb", "Aaa"]
+        self.setup_language_list(lg_names)
+        self.assertEqual(LanguageList.objects.get(
+                name=LanguageList.DEFAULT).languages.count(), 4)
+        self.db[Language].delete()
+        self.assertEqual(LanguageList.objects.get(
+                name=LanguageList.DEFAULT).languages.count(), 3)
+
+    def test_default_alpha(self):
+        default_alpha = LanguageList.DEFAULT+"-alpha"
+        lg_names = ["Ccc", "Bbb", "Aaa"]
+        self.setup_language_list(lg_names)
+        self.db[Language].delete() 
+        alpha_list = LanguageList.objects.get(name=default_alpha)
+        alpha_list_names = [l.ascii_name for l in
+                alpha_list.languages.all().order_by("languagelistorder")]
+        self.assertNotEqual(lg_names, sorted(lg_names))
+        self.assertEqual(alpha_list_names, sorted(lg_names))
+
 # class NexusExportFormTests(TestCase):
 # 
 #     def setUp(self):
@@ -273,7 +342,6 @@ class CognateCitationValidityTests(TestCase):
         except IntegrityError:
             self.fail("Should be able to delete final citation via cascade")
 
-
 class LexemeCitationValidityTests(TestCase):
 
     def setUp(self):
@@ -333,7 +401,6 @@ class LexemeCitationValidityTests(TestCase):
             self.fail("Should be able to delete final citation via cascade")
         self.assertEqual(Lexeme.objects.count(), 0)
         self.assertEqual(LexemeCitation.objects.count(), 0)
-
 
 class CleanLexemeFormTests(TestCase):
 

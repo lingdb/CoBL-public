@@ -22,16 +22,9 @@ Installation Guide
     - The `south <http://south.aeracode.org/>`_ schema migration package
       (``pip install South``; currently using 0.8.4)
 
-  * If you're going to do any work on the code, it is useful to install
-    `debug_toolbar 
-    <https://github.com/django-debug-toolbar/django-debug-toolbar>`_
-    (``pip install django-debug-toolbar``; currently using 0.9.4). If debug
-    toolbar is available it will be activated when `DEBUG` is set to `True` in
-    the `local_settings.py` file; see below.A
-
   * If you're going to work with the console (e.g. to import data) then is is
     highly desirable to install the `ipython` shell (``pip install ipython``).
-  
+
 2. After a clean install, 
 
   * Run ``python manage.py syncdb`` and add superuser when prompted (this will
@@ -73,10 +66,24 @@ Installation Guide
 
    * The database code has some (currently not nearly enough) `unit tests
      <https://bitbucket.org/evoling/lexdb/wiki/unit_tests>`_, which introduce
-     other dependencies:
+     other dependencies::
 
+       pip install -r REQUIREMENTS-DEV
+
+     The individual packages are:
+     
+     - `debug_toolbar <https://github.com/django-debug-toolbar/django-debug-toolbar>`_
+       (``pip install django-debug-toolbar``; currently using 0.9.4). If debug
+       toolbar is available it will be activated when `DEBUG` is set to `True` in
+       the `local_settings.py` file.
      - `lxml <http://pypi.python.org/pypi/lxml/2.3.4#downloads>`_
      - cssselect (``pip install cssselect``); used to be part of lxml, now a
        separate project
+
+   * Coverage tests: ``pip install coverage``, then::
+
+       coverage run --source='.' manage.py test ielex 
+       coverage html
+       open covhtml/index.html
 
 .. vim:ft=rst
