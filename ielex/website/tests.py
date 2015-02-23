@@ -270,5 +270,28 @@ class ObligatoryCogJudgeCitationTests(TestCase):
                 make_uncited_cognate_judgement,
                 self.db[Lexeme])
 
+class SearchTests(TestCase):
+
+    def setUp(self):
+        self.db = make_basic_objects()
+        for i in range(9):
+            Lexeme.objects.create(
+                    source_form="a{}".format(i),
+                    language=self.db[Language],
+                    meaning=self.db[Meaning])
+
+    def test_setup_objects_exist(self):
+        "Test that nine 'a*' lexemes have been created"
+        self.assertTrue(Lexeme.objects.filter(
+                source_form__regex="^a").count(), 9)
+
+    def test_search_limit(self):
+        "Test LIMIT_TO constraint exists and is respected"
+        from ielex.settings import LIMIT_TO
+        response = self.client.post(
+                "/lexeme/search/", 
+                {"search_fields":"L", "regex":"^a"})
+        self.assertEqual(LIMIT_TO, 4)
+        self.assertTrue(len(response.context["lexemes"]), 4)
 
 

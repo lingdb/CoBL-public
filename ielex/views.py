@@ -19,6 +19,7 @@ from django.template import Template
 from django.template.loader import get_template
 from reversion.models import Revision, Version
 from reversion import revision
+from ielex.settings import LIMIT_TO
 from ielex.forms import *
 from ielex.lexicon.models import *
 # from ielex.citations.models import *
@@ -1303,12 +1304,12 @@ def lexeme_search(request):
             if form.cleaned_data["search_fields"] == "L": # Search language fields
                 lexemes = Lexeme.objects.filter(
                         Q(phon_form__regex=regex) | Q(source_form__regex=regex),
-                        language__in=languages)
+                        language__in=languages)[:LIMIT_TO]
             else:
                 assert form.cleaned_data["search_fields"] == "E" # Search English fields
                 lexemes = Lexeme.objects.filter(
                         Q(gloss__regex=regex) | Q(notes__regex=regex) | Q(meaning__gloss__regex=regex),
-                        language__in=languages)
+                        language__in=languages)[:LIMIT_TO]
             return render_template(request, "lexeme_search_results.html", {
                     "regex": regex,
                     "language_names":[(l.utf8_name or l.ascii_name) for l in languages],

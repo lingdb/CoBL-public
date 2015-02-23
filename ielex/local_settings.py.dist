@@ -62,6 +62,9 @@ acknowledgements = u"" # may include html markup
 semantic_domains = False
 structural_features = False # NotImplemented
 
+# Maximum number of search results
+LIMIT_TO = 500
+
 # Automatically generated secret key
 SECRET_KEY = "<++>"
 

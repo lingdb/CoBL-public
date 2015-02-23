@@ -106,6 +106,9 @@ LOGIN_REDIRECT_URL = '/accounts/profile/'
 #      filename=os.path.join(os.path.dirname(ROOTDIR), 'django.log'),
 #      filemode='a+')
 
+# Default values (override in local_settings.py)
+LIMIT_TO = 500
+
 # -- local settings file, overrides settings.py ------------------
 local_settings_path = os.path.join(ROOTDIR, "local_settings.py")
 if not os.path.exists(local_settings_path):
@@ -134,8 +137,9 @@ if "test" in sys.argv:
                 'PASSWORD': '',
                 'HOST': '',
                 'PORT': '',
-        }
+        },
     }
+    LIMIT_TO = 4 # limit lexicon searches to four items
 
 
 if DEBUG:
