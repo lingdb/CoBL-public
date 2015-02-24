@@ -13,9 +13,9 @@ class ChooseOutputBaseForm(forms.Form):
             widget=forms.Select())
 
 class ChooseNexusOutputForm(ChooseOutputBaseForm):
-    SINGLETON = (("all", "All singletons"),
-            ("limited", "Maximum one singleton per language"),
-            ("none", "No singletons"))
+    # SINGLETON = (("all", "All singletons"),
+    #         ("limited", "Maximum one singleton per language"),
+    #         ("none", "No singletons"))
     DIALECT = (("BP", "BayesPhylogenies"),
             ("NN", "NeighborNet"),
             ("MB", "MrBayes"))
@@ -27,11 +27,11 @@ class ChooseNexusOutputForm(ChooseOutputBaseForm):
             required=False,
             label="Exclude ratings")
     # unique = forms.BooleanField(label="Include unique states")
-    exclude_invariant = forms.BooleanField(required=False,
-            label="Exclude invariant states")
-    singletons = forms.ChoiceField(choices=SINGLETON,
-            widget=forms.RadioSelect,
-            label="Singletons")
+    # exclude_invariant = forms.BooleanField(required=False,
+    #         label="Exclude invariant states")
+    # singletons = forms.ChoiceField(choices=SINGLETON,
+    #         widget=forms.RadioSelect,
+    #         label="Singletons")
     use_iso_codes = forms.BooleanField(
             required=False,
             label="Use ISO codes instead of language names")
