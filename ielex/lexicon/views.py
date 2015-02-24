@@ -209,6 +209,7 @@ def write_nexus(fileobj,
             time.localtime()), file=fileobj)
 
     if dialect == "NN":
+        max_len += 2 # taxlabels are quoted
         print(dedent("""\
             begin taxa;
               dimensions ntax=%s;
@@ -221,7 +222,7 @@ def write_nexus(fileobj,
               format symbols="01" missing=?;
               charstatelabels""" % len(cognate_class_names)), file=fileobj)
         labels = []
-
+        
         for i, cc in enumerate(cognate_class_names):
             labels.append("    %d %s" % (i+1, cc))
         print(*labels, sep=",\n", file=fileobj)
@@ -320,7 +321,7 @@ def write_delimited(fileobj,
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
     meanings = meaning_list.meanings.all().order_by("meaninglistorder")
     matrix, cognate_class_names = construct_matrix(languages,
-            meanings, exclude_ratings)
+            meanings, exclude_ratings, False) # no ascertainment marker
     print("\t" + "\t".join(cognate_class_names), file=fileobj)
     for row in matrix:
         print(*row, sep="\t", file=fileobj)
@@ -429,9 +430,8 @@ def construct_matrix(
                     if make_header:
                         cognate_class_names.append("%s_group" %
                                 cognate_class_dict[cc])
-                else:
-                    if make_header:
-                        cognate_class_names.append(cognate_class_name_formatter(cc))
+                if make_header:
+                    cognate_class_names.append(cognate_class_name_formatter(cc))
                 if language.id in data[cc]:
                     row.append("1")
                 elif language.id in data_missing[cc]:
