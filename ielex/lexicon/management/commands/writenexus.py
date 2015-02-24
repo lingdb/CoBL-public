@@ -36,6 +36,11 @@ class Command(LexDBManagementCommand):
             make_option("--use-iso-codes", dest="use_iso_codes",
                 action="store_true", default=False,
                 help="Use ISO codes instead of language names"),
+            make_option("--ascertainment-marker", dest="ascertainment_marker",
+                action="store_true", default=False,
+                help=("Insert dummy columns for ascertainment correction: "
+                "For each meaning, insert 0 if there is valid 1/0 data, "
+                "and ? if there are only ???")),
             make_option("--outfile", dest="filename",
                 action="store", default=None,
                 help="Name of destination file [output to screen]"),
@@ -56,6 +61,7 @@ class Command(LexDBManagementCommand):
             True, # label cognate sets
             # options["unique"],
             # options["exclude_invariant"],
+            options["ascertainment_marker"],
             options["use_iso_codes"])
         fileobj.close()
         return
