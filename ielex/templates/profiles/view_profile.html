@@ -12,14 +12,19 @@
     <tr><td>First name:</td><td>{{ the_user.first_name }}</td></tr>
     <tr><td>Last name:</td><td>{{ the_user.last_name }}</td></tr>
     <tr><td>Email address:</td><td>{{ the_user.email }}</td></tr>
+    {% if user.username == the_user.username %}
     <tr>
       <td></td>
       <td>
-        <a href="/accounts/alter/profile/{{ the_user.username }}/" class="button">
-          <input type="button" value="Alter details">
+        <a href="{% url 'change-password' %}" class="button">
+          <input type="button" value="Change password">
+        </a>
+        <a href="{% url 'alter-profile' %}" class="button">
+          <input type="button" value="Alter personal information">
         </a>
       </td>
     </tr>
+    {% endif %}
   </table>
   <h2>Permissions</h2>
   <ul>

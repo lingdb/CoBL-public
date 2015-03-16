@@ -229,7 +229,6 @@ urlpatterns = patterns('',
 
     url(r'^revert/(?P<revision_id>\d+)/$', revert_version, name="revert-item"),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
-
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
@@ -247,22 +246,23 @@ urlpatterns += patterns('',
         )
 
 urlpatterns += patterns('django.contrib.auth',
-    url(r'^accounts/login/$','views.login', {'template_name':
+    url(r'^login/$','views.login', {'template_name':
         'profiles/login.html'}, name="login"),
-    url(r'^accounts/logout/$','views.logout', {'template_name':
+    url(r'^logout/$','views.logout', {'template_name':
         'profiles/logout.html'}, name="logout"),
     )
 
 urlpatterns += patterns('',
     (r'^admin/', include(admin.site.urls)),
-    url(r'^accounts/profile/$', 'ielex.profiles.views.view_profile',
+    url(r'^user/$', 'ielex.profiles.views.view_profile',
             name="view-profile"),
-    (r'^accounts/alter/profile/$', 'ielex.profiles.views.alter_profile'),
-    (r'^accounts/change-password/$', 'ielex.profiles.views.change_password'),
-    url(r'^accounts/profile/(?P<username>.+)/$',
+    url(r'^user/alter/$', 'ielex.profiles.views.alter_profile',
+        name='alter-profile'),
+    url(r'^user/change-password/$', 'ielex.profiles.views.change_password',
+        name='change-password'),
+    # public profile
+    url(r'^user/(?P<username>.+)/$',
         'ielex.profiles.views.view_profile', name="view-profile-user"),
-    (r'^accounts/alter/profile/(?P<username>.+)/$',
-        'ielex.profiles.views.alter_profile'),
     )
 
 if settings.DEBUG: # additional urls for testing purposes

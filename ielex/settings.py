@@ -96,9 +96,9 @@ INSTALLED_APPS = (
 )
 
 # admin urls
-LOGIN_URL = '/accounts/login/'
-LOGOUT_URL = '/accounts/logout/'
-LOGIN_REDIRECT_URL = '/accounts/profile/'
+LOGIN_URL = '/login/'
+LOGOUT_URL = '/logout/'
+LOGIN_REDIRECT_URL = '/user/'
 
 ## -- setup logger ------------------------------------------------
 # logging.basicConfig(level=logging.INFO,
