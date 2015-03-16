@@ -53,7 +53,7 @@ Installation Guide
    ``%cd`` and ``%run``; without ipython this won't work)::
 
       # change the working directory of the shell
-      %cd dev
+      %cd dev/andronov
       # run the script there
       %run import_csv_data.py
       # and once it's ready
