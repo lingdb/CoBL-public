@@ -27,12 +27,30 @@ Installation Guide
 
 2. After a clean install, 
 
-  * Run ``python manage.py syncdb`` and add superuser when prompted (this will
+  * Run ``./manage.py syncdb`` and add superuser when prompted (this will
     copy ``local_settings.py.dist`` to ``local_settings.py`` and generate a
     secret key) 
     
+    - Create a superuser at the prompt::
+      
+        You just installed Django's auth system, which means you don't have any
+        superusers defined.  Would you like to create one now? (yes/no):
+        
+    - If the version of LexDB you are installing includes database migrations
+      you will see the following lines of the output::
+      
+         Not synced (use migrations):
+         - reversion
+         - ielex.lexicon
+         - ielex.extensional_semantics
+         (use ./manage.py migrate to migrate these)
+      
+      Run ``./manage.py migrate`` as it says. 
+    
   * Customize ``local_settings.py`` with name of database etc. If you're doing
-    a test then everything can be left at the default values.
+    a test almost everything can be left at the default values.
+    
+      - Change the DEBUG setting to True
 
       - It's a good idea to move ``local_settings.py`` to a private,
         version-controlled directory _outside_ the ``LexDB`` hierarchy, with a
@@ -40,9 +58,6 @@ Installation Guide
         You can keep more than one version of your private settings file, e.g.
         one pointing to a sqlite test database and one pointing to your
         production server.  
-
-  * Run ``python manage.py migrate`` to update all the database schemas to the
-    most current version.
 
 3. Finally, if you want to test the database with some sample data, open the
    django shell using::
