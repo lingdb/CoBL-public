@@ -5,8 +5,10 @@
 {% endblock %}
 
 {% block content %}
-{% if error_message %}
-<p class="errornote">{{ error_message }}</p>
+{% if form.errors %}
+<ul id="message">
+  <li id="message">Username and password do not match. Please try again.</li>
+</ul>
 {% endif %}
 <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
   <table>

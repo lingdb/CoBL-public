@@ -1,21 +1,15 @@
 from django.conf.urls import *
-# after django version 1.4 (and definitely by version 1.6) change "from
-# django.conf.urls.defaults import *" to "from django.conf.urls import *"
 from django.contrib.auth.decorators import login_required
 from django.views.generic import DetailView, UpdateView,\
         CreateView, ListView, TemplateView, RedirectView
-#from django.views.generic.simple import redirect_to
 from ielex.views import *
 from ielex import settings
 from ielex.lexicon.views import *
 from ielex.lexicon.models import *
-# from ielex.forms import EditCitationForm
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
-
-# additional arguments can be passed with a dictionary
 
 # standard regexes for urls
 # url_char = "a-zA-Z0-9$_.+!*'(),-" # unreserved 
@@ -261,7 +255,7 @@ urlpatterns += patterns('',
     url(r'^user/change-password/$', 'ielex.profiles.views.change_password',
         name='change-password'),
     # public profile
-    url(r'^user/(?P<username>.+)/$',
+    url(r'^user/%(USERNAME)s/$' % R,
         'ielex.profiles.views.view_profile', name="view-profile-user"),
     )
 

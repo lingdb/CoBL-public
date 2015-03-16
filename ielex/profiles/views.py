@@ -39,7 +39,8 @@ def alter_profile(request, username=None):
             messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(redirect_url)
     else:
-        form = UserAlterDetailsForm(the_user.__dict__)
+        # form = UserAlterDetailsForm(initial=the_user.__dict__)
+        form = UserAlterDetailsForm(instance=the_user)
     return render_template(request, "profiles/alter_profile.html",
             {"the_user":the_user,
              "form":form})
