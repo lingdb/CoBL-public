@@ -110,6 +110,7 @@ class EditSourceForm(forms.ModelForm):
 
     class Meta:
         model = Source
+        fields = "__all__"
 
 class EditLanguageForm(forms.ModelForm):
 
@@ -121,6 +122,7 @@ class EditLanguageForm(forms.ModelForm):
 
     class Meta:
         model = Language
+        fields = "__all__"
 
 class EditMeaningForm(forms.ModelForm):
 
@@ -129,6 +131,7 @@ class EditMeaningForm(forms.ModelForm):
 
     class Meta:
         model = Meaning
+        fields = ["gloss", "description", "notes"]
 
 class EditMeaningListForm(forms.ModelForm):
 
@@ -235,7 +238,7 @@ class EditCognateClassNameForm(forms.ModelForm):
 
     class Meta:
         model = CognateClass
-        field = ["name"]
+        fields = ["name"]
 
 class EditCognateClassNotesForm(forms.ModelForm):
     notes = forms.CharField(
