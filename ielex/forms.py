@@ -233,8 +233,17 @@ class ChooseCognateClassForm(forms.Form):
 class EditCognateClassNameForm(forms.ModelForm):
     name = forms.CharField(required=False)
 
+    class Meta:
+        model = CognateClass
+        field = ["name"]
+
 class EditCognateClassNotesForm(forms.ModelForm):
-    notes = forms.CharField(widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}), required=False)
+    notes = forms.CharField(
+            widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}), required=False)
+
+    class Meta:
+        model = CognateClass
+        fields = ["notes"]
 
 def make_reorder_languagelist_form(objlist):
     choices = [(e.id, e.ascii_name) for e in objlist]
