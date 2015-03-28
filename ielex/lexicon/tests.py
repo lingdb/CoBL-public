@@ -308,7 +308,7 @@ class CognateCitationValidityTests(TestCase):
                 source=self.source,
                 cognate_judgement=cognate_judgement,
                 reliability="B")
-        self.failUnlessRaises(IntegrityError, self.delete, citation)
+        self.assertRaises(IntegrityError, self.delete, citation)
         self.assertEqual(cognate_judgement.source.count(), 1)
 
     def test_can_delete_penultimate_citation(self):
@@ -327,7 +327,7 @@ class CognateCitationValidityTests(TestCase):
         self.assertEqual(cognate_judgement.source.count(), 2)
         citation_2.delete()
         self.assertEqual(cognate_judgement.source.count(), 1)
-        self.failUnlessRaises(IntegrityError, self.delete, citation_1)
+        self.assertRaises(IntegrityError, self.delete, citation_1)
 
     def test_can_still_delete_on_cascade(self):
         cognate_judgement = CognateJudgement.objects.create(
@@ -361,7 +361,7 @@ class LexemeCitationValidityTests(TestCase):
                 lexeme=lexeme,
                 source=self.source,
                 reliability="B")
-        self.failUnlessRaises(IntegrityError, self.delete, citation)
+        self.assertRaises(IntegrityError, self.delete, citation)
         self.assertEqual(lexeme.source.count(), 1)
 
     def test_can_delete_penultimate_citation(self):
@@ -379,7 +379,7 @@ class LexemeCitationValidityTests(TestCase):
         self.assertEqual(lexeme.source.count(), 2)
         citation_2.delete()
         self.assertEqual(lexeme.source.count(), 1)
-        self.failUnlessRaises(IntegrityError, self.delete, citation_1)
+        self.assertRaises(IntegrityError, self.delete, citation_1)
 
     def test_can_still_delete_on_cascade(self):
         lexeme = Lexeme.objects.create(
@@ -391,7 +391,7 @@ class LexemeCitationValidityTests(TestCase):
                 source=self.source,
                 reliability="B")
         # sanity check
-        self.failUnlessRaises(IntegrityError, self.delete, citation)
+        self.assertRaises(IntegrityError, self.delete, citation)
         self.assertEqual(Lexeme.objects.count(), 1)
         self.assertEqual(LexemeCitation.objects.count(), 1)
         # delete tests
