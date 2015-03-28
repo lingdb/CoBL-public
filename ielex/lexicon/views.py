@@ -110,7 +110,7 @@ class NexusExportView(TemplateView):
         filename = "%s-%s-%s.nex" % (settings.project_short_name,
                 form.cleaned_data["language_list"].name,
                 form.cleaned_data["meaning_list"].name)
-        response = HttpResponse(mimetype='text/plain')
+        response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=%s' % \
                 filename.replace(" ", "_")
 
@@ -148,7 +148,7 @@ class DumpRawDataView(TemplateView):
         filename = "%s-%s-%s-data.csv" % (settings.project_short_name,
                 form.cleaned_data["language_list"].name,
                 form.cleaned_data["meaning_list"].name)
-        response = HttpResponse(mimetype='text/plain')
+        response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=%s' % \
                 filename.replace(" ", "_")
 
@@ -168,6 +168,7 @@ def write_nexus(fileobj,
             ascertainment_marker, # bool
             use_iso_codes):       # bool
     start_time = time.time()
+    dialect_full_name = dict(ChooseNexusOutputForm.DIALECT)[dialect]
 
     # get data together
     language_list = LanguageList.objects.get(name=language_list_name)
@@ -205,6 +206,10 @@ def write_nexus(fileobj,
     print("[ Language list: %s ]" % language_list_name, file=fileobj)
     print("[ Meaning list: %s ]" % meaning_list_name, file=fileobj)
     print("[ Exclude rating/s: %s ]" % ", ".join(sorted(exclude_ratings)), file=fileobj)
+    print("[ Nexus dialect: %s ]" % dialect_full_name, file=fileobj)
+    print("[ Cognate set labels: %s ]" % LABEL_COGNATE_SETS, file=fileobj)
+    print("[ Mark meaning sets for ascertainment correction: %s ]" %
+            ascertainment_marker, file=fileobj)
     print("[ File generated: %s ]\n" % time.strftime("%Y-%m-%d %H:%M:%S",
             time.localtime()), file=fileobj)
 
@@ -304,7 +309,7 @@ def write_nexus(fileobj,
     minutes = seconds // 60
     seconds %= 60
     print("[ Processing time: %02d:%02d ]" % (minutes, seconds), file=fileobj)
-    print("[ %s ]" % " ".join(sys.argv), file=fileobj)
+    # print("[ %s ]" % " ".join(sys.argv), file=fileobj)
     print("# Processed %s cognate sets from %s languages" %
             (len(cognate_class_names), len(matrix)), file=sys.stderr)
     return fileobj
