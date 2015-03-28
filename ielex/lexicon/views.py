@@ -423,10 +423,10 @@ def construct_matrix(
             for i, cc in enumerate(data_keys):
                 if ascertainment_marker and i in ascertainment_marker_idx:
                     # start of a new group
-                    if language.id in data_missing[cc]:
-                        row.append("?")
-                    else:
-                        row.append("0")
+                    # if language.id in data_missing[cc]:
+                    #     row.append("?")
+                    # else:
+                    row.append("0")
                     if make_header:
                         cognate_class_names.append("%s_group" %
                                 cognate_class_dict[cc])
