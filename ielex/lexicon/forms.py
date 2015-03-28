@@ -31,9 +31,6 @@ class ChooseNexusOutputForm(ChooseOutputBaseForm):
             label="Ascertainment bias correction marker",
             help_text="""Sets of cognates referring to the same meaning are
             marked by an initial all-zero column""")
-    use_iso_codes = forms.BooleanField(
-            required=False,
-            label="Use ISO codes instead of language names")
 
 class DumpSnapshotForm(ChooseOutputBaseForm):
     pass

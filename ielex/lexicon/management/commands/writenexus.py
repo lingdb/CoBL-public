@@ -18,24 +18,11 @@ class Command(LexDBManagementCommand):
             make_option("--meaning-list", dest="meaning_list",
                 action="store", default="all", metavar="NAME",
                 help="Name of meaning list [%s]" % MeaningList.DEFAULT),
-            # make_option("--unique", dest="unique", metavar=("{%s}" %
-            #     "|".join(unique_choices)),
-            #     action="store", type="choice", default=unique_choices[0],
-            #     choices=unique_choices ,
-            #     help=("Include unique cognate sets [%s]" % unique_choices[0])),
             make_option("--dialect", dest="dialect", choices=dialects,
                 action="store", default="NN",
                 metavar=("{%s}" % "|".join(dialects)),
                 help=("NEXUS dialect: MrBayes, BayesPhylogenies, NeighborNet"
                 " [NN]")),
-            # make_option("--suppress-invariant", dest="exclude_invariant",
-            #     action="store_true", default=False,
-            #     help="Suppress cognate sets with a reflex present"\
-            #     " in all languages (missing data is not treated as"\
-            #     " evidence of variation) [don't suppress]"),
-            make_option("--use-iso-codes", dest="use_iso_codes",
-                action="store_true", default=False,
-                help="Use ISO codes instead of language names"),
             make_option("--ascertainment-marker", dest="ascertainment_marker",
                 action="store_true", default=False,
                 help=("Insert dummy columns for ascertainment correction: "
@@ -51,18 +38,13 @@ class Command(LexDBManagementCommand):
             fileobj = open(expanduser(expandvars(options["filename"])), "w")
         else:
             fileobj = self.stdout
-        # if options["unique"] == 'none':
-        #     options["unique"] = False
         fileobj = write_nexus(fileobj,
             options["language_list"],
             options["meaning_list"],
             set(["L","X"]), # exclude
             options["dialect"], # dialect
             True, # label cognate sets
-            # options["unique"],
-            # options["exclude_invariant"],
-            options["ascertainment_marker"],
-            options["use_iso_codes"])
+            options["ascertainment_marker"])
         fileobj.close()
         return
 

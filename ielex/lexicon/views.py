@@ -120,8 +120,7 @@ class NexusExportView(TemplateView):
                 set(form.cleaned_data["reliability"]),
                 form.cleaned_data["dialect"],
                 True,
-                form.cleaned_data["ascertainment_marker"],
-                form.cleaned_data["use_iso_codes"]
+                form.cleaned_data["ascertainment_marker"]
                 )
         return response
 
@@ -160,34 +159,19 @@ class DumpRawDataView(TemplateView):
         return response
 
 def write_nexus(fileobj,
-            language_list_name,   # string
-            meaning_list_name,    # string
-            exclude_ratings,      # set
-            dialect,              # string
-            LABEL_COGNATE_SETS,   # bool
-            ascertainment_marker, # bool
-            use_iso_codes):       # bool
+            language_list_name,    # string
+            meaning_list_name,     # string
+            exclude_ratings,       # set
+            dialect,               # string
+            LABEL_COGNATE_SETS,    # bool
+            ascertainment_marker): # bool
     start_time = time.time()
     dialect_full_name = dict(ChooseNexusOutputForm.DIALECT)[dialect]
 
     # get data together
     language_list = LanguageList.objects.get(name=language_list_name)
     languages = language_list.languages.all().order_by("languagelistorder")
-    if use_iso_codes:
-        names_and_iso_codes = []
-        code_generator = local_iso_code_generator()
-        language_names = []
-        for language in languages:
-            if language.iso_code and language.iso_code not in language_names:
-                language_names.append(language.iso_code)
-                names_and_iso_codes.append((language.ascii_name,
-                    language.iso_code))
-            else:
-                iso_code = code_generator.next()
-                language_names.append(iso_code)
-                names_and_iso_codes.append((language.ascii_name, iso_code))
-    else:
-        language_names = [language.ascii_name for language in languages]
+    language_names = [language.ascii_name for language in languages]
 
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
     meanings = meaning_list.meanings.all().order_by("meaninglistorder")
@@ -266,24 +250,15 @@ def write_nexus(fileobj,
         print("    %s[ %s ]" % (" "*max_len, "".join(row)), file=fileobj)
 
     # write matrix
-    if use_iso_codes:
-        name2iso_code = dict(names_and_iso_codes)
     for row in matrix:
         language_name, row = row[0], row[1:]
         if dialect == "NN":
             quoted = lambda s: "'%s'" % s
         else:
             quoted = lambda s: s
-        if use_iso_codes:
-            language_name = name2iso_code[language_name]
         print("    %s %s%s" % (quoted(language_name),
                 " "*(max_len - len(quoted(language_name))), "".join(row)), file=fileobj)
     print("  ;\nend;\n", file=fileobj)
-
-    if use_iso_codes:
-        print("[ ISO code: name (may include local codes) ]", file=fileobj)
-        for name, iso_code in sorted(names_and_iso_codes, key=lambda e:e[1]):
-            print("[ %s: %s ]" % (iso_code, name.ljust(35)), file=fileobj)
 
     if dialect == "BP":
         print(dedent("""\
