@@ -158,12 +158,12 @@ class DumpRawDataView(TemplateView):
                 )
         return response
 
-def write_nexus(fileobj,
+def write_nexus(fileobj,           # file object
             language_list_name,    # string
             meaning_list_name,     # string
             exclude_ratings,       # set
             dialect,               # string
-            LABEL_COGNATE_SETS,    # bool
+            label_cognate_sets,    # bool
             ascertainment_marker): # bool
     start_time = time.time()
     dialect_full_name = dict(ChooseNexusOutputForm.DIALECT)[dialect]
@@ -191,7 +191,7 @@ def write_nexus(fileobj,
     print("[ Meaning list: %s ]" % meaning_list_name, file=fileobj)
     print("[ Exclude rating/s: %s ]" % ", ".join(sorted(exclude_ratings)), file=fileobj)
     print("[ Nexus dialect: %s ]" % dialect_full_name, file=fileobj)
-    print("[ Cognate set labels: %s ]" % LABEL_COGNATE_SETS, file=fileobj)
+    print("[ Cognate set labels: %s ]" % label_cognate_sets, file=fileobj)
     print("[ Mark meaning sets for ascertainment correction: %s ]" %
             ascertainment_marker, file=fileobj)
     print("[ File generated: %s ]\n" % time.strftime("%Y-%m-%d %H:%M:%S",
@@ -242,7 +242,7 @@ def write_nexus(fileobj,
             """ % (len(languages), len(cognate_class_names), " ".join(language_names))),
                     file=fileobj)
 
-    if LABEL_COGNATE_SETS:
+    if label_cognate_sets:
         row = [" "*9] + [str(i).ljust(10) for i in
                 range(len(cognate_class_names))[10::10]]
         print("    %s[ %s ]" % (" "*max_len, "".join(row)), file=fileobj)
@@ -293,7 +293,7 @@ def write_delimited(fileobj,
             language_list_name,
             meaning_list_name,
             exclude_ratings,
-            LABEL_COGNATE_SETS):
+            label_cognate_sets):
     start_time = time.time()
 
     language_list = LanguageList.objects.get(name=language_list_name)
