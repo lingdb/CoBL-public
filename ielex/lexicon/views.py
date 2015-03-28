@@ -355,18 +355,22 @@ def construct_matrix(
             missing[meaning] = [language.id for language in languages if not
                     language.lexeme_set.filter(meaning=meaning).exists()]
 
+        # lexemes which have been marked as being excluded
+        exclude_lexemes = set(LexemeCitation.objects.filter(
+                lexeme__language__in=languages,
+                reliability__in=exclude_ratings).values_list(
+                "lexeme", flat=True))
+        exclude_lexemes &= set(CognateJudgementCitation.objects.filter(
+                cognate_judgement__lexeme__language__in=languages,
+                reliability__in=exclude_ratings).values_list(
+                "cognate_judgement__lexeme", flat=True))
+
         data, data_missing = {}, {}
         for cc in cognate_class_ids:
-            ## Faster way: (doesn't do reliability ratings properly)
-            # language_ids = CognateClass.objects.get(id=cc).lexeme_set.filter(
-            #         meaning__in=meanings).values_list('language', flat=True)
-            ## Slower way:
-            # TODO look at LexemeCitation reliablity ratings here too
             language_ids = [cj.lexeme.language.id for cj in
                     CognateJudgement.objects.filter(cognate_class=cc,
-                    lexeme__meaning__in=meanings)
-                    if cj.lexeme.language in languages
-                    and not (cj.reliability_ratings & exclude_ratings)]
+                    lexeme__meaning__in=meanings) if cj.lexeme.language in
+                    languages and cj.lexeme not in exclude_lexemes]
             if language_ids:
                 try:
                     meaning = CognateClass.objects.get(id=cc).get_meaning()
@@ -380,25 +384,21 @@ def construct_matrix(
 
         # adds a cc code for all the lexemes which are not registered as
         # belonging to a cognate class
-        # TODO look at LexemeCitation reliablity ratings here too
         uniques = Lexeme.objects.filter(
                 language__in=languages,
                 meaning__in=meanings,
-                cognate_class__isnull=True).values_list(
-                        "language__id",
-                        "meaning__id",
-                        "id")
-
-        for language_id, meaning_id, lexeme_id in uniques:
+                cognate_class__isnull=True)
+        
+        for lexeme in uniques:
+            if lexeme not in exclude_lexemes:
             # add singleton ids to cognate_class_dict
-            meaning = Meaning.objects.get(id=meaning_id)
-            cc = ("U", lexeme_id)
-            data[cc] = [language_id]
-            cognate_class_dict[cc] = meaning.gloss
-            try:
-                data_missing[cc] = missing[meaning]
-            except KeyError:
-                data_missing[cc] = []
+                cc = ("U", lexeme.id)
+                data[cc] = [lexeme.language.id]
+                cognate_class_dict[cc] = lexeme.meaning.gloss
+                try:
+                    data_missing[cc] = missing[lexeme.meaning]
+                except KeyError:
+                    data_missing[cc] = []
 
         # make matrix
         def cognate_class_name_formatter(cc):
@@ -423,9 +423,6 @@ def construct_matrix(
             for i, cc in enumerate(data_keys):
                 if ascertainment_marker and i in ascertainment_marker_idx:
                     # start of a new group
-                    # if language.id in data_missing[cc]:
-                    #     row.append("?")
-                    # else:
                     row.append("0")
                     if make_header:
                         cognate_class_names.append("%s_group" %
