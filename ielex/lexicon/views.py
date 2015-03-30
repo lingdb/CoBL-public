@@ -321,101 +321,84 @@ def construct_matrix(
     exclude_ratings,
     ascertainment_marker):
 
-        matrix = []
-        # all cognate classes
-        cognate_class_ids = CognateClass.objects.all().values_list("id", flat=True)
-        cognate_class_dict = dict(CognateJudgement.objects.all().values_list(
-                "cognate_class__id", "lexeme__meaning__gloss").distinct())
+        # synonymous cognate classes (i.e. cognate reflexes representing
+        # a single Swadesh meaning)
+        cognate_classes = dict()
+        for cc, meaning in CognateJudgement.objects.filter(
+                lexeme__language__in=languages, lexeme__meaning__in=meanings
+                ).order_by("lexeme__meaning",
+                "cognate_class").values_list("cognate_class__id",
+                "lexeme__meaning__gloss").distinct():
+            cognate_classes.setdefault(meaning, list()).append(cc)
 
         # lexemes which have been marked as being excluded
         exclude_lexemes = set(LexemeCitation.objects.filter(
                 lexeme__language__in=languages,
                 reliability__in=exclude_ratings).values_list(
-                "lexeme", flat=True))
+                "lexeme__id", flat=True))
         exclude_lexemes &= set(CognateJudgementCitation.objects.filter(
                 cognate_judgement__lexeme__language__in=languages,
                 reliability__in=exclude_ratings).values_list(
-                "cognate_judgement__lexeme", flat=True))
+                "cognate_judgement__lexeme__id", flat=True))
 
-        # make a lists of languages lacking any lexeme for a meaning
-        languages_missing_meaning = {}
+        # languages lacking any lexeme for a meaning
+        languages_missing_meaning = dict()
+        # languages having a reflex for a cognate set
+        data = dict()
         for meaning in meanings:
-            languages_missing_meaning[meaning] = [language.id for language in
+            languages_missing_meaning[meaning.gloss] = [language for language in
                     languages if not
                     language.lexeme_set.filter(meaning=meaning).exists()]
-        
-        # dictionary of languages having a reflex for a cognate set
-        # (i.e. "1" values)
-        # dictionary of languages (also keyed on cognate set) which lack
-        # any reflex for a meaning (i.e. "?" values rather than "0")
-        data, data_missing = {}, {}
-        for cc in cognate_class_ids:
-            language_ids = [cj.lexeme.language.id for cj in
-                    CognateJudgement.objects.filter(cognate_class=cc,
-                    lexeme__meaning__in=meanings) if cj.lexeme.language in
-                    languages and cj.lexeme not in exclude_lexemes]
-            if language_ids:
-                meaning = CognateClass.objects.get(id=cc).get_meaning()
-                data[cc] = language_ids
-                data_missing[cc] = languages_missing_meaning[meaning]
-
-
-        # adds a cc code for all the lexemes which are not registered as
-        # belonging to a cognate class
-        uniques = Lexeme.objects.filter(
+            for cc in cognate_classes[meaning.gloss]:
+                matches = [cj.lexeme.language for cj in
+                        CognateJudgement.objects.filter(cognate_class=cc,
+                        lexeme__meaning=meaning) if cj.lexeme.language in
+                        languages and cj.lexeme.id not in exclude_lexemes]
+                if matches:
+                    data.setdefault(meaning.gloss, dict())[cc] = matches
+                
+        # adds a cc code for all singletons (lexemes which are not registered as
+        # belonging to a cognate class), and add to cognate_class_dict
+        for lexeme in Lexeme.objects.filter(
                 language__in=languages,
                 meaning__in=meanings,
-                cognate_class__isnull=True)
-        
-        for lexeme in uniques:
-            if lexeme not in exclude_lexemes:
-            # add singleton ids to cognate_class_dict
-                cc = ("U", lexeme.id)
-                data[cc] = [lexeme.language.id]
-                cognate_class_dict[cc] = lexeme.meaning.gloss
-                try:
-                    data_missing[cc] = languages_missing_meaning[lexeme.meaning]
-                except KeyError:
-                    data_missing[cc] = []
+                cognate_class__isnull=True):
+            if lexeme.id not in exclude_lexemes:
+                cc = ("U", lexeme.id) # use tuple for sorting
+                data[lexeme.meaning.gloss].setdefault(cc,
+                        list()).append(lexeme.language)
 
-        # make matrix
-        def cognate_class_name_formatter(cc):
-            gloss = cognate_class_dict[cc]
+        def cognate_class_name_formatter(cc, gloss):
+            # gloss = cognate_class_dict[cc]
             if type(cc) == int:
-                return "%s_cogset_%s" % (gloss, cc)
+                return "%s_cognate_%s" % (gloss, cc)
             else:
                 assert type(cc) == tuple
                 return "%s_lexeme_%s" % (gloss, cc[1])
 
-        # sort cognate class ids by meaning
-        data_keys = sorted(data, key=lambda cc: (cognate_class_dict[cc], cc))
-        if ascertainment_marker: # store indexes where meaning blocks change
-            ascertainment_marker_idx = [i for i, cc in enumerate(data_keys) if
-                    cognate_class_dict[cc] if 
-                    cognate_class_dict[cc] != cognate_class_dict[data_keys[i-1]]]
-
-        cognate_class_names = []
+        # make matrix
+        matrix, cognate_class_names = list(), list()
         make_header = True
         for language in languages:
             row = [language.ascii_name]
-            for i, cc in enumerate(data_keys):
-                if ascertainment_marker and i in ascertainment_marker_idx:
-                    # start of a new group
-                    if language.id in data_missing[cc]:
+            for meaning in meanings:
+                if ascertainment_marker:
+                    if language in languages_missing_meaning[meaning.gloss]:
                         row.append("?")
                     else:
                         row.append("0")
                     if make_header:
-                        cognate_class_names.append("%s_group" %
-                                cognate_class_dict[cc])
-                if make_header:
-                    cognate_class_names.append(cognate_class_name_formatter(cc))
-                if language.id in data[cc]:
-                    row.append("1")
-                elif language.id in data_missing[cc]:
-                    row.append("?")
-                else:
-                    row.append("0")
+                        cognate_class_names.append("%s_group" % meaning.gloss)
+                for cc in sorted(data[meaning.gloss]):
+                    if make_header:
+                        cognate_class_names.append(cognate_class_name_formatter(cc,
+                            meaning.gloss))
+                    if language in data[meaning.gloss][cc]:
+                        row.append("1")
+                    elif language in languages_missing_meaning[meaning.gloss]:
+                        row.append("?")
+                    else:
+                        row.append("0")
             matrix.append(row)
             make_header = False
 
