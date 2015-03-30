@@ -245,9 +245,9 @@ def write_nexus(fileobj,           # file object
     if label_cognate_sets:
         row = [" "*9] + [str(i).ljust(10) for i in
                 range(len(cognate_class_names))[10::10]]
-        print("    %s[ %s ]" % (" "*max_len, "".join(row)), file=fileobj)
+        print("   %s[ %s ]" % (" "*max_len, "".join(row)), file=fileobj)
         row = [" "*9] + [".         " for i in range(len(cognate_class_names))[10::10]]
-        print("    %s[ %s ]" % (" "*max_len, "".join(row)), file=fileobj)
+        print("   %s[ %s ]" % (" "*max_len, "".join(row)), file=fileobj)
 
     # write matrix
     for row in matrix:
@@ -326,14 +326,6 @@ def construct_matrix(
         cognate_class_ids = CognateClass.objects.all().values_list("id", flat=True)
         cognate_class_dict = dict(CognateJudgement.objects.all().values_list(
                 "cognate_class__id", "lexeme__meaning__gloss").distinct())
-        #logging.info("len cognate_class_ids = %s" % len(cognate_class_ids))
-
-        # make a list for each meaning of the languages lacking any lexeme
-        # with that meaning
-        missing = {}
-        for meaning in meanings:
-            missing[meaning] = [language.id for language in languages if not
-                    language.lexeme_set.filter(meaning=meaning).exists()]
 
         # lexemes which have been marked as being excluded
         exclude_lexemes = set(LexemeCitation.objects.filter(
@@ -345,6 +337,17 @@ def construct_matrix(
                 reliability__in=exclude_ratings).values_list(
                 "cognate_judgement__lexeme", flat=True))
 
+        # make a lists of languages lacking any lexeme for a meaning
+        languages_missing_meaning = {}
+        for meaning in meanings:
+            languages_missing_meaning[meaning] = [language.id for language in
+                    languages if not
+                    language.lexeme_set.filter(meaning=meaning).exists()]
+        
+        # dictionary of languages having a reflex for a cognate set
+        # (i.e. "1" values)
+        # dictionary of languages (also keyed on cognate set) which lack
+        # any reflex for a meaning (i.e. "?" values rather than "0")
         data, data_missing = {}, {}
         for cc in cognate_class_ids:
             language_ids = [cj.lexeme.language.id for cj in
@@ -352,15 +355,10 @@ def construct_matrix(
                     lexeme__meaning__in=meanings) if cj.lexeme.language in
                     languages and cj.lexeme not in exclude_lexemes]
             if language_ids:
-                try:
-                    meaning = CognateClass.objects.get(id=cc).get_meaning()
-                    data[cc] = language_ids
-                    try:
-                        data_missing[cc] = missing[meaning]
-                    except KeyError:
-                        data_missing[cc] = []
-                except AssertionError:
-                    pass
+                meaning = CognateClass.objects.get(id=cc).get_meaning()
+                data[cc] = language_ids
+                data_missing[cc] = languages_missing_meaning[meaning]
+
 
         # adds a cc code for all the lexemes which are not registered as
         # belonging to a cognate class
@@ -376,7 +374,7 @@ def construct_matrix(
                 data[cc] = [lexeme.language.id]
                 cognate_class_dict[cc] = lexeme.meaning.gloss
                 try:
-                    data_missing[cc] = missing[lexeme.meaning]
+                    data_missing[cc] = languages_missing_meaning[lexeme.meaning]
                 except KeyError:
                     data_missing[cc] = []
 
@@ -403,7 +401,10 @@ def construct_matrix(
             for i, cc in enumerate(data_keys):
                 if ascertainment_marker and i in ascertainment_marker_idx:
                     # start of a new group
-                    row.append("0")
+                    if language.id in data_missing[cc]:
+                        row.append("?")
+                    else:
+                        row.append("0")
                     if make_header:
                         cognate_class_names.append("%s_group" %
                                 cognate_class_dict[cc])
