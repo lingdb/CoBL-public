@@ -187,7 +187,8 @@ urlpatterns = patterns('',
             name="cognate-class-citation-detail"),
     # handle redundant cognate_id
     url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/$',
-            RedirectView.as_view(url="/cognate/citation/%(pk)s/"),
+            RedirectView.as_view(url="/cognate/citation/%(pk)s/",
+                    permanent=True),
             name="cognate-class-citation-view"),
     # Cognate citation :: update
     url(r'^cognate/citation/(?P<pk>\d+)/edit/$',
@@ -195,7 +196,8 @@ urlpatterns = patterns('',
             name="cognate-citation-edit"),
     # handle redundant cognate_id
     url(r'^cognate/(?P<cognate_id>\d+)/citation/(?P<pk>\d+)/edit/$',
-            RedirectView.as_view(url="/cognate/citation/%(pk)s/edit/"),
+            RedirectView.as_view(url="/cognate/citation/%(pk)s/edit/",
+                    permanent=True),
             name="cognate-class-citation-edit"),
     # Cognate citation :: add
     url(r'^cognate/(?P<cognate_id>\d+)/add-citation/$',

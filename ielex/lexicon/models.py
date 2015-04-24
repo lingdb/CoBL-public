@@ -14,7 +14,7 @@ from django.utils.safestring import SafeString
 import reversion
 from reversion.revisions import RegistrationError
 # from reversion.admin import VersionAdmin # reinstate?
-from south.modelsinspector import add_introspection_rules
+#from south.modelsinspector import add_introspection_rules
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import *
 
@@ -55,7 +55,7 @@ RELIABILITY_CHOICES = ( # used by Citation classes
         )
 
 # http://south.aeracode.org/docs/customfields.html#extending-introspection
-add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])
+# add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])
 
 class CharNullField(models.CharField):
 	"""CharField that stores NULL but returns ''
@@ -335,7 +335,7 @@ class LanguageList(models.Model):
     DEFAULT = "all" # all languages
 
     name = models.CharField(max_length=128, unique=True, 
-            validators=[suitable_for_url, reserved_names("all", "all-alpha")])
+            validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
     languages = models.ManyToManyField(Language, through="LanguageListOrder")
     modified = models.DateTimeField(auto_now=True)
@@ -437,7 +437,7 @@ class MeaningList(models.Model):
     DEFAULT = "all"
 
     name = models.CharField(max_length=128,
-            validators=[suitable_for_url, reserved_names("all", "all-alpha")])
+            validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
     meanings = models.ManyToManyField(Meaning, through="MeaningListOrder")
     modified = models.DateTimeField(auto_now=True)

@@ -23,6 +23,7 @@ class EditRelationForm(forms.ModelForm):
 
     class Meta:
         model = SemanticRelation
+        exclude = []
 
 class EditSemanticDomainForm(forms.ModelForm):
 
@@ -49,6 +50,7 @@ class SemanticExtensionCitationForm(forms.ModelForm):
     class Meta:
         #exclude = ["extension"]
         model = SemanticExtensionCitation
+        exclude = []
 
 class MultipleSemanticExtensionCitationForm(forms.ModelForm):
     """Hides the extension value; will be applied to multiple objects"""

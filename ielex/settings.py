@@ -7,7 +7,7 @@ import os.path
 # TEMPLATE_DEBUG = DEBUG
 
 ROOTDIR = os.path.abspath(os.path.dirname(__file__))
-VERSION = "0.9"
+VERSION = "1.0"
 
 # set this in local_settings.py
 # ADMINS = ( ('Your Name', 'your_email@domain.com'),)
@@ -89,7 +89,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'reversion',
-    'south',
     'ielex.lexicon',
     'ielex.extensional_semantics',
     'ielex.website',

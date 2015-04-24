@@ -1,5 +1,4 @@
 # usage: pip install -r REQUIREMENTS
-Django>=1.6.1
-South>=0.8.1
+Django>=1.8
 django-reversion>=1.8.0
 psycopg2>=2.5.2

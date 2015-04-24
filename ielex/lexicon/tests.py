@@ -450,11 +450,11 @@ class LanguageFormTests(TestCase):
 class ValidatorTests(TestCase):
 
     def test_reserved_names_validator(self):
-        validator = reserved_names("all", "all-alpha")
+        #validator = reserved_names("all", "all-alpha")
         for name in ["foo", "bar"]: # good names
-            self.assertIsNone(validator(name))
+            self.assertIsNone(standard_reserved_names(name))
         for name in ["all", "all-alpha"]: # bad names
-            self.assertRaises(ValidationError, validator, name)
+            self.assertRaises(ValidationError, standard_reserved_names, name)
 
     def test_suitable_for_url_validator(self):
         for name in ["aaa", "a-a", "a_a", "a~"]: # good names
