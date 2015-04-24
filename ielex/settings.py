@@ -65,7 +65,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.transaction.TransactionMiddleware',
+    #'django.middleware.transaction.TransactionMiddleware',
+    #    "TransactionMiddleware is deprecated in favor of ATOMIC_REQUESTS.",
     'django.middleware.common.CommonMiddleware', # provides APPEND_SLASH
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

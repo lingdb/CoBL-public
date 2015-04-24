@@ -10,7 +10,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
-# from django.db import transaction
 from django.db.models import Q, Max, Count
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import redirect

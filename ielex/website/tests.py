@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.test.client import Client
-from django.db import transaction
 from django.db import IntegrityError
 import logging
 import lxml.html

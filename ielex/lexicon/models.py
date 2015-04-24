@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models import Max, F
 from django.core.urlresolvers import reverse
 ## from django.core.cache import cache
-from django.db import connection, transaction ### testing
+#from django.db import connection ### testing
 from django.db import IntegrityError
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_delete
