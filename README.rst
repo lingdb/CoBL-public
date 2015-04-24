@@ -13,7 +13,7 @@ Please note that there are currently two branches of the software. The
 ``default`` branch will run on outdated software (Django 1.6, and doesn't
 require a python newer than 2.6), and the ``py2.7-django1.8`` branch which
 requires python 2.7 and Django 1.8. The commands for working with
-branches below; see also the INSTALL file in the ``py2.7-django1.8`` branch for
+branches are below; see also the INSTALL file in the ``py2.7-django1.8`` branch for
 information about converting an older instance of the database.
   
 To see which branches there are::
@@ -36,5 +36,3 @@ To move back::
 
   $ hg update default
   38 files updated, 0 files merged, 0 files removed, 0 files unresolved
-
-  
