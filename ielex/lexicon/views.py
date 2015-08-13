@@ -18,6 +18,12 @@ from ielex.forms import EditCognateClassCitationForm
 from ielex.lexicon.forms import ChooseNexusOutputForm, DumpSnapshotForm
 from ielex.lexicon.functions import nexus_comment
 
+try:
+    if settings.default_language_list != "all":
+        LanguageList.DEFAULT = settings.default_language_list
+except AttributeError:
+    pass
+
 class FrontpageView(TemplateView):
     template_name = "frontpage.html"
 
