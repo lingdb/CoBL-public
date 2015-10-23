@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <title>{{ project_short_name }} :: {% block title %}{% endblock %}</title>
-  <link rel="stylesheet" type="text/css" href="/media/css/ielex.css" />
-  <link rel="stylesheet" type="text/css" media="print" href="/media/css/print.css" />
+  <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ielex.css" />
+  <link rel="stylesheet" type="text/css" media="print" href="{{ MEDIA_URL }}css/print.css" />
   {% block meta %}{% endblock %}
 </head>
 <body>
   <div id="container">
       <div id="logo">
-        <a href="{% url 'view-frontpage' %}"><img src="/media/logo_50px.png" /></a>
+        <a href="{% url 'view-frontpage' %}"><img src="{{ MEDIA_URL }}logo_50px.png" /></a>
       </div>
 
     <div id="top">
@@ -17,7 +17,7 @@
         {% if user.is_authenticated %}
         <a href="{% url 'view-profile' %}">{{ user.username }}</a> <small>[<a href="{% url 'logout' %}">logout</a>]</small>
           {% if user.is_staff %}
-            <a href="/admin/"><img src="/media/buttons/save-backup.png" alt="Admin site" title="Go to the admin site" /></a>
+            <a href="/admin/"><img src="{{ MEDIA_URL }}buttons/save-backup.png" alt="Admin site" title="Go to the admin site" /></a>
           {% endif %}
         {% else %}
         <a href="{% url 'login' %}">login</a>
