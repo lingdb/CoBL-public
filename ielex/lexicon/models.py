@@ -102,7 +102,7 @@ class Language(models.Model):
             validators=[suitable_for_url])
     utf8_name = models.CharField(max_length=128, unique=True)
     description = models.TextField(blank=True, null=True)
-    data = jsonfield.JSONField()
+    altname = jsonfield.JSONField()
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
