@@ -113,16 +113,6 @@ class Language(models.Model):
     class Meta:
         ordering = ["ascii_name"]
 
-class DyenName(models.Model):
-    language = models.ForeignKey(Language)
-    name = models.CharField(max_length=128)
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        ordering = ["name"]
-
 class Meaning(models.Model):
     gloss = models.CharField(max_length=64, validators=[suitable_for_url])
     description = models.CharField(max_length=64, blank=True) # show name
