@@ -18,7 +18,7 @@
   workon py2.7-django1.8
   hg update py2.7-django1.8
   ./manage.py migrate --fake
-  atom ielex/local_settings.py # add 'ATOMIC_REQUESTS'=True
+  atom ielex/local_settings.py # add 'ATOMIC_REQUESTS':True
   ./manage.py shell # test connection
   ```
 
@@ -26,27 +26,28 @@
 
 - `pip install django-jsonfield`
 
-- added `data = jsonfield.JSONField()` to most models
+- added `data = jsonfield.JSONField()` to most models; for Language table named
+  it `altname` instead
 
 - run:
    ```
-   ./manage makemigrations --name add_JSON_fields lexicon
-   ./manage migrate
+   ./manage.py makemigrations --name add_JSON_fields lexicon
+   ./manage.py migrate
    ```
 
 - test:
   ```
   In [1]: from ielex.lexicon.models import *
 
-  In [2]: l = Language.objects.get(id=66)
+  In [2]: l = Language.objects.get(ascii_name="Dutch")
 
   In [3]: l
-  Out[3]: <Language: Slovak>
+  Out[3]: <Language: Dutch>
 
-  In [5]: l.data = {"altname":"Slovakian"}
+  In [4]: l.altname = {"Dyen":"Dutch_List"}
 
-  In [6]: l.save()
+  In [5]: l.save()
 
-  In [7]: l.data["altname"]
-  Out[7]: 'Slovakian'
+  In [6]: l.altname["Dyen"]
+  Out[6]: 'Dutch_List'
   ```
