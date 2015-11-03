@@ -11,6 +11,7 @@ from django.db.models.signals import pre_delete, post_delete
 from django.db.backends.signals import connection_created
 from django.utils.safestring import SafeString
 # from django.contrib import admin
+import jsonfield
 import reversion
 from reversion.revisions import RegistrationError
 # from reversion.admin import VersionAdmin # reinstate?
@@ -65,7 +66,7 @@ class CharNullField(models.CharField):
     having a name is optional."""
 	def to_python(self, value):
 		if isinstance(value, models.CharField):
-			return value 
+			return value
 		if value==None:
 			return ""
 		else:
@@ -83,6 +84,7 @@ class Source(models.Model):
     type_code = models.CharField(max_length=1, choices=TYPE_CHOICES,
             default="P")
     description = models.TextField(blank=True)
+    data = jsonfield.JSONField()
     modified = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -100,6 +102,7 @@ class Language(models.Model):
             validators=[suitable_for_url])
     utf8_name = models.CharField(max_length=128, unique=True)
     description = models.TextField(blank=True, null=True)
+    data = jsonfield.JSONField()
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
@@ -124,6 +127,7 @@ class Meaning(models.Model):
     gloss = models.CharField(max_length=64, validators=[suitable_for_url])
     description = models.CharField(max_length=64, blank=True) # show name
     notes = models.TextField(blank=True)
+    data = jsonfield.JSONField()
     percent_coded = models.FloatField(editable=False, default=0)
 
     def get_absolute_url(self):
@@ -155,6 +159,7 @@ class CognateClass(models.Model):
     modified = models.DateTimeField(auto_now=True)
     name = CharNullField(max_length=128, blank=True, null=True, unique=True,
             validators=[suitable_for_url])
+    data = jsonfield.JSONField()
 
     def update_alias(self, save=True):
         """Reset alias to the first unused letter"""
@@ -219,6 +224,7 @@ class Lexeme(models.Model):
     notes = models.TextField(blank=True)
     source = models.ManyToManyField(Source, through="LexemeCitation",
             blank=True)
+    data = jsonfield.JSONField()
     modified = models.DateTimeField(auto_now=True)
     number_cognate_coded = models.IntegerField(editable=False, default=0)
     denormalized_cognate_classes = models.TextField(editable=False, blank=True)
@@ -226,7 +232,7 @@ class Lexeme(models.Model):
     def set_denormalized_cognate_classes(self):
         """Create a sequence of 'cc1.id, cc1.alias, cc2.id, cc2.alias'
         as a string and store"""
-        old_value = self.denormalized_cognate_classes 
+        old_value = self.denormalized_cognate_classes
         data = []
         for cc in self.cognate_class.all():
             data.append(cc.id)
@@ -241,7 +247,7 @@ class Lexeme(models.Model):
         return
 
     def set_number_cognate_coded(self):
-        old_number = self.number_cognate_coded 
+        old_number = self.number_cognate_coded
         self.number_cognate_coded = self.cognate_class.count()
         if self.number_cognate_coded != old_number:
             self.save()
@@ -287,6 +293,7 @@ class CognateJudgement(models.Model):
     lexeme = models.ForeignKey(Lexeme)
     cognate_class = models.ForeignKey(CognateClass)
     source = models.ManyToManyField(Source, through="CognateJudgementCitation")
+    data = jsonfield.JSONField()
     modified = models.DateTimeField(auto_now=True)
 
     # def get_absolute_url(self):
@@ -334,10 +341,11 @@ class LanguageList(models.Model):
     """
     DEFAULT = "all" # all languages
 
-    name = models.CharField(max_length=128, unique=True, 
+    name = models.CharField(max_length=128, unique=True,
             validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
     languages = models.ManyToManyField(Language, through="LanguageListOrder")
+    data = jsonfield.JSONField()
     modified = models.DateTimeField(auto_now=True)
 
     def append(self, language):
@@ -423,7 +431,7 @@ class LanguageListOrder(models.Model):
     order = models.FloatField()
 
     def __unicode__(self):
-        return u"%s:%s(%s)" % (self.language_list.name, 
+        return u"%s:%s(%s)" % (self.language_list.name,
                 self.order,
                 self.language.ascii_name)
 
@@ -440,6 +448,7 @@ class MeaningList(models.Model):
             validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
     meanings = models.ManyToManyField(Meaning, through="MeaningListOrder")
+    data = jsonfield.JSONField()
     modified = models.DateTimeField(auto_now=True)
 
     def append(self, meaning):
@@ -547,18 +556,18 @@ class MeaningListOrder(models.Model):
 #     reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
 #     comment = models.TextField(blank=True)
 #     modified = models.DateTimeField(auto_now=True)
-# 
+#
 #     def long_reliability(self):
 #         try:
 #             description = dict(RELIABILITY_CHOICES)[self.reliability]
 #         except KeyError:
 #             description = ""
 #         return description
-# 
+#
 #     class Meta:
 #         unique_together = (("content_type", "object_id", "source"),)
 #         ## Can't use a "content_object" in a unique_together constraint
-# 
+#
 # # reversion.register(GenericCitation)
 
 class AbstractBaseCitation(models.Model):
@@ -650,7 +659,7 @@ class CognateClassCitation(AbstractBaseCitation):
 #                     "This deletion would leave parent without citations")
 #     except CognateJudgement.DoesNotExist:
 #         pass # parent has been deleted
-# 
+#
 # @receiver(post_delete, sender=LexemeCitation)
 # def check_lexeme_has_citation(sender, instance, **kwargs):
 #     #_delete = getattr(instance.lexeme, "_delete", False)
@@ -765,4 +774,3 @@ for modelclass in [Source, Language, Meaning, CognateClass, Lexeme,
         MeaningList]:
     if not reversion.is_registered(modelclass):
         reversion.register(modelclass)
-
