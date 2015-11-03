@@ -2,3 +2,4 @@
 Django>=1.8
 django-reversion>=1.8.0
 psycopg2>=2.5.2
+django-jsonfield>=0.9.15
