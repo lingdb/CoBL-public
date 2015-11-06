@@ -114,7 +114,7 @@ class Language(models.Model):
         ordering = ["ascii_name"]
 
 class Meaning(models.Model):
-    gloss = models.CharField(max_length=64, validators=[suitable_for_url])
+    gloss = models.CharField(max_length=64, unique=True, validators=[suitable_for_url])
     description = models.CharField(max_length=64, blank=True) # show name
     notes = models.TextField(blank=True)
     data = jsonfield.JSONField()

@@ -51,3 +51,10 @@
   In [6]: l.altname["Dyen"]
   Out[6]: 'Dutch_List'
   ```
+
+
+## TODO
+
+- move iso_code to Language.altname, add some glottocodes as well
+- make a template tag to display iso_code, glottocode (that displays "" when
+  the code is also null)
