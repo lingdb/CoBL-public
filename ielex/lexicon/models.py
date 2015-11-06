@@ -434,7 +434,7 @@ class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
     DEFAULT = "all"
 
-    name = models.CharField(max_length=128,
+    name = models.CharField(max_length=128, unique=True,
             validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
     meanings = models.ManyToManyField(Meaning, through="MeaningListOrder")
