@@ -28,9 +28,10 @@ class ChooseNexusOutputForm(ChooseOutputBaseForm):
             required=False,
             label="Exclude ratings")
     ascertainment_marker = forms.BooleanField(required=False,
-            label="Ascertainment bias correction marker",
+            label=u"Ascertainment bias correction marker",
             help_text="""Sets of cognates referring to the same meaning are
-            marked by an initial all-zero column""")
+            marked by an initial all-zero column; column indexes  of character
+            sets are listed in an ‘assumptions’ block""")
 
 class DumpSnapshotForm(ChooseOutputBaseForm):
     pass
