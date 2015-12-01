@@ -256,13 +256,37 @@ def get_canonical_language_list(language_list=None, request=None):
 #     return form
 
 
+############ CHANGED ##############################
+
+@csrf_protect
 def view_language_list(request, language_list=None):
     current_list = get_canonical_language_list(language_list, request)
     request.session["current_language_list_name"] = current_list.name
     languages = current_list.languages.all().order_by("languagelistorder")
     languages = languages.annotate(lexeme_count=Count("lexeme"))
 
-    if request.method == 'POST':
+    def process_postrequest_form(multidict):
+        res = defaultdict(list)
+        for key in multidict.keys():
+            if not(key in ['langlist_form', 'csrfmiddlewaretoken']):
+                outer_key = ''.join(key.split('-')[0:2])
+                inner_key = key.split('-')[-1]
+                res[outer_key].append((inner_key, multidict.getlist(key)[0]))
+        return res
+
+    def is_unchanged(lang, vdict):
+        
+        return  lang.iso_code == vdict['iso_code'] and \
+                lang.ascii_name == vdict['ascii_name'] and \
+                lang.data.get('glottocode', '') == vdict['glottocode'] and \
+                lang.data.get('variety', '') == vdict['variety'] and \
+                lang.data.get('soundcompcode', '') == vdict['soundcompcode'] and \
+                lang.data.get('level0', '') == vdict['level0'] and \
+                lang.data.get('level1', '') == vdict['level1'] and \
+                lang.data.get('level2', '') == vdict['level2'] and \
+                lang.data.get('representative', '') == (v_dict['representative']=='y')
+
+    if request.method == 'POST' and not ('langlist_form' in request.POST):
         form = ChooseLanguageListForm(request.POST)
         if form.is_valid():
             current_list = form.cleaned_data["language_list"]
@@ -276,10 +300,95 @@ def view_language_list(request, language_list=None):
         form = ChooseLanguageListForm()
     form.fields["language_list"].initial = current_list.id
 
-    return render_template(request, "language_list.html",
-            {"languages":languages,
-            "language_list_form":form,
-            "current_list":current_list})
+    if (request.method == 'POST') and ('langlist_form' in request.POST):
+
+        request_form_dict = process_postrequest_form(request.POST)
+        
+        #TODO: need to check validity of input
+        #if lex_ed_form.is_valid():
+        for k,v in request_form_dict.items():
+
+            v_dict = dict(v)
+
+            #TODO: temporary fix for problem with HTML checkboxes,
+            #where these return nothing if box unchecked.
+            #FIX: create validation procedure for 'lex_form'. 
+            if not('representative' in v_dict.keys()):
+                v_dict['representative'] = ''
+
+            try:
+
+                lang = Language.objects.get(**{'ascii_name': v_dict['ascii_name']})
+
+                if not is_unchanged(lang, v_dict):
+                    
+                    lang.iso_code = v_dict['iso_code']
+                    lang.utf8_name = v_dict['ascii_name'].encode('utf8','ignore')
+        
+                    lang.data = {
+                                 'glottocode': v_dict['glottocode'],
+                                 'variety': v_dict['variety'],
+                                 'soundcompcode': v_dict['soundcompcode'],
+                                 'level0': v_dict['level0'],
+                                 'level1': v_dict['level1'],
+                                 'level2': v_dict['level2'],
+                                 'representative': (v_dict['representative']=='y')
+                                 }
+    
+                    try:
+                        lang.save()
+                    except Exception, e:
+                        print 'Exception while saving POST: ',e
+
+                else:
+                    pass
+
+            except Exception, e:
+                print 'Exception while accessing Language object: ',e,'; POST items are: ',v_dict
+
+        return HttpResponseRedirect(reverse("view-language-list", args=[current_list.name]))
+
+    else:
+        pass # TODO:
+
+    def fill_langstable_from_DB(langs):
+        
+        langlist_table_form = AddLanguageListTableForm()
+        
+        # Pop off any blank fields already in lexemes
+        while len(langlist_table_form.langlist) > 0:
+            langlist_table_form.langlist.pop_entry()
+    
+        for lang in langs:
+            
+            langlist_row_form = LanguageListRowForm()
+            langlist_row_form.iso_code = lang.iso_code.encode("ascii","ignore")
+            langlist_row_form.ascii_name = lang.ascii_name.encode("ascii","ignore")
+            langlist_row_form.utf8_name = lang.utf8_name.encode("ascii","ignore")
+            langlist_row_form.lex_count = lang.lexeme_count
+
+            langlist_row_form.glottocode = lang.data.get('glottocode', '')
+            langlist_row_form.variety = lang.data.get('variety', '')
+            langlist_row_form.soundcompcode = lang.data.get('soundcompcode', '')
+            langlist_row_form.level0 = lang.data.get('level0', '')
+            langlist_row_form.level1 = lang.data.get('level1', '')
+            langlist_row_form.level2 = lang.data.get('level2', '')
+            langlist_row_form.representative = lang.data.get('representative', '')
+            
+            langlist_table_form.langlist.append_entry(langlist_row_form)
+        return langlist_table_form
+
+    languages_editabletable_form = fill_langstable_from_DB(languages)
+
+    return render_template(request, "language_list_editable.html",
+                           {
+                            "languages":languages,
+                            "language_list_form":form,
+                            'lang_ed_form': languages_editabletable_form,
+                            "current_list":current_list
+                            })
+
+##################################################
 
 def reorder_language_list(request, language_list):
     language_id = request.session.get("current_language_id", None)

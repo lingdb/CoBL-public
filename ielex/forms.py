@@ -207,6 +207,23 @@ class ChooseMeaningListForm(forms.Form):
 
 ################# CHANGED ##################
 
+class LanguageListRowForm(Form):
+    iso_code = StringField('Language ISO Code', validators = [DataRequired()])
+    utf8_name = StringField('Language Utf8 Name', validators = [DataRequired()])
+    ascii_name = StringField('Language ASCII Name', validators = [DataRequired()])
+    glottocode = StringField('Glottocode', validators = [DataRequired()])
+    variety = StringField('Language Variety', validators = [DataRequired()])
+    soundcompcode = StringField('Sound Comparisons Code', validators = [DataRequired()])
+    level0 = StringField('Level 0 Branch', validators = [DataRequired()])
+    level1 = StringField('Level 1 Branch', validators = [DataRequired()])
+    level2 = StringField('Level 2 Branch', validators = [DataRequired()])
+    representative = BooleanField('Representative', validators = [DataRequired()])
+    lex_count = IntegerField('Lexeme Count', validators = [DataRequired()])
+
+class AddLanguageListTableForm(Form):
+    langlist = FieldList(FormField(LanguageListRowForm), min_entries = 5) # Default of at least 5 blank fields
+
+
 class LexemeRowForm(Form):
     id = IntegerField('Lexeme Id', validators = [DataRequired()])
     language_id = StringField('Language Id', validators = [DataRequired()])
