@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load staticfiles %}
+
 {% block title %}Page not found{% endblock %}
 
 {% block top %}
@@ -11,7 +13,7 @@
 {% endblock %}
 
 {% block controls%}
-<img src="/media/page_not_found.jpg" alt="Page not found" title="Page not found" width="100%"/>
+<img src="{% static 'page_not_found.jpg' %}" alt="Page not found" title="Page not found" width="100%"/>
 {% endblock %}
 
 {# vim:ft=htmldjango: #}

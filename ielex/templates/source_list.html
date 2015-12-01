@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {# do permissions #}
 
+{% load staticfiles %}
+
 {% block title %}List of sources{% endblock %}
 
 {% block top %}
@@ -14,7 +16,7 @@
   <table>
   {% for source in sources %}
     <tr class="odd"><td><a href="{% url 'view-source' source.id %}">
-      <img src="/media/buttons/view.png" alt="Edit" title="Edit this source"/></a></td>
+      <img src="{% static 'buttons/view.png' %}" alt="Edit" title="Edit this source"/></a></td>
       <td>{{ source.citation_text }}</td></tr>
     <tr><td></td><td><em>{{ source.description }}</em></td></tr>
     <tr><td></td>

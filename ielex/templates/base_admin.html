@@ -1,10 +1,14 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+{% load staticfiles %}
+
 <html lang="en">
+
 <head>
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" type="text/css" href="/media/css/ielex.css" />
-    <link rel="stylesheet" type="text/css" href="/media/css/login.css" />
-    <link rel="stylesheet" type="text/css" media="print" href="/media/css/print.css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/ielex.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}" />
+    <link rel="stylesheet" type="text/css" media="print" href="{% static 'css/print.css' %}" />
 </head>
 <body>
   <div id="container">

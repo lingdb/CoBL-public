@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+
+{% load staticfiles %}
 {% load lexicon_utils %}
 
 {% block title %}Word list{% endblock %}
@@ -19,7 +21,7 @@
     <td>
       {% if user.is_authenticated %}
         <a href="{% url 'edit-meaning' meaning.gloss %}">
-          <img src="/media/buttons/edit.png" alt="edit" title="Edit ‘{{ meaning.gloss }}’ metadata" />
+          <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit ‘{{ meaning.gloss }}’ metadata" />
         </a>
       {% endif %}
       <a href="{% url 'view-meaning-languages' meaning.gloss current_language_list %}">{{ meaning.gloss }}</a>
