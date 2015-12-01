@@ -259,11 +259,26 @@ urlpatterns += patterns('',
         'ielex.profiles.views.view_profile', name="view-profile-user"),
     )
 
+################ CHANGED #####################
+
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+urlpatterns += staticfiles_urlpatterns()
+
+
 if settings.DEBUG: # additional urls for testing purposes
     urlpatterns += patterns('',
     # this is needed for running the development server
-    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
-     {'document_root': settings.MEDIA_ROOT}),
+        url(r'^static/(?P<path>.*)$', 'django.views.static.serve',
+            {'document_root': settings.STATIC_ROOT}),
     )
+
+#if settings.DEBUG: # additional urls for testing purposes
+#    urlpatterns += patterns('',
+#    # this is needed for running the development server
+#    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
+#     {'document_root': settings.MEDIA_ROOT}),
+#    )
+
+#############################################
 
 # vim:nowrap

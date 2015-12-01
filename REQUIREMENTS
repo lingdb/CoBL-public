@@ -1,5 +1,9 @@
 # usage: pip install -r REQUIREMENTS
-Django>=1.6.1
-South>=0.8.1
+Django>=1.8
+django-jsonfield>=0.9.15
+django_tables2
 django-reversion>=1.8.0
 psycopg2>=2.5.2
+WTForms-SQLAlchemy
+WTForms
+wtforms_components

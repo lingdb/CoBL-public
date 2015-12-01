@@ -93,6 +93,8 @@ INSTALLED_APPS = (
     'ielex.lexicon',
     'ielex.extensional_semantics',
     'ielex.website',
+    'django_tables2',
+    'wtforms.ext.django',
 )
 
 # admin urls
