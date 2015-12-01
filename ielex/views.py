@@ -26,6 +26,16 @@ from ielex.extensional_semantics.views import *
 from ielex.shortcuts import render_template
 from ielex.utilities import next_alias, confirm_required, anchored, oneline
 
+############ CHANGED ##############################
+
+from collections import defaultdict
+from django.views.decorators.csrf import csrf_protect
+from django_tables2 import RequestConfig
+from ielex.tables import *
+from werkzeug.datastructures import MultiDict
+
+##################################################
+
 # Refactoring: 
 # - rename the functions which render to response with the format
 # view_TEMPLATE_NAME(request, ...). Put subsiduary functions under their main
@@ -320,8 +330,63 @@ def move_language(language, language_list, direction):
             language_list.insert(0, language)
     return
 
+############ CHANGED ##############################
+
+@csrf_protect
 def view_language_wordlist(request, language, wordlist):
     wordlist = MeaningList.objects.get(name=wordlist)
+
+    #def view_post_request(request):
+    #    res = {}
+    #    for key, value in request.POST.iteritems():
+    #        res[key] = value.encode('utf-8')
+    #    return res
+            
+    #TODO: need to move this out of views.py, eg into forms.py ?
+    def process_postrequest_form(multidict):
+        res = defaultdict(list)
+        for key in multidict.keys():
+            if not(key in ['lex_form', 'csrfmiddlewaretoken']):
+                outer_key = ''.join(key.split('-')[0:2])
+                inner_key = key.split('-')[-1]
+                res[outer_key].append((inner_key, multidict.getlist(key)[0]))
+        return res
+
+    def is_lexform(multidict):
+        
+        standard_keyset = set(['source_form', 'phon_form', 'gloss', 
+                     'notes', 'phoneMic', 'phoneMic', 
+                     'transliteration', 'not_swadesh_term'])
+        
+        test_keyset = set()
+        for key in multidict.keys():
+            if not(key in ['lex_form', 'csrfmiddlewaretoken']):
+                key_bit = key.split('-')[-1]
+                test_keyset.add(key_bit)
+        
+        return len(standard_keyset-test_keyset) == 0
+    
+    def is_changewordlistform(multidict):
+
+        standard_keyset = set(['meaning_list', 'changewordlist'])
+        
+        test_keyset = set()
+        for key in multidict.keys():
+            if not(key in ['csrfmiddlewaretoken']):
+                key_bit = key.split('-')[-1]
+                test_keyset.add(key_bit)
+        
+        return len(standard_keyset-test_keyset) == 0
+		
+    def is_unchanged(lxm, vdict):
+        
+        return  lxm.source_form == vdict['source_form'] and \
+                lxm.phon_form == vdict['phon_form'] and \
+                lxm.gloss == vdict['gloss'] and \
+                lxm.notes == vdict['notes'] and \
+                lxm.data.get('phoneMic', '') == vdict['phoneMic'] and \
+                lxm.data.get('transliteration', '') == vdict['transliteration'] and \
+                lxm.data.get('not_swadesh_term', '') == (v_dict['not_swadesh_term']=='y')
 
     # clean language name
     try:
@@ -330,42 +395,142 @@ def view_language_wordlist(request, language, wordlist):
         language = get_canonical_language(language, request)
         return HttpResponseRedirect(reverse("view-language-wordlist",
             args=[language.ascii_name, wordlist.name]))
-
+    
     # change wordlist
-    if request.method == 'POST':
-        form = ChooseMeaningListForm(request.POST)
-        if form.is_valid():
-            wordlist = form.cleaned_data["meaning_list"]
+    if request.method == 'POST' and not ('lex_form' in request.POST):
+        wrdlst_form = ChooseMeaningListForm(request.POST)
+        if wrdlst_form.is_valid():
+            wordlist = wrdlst_form.cleaned_data["meaning_list"]
             request.session["current_wordlist_name"] = wordlist.name
             msg = u"Wordlist selection changed to ‘%s’" % wordlist.name
             messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(reverse("view-language-wordlist",
                     args=[language.ascii_name, wordlist.name]))
     else:
-        form = ChooseMeaningListForm()
-    form.fields["meaning_list"].initial = wordlist.id
+        wrdlst_form = ChooseMeaningListForm()
+    wrdlst_form.fields["meaning_list"].initial = wordlist.id
 
+
+    if (request.method == 'POST') and ('lex_form' in request.POST):
+
+        request_form_dict = process_postrequest_form(request.POST)
+        
+        #TODO: need to check validity of input
+        #if lex_ed_form.is_valid():
+        for k,v in request_form_dict.items():
+
+            v_dict = dict(v)
+
+            #TODO: temporary fix for problem with HTML checkboxes,
+            #where these return nothing if box unchecked.
+            #FIX: create validation procedure for 'lex_form'. 
+            if not('not_swadesh_term' in v_dict.keys()):
+                v_dict['not_swadesh_term'] = ''
+
+            try:
+
+                lexm = Lexeme.objects.get(**{'id': int(v_dict['id'])})
+
+                if not is_unchanged(lexm, v_dict):
+    
+                    lexm.language = language
+                    lexm.source_form = v_dict['source_form']
+                    lexm.phon_form = v_dict['phon_form']
+                    lexm.gloss = v_dict['gloss']
+                    lexm.notes = v_dict['notes']
+                    lexm.number_cognate_coded = v_dict['number_cognate_coded']
+                    lexm.data = {
+								'transliteration': v_dict['transliteration'],
+								'phoneMic': v_dict['phoneMic'],
+								'not_swadesh_term': (v_dict['not_swadesh_term']=='y')
+								}
+    
+                    try:
+                        lexm.save()
+                    except Exception, e:
+                        print 'Exception while saving POST: ',e
+
+                else:
+                    pass
+
+            except Exception, e:
+                print 'Exception while accessing Lexeme object: ',e,'; POST items are: ',v_dict
+
+        return HttpResponseRedirect(reverse("view-language-wordlist",
+                    args=[language.ascii_name, wordlist.name]))
+
+    else:
+        pass # TODO:
+    
     # collect data
     lexemes = Lexeme.objects.filter(language=language,
             meaning__in=wordlist.meanings.all()
             ).select_related("meaning__gloss").order_by("meaning__gloss")
     # decorate (with a temporary attribute)
+
+    #TODO: move this out of views
+    #filter by 'language' or 'meaning'
+    filt_form = LexemeTableFilterForm(request.GET)
+    if filt_form.is_valid():
+        #print lexemes.filter(meaning=int(request.GET.get('meaning')))
+        if request.GET.get('meaning'):
+            lexemes = lexemes.filter(meaning=int(request.GET.get('meaning')))
+        if request.GET.get('cognate_class'):
+            print 'cognate_class:',request.GET#.get('cognate_class')
+            lexemes = lexemes.filter(cognate_class=request.GET.get('cognate_class')) 
+
     for lexeme in lexemes:
         lexeme.temporary_sort_order = MeaningListOrder.objects.get(
                 meaning_list=wordlist,
                 meaning=lexeme.meaning).order
     lexemes = sorted(lexemes, key=lambda l:l.temporary_sort_order)
 
+    def fill_lexemestable_from_DB(lexms):
+        
+        lex_table_form = AddLexemesTableForm()
+
+        # Pop off any blank fields already in lexemes
+        while len(lex_table_form.lexemes) > 0:
+            lex_table_form.lexemes.pop_entry()
+    
+        for lex in lexms:
+            
+            lex_row_form = LexemeRowForm()
+            lex_row_form.id = int(lex.id)
+            lex_row_form.meaning_id = int(lex.meaning.id)
+            lex_row_form.meaning = lex.meaning
+            lex_row_form.source_form = lex.source_form
+            lex_row_form.phon_form = lex.phon_form            
+            lex_row_form.gloss = lex.gloss
+            lex_row_form.notes = lex.notes
+            lex_row_form.number_cognate_coded = lex.number_cognate_coded
+            
+            lex_row_form.phoneMic = lex.data.get('phoneMic', '')
+            lex_row_form.transliteration  = lex.data.get('transliteration', '')
+            lex_row_form.not_swadesh_term = lex.data.get('not_swadesh_term', '')
+                       
+            lex_table_form.lexemes.append_entry(lex_row_form)
+        return lex_table_form
+
+    lexemes_editabletable_form = fill_lexemestable_from_DB(lexemes)
+    
     prev_language, next_language = \
             get_prev_and_next_languages(request, language)
-    return render_template(request, "language_wordlist.html",
-            {"language":language,
-            "lexemes":lexemes,
-            "prev_language":prev_language,
-            "next_language":next_language,
-            "wordlist":wordlist,
-            "form":form
-            })
+    return render_template(
+                            request, "language_wordlist_editable.html",
+                            {
+                             "language":language,
+                             "lexemes":lexemes,
+                             "prev_language":prev_language,
+                             "next_language":next_language,
+                             "wordlist":wordlist,
+                             "wrdlst_form":wrdlst_form,
+                             'lex_ed_form': lexemes_editabletable_form,
+                             'filt_form': filt_form
+                            }
+                           )
+
+##########################################
 
 @login_required
 def add_language_list(request):
@@ -636,6 +801,9 @@ def edit_meaning(request, meaning):
             {"meaning":meaning,
             "form":form})
 
+############### CHANGED #################################
+
+@csrf_protect
 def view_meaning(request, meaning, language_list, lexeme_id=None):
 
     # Normalize calling parameters
@@ -647,9 +815,30 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             args=[canonical_gloss, current_language_list.name]))
     else:
         meaning = Meaning.objects.get(gloss=meaning)
+    
+        
+    #TODO: need to move this out of views.py, eg into forms.py ?
+    def process_postrequest_form(multidict):
+        res = defaultdict(list)
+        for key in multidict.keys():
+            if not(key in ['meang_form', 'csrfmiddlewaretoken']):
+                outer_key = ''.join(key.split('-')[0:2])
+                inner_key = key.split('-')[-1]
+                res[outer_key].append((inner_key, multidict.getlist(key)[0]))
+        return res
+    
+    def is_unchanged(lxm, vdict):
+        
+        return  lxm.source_form == vdict['source_form'] and \
+                lxm.phon_form == vdict['phon_form'] and \
+                lxm.gloss == vdict['gloss'] and \
+                lxm.notes == vdict['notes'] and \
+                lxm.data.get('phoneMic', '') == vdict[u'phoneMic'] and \
+                lxm.data.get('transliteration', '') == vdict['transliteration'] and \
+                lxm.data.get('not_swadesh_term', '') == (v_dict['not_swadesh_term']=='y')
 
     # Change language list form
-    if request.method == 'POST':
+    if request.method == 'POST' and not ('meang_form' in request.POST):
         language_form = ChooseLanguageListForm(request.POST)
         if language_form.is_valid():
             current_language_list = language_form.cleaned_data["language_list"]
@@ -665,7 +854,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     language_form.fields["language_list"].initial = current_language_list.id
 
     # Cognate class judgement button
-    if request.method == 'POST':
+    if request.method == 'POST' and not ('meang_form' in request.POST):
         cognate_form = ChooseCognateClassForm(request.POST)
         if cognate_form.is_valid():
             cd = cognate_form.cleaned_data
@@ -692,24 +881,125 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     else:
         cognate_form = ChooseCognateClassForm()
 
+    if request.method == 'POST' and 'meang_form' in request.POST:
+  
+        request_form_dict = process_postrequest_form(request.POST)
+        
+        #TODO: need to check validity of input
+        #if lex_ed_form.is_valid():
+        for k,v in request_form_dict.items():
+
+            v_dict = dict(v)
+
+            #TODO: temporary fix for problem with HTML checkboxes,
+            #where these return nothing if box unchecked.
+            #FIX: create validation procedure for 'meang_form'. 
+            if not('not_swadesh_term' in v_dict.keys()):
+                v_dict['not_swadesh_term'] = u''
+
+            try:
+                
+                lexm = Lexeme.objects.get(**{'id': int(v_dict['id'])})
+                
+                if not is_unchanged(lexm, v_dict):
+                    
+                    lexm.language = Language.objects.get(utf8_name=v_dict['language_utf8name'].encode('ascii','ignore'))
+                    lexm.source_form = v_dict['source_form']
+                    lexm.phon_form = v_dict['phon_form']
+                    lexm.gloss = v_dict['gloss']
+                    lexm.notes = v_dict['notes']
+                    lexm.number_cognate_coded = v_dict['number_cognate_coded']
+                    lexm.data = {
+                                 'transliteration': v_dict['transliteration'],
+                                 'phoneMic': v_dict['phoneMic'],
+                                 'not_swadesh_term': (v_dict['not_swadesh_term']=='y')
+                                }
+                    try:
+                        lexm.save()
+                    except Exception, e:
+                        print 'Exception while saving POST: ',e
+                else:
+                    pass
+
+            except Exception, e:
+                print 'Exception while accessing Lexeme object: ',e,'; POST items are: ',v_dict
+
+        return HttpResponseRedirect(reverse("view-meaning-languages",
+                    args=[canonical_gloss, current_language_list.name]))
+
+    else:
+        pass # TODO:
+
     # Get lexemes, respecting 'languages'
     # lexemes = Lexeme.objects.filter(meaning=meaning,
     #         language__id__in=current_language_list.language_id_list)
     lexemes = get_ordered_lexemes(meaning, current_language_list,
-            "language", "meaning", "cognatejudgement_set")
+            "language", "meaning")#, "cognatejudgement_set")
     cognate_form.fields["cognate_class"].queryset = CognateClass.objects.filter(
             lexeme__in=lexemes).distinct()
 
+    #TODO: move this out of views
+    #filter by 'language' or 'meaning'
+    filt_form = MeaningTableFilterForm(request.GET)
+    if filt_form.is_valid():
+        if request.GET.get('language'):
+            lexemes = lexemes.filter(language=request.GET.get('language'))
+    #TODO: suppress errorlist with error "This field is required.", but only here:
+    #Here this is not needed. 
+    filt_form.errors['language'] = ''
+
+
+    def fill_lexemestable_from_DB(lexms):
+        
+        lex_table_form = AddLexemesTableForm()
+        
+        # Pop off any blank fields already in lexemes
+        while len(lex_table_form.lexemes) > 0:
+            lex_table_form.lexemes.pop_entry()
+    
+        for lex in lexms:
+            
+            lex_row_form = LexemeRowForm()
+            lex_row_form.id = int(lex.id)
+            lex_row_form.language_id = lex.language.id
+            lex_row_form.language = lex.language
+            lex_row_form.language_asciiname = lex.language.ascii_name
+            lex_row_form.language_utf8name = lex.language.utf8_name
+            lex_row_form.cognate_class_links = lex.get_cognate_class_links
+            lex_row_form.meaning_id = lex.meaning.id
+            lex_row_form.meaning = lex.meaning
+            lex_row_form.source_form = lex.source_form
+            lex_row_form.phon_form = lex.phon_form            
+            lex_row_form.gloss = lex.gloss
+            lex_row_form.notes = lex.notes
+            lex_row_form.number_cognate_coded = lex.number_cognate_coded
+            
+            lex_row_form.phoneMic = lex.data.get('phoneMic', u'')
+            lex_row_form.transliteration  = lex.data.get('transliteration', u'')
+            lex_row_form.not_swadesh_term = lex.data.get('not_swadesh_term', u'')
+
+            lex_table_form.lexemes.append_entry(lex_row_form)
+        return lex_table_form
+    
+    lexemes_editabletable_form = fill_lexemestable_from_DB(lexemes)
+
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
-    return render_template(request, "view_meaning.html",
-            {"meaning":meaning,
-            "prev_meaning":prev_meaning,
-            "next_meaning":next_meaning,
-            "lexemes": lexemes,
-            "language_form":language_form,
-            "cognate_form":cognate_form,
-            "add_cognate_judgement":lexeme_id,
-            })
+    return render_template(
+                            request, "view_meaning_editable.html",
+                            {"meaning":meaning,
+                            "prev_meaning":prev_meaning,
+                            "next_meaning":next_meaning,
+                            "lexemes": lexemes,
+                            "language_form":language_form,
+                            "current_language_list": current_language_list,
+                            "cognate_form":cognate_form,
+                            "add_cognate_judgement":lexeme_id,
+                            'lex_ed_form': lexemes_editabletable_form,
+                            'filt_form': filt_form
+                            }
+                           )
+
+##################################################################
 
 
 

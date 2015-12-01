@@ -26,6 +26,13 @@ except ImportError:
     from django.utils.functional import wraps
 import inspect
 
+################ CHANGED ##################
+
+import jsonfield
+
+##########################################
+
+
 def disable_for_loaddata(signal_handler):
     """The signals to update denormalized data should not be called
     during loaddata management command (can raise an IntegrityError)"""
@@ -117,7 +124,7 @@ class Meaning(models.Model):
     gloss = models.CharField(max_length=64, unique=True, validators=[suitable_for_url])
     description = models.CharField(max_length=64, blank=True) # show name
     notes = models.TextField(blank=True)
-    data = jsonfield.JSONField()
+    data = jsonfield.JSONField(blank=True)
     percent_coded = models.FloatField(editable=False, default=0)
 
     def get_absolute_url(self):
@@ -149,7 +156,7 @@ class CognateClass(models.Model):
     modified = models.DateTimeField(auto_now=True)
     name = CharNullField(max_length=128, blank=True, null=True, unique=True,
             validators=[suitable_for_url])
-    data = jsonfield.JSONField()
+    data = jsonfield.JSONField(blank=True)
 
     def update_alias(self, save=True):
         """Reset alias to the first unused letter"""
@@ -214,7 +221,7 @@ class Lexeme(models.Model):
     notes = models.TextField(blank=True)
     source = models.ManyToManyField(Source, through="LexemeCitation",
             blank=True)
-    data = jsonfield.JSONField()
+    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
     number_cognate_coded = models.IntegerField(editable=False, default=0)
     denormalized_cognate_classes = models.TextField(editable=False, blank=True)
