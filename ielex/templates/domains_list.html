@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load staticfiles %}
+
 {% block title %}Semantic domains{% endblock %}
 
 {% block top %}
@@ -24,12 +26,12 @@
     {% if user.is_authenticated and domain.name != domain.DEFAULT %}
     <td>
       <a href="{% url 'edit-semantic-domain' domain.name %}">
-        <img src="/media/buttons/edit.png" alt="edit" title="Edit {{ domain.name }} metadata" />
+        <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit {{ domain.name }} metadata" />
       </a>
     </td>
     <td>
       <a href="{% url 'delete-semantic-domain' domain.name %}">
-        <img src="/media/buttons/delete.png" alt="edit" title="Delete list {{ domain.name }}" />
+        <img src="{% static 'buttons/delete.png' %}" alt="edit" title="Delete list {{ domain.name }}" />
       </a>
     </td>
     {% endif %}

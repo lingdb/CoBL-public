@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load lexicon_utils %}
+{% load staticfiles %}
+
 
 {% block title %}Language list ‘{{ current_language_list_name }}’{% endblock %}
 
@@ -24,7 +26,7 @@
       <td>
         {% if user.is_authenticated %}
           <a href="{% url 'language-edit' language.ascii_name %}">
-            <img src="/media/buttons/edit.png" alt="edit" title="Edit {{ language.utf8_name }} metadata" />
+            <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit {{ language.utf8_name }} metadata" />
           </a>
         {% endif %}
         <a href="{% url 'language-report' language.ascii_name %}" alt="view lexeme list" title="View wordlist list for {{ language.utf8_name }}">
