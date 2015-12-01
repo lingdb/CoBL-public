@@ -265,6 +265,32 @@ def view_language_list(request, language_list=None):
     languages = current_list.languages.all().order_by("languagelistorder")
     languages = languages.annotate(lexeme_count=Count("lexeme"))
 
+    if request.method == 'POST':
+        form = ChooseLanguageListForm(request.POST)
+        if form.is_valid():
+            current_list = form.cleaned_data["language_list"]
+            request.session["current_language_list_name"] = current_list.name
+            msg = u"Language list selection changed to ‘%s’" %\
+                    current_list.name
+            messages.add_message(request, messages.INFO, msg)
+            return HttpResponseRedirect(reverse("view-language-list",
+                    args=[current_list.name]))
+    else:
+        form = ChooseLanguageListForm()
+    form.fields["language_list"].initial = current_list.id
+
+    return render_template(request, "language_list.html",
+            {"languages":languages,
+            "language_list_form":form,
+            "current_list":current_list})
+
+@csrf_protect
+def view_language_listALT(request, language_list=None):
+    current_list = get_canonical_language_list(language_list, request)
+    request.session["current_language_list_name"] = current_list.name
+    languages = current_list.languages.all().order_by("languagelistorder")
+    languages = languages.annotate(lexeme_count=Count("lexeme"))
+
     def process_postrequest_form(multidict):
         res = defaultdict(list)
         for key in multidict.keys():
