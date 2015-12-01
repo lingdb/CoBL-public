@@ -278,13 +278,13 @@ def view_language_list(request, language_list=None):
         
         return  lang.iso_code == vdict['iso_code'] and \
                 lang.ascii_name == vdict['ascii_name'] and \
-                lang.data.get('glottocode', '') == vdict['glottocode'] and \
-                lang.data.get('variety', '') == vdict['variety'] and \
-                lang.data.get('soundcompcode', '') == vdict['soundcompcode'] and \
-                lang.data.get('level0', '') == vdict['level0'] and \
-                lang.data.get('level1', '') == vdict['level1'] and \
-                lang.data.get('level2', '') == vdict['level2'] and \
-                lang.data.get('representative', '') == (v_dict['representative']=='y')
+                lang.altname.get('glottocode', '') == vdict['glottocode'] and \
+                lang.altname.get('variety', '') == vdict['variety'] and \
+                lang.altname.get('soundcompcode', '') == vdict['soundcompcode'] and \
+                lang.altname.get('level0', '') == vdict['level0'] and \
+                lang.altname.get('level1', '') == vdict['level1'] and \
+                lang.altname.get('level2', '') == vdict['level2'] and \
+                lang.altname.get('representative', '') == (v_dict['representative']=='y')
 
     if request.method == 'POST' and not ('langlist_form' in request.POST):
         form = ChooseLanguageListForm(request.POST)
@@ -325,7 +325,7 @@ def view_language_list(request, language_list=None):
                     lang.iso_code = v_dict['iso_code']
                     lang.utf8_name = v_dict['ascii_name'].encode('utf8','ignore')
         
-                    lang.data = {
+                    lang.altname = {
                                  'glottocode': v_dict['glottocode'],
                                  'variety': v_dict['variety'],
                                  'soundcompcode': v_dict['soundcompcode'],
@@ -367,13 +367,13 @@ def view_language_list(request, language_list=None):
             langlist_row_form.utf8_name = lang.utf8_name.encode("ascii","ignore")
             langlist_row_form.lex_count = lang.lexeme_count
 
-            langlist_row_form.glottocode = lang.data.get('glottocode', '')
-            langlist_row_form.variety = lang.data.get('variety', '')
-            langlist_row_form.soundcompcode = lang.data.get('soundcompcode', '')
-            langlist_row_form.level0 = lang.data.get('level0', '')
-            langlist_row_form.level1 = lang.data.get('level1', '')
-            langlist_row_form.level2 = lang.data.get('level2', '')
-            langlist_row_form.representative = lang.data.get('representative', '')
+            langlist_row_form.glottocode = lang.altname.get('glottocode', '')
+            langlist_row_form.variety = lang.altname.get('variety', '')
+            langlist_row_form.soundcompcode = lang.altname.get('soundcompcode', '')
+            langlist_row_form.level0 = lang.altname.get('level0', '')
+            langlist_row_form.level1 = lang.altname.get('level1', '')
+            langlist_row_form.level2 = lang.altname.get('level2', '')
+            langlist_row_form.representative = lang.altname.get('representative', '')
             
             langlist_table_form.langlist.append_entry(langlist_row_form)
         return langlist_table_form
