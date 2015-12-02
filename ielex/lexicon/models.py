@@ -91,7 +91,7 @@ class Source(models.Model):
     type_code = models.CharField(max_length=1, choices=TYPE_CHOICES,
             default="P")
     description = models.TextField(blank=True)
-    data = jsonfield.JSONField()
+    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -290,7 +290,7 @@ class CognateJudgement(models.Model):
     lexeme = models.ForeignKey(Lexeme)
     cognate_class = models.ForeignKey(CognateClass)
     source = models.ManyToManyField(Source, through="CognateJudgementCitation")
-    data = jsonfield.JSONField()
+    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     # def get_absolute_url(self):
@@ -342,7 +342,7 @@ class LanguageList(models.Model):
             validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
     languages = models.ManyToManyField(Language, through="LanguageListOrder")
-    data = jsonfield.JSONField()
+    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     def append(self, language):
@@ -445,7 +445,7 @@ class MeaningList(models.Model):
             validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
     meanings = models.ManyToManyField(Meaning, through="MeaningListOrder")
-    data = jsonfield.JSONField()
+    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     def append(self, meaning):
