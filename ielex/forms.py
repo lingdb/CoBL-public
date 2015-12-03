@@ -15,6 +15,8 @@ from wtforms.form import Form
 from wtforms.ext.django.orm import model_form 
 from lexicon.models import Lexeme
 
+from django.db.utils import OperationalError
+
 LexemeForm = model_form(Lexeme)
 
 ###########################################
