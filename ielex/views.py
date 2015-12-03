@@ -627,19 +627,33 @@ def view_language_wordlist(request, language, wordlist):
     
         for lex in lexms:
             
-            lex_row_form = LexemeRowForm()
-            lex_row_form.id = int(lex.id)
-            lex_row_form.meaning_id = int(lex.meaning.id)
-            lex_row_form.meaning = lex.meaning
-            lex_row_form.source_form = lex.source_form
-            lex_row_form.phon_form = lex.phon_form            
-            lex_row_form.gloss = lex.gloss
-            lex_row_form.notes = lex.notes
-            lex_row_form.number_cognate_coded = lex.number_cognate_coded
-            
-            lex_row_form.phoneMic = lex.data.get('phoneMic', '')
-            lex_row_form.transliteration  = lex.data.get('transliteration', '')
-            lex_row_form.not_swadesh_term = lex.data.get('not_swadesh_term', '')
+            if lex:
+                lex_row_form.id = int(lex.id)
+                lex_row_form.meaning_id = int(lex.meaning.id)
+                lex_row_form.meaning = lex.meaning
+                lex_row_form.source_form = lex.source_form
+                lex_row_form.phon_form = lex.phon_form
+                lex_row_form.gloss = lex.gloss
+                lex_row_form.notes = lex.notes
+                lex_row_form.number_cognate_coded = lex.number_cognate_coded
+                
+                lex_row_form.phoneMic = lex.data.get('phoneMic', '')
+                lex_row_form.transliteration  = lex.data.get('transliteration', '')
+                lex_row_form.not_swadesh_term = lex.data.get('not_swadesh_term', '')
+                
+            else:
+                lex_row_form.id = int()
+                lex_row_form.meaning_id = int()
+                lex_row_form.meaning = str()
+                lex_row_form.source_form = str()
+                lex_row_form.phon_form = str()
+                lex_row_form.gloss = str()
+                lex_row_form.notes = str()
+                lex_row_form.number_cognate_coded = str()
+                
+                lex_row_form.phoneMic = str()
+                lex_row_form.transliteration  = str()
+                lex_row_form.not_swadesh_term = str()
                        
             lex_table_form.lexemes.append_entry(lex_row_form)
         return lex_table_form
