@@ -627,6 +627,8 @@ def view_language_wordlist(request, language, wordlist):
     
         for lex in lexms:
             
+            lex_row_form = LexemeRowForm()
+
             if lex:
                 lex_row_form.id = int(lex.id)
                 lex_row_form.meaning_id = int(lex.meaning.id)
