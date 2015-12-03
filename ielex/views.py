@@ -618,50 +618,34 @@ def view_language_wordlist(request, language, wordlist):
     lexemes = sorted(lexemes, key=lambda l:l.temporary_sort_order)
 
     def fill_lexemestable_from_DB(lexms):
-        
+
         lex_table_form = AddLexemesTableForm()
 
         # Pop off any blank fields already in lexemes
         while len(lex_table_form.lexemes) > 0:
             lex_table_form.lexemes.pop_entry()
-    
-        for lex in lexms:
-            
-            lex_row_form = LexemeRowForm()
 
-            if lex:
-                lex_row_form.id = int(lex.id)
-                lex_row_form.meaning_id = int(lex.meaning.id)
-                lex_row_form.meaning = lex.meaning
-                lex_row_form.source_form = lex.source_form
-                lex_row_form.phon_form = lex.phon_form
-                lex_row_form.gloss = lex.gloss
-                lex_row_form.notes = lex.notes
-                lex_row_form.number_cognate_coded = lex.number_cognate_coded
-                
-                lex_row_form.phoneMic = lex.data.get('phoneMic', '')
-                lex_row_form.transliteration  = lex.data.get('transliteration', '')
-                lex_row_form.not_swadesh_term = lex.data.get('not_swadesh_term', '')
-                
-            else:
-                lex_row_form.id = int()
-                lex_row_form.meaning_id = int()
-                lex_row_form.meaning = str()
-                lex_row_form.source_form = str()
-                lex_row_form.phon_form = str()
-                lex_row_form.gloss = str()
-                lex_row_form.notes = str()
-                lex_row_form.number_cognate_coded = str()
-                
-                lex_row_form.phoneMic = str()
-                lex_row_form.transliteration  = str()
-                lex_row_form.not_swadesh_term = str()
-                       
+        for lex in lexms:
+
+            lex_row_form = LexemeRowForm()
+            lex_row_form.id = int(lex.id)
+            lex_row_form.meaning_id = int(lex.meaning.id)
+            lex_row_form.meaning = lex.meaning
+            lex_row_form.source_form = lex.source_form
+            lex_row_form.phon_form = lex.phon_form
+            lex_row_form.gloss = lex.gloss
+            lex_row_form.notes = lex.notes
+            lex_row_form.number_cognate_coded = lex.number_cognate_coded
+
+            lex_row_form.phoneMic = lex.data.get('phoneMic', '')
+            lex_row_form.transliteration  = lex.data.get('transliteration', '')
+            lex_row_form.not_swadesh_term = lex.data.get('not_swadesh_term', '')
+
             lex_table_form.lexemes.append_entry(lex_row_form)
         return lex_table_form
 
     lexemes_editabletable_form = fill_lexemestable_from_DB(lexemes)
-    
+
     prev_language, next_language = \
             get_prev_and_next_languages(request, language)
     return render_template(
