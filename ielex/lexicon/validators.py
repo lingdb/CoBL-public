@@ -36,7 +36,7 @@ def suitable_for_url(value):
 
 def standard_reserved_names(value):
     reserved_names =["all", "all-alpha"]
-    if value in names:
+    if value in reserved_names:
         raise ValidationError(
         "The name `%s' is reserved for system-internal use. Please choose another."
         % value)
