@@ -359,8 +359,13 @@ class SearchLexemeForm(forms.Form):
     regex = forms.CharField()
     search_fields = forms.ChoiceField(widget=forms.RadioSelect(),
             choices=SEARCH_FIELD_CHOICES, initial="L")
-    languages = ChooseLanguagesField(queryset=Language.objects.all(),
-            required=False,
-            widget=forms.SelectMultiple(attrs={"size":min(40,
-                    Language.objects.count())}),
-            help_text=u"no selection → all")
+    try:
+        #code requiring database access here
+        languages = ChooseLanguagesField(queryset=Language.objects.all(),
+                                         required=False,
+                                         widget=forms.SelectMultiple(attrs={"size":min(40, Language.objects.count())}),
+                                         help_text=u"no selection → all")
+    except OperationalError, e:
+        print e,':',Language.objects
+        #close the database connection
+        #connection.close()
