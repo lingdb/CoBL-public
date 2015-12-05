@@ -1,5 +1,8 @@
 Installation Guide
-========================
+==================
+
+If you already have a functioning database and wish to convert it to LexDB
+version 1.0 see the informatoin on **Conversion** below.
 
 1. Dependencies:
 
@@ -19,9 +22,6 @@ Installation Guide
     - Recent `reversion <https://github.com/etianen/django-reversion>`_
       middleware (``pip install django-reversion``; currently using 1.8.0)
 
-    - The `south <http://south.aeracode.org/>`_ schema migration package
-      (``pip install South``; currently using 0.8.4)
-
   * If you're going to work with the console (e.g. to import data) then is is
     highly desirable to install the `ipython` shell (``pip install ipython``).
 
@@ -36,17 +36,8 @@ Installation Guide
         You just installed Django's auth system, which means you don't have any
         superusers defined.  Would you like to create one now? (yes/no):
         
-    - If the version of LexDB you are installing includes database migrations
-      you will see the following lines of the output::
-      
-         Not synced (use migrations):
-         - reversion
-         - ielex.lexicon
-         - ielex.extensional_semantics
-         (use ./manage.py migrate to migrate these)
-      
-      Run ``./manage.py migrate`` as it says. 
-    
+      Enter ``yes`` and fill out the required information
+
   * Customize ``local_settings.py`` with name of database etc. If you're doing
     a test almost everything can be left at the default values.
     
@@ -100,5 +91,33 @@ Installation Guide
        coverage run --source='.' manage.py test ielex 
        coverage html
        open covhtml/index.html
+       
+4. Conversion
+   
+Up until version 1.0 (revision eef0123ba331) the default branch assumed python
+2.6 and Django 1.6.1. Migrations were managed by the external "South" library.
+From version 1.0 LexDB uses python 2.7 and Django 1.8, which includes its own
+migration mechanism.
+
+To convert from  the old version to the new version you should:
+
+  - Make sure all South migrations have been applied while still running the
+    old version
+  - When you move to the newer python and Django versions simultaneously
+    update the LexDB package (while both versions are under development you can
+    switch to the ‘modern’ branch using ``hg update py2.7-django1.8``)
+  - Run ``./manage.py migrate --fake`` to initialize the new table in the
+    database. 
+
+Note also that "TransactionMiddleware" is deprecated in favor of
+ATOMIC_REQUESTS; if you are not using using ATOMIC_REQUESTS in your DATABASE
+definition your local settings file you should add it::
+
+  DATABASES = {
+      'default': {
+          ## Various other settings not shown ##
+          'ATOMIC_REQUESTS':True,   ## <-- add this line 
+      }
+  }
 
 .. vim:ft=rst

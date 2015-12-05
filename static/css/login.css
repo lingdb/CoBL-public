@@ -1,0 +1,28 @@
+/* LOGIN FORM */
+
+#top {
+  padding: 1%;
+  background-color: #cf9;
+  border-bottom: 1px solid gray;
+}
+
+#top h1 {
+  letter-spacing: 3px;
+  padding: 6px;
+  margin: 0;
+}
+
+#container {
+  width: 33%;
+  margin: 10px auto;
+  background-color: #fff;
+  color: #333;
+  border: 1px solid gray;
+}
+
+#content {
+  margin-right: 0%;
+  margin-left: 0%;
+  border: none;
+  background-color: #ddd;
+}

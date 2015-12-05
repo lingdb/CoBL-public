@@ -22,13 +22,24 @@ def suitable_for_url(value):
                 which are legal in a url: letters, digits and - . _ ~""")
     return
 
-def reserved_names(*names):
-    # reserved_names =["all", "all-alpha"]
-    def test_reserved_names(value):
-        if value in names:
-            raise ValidationError(
-            "The name `%s' is reserved for system-internal use. Please choose another."
-            % value)
-        return
-    return test_reserved_names
+# this cannot be serialized by django 1.8
+# https://docs.djangoproject.com/en/1.8/topics/migrations/#serializing-values
+# def reserved_names(*names):
+#     # reserved_names =["all", "all-alpha"]
+#     def test_reserved_names(value):
+#         if value in names:
+#             raise ValidationError(
+#             "The name `%s' is reserved for system-internal use. Please choose another."
+#             % value)
+#         return
+#     return test_reserved_names
+
+def standard_reserved_names(value):
+    reserved_names =["all", "all-alpha"]
+    if value in reserved_names:
+        raise ValidationError(
+        "The name `%s' is reserved for system-internal use. Please choose another."
+        % value)
+    return
+
 

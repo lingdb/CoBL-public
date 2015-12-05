@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+
+{% load staticfiles %}
 {% load lexicon_utils %}
 
 {% block title %}Cognate {% firstof cognate_class.name cognate_class.id %}{% endblock %}
@@ -21,7 +23,7 @@
     <strong>Notes</strong>
     {% if user.is_authenticated %}
     <a href="{% url 'edit-cognate-notes' cognate_class.id %}">
-      <img src="/media/buttons/edit-pencil.png" />
+      <img src="{% static 'buttons/edit-pencil.png' %}" />
     </a>
     {% endif %}
   </legend>
@@ -42,11 +44,11 @@
       </strong>
       {{ citation.pages }}
       <a href="{% url 'cognate-class-citation-detail' citation.id %}">
-        <img src="/media/buttons/view.png" alt="View" title="View the citation" />
+        <img src="{% static 'buttons/view.png' %}" alt="View" title="View the citation" />
       </a>
       {% if user.is_authenticated %}
       <a href="{% url 'cognate-citation-edit' citation.id %}">
-        <img src="/media/buttons/edit-pencil.png" alt="View" title="Edit the citation" />
+        <img src="{% static 'buttons/edit-pencil.png' %}" alt="View" title="Edit the citation" />
       </a>
       {% endif %}
     </legend>
@@ -86,7 +88,7 @@
       </td>
       <td>
         <a href="{% url 'view-lexeme' cj.lexeme.id %}">
-          <img src="/media/buttons/view.png" alt="View" title="View/edit the lexical entry" />
+          <img src="{% static 'buttons/view.png' %}" alt="View" title="View/edit the lexical entry" />
         </a>
       </td>
     </tr>
@@ -109,7 +111,7 @@
     Cognate class name: <strong>{{ cognate_class.name }}</strong>
     {% if user.is_authenticated %}
       <a href="{% url 'edit-cognate-name' cognate_class.id %}">
-        <img src="/media/buttons/edit-pencil.png" />
+        <img src="{% static 'buttons/edit-pencil.png' %}" />
       </a>
     {% endif %}
   {% endif %}

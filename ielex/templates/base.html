@@ -1,45 +1,92 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+{% load staticfiles %}
+
 <html lang="en">
 <head>
-  <title>{{ project_short_name }} :: {% block title %}{% endblock %}</title>
-  <link rel="stylesheet" type="text/css" href="/media/css/ielex.css" />
-  <link rel="stylesheet" type="text/css" media="print" href="/media/css/print.css" />
-  {% block meta %}{% endblock %}
+	<title>{{ project_short_name }} :: {% block title %}{% endblock %}</title>
+  	<link rel="stylesheet" type="text/css" href="{% static 'css/ielex.css' %}" />
+  	<link rel="stylesheet" type="text/css" media="print" href="{% static 'css/print.css' %}" />
+  	<script>
+  	
+		  (function () {
+			    if (window.addEventListener) {
+			        window.addEventListener('DOMContentLoaded', CopyAcross, false);
+			    } else {
+			        window.attachEvent('onclick', CopyAcross);
+			    }
+			} ());
+		  
+			function CopyAcross(f) {
+			  
+			  	if(f.checked) {
+			  		
+			  		var f_id_arr = f.id.split('#');
+			  		var f_id = f_id_arr[0];
+			  		var f_src = f_id_arr[1];
+			  		var f_trg = f_id_arr[2];
+			  		
+			  		if(f_id=='src2translit') {
+			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;			  			
+			  		}
+			  		if(f_id=='translit2src') {
+			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;			  			
+			  		}
+			  		if(f_id=='phoneMic2phoneTic') {
+			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;			  			
+			  		}
+			  		if(f_id=='phoneTic2phoneMic') {
+			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;			  			
+			  		}
+				}
+			};
+			
+			function UncheckAll(){ 
+		    	var w = document.getElementsByTagName('input'); 
+		      	for(var i = 0; i < w.length; i++){ 
+		        	if(w[i].type=='checkbox'){ 
+		          		w[i].checked = false; 
+		        	}
+		      	}
+		  	};
+		  	
+  	</script>
+  	{% block meta %}{% endblock %}
 </head>
 <body>
-  <div id="container">
-      <div id="logo">
-        <a href="{% url 'view-frontpage' %}"><img src="/media/logo_50px.png" /></a>
-      </div>
+  	<div id="container">
+      	<div id="logo">
+        	<a href="{% url 'view-frontpage' %}"><img src="{% static 'logo_50px.png' %}" /></a>
+      	</div>
 
-    <div id="top">
-      <div id="login">
-        {% if user.is_authenticated %}
-        <a href="{% url 'view-profile' %}">{{ user.username }}</a> <small>[<a href="{% url 'logout' %}">logout</a>]</small>
-          {% if user.is_staff %}
-            <a href="/admin/"><img src="/media/buttons/save-backup.png" alt="Admin site" title="Go to the admin site" /></a>
-          {% endif %}
-        {% else %}
-        <a href="{% url 'login' %}">login</a>
-        {% endif %}
-      </div>
-    <small>{{ project_short_name }}</small>
-    {% block top %}{% endblock %}
-    </div>
+    	<div id="top">
+	      	<div id="login">
+	        	{% if user.is_authenticated %}
+	        	<a href="{% url 'view-profile' %}">{{ user.username }}</a> <small>[<a href="{% url 'logout' %}">logout</a>]</small>
+	          		{% if user.is_staff %}
+		        	<a href="/admin/"><img src="{% static 'buttons/save-backup.png' %}" alt="Admin site" title="Go to the admin site" /></a>
+	          		{% endif %}
+	        		{% else %}
+	        		<a href="{% url 'login' %}">login</a>
+	        	{% endif %}
+	      	</div>
+	    	<small>{{ project_short_name }}</small>
+	   	{% block top %}{% endblock %}
+    	</div>
 
-    <div id="controls">
-    {% block controls %}{% endblock %}
-      <p align="right">
-        <small>
-          Language list: <strong>{{ current_language_list_name }}</strong><br />
-          Wordlist: <strong>{{ current_wordlist_name }}</strong>
-        </small>
-      </p>
-    </div>
+	    <div id="controls">
+	    {% block controls %}{% endblock %}
+	      <p align="right">
+	        <small>
+	          Language list: <strong>{{ current_language_list_name }}</strong><br />
+	          Wordlist: <strong>{{ current_wordlist_name }}</strong>
+	        </small>
+	      </p>
+	    </div>
 
-    <div id="content">
-    {% block content %}{% endblock %}
-    </div>
+	    <div id="content">
+	    	{% block content %}{% endblock %}
+	    </div>
 
     <div id="footer">
       {# <div id="sitemap"> #}
@@ -51,12 +98,10 @@
     </div>
   </div>
 
-</div>
-
   {# == Floating messages == #}
   {% if messages %}
   <div id="message">
-    <ul>
+  	<ul>
     {% for message in messages %}
     {% if message.tags == "info" %}{# clicking on info level messages dismisses them #}
     <li><a href="{{ current_url }}">{{ message }}</a></li>

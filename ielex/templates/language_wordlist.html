@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load staticfiles %}
+
 
 {% block title %}{{ language.utf8_name }} ({{ wordlist }}){% endblock %}
 
@@ -26,7 +28,7 @@
       <td>{{ lexeme.notes|truncatewords:5 }}</td>
       <td>
         <a href="{% url 'view-lexeme' lexeme.id %}">
-          <img src="/media/buttons/view.png" alt="View" title="View detailed information on lexeme" />
+          <img src="{% static 'buttons/view.png' %}" alt="View" title="View detailed information on lexeme" />
           <a>
         {{ lexeme.number_cognate_coded }}
       </td>

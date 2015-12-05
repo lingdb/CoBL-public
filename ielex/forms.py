@@ -6,6 +6,19 @@ from ielex.lexicon.models import *
 from ielex.lexicon.validators import suitable_for_url
 # from ielex.extensional_semantics.models import *
 
+################ CHANGED ##################
+
+from wtforms import StringField, IntegerField, FieldList, FormField, TextField, BooleanField
+from wtforms.validators import DataRequired
+from wtforms_components import read_only
+from wtforms.form import Form
+from wtforms.ext.django.orm import model_form 
+from lexicon.models import Lexeme
+
+LexemeForm = model_form(Lexeme)
+
+###########################################
+
 
 def clean_value_for_url(instance, field_label):
     """Check that a string in a form field is suitable to be part of a url"""
@@ -192,6 +205,80 @@ class ChooseMeaningListForm(forms.Form):
             empty_label=None,
             widget=forms.Select(attrs={"onchange":"this.form.submit()"}))
 
+################# CHANGED ##################
+
+class LanguageListRowForm(Form):
+    iso_code = StringField('Language ISO Code', validators = [DataRequired()])
+    utf8_name = StringField('Language Utf8 Name', validators = [DataRequired()])
+    ascii_name = StringField('Language ASCII Name', validators = [DataRequired()])
+    glottocode = StringField('Glottocode', validators = [DataRequired()])
+    variety = StringField('Language Variety', validators = [DataRequired()])
+    soundcompcode = StringField('Sound Comparisons Code', validators = [DataRequired()])
+    level0 = StringField('Level 0 Branch', validators = [DataRequired()])
+    level1 = StringField('Level 1 Branch', validators = [DataRequired()])
+    level2 = StringField('Level 2 Branch', validators = [DataRequired()])
+    representative = BooleanField('Representative', validators = [DataRequired()])
+    lex_count = IntegerField('Lexeme Count', validators = [DataRequired()])
+
+class AddLanguageListTableForm(Form):
+    langlist = FieldList(FormField(LanguageListRowForm), min_entries = 5) # Default of at least 5 blank fields
+
+
+class LexemeRowForm(Form):
+    id = IntegerField('Lexeme Id', validators = [DataRequired()])
+    language_id = StringField('Language Id', validators = [DataRequired()])
+    language = StringField('Language', validators = [DataRequired()])
+    language_asciiname = StringField('Language Ascii Name', validators = [DataRequired()])
+    language_utf8name = StringField('Language Utf8 Name', validators = [DataRequired()])
+    cognate_class_links = StringField('Cognate Class', validators = [DataRequired()])
+    meaning_id = IntegerField('Meaning Id', validators = [DataRequired()])
+    meaning = IntegerField('Meaning', validators = [DataRequired()])
+    source_form = StringField('Source Form', validators = [DataRequired()])
+    phon_form = StringField('PhoNetic Form', validators = [DataRequired()])
+    phoneMic = StringField('PhoneMic Form', validators = [DataRequired()])
+    transliteration = StringField('Transliteration', validators = [DataRequired()])
+    not_swadesh_term = BooleanField('Not Swadesh Term',validators = [DataRequired()])
+    gloss = StringField('Gloss', validators = [DataRequired()])
+    number_cognate_coded = IntegerField('Count Coded Cognates', validators = [DataRequired()])
+    notes = TextField('Notes', validators = [DataRequired()])
+	
+    #Components for copying buttons
+    source_form_2_transliteration = BooleanField('Source Form to Transliteration', validators = [DataRequired()])
+    transliteration_2_source_form = BooleanField('Transliteration to Source Form', validators = [DataRequired()])
+    phon_form_2_phoneMic = BooleanField('PhoneTic to PhoneMic', validators = [DataRequired()])
+    phoneMic_2_phon_form = BooleanField('PhoneMic to PhoneTic', validators = [DataRequired()])
+
+    
+    def __init__(self, *args, **kwargs):
+        super(LexemeRowForm, self).__init__(*args, **kwargs)
+        read_only(self.meaning_id)
+        read_only(self.meaning)
+        read_only(self.language_utf8name)
+
+class AddLexemesTableForm(Form):
+    lexemes = FieldList(FormField(LexemeRowForm), min_entries = 5) # Default of at least 5 blank fields
+
+
+class LexemeTableFilterForm(forms.ModelForm):
+    
+    #cognate_class = ChooseCognateClassField(queryset=CognateClass.objects.all(),
+    #        #widget=forms.Select(attrs={"onchange":"this.form.submit()"}),
+    #        empty_label="---", # make this into the "new" button?
+    #        label="Cognate class")
+    
+    class Meta:
+        model = Lexeme
+        fields = ['meaning']#, 'cognate_class']
+     
+class MeaningTableFilterForm(forms.ModelForm):
+    
+    class Meta:
+        model = Lexeme
+        fields = ['language']
+
+
+###################################################
+
 
 class ChooseSourceForm(forms.Form):
     source = ChooseSourcesField(queryset=Source.objects.all())
@@ -273,7 +360,6 @@ class SearchLexemeForm(forms.Form):
     search_fields = forms.ChoiceField(widget=forms.RadioSelect(),
             choices=SEARCH_FIELD_CHOICES, initial="L")
     languages = ChooseLanguagesField(queryset=Language.objects.all(),
-            required=False,
-            widget=forms.SelectMultiple(attrs={"size":min(40,
-                    Language.objects.count())}),
+            required=False, widget=forms.SelectMultiple(
+            attrs={"size":min(40, Language.objects.count())}),
             help_text=u"no selection → all")

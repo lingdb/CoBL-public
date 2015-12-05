@@ -1,7 +1,10 @@
 <html>
+
+{% load staticfiles %}
+
 <head>
   <title>T E S T</title>
-  <link rel="stylesheet" type="text/css" href="/media/css/ielex.css" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/ielex.css' %}" />
 </head>
 <body>
     <form action="" method="post">{% csrf_token %}

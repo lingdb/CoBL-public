@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+
+{% load staticfiles %}
 {% load lexicon_utils %}
 
 {% block title %}{{ meaning.gloss }}{% endblock %}
@@ -6,6 +8,7 @@
 {% block top %}<h1>{{ meaning.gloss }}</h1>{% endblock %}
 
 {% block content %}
+
 <table>
   <tr>
     <th>ID</th>
@@ -13,7 +16,8 @@
     <th>Source Form</th>
     <th>Phonological Form</th>
     <th>Notes</th>
-    <th>Cognate Class</th>
+    <th>Cognate Class Label</th>
+    <th></th>
   </tr>
   {% for lexeme in lexemes %}
   <tr class="{% cycle 'odd' 'even' %}">
@@ -25,7 +29,7 @@
       {{ lexeme.notes|wikilink|truncatewords_html:5 }}
       {% if lexeme.notes|is_truncated:5 %}
       <a href="{% url 'view-lexeme' lexeme.id %}" title="{{ lexeme.notes }}">
-        <img src="/media/buttons/view.png" title="{{ lexeme.notes }}" />
+        <img src="{% static 'buttons/view.png' %}" title="{{ lexeme.notes }}" />
       </a>
       {% endif %}
     </td>  
@@ -34,7 +38,7 @@
       {% if user.is_authenticated %}
         {% ifnotequal add_cognate_judgement|asint lexeme.id|asint %}
         <a href="{% url 'lexeme-add-cognate' lexeme.id %}#lexeme_{{ lexeme.id }}">
-          <img src="/media/buttons/add.png" alt="Add" title="Add another cognate class" />
+          <img src="{% static 'buttons/add.png' %}" alt="Add" title="Add another cognate class" />
         </a>
         {% else %}
         <form action="" method="post">{% csrf_token %}
@@ -45,7 +49,7 @@
     </td>
     <td>
       <a href="{% url 'view-lexeme' lexeme.id %}">
-        <img src="/media/buttons/view.png" alt="View" title="View/edit the lexical entry" />
+        <img src="{% static 'buttons/view.png' %}" alt="View" title="View/edit the lexical entry" />
       </a>
     </td>
   {% endfor %}
@@ -70,7 +74,7 @@
   <li><a href="{% url 'lexeme-search' %}">search lexemes</a></li>
   <li><a href="{% url 'meaning-add-lexeme' meaning.gloss %}">add a new lexeme</a></li>
 </ul>
-<p>Cognate judgements are added on this page, but deleted by the lexeme view (use the <img src="/media/buttons/view.png" alt="" title="View/Edit the lexical entry" /> button)</p>
+<p>Cognate judgements are added on this page, but deleted by the lexeme view (use the <img src="{% static 'buttons/view.png' %}" alt="" title="View/Edit the lexical entry" /> button)</p>
 
 <h3>Description</h3>
 {{ meaning.notes|linebreaksbr }}

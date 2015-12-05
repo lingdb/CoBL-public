@@ -4,17 +4,16 @@ from django.db import models
 from django.db.models import Max, F
 from django.core.urlresolvers import reverse
 ## from django.core.cache import cache
-from django.db import connection, transaction ### testing
+#from django.db import connection ### testing
 from django.db import IntegrityError
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_delete
 from django.db.backends.signals import connection_created
 from django.utils.safestring import SafeString
 # from django.contrib import admin
+import jsonfield
 import reversion
-from reversion.revisions import RegistrationError
-# from reversion.admin import VersionAdmin # reinstate?
-from south.modelsinspector import add_introspection_rules
+#from reversion.admin import VersionAdmin
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import *
 
@@ -56,7 +55,7 @@ RELIABILITY_CHOICES = ( # used by Citation classes
         )
 
 # http://south.aeracode.org/docs/customfields.html#extending-introspection
-add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])
+# add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])
 
 class CharNullField(models.CharField):
 	"""CharField that stores NULL but returns ''
@@ -66,7 +65,7 @@ class CharNullField(models.CharField):
     having a name is optional."""
 	def to_python(self, value):
 		if isinstance(value, models.CharField):
-			return value 
+			return value
 		if value==None:
 			return ""
 		else:
@@ -78,12 +77,14 @@ class CharNullField(models.CharField):
 		else:
 			return value
 
+@reversion.register
 class Source(models.Model):
 
     citation_text = models.TextField(unique=True)
     type_code = models.CharField(max_length=1, choices=TYPE_CHOICES,
             default="P")
     description = models.TextField(blank=True)
+    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
@@ -95,12 +96,14 @@ class Source(models.Model):
     class Meta:
         ordering = ["type_code", "citation_text"]
 
+@reversion.register
 class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
     ascii_name = models.CharField(max_length=128, unique=True,
             validators=[suitable_for_url])
     utf8_name = models.CharField(max_length=128, unique=True)
     description = models.TextField(blank=True, null=True)
+    altname = jsonfield.JSONField(blank=True)
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
@@ -111,20 +114,12 @@ class Language(models.Model):
     class Meta:
         ordering = ["ascii_name"]
 
-class DyenName(models.Model):
-    language = models.ForeignKey(Language)
-    name = models.CharField(max_length=128)
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        ordering = ["name"]
-
+@reversion.register
 class Meaning(models.Model):
-    gloss = models.CharField(max_length=64, validators=[suitable_for_url])
+    gloss = models.CharField(max_length=64, unique=True, validators=[suitable_for_url])
     description = models.CharField(max_length=64, blank=True) # show name
     notes = models.TextField(blank=True)
+    data = jsonfield.JSONField(blank=True)
     percent_coded = models.FloatField(editable=False, default=0)
 
     def get_absolute_url(self):
@@ -149,6 +144,7 @@ class Meaning(models.Model):
     class Meta:
         ordering = ["gloss"]
 
+@reversion.register
 class CognateClass(models.Model):
     """`name` field is optional, for manually given names"""
     alias = models.CharField(max_length=3)
@@ -156,6 +152,7 @@ class CognateClass(models.Model):
     modified = models.DateTimeField(auto_now=True)
     name = CharNullField(max_length=128, blank=True, null=True, unique=True,
             validators=[suitable_for_url])
+    data = jsonfield.JSONField(blank=True)
 
     def update_alias(self, save=True):
         """Reset alias to the first unused letter"""
@@ -209,6 +206,7 @@ class DyenCognateSet(models.Model):
             qmark =""
         return "%s%s" % (self.name, qmark)
 
+@reversion.register
 class Lexeme(models.Model):
     language = models.ForeignKey(Language)
     meaning = models.ForeignKey(Meaning, blank=True, null=True)
@@ -220,6 +218,7 @@ class Lexeme(models.Model):
     notes = models.TextField(blank=True)
     source = models.ManyToManyField(Source, through="LexemeCitation",
             blank=True)
+    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
     number_cognate_coded = models.IntegerField(editable=False, default=0)
     denormalized_cognate_classes = models.TextField(editable=False, blank=True)
@@ -227,7 +226,7 @@ class Lexeme(models.Model):
     def set_denormalized_cognate_classes(self):
         """Create a sequence of 'cc1.id, cc1.alias, cc2.id, cc2.alias'
         as a string and store"""
-        old_value = self.denormalized_cognate_classes 
+        old_value = self.denormalized_cognate_classes
         data = []
         for cc in self.cognate_class.all():
             data.append(cc.id)
@@ -242,7 +241,7 @@ class Lexeme(models.Model):
         return
 
     def set_number_cognate_coded(self):
-        old_number = self.number_cognate_coded 
+        old_number = self.number_cognate_coded
         self.number_cognate_coded = self.cognate_class.count()
         if self.number_cognate_coded != old_number:
             self.save()
@@ -284,10 +283,12 @@ class Lexeme(models.Model):
         order_with_respect_to = "language"
 
 
+@reversion.register
 class CognateJudgement(models.Model):
     lexeme = models.ForeignKey(Lexeme)
     cognate_class = models.ForeignKey(CognateClass)
     source = models.ManyToManyField(Source, through="CognateJudgementCitation")
+    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     # def get_absolute_url(self):
@@ -322,6 +323,7 @@ class CognateJudgement(models.Model):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
                 self.cognate_class.alias, self.id)
 
+@reversion.register
 class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A
     default list, named 'all' is (re)created on save/delete of the Language
@@ -335,10 +337,11 @@ class LanguageList(models.Model):
     """
     DEFAULT = "all" # all languages
 
-    name = models.CharField(max_length=128, unique=True, 
-            validators=[suitable_for_url, reserved_names("all", "all-alpha")])
+    name = models.CharField(max_length=128, unique=True,
+            validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
     languages = models.ManyToManyField(Language, through="LanguageListOrder")
+    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     def append(self, language):
@@ -424,7 +427,7 @@ class LanguageListOrder(models.Model):
     order = models.FloatField()
 
     def __unicode__(self):
-        return u"%s:%s(%s)" % (self.language_list.name, 
+        return u"%s:%s(%s)" % (self.language_list.name,
                 self.order,
                 self.language.ascii_name)
 
@@ -433,14 +436,16 @@ class LanguageListOrder(models.Model):
         unique_together = (("language_list", "language"),
                 ("language_list", "order"))
 
+@reversion.register
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
     DEFAULT = "all"
 
-    name = models.CharField(max_length=128,
-            validators=[suitable_for_url, reserved_names("all", "all-alpha")])
+    name = models.CharField(max_length=128, unique=True,
+            validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
     meanings = models.ManyToManyField(Meaning, through="MeaningListOrder")
+    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     def append(self, meaning):
@@ -548,18 +553,18 @@ class MeaningListOrder(models.Model):
 #     reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
 #     comment = models.TextField(blank=True)
 #     modified = models.DateTimeField(auto_now=True)
-# 
+#
 #     def long_reliability(self):
 #         try:
 #             description = dict(RELIABILITY_CHOICES)[self.reliability]
 #         except KeyError:
 #             description = ""
 #         return description
-# 
+#
 #     class Meta:
 #         unique_together = (("content_type", "object_id", "source"),)
 #         ## Can't use a "content_object" in a unique_together constraint
-# 
+#
 # # reversion.register(GenericCitation)
 
 class AbstractBaseCitation(models.Model):
@@ -582,6 +587,7 @@ class AbstractBaseCitation(models.Model):
         abstract = True
 
 
+@reversion.register
 class CognateJudgementCitation(AbstractBaseCitation):
     cognate_judgement = models.ForeignKey(CognateJudgement)
     source = models.ForeignKey(Source)
@@ -602,6 +608,7 @@ class CognateJudgementCitation(AbstractBaseCitation):
         unique_together = (("cognate_judgement", "source"),)
 
 
+@reversion.register
 class LexemeCitation(AbstractBaseCitation):
     lexeme = models.ForeignKey(Lexeme)
     source = models.ForeignKey(Source)
@@ -619,6 +626,7 @@ class LexemeCitation(AbstractBaseCitation):
     class Meta:
         unique_together = (("lexeme", "source"),)
 
+@reversion.register
 class CognateClassCitation(AbstractBaseCitation):
     cognate_class = models.ForeignKey(CognateClass)
     source = models.ForeignKey(Source)
@@ -651,7 +659,7 @@ class CognateClassCitation(AbstractBaseCitation):
 #                     "This deletion would leave parent without citations")
 #     except CognateJudgement.DoesNotExist:
 #         pass # parent has been deleted
-# 
+#
 # @receiver(post_delete, sender=LexemeCitation)
 # def check_lexeme_has_citation(sender, instance, **kwargs):
 #     #_delete = getattr(instance.lexeme, "_delete", False)
@@ -760,10 +768,9 @@ models.signals.post_delete.connect(update_denormalized_from_lexeme,
 # -- Reversion registration ----------------------------------------
 
 # once we're upgraded to 1.5.1 this might not be necessary anymore
-for modelclass in [Source, Language, Meaning, CognateClass, Lexeme,
-        CognateJudgement, LanguageList, LanguageListOrder,
-        CognateJudgementCitation, CognateClassCitation, LexemeCitation,
-        MeaningList]:
-    if not reversion.is_registered(modelclass):
-        reversion.register(modelclass)
-
+# for modelclass in [Source, Language, Meaning, CognateClass, Lexeme,
+#         CognateJudgement, LanguageList, LanguageListOrder,
+#         CognateJudgementCitation, CognateClassCitation, LexemeCitation,
+#         MeaningList]:
+#     if not reversion.is_registered(modelclass):
+#         reversion.register(modelclass)

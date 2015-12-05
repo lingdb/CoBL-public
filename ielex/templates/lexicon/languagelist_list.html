@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load staticfiles %}
+
 {% block title %}Language lists{% endblock %}
 
 {% block top %}<h1>Language lists</h1>{% endblock %}
@@ -20,7 +22,7 @@
     {% if user.is_authenticated and language_list.name != language_list.DEFAULT %}
     <td>
       <a href="{% url 'edit-language-list' language_list.name %}">
-        <img src="/media/buttons/edit.png" alt="edit" title="Edit {{ language_list.name }} metadata" />
+        <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit {{ language_list.name }} metadata" />
       </a>
     </td>
     {% endif %}

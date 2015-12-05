@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load staticfiles %}
+
 {% block title %}{% if action %}{{ action|title }}{% endif %} Source{% endblock %}
 
 {% block top %}
@@ -22,9 +24,9 @@
     {% if user.is_authenticated %}
     <td>
       <a href="{% url 'edit-source' source.id %}">
-        <img src="/media/buttons/edit.png" alt="Edit" title="Edit" />
+        <img src="{% static 'buttons/edit.png' %}" alt="Edit" title="Edit" />
       </a>
-      <img src="/media/buttons/delete.png" alt="{% url 'delete-source' source.id %} to delete"
+      <img src="{% static 'buttons/delete.png' %}" alt="{% url 'delete-source' source.id %} to delete"
           title="{% url 'delete-source' source.id %} to delete" />
     </td>
     {% endif %}

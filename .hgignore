@@ -3,10 +3,9 @@ syntax: glob
 *.pyc
 .RData
 .Rhistory
+.venv
 ielex/db.sqlite3
 ielex/db.dump
 ielex/local_settings.py
 unittest.log
 htmlcov
-NOTES-DEV
-REQUIREMENTS-DEV

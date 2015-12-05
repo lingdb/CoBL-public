@@ -1,4 +1,4 @@
-# usage: pip install -r REQUIREMENTS
+# usage: pip install -r REQUIREMENTS-DEV
 django-debug-toolbar>=1.0.1
 lxml
 cssselect

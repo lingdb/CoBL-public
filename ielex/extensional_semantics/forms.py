@@ -4,7 +4,6 @@ from ielex.forms import clean_value_for_url
 from ielex.extensional_semantics.models import *
 from ielex.lexicon.models import RELIABILITY_CHOICES
 
-
 class ChooseSemanticRelationsField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
@@ -23,6 +22,7 @@ class EditRelationForm(forms.ModelForm):
 
     class Meta:
         model = SemanticRelation
+        exclude = []
 
 class EditSemanticDomainForm(forms.ModelForm):
 
@@ -35,10 +35,10 @@ class EditSemanticDomainForm(forms.ModelForm):
 
 class AddSemanticExtensionForm(forms.Form):
     relations = forms.MultipleChoiceField(
-            required=False,
-            widget=forms.CheckboxSelectMultiple(),
-            choices=SemanticRelation.objects.values_list("id", "relation_code"),
-            )
+        required=False,
+        widget=forms.CheckboxSelectMultiple(),
+        choices=SemanticRelation.objects.values_list("id", "relation_code"),
+        )
 
 class SemanticExtensionCitationForm(forms.ModelForm):
 
@@ -49,6 +49,7 @@ class SemanticExtensionCitationForm(forms.ModelForm):
     class Meta:
         #exclude = ["extension"]
         model = SemanticExtensionCitation
+        exclude = []
 
 class MultipleSemanticExtensionCitationForm(forms.ModelForm):
     """Hides the extension value; will be applied to multiple objects"""
