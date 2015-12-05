@@ -6,13 +6,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VERSION = "1.0"
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'm9y8koy5%cm4@_=sk_hjlbl$z%mgj*8dztu13@)^zr(j*g@q0m'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
-
+# SECRET_KEY = '##' ## Secret key is set in local_settings.py
+# DEBUG = False ## Debug is set in local_settings.py
+# ALLOWED_HOSTS = [] 
 
 # Application definition
 
@@ -72,6 +70,7 @@ TEMPLATES = [
                 'django.template.loaders.app_directories.Loader',
                 #'django.template.loaders.eggs.load_template_source',
             ],
+            'debug':False, # reset in local_settings.py
         },
     },
 ]
@@ -172,3 +171,4 @@ if DEBUG:
         # DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS':False}
     except ImportError:
         pass
+    TEMPLATES[0]["OPTIONS"]["debug"] = True

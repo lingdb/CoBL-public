@@ -5,7 +5,6 @@ from settings import ROOTDIR
 # Development settings
 # IMPORTANT: do not change DEBUG to True until after the first syncdb
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
 
 # Database backend
 DATABASES = {
@@ -20,9 +19,12 @@ DATABASES = {
     }
 }
 
+# Automatically generated secret key
+SECRET_KEY = "<++>"
+
 # Need to define a place to keep static files (use ./manage
 # collectstatic to put them there)
-STATIC_ROOT = ""
+STATIC_ROOT = []
 
 # A list of strings representing the host/domain names that this Django
 # site can serve
@@ -43,13 +45,25 @@ ADMINS = (
         )
 MANAGERS = ADMINS
 
+# These settings allow email from server
+# EMAIL_HOST = "mailhost.mpi.nl"
+# EMAIL_SUBJECT_PREFIX = "[IELex] "
+# SERVER_EMAIL = "ielex-noreply@mpi.nl"
+# DEFAULT_FROM_EMAIL = "ielex-webmaster@mpi.nl"
+# SEND_BROKEN_LINK_EMAILS = True
+# # IGNORABLE_404_URLS = map(re.compile,
+#         r'favicon\.ico/?$',
+#         r'crossdomain\.xml/?$',
+#         r'\.php/?', # wannabe hackers
+#         )
+
 ## Datetime formats
 ## These may be freely customized according to:
 ## http://docs.djangoproject.com/en/dev/ref/templates/builtins/#date
-# DATE_FORMAT = "d M Y"
-# DATETIME_FORMAT = "l, dS F Y  H:i:s O"
-# SHORT_DATE_FORMAT = "d-m-Y"
-# SHORT_DATETIME_FORMAT = "Y-m-d H:i:s"
+DATE_FORMAT = "d M Y"
+DATETIME_FORMAT = "l, dS F Y  H:i:s O"
+SHORT_DATE_FORMAT = "d-m-Y"
+SHORT_DATETIME_FORMAT = "Y-m-d H:i:s"
 
 # Project customization
 project_long_name = u"Test Lexical Cognacy Database"
@@ -65,7 +79,5 @@ structural_features = False # NotImplemented
 # Maximum number of search results
 LIMIT_TO = 500
 
-# Automatically generated secret key
-SECRET_KEY = "<++>"
 
 # vim:ft=python
