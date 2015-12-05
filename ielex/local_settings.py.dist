@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-from settings import ROOTDIR
 
 # Development settings
 # IMPORTANT: do not change DEBUG to True until after the first syncdb
@@ -10,7 +9,7 @@ DEBUG = False
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(ROOTDIR, 'db.sqlite3'),
+        'NAME': os.path.join(os.path.abspath(os.path.dirname(__file__)), 'db.sqlite3'),
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Not used with sqlite3.
