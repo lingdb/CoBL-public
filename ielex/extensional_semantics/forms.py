@@ -4,13 +4,6 @@ from ielex.forms import clean_value_for_url
 from ielex.extensional_semantics.models import *
 from ielex.lexicon.models import RELIABILITY_CHOICES
 
-########## CHANGEd ########################
-
-from django.db.utils import OperationalError
-
-##########################################
-
-
 class ChooseSemanticRelationsField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
@@ -41,14 +34,11 @@ class EditSemanticDomainForm(forms.ModelForm):
         exclude = ["relation_ids"]
 
 class AddSemanticExtensionForm(forms.Form):
-    try:
-        relations = forms.MultipleChoiceField(
-            required=False,
-            widget=forms.CheckboxSelectMultiple(),
-            choices=SemanticRelation.objects.values_list("id", "relation_code"),
-            )
-    except OperationalError, e:
-        print e,':',SemanticRelation.objects
+    relations = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple(),
+        choices=SemanticRelation.objects.values_list("id", "relation_code"),
+        )
 
 class SemanticExtensionCitationForm(forms.ModelForm):
 

@@ -152,15 +152,15 @@ STATICFILES_DIRS = (
 # Examples: "http://foo.com/media/", "/media/".
 
 
-#local_settings_path = os.path.join(BASE_DIR, "ielex/local_settings.py")
-#if not os.path.exists(local_settings_path):
-#    ## create default local settings
-#    import random
-#    settings_template = file(os.path.join(BASE_DIR,"ielex/local_settings.py")).read()
-#    key_chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
-#    secret_key = "".join([random.choice(key_chars) for i in range(50)])
-#    print>>file(local_settings_path, "w"), settings_template.replace("<++>",secret_key)
-#from local_settings import *
+local_settings_path = os.path.join(BASE_DIR, "ielex/local_settings.py")
+if not os.path.exists(local_settings_path):
+    ## create default local settings
+    import random
+    settings_template = file(os.path.join(BASE_DIR,"ielex/local_settings.py")).read()
+    key_chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
+    secret_key = "".join([random.choice(key_chars) for i in range(50)])
+    print>>file(local_settings_path, "w"), settings_template.replace("<++>",secret_key)
+from local_settings import *
 
 
 if DEBUG:
