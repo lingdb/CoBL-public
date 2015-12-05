@@ -17,7 +17,7 @@ from django.template import RequestContext
 from django.template import Template
 from django.template.loader import get_template
 from reversion.models import Revision, Version
-from reversion import revision
+# from reversion import revision
 from ielex.settings import LIMIT_TO
 from ielex.forms import *
 from ielex.lexicon.models import *

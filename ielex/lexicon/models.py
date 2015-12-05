@@ -13,9 +13,7 @@ from django.utils.safestring import SafeString
 # from django.contrib import admin
 import jsonfield
 import reversion
-from reversion.revisions import RegistrationError
-# from reversion.admin import VersionAdmin # reinstate?
-#from south.modelsinspector import add_introspection_rules
+#from reversion.admin import VersionAdmin
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import *
 
@@ -25,12 +23,6 @@ try:
 except ImportError:
     from django.utils.functional import wraps
 import inspect
-
-################ CHANGED ##################
-
-import jsonfield
-
-##########################################
 
 
 def disable_for_loaddata(signal_handler):
@@ -85,6 +77,7 @@ class CharNullField(models.CharField):
 		else:
 			return value
 
+@reversion.register
 class Source(models.Model):
 
     citation_text = models.TextField(unique=True)
@@ -103,6 +96,7 @@ class Source(models.Model):
     class Meta:
         ordering = ["type_code", "citation_text"]
 
+@reversion.register
 class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
     ascii_name = models.CharField(max_length=128, unique=True,
@@ -120,6 +114,7 @@ class Language(models.Model):
     class Meta:
         ordering = ["ascii_name"]
 
+@reversion.register
 class Meaning(models.Model):
     gloss = models.CharField(max_length=64, unique=True, validators=[suitable_for_url])
     description = models.CharField(max_length=64, blank=True) # show name
@@ -149,6 +144,7 @@ class Meaning(models.Model):
     class Meta:
         ordering = ["gloss"]
 
+@reversion.register
 class CognateClass(models.Model):
     """`name` field is optional, for manually given names"""
     alias = models.CharField(max_length=3)
@@ -210,6 +206,7 @@ class DyenCognateSet(models.Model):
             qmark =""
         return "%s%s" % (self.name, qmark)
 
+@reversion.register
 class Lexeme(models.Model):
     language = models.ForeignKey(Language)
     meaning = models.ForeignKey(Meaning, blank=True, null=True)
@@ -286,6 +283,7 @@ class Lexeme(models.Model):
         order_with_respect_to = "language"
 
 
+@reversion.register
 class CognateJudgement(models.Model):
     lexeme = models.ForeignKey(Lexeme)
     cognate_class = models.ForeignKey(CognateClass)
@@ -325,6 +323,7 @@ class CognateJudgement(models.Model):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
                 self.cognate_class.alias, self.id)
 
+@reversion.register
 class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A
     default list, named 'all' is (re)created on save/delete of the Language
@@ -437,6 +436,7 @@ class LanguageListOrder(models.Model):
         unique_together = (("language_list", "language"),
                 ("language_list", "order"))
 
+@reversion.register
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
     DEFAULT = "all"
@@ -587,6 +587,7 @@ class AbstractBaseCitation(models.Model):
         abstract = True
 
 
+@reversion.register
 class CognateJudgementCitation(AbstractBaseCitation):
     cognate_judgement = models.ForeignKey(CognateJudgement)
     source = models.ForeignKey(Source)
@@ -607,6 +608,7 @@ class CognateJudgementCitation(AbstractBaseCitation):
         unique_together = (("cognate_judgement", "source"),)
 
 
+@reversion.register
 class LexemeCitation(AbstractBaseCitation):
     lexeme = models.ForeignKey(Lexeme)
     source = models.ForeignKey(Source)
@@ -624,6 +626,7 @@ class LexemeCitation(AbstractBaseCitation):
     class Meta:
         unique_together = (("lexeme", "source"),)
 
+@reversion.register
 class CognateClassCitation(AbstractBaseCitation):
     cognate_class = models.ForeignKey(CognateClass)
     source = models.ForeignKey(Source)
@@ -765,9 +768,9 @@ models.signals.post_delete.connect(update_denormalized_from_lexeme,
 # -- Reversion registration ----------------------------------------
 
 # once we're upgraded to 1.5.1 this might not be necessary anymore
-for modelclass in [Source, Language, Meaning, CognateClass, Lexeme,
-        CognateJudgement, LanguageList, LanguageListOrder,
-        CognateJudgementCitation, CognateClassCitation, LexemeCitation,
-        MeaningList]:
-    if not reversion.is_registered(modelclass):
-        reversion.register(modelclass)
+# for modelclass in [Source, Language, Meaning, CognateClass, Lexeme,
+#         CognateJudgement, LanguageList, LanguageListOrder,
+#         CognateJudgementCitation, CognateClassCitation, LexemeCitation,
+#         MeaningList]:
+#     if not reversion.is_registered(modelclass):
+#         reversion.register(modelclass)

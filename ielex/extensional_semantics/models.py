@@ -2,6 +2,7 @@ from django.db import models
 import reversion
 from ielex.lexicon.models import AbstractBaseCitation
 
+@reversion.register
 class SemanticRelation(models.Model):
     relation_code = models.CharField(max_length=64)
     long_name = models.CharField(max_length=128)
@@ -15,7 +16,7 @@ class SemanticRelation(models.Model):
     def __unicode__(self):
         return unicode("%s (%s)" % (self.relation_code, self.long_name))
 
-
+@reversion.register
 class SemanticExtension(models.Model):
     lexeme = models.ForeignKey('lexicon.Lexeme')
     relation = models.ForeignKey(SemanticRelation)
@@ -31,7 +32,7 @@ class SemanticExtension(models.Model):
     def __unicode__(self):
         return u"%s" % (self.id)
 
-
+@reversion.register
 class SemanticExtensionCitation(AbstractBaseCitation):
     extension = models.ForeignKey(SemanticExtension)
     source = models.ForeignKey('lexicon.Source')
@@ -45,7 +46,7 @@ class SemanticExtensionCitation(AbstractBaseCitation):
     class Meta:
         unique_together = (("extension", "source"),)
 
-
+@reversion.register
 class SemanticDomain(models.Model):
     """A named, ordered list of semantic relations (referred to as a 'domain'
     in the user interface) for use in display and output. A default list, named
@@ -75,7 +76,6 @@ class SemanticDomain(models.Model):
     class Meta:
         ordering = ["name"]
 
-
 def update_semantic_domain_all(sender, instance, **kwargs):
     try:
         sd = SemanticDomain.objects.get(name=SemanticDomain.DEFAULT)
@@ -90,9 +90,9 @@ def update_semantic_domain_all(sender, instance, **kwargs):
 models.signals.post_save.connect(update_semantic_domain_all, sender=SemanticRelation)
 models.signals.post_delete.connect(update_semantic_domain_all, sender=SemanticRelation)
 
-for modelclass in [SemanticRelation,
-        SemanticExtension,
-        SemanticExtensionCitation,
-        SemanticDomain]:
-    if not reversion.is_registered(modelclass):
-        reversion.register(modelclass)
+# for modelclass in [SemanticRelation,
+#         SemanticExtension,
+#         SemanticExtensionCitation,
+#         SemanticDomain]:
+#     if not reversion.is_registered(modelclass):
+#         reversion.register(modelclass)
