@@ -17,8 +17,8 @@
   ```
   workon py2.7-django1.8
   hg update py2.7-django1.8
-  ./manage.py migrate --fake
-  atom ielex/local_settings.py # add 'ATOMIC_REQUESTS':True
+  ./manage.py migrate --fake-initial
+  vim ielex/local_settings.py # add 'ATOMIC_REQUESTS':True to DATABASES setting 
   ./manage.py shell # test connection
   ```
 
