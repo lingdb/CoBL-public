@@ -42,12 +42,12 @@
 		  <tr>
 		    <td>{{ forloop.counter }}</td>
 		      <td>
-		          {% form_field language.ascii_name %}
+		        <a href="{% url 'language-report' language.ascii_name.data %}" alt="view lexeme list" title="View wordlist list for {{ language.utf8_name.data }}">
+		          {% form_field language.ascii_name class="readonly" %}
+		        </a>
 		        <a href="{% url 'language-edit' language.ascii_name.data %}">
 		            <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit {{ language.utf8_name.data }} metadata" >
 		          </a>
-		        <a href="{% url 'language-report' language.ascii_name.data %}" alt="view lexeme list" title="View wordlist list for {{ language.utf8_name.data }}">
-		        </a>
 		      </td>
 		      <td>
 		      	<a href="http://www.ethnologue.com/language/{{ language.iso_code.data }}" target="_blank">

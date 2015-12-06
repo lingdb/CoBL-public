@@ -259,7 +259,7 @@ def get_canonical_language_list(language_list=None, request=None):
 ############ CHANGED ##############################
 
 @csrf_protect
-def view_language_list(request, language_list=None):
+def view_language_listALT(request, language_list=None):
     current_list = get_canonical_language_list(language_list, request)
     request.session["current_language_list_name"] = current_list.name
     languages = current_list.languages.all().order_by("languagelistorder")
@@ -285,7 +285,7 @@ def view_language_list(request, language_list=None):
             "current_list":current_list})
 
 @csrf_protect
-def view_language_listALT(request, language_list=None):
+def view_language_list(request, language_list=None):
     current_list = get_canonical_language_list(language_list, request)
     request.session["current_language_list_name"] = current_list.name
     languages = current_list.languages.all().order_by("languagelistorder")
