@@ -115,6 +115,12 @@ class Language(models.Model):
         ordering = ["ascii_name"]
 
 @reversion.register
+class LanguageBranches(models.Model):
+    family_ix = models.IntegerField(blank=True)
+    level1_branch_ix = models.IntegerField(blank=True)
+    level1_branch_name = models.TextField(blank=True, unique=True)
+
+@reversion.register
 class Meaning(models.Model):
     gloss = models.CharField(max_length=64, unique=True, validators=[suitable_for_url])
     description = models.CharField(max_length=64, blank=True) # show name
