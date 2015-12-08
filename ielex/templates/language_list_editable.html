@@ -10,7 +10,7 @@
 
 {% block content %}
 
-  {% if user.is_authenticated %}
+  {% if user.is_authenticated and user.is_staff %}
   
   <form action="" method="POST" name="langlist_ed_form" >{% csrf_token %}
 
