@@ -1022,6 +1022,9 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
   
         request_form_dict = process_postrequest_form(request.POST)
         
+        #TODO: hack to record changed root_form items in CognateClass
+        cogclass_changed_rootform_map = defaultdict(str)
+
         #TODO: need to check validity of input
         #if lex_ed_form.is_valid():
         for k,v in request_form_dict.items():
@@ -1039,15 +1042,16 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                 lexm = Lexeme.objects.get(**{'id': int(v_dict['id'])})
 
                 #Saving CognateClass.root_form
-                cogclass_ids = [i[0] for i in list2ntuple(2, lexm.denormalized_cognate_classes.split(','))]
-                for cc_id in cogclass_ids:
-                    for v in v_dict['root_form'].split(','):
-                        cogclass = CognateClass.objects.get(**{'id': int(cc_id)})
-                        cogclass.root_form = v.strip(',')
-                        try:
-                            cogclass.save()
-                        except Exception, e:
-                            print 'Exception for CognateClass table while saving POST: ',e#'Error saving: ',lexm
+                cogclassid_rootform = zip([i[0] for i in list2ntuple(2, lexm.denormalized_cognate_classes.split(','))], v_dict['root_form'].split(','))
+                for ccid,rtfrm in cogclassid_rootform:
+                    if ccid:
+                        cogclass = CognateClass.objects.get(**{'id': int(ccid)})
+                        
+                        #TODO: hack to only update this root_form if we have seen it before during this post
+                        #AND to update it to the changed value
+                        #Only update IF the current value is a change AND IF it is the first change this POST
+                        if cogclass.root_form!=rtfrm:
+                            cogclass_changed_rootform_map[ccid] = rtfrm
 
                 if not is_unchanged(lexm, v_dict):
                     
@@ -1065,12 +1069,24 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                     try:
                         lexm.save()
                     except Exception, e:
-                        print 'Exception while saving POST: ',e
+                        print 'Exception for saving Lexeme object: ',e
                 else:
                     pass
 
             except Exception, e:
                 print 'Exception while accessing Lexeme object: ',e,'; POST items are: ',v_dict
+
+        #Now update the CognateClass
+        #TODO: hack to only update this root_form if we have seen it before during this post
+        #AND to update it to the changed value
+        #Only update IF the current value is a change AND IF it is the first change this POST
+        for k,v in cogclass_changed_rootform_map.items():
+            cogclass = CognateClass.objects.get(**{'id': int(k)})
+            cogclass.root_form = v
+            try:
+                cogclass.save()
+            except Exception, e:
+                print 'Exception while saving CognateClass object: ',e
 
         return HttpResponseRedirect(reverse("view-meaning-languages",
                     args=[canonical_gloss, current_language_list.name]))
@@ -1124,7 +1140,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
             #Adding CognateClass.root_form to the form
             cogclass_ids = [i[0] for i in list2ntuple(2, lex.denormalized_cognate_classes.split(','))]
-            cogclass_map = {cc_id:CognateClass.objects.filter(id = int(cc_id))[0].root_form for cc_id in cogclass_ids}
+            cogclass_map = {cc_id:CognateClass.objects.filter(id = int(cc_id))[0].root_form for cc_id in cogclass_ids if cc_id}
             lex_row_form.root_form = ','.join([v for v in cogclass_map.values() if v])
             
             lex_row_form.phoneMic = lex.data.get('phoneMic', u'')
