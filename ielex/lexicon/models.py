@@ -158,6 +158,7 @@ class CognateClass(models.Model):
     modified = models.DateTimeField(auto_now=True)
     name = CharNullField(max_length=128, blank=True, null=True, unique=True,
             validators=[suitable_for_url])
+    root_form = models.TextField(blank=True)
     data = jsonfield.JSONField(blank=True)
 
     def update_alias(self, save=True):

@@ -248,6 +248,7 @@ class LexemeRowForm(Form):
     phon_form_2_phoneMic = BooleanField('PhoneTic to PhoneMic', validators = [DataRequired()])
     phoneMic_2_phon_form = BooleanField('PhoneMic to PhoneTic', validators = [DataRequired()])
 
+    root_form = StringField('Root Form', validators = [DataRequired()])
     
     def __init__(self, *args, **kwargs):
         super(LexemeRowForm, self).__init__(*args, **kwargs)

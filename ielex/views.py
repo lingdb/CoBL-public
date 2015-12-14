@@ -969,6 +969,10 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                 lxm.data.get('transliteration', '') == vdict['transliteration'] and \
                 lxm.data.get('not_swadesh_term', '') == (v_dict['not_swadesh_term']=='y')
 
+    def list2ntuple(n, iterable, fillvals=None):
+        init_tuples = [iter(iterable)] * n
+        return izip_longest(fillvalue=fillvals, *init_tuples)
+
     # Change language list form
     if request.method == 'POST' and not ('meang_form' in request.POST):
         language_form = ChooseLanguageListForm(request.POST)
@@ -1032,7 +1036,18 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             try:
                 
                 lexm = Lexeme.objects.get(**{'id': int(v_dict['id'])})
-                
+
+                #Saving CognateClass.root_form
+                cogclass_ids = [i[0] for i in list2ntuple(2, lexm.denormalized_cognate_classes.split(','))]
+                for cc_id in cogclass_ids:
+                    for v in v_dict['root_form'].split(','):
+                        cogclass = CognateClass.objects.get(**{'id': int(cc_id)})
+                        cogclass.root_form = v.strip(',')
+                        try:
+                            cogclass.save()
+                        except Exception, e:
+                            print 'Exception for CognateClass table while saving POST: ',e#'Error saving: ',lexm
+
                 if not is_unchanged(lexm, v_dict):
                     
                     lexm.language = Language.objects.get(utf8_name=v_dict['language_utf8name'].encode('ascii','ignore'))
@@ -1105,6 +1120,11 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             lex_row_form.gloss = lex.gloss
             lex_row_form.notes = lex.notes
             lex_row_form.number_cognate_coded = lex.number_cognate_coded
+
+            #Adding CognateClass.root_form to the form
+            cogclass_ids = [i[0] for i in list2ntuple(2, lex.denormalized_cognate_classes.split(','))]
+            cogclass_map = {cc_id:CognateClass.objects.filter(id = int(cc_id))[0].root_form for cc_id in cogclass_ids}
+            lex_row_form.root_form = ','.join([v for v in cogclass_map.values() if v])
             
             lex_row_form.phoneMic = lex.data.get('phoneMic', u'')
             lex_row_form.transliteration  = lex.data.get('transliteration', u'')

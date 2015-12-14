@@ -33,6 +33,7 @@
 		    <th>PhoneTic</th>
 		    <th alt="Language specific">Gloss</th>
 		    <th>Notes</th>
+		    <th>Root</th>
 		    <th>Cog <br> Class <br> Label</th>
 			<th alt="Number of cognate classes">nCog</th>
 		    <th></th>
@@ -66,6 +67,7 @@
 		      <td>{% form_field lexeme.phon_form id="phoneTic" %}</td>
 		      <td>{% form_field lexeme.gloss class="widetext" %}</td>
 		      <td>{% form_field lexeme.notes class="widetext" %}</td>
+		      <td>{% form_field lexeme.root_form %}</td>
 			  <td>
 			  	<div class="narrow_form"> 
 			      {{ lexeme.cognate_class_links.data }}
