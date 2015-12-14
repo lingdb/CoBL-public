@@ -33,6 +33,7 @@ from django.views.decorators.csrf import csrf_protect
 from django_tables2 import RequestConfig
 from ielex.tables import *
 from werkzeug.datastructures import MultiDict
+from itertools import izip_longest
 
 ##################################################
 
