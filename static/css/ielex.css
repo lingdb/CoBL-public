@@ -39,14 +39,15 @@ tr.selected { background: #fc6 }
 tr.mid-align { vertical-align: middle; }
 td.rightalign { text-align: right }
 td.rowname { font-weight: bold;	color: #360; }
-td.narrow { width: 30px; }
+td.narrow { width: 20px; }
 th.hidden { display: none;}
 td.hidden { display: none;}
 td.widetext { display: table-cell;}
-
-div.narrow_form { width: 100%; margin-bottom: 7px; font-size: 20px; border: 0; padding: 5px 7px;  
+div.Orightarrow { width: 35px; color: green; font-size: 15px; }
+div.narrow_form { width: 70px; font-size: 20px; padding: 5px 0 5px 5px;   
 				 background-color: #C3FDB8; color: black; vertical-align: middle; }
 div.narrow_form > select#id_cognate_class { margin-left: 5px; position: absolute; }
+div.Oright { width: 100%; padding: 5px 5px 5px 0; vertical-align: middle; }
 
 /* == Forms ===================================================={{{1 */
 
@@ -62,26 +63,30 @@ form input[type=text]:focus { color: red; }
 form input[class=widetext]:focus { color: red; width: 500px; rows: 4; transition: width .6s ease;}
 /*form input[class=widetext]:hover { content: attr(value); }*/
 
+form input[class=mediumtext] { width: 80px; }
+
 /*form input[class=readonly] { background-color: #cf9; }*/
 form input[class=readonly] { width: 70px; background-color: #ccc; }
-form input[class=readonlynarrow] { width: 30px; background-color: #ccc; margin: 0 0 0 0px; padding: 5px 0px; text-align: center;}
+form input[class=medwide_readonly] { width: 90px; background-color: #ccc; }
+form input[class=readonlynarrow] { width: 25px; background-color: #ccc; margin: 0 0 0 0px; padding: 6px 0px; text-align: center; font-size: 18px; }
 
-form input#narrowtext { width: 45px; }
+form input#narrowtext { width: 35px; }
+form input#verynarrowtext { width: 25px; }
 form input#linked { color: blue; }
 
 form input[class=leftcheckarrow] { display: none; padding: 0 0 0 0; margin: 0 0 0 0; float:left;}
-form label.left {float:left; height: 20px; width: 20px; }
+form label.left {float:left; height: 18px; width: 18px; }
 form input[class=leftcheckarrow] + label { background:url('../buttons/left.png') no-repeat; ; background-size: 50% 50%; background-position: center;
 										   display:inline-block; padding: 0 0 0 0; margin: 0 0 0 0; }
 
 form input[class=rightcheckarrow] { display: none; padding: 0 0 0 0; margin: 0 0 0 0;}
-form label.right {float:right; height: 20px; width: 20px; }
 form input[class=rightcheckarrow] + label { background:url('../buttons/right.png') no-repeat; background-size: 50% 50%; background-position: center; 
 											display:inline-block; padding: 0 0 0 0; margin: 0 0 0 0;}
+form label.right {float:right; height: 18px; width: 18px;}
 form input[class=Orightcheckarrow] { display: none; padding: 0 0 0 0; margin: 0 0 0 0;}
 form input[class=Orightcheckarrow] + label { background:url('../buttons/Oright.png') no-repeat; background-size: 100% 100%; background-position: center; 
 											display:inline-block; padding: 0 0 0 0; margin: 0 0 0 0;}
-form label.Oright {float:right; height: 20px; width: 20px; }
+form label.Oright {float:right; height: 20px; width: 20px;}
 
 form input[class=hyperformfield] { color: blue; }
 

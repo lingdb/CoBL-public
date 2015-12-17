@@ -43,23 +43,23 @@
 	  	  <td class="hidden">{{ lexeme.id }}</td>
 	      <td class="narrow">{% form_field lexeme.meaning_id class="readonlynarrow" id="narrowtext" %}</td>
 	      <td><a href="{% url 'meaning-report' lexeme.meaning_id.data %}">{% form_field lexeme.meaning class="readonly" id="linked" %}</a></td>
-	      <td>{% form_field lexeme.source_form id="source_form" %}</td>
+	      <td>{% form_field lexeme.source_form id="source_form" class="mediumtext" %}</td>
 	      <td>
 	      	<div>
 	      		<input class="leftcheckarrow" type="checkbox" id="translit2src#{{lexeme.transliteration.name}}#{{lexeme.source_form.name}}" onclick="CopyAcross(this)"><label class="left" for="translit2src#{{lexeme.transliteration.name}}#{{lexeme.source_form.name}}"></label>
 				<input class="rightcheckarrow" type="checkbox" id="src2translit#{{lexeme.source_form.name}}#{{lexeme.transliteration.name}}" onclick="CopyAcross(this)"><label class="right" for="src2translit#{{lexeme.source_form.name}}#{{lexeme.transliteration.name}}"></label>
 			</div>
 	      </td>
-	      <td>{% form_field lexeme.transliteration id="transliteration" %}</td>
+	      <td>{% form_field lexeme.transliteration id="transliteration" class="mediumtext" %}</td>
 	      <td>{% form_field lexeme.not_swadesh_term %}</td>
-	      <td>{% form_field lexeme.phoneMic id="phoneMic" %}</td>
+	      <td>{% form_field lexeme.phoneMic id="phoneMic" class="mediumtext" %}</td>
 	      <td>
 	      	<div>
 	      		<input class="leftcheckarrow" type="checkbox" id="phoneTic2phoneMic#{{lexeme.phon_form.name}}#{{lexeme.phoneMic.name}}" onclick="CopyAcross(this)"><label class="left" for="phoneTic2phoneMic#{{lexeme.phon_form.name}}#{{lexeme.phoneMic.name}}"></label>
 		      	<input class="rightcheckarrow" type="checkbox" id="phoneMic2phoneTic#{{lexeme.phoneMic.name}}#{{lexeme.phon_form.name}}" onclick="CopyAcross(this)"><label class="right" for="phoneMic2phoneTic#{{lexeme.phoneMic.name}}#{{lexeme.phon_form.name}}"></label>
 			</div>
 		  </td>
-	      <td>{% form_field lexeme.phon_form id="phoneTic" %}</td>
+	      <td>{% form_field lexeme.phon_form id="phoneTic" class="mediumtext" %}</td>
 	      <td class="widetext">{% form_field lexeme.gloss class="widetext" id="widetext" %}</td>
 	      <td class="widetext">{% form_field lexeme.notes class="widetext" id="widetext" %}</td>
 	      <td class="narrow">
