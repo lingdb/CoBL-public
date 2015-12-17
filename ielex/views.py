@@ -1022,7 +1022,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
   
         request_form_dict = process_postrequest_form(request.POST)
         
-        #TODO: hack to record changed root_form items in CognateClass
+        #TODO: hack to update CognateClass.root_form only if it has been changed during this POST
+        #Here: initialise map for recording changed items plus cog class id
         cogclass_changed_rootform_map = defaultdict(str)
 
         #TODO: need to check validity of input
@@ -1047,9 +1048,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                     if ccid:
                         cogclass = CognateClass.objects.get(**{'id': int(ccid)})
                         
-                        #TODO: hack to only update this root_form if we have seen it before during this post
-                        #AND to update it to the changed value
-                        #Only update IF the current value is a change AND IF it is the first change this POST
+                        #TODO: hack to update CognateClass.root_form only if it has been changed during this POST
+                        #Here: collect only forms which have been changed during this POST
                         if cogclass.root_form!=rtfrm:
                             cogclass_changed_rootform_map[ccid] = rtfrm
 
@@ -1077,9 +1077,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                 print 'Exception while accessing Lexeme object: ',e,'; POST items are: ',v_dict
 
         #Now update the CognateClass
-        #TODO: hack to only update this root_form if we have seen it before during this post
-        #AND to update it to the changed value
-        #Only update IF the current value is a change AND IF it is the first change this POST
+        #TODO: hack to update CognateClass.root_form only if it has been changed during this POST
+        #Here: update root forms which were changed during this POST
         for k,v in cogclass_changed_rootform_map.items():
             cogclass = CognateClass.objects.get(**{'id': int(k)})
             cogclass.root_form = v
