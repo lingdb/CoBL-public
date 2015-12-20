@@ -32,7 +32,6 @@
 		      <th>Level 1 <br> branch</th>
 		      <th>Level 2 <br> branch</th>
 		      <th>Representative <br>
-		      	<input type="button" value="clear all" onclick='UncheckAll();' />
 		      </th>
 		      <th>No. <br> Lexemes</th>
 		    </tr>
@@ -43,7 +42,7 @@
 		    <td>{{ forloop.counter }}</td>
 		      <td>
 		        <a href="{% url 'language-report' language.ascii_name.data %}" alt="view lexeme list" title="View wordlist list for {{ language.utf8_name.data }}">
-		          {% form_field language.ascii_name class="readonly" %}
+		          {% form_field language.ascii_name class="language_name" %}
 		        </a>
 		        <a href="{% url 'language-edit' language.ascii_name.data %}">
 		            <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit {{ language.utf8_name.data }} metadata" >

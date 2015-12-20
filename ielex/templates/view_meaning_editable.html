@@ -25,8 +25,7 @@
 		    <th>Orthog.</th>
 		    <th></th>
 		    <th>Translit.</th>
-		    <th>Not<br>Swad.<br>
-		    	<input type="button" value="clear" onclick='UncheckAll();' />
+		    <th>Not<br>Swh<br>
 			</th>
 		    <th>PhoneMic</th>
 		    <th></th>
@@ -48,7 +47,7 @@
 		  <tr>
 		  	<td class="hidden">{{ lexeme.id }}</td>
 		    <td class="narrow">{% form_field lexeme.language_id class="readonlynarrow" id="narrowtext" %}</td>
-		    <td><a href="{% url 'language-report' lexeme.language_asciiname.data %}">{% form_field lexeme.language_utf8name class="medwide_readonly" id="linked" %}</a></td>
+		    <td><a href="{% url 'language-report' lexeme.language_asciiname.data %}">{% form_field lexeme.language_utf8name class="language_name" id="linked" %}</a></td>
 		      <td>{% form_field lexeme.source_form id="source_form" class="mediumtext" %}</td>
 		      <td>
 		      	<div>
