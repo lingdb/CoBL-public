@@ -521,6 +521,10 @@ def view_language_wordlist(request, language, wordlist):
                 lxm.data.get('transliteration', '') == vdict['transliteration'] and \
                 lxm.data.get('not_swadesh_term', '') == (v_dict['not_swadesh_term']=='y')
 
+    def list2ntuple(n, iterable, fillvals=None):
+        init_tuples = [iter(iterable)] * n
+        return izip_longest(fillvalue=fillvals, *init_tuples)
+
     # clean language name
     try:
         language = Language.objects.get(ascii_name=language)
@@ -547,6 +551,10 @@ def view_language_wordlist(request, language, wordlist):
     if (request.method == 'POST') and ('lex_form' in request.POST):
 
         request_form_dict = process_postrequest_form(request.POST)
+
+        #TODO: hack to update CognateClass.root_form only if it has been changed during this POST
+        #Here: initialise map for recording changed items plus cog class id
+        cogclass_changed_rootform_map = defaultdict(str)
         
         #TODO: need to check validity of input
         #if lex_ed_form.is_valid():
@@ -563,6 +571,17 @@ def view_language_wordlist(request, language, wordlist):
             try:
 
                 lexm = Lexeme.objects.get(**{'id': int(v_dict['id'])})
+
+                #Saving CognateClass.root_form
+                cogclassid_rootform = zip([i[0] for i in list2ntuple(2, lexm.denormalized_cognate_classes.split(','))], v_dict['root_form'].split(','))
+                for ccid,rtfrm in cogclassid_rootform:
+				    if ccid:
+                        cogclass = CognateClass.objects.get(**{'id': int(ccid)})
+
+                        #TODO: hack to update CognateClass.root_form only if it has been changed during this POST
+                        #Here: collect only forms which have been changed during this POST
+                        if cogclass.root_form!=rtfrm:
+                            cogclass_changed_rootform_map[ccid] = rtfrm
 
                 if not is_unchanged(lexm, v_dict):
     
@@ -588,6 +607,17 @@ def view_language_wordlist(request, language, wordlist):
 
             except Exception, e:
                 print 'Exception while accessing Lexeme object: ',e,'; POST items are: ',v_dict
+
+        #Now update the CognateClass
+        #TODO: hack to update CognateClass.root_form only if it has been changed during this POST
+        #Here: update root forms which were changed during this POST
+        for k,v in cogclass_changed_rootform_map.items():
+            cogclass = CognateClass.objects.get(**{'id': int(k)})
+            cogclass.root_form = v
+            try:
+                cogclass.save()
+            except Exception, e:
+                print 'Exception while saving CognateClass object: ',e
 
         return HttpResponseRedirect(reverse("view-language-wordlist",
                     args=[language.ascii_name, wordlist.name]))
@@ -637,6 +667,10 @@ def view_language_wordlist(request, language, wordlist):
             lex_row_form.gloss = lex.gloss
             lex_row_form.notes = lex.notes
             lex_row_form.number_cognate_coded = lex.number_cognate_coded
+
+            cogclass_ids = [i[0] for i in list2ntuple(2, lex.denormalized_cognate_classes.split(','))]
+            cogclass_map = {cc_id:CognateClass.objects.filter(id = int(cc_id))[0].root_form for cc_id in cogclass_ids if cc_id}
+            lex_row_form.root_form = ','.join([v for v in cogclass_map.values() if v])
 
             lex_row_form.phoneMic = lex.data.get('phoneMic', '')
             lex_row_form.transliteration  = lex.data.get('transliteration', '')
