@@ -575,7 +575,7 @@ def view_language_wordlist(request, language, wordlist):
                 #Saving CognateClass.root_form
                 cogclassid_rootform = zip([i[0] for i in list2ntuple(2, lexm.denormalized_cognate_classes.split(','))], v_dict['root_form'].split(','))
                 for ccid,rtfrm in cogclassid_rootform:
-				    if ccid:
+                    if ccid:
                         cogclass = CognateClass.objects.get(**{'id': int(ccid)})
 
                         #TODO: hack to update CognateClass.root_form only if it has been changed during this POST
