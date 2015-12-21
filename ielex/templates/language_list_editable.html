@@ -24,10 +24,10 @@
 		   	<tr class="mid-align">
 		      <th></th>
 		      <th>Name</th>
-		      <th>ISO-639-3</th>
-		      <th>Glottocode</th>
+		      <th>ISO</th>
+		      <th>Glotto</th>
 		      <th>Variety</th>
-		      <th>Sound <br> Comparisons <br> code</th>
+		      <th>SndComp <br> code</th>
 		      <th>Level 0 <br> branch</th>
 		      <th>Level 1 <br> branch</th>
 		      <th>Level 2 <br> branch</th>
@@ -50,10 +50,10 @@
 		      </td>
 		      <td>
 		      	<a href="http://en.wikipedia.org/wiki/ISO_639:{{ language.iso_code.data }}" target="_blank">
-		          {% form_field language.iso_code class="hyperformfield" %}
+		          {% form_field language.iso_code class="hyperformfield" id="verynarrowtext" %}
 		        </a>
 		      </td>
-		      <td>{% form_field language.glottocode %}</td>
+		      <td>{% form_field language.glottocode id="lowmediumtext" %}</td>
 		      <td>{% form_field language.variety %}</td>
 		      <td>{% form_field language.soundcompcode %}</td>
 		      <td></td>
