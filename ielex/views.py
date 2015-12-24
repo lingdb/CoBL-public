@@ -1280,8 +1280,7 @@ def view_cognateclasses(request, cognate_id=0, cognate_name=None):
             except Exception, e:
                 print 'Exception while accessing CognateClass object: ',e,'; problem items are: ',v_dict
         
-        return HttpResponseRedirect(reverse('edit-cogclass',
-                        args=[cognate_id]))
+        return HttpResponseRedirect(reverse('edit-cogclass', args=[cognate_id]))
 
     else:
         pass # TODO:
@@ -1319,8 +1318,6 @@ def view_cognateclasses(request, cognate_id=0, cognate_name=None):
             
             cogclass_row_form.root_language = lang#cc.data.get('root_language','')
             cogclass_row_form.loanword = cc.data.get('loanword','')
-            
-            print cogclass_row_form.root_language
             
             cogclass_table_form.cogclass.append_entry(cogclass_row_form)
         return cogclass_table_form
