@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load lexicon_utils %}
+{% load wtforms %}
+
+{% block title %}Cognate {% firstof cognate_class.root_form cognate_class.id %}{% endblock %}
+
+{% block top %}<h1>Cognate class {% firstof cognate_class.root_form cognate_class.id %}</h1>{% endblock %}
+
+{% block content %}
+
+	<form action="" method="POST" name="cogclass_ed_form" id="cogclass_ed_form">{% csrf_token %}
+	
+		<div class="lex_form">
+		<input type="submit" value="Submit" name="cogclass_form"> <br> <a href="{% url 'edit-cogclass' cognate_class.id %}"> Cancel</a><br>
+		</div>
+	
+		<table id="editable">
+			<tr class="mid-align">
+		      <th>ID</th>
+		      <th>Alias</th>
+		      <!-- th>Modified</th-->
+		      <th>Name</th>
+		      <th>Root</th>
+		      <th>Root <br> Language</th>
+		      <th>Loanword</th>
+		      <th>Notes</th>
+		    </tr>
+		  <tbody>
+		    {% for cc in cogclass_editable_form.cogclass %}
+		  <tr>
+		      <td>{% form_field cc.cogclass_id class="readonlynarrow" id="narrowtext" %}</td>
+		      <td>{% form_field cc.alias id="narrowtext" %}</td>
+		      <td>{% form_field cc.cogclass_name class="mediumtext" %}</td>
+		      <td>{% form_field cc.root_form class="mediumtext" %}</td>
+		      <td><a href="{% url 'language-report' cc.root_language.data %}">{% form_field cc.root_language class="language_name" id="linked" %}</a></td>
+		      <td>{% form_field cc.loanword class="mediumtext" %}</td>
+	      	  <td class="widetext">{% form_field cc.notes class="widetext" id="widetext" %}</td>
+		    </tr>
+		  {% endfor %}
+		  </tbody>
+		</table>
+	</form>
+
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+{# include "snippets/change_sort_order.html" #}
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

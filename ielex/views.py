@@ -1228,37 +1228,8 @@ def view_cognateclasses(request, cognate_id=0, cognate_name=None):
                 cc.data.get('root_language', '') == v_dict['root_language'] and \
                 cc.data.get('loanword', '') == (v_dict['loanword']=='y')
 
-    def ccdb_instances_equal(obj1, obj2):
-        return  obj1.alias == obj2.alias and \
-                obj1.name == obj2.name and \
-                obj1.root_form == obj2.root_form and \
-                obj1.data.get('root_language', '') == obj2.data.get('root_language', '') and \
-                obj1.data.get('loanword', '') == obj2.data.get('loanword', '')
-
 
     if (request.method == 'POST') and 'cogclass_form' in request.POST:#is_meaningform(request.POST):
-    
-        '''
-        TODO: Need to move to a more Django-style set-up in future, using django-forms -- some possible, so far false, starts:
-    
-        form = EditMeaningTableForm(request.POST)
-    
-        #request_form_dict.keys():
-        if "cancel" in request.POST: # has to be tested before data is cleaned
-                
-            return HttpResponseRedirect(reverse("view-language-wordlist",
-                        args=[language.ascii_name, wordlist.name]))
-        #print form#.is_valid()
-        lexeme = Lexeme.objects.create(**form)
-    
-        try:
-            lexeme.save()
-        except Lexeme.DoesNotExist:
-            form = AddLexemeForm()
-                
-        return HttpResponseRedirect(reverse("view-language-wordlist",
-                        args=[language.ascii_name, wordlist.name]))
-        '''
     
         request_form_dict = process_postrequest_form(request.POST)
         
@@ -1303,8 +1274,6 @@ def view_cognateclasses(request, cognate_id=0, cognate_name=None):
                     except Exception, e:#Lexeme.DoesNotExist:
                         print 'Exception while saving CognateClass object: ',e
                     
-                    print test_update_result(CognateClass, cogclass)
-                    
                 else:
                     pass
                     
@@ -1339,10 +1308,6 @@ def view_cognateclasses(request, cognate_id=0, cognate_name=None):
             
             lang = cj.lexeme.language
             cc = cj.cognate_class
-            
-            obj1 = CognateClass.objects.get(pk=cognate_class.pk)
-            obj2 = CognateClass.objects.get(pk=cc.pk)
-            print ccdb_instances_equal(obj1,obj2)
             
             cogclass_row_form = CogClassRowForm()
             cogclass_row_form.cogclass_id = int(cc.id)
