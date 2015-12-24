@@ -1162,7 +1162,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             lex_row_form.language = lex.language
             lex_row_form.language_asciiname = lex.language.ascii_name
             lex_row_form.language_utf8name = lex.language.utf8_name
-            lex_row_form.cognate_class_links = lex.get_cognate_class_links
+            #lex_row_form.cognate_class_links = lex.get_cognate_class_links
             lex_row_form.meaning_id = lex.meaning.id
             lex_row_form.meaning = lex.meaning
             lex_row_form.source_form = lex.source_form
@@ -1170,6 +1170,13 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             lex_row_form.gloss = lex.gloss
             lex_row_form.notes = lex.notes
             lex_row_form.number_cognate_coded = lex.number_cognate_coded
+
+            #Create links to link to relevant items in /cognateclass/[COGNATE_ID]/
+			#Add this to form
+            cogclass_link_list = ['<a href="/cognateclass/%s/">%s</a>' % (ccid,cclab) 
+                                  for ccid,cclab in list2ntuple(2, lex.denormalized_cognate_classes.split(','))
+                                  ]
+            lex_row_form.cogclass_link = SafeString(', '.join(cogclass_link_list))
 
             #Adding CognateClass.root_form to the form
             cogclass_ids = [i[0] for i in list2ntuple(2, lex.denormalized_cognate_classes.split(','))]
@@ -1201,6 +1208,178 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                             }
                            )
 
+						   
+@csrf_protect
+def view_cognateclasses(request, cognate_id=0, cognate_name=None):
+    
+    def process_postrequest_form(multidict):
+        res = defaultdict(list)
+        for key in multidict.keys():
+            if not(key in ['cogclass_form', 'csrfmiddlewaretoken']):
+                outer_key = ''.join(key.split('-')[0:2])
+                inner_key = key.split('-')[-1]
+                res[outer_key].append((inner_key, multidict.getlist(key)[0]))
+        return res
+
+    def is_unchanged_cc(cc, vdict):        
+        return  cc.alias == v_dict['alias'] and \
+                cc.name == v_dict['cogclass_name'] and \
+                cc.root_form == v_dict['root_form'] and \
+                cc.data.get('root_language', '') == v_dict['root_language'] and \
+                cc.data.get('loanword', '') == (v_dict['loanword']=='y')
+
+    def ccdb_instances_equal(obj1, obj2):
+        return  obj1.alias == obj2.alias and \
+                obj1.name == obj2.name and \
+                obj1.root_form == obj2.root_form and \
+                obj1.data.get('root_language', '') == obj2.data.get('root_language', '') and \
+                obj1.data.get('loanword', '') == obj2.data.get('loanword', '')
+
+
+    if (request.method == 'POST') and 'cogclass_form' in request.POST:#is_meaningform(request.POST):
+    
+        '''
+        TODO: Need to move to a more Django-style set-up in future, using django-forms -- some possible, so far false, starts:
+    
+        form = EditMeaningTableForm(request.POST)
+    
+        #request_form_dict.keys():
+        if "cancel" in request.POST: # has to be tested before data is cleaned
+                
+            return HttpResponseRedirect(reverse("view-language-wordlist",
+                        args=[language.ascii_name, wordlist.name]))
+        #print form#.is_valid()
+        lexeme = Lexeme.objects.create(**form)
+    
+        try:
+            lexeme.save()
+        except Lexeme.DoesNotExist:
+            form = AddLexemeForm()
+                
+        return HttpResponseRedirect(reverse("view-language-wordlist",
+                        args=[language.ascii_name, wordlist.name]))
+        '''
+    
+        request_form_dict = process_postrequest_form(request.POST)
+        
+        #TODO: need to check validity of input
+        #if lex_ed_form.is_valid():
+        v_dict = defaultdict(str)
+        for k,v in request_form_dict.items():
+                
+            v_dict = dict(v)
+    
+            #TODO: temporary fix for problem with HTML checkboxes,
+            #where these return nothing if box unchecked
+            #FIX: create validation procedure for these forms. 
+            #Refernces:
+            #(1) https://github.com/wtforms/wtforms/issues/188
+            #(2) https://github.com/wtforms/wtforms/issues/141
+            if not('loanword' in v_dict.keys()):
+                v_dict['loanword'] = ''
+                
+            try:
+                #NB. the following works and is an interesting instance of updating the database, 
+                #but we probably don't want to do this specific instance. 
+                #>meang = Meaning.objects.create(**{'gloss':v_dict['meaning']})
+                
+                cogclass = CognateClass.objects.get(**{'id': int(v_dict['cogclass_id'])})
+            
+                if not is_unchanged_cc(cogclass, v_dict):
+                    
+                    cogclass.alias = v_dict['alias']
+                    #cogclass.modified = v_dict['modified']
+                    cogclass.notes = v_dict['notes']
+                    cogclass.name = v_dict['cogclass_name']
+                    cogclass.root_form = v_dict['root_form']
+
+                    cogclass.data = { 
+                                     'root_language': v_dict['root_language'],
+                                     'loanword': (v_dict['loanword']=='y')
+                                     }
+
+                    try:
+                        cogclass.save()#force_update=True) # TODO: WHY is this necessary? Because no explicit ID in the transaction?
+                    except Exception, e:#Lexeme.DoesNotExist:
+                        print 'Exception while saving CognateClass object: ',e
+                    
+                    print test_update_result(CognateClass, cogclass)
+                    
+                else:
+                    pass
+                    
+            except Exception, e:
+                print 'Exception while accessing CognateClass object: ',e,'; problem items are: ',v_dict
+        
+        return HttpResponseRedirect(reverse('edit-cogclass',
+                        args=[cognate_id]))
+
+    else:
+        pass # TODO:
+
+
+    #cogclass_ids = [i[0] for i in list2ntuple(2, lex.denormalized_cognate_classes.split(','))]
+    #cogclass_map = {cc_id:CognateClass.objects.filter(id = int(cc_id))[0].root_form for cc_id in cogclass_ids if cc_id}
+
+    if cognate_id:
+        cognate_class = CognateClass.objects.get(id=int(cognate_id))
+    elif cognate_name:
+        cognate_class = CognateClass.objects.get(name=cognate_name)
+
+
+    def fill_cogclass_table_from_DB(cj_ordered):
+        
+        cogclass_table_form = AddCogClassTableForm()
+
+        # Pop off any blank fields already in lexemes
+        while len(cogclass_table_form.cogclass) > 0:
+            cogclass_table_form.cogclass.pop_entry()
+    
+        for cj in cj_ordered:
+            
+            lang = cj.lexeme.language
+            cc = cj.cognate_class
+            
+            obj1 = CognateClass.objects.get(pk=cognate_class.pk)
+            obj2 = CognateClass.objects.get(pk=cc.pk)
+            print ccdb_instances_equal(obj1,obj2)
+            
+            cogclass_row_form = CogClassRowForm()
+            cogclass_row_form.cogclass_id = int(cc.id)
+            cogclass_row_form.alias = cc.alias
+            #cogclass_row_form.modified = cc.modified
+            cogclass_row_form.cogclass_name = cc.name
+            cogclass_row_form.root_form = cc.root_form
+            cogclass_row_form.notes = cc.notes
+            
+            cogclass_row_form.root_language = lang#cc.data.get('root_language','')
+            cogclass_row_form.loanword = cc.data.get('loanword','')
+            
+            print cogclass_row_form.root_language
+            
+            cogclass_table_form.cogclass.append_entry(cogclass_row_form)
+        return cogclass_table_form
+
+    # This is a clunky way of sorting; currently assumes LanguageList
+    # 'all' (maybe make this configurable?)
+    language_list = LanguageList.objects.get(name=LanguageList.DEFAULT)
+    cj_ordered = []
+    # for language_id in language_list.language_id_list:
+    for language in language_list.languages.all().order_by("languagelistorder"):
+        cj = cognate_class.cognatejudgement_set.filter(lexeme__language=language)
+        cj_ordered.extend(list(cj))
+    
+    cogclass_editabletable_form = fill_cogclass_table_from_DB(cj_ordered)
+    
+    return render_template(
+                            request, "view_cognateclass_editable.html",
+                            {
+                             "cognate_class": cognate_class,
+                             "cogclass_editable_form":cogclass_editabletable_form
+                            }
+                           )
+
+						   
 ##################################################################
 
 

@@ -69,7 +69,7 @@
 		      <td>{% form_field lexeme.notes class="widetext" %}</td>
 			  <td>
 			  	<div class="narrow_form"> 
-			      {{ lexeme.cognate_class_links.data }}
+			      {{ lexeme.cogclass_link.data }}
 			      {% if user.is_authenticated %}
 			        {% ifnotequal add_cognate_judgement|asint lexeme.id.data|asint %}
 			        <a href="{% url 'lexeme-add-cognate' lexeme.id.data %}#lexeme_{{ lexeme.id.data }}">

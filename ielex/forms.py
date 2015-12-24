@@ -241,6 +241,7 @@ class LexemeRowForm(Form):
     gloss = StringField('Gloss', validators = [DataRequired()])
     number_cognate_coded = IntegerField('Count Coded Cognates', validators = [DataRequired()])
     notes = TextField('Notes', validators = [DataRequired()])
+    cogclass_link = TextField('CogClass Links', validators = [DataRequired()])
 	
     #Components for copying buttons
     source_form_2_transliteration = BooleanField('Source Form to Transliteration', validators = [DataRequired()])
@@ -258,6 +259,25 @@ class LexemeRowForm(Form):
 
 class AddLexemesTableForm(Form):
     lexemes = FieldList(FormField(LexemeRowForm), min_entries = 5) # Default of at least 5 blank fields
+
+
+class CogClassRowForm(WTForm):
+    cogclass_id = IntegerField('Cog Class Id', validators = [DataRequired()])
+    alias = StringField('Cog Class Alias', validators = [DataRequired()])
+    modified = DateTimeField('Date Modified', validators = [DataRequired()])
+    cogclass_name = StringField('Cog Class Name', validators = [DataRequired()])
+    root_form = StringField('Cog Class Root', validators = [DataRequired()])
+    root_language = StringField('Root Language', validators = [DataRequired()])
+    loanword = BooleanField('Loanword', validators = [DataRequired()])
+    notes = TextField('Notes', validators = [DataRequired()])
+    
+    def __init__(self, *args, **kwargs):
+        super(CogClassRowForm, self).__init__(*args, **kwargs)
+        read_only(self.cogclass_id)
+        read_only(self.alias)
+
+class AddCogClassTableForm(WTForm):
+    cogclass = FieldList(FormField(CogClassRowForm), min_entries = 5) # Default of at least 5 blank fields
 
 
 class LexemeTableFilterForm(forms.ModelForm):
