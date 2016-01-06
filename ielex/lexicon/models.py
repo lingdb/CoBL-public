@@ -1,4 +1,5 @@
 from __future__ import division
+from itertools import izip
 from string import uppercase, lowercase
 from django.db import models
 from django.db.models import Max, F
@@ -110,6 +111,33 @@ class Language(models.Model):
 
     def __unicode__(self):
         return self.utf8_name
+
+    def validateBranchLevels(self):
+        levels = ['level0','level1','level2']
+        # Making sure all levels exist and have an int in them:
+        for level in levels:
+            if level in self.altname:
+                l = self.altname[level]
+                if not isinstance(l, int):
+                    try:
+                        l = int(l, 10)
+                    except ValueError:
+                        l = 0
+                    self.altname[level] = l
+            else:
+                self.altname[level] = 0;
+        # Making sure levels map to an entry of LanguageBranches:
+        mustHave = {}
+        for level, field in izip(levels, ['family_ix', 'level1_branch_ix']):
+            l = self.altname[level]
+            if l == 0:
+                break
+            mustHave[field] = l
+        exists = LanguageBranches.objects.filter(**mustHave).count() > 0
+        # Set all levels = 0 if LanguageBranches don't exist:
+        if not exists:
+            for level in levels:
+                self.altname[level] = 0
 
     class Meta:
         ordering = ["ascii_name"]

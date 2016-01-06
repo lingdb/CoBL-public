@@ -308,7 +308,10 @@ def view_language_list(request, language_list=None):
                 lang.altname.get('glottocode', '') == vdict['glottocode'] and \
                 lang.altname.get('variety', '') == vdict['variety'] and \
                 lang.altname.get('soundcompcode', '') == vdict['soundcompcode'] and \
-                lang.altname.get('representative', '') == (v_dict['representative']=='y')
+                lang.altname.get('representative', '') == (v_dict['representative']=='y') and \
+                lang.altname.get('level0', '') == v_dict['level0'] and \
+                lang.altname.get('level1', '') == v_dict['level1'] and \
+                lang.altname.get('level2', '') == v_dict['level2']
 
     if request.method == 'POST' and not ('langlist_form' in request.POST):
         form = ChooseLanguageListForm(request.POST)
@@ -353,12 +356,14 @@ def view_language_list(request, language_list=None):
                                  'glottocode': v_dict['glottocode'],
                                  'variety': v_dict['variety'],
                                  'soundcompcode': v_dict['soundcompcode'],
-                                 #'level0': v_dict['level0'],
-                                 #'level1': v_dict['level1'],
-                                 #'level2': v_dict['level2'],
+                                 'level0': v_dict['level0'],
+                                 'level1': v_dict['level1'],
+                                 'level2': v_dict['level2'],
                                  'representative': (v_dict['representative']=='y')
                                  }
     
+                    lang.validateBranchLevels()
+
                     try:
                         lang.save()
                     except Exception, e:
@@ -394,9 +399,9 @@ def view_language_list(request, language_list=None):
             langlist_row_form.glottocode = lang.altname.get('glottocode', '')
             langlist_row_form.variety = lang.altname.get('variety', '')
             langlist_row_form.soundcompcode = lang.altname.get('soundcompcode', '')
-            #langlist_row_form.level0 = lang.altname.get('level0', '')
-            #langlist_row_form.level1 = lang.altname.get('level1', '')
-            #langlist_row_form.level2 = lang.altname.get('level2', '')
+            langlist_row_form.level0 = lang.altname.get('level0', '')
+            langlist_row_form.level1 = lang.altname.get('level1', '')
+            langlist_row_form.level2 = lang.altname.get('level2', '')
             langlist_row_form.representative = lang.altname.get('representative', '')
             
             langlist_table_form.langlist.append_entry(langlist_row_form)
