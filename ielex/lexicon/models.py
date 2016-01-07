@@ -133,9 +133,8 @@ class Language(models.Model):
             if l == 0:
                 break
             mustHave[field] = l
-        exists = LanguageBranches.objects.filter(**mustHave).count() > 0
         # Set all levels = 0 if LanguageBranches don't exist:
-        if not exists:
+        if not LanguageBranches.objects.filter(**mustHave).exists():
             for level in levels:
                 self.altname[level] = 0
 
