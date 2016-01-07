@@ -11,6 +11,7 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_delete
 from django.db.backends.signals import connection_created
 from django.utils.safestring import SafeString
+from django.utils.encoding import python_2_unicode_compatible
 # from django.contrib import admin
 import jsonfield
 import reversion
