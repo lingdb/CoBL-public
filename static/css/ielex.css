@@ -42,6 +42,7 @@ td.rowname { font-weight: bold;	color: #360; }
 td.narrow { width: 20px; }
 th.hidden { display: none;}
 td.hidden { display: none;}
+td.mid-align { text-align: center; }
 td.widetext { display: table-cell;}
 div.Orightarrow { width: 35px; color: green; font-size: 15px; }
 div.narrow_form { width: 70px; font-size: 15px; padding: 5px 0 5px 5px;   
