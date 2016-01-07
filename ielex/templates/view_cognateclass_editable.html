@@ -4,16 +4,16 @@
 {% load lexicon_utils %}
 {% load wtforms %}
 
-{% block title %}Cognate {% firstof cognate_class.root_form cognate_class.id %}{% endblock %}
+{% block title %}Cognate classes for {{ meaning }}{% endblock %}
 
-{% block top %}<h1>Cognate class {% firstof cognate_class.root_form cognate_class.id %}</h1>{% endblock %}
+{% block top %}<h1>Cognate classes for {{ meaning }}</h1>{% endblock %}
 
 {% block content %}
 
 	<form action="" method="POST" name="cogclass_ed_form" id="cogclass_ed_form">{% csrf_token %}
 	
 		<div class="lex_form">
-		<input type="submit" value="Submit" name="cogclass_form"> <br> <a href="{% url 'edit-cogclass' cognate_class.id %}"> Cancel</a><br>
+		<input type="submit" value="Submit" name="cogclass_form"> <br> <a href="{% url 'edit-cogclasses' meaning %}"> Cancel</a><br>
 		</div>
 	
 		<table id="editable">
@@ -34,7 +34,12 @@
 		      <td>{% form_field cc.alias id="narrowtext" %}</td>
 		      <td>{% form_field cc.cogclass_name class="mediumtext" %}</td>
 		      <td>{% form_field cc.root_form class="mediumtext" %}</td>
-		      <td><a href="{% url 'language-report' cc.root_language.data %}">{% form_field cc.root_language class="language_name" id="linked" %}</a></td>
+		      <td>{% if cc.root_language.data %}
+		      		<a href="{% url 'language-report' cc.root_language.data %}">{% form_field cc.root_language class="language_name" id="linked" %}</a>
+		      		{% else %}
+		      		{% form_field cc.root_language class="language_name" id="linked" %}
+		      		{% endif %}
+		      </td>
 		      <td>{% form_field cc.loanword class="mediumtext" %}</td>
 	      	  <td class="widetext">{% form_field cc.notes class="widetext" id="widetext" %}</td>
 		    </tr>
