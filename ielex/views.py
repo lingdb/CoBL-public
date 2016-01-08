@@ -1195,11 +1195,11 @@ def view_cognateclasses(request, meaning):
                 res[outer_key].append((inner_key, multidict.getlist(key)[0]))
         return res
 
-    def is_unchanged_cc(cc, vdict):        
+    def is_unchanged_cc(cc, vdict):
         return  cc.alias == v_dict['alias'] and \
-                cc.name == v_dict['cogclass_name'] and \
                 cc.root_form == v_dict['root_form'] and \
-                cc.data.get('root_language', '') == v_dict['root_language'] and \
+                cc.root_language == v_dict['root_language'] and \
+                cc.notes == v_dict['notes'] and \
                 cc.data.get('loanword', '') == (v_dict['loanword']=='y')
 
 
