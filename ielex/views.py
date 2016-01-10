@@ -1293,11 +1293,13 @@ def view_cognateclasses(request, meaning):
         ccl_ordered_extend = ccl_ordered.extend
         coglist_ordered = cognateclass_list.cognateclasses.all().order_by("cognateclasslistorder")
         CognateClass_objects_filter = CognateClass.objects.filter
+        cogclass_bymeaning = CognateClass.objects.filter(cognatejudgement__lexeme__meaning__gloss=meaning)
+        cogclass_bymeaning_ids = [i.pk for i in cogclass_bymeaning]
         for cogclass in coglist_ordered:
             cogclass_pk = cogclass.pk
-            cc = CognateClass_objects_filter(pk=cogclass_pk, 
-                    cognatejudgement__lexeme__meaning__gloss=meaning).distinct()
-            ccl_ordered_extend(list(cc))
+            if cogclass_pk in cogclass_bymeaning_ids:
+                cc = CognateClass_objects_filter(pk=cogclass_pk).distinct()
+                ccl_ordered_extend(list(cc))
         return ccl_ordered
 
     ccl_ordered = iter_orderedcoglist()
