@@ -1287,14 +1287,21 @@ def view_cognateclasses(request, meaning):
     # This is a clunky way of sorting; currently assumes LanguageList
     # 'all' (maybe make this configurable?)
     cognateclass_list = CognateClassList.objects.get(name=CognateClassList.DEFAULT)
-    cc_ordered = []
 
-    for cogclass in cognateclass_list.cognateclasses.all().order_by("cognateclasslistorder"):
-        cc = CognateClass.objects.filter(pk=cogclass.pk,
-                cognatejudgement__lexeme__meaning__gloss=meaning).distinct()
-        cc_ordered.extend(list(cc))
-    
-    cogclass_editabletable_form = fill_cogclass_table_from_DB(cc_ordered)
+    def iter_orderedcoglist(): 
+        ccl_ordered = []
+        ccl_ordered_extend = ccl_ordered.extend
+        coglist_ordered = cognateclass_list.cognateclasses.all().order_by("cognateclasslistorder")
+        CognateClass_objects_filter = CognateClass.objects.filter
+        for cogclass in coglist_ordered:
+            cogclass_pk = cogclass.pk
+            cc = CognateClass_objects_filter(pk=cogclass_pk, 
+                    cognatejudgement__lexeme__meaning__gloss=meaning).distinct()
+            ccl_ordered_extend(list(cc))
+        return ccl_ordered
+
+    ccl_ordered = iter_orderedcoglist()
+    cogclass_editabletable_form = fill_cogclass_table_from_DB(ccl_ordered)
     
     return render_template(
                             request, "view_cognateclass_editable.html",
