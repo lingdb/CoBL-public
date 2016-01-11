@@ -20,11 +20,12 @@
 			<tr class="mid-align">
 		      <th>ID</th>
 		      <th>Alias</th>
-		      <!-- th>Modified</th-->
-		      <th>Name</th>
 		      <th>Root</th>
 		      <th>Root <br> Language</th>
-		      <th>Loanword</th>
+		      <th>Gloss</th>
+		      <!-- th>Modified</th-->
+		      <!-- th>Name</th-->
+		      <th>Loan</th>
 		      <th>Notes</th>
 		    </tr>
 		  <tbody>
@@ -32,7 +33,6 @@
 		  <tr>
 		      <td>{% form_field cc.cogclass_id class="readonlynarrow" id="narrowtext" %}</td>
 		      <td>{% form_field cc.alias id="narrowtext" %}</td>
-		      <td>{% form_field cc.cogclass_name class="mediumtext" %}</td>
 		      <td>{% form_field cc.root_form class="mediumtext" %}</td>
 		      <td>{% if cc.root_language.data %}
 		      		<a href="{% url 'language-report' cc.root_language.data %}">{% form_field cc.root_language class="language_name" id="linked" %}</a>
@@ -40,7 +40,8 @@
 		      		{% form_field cc.root_language class="language_name" id="linked" %}
 		      		{% endif %}
 		      </td>
-		      <td>{% form_field cc.loanword class="mediumtext" %}</td>
+		      <td>{% form_field cc.gloss_in_root_lang class="mediumtext" %}</td>
+		      <td>{% form_field cc.loanword %}</td>
 	      	  <td class="widetext">{% form_field cc.notes class="widetext" id="widetext" %}</td>
 		    </tr>
 		  {% endfor %}

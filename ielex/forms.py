@@ -269,6 +269,7 @@ class CogClassRowForm(WTForm):
     cogclass_name = StringField('Cog Class Name', validators = [DataRequired()])
     root_form = StringField('Cog Class Root', validators = [DataRequired()])
     root_language = StringField('Root Language', validators = [DataRequired()])
+    gloss_in_root_lang = StringField('Gloss in Root Language', validators = [DataRequired()])
     loanword = BooleanField('Loanword', validators = [DataRequired()])
     notes = TextField('Notes', validators = [DataRequired()])
     
@@ -281,13 +282,13 @@ class CogClassRowForm(WTForm):
         cogclass_form_vals = (
                               str(self.cogclass_id),
                               self.alias,
-                              self.cogclass_name,
                               self.root_form,#.encode('ascii', 'replace'),
                               self.root_language,
+                              self.gloss_in_root_lang,
                               str(self.loanword),
                               self.notes
                               )
-        return '( id=%s, alias=%s, name=%s, root=%s, language=%s, loanword=%s, notes=%s )' % cogclass_form_vals
+        return '( id=%s, root=%s, language=%s, gloss=%s, alias=%s, loanword=%s, notes=%s )' % cogclass_form_vals
 
 class AddCogClassTableForm(WTForm):
     cogclass = FieldList(FormField(CogClassRowForm), min_entries = 5) # Default of at least 5 blank fields

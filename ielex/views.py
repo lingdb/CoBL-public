@@ -1199,6 +1199,7 @@ def view_cognateclasses(request, meaning):
         return  cc.alias == v_dict['alias'] and \
                 cc.root_form == v_dict['root_form'] and \
                 cc.root_language == v_dict['root_language'] and \
+                cc.data.get('gloss_in_root_lang', '') == v_dict['gloss_in_root_lang'] and \
                 cc.notes == v_dict['notes'] and \
                 cc.data.get('loanword', '') == (v_dict['loanword']=='y')
 
@@ -1235,11 +1236,12 @@ def view_cognateclasses(request, meaning):
                     cogclass.alias = v_dict['alias']
                     #cogclass.modified = v_dict['modified']
                     cogclass.notes = v_dict['notes']
-                    cogclass.name = v_dict['cogclass_name']
+
                     cogclass.root_form = v_dict['root_form']
+                    cogclass.root_language = v_dict['root_language']
 
                     cogclass.data = { 
-                                     'root_language': v_dict['root_language'],
+                                     'gloss_in_root_lang': v_dict['gloss_in_root_lang'],
                                      'loanword': (v_dict['loanword']=='y')
                                      }
 
@@ -1273,13 +1275,11 @@ def view_cognateclasses(request, meaning):
             cogclass_row_form = CogClassRowForm()
             cogclass_row_form.cogclass_id = int(cc.id)
             cogclass_row_form.alias = cc.alias
-            #cogclass_row_form.modified = cc.modified
-            cogclass_row_form.cogclass_name = cc.name
             cogclass_row_form.root_form = cc.root_form
-            cogclass_row_form.notes = cc.notes
-            
             cogclass_row_form.root_language = cc.root_language
             cogclass_row_form.loanword = cc.data.get('loanword','')
+            cogclass_row_form.gloss_in_root_lang = cc.data.get('gloss_in_root_lang', '')
+            cogclass_row_form.notes = cc.notes
 
             cogclass_table_form.cogclass.append_entry(cogclass_row_form)
         return cogclass_table_form
