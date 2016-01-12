@@ -19,30 +19,30 @@
 		<table id="editable">
 			<tr class="mid-align">
 		      <th>ID</th>
-		      <th>Alias</th>
+		      <th>Cog.<br>Alias</th>
 		      <th>Root</th>
-		      <th>Root <br> Language</th>
-		      <th>Gloss</th>
+		      <th>Root<br>Language</th>
+		      <th>Root<br>Gloss</th>
 		      <!-- th>Modified</th-->
 		      <!-- th>Name</th-->
-		      <th>Loan</th>
-		      <th>Notes</th>
+		      <th>Root<br>Notes</th>
+		      <th>Loan<br>Event</th>
 		    </tr>
 		  <tbody>
-		    {% for cc in cogclass_editable_form.cogclass %}
-		  <tr>
+      {% for cc in cogclass_editable_form.cogclass %}
+        <tr>
 		      <td>{% form_field cc.cogclass_id class="readonlynarrow" id="narrowtext" %}</td>
-		      <td>{% form_field cc.alias id="narrowtext" %}</td>
+		      <td>{% form_field cc.alias class="readonlynarrow" id="narrowtext" %}</td>
 		      <td>{% form_field cc.root_form class="mediumtext" %}</td>
 		      <td>{% if cc.root_language.data %}
-		      		<a href="{% url 'language-report' cc.root_language.data %}">{% form_field cc.root_language class="language_name" id="linked" %}</a>
+		      		<a href="{% url 'language-report' cc.root_language.data %}">{% form_field cc.root_language id="linked" %}</a>
 		      		{% else %}
-		      		{% form_field cc.root_language class="language_name" id="linked" %}
+		      		{% form_field cc.root_language id="linked" %}
 		      		{% endif %}
 		      </td>
 		      <td>{% form_field cc.gloss_in_root_lang class="mediumtext" %}</td>
+          <td class="widetext">{% form_field cc.notes class="widetext" id="widetext" %}</td>
 		      <td>{% form_field cc.loanword %}</td>
-	      	  <td class="widetext">{% form_field cc.notes class="widetext" id="widetext" %}</td>
 		    </tr>
 		  {% endfor %}
 		  </tbody>
