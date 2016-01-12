@@ -74,7 +74,8 @@ form input[class=readonlynarrow] { width: 25px; background-color: #ccc; margin: 
 form input#lowmediumtext { width: 65px; }
 form input#narrowtext { width: 35px; }
 form input#verynarrowtext { width: 25px; }
-form input#linked { color: blue; }
+form input#linked,
+form input.linked { color: blue; }
 
 form input[class=leftcheckarrow] { display: none; padding: 0 0 0 0; margin: 0 0 0 0; float:left;}
 form label.left {float:left; height: 18px; width: 18px; }

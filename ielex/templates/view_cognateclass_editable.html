@@ -36,12 +36,7 @@
 		      <td>{% form_field cc.cogclass_id class="readonlynarrow" id="narrowtext" %}</td>
 		      <td><a href="{{cc.object_data.absolute_url}}">{% form_field cc.alias class="readonlynarrow" id="narrowtext" %}</a></td>
 		      <td>{% form_field cc.root_form class="mediumtext" %}</td>
-		      <td>{% if cc.root_language.data %}
-		      		<a href="{% url 'language-report' cc.root_language.data %}">{% form_field cc.root_language id="linked" %}</a>
-		      		{% else %}
-		      		{% form_field cc.root_language id="linked" %}
-		      		{% endif %}
-		      </td>
+		      <td>{% form_field cc.root_language class="linked" %}</td>
 		      <td>{% form_field cc.gloss_in_root_lang class="mediumtext" %}</td>
           <td class="widetext">{% form_field cc.notes class="widetext" id="widetext" %}</td>
 		      <td>{% form_field cc.loanword %}</td>
