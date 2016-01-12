@@ -4,7 +4,7 @@
       <li><a href="{{ prev_page }}">previous page</a></li>
     {% endif %}
     <li><a href={% url 'view-language-list' current_language_list_name %}>view languages</a></li>
-    <li><a href={% url 'view-wordlist' current_wordlist_name %}>view wordlist</a></li>
+    <li><a href={% url 'view-wordlist' current_wordlist_name %}>view meanings</a></li>
     {% if semantic_domains %}
       <li><a href={% url 'view-domains' %}>view domains</a></li>
     {% endif %}
