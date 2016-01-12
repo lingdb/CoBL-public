@@ -272,6 +272,8 @@ class CogClassRowForm(WTForm):
     gloss_in_root_lang = StringField('Gloss in Root Language', validators = [DataRequired()])
     loanword = BooleanField('Loanword', validators = [DataRequired()])
     notes = TextField('Notes', validators = [DataRequired()])
+    loan_source = TextField('Loan Source', validators = [DataRequired()])
+    loan_notes = TextField('Loan Notes', validators = [DataRequired()])
     
     def __init__(self, *args, **kwargs):
         super(CogClassRowForm, self).__init__(*args, **kwargs)

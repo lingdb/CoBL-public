@@ -27,6 +27,8 @@
 		      <!-- th>Name</th-->
 		      <th>Root<br>Notes</th>
 		      <th>Loan<br>Event</th>
+		      <th>Loan<br>Source</th>
+		      <th>Loan<br>Notes</th>
 		    </tr>
 		  <tbody>
       {% for cc in cogclass_editable_form.cogclass %}
@@ -43,6 +45,8 @@
 		      <td>{% form_field cc.gloss_in_root_lang class="mediumtext" %}</td>
           <td class="widetext">{% form_field cc.notes class="widetext" id="widetext" %}</td>
 		      <td>{% form_field cc.loanword %}</td>
+          <td>{% form_field cc.loan_source %}</td>
+          <td class="widetext">{% form_field cc.loan_notes %}</td>
 		    </tr>
 		  {% endfor %}
 		  </tbody>

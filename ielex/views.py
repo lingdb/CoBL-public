@@ -1201,7 +1201,9 @@ def view_cognateclasses(request, meaning):
                 cc.root_language == v_dict['root_language'] and \
                 cc.data.get('gloss_in_root_lang', '') == v_dict['gloss_in_root_lang'] and \
                 cc.notes == v_dict['notes'] and \
-                cc.data.get('loanword', '') == (v_dict['loanword']=='y')
+                cc.data.get('loanword', '') == (v_dict['loanword']=='y') and \
+                cc.data.get('loan_source', '') == v_dict['loan_source'] and \
+                cc.data.get('loan_notes', '') == v_dict['loan_notes']
 
 
     if (request.method == 'POST') and 'cogclass_form' in request.POST:#is_meaningform(request.POST):
@@ -1242,7 +1244,9 @@ def view_cognateclasses(request, meaning):
 
                     cogclass.data = { 
                                      'gloss_in_root_lang': v_dict['gloss_in_root_lang'],
-                                     'loanword': (v_dict['loanword']=='y')
+                                     'loanword': (v_dict['loanword']=='y'),
+                                     'loan_source': v_dict['loan_source'],
+                                     'loan_notes':v_dict['loan_notes']
                                      }
 
                     try:
@@ -1280,6 +1284,8 @@ def view_cognateclasses(request, meaning):
             cogclass_row_form.loanword = cc.data.get('loanword','')
             cogclass_row_form.gloss_in_root_lang = cc.data.get('gloss_in_root_lang', '')
             cogclass_row_form.notes = cc.notes
+            cogclass_row_form.loan_source = cc.data.get('loan_source','')
+            cogclass_row_form.loan_notes = cc.data.get('loan_notes','')
 
             cogclass_table_form.cogclass.append_entry(cogclass_row_form)
         return cogclass_table_form
