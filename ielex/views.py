@@ -1286,6 +1286,10 @@ def view_cognateclasses(request, meaning):
             cogclass_row_form.notes = cc.notes
             cogclass_row_form.loan_source = cc.data.get('loan_source','')
             cogclass_row_form.loan_notes = cc.data.get('loan_notes','')
+            # To link to a given cognate class the get_absolute_url method of cc is used
+            # together with object_data in the template.
+            # See https://wtforms.readthedocs.org/en/latest/fields.html#wtforms.fields.Field.object_data
+            cogclass_row_form.absolute_url = cc.get_absolute_url()
 
             cogclass_table_form.cogclass.append_entry(cogclass_row_form)
         return cogclass_table_form
