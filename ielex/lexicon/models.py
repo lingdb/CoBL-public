@@ -1,4 +1,5 @@
 from __future__ import division
+from itertools import izip
 from string import uppercase, lowercase
 from django.db import models
 from django.db.models import Max, F
@@ -10,6 +11,7 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_delete
 from django.db.backends.signals import connection_created
 from django.utils.safestring import SafeString
+from django.utils.encoding import python_2_unicode_compatible
 # from django.contrib import admin
 import jsonfield
 import reversion
@@ -111,6 +113,32 @@ class Language(models.Model):
     def __unicode__(self):
         return self.utf8_name
 
+    def validateBranchLevels(self):
+        levels = ['level0','level1','level2']
+        # Making sure all levels exist and have an int in them:
+        for level in levels:
+            if level in self.altname:
+                l = self.altname[level]
+                if not isinstance(l, int):
+                    try:
+                        l = int(l, 10)
+                    except ValueError:
+                        l = 0
+                    self.altname[level] = l
+            else:
+                self.altname[level] = 0;
+        # Making sure levels map to an entry of LanguageBranches:
+        mustHave = {}
+        for level, field in izip(levels, ['family_ix', 'level1_branch_ix']):
+            l = self.altname[level]
+            if l == 0:
+                break
+            mustHave[field] = l
+        # Set all levels = 0 if LanguageBranches don't exist:
+        if not LanguageBranches.objects.filter(**mustHave).exists():
+            for level in levels:
+                self.altname[level] = 0
+
     class Meta:
         ordering = ["ascii_name"]
 
@@ -151,15 +179,25 @@ class Meaning(models.Model):
         ordering = ["gloss"]
 
 @reversion.register
+@python_2_unicode_compatible
 class CognateClass(models.Model):
-    """`name` field is optional, for manually given names"""
+    """
+    1.  `name` field: This is optional, for manually given names.
+    2.  `root_form` field: Using decorator to ensure Python 2 unicode compatibility.
+        For details, see `django.utils.encoding.python_2_unicode_compatible` at:
+        https://docs.djangoproject.com/en/dev/ref/utils/
+    """
     alias = models.CharField(max_length=3)
     notes = models.TextField(blank=True)
     modified = models.DateTimeField(auto_now=True)
     name = CharNullField(max_length=128, blank=True, null=True, unique=True,
             validators=[suitable_for_url])
     root_form = models.TextField(blank=True)
+    root_language = models.TextField(blank=True)
     data = jsonfield.JSONField(blank=True)
+
+    def __str__(self):
+        return self.root_form
 
     def update_alias(self, save=True):
         """Reset alias to the first unused letter"""
@@ -547,6 +585,118 @@ class MeaningListOrder(models.Model):
         unique_together = (("meaning_list", "meaning"),
                 ("meaning_list", "order"))
 
+
+class CognateClassList(models.Model):
+    """A named, ordered list of cognate classes for use in display and output. A
+    default list, named 'all' is (re)created on save/delete of the CognateClass
+    table (cf. ielex.models.update_cognateclass_list_all)
+
+    To get an order list of language from cognateclasslist `ccl`::
+
+        ccl.cognateclasses.all().order_by("cognateclasslistorder")
+    """
+
+    DEFAULT = "all"
+
+    name = models.CharField(max_length=128,
+            validators=[suitable_for_url, standard_reserved_names])
+    description = models.TextField(blank=True, null=True)
+    cognateclasses = models.ManyToManyField(CognateClass, through="CognateClassListOrder")
+    modified = models.DateTimeField(auto_now=True)
+
+    def append(self, cognateclass):
+        """Add another cognateclass to the end of a CognateClassList ordering"""
+        N = self.cognateclasslistorder_set.aggregate(Max("order")).values()[0]
+        try:
+            N += 1
+        except TypeError:
+            assert N is None
+            N = 0
+        CognateClassListOrder.objects.create(
+                cognateclass=cognateclass,
+                cognateclass_list=self,
+                order=N)
+        return
+
+    def insert(self, N, cognateclass):
+        """Insert another cognateclass into a CognateClassList ordering before the object position N"""
+        llo = CognateClassListOrder.objects.get(
+                cognateclass=cognateclass,
+                cognateclass_list=self)
+        target = self.cognateclassorder_set.all()[N]
+        llo.order = target.order - 0.0001
+        llo.save()
+        return
+
+    def remove(self, cognateclass):
+        llo = CognateClassListOrder.objects.get(
+                cognateclass=cognateclass,
+                cognateclass_list=self)
+        llo.delete()
+        return
+
+    def sequentialize(self):
+        """Sequentialize the order fields of a CognateClassListOrder set
+        with a separation of approximately 1.0.  This is a bit slow, so
+        it should only be done from time to time."""
+        count = self.cognateclasslistorder_set.count()
+        def jitter(N, N_list):
+            """Return a number close to N such that N is not in N_list"""
+            while True:
+                try:
+                    assert N not in N_list
+                    return N
+                except AssertionError:
+                    N += 0.0001
+            return
+        if count:
+            order_floats = self.cognateclasslistorder_set.values_list("order", flat=True)
+            for i, llo in enumerate(self.cognateclasslistorder_set.all()):
+                if i != llo.order:
+                    llo.order = jitter(i, order_floats)
+                    llo.save()
+        return
+
+    def swap(self, cognateclassA, cognateclassB):
+        """Swap the order of two meanings"""
+        orderA = CognateClassListOrder.objects.get(
+                cognateclass=cognateclassA,
+                cognateclass_list=self)
+        orderB = CognateClassListOrder.objects.get(
+                cognateclass=cognateclassB,
+                cognateclass_list=self)
+        orderB.delete()
+        orderA.order, orderB.order = orderB.order, orderA.order
+        orderA.save()
+        orderB.save()
+        return
+
+    #def get_absolute_url(self):
+    #    return "/meanings/%s/" % self.name
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
+
+class CognateClassListOrder(models.Model):
+
+    cognateclass = models.ForeignKey(CognateClass)
+    cognateclass_list = models.ForeignKey(CognateClassList)
+    order = models.FloatField()
+
+    def __unicode__(self):
+        return u"%s:%s(%s)" % (self.cognateclass_list.name,
+                self.order,
+                self.cognateclass.alias)
+
+    class Meta:
+        ordering = ["order"]
+        unique_together = (("cognateclass_list", "cognateclass"),
+                ("cognateclass_list", "order"))
+
+
 # class GenericCitation(models.Model):
 #     # This would have been a good way to do it, but it's going to be too
 #     # difficult to convert the ManyToMany fields in the current models to use
@@ -728,6 +878,34 @@ def update_meaning_list_all(sender, instance, **kwargs):
 
 models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
 models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
+
+
+@disable_for_loaddata
+def update_cognateclass_list_all(sender, instance, **kwargs):
+    """Update the CognateClassList 'all' whenever CognateClass table is changed"""
+    ccl, _ = CognateClassList.objects.get_or_create(name=CognateClassList.DEFAULT)
+    ccl.sequentialize()
+
+    missing_cognateclasses = set(CognateClass.objects.all()) - set(ccl.cognateclasses.all())
+    for cogclass in missing_cognateclasses:
+        ccl.append(cogclass)
+
+    if missing_cognateclasses:
+        # make a new alphabetized list
+        default_alpha = CognateClassList.DEFAULT+"-alpha"
+        try:
+            ml_alpha = CognateClassList.objects.get(name=default_alpha)
+            ml_alpha.delete()
+        except CognateClassList.DoesNotExist:
+            pass
+        ccl_alpha = CognateClassList.objects.create(name=default_alpha)
+        for cgclss in CognateClass.objects.all().order_by("alias"):
+            ccl_alpha.append(cgclss)
+    return
+
+models.signals.post_save.connect(update_cognateclass_list_all, sender=CognateClass)
+models.signals.post_delete.connect(update_cognateclass_list_all, sender=CognateClass)
+
 
 @disable_for_loaddata
 def update_denormalized_data(sender, instance, **kwargs):

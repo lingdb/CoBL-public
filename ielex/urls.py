@@ -174,6 +174,7 @@ urlpatterns = patterns('',
     url(r'^cognate/%(COGNATE_NAME)s/$' % R, cognate_report),
     url(r'^meaning/%(MEANING)s/cognate/(?P<code>[A-Z]+[0-9]*)/$' % R,
             cognate_report),
+    url(r'^meaning/%(MEANING)s/cognateclasslist/$' % R, view_cognateclasses, name="edit-cogclasses"),
     # TODO better url:
     # url(r'^meaning/%(MEANING)s/cognate/(?P<code>[A-Z]+[0-9]*)/$' % R,
     #        cognate_report),

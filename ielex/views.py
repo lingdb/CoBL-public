@@ -260,32 +260,6 @@ def get_canonical_language_list(language_list=None, request=None):
 ############ CHANGED ##############################
 
 @csrf_protect
-def view_language_listALT(request, language_list=None):
-    current_list = get_canonical_language_list(language_list, request)
-    request.session["current_language_list_name"] = current_list.name
-    languages = current_list.languages.all().order_by("languagelistorder")
-    languages = languages.annotate(lexeme_count=Count("lexeme"))
-
-    if request.method == 'POST':
-        form = ChooseLanguageListForm(request.POST)
-        if form.is_valid():
-            current_list = form.cleaned_data["language_list"]
-            request.session["current_language_list_name"] = current_list.name
-            msg = u"Language list selection changed to ‘%s’" %\
-                    current_list.name
-            messages.add_message(request, messages.INFO, msg)
-            return HttpResponseRedirect(reverse("view-language-list",
-                    args=[current_list.name]))
-    else:
-        form = ChooseLanguageListForm()
-    form.fields["language_list"].initial = current_list.id
-
-    return render_template(request, "language_list.html",
-            {"languages":languages,
-            "language_list_form":form,
-            "current_list":current_list})
-
-@csrf_protect
 def view_language_list(request, language_list=None):
     current_list = get_canonical_language_list(language_list, request)
     request.session["current_language_list_name"] = current_list.name
@@ -308,7 +282,10 @@ def view_language_list(request, language_list=None):
                 lang.altname.get('glottocode', '') == vdict['glottocode'] and \
                 lang.altname.get('variety', '') == vdict['variety'] and \
                 lang.altname.get('soundcompcode', '') == vdict['soundcompcode'] and \
-                lang.altname.get('representative', '') == (v_dict['representative']=='y')
+                lang.altname.get('representative', '') == (v_dict['representative']=='y') and \
+                lang.altname.get('level0', '') == v_dict['level0'] and \
+                lang.altname.get('level1', '') == v_dict['level1'] and \
+                lang.altname.get('level2', '') == v_dict['level2']
 
     if request.method == 'POST' and not ('langlist_form' in request.POST):
         form = ChooseLanguageListForm(request.POST)
@@ -347,18 +324,21 @@ def view_language_list(request, language_list=None):
                 if not is_unchanged(lang, v_dict):
                     
                     lang.iso_code = v_dict['iso_code']
+                    #ascii encoding is OK here as there are no problematic characters ?
                     lang.utf8_name = v_dict['ascii_name'].encode('utf8','ignore')
         
                     lang.altname = {
                                  'glottocode': v_dict['glottocode'],
                                  'variety': v_dict['variety'],
                                  'soundcompcode': v_dict['soundcompcode'],
-                                 #'level0': v_dict['level0'],
-                                 #'level1': v_dict['level1'],
-                                 #'level2': v_dict['level2'],
+                                 'level0': v_dict['level0'],
+                                 'level1': v_dict['level1'],
+                                 'level2': v_dict['level2'],
                                  'representative': (v_dict['representative']=='y')
                                  }
     
+                    lang.validateBranchLevels()
+
                     try:
                         lang.save()
                     except Exception, e:
@@ -388,15 +368,16 @@ def view_language_list(request, language_list=None):
             langlist_row_form = LanguageListRowForm()
             langlist_row_form.iso_code = lang.iso_code.encode("ascii","ignore")
             langlist_row_form.ascii_name = lang.ascii_name.encode("ascii","ignore")
+            #TODO: ascii encoding is OK here as there are no problematic characters ?
             langlist_row_form.utf8_name = lang.utf8_name.encode("ascii","ignore")
             langlist_row_form.lex_count = lang.lexeme_count
 
             langlist_row_form.glottocode = lang.altname.get('glottocode', '')
             langlist_row_form.variety = lang.altname.get('variety', '')
             langlist_row_form.soundcompcode = lang.altname.get('soundcompcode', '')
-            #langlist_row_form.level0 = lang.altname.get('level0', '')
-            #langlist_row_form.level1 = lang.altname.get('level1', '')
-            #langlist_row_form.level2 = lang.altname.get('level2', '')
+            langlist_row_form.level0 = lang.altname.get('level0', '')
+            langlist_row_form.level1 = lang.altname.get('level1', '')
+            langlist_row_form.level2 = lang.altname.get('level2', '')
             langlist_row_form.representative = lang.altname.get('representative', '')
             
             langlist_table_form.langlist.append_entry(langlist_row_form)
@@ -584,7 +565,6 @@ def view_language_wordlist(request, language, wordlist):
                             cogclass_changed_rootform_map[ccid] = rtfrm
 
                 if not is_unchanged(lexm, v_dict):
-    
                     lexm.language = language
                     lexm.source_form = v_dict['source_form']
                     lexm.phon_form = v_dict['phon_form']
@@ -592,10 +572,10 @@ def view_language_wordlist(request, language, wordlist):
                     lexm.notes = v_dict['notes']
                     lexm.number_cognate_coded = v_dict['number_cognate_coded']
                     lexm.data = {
-								'transliteration': v_dict['transliteration'],
-								'phoneMic': v_dict['phoneMic'],
-								'not_swadesh_term': (v_dict['not_swadesh_term']=='y')
-								}
+                        'transliteration': v_dict['transliteration'],
+                        'phoneMic': v_dict['phoneMic'],
+                        'not_swadesh_term': (v_dict['not_swadesh_term']=='y')
+                        }
     
                     try:
                         lexm.save()
@@ -1088,7 +1068,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                             cogclass_changed_rootform_map[ccid] = rtfrm
 
                 if not is_unchanged(lexm, v_dict):
-                    
+
+                    #TODO: ascii encoding is OK here as there are no problematic characters ?
                     lexm.language = Language.objects.get(utf8_name=v_dict['language_utf8name'].encode('ascii','ignore'))
                     lexm.source_form = v_dict['source_form']
                     lexm.phon_form = v_dict['phon_form']
@@ -1201,6 +1182,148 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                             }
                            )
 
+						   
+@csrf_protect
+def view_cognateclasses(request, meaning):
+    
+    def process_postrequest_form(multidict):
+        res = defaultdict(list)
+        for key in multidict.keys():
+            if not(key in ['cogclass_form', 'csrfmiddlewaretoken']):
+                outer_key = ''.join(key.split('-')[0:2])
+                inner_key = key.split('-')[-1]
+                res[outer_key].append((inner_key, multidict.getlist(key)[0]))
+        return res
+
+    def is_unchanged_cc(cc, vdict):
+        return  cc.alias == v_dict['alias'] and \
+                cc.root_form == v_dict['root_form'] and \
+                cc.root_language == v_dict['root_language'] and \
+                cc.data.get('gloss_in_root_lang', '') == v_dict['gloss_in_root_lang'] and \
+                cc.notes == v_dict['notes'] and \
+                cc.data.get('loanword', '') == (v_dict['loanword']=='y') and \
+                cc.data.get('loan_source', '') == v_dict['loan_source'] and \
+                cc.data.get('loan_notes', '') == v_dict['loan_notes']
+
+
+    if (request.method == 'POST') and 'cogclass_form' in request.POST:#is_meaningform(request.POST):
+    
+        request_form_dict = process_postrequest_form(request.POST)
+        
+        #TODO: need to check validity of input
+        #if lex_ed_form.is_valid():
+        v_dict = defaultdict(str)
+        for k,v in request_form_dict.items():
+                
+            v_dict = dict(v)
+    
+            #TODO: temporary fix for problem with HTML checkboxes,
+            #where these return nothing if box unchecked
+            #FIX: create validation procedure for these forms. 
+            #Refernces:
+            #(1) https://github.com/wtforms/wtforms/issues/188
+            #(2) https://github.com/wtforms/wtforms/issues/141
+            if not('loanword' in v_dict.keys()):
+                v_dict['loanword'] = ''
+                
+            try:
+                #NB. the following works and is an interesting instance of updating the database, 
+                #but we probably don't want to do this specific instance. 
+                #>meang = Meaning.objects.create(**{'gloss':v_dict['meaning']})
+                
+                cogclass = CognateClass.objects.get(**{'id': int(v_dict['cogclass_id'])})
+            
+                if not is_unchanged_cc(cogclass, v_dict):
+                    
+                    cogclass.alias = v_dict['alias']
+                    #cogclass.modified = v_dict['modified']
+                    cogclass.notes = v_dict['notes']
+
+                    cogclass.root_form = v_dict['root_form']
+                    cogclass.root_language = v_dict['root_language']
+
+                    cogclass.data = { 
+                                     'gloss_in_root_lang': v_dict['gloss_in_root_lang'],
+                                     'loanword': (v_dict['loanword']=='y'),
+                                     'loan_source': v_dict['loan_source'],
+                                     'loan_notes':v_dict['loan_notes']
+                                     }
+
+                    try:
+                        cogclass.save()#force_update=True) # TODO: WHY is this necessary? Because no explicit ID in the transaction?
+                    except Exception, e:#Lexeme.DoesNotExist:
+                        print 'Exception while saving CognateClass object: ',e
+                    
+                else:
+                    pass
+                    
+            except Exception, e:
+                print 'Exception while accessing CognateClass object: ',e,'; problem items are: ',v_dict
+        
+        return HttpResponseRedirect(reverse('edit-cogclasses', args=[meaning]))
+
+    else:
+        pass # TODO:
+
+
+    def fill_cogclass_table_from_DB(cc_ordered):
+        
+        cogclass_table_form = AddCogClassTableForm()
+
+        # Pop off any blank fields already in lexemes
+        while len(cogclass_table_form.cogclass) > 0:
+            cogclass_table_form.cogclass.pop_entry()
+    
+        for cc in cc_ordered:
+            
+            cogclass_row_form = CogClassRowForm()
+            cogclass_row_form.cogclass_id = int(cc.id)
+            cogclass_row_form.alias = cc.alias
+            cogclass_row_form.root_form = cc.root_form
+            cogclass_row_form.root_language = cc.root_language
+            cogclass_row_form.loanword = cc.data.get('loanword','')
+            cogclass_row_form.gloss_in_root_lang = cc.data.get('gloss_in_root_lang', '')
+            cogclass_row_form.notes = cc.notes
+            cogclass_row_form.loan_source = cc.data.get('loan_source','')
+            cogclass_row_form.loan_notes = cc.data.get('loan_notes','')
+            # To link to a given cognate class the get_absolute_url method of cc is used
+            # together with object_data in the template.
+            # See https://wtforms.readthedocs.org/en/latest/fields.html#wtforms.fields.Field.object_data
+            cogclass_row_form.absolute_url = cc.get_absolute_url()
+
+            cogclass_table_form.cogclass.append_entry(cogclass_row_form)
+        return cogclass_table_form
+
+    # This is a clunky way of sorting; currently assumes LanguageList
+    # 'all' (maybe make this configurable?)
+    cognateclass_list = CognateClassList.objects.get(name=CognateClassList.DEFAULT)
+
+    def iter_orderedcoglist(): 
+        ccl_ordered = []
+        ccl_ordered_extend = ccl_ordered.extend
+        coglist_ordered = cognateclass_list.cognateclasses.all().order_by("cognateclasslistorder")
+        CognateClass_objects_filter = CognateClass.objects.filter
+        cogclass_bymeaning = CognateClass.objects.filter(cognatejudgement__lexeme__meaning__gloss=meaning)
+        cogclass_bymeaning_ids = [i.pk for i in cogclass_bymeaning]
+        for cogclass in coglist_ordered:
+            cogclass_pk = cogclass.pk
+            if cogclass_pk in cogclass_bymeaning_ids:
+                cc = CognateClass_objects_filter(pk=cogclass_pk).distinct()
+                ccl_ordered_extend(list(cc))
+        return ccl_ordered
+
+    ccl_ordered = iter_orderedcoglist()
+    cogclass_editabletable_form = fill_cogclass_table_from_DB(ccl_ordered)
+    
+    return render_template(
+                            request, "view_cognateclass_editable.html",
+                            {
+                             "meaning": meaning,
+                             "cogclass_editable_form":cogclass_editabletable_form
+                            }
+                           )
+
+						   
 ##################################################################
 
 

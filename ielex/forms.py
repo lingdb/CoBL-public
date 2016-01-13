@@ -8,10 +8,10 @@ from ielex.lexicon.validators import suitable_for_url
 
 ################ CHANGED ##################
 
-from wtforms import StringField, IntegerField, FieldList, FormField, TextField, BooleanField
+from wtforms import StringField, IntegerField, FieldList, FormField, TextField, BooleanField, DateTimeField
 from wtforms.validators import DataRequired
 from wtforms_components import read_only
-from wtforms.form import Form
+from wtforms.form import Form as WTForm
 from wtforms.ext.django.orm import model_form 
 from lexicon.models import Lexeme
 
@@ -207,7 +207,7 @@ class ChooseMeaningListForm(forms.Form):
 
 ################# CHANGED ##################
 
-class LanguageListRowForm(Form):
+class LanguageListRowForm(WTForm):
     iso_code = StringField('Language ISO Code', validators = [DataRequired()])
     utf8_name = StringField('Language Utf8 Name', validators = [DataRequired()])
     ascii_name = StringField('Language ASCII Name', validators = [DataRequired()])
@@ -220,11 +220,11 @@ class LanguageListRowForm(Form):
     representative = BooleanField('Representative', validators = [DataRequired()])
     lex_count = IntegerField('Lexeme Count', validators = [DataRequired()])
 
-class AddLanguageListTableForm(Form):
+class AddLanguageListTableForm(WTForm):
     langlist = FieldList(FormField(LanguageListRowForm), min_entries = 5) # Default of at least 5 blank fields
 
 
-class LexemeRowForm(Form):
+class LexemeRowForm(WTForm):
     id = IntegerField('Lexeme Id', validators = [DataRequired()])
     language_id = StringField('Language Id', validators = [DataRequired()])
     language = StringField('Language', validators = [DataRequired()])
@@ -241,6 +241,7 @@ class LexemeRowForm(Form):
     gloss = StringField('Gloss', validators = [DataRequired()])
     number_cognate_coded = IntegerField('Count Coded Cognates', validators = [DataRequired()])
     notes = TextField('Notes', validators = [DataRequired()])
+    cogclass_link = TextField('CogClass Links', validators = [DataRequired()])
 	
     #Components for copying buttons
     source_form_2_transliteration = BooleanField('Source Form to Transliteration', validators = [DataRequired()])
@@ -256,8 +257,43 @@ class LexemeRowForm(Form):
         read_only(self.meaning)
         read_only(self.language_utf8name)
 
-class AddLexemesTableForm(Form):
+class AddLexemesTableForm(WTForm):
     lexemes = FieldList(FormField(LexemeRowForm), min_entries = 5) # Default of at least 5 blank fields
+
+#TODO: return to this if/when moving to Python 3
+@python_2_unicode_compatible
+class CogClassRowForm(WTForm):
+    cogclass_id = IntegerField('Cog Class Id', validators = [DataRequired()])
+    alias = StringField('Cog Class Alias', validators = [DataRequired()])
+    modified = DateTimeField('Date Modified', validators = [DataRequired()])
+    cogclass_name = StringField('Cog Class Name', validators = [DataRequired()])
+    root_form = StringField('Cog Class Root', validators = [DataRequired()])
+    root_language = StringField('Root Language', validators = [DataRequired()])
+    gloss_in_root_lang = StringField('Gloss in Root Language', validators = [DataRequired()])
+    loanword = BooleanField('Loanword', validators = [DataRequired()])
+    notes = TextField('Notes', validators = [DataRequired()])
+    loan_source = TextField('Loan Source', validators = [DataRequired()])
+    loan_notes = TextField('Loan Notes', validators = [DataRequired()])
+    
+    def __init__(self, *args, **kwargs):
+        super(CogClassRowForm, self).__init__(*args, **kwargs)
+        read_only(self.cogclass_id)
+        read_only(self.alias)
+
+    def __str__(self):
+        cogclass_form_vals = (
+                              str(self.cogclass_id),
+                              self.alias,
+                              self.root_form,#.encode('ascii', 'replace'),
+                              self.root_language,
+                              self.gloss_in_root_lang,
+                              str(self.loanword),
+                              self.notes
+                              )
+        return '( id=%s, root=%s, language=%s, gloss=%s, alias=%s, loanword=%s, notes=%s )' % cogclass_form_vals
+
+class AddCogClassTableForm(WTForm):
+    cogclass = FieldList(FormField(CogClassRowForm), min_entries = 5) # Default of at least 5 blank fields
 
 
 class LexemeTableFilterForm(forms.ModelForm):

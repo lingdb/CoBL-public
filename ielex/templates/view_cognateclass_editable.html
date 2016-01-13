@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load lexicon_utils %}
+{% load wtforms %}
+
+{% block title %}Cognate classes for {{ meaning }}{% endblock %}
+
+{% block top %}<h1>Cognate classes for {{ meaning }}</h1>{% endblock %}
+
+{% block content %}
+
+	<form action="" method="POST" name="cogclass_ed_form" id="cogclass_ed_form">{% csrf_token %}
+	
+		<div class="lex_form">
+		<input type="submit" value="Submit" name="cogclass_form"> <br> <a href="{% url 'edit-cogclasses' meaning %}"> Cancel</a><br>
+		</div>
+	
+		<table id="editable">
+			<tr class="mid-align">
+		      <th>ID</th>
+		      <th>Cog.<br>Alias</th>
+		      <th>Root</th>
+		      <th>Root<br>Language</th>
+		      <th>Root<br>Gloss</th>
+		      <!-- th>Modified</th-->
+		      <!-- th>Name</th-->
+		      <th>Root<br>Notes</th>
+		      <th>Loan<br>Event</th>
+		      <th>Loan<br>Source</th>
+		      <th>Loan<br>Notes</th>
+		    </tr>
+		  <tbody>
+      {% for cc in cogclass_editable_form.cogclass %}
+        <tr>
+		      <td>{% form_field cc.cogclass_id class="readonlynarrow" id="narrowtext" %}</td>
+		      <td><a href="{{cc.object_data.absolute_url}}">{% form_field cc.alias class="readonlynarrow" id="narrowtext" %}</a></td>
+		      <td>{% form_field cc.root_form class="mediumtext" %}</td>
+		      <td>{% form_field cc.root_language class="linked" %}</td>
+		      <td>{% form_field cc.gloss_in_root_lang class="mediumtext" %}</td>
+          <td class="widetext">{% form_field cc.notes class="widetext" id="widetext" %}</td>
+		      <td>{% form_field cc.loanword %}</td>
+          <td>{% form_field cc.loan_source %}</td>
+          <td class="widetext">{% form_field cc.loan_notes %}</td>
+		    </tr>
+		  {% endfor %}
+		  </tbody>
+		</table>
+	</form>
+
+{% endblock %}
+
+{% block controls %}
+{% include "snippets/go_to.html" %}
+{# include "snippets/change_sort_order.html" #}
+{% endblock %}
+
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
