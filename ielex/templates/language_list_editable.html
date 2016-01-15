@@ -52,7 +52,15 @@
 		          {% form_field language.iso_code class="hyperformfield" id="verynarrowtext" %}
 		        </a>
 		      </td>
-		      <td>{% form_field language.glottocode id="lowmediumtext" %}</td>
+		      <td>
+ 		       	{% if language.data.glottocode %}
+ 		       	<a href="http://glottolog.org/resource/languoid/id/{{ language.data.glottocode }}" target="_blank">
+ 		       	 	{% form_field language.glottocode id="lowmediumtext" class="hyperformfield" %}
+ 		       	</a>
+ 		       	{% else %}
+  		      {% form_field language.glottocode id="lowmediumtext" %}
+  		      {% endif %}
+		      </td>
 		      <td>{% form_field language.variety %}</td>
 		      <td>{% form_field language.soundcompcode %}</td>
 		      <td>{% form_field language.level0 %}</td>
