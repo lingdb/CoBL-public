@@ -1308,7 +1308,7 @@ def view_cognateclasses(request, meaning):
     def iter_orderedcoglist(): 
         ccl_ordered = []
         ccl_ordered_extend = ccl_ordered.extend
-        coglist_ordered = cognateclass_list.cognateclasses.all().order_by("cognateclasslistorder")
+        coglist_ordered = cognateclass_list.cognateclasses.all().order_by("alias")
         CognateClass_objects_filter = CognateClass.objects.filter
         cogclass_bymeaning = CognateClass.objects.filter(cognatejudgement__lexeme__meaning__gloss=meaning)
         cogclass_bymeaning_ids = [i.pk for i in cogclass_bymeaning]
