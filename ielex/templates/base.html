@@ -44,28 +44,32 @@
 				}
 			};
 
-            function MutexCheckbox(eventSource){
-                console.log('MutexCheckbox()', this, eventSource);
-                if(eventSource.checked){
+            function MutexCheckbox(f){
+                if(f.checked){
                     // Unchecking others if checked…
-                    var tr = eventSource.parentElement.parentElement;
-                    var boxes = tr.getElementsByClassName('MutexCheckbox');
-                    Array.prototype.forEach.call(boxes, function(chkBox){
-                        if(chkBox === eventSource) return;
-                        if(chkBox.checked) chkBox.checked = false;
+                    var f_info = f.name.split('-');
+                    var f_num = f_info[1];
+                    var chckbx_list = document.getElementsByClassName('MutexCheckbox');
+                    Array.prototype.forEach.call(chckbx_list, function(targ_chckbx){
+                        var targ_chckbx_info = targ_chckbx.name.split('-');
+                        var targ_chckbx_num = targ_chckbx_info[1];
+                        if(f.id === targ_chckbx.id) return;
+                        if(f_num !== targ_chckbx_num) return;
+                        if(targ_chckbx.checked){
+                            targ_chckbx.checked = false;
+                        }
                     });
                 }
             };
-			
-			//function UncheckAll(){ 
-		    //	var w = document.getElementsByTagName('input'); 
-		    //  	for(var i = 0; i < w.length; i++){ 
-		    //    	if(w[i].type=='checkbox'){ 
-		    //      		w[i].checked = false; 
-		    //    	}
-		    //  	}
-		  	//};
-		  	
+
+            //function UncheckAll(){
+            //    var w = document.getElementsByTagName('input');
+            //    for(var i = 0; i < w.length; i++){
+            //        if(w[i].type=='checkbox'){
+            //            w[i].checked = false;
+            //        }
+            //    }
+            //};
   	</script>
   	{% block meta %}{% endblock %}
 </head>
