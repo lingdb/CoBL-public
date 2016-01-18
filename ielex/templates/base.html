@@ -43,6 +43,19 @@
 			  		}
 				}
 			};
+
+            function MutexCheckbox(eventSource){
+                console.log('MutexCheckbox()', this, eventSource);
+                if(eventSource.checked){
+                    // Unchecking others if checked…
+                    var tr = eventSource.parentElement.parentElement;
+                    var boxes = tr.getElementsByClassName('MutexCheckbox');
+                    Array.prototype.forEach.call(boxes, function(chkBox){
+                        if(chkBox === eventSource) return;
+                        if(chkBox.checked) chkBox.checked = false;
+                    });
+                }
+            };
 			
 			//function UncheckAll(){ 
 		    //	var w = document.getElementsByTagName('input'); 

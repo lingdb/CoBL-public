@@ -27,6 +27,8 @@
 		      <th>ISO</th>
 		      <th>Glotto</th>
 		      <th>Variety</th>
+		      <th>Foss.<br>Stat.</th>
+		      <th>Low.<br>Stat.</th>
 		      <th>SndComp<br>code</th>
 		      <th>Level 0<br>branch</th>
 		      <th>Level 1<br>branch</th>
@@ -62,6 +64,8 @@
   		      {% endif %}
 		      </td>
 		      <td>{% form_field language.variety %}</td>
+		      <td>{% form_field language.foss_stat onclick="MutexCheckbox(this)" class="MutexCheckbox" %}</td>
+		      <td>{% form_field language.low_stat onclick="MutexCheckbox(this)" class="MutexCheckbox" %}</td>
 		      <td>{% form_field language.soundcompcode %}</td>
 		      <td>{% form_field language.level0 %}</td>
 		      <td>{% form_field language.level1 %}</td>

@@ -281,11 +281,13 @@ def view_language_list(request, language_list=None):
                 lang.ascii_name == vdict['ascii_name'] and \
                 lang.altname.get('glottocode', '') == vdict['glottocode'] and \
                 lang.altname.get('variety', '') == vdict['variety'] and \
+                lang.altname.get('foss_stat', '') == (vdict['foss_stat']=='y') and \
+                lang.altname.get('low_stat', '') == (vdict['low_stat']=='y') and \
                 lang.altname.get('soundcompcode', '') == vdict['soundcompcode'] and \
-                lang.altname.get('representative', '') == (v_dict['representative']=='y') and \
-                lang.altname.get('level0', '') == v_dict['level0'] and \
-                lang.altname.get('level1', '') == v_dict['level1'] and \
-                lang.altname.get('level2', '') == v_dict['level2']
+                lang.altname.get('representative', '') == (vdict['representative']=='y') and \
+                lang.altname.get('level0', '') == vdict['level0'] and \
+                lang.altname.get('level1', '') == vdict['level1'] and \
+                lang.altname.get('level2', '') == vdict['level2']
 
     if request.method == 'POST' and not ('langlist_form' in request.POST):
         form = ChooseLanguageListForm(request.POST)
@@ -314,8 +316,9 @@ def view_language_list(request, language_list=None):
             #TODO: temporary fix for problem with HTML checkboxes,
             #where these return nothing if box unchecked.
             #FIX: create validation procedure for 'lex_form'. 
-            if not('representative' in v_dict.keys()):
-                v_dict['representative'] = ''
+            for k in ['representative','foss_stat','low_stat']:
+                if not(k in v_dict.keys()):
+                    v_dict[k] = ''
 
             try:
 
@@ -330,6 +333,8 @@ def view_language_list(request, language_list=None):
                     lang.altname = {
                                  'glottocode': v_dict['glottocode'],
                                  'variety': v_dict['variety'],
+                                 'foss_stat': (v_dict['foss_stat']=='y'),
+                                 'low_stat': (v_dict['low_stat']=='y'),
                                  'soundcompcode': v_dict['soundcompcode'],
                                  'level0': v_dict['level0'],
                                  'level1': v_dict['level1'],
@@ -374,6 +379,8 @@ def view_language_list(request, language_list=None):
 
             langlist_row_form.glottocode = lang.altname.get('glottocode', '')
             langlist_row_form.variety = lang.altname.get('variety', '')
+            langlist_row_form.foss_stat = lang.altname.get('foss_stat', '')
+            langlist_row_form.low_stat = lang.altname.get('low_stat', '')
             langlist_row_form.soundcompcode = lang.altname.get('soundcompcode', '')
             langlist_row_form.level0 = lang.altname.get('level0', '')
             langlist_row_form.level1 = lang.altname.get('level1', '')

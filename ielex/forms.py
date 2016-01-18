@@ -213,6 +213,8 @@ class LanguageListRowForm(WTForm):
     ascii_name = StringField('Language ASCII Name', validators = [DataRequired()])
     glottocode = StringField('Glottocode', validators = [DataRequired()])
     variety = StringField('Language Variety', validators = [DataRequired()])
+    foss_stat = BooleanField('Fossile Status', validators = [DataRequired()])
+    low_stat = BooleanField('Low Status', validators = [DataRequired()])
     soundcompcode = StringField('Sound Comparisons Code', validators = [DataRequired()])
     level0 = StringField('Level 0 Branch', validators = [DataRequired()])
     level1 = StringField('Level 1 Branch', validators = [DataRequired()])
