@@ -71,7 +71,7 @@
 			  	<div class="narrow_form">
 			      {{ lexeme.cognate_class_links.data }}
 			      {% if user.is_authenticated %}
-			        {% ifnotequal add_cognate_judgement|asint lexeme.id|asint %}
+			        {% ifnotequal add_cognate_judgement|asint lexeme.id.data|asint %}
 			        <a href="{% url 'lexeme-add-cognate' lexeme.id.data %}#lexeme_{{ lexeme.id.data }}">
 			          <img src="{% static 'buttons/add.png' %}" alt="Add" title="Add another cognate class" />
 			        </a>
