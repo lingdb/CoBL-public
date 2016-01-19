@@ -147,7 +147,8 @@ a.button:hover { text-decoration: none }
 }
 
 #top {
-  padding: 1%;
+  padding-top: 2.5px;
+  padding-left: 2.5px;
   background-color: #cf9;
   border-bottom: 1px solid gray;
 }
