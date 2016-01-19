@@ -6,8 +6,8 @@
 
 body { font-family: sans-serif }
 
-div.lex_form { position: fixed; top: 120px; right: 370px; background-color: #ccc; padding: 5px; opacity: 0.9; margin: 0 0 0 0px; border: none !important; }
-div.langlist_form { position: fixed; top: 120px; right: 410px; background-color: #ccc; padding: 5px; opacity: 0.9; margin: 0 0 0 0px; border: none !important; }
+div.lex_form { position: fixed; top: 20px; right: 370px; background-color: #ccc; padding: 5px; opacity: 0.9; margin: 0 0 0 0px; border: none !important; }
+div.langlist_form { position: fixed; top: 20px; right: 410px; background-color: #ccc; padding: 5px; opacity: 0.9; margin: 0 0 0 0px; border: none !important; }
 
 p.help { text-size: small }
 
@@ -147,8 +147,7 @@ a.button:hover { text-decoration: none }
 }
 
 #top {
-  padding-top: 2.5px;
-  padding-left: 2.5px;
+  padding: 1%;
   background-color: #cf9;
   border-bottom: 1px solid gray;
 }
