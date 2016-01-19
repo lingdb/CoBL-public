@@ -148,10 +148,7 @@ class Language(models.Model):
         # meanings = set([l.meaning for l in lexemes])
         # return len(meanings)
         # This performs, but doesn't use the ORM:
-        query = " ".join(["SELECT COUNT(DISTINCT(lexicon_meaning.id))",
-                        "FROM lexicon_meaning JOIN lexicon_lexeme",
-                        "ON lexicon_meaning.id=lexicon_lexeme.meaning_id",
-                        "WHERE lexicon_lexeme.language_id=%s"])
+        query = "SELECT COUNT(DISTINCT(meaning_id)) FROM lexicon_lexeme WHERE language_id = %s"
         cursor = connection.cursor()
         cursor.execute(query, [self.id])
         count, = cursor.fetchone()
