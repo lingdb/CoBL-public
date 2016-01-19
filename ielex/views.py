@@ -264,7 +264,9 @@ def view_language_list(request, language_list=None):
     current_list = get_canonical_language_list(language_list, request)
     request.session["current_language_list_name"] = current_list.name
     languages = current_list.languages.all().order_by("languagelistorder")
-    languages = languages.annotate(entry_count=Count("lexeme"))
+    languages = languages.annotate(lexeme_count=Count("lexeme"))
+    languages = languages.annotate(meaning_count=Count("lexeme__meaning"))
+    languages = languages.annotate(entry_count=Count("lexeme__language"))
 
     def process_postrequest_form(multidict):
         res = defaultdict(list)
@@ -375,8 +377,8 @@ def view_language_list(request, language_list=None):
             langlist_row_form.ascii_name = lang.ascii_name.encode("ascii","ignore")
             #TODO: ascii encoding is OK here as there are no problematic characters ?
             langlist_row_form.utf8_name = lang.utf8_name.encode("ascii","ignore")
-            langlist_row_form.mgs_count = lang.getMeaningCount()
-            langlist_row_form.lex_count = lang.getLexemeCount()
+            langlist_row_form.lex_count = lang.lexeme_count
+            langlist_row_form.mgs_count = lang.meaning_count
             langlist_row_form.entd_count = lang.entry_count
 
             langlist_row_form.glottocode = lang.altname.get('glottocode', '')
