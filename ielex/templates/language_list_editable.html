@@ -33,8 +33,10 @@
 		      <th>Level 0<br>branch</th>
 		      <th>Level 1<br>branch</th>
 		      <th>Level 2<br>branch</th>
-		      <th>Rep.</th>
-		      <th>Lex.</th>
+		      <th title="Representative">Rep.</th>
+		      <th title="Number of meanings">Mgs</th>{# Number of meanings per language #}
+		      <th title="Number of lexemes">Lex.</th>{# Number of lexemes per language #}
+		      <th title="Number of entries">Entd</th>{# Number of entries per language #}
 		    </tr>
 		  </thead>
 		  <tbody>
@@ -75,7 +77,9 @@
 		      		{% form_field language.representative %}
 		      	</div>
 		      </td>
-		      <td>{% form_field language.lex_count class="readonlynarrow" id="narrowtext" %}</td>
+		      <td>{% form_field language.mgs_count class="readonlynarrow" id="narrowtext" %}</td>{# FIXME ADJUST #}
+		      <td>{% form_field language.lex_count class="readonlynarrow" id="narrowtext" %}</td>{# FIXME ADJUST #}
+		      <td>{% form_field language.entd_count class="readonlynarrow" id="narrowtext" %}</td>
 		    </tr>
 		  {% endfor %}
 		  </tbody>

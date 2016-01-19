@@ -220,7 +220,9 @@ class LanguageListRowForm(WTForm):
     level1 = StringField('Level 1 Branch', validators = [DataRequired()])
     level2 = StringField('Level 2 Branch', validators = [DataRequired()])
     representative = BooleanField('Representative', validators = [DataRequired()])
+    mgs_count = IntegerField('Meaning Count', validators = [DataRequired()])
     lex_count = IntegerField('Lexeme Count', validators = [DataRequired()])
+    entd_count = IntegerField('Entry Count', validators = [DataRequired()])
 
 class AddLanguageListTableForm(WTForm):
     langlist = FieldList(FormField(LanguageListRowForm), min_entries = 5) # Default of at least 5 blank fields

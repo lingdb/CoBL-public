@@ -1,7 +1,7 @@
 from __future__ import division
 from itertools import izip
 from string import uppercase, lowercase
-from django.db import models
+from django.db import models, connection
 from django.db.models import Max, F
 from django.core.urlresolvers import reverse
 ## from django.core.cache import cache
@@ -138,6 +138,37 @@ class Language(models.Model):
         if not LanguageBranches.objects.filter(**mustHave).exists():
             for level in levels:
                 self.altname[level] = 0
+
+    def getMeaningCount(self):
+        """
+            Counts the distinct meanings linked to self.
+        """
+        # This kills:
+        # lexemes = Lexeme.objects.filter(language=self).distinct()
+        # meanings = set([l.meaning for l in lexemes])
+        # return len(meanings)
+        # This performs, but doesn't use the ORM:
+        query = " ".join(["SELECT COUNT(DISTINCT(lexicon_meaning.id))",
+                        "FROM lexicon_meaning JOIN lexicon_lexeme",
+                        "ON lexicon_meaning.id=lexicon_lexeme.meaning_id",
+                        "WHERE lexicon_lexeme.language_id=%s"])
+        cursor = connection.cursor()
+        cursor.execute(query, [self.id])
+        count, = cursor.fetchone()
+        return count
+
+    def getLexemeCount(self):
+        """
+            Counts all lexemes linked to self that are not excluded.
+        """
+        query = " ".join(["SELECT COUNT(*)",
+                          "FROM lexicon_lexeme",
+                          "WHERE (cast(data AS json)->>'not_swadesh_term')='false'",
+                          "AND language_id = %s"])
+        cursor = connection.cursor()
+        cursor.execute(query, [self.id])
+        count, = cursor.fetchone()
+        return count
 
     class Meta:
         ordering = ["ascii_name"]
