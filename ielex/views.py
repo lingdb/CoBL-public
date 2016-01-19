@@ -264,9 +264,9 @@ def view_language_list(request, language_list=None):
     current_list = get_canonical_language_list(language_list, request)
     request.session["current_language_list_name"] = current_list.name
     languages = current_list.languages.all().order_by("languagelistorder")
-    languages = languages.annotate(lexeme_count=Count("lexeme"))
-    languages = languages.annotate(meaning_count=Count("lexeme__meaning"))
-    languages = languages.annotate(entry_count=Count("lexeme__language"))
+    languages = languages.annotate(lexeme_count=Count("lexeme", distinct=True))
+    languages = languages.annotate(meaning_count=Count("lexeme__meaning", distinct=True))
+    languages = languages.annotate(entry_count=Count("lexeme__language", distinct=True))
 
     def process_postrequest_form(multidict):
         res = defaultdict(list)
