@@ -160,7 +160,8 @@ class Language(models.Model):
         """
         query = " ".join(["SELECT COUNT(*)",
                           "FROM lexicon_lexeme",
-                          "WHERE (cast(data AS json)->>'not_swadesh_term')='false'",
+                          "WHERE ((cast(data AS json)->>'not_swadesh_term') = 'false'",
+                          "OR (cast(data AS json)->>'not_swadesh_term') IS NULL)",
                           "AND language_id = %s"])
         cursor = connection.cursor()
         cursor.execute(query, [self.id])
