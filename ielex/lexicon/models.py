@@ -139,35 +139,6 @@ class Language(models.Model):
             for level in levels:
                 self.altname[level] = 0
 
-    def getMeaningCount(self):
-        """
-            Counts the distinct meanings linked to self.
-        """
-        # This kills:
-        # lexemes = Lexeme.objects.filter(language=self).distinct()
-        # meanings = set([l.meaning for l in lexemes])
-        # return len(meanings)
-        # This performs, but doesn't use the ORM:
-        query = "SELECT COUNT(DISTINCT(meaning_id)) FROM lexicon_lexeme WHERE language_id = %s"
-        cursor = connection.cursor()
-        cursor.execute(query, [self.id])
-        count, = cursor.fetchone()
-        return count
-
-    def getLexemeCount(self):
-        """
-            Counts all lexemes linked to self that are not excluded.
-        """
-        query = " ".join(["SELECT COUNT(*)",
-                          "FROM lexicon_lexeme",
-                          "WHERE ((cast(data AS json)->>'not_swadesh_term') = 'false'",
-                          "OR (cast(data AS json)->>'not_swadesh_term') IS NULL)",
-                          "AND language_id = %s"])
-        cursor = connection.cursor()
-        cursor.execute(query, [self.id])
-        count, = cursor.fetchone()
-        return count
-
     class Meta:
         ordering = ["ascii_name"]
 

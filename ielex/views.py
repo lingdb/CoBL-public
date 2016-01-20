@@ -264,9 +264,8 @@ def view_language_list(request, language_list=None):
     current_list = get_canonical_language_list(language_list, request)
     request.session["current_language_list_name"] = current_list.name
     languages = current_list.languages.all().order_by("languagelistorder")
-    languages = languages.annotate(lexeme_count=Count("lexeme", distinct=True))
     languages = languages.annotate(meaning_count=Count("lexeme__meaning", distinct=True))
-    languages = languages.annotate(entry_count=Count("lexeme__language", distinct=True))
+    languages = languages.annotate(entry_count=Count("lexeme", distinct=True))
 
     def process_postrequest_form(multidict):
         res = defaultdict(list)
@@ -377,7 +376,8 @@ def view_language_list(request, language_list=None):
             langlist_row_form.ascii_name = lang.ascii_name.encode("ascii","ignore")
             #TODO: ascii encoding is OK here as there are no problematic characters ?
             langlist_row_form.utf8_name = lang.utf8_name.encode("ascii","ignore")
-            langlist_row_form.lex_count = lang.lexeme_count
+            nonLexCount = Lexeme.objects.filter(language=lang, data__icontains='not_swadesh_term": true').count()
+            langlist_row_form.lex_count = lang.entry_count - nonLexCount
             langlist_row_form.mgs_count = lang.meaning_count
             langlist_row_form.entd_count = lang.entry_count
 
