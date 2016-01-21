@@ -68,7 +68,7 @@ form input[class=mediumtext] { width: 90px; }
 
 /*form input[class=readonly] { background-color: #cf9; }*/
 form input[class=readonly] { width: 70px; background-color: #ccc; font-size: 15px;}
-form input[class=language_name] { width: 100px; background-color: #ccc; }
+form input[class=language_name] { width: 150px; background-color: #ccc; }
 form input[class=readonlynarrow] { width: 25px; background-color: #ccc; margin: 0 0 0 0px; padding: 6px 0px; text-align: center; font-size: 15px; }
 
 form input#lowmediumtext { width: 65px; }
