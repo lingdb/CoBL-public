@@ -380,6 +380,7 @@ def view_language_list(request, language_list=None):
             langlist_row_form.lex_count = lang.entry_count - nonLexCount
             langlist_row_form.mgs_count = lang.meaning_count
             langlist_row_form.entd_count = lang.entry_count
+            langlist_row_form.excess_count = (lang.entry_count - nonLexCount) - lang.meaning_count
 
             langlist_row_form.glottocode = lang.altname.get('glottocode', '')
             langlist_row_form.variety = lang.altname.get('variety', '')

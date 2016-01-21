@@ -95,6 +95,8 @@ form input[class=hyperformfield] { color: blue; }
 
 input[class=hidden] { display: none; }
 
+form input.languageBranch {width: 1em;}
+
 /* == Navigation button/lists =================================={{{1 */
 
 ul.navigation {
