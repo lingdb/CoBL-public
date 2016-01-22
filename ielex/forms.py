@@ -255,6 +255,10 @@ class LexemeRowForm(WTForm):
     phoneMic_2_phon_form = BooleanField('PhoneMic to PhoneTic', validators = [DataRequired()])
 
     root_form = StringField('Root Form', validators = [DataRequired()])
+
+    # Exclusion booleans:
+    is_excluded = BooleanField('Is Excluded',validators = [DataRequired()])
+    is_loan = BooleanField('Is Loan',validators = [DataRequired()])
     
     def __init__(self, *args, **kwargs):
         super(LexemeRowForm, self).__init__(*args, **kwargs)
