@@ -11,7 +11,7 @@
 {% block content %}
 
   {% if user.is_authenticated and user.is_staff %}
-  
+
   <form action="" method="POST" name="langlist_ed_form" >{% csrf_token %}
 
 	<div class="langlist_form">
@@ -19,7 +19,7 @@
 	</div>
 
 	<table class="widetable" id="editable">
-	
+
 		  <thead> {# handy for the print view #}
 		   	<tr class="mid-align">
 		      <th></th>
@@ -38,6 +38,8 @@
 		      <th title="Level 1 branch">Lv 1</th>
 		      <th title="Level 2 branch">Lv 2</th>
 		      <th>SndComp<br>code</th>
+		      <th>Mean time depth (yrs)</th>
+		      <th>Std Dev. time depth (yrs)</th>
 		      <th></th>
 		    </tr>
 		  </thead>
@@ -80,6 +82,8 @@
 		      <td>{% form_field language.level1 class="languageBranch" %}</td>
 		      <td>{% form_field language.level2 class="languageBranch" %}</td>
 		      <td>{% form_field language.soundcompcode %}</td>
+			    <td>{% form_field language.mean_timedepth_BP_years %}</td>
+		      <td>{% form_field language.std_deviation_timedepth_BP_years %}</td>
               <td>
 		        <a href="{% url 'language-edit' language.ascii_name.data %}">
 		            <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit {{ language.utf8_name.data }} metadata" >
@@ -129,7 +133,7 @@
 	  </tbody>
 	</table>
   {% endif %}
-  
+
 {% endblock %}
 
 {% block controls %}

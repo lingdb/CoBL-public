@@ -224,6 +224,8 @@ class LanguageListRowForm(WTForm):
     lex_count = IntegerField('Lexeme Count', validators = [DataRequired()])
     entd_count = IntegerField('Entry Count', validators = [DataRequired()])
     excess_count = IntegerField('Excess Count', validators = [DataRequired()])
+    mean_timedepth_BP_years = IntegerField('Mean of Time Depth BP (years)', validators = [DataRequired()])
+    std_deviation_timedepth_BP_years = IntegerField('Standard Deviation of Time Depth BP (years)', validators = [DataRequired()])
 
 class AddLanguageListTableForm(WTForm):
     langlist = FieldList(FormField(LanguageListRowForm), min_entries = 5) # Default of at least 5 blank fields
