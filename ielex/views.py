@@ -395,8 +395,8 @@ def view_language_list(request, language_list=None):
             langlist_row_form.level1 = lang.altname.get('level1', '')
             langlist_row_form.level2 = lang.altname.get('level2', '')
             langlist_row_form.representative = lang.altname.get('representative', '')
-            langlist_row_form.mean_timedepth_BP_years = lang.data.get('mean_timedepth_BP_years')
-            langlist_row_form.std_deviation_timedepth_BP_years = lang.data.get('std_deviation_timedepth_BP_years')
+            langlist_row_form.mean_timedepth_BP_years = lang.altname.get('mean_timedepth_BP_years')
+            langlist_row_form.std_deviation_timedepth_BP_years = lang.altname.get('std_deviation_timedepth_BP_years')
 
             langlist_table_form.langlist.append_entry(langlist_row_form)
         return langlist_table_form

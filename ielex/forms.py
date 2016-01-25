@@ -244,7 +244,7 @@ class LexemeRowForm(WTForm):
     phon_form = StringField('PhoNetic Form', validators = [DataRequired()])
     phoneMic = StringField('PhoneMic Form', validators = [DataRequired()])
     transliteration = StringField('Transliteration', validators = [DataRequired()])
-    not_swadesh_term = BooleanField('Not Swadesh Term',validators = [DataRequired()])
+    not_swadesh_term = BooleanField('Not Swadesh Term', validators = [DataRequired()])
     gloss = StringField('Gloss', validators = [DataRequired()])
     number_cognate_coded = IntegerField('Count Coded Cognates', validators = [DataRequired()])
     notes = TextField('Notes', validators = [DataRequired()])
