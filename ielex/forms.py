@@ -213,12 +213,19 @@ class LanguageListRowForm(WTForm):
     ascii_name = StringField('Language ASCII Name', validators = [DataRequired()])
     glottocode = StringField('Glottocode', validators = [DataRequired()])
     variety = StringField('Language Variety', validators = [DataRequired()])
+    foss_stat = BooleanField('Fossile Status', validators = [DataRequired()])
+    low_stat = BooleanField('Low Status', validators = [DataRequired()])
     soundcompcode = StringField('Sound Comparisons Code', validators = [DataRequired()])
     level0 = StringField('Level 0 Branch', validators = [DataRequired()])
     level1 = StringField('Level 1 Branch', validators = [DataRequired()])
     level2 = StringField('Level 2 Branch', validators = [DataRequired()])
     representative = BooleanField('Representative', validators = [DataRequired()])
+    mgs_count = IntegerField('Meaning Count', validators = [DataRequired()])
     lex_count = IntegerField('Lexeme Count', validators = [DataRequired()])
+    entd_count = IntegerField('Entry Count', validators = [DataRequired()])
+    excess_count = IntegerField('Excess Count', validators = [DataRequired()])
+    mean_timedepth_BP_years = IntegerField('Mean of Time Depth BP (years)', validators = [DataRequired()])
+    std_deviation_timedepth_BP_years = IntegerField('Standard Deviation of Time Depth BP (years)', validators = [DataRequired()])
 
 class AddLanguageListTableForm(WTForm):
     langlist = FieldList(FormField(LanguageListRowForm), min_entries = 5) # Default of at least 5 blank fields
@@ -237,7 +244,7 @@ class LexemeRowForm(WTForm):
     phon_form = StringField('PhoNetic Form', validators = [DataRequired()])
     phoneMic = StringField('PhoneMic Form', validators = [DataRequired()])
     transliteration = StringField('Transliteration', validators = [DataRequired()])
-    not_swadesh_term = BooleanField('Not Swadesh Term',validators = [DataRequired()])
+    not_swadesh_term = BooleanField('Not Swadesh Term', validators = [DataRequired()])
     gloss = StringField('Gloss', validators = [DataRequired()])
     number_cognate_coded = IntegerField('Count Coded Cognates', validators = [DataRequired()])
     notes = TextField('Notes', validators = [DataRequired()])
@@ -250,6 +257,10 @@ class LexemeRowForm(WTForm):
     phoneMic_2_phon_form = BooleanField('PhoneMic to PhoneTic', validators = [DataRequired()])
 
     root_form = StringField('Root Form', validators = [DataRequired()])
+
+    # Exclusion booleans:
+    is_excluded = BooleanField('Is Excluded',validators = [DataRequired()])
+    is_loan = BooleanField('Is Loan',validators = [DataRequired()])
     
     def __init__(self, *args, **kwargs):
         super(LexemeRowForm, self).__init__(*args, **kwargs)

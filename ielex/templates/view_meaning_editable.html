@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{%extends "base.html" %}
 
 {% load staticfiles %}
 {% load lexicon_utils %}
@@ -24,19 +24,20 @@
 		    <th>Language</th>
 		    <th>Orthog.</th>
 		    <th></th>
+		    <th></th>
 		    <th>Translit.</th>
-		    <th>Not<br>Swh<br>
-			</th>
+		    <th>Not<br>Swh<br></th>
 		    <th>PhoneMic</th>
 		    <th></th>
 		    <th>PhoneTic</th>
 		    <th alt="Language specific">Gloss</th>
 		    <th>Notes</th>
 		    <th>Cog.<br>Alias</th>
+		    <th>is_loan</th>
+		    <th>is_exc</th>
 		    <th></th>
 		    <th>Root</th>
-			<th alt="Number of cognate classes">nCog</th>
-		    <th></th>
+            <th alt="Number of cognate classes">nCog</th>
 		    <th>
 		    	<div class="lex_form">
 					<input type="submit" value="Submit" name="meang_form"> <br> <a href="{% url 'view-meaning-languages' meaning.gloss current_language_list.name %}"> undo</a><br>
@@ -48,27 +49,32 @@
 		  	<td class="hidden">{{ lexeme.id }}</td>
 		    <td class="narrow">{% form_field lexeme.language_id class="readonlynarrow" id="narrowtext" %}</td>
 		    <td><a href="{% url 'language-report' lexeme.language_asciiname.data %}">{% form_field lexeme.language_utf8name class="language_name" id="linked" %}</a></td>
-		      <td>{% form_field lexeme.source_form id="source_form" class="mediumtext" %}</td>
-		      <td>
-		      	<div>
-					<input class="leftcheckarrow" type="checkbox" id="translit2src#{{lexeme.transliteration.name}}#{{lexeme.source_form.name}}" onclick="CopyAcross(this)"><label class="left" for="translit2src#{{lexeme.transliteration.name}}#{{lexeme.source_form.name}}"></label>
-					<input class="rightcheckarrow" type="checkbox" id="src2translit#{{lexeme.source_form.name}}#{{lexeme.transliteration.name}}" onclick="CopyAcross(this)"><label class="right" for="src2translit#{{lexeme.source_form.name}}#{{lexeme.transliteration.name}}"></label>
-				</div>
-		      </td>
-		      <td>{% form_field lexeme.transliteration id="transliteration" class="mediumtext" %}</td>
-		      <td>{% form_field lexeme.not_swadesh_term %}</td>
-		      <td>{% form_field lexeme.phoneMic id="phoneMic" class="mediumtext" %}</td>
-		      <td>
-		      	<div>
-		      		<input class="leftcheckarrow" type="checkbox" id="phoneTic2phoneMic#{{lexeme.phon_form.name}}#{{lexeme.phoneMic.name}}" onclick="CopyAcross(this)"><label class="left" for="phoneTic2phoneMic#{{lexeme.phon_form.name}}#{{lexeme.phoneMic.name}}"></label>
-		      		<input class="rightcheckarrow" type="checkbox" id="phoneMic2phoneTic#{{lexeme.phoneMic.name}}#{{lexeme.phon_form.name}}" onclick="CopyAcross(this)"><label class="right" for="phoneMic2phoneTic#{{lexeme.phoneMic.name}}#{{lexeme.phon_form.name}}"></label>
-		      	</div>
-		      </td>
-		      <td>{% form_field lexeme.phon_form id="phoneTic" class="mediumtext" %}</td>
-		      <td>{% form_field lexeme.gloss class="widetext" %}</td>
-		      <td>{% form_field lexeme.notes class="widetext" %}</td>
-			  <td>
-			  	<div class="narrow_form">
+        <td>{% form_field lexeme.source_form id="source_form" class="mediumtext" %}</td>
+        <td>
+          <a href="{% url 'view-lexeme' lexeme.id.data %}">
+            <img src="{% static 'buttons/view.png' %}" alt="View" title="View/edit the lexical entry" />
+          </a>
+        </td>
+        <td>
+          <div>
+            <input class="leftcheckarrow" type="checkbox" id="translit2src#{{lexeme.transliteration.name}}#{{lexeme.source_form.name}}" onclick="CopyAcross(this)"><label class="left" for="translit2src#{{lexeme.transliteration.name}}#{{lexeme.source_form.name}}"></label>
+            <input class="rightcheckarrow" type="checkbox" id="src2translit#{{lexeme.source_form.name}}#{{lexeme.transliteration.name}}" onclick="CopyAcross(this)"><label class="right" for="src2translit#{{lexeme.source_form.name}}#{{lexeme.transliteration.name}}"></label>
+          </div>
+        </td>
+        <td>{% form_field lexeme.transliteration id="transliteration" class="mediumtext" %}</td>
+        <td>{% form_field lexeme.not_swadesh_term %}</td>
+        <td>{% form_field lexeme.phoneMic id="phoneMic" class="mediumtext" %}</td>
+        <td>
+          <div>
+            <input class="leftcheckarrow" type="checkbox" id="phoneTic2phoneMic#{{lexeme.phon_form.name}}#{{lexeme.phoneMic.name}}" onclick="CopyAcross(this)"><label class="left" for="phoneTic2phoneMic#{{lexeme.phon_form.name}}#{{lexeme.phoneMic.name}}"></label>
+            <input class="rightcheckarrow" type="checkbox" id="phoneMic2phoneTic#{{lexeme.phoneMic.name}}#{{lexeme.phon_form.name}}" onclick="CopyAcross(this)"><label class="right" for="phoneMic2phoneTic#{{lexeme.phoneMic.name}}#{{lexeme.phon_form.name}}"></label>
+          </div>
+        </td>
+        <td>{% form_field lexeme.phon_form id="phoneTic" class="mediumtext" %}</td>
+        <td>{% form_field lexeme.gloss class="widetext" %}</td>
+        <td>{% form_field lexeme.notes class="widetext" %}</td>
+        <td>
+          <div class="narrow_form">
 			      {{ lexeme.cognate_class_links.data }}
 			      {% if user.is_authenticated %}
 			        {% ifnotequal add_cognate_judgement|asint lexeme.id.data|asint %}
@@ -81,23 +87,20 @@
 			        </form>
 			        {% endifnotequal %}
 			      {% endif %}
-			      </div>
-			  </td>
-		      <td>
-		      	<div class="Oright">
-		      		<input class="Orightcheckarrow" type="checkbox" id="src2root#{{lexeme.source_form.name}}#{{lexeme.root_form.name}}" onclick="CopyAcross(this)"><label class="Oright" for="src2root#{{lexeme.source_form.name}}#{{lexeme.root_form.name}}"></label>
+          </div>
+        </td>
+        <td>{% form_field lexeme.is_loan disabled="disabled" %}</td>
+        <td>{% form_field lexeme.is_excluded disabled="disabled" %}</td>
+        <td>
+          <div class="Oright">
+            <input class="Orightcheckarrow" type="checkbox" id="src2root#{{lexeme.source_form.name}}#{{lexeme.root_form.name}}" onclick="CopyAcross(this)"><label class="Oright" for="src2root#{{lexeme.source_form.name}}#{{lexeme.root_form.name}}"></label>
 			  	</div>
 			  </td>
-		      <td>{% form_field lexeme.root_form id="rootform" class="mediumtext" %}</td>
-		      <td class="narrow">
-			        {% form_field lexeme.number_cognate_coded id="verynarrowtext"class="readonlynarrow" %}
+        <td>{% form_field lexeme.root_form id="rootform" class="mediumtext" %}</td>
+        <td class="narrow">
+            {% form_field lexeme.number_cognate_coded id="verynarrowtext"class="readonlynarrow" %}
 			  </td>
-		      <td>
-		      	<a href="{% url 'view-lexeme' lexeme.id.data %}">
-		        	<img src="{% static 'buttons/view.png' %}" alt="View" title="View/edit the lexical entry" />
-		      	</a>
-		      </td>
-		      </tr>
+      </tr>
 		  {% endfor %}
 	</table>
 	</form>

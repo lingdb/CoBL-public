@@ -1,7 +1,7 @@
 from __future__ import division
 from itertools import izip
 from string import uppercase, lowercase
-from django.db import models
+from django.db import models, connection
 from django.db.models import Max, F
 from django.core.urlresolvers import reverse
 ## from django.core.cache import cache
@@ -303,6 +303,23 @@ class Lexeme(models.Model):
         return  SafeString(", ".join(format_link(cc_id, alias) for cc_id, alias in
                         two_by_two(self.denormalized_cognate_classes.split(","))))
     # get_cognate_class_links.allow_tags = True # this is only for admin
+
+    def is_excluded(self):
+        # Tests is_exc for #29
+        js = CognateJudgement.objects.filter(lexeme=self).all()
+        for j in js:
+            if j.is_excluded:
+                if not j.is_loanword:
+                    return True
+        return False
+
+    def is_loan(self):
+        js = CognateJudgement.objects.filter(lexeme=self).all()
+        for j in js:
+                if j.is_excluded:
+                    if j.is_loanword:
+                        return True
+        return False
 
     @property
     def reliability_ratings(self):
