@@ -62,28 +62,20 @@
                 }
             };
 
-						function ExcludeRows() {
-							var notswad_chckbx_list = document.getElementsByClassName('notswad_checkbox');
-							var input_list = document.getElementsByTagName('input');
-							var tbl_rows = document.getElementsByClassName('content_row');
-							Array.prototype.forEach.call(notswad_chckbx_list, function(notswad_chckbx_elem) {
-								var targ_chckbx_info = notswad_chckbx_elem.name.split('-');
-								var targ_chckbx_id_num = targ_chckbx_info.slice(0,2);
-								if(notswad_chckbx_elem.checked) {
-										Array.prototype.forEach.call(input_list, function(inpt_elem) {
-											var inpt_elem_info = inpt_elem.name.split('-');
-											var inpt_elem_id_num = inpt_elem_info.slice(0,2);
-											if(targ_chckbx_id_num[0]==inpt_elem_id_num[0] && targ_chckbx_id_num[1]==inpt_elem_id_num[1]) {
-												for(j = 0; j < tbl_rows.length; j++) {
-													if(j==inpt_elem_id_num[1]) {
-														tbl_rows[j].style.display = "none";
-													}
-												}
-											}
-										});
-								}
-							});
-						}
+            function ExcludeRows() {
+                var notswad_chckbx_list = document.getElementsByClassName('notswad_checkbox');
+                Array.prototype.forEach.call(notswad_chckbx_list, function(notswad_chckbx_elem) {
+                    if(notswad_chckbx_elem.checked) {
+                        var target = notswad_chckbx_elem.parentElement;
+                        while(target.tagName !== 'TR' && target !== null){
+                            target = target.parentElement;
+                        }
+                        if(target !== null){
+                            target.style.display = "none";
+                        }
+                    }
+                });
+            }
 
             //function UncheckAll(){
             //    var w = document.getElementsByTagName('input');

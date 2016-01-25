@@ -62,7 +62,7 @@
           </div>
         </td>
         <td>{% form_field lexeme.transliteration id="transliteration" class="mediumtext" %}</td>
-        <td>{% form_field lexeme.not_swadesh_term %}</td>
+        <td>{% form_field lexeme.not_swadesh_term class="notswad_checkbox" %}</td>
         <td>{% form_field lexeme.phoneMic id="phoneMic" class="mediumtext" %}</td>
         <td>
           <div>
@@ -179,6 +179,7 @@
 </ul>
 <p>Cognate judgements are added on this page, but deleted by the lexeme view (use the <img src="{% static 'buttons/view.png' %}" alt="" title="View/Edit the lexical entry" /> button)</p>
 
+<strong>Filter out non-Swadesh terms: <input type="submit" value="Filter" id="filter_non_swadesh" onclick="ExcludeRows()"></strong>
 <h3>Description</h3>
 {{ meaning.notes|linebreaksbr }}
 {% endblock %}
