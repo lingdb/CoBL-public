@@ -8,7 +8,7 @@
   	<link rel="stylesheet" type="text/css" href="{% static 'css/ielex.css' %}" />
   	<link rel="stylesheet" type="text/css" media="print" href="{% static 'css/print.css' %}" />
   	<script>
-  	
+
 		  (function () {
 			    if (window.addEventListener) {
 			        window.addEventListener('DOMContentLoaded', CopyAcross, false);
@@ -16,30 +16,30 @@
 			        window.attachEvent('onclick', CopyAcross);
 			    }
 			} ());
-		  
+
 			function CopyAcross(f) {
-			  
+
 			  	if(f.checked) {
-			  		
+
 			  		var f_id_arr = f.id.split('#');
 			  		var f_id = f_id_arr[0];
 			  		var f_src = f_id_arr[1];
 			  		var f_trg = f_id_arr[2];
-			  		
+
 			  		if(f_id=='src2translit') {
-			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;			  			
+			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
 			  		}
 			  		if(f_id=='src2root') {
-			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;			  			
+			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
 			  		}
 			  		if(f_id=='translit2src') {
-			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;			  			
+			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
 			  		}
 			  		if(f_id=='phoneMic2phoneTic') {
-			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;			  			
+			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
 			  		}
 			  		if(f_id=='phoneTic2phoneMic') {
-			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;			  			
+			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
 			  		}
 				}
 			};
@@ -61,6 +61,21 @@
                     });
                 }
             };
+
+            function ExcludeRows() {
+                var notswad_chckbx_list = document.getElementsByClassName('notswad_checkbox');
+                Array.prototype.forEach.call(notswad_chckbx_list, function(notswad_chckbx_elem) {
+                    if(notswad_chckbx_elem.checked) {
+                        var target = notswad_chckbx_elem.parentElement;
+                        while(target.tagName !== 'TR' && target !== null){
+                            target = target.parentElement;
+                        }
+                        if(target !== null){
+                            target.style.display = "none";
+                        }
+                    }
+                });
+            }
 
             //function UncheckAll(){
             //    var w = document.getElementsByTagName('input');
@@ -137,4 +152,3 @@
 </html>
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
-
