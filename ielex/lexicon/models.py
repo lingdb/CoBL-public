@@ -142,6 +142,34 @@ class Language(models.Model):
     class Meta:
         ordering = ["ascii_name"]
 
+    def is_unchanged(self, **vdict):
+
+        isField = lambda x: getattr(self, x) == vdict[x]
+        isData = lambda x: self.altname.get(x, '') == vdict[x]
+        isY = lambda x: self.altname.get(x, '') == (vdict[x] == 'y')
+
+        fields = {
+            'iso_code': isField,
+            'ascii_name': isField,
+            'glottocode': isData,
+            'variety': isData,
+            'soundcompcode': isData,
+            'level0': isData,
+            'level1': isData,
+            'level2': isData,
+            'mean_timedepth_BP_years': isData,
+            'std_deviation_timedepth_BP_years': isData,
+            'foss_stat': isY,
+            'low_stat': isY,
+            'representative': isY
+            }
+
+        for k,_ in vdict.iteritems():
+            if k in fields:
+                if not fields[k](k):
+                    return False
+        return True
+
 @reversion.register
 class LanguageBranches(models.Model):
     family_ix = models.IntegerField(blank=True)
@@ -238,6 +266,29 @@ class CognateClass(models.Model):
 
     class Meta:
         ordering = ["alias"]
+
+    def is_unchanged(self, **vdict):
+
+        isField = lambda x: getattr(self, x) == vdict[x]
+        isData = lambda x: self.data.get(x, '') == vdict[x]
+        isY = lambda x: self.data.get(x, '') == (vdict[x] == 'y')
+
+        fields = {
+            'alias': isField,
+            'root_form': isField,
+            'root_language': isField,
+            'notes': isField,
+            'gloss_in_root_lang': isData,
+            'loan_source': isData,
+            'loan_notes': isData,
+            'loanword': isY
+            }
+
+        for k,_ in vdict.iteritems():
+            if k in fields:
+                if not fields[k](k):
+                    return False
+        return True
 
 class DyenCognateSet(models.Model):
     cognate_class = models.ForeignKey(CognateClass)
@@ -343,6 +394,28 @@ class Lexeme(models.Model):
 
     class Meta:
         order_with_respect_to = "language"
+
+    def is_unchanged(self, **vdict):
+
+        isField = lambda x: getattr(self, x) == vdict[x]
+        isData = lambda x: self.data.get(x, '') == vdict[x]
+        isY = lambda x: self.data.get(x, '') == (vdict[x] == 'y')
+
+        fields = {
+            'source_form': isField,
+            'phon_form': isField,
+            'gloss': isField,
+            'notes': isField,
+            'phoneMic': isData,
+            'transliteration': isData,
+            'not_swadesh_term': isY
+            }
+
+        for k,_ in vdict.iteritems():
+            if k in fields:
+                if not fields[k](k):
+                    return False
+        return True
 
 
 @reversion.register
