@@ -365,6 +365,7 @@ class Lexeme(models.Model):
         return False
 
     def is_loan(self):
+        # Tests is_loan for #29
         js = CognateJudgement.objects.filter(lexeme=self).all()
         for j in js:
                 if j.is_excluded:
@@ -401,6 +402,12 @@ class Lexeme(models.Model):
         isData = lambda x: self.data.get(x, '') == vdict[x]
         isY = lambda x: self.data.get(x, '') == (vdict[x] == 'y')
 
+        def compareCheckLoan(x):
+            cle = self.checkLoanEvent()
+            if cle == None:
+                return True
+            return cle == (vdict[x] == 'y')
+
         fields = {
             'source_form': isField,
             'phon_form': isField,
@@ -408,7 +415,8 @@ class Lexeme(models.Model):
             'notes': isField,
             'phoneMic': isData,
             'transliteration': isData,
-            'not_swadesh_term': isY
+            'not_swadesh_term': isY,
+            'loan_event': compareCheckLoan
             }
 
         for k,_ in vdict.iteritems():
@@ -416,6 +424,18 @@ class Lexeme(models.Model):
                 if not fields[k](k):
                     return False
         return True
+
+    def checkLoanEvent(self):
+        """
+        This method was added for #29, and shall return one of these three values:
+        * In case that there is exactly one CognateClass linked to this lexeme:
+          * Return .data.get('loanword', False)
+        * Otherwise return None.
+        """
+        if self.cognate_class.count() == 1:
+            for c in self.cognate_class.all():
+                return c.data.get('loanword', False)
+        return None
 
 
 @reversion.register

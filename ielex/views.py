@@ -651,6 +651,10 @@ def view_language_wordlist(request, language, wordlist):
             lex_row_form.is_excluded = lex.is_excluded()
             lex_row_form.is_loan = lex.is_loan()
 
+            cle = lex.checkLoanEvent()
+            lex_row_form.show_loan_event = (cle != None)
+            lex_row_form.loan_event = cle
+
             lex_table_form.lexemes.append_entry(lex_row_form)
         return lex_table_form
 
@@ -1136,8 +1140,13 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             lex_row_form.gloss = lex.gloss
             lex_row_form.notes = lex.notes
             lex_row_form.number_cognate_coded = lex.number_cognate_coded
+
             lex_row_form.is_excluded = lex.is_excluded()
             lex_row_form.is_loan = lex.is_loan()
+
+            cle = lex.checkLoanEvent()
+            lex_row_form.show_loan_event = (cle != None)
+            lex_row_form.loan_event = cle
 
             #Adding CognateClass.root_form to the form
             cogclass_ids = [i[0] for i in list2ntuple(2, lex.denormalized_cognate_classes.split(','))]
