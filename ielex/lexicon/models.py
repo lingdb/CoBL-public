@@ -427,7 +427,7 @@ class Lexeme(models.Model):
 
     def checkLoanEvent(self):
         """
-        This method was added for #29, and shall return one of these three values:
+        This method was added for #29 and shall return one of these three values:
         * In case that there is exactly one CognateClass linked to this lexeme:
           * Return .data.get('loanword', False)
         * Otherwise return None.
@@ -436,6 +436,28 @@ class Lexeme(models.Model):
             for c in self.cognate_class.all():
                 return c.data.get('loanword', False)
         return None
+
+    def setLoanEvent(self, loanword):
+        """
+        This method was added for #29 and shall save a loanword field to
+        the associated CognateClass iff there is exactly one connected to self.
+        """
+        # {unicode,str} -> Bool
+        if type(loanword) == unicode or type(loanword) == str:
+            loanword = (loanword == 'y')
+        # Making sure we've got a bool:
+        if type(loanword) != bool:
+            raise ValueError('loanword had unexpected type: %s' % type(loanword))
+        if self.cognate_class.count() == 1:
+            for c in self.cognate_class.all():
+                old = c.data.get('loanword', False)
+                if old == loanword:
+                    return None
+                c.data['loanword'] = loanword
+                try:
+                    c.save()
+                except Exception, e:
+                    print('Could not store cognate_class for lexeme: ', l.meaning, e)
 
 
 @reversion.register

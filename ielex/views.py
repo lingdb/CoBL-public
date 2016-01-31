@@ -568,6 +568,8 @@ def view_language_wordlist(request, language, wordlist):
                         'phoneMic': v_dict['phoneMic'],
                         'not_swadesh_term': (v_dict['not_swadesh_term']=='y')
                         }
+                    if 'loan_event' in v_dict:
+                        lexm.setLoanEvent(v_dict['loan_event'])
 
                     try:
                         lexm.save()
@@ -1070,6 +1072,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                                  'phoneMic': v_dict['phoneMic'],
                                  'not_swadesh_term': (v_dict['not_swadesh_term']=='y')
                                 }
+                    if 'loan_event' in v_dict:
+                        lexm.setLoanEvent(v_dict['loan_event'])
                     try:
                         lexm.save()
                     except Exception, e:
