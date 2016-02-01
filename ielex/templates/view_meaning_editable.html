@@ -94,18 +94,19 @@
         <td>{% form_field lexeme.is_excluded disabled="disabled" %}</td>
         <td>
         {% if lexeme.object_data.show_loan_event %}
-          {% form_field lexeme.loan_event %}
+          {% form_field lexeme.loan_event class="loan_event" onclick="MirrorCognateCheckboxes(this)" data-mirror=lexeme.cognate_class_links.data %}
         {% endif %}
         </td>
         <td>
           <div class="Oright">
-            <input class="Orightcheckarrow" type="checkbox" id="src2root#{{lexeme.source_form.name}}#{{lexeme.root_form.name}}" onclick="CopyAcross(this)"><label class="Oright" for="src2root#{{lexeme.source_form.name}}#{{lexeme.root_form.name}}"></label>
-			  	</div>
-			  </td>
+            <input class="Orightcheckarrow" type="checkbox" id="src2root#{{lexeme.source_form.name}}#{{lexeme.root_form.name}}" onclick="CopyAcross(this)">
+            <label class="Oright" for="src2root#{{lexeme.source_form.name}}#{{lexeme.root_form.name}}"></label>
+          </div>
+        </td>
         <td>{% form_field lexeme.root_form id="rootform" class="mediumtext" %}</td>
         <td class="narrow">
-            {% form_field lexeme.number_cognate_coded id="verynarrowtext"class="readonlynarrow" %}
-			  </td>
+            {% form_field lexeme.number_cognate_coded id="verynarrowtext" class="readonlynarrow" %}
+        </td>
       </tr>
 		  {% endfor %}
 	</table>

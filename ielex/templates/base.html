@@ -76,6 +76,19 @@
                     }
                 });
             }
+
+            function MirrorCognateCheckboxes(cbox){
+                var checked = cbox.checked
+                  , cld = cbox.dataset.mirror
+                  , cboxList = document.getElementsByClassName('loan_event');
+                Array.prototype.forEach.call(cboxList, function(c){
+                    if(cld === c.dataset.mirror){
+                        if(c.checked !== checked){
+                            c.checked = checked;
+                        }
+                    }
+                });
+            }
   	</script>
   	{% block meta %}{% endblock %}
 </head>
