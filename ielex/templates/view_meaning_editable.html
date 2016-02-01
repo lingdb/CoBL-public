@@ -94,7 +94,7 @@
         <td>{% form_field lexeme.is_excluded disabled="disabled" %}</td>
         <td>
         {% if lexeme.object_data.show_loan_event %}
-          {% form_field lexeme.loan_event class="loan_event" onclick="MirrorCognateCheckboxes(this)" data-mirror=lexeme.cognate_class_links.data %}
+          {% form_field lexeme.loan_event disabled="disabled" %}
         {% endif %}
         </td>
         <td>

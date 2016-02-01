@@ -402,12 +402,6 @@ class Lexeme(models.Model):
         isData = lambda x: self.data.get(x, '') == vdict[x]
         isY = lambda x: self.data.get(x, '') == (vdict[x] == 'y')
 
-        def compareCheckLoan(x):
-            cle = self.checkLoanEvent()
-            if cle == None:
-                return True
-            return cle == (vdict[x] == 'y')
-
         fields = {
             'source_form': isField,
             'phon_form': isField,
@@ -415,8 +409,7 @@ class Lexeme(models.Model):
             'notes': isField,
             'phoneMic': isData,
             'transliteration': isData,
-            'not_swadesh_term': isY,
-            'loan_event': compareCheckLoan
+            'not_swadesh_term': isY
             }
 
         for k,_ in vdict.iteritems():
@@ -436,28 +429,6 @@ class Lexeme(models.Model):
             for c in self.cognate_class.all():
                 return c.data.get('loanword', False)
         return None
-
-    def setLoanEvent(self, loanword):
-        """
-        This method was added for #29 and shall save a loanword field to
-        the associated CognateClass iff there is exactly one connected to self.
-        """
-        # {unicode,str} -> Bool
-        if type(loanword) == unicode or type(loanword) == str:
-            loanword = (loanword == 'y')
-        # Making sure we've got a bool:
-        if type(loanword) != bool:
-            raise ValueError('loanword had unexpected type: %s' % type(loanword))
-        if self.cognate_class.count() == 1:
-            for c in self.cognate_class.all():
-                old = c.data.get('loanword', False)
-                if old == loanword:
-                    return None
-                c.data['loanword'] = loanword
-                try:
-                    c.save()
-                except Exception, e:
-                    print('Could not store cognate_class for lexeme: ', self.meaning, e)
 
 
 @reversion.register
