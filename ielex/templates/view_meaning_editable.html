@@ -35,6 +35,7 @@
 		    <th>Cog.<br>Alias</th>
 		    <th>is_loan</th>
 		    <th>is_exc</th>
+            <th>Loan<br>Event</th>
 		    <th></th>
 		    <th>Root</th>
             <th alt="Number of cognate classes">nCog</th>
@@ -92,14 +93,20 @@
         <td>{% form_field lexeme.is_loan disabled="disabled" %}</td>
         <td>{% form_field lexeme.is_excluded disabled="disabled" %}</td>
         <td>
+        {% if lexeme.object_data.show_loan_event %}
+          {% form_field lexeme.loan_event disabled="disabled" %}
+        {% endif %}
+        </td>
+        <td>
           <div class="Oright">
-            <input class="Orightcheckarrow" type="checkbox" id="src2root#{{lexeme.source_form.name}}#{{lexeme.root_form.name}}" onclick="CopyAcross(this)"><label class="Oright" for="src2root#{{lexeme.source_form.name}}#{{lexeme.root_form.name}}"></label>
-			  	</div>
-			  </td>
+            <input class="Orightcheckarrow" type="checkbox" id="src2root#{{lexeme.source_form.name}}#{{lexeme.root_form.name}}" onclick="CopyAcross(this)">
+            <label class="Oright" for="src2root#{{lexeme.source_form.name}}#{{lexeme.root_form.name}}"></label>
+          </div>
+        </td>
         <td>{% form_field lexeme.root_form id="rootform" class="mediumtext" %}</td>
         <td class="narrow">
-            {% form_field lexeme.number_cognate_coded id="verynarrowtext"class="readonlynarrow" %}
-			  </td>
+            {% form_field lexeme.number_cognate_coded id="verynarrowtext" class="readonlynarrow" %}
+        </td>
       </tr>
 		  {% endfor %}
 	</table>

@@ -157,7 +157,7 @@ if not os.path.exists(local_settings_path):
     import random
     settings_template = file(os.path.join(BASE_DIR,"ielex/local_settings.py")).read()
     key_chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
-    secret_key = "".join([random.choice(key_chars) for i in range(50)])
+    secret_key = "".join([random.choice(key_chars) for i in xrange(50)])
     print>>file(local_settings_path, "w"), settings_template.replace("<++>",secret_key)
 from local_settings import *
 

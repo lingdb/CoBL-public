@@ -259,8 +259,11 @@ class LexemeRowForm(WTForm):
     root_form = StringField('Root Form', validators = [DataRequired()])
 
     # Exclusion booleans:
-    is_excluded = BooleanField('Is Excluded',validators = [DataRequired()])
-    is_loan = BooleanField('Is Loan',validators = [DataRequired()])
+    is_excluded = BooleanField('Is Excluded', validators = [DataRequired()])
+    is_loan = BooleanField('Is Loan', validators = [DataRequired()])
+
+    # LoanEvent for #29:
+    loan_event = BooleanField('Loan Event', validators = [DataRequired()])
     
     def __init__(self, *args, **kwargs):
         super(LexemeRowForm, self).__init__(*args, **kwargs)

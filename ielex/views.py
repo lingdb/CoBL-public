@@ -276,22 +276,6 @@ def view_language_list(request, language_list=None):
                 res[outer_key].append((inner_key, multidict.getlist(key)[0]))
         return res
 
-    def is_unchanged(lang, vdict):
-
-        return  lang.iso_code == vdict['iso_code'] and \
-                lang.ascii_name == vdict['ascii_name'] and \
-                lang.altname.get('glottocode', '') == vdict['glottocode'] and \
-                lang.altname.get('variety', '') == vdict['variety'] and \
-                lang.altname.get('foss_stat', '') == (vdict['foss_stat']=='y') and \
-                lang.altname.get('low_stat', '') == (vdict['low_stat']=='y') and \
-                lang.altname.get('soundcompcode', '') == vdict['soundcompcode'] and \
-                lang.altname.get('representative', '') == (vdict['representative']=='y') and \
-                lang.altname.get('level0', '') == vdict['level0'] and \
-                lang.altname.get('level1', '') == vdict['level1'] and \
-                lang.altname.get('level2', '') == vdict['level2'] and \
-                lang.data.get('mean_timedepth_BP_years', '') == v_dict['mean_timedepth_BP_years'] and \
-                lang.data.get('std_deviation_timedepth_BP_years', '') == v_dict['std_deviation_timedepth_BP_years']
-
     if request.method == 'POST' and not ('langlist_form' in request.POST):
         form = ChooseLanguageListForm(request.POST)
         if form.is_valid():
@@ -325,9 +309,9 @@ def view_language_list(request, language_list=None):
 
             try:
 
-                lang = Language.objects.get(**{'ascii_name': v_dict['ascii_name']})
+                lang = Language.objects.get(ascii_name = v_dict['ascii_name'])
 
-                if not is_unchanged(lang, v_dict):
+                if not lang.is_unchanged(**v_dict):
 
                     lang.iso_code = v_dict['iso_code']
                     #ascii encoding is OK here as there are no problematic characters ?
@@ -510,16 +494,6 @@ def view_language_wordlist(request, language, wordlist):
 
         return len(standard_keyset-test_keyset) == 0
 
-    def is_unchanged(lxm, vdict):
-
-        return  lxm.source_form == vdict['source_form'] and \
-                lxm.phon_form == vdict['phon_form'] and \
-                lxm.gloss == vdict['gloss'] and \
-                lxm.notes == vdict['notes'] and \
-                lxm.data.get('phoneMic', '') == vdict['phoneMic'] and \
-                lxm.data.get('transliteration', '') == vdict['transliteration'] and \
-                lxm.data.get('not_swadesh_term', '') == (v_dict['not_swadesh_term']=='y')
-
     def list2ntuple(n, iterable, fillvals=None):
         init_tuples = [iter(iterable)] * n
         return izip_longest(fillvalue=fillvals, *init_tuples)
@@ -569,20 +543,20 @@ def view_language_wordlist(request, language, wordlist):
 
             try:
 
-                lexm = Lexeme.objects.get(**{'id': int(v_dict['id'])})
+                lexm = Lexeme.objects.get(id = int(v_dict['id']))
 
                 #Saving CognateClass.root_form
                 cogclassid_rootform = zip([i[0] for i in list2ntuple(2, lexm.denormalized_cognate_classes.split(','))], v_dict['root_form'].split(','))
                 for ccid,rtfrm in cogclassid_rootform:
                     if ccid:
-                        cogclass = CognateClass.objects.get(**{'id': int(ccid)})
+                        cogclass = CognateClass.objects.get(id = int(ccid))
 
                         #TODO: hack to update CognateClass.root_form only if it has been changed during this POST
                         #Here: collect only forms which have been changed during this POST
                         if cogclass.root_form!=rtfrm:
                             cogclass_changed_rootform_map[ccid] = rtfrm
 
-                if not is_unchanged(lexm, v_dict):
+                if not lexm.is_unchanged(**v_dict):
                     lexm.language = language
                     lexm.source_form = v_dict['source_form']
                     lexm.phon_form = v_dict['phon_form']
@@ -610,7 +584,7 @@ def view_language_wordlist(request, language, wordlist):
         #TODO: hack to update CognateClass.root_form only if it has been changed during this POST
         #Here: update root forms which were changed during this POST
         for k,v in cogclass_changed_rootform_map.items():
-            cogclass = CognateClass.objects.get(**{'id': int(k)})
+            cogclass = CognateClass.objects.get(id = int(k))
             cogclass.root_form = v
             try:
                 cogclass.save()
@@ -676,6 +650,10 @@ def view_language_wordlist(request, language, wordlist):
 
             lex_row_form.is_excluded = lex.is_excluded()
             lex_row_form.is_loan = lex.is_loan()
+
+            cle = lex.checkLoanEvent()
+            lex_row_form.show_loan_event = (cle != None)
+            lex_row_form.loan_event = cle
 
             lex_table_form.lexemes.append_entry(lex_row_form)
         return lex_table_form
@@ -995,16 +973,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                 res[outer_key].append((inner_key, multidict.getlist(key)[0]))
         return res
 
-    def is_unchanged(lxm, vdict):
-
-        return  lxm.source_form == vdict['source_form'] and \
-                lxm.phon_form == vdict['phon_form'] and \
-                lxm.gloss == vdict['gloss'] and \
-                lxm.notes == vdict['notes'] and \
-                lxm.data.get('phoneMic', '') == vdict[u'phoneMic'] and \
-                lxm.data.get('transliteration', '') == vdict['transliteration'] and \
-                lxm.data.get('not_swadesh_term', '') == (v_dict['not_swadesh_term']=='y')
-
     def list2ntuple(n, iterable, fillvals=None):
         init_tuples = [iter(iterable)] * n
         return izip_longest(fillvalue=fillvals, *init_tuples)
@@ -1075,20 +1043,20 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
             try:
 
-                lexm = Lexeme.objects.get(**{'id': int(v_dict['id'])})
+                lexm = Lexeme.objects.get(id=int(v_dict['id']))
 
                 #Saving CognateClass.root_form
                 cogclassid_rootform = zip([i[0] for i in list2ntuple(2, lexm.denormalized_cognate_classes.split(','))], v_dict['root_form'].split(','))
                 for ccid,rtfrm in cogclassid_rootform:
                     if ccid:
-                        cogclass = CognateClass.objects.get(**{'id': int(ccid)})
+                        cogclass = CognateClass.objects.get(id = int(ccid))
 
                         #TODO: hack to update CognateClass.root_form only if it has been changed during this POST
                         #Here: collect only forms which have been changed during this POST
                         if cogclass.root_form!=rtfrm:
                             cogclass_changed_rootform_map[ccid] = rtfrm
 
-                if not is_unchanged(lexm, v_dict):
+                if not lexm.is_unchanged(**v_dict):
 
                     #TODO: ascii encoding is OK here as there are no problematic characters ?
                     lexm.language = Language.objects.get(utf8_name=v_dict['language_utf8name'].encode('ascii','ignore'))
@@ -1116,7 +1084,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         #TODO: hack to update CognateClass.root_form only if it has been changed during this POST
         #Here: update root forms which were changed during this POST
         for k,v in cogclass_changed_rootform_map.items():
-            cogclass = CognateClass.objects.get(**{'id': int(k)})
+            cogclass = CognateClass.objects.get(id = int(k))
             cogclass.root_form = v
             try:
                 cogclass.save()
@@ -1172,8 +1140,13 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             lex_row_form.gloss = lex.gloss
             lex_row_form.notes = lex.notes
             lex_row_form.number_cognate_coded = lex.number_cognate_coded
+
             lex_row_form.is_excluded = lex.is_excluded()
             lex_row_form.is_loan = lex.is_loan()
+
+            cle = lex.checkLoanEvent()
+            lex_row_form.show_loan_event = (cle != None)
+            lex_row_form.loan_event = cle
 
             #Adding CognateClass.root_form to the form
             cogclass_ids = [i[0] for i in list2ntuple(2, lex.denormalized_cognate_classes.split(','))]
@@ -1218,17 +1191,6 @@ def view_cognateclasses(request, meaning):
                 res[outer_key].append((inner_key, multidict.getlist(key)[0]))
         return res
 
-    def is_unchanged_cc(cc, vdict):
-        return  cc.alias == v_dict['alias'] and \
-                cc.root_form == v_dict['root_form'] and \
-                cc.root_language == v_dict['root_language'] and \
-                cc.data.get('gloss_in_root_lang', '') == v_dict['gloss_in_root_lang'] and \
-                cc.notes == v_dict['notes'] and \
-                cc.data.get('loanword', '') == (v_dict['loanword']=='y') and \
-                cc.data.get('loan_source', '') == v_dict['loan_source'] and \
-                cc.data.get('loan_notes', '') == v_dict['loan_notes']
-
-
     if (request.method == 'POST') and 'cogclass_form' in request.POST:#is_meaningform(request.POST):
 
         request_form_dict = process_postrequest_form(request.POST)
@@ -1252,11 +1214,11 @@ def view_cognateclasses(request, meaning):
             try:
                 #NB. the following works and is an interesting instance of updating the database,
                 #but we probably don't want to do this specific instance.
-                #>meang = Meaning.objects.create(**{'gloss':v_dict['meaning']})
+                #>meang = Meaning.objects.create(gloss = v_dict['meaning'])
 
-                cogclass = CognateClass.objects.get(**{'id': int(v_dict['cogclass_id'])})
+                cogclass = CognateClass.objects.get(id = int(v_dict['cogclass_id']))
 
-                if not is_unchanged_cc(cogclass, v_dict):
+                if not cogclass.is_unchanged(**v_dict):
 
                     cogclass.alias = v_dict['alias']
                     #cogclass.modified = v_dict['modified']
