@@ -457,7 +457,7 @@ class Lexeme(models.Model):
                 try:
                     c.save()
                 except Exception, e:
-                    print('Could not store cognate_class for lexeme: ', l.meaning, e)
+                    print('Could not store cognate_class for lexeme: ', self.meaning, e)
 
 
 @reversion.register
