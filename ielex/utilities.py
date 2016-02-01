@@ -115,7 +115,7 @@ class LexDBManagementCommand(NoArgsCommand):
 
 if __name__ == "__main__":
     snip_flag = True
-    for i in range(1,703):
+    for i in xrange(1,703):
         s = int2alpha(i)
         if i < 11 or i > 692:
             print i, s
