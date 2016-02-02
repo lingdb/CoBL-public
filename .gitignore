@@ -1,5 +1,3 @@
-syntax: glob
-
 *.pyc
 .RData
 .Rhistory
