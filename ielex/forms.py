@@ -251,6 +251,8 @@ class LexemeRowForm(WTForm):
     number_cognate_coded = IntegerField('Count Coded Cognates', validators = [DataRequired()])
     notes = TextField('Notes', validators = [DataRequired()])
     cogclass_link = TextField('CogClass Links', validators = [DataRequired()])
+    rfcWebLookup1 = StringField('This Lg lex rfc web path 1', validators = [DataRequired()])
+    rfcWebLookup2 = StringField('This Lg lex rfc web path 2', validators = [DataRequired()])
 	
     #Components for copying buttons
     source_form_2_transliteration = BooleanField('Source Form to Transliteration', validators = [DataRequired()])

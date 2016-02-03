@@ -570,7 +570,9 @@ def view_language_wordlist(request, language, wordlist):
                     lexm.data = {
                         'transliteration': v_dict['transliteration'],
                         'phoneMic': v_dict['phoneMic'],
-                        'not_swadesh_term': (v_dict['not_swadesh_term']=='y')
+                        'not_swadesh_term': (v_dict['not_swadesh_term']=='y'),
+                        'rfcWebLookup1': v_dict['rfcWebLookup1'],
+                        'rfcWebLookup2': v_dict['rfcWebLookup2']
                         }
 
                     try:
@@ -658,6 +660,9 @@ def view_language_wordlist(request, language, wordlist):
             cle = lex.checkLoanEvent()
             lex_row_form.show_loan_event = (cle != None)
             lex_row_form.loan_event = cle
+
+            lex_row_form.rfcWebLookup1 = lex.data.get('rfcWebLookup1', '')
+            lex_row_form.rfcWebLookup2 = lex.data.get('rfcWebLookup2', '')
 
             lex_table_form.lexemes.append_entry(lex_row_form)
         return lex_table_form
@@ -1072,7 +1077,9 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                     lexm.data = {
                                  'transliteration': v_dict['transliteration'],
                                  'phoneMic': v_dict['phoneMic'],
-                                 'not_swadesh_term': (v_dict['not_swadesh_term']=='y')
+                                 'not_swadesh_term': (v_dict['not_swadesh_term']=='y'),
+                                 'rfcWebLookup1': v_dict['rfcWebLookup1'],
+                                 'rfcWebLookup2': v_dict['rfcWebLookup2']
                                 }
                     try:
                         lexm.save()
@@ -1151,6 +1158,9 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             cle = lex.checkLoanEvent()
             lex_row_form.show_loan_event = (cle != None)
             lex_row_form.loan_event = cle
+
+            lex_row_form.rfcWebLookup1 = lex.data.get('rfcWebLookup1', u'')
+            lex_row_form.rfcWebLookup2 = lex.data.get('rfcWebLookup2', u'')
 
             #Adding CognateClass.root_form to the form
             cogclass_ids = [i[0] for i in list2ntuple(2, lex.denormalized_cognate_classes.split(','))]

@@ -411,7 +411,9 @@ class Lexeme(models.Model):
             'notes': isField,
             'phoneMic': isData,
             'transliteration': isData,
-            'not_swadesh_term': isY
+            'not_swadesh_term': isY,
+            'rfcWebLookup1': isData,
+            'rfcWebLookup2': isData
             }
 
         for k,_ in vdict.iteritems():

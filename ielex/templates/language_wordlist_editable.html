@@ -40,6 +40,8 @@
 		<th></th>
 		<th>Root</th>
 		<th alt="Number of cognate classes">nCog</th>
+		<th>Lex ID for web lookup 1</th>
+		<th>Lex ID for web lookup 2</th>
 	  </tr>
 	  {% for lexeme in lex_ed_form.lexemes %}
 	  {# if lexeme.meaning.data #}
@@ -87,6 +89,8 @@
 	      <td class="narrow">
 		        {% form_field lexeme.number_cognate_coded id="narrowtext"class="readonlynarrow" %}
 		  </td>
+          <td>{% form_field lexeme.rfcWebLookup1 %}</td>
+          <td>{% form_field lexeme.rfcWebLookup2 %}</td>
 	    </tr>
 	    {# endif #}
 	  {% endfor %}

@@ -15,7 +15,9 @@
 	<form action="" method="POST" name="lex_ed_form">{% csrf_token %}
 			
 	<div class="lex_form">
-		<input type="submit" value="Submit" name="meang_form"> <br> <a href="{% url 'view-meaning-languages' meaning.gloss current_language_list.name %}"> Cancel</a><br>
+		<input type="submit" value="Submit" name="meang_form">
+        <br>
+        <a href="{% url 'view-meaning-languages' meaning.gloss current_language_list.name %}">undo</a>
 	</div>
 	<table id="editable">
 		  <tr class="mid-align">
@@ -39,11 +41,8 @@
 		    <th></th>
 		    <th>Root</th>
             <th alt="Number of cognate classes">nCog</th>
-		    <th>
-		    	<div class="lex_form">
-					<input type="submit" value="Submit" name="meang_form"> <br> <a href="{% url 'view-meaning-languages' meaning.gloss current_language_list.name %}"> undo</a><br>
-				</div>
-		    </th>
+		    <th>This Lg lex rfc web path 1</th>
+		    <th>This Lg lex rfc web path 2</th>
 		  </tr>
 		  {% for lexeme in lex_ed_form.lexemes %}
 		  <tr>
@@ -107,6 +106,8 @@
         <td class="narrow">
             {% form_field lexeme.number_cognate_coded id="verynarrowtext" class="readonlynarrow" %}
         </td>
+        <td>{% form_field lexeme.rfcWebLookup1 %}</td>
+        <td>{% form_field lexeme.rfcWebLookup2 %}</td>
       </tr>
 		  {% endfor %}
 	</table>
