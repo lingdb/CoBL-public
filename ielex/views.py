@@ -328,7 +328,9 @@ def view_language_list(request, language_list=None):
                                  'level2': v_dict['level2'],
                                  'representative': (v_dict['representative']=='y'),
                                  'mean_timedepth_BP_years': v_dict['mean_timedepth_BP_years'],
-                                 'std_deviation_timedepth_BP_years': v_dict['std_deviation_timedepth_BP_years']
+                                 'std_deviation_timedepth_BP_years': v_dict['std_deviation_timedepth_BP_years'],
+                                 'rfcWebPath1': v_dict['rfcWebPath1'],
+                                 'rfcWebPath2': v_dict['rfcWebPath2']
                                  }
 
                     lang.validateBranchLevels()
@@ -381,6 +383,8 @@ def view_language_list(request, language_list=None):
             langlist_row_form.representative = lang.altname.get('representative', '')
             langlist_row_form.mean_timedepth_BP_years = lang.altname.get('mean_timedepth_BP_years')
             langlist_row_form.std_deviation_timedepth_BP_years = lang.altname.get('std_deviation_timedepth_BP_years')
+            langlist_row_form.rfcWebPath1 = lang.altname.get('rfcWebPath1', '')
+            langlist_row_form.rfcWebPath2 = lang.altname.get('rfcWebPath2', '')
 
             langlist_table_form.langlist.append_entry(langlist_row_form)
         return langlist_table_form

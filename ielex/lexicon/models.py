@@ -161,7 +161,9 @@ class Language(models.Model):
             'std_deviation_timedepth_BP_years': isData,
             'foss_stat': isY,
             'low_stat': isY,
-            'representative': isY
+            'representative': isY,
+            'rfcWebPath1': isData,
+            'rfcWebPath2': isData
             }
 
         for k,_ in vdict.iteritems():

@@ -226,6 +226,8 @@ class LanguageListRowForm(WTForm):
     excess_count = IntegerField('Excess Count', validators = [DataRequired()])
     mean_timedepth_BP_years = IntegerField('Mean of Time Depth BP (years)', validators = [DataRequired()])
     std_deviation_timedepth_BP_years = IntegerField('Standard Deviation of Time Depth BP (years)', validators = [DataRequired()])
+    rfcWebPath1 = StringField('This Lg lex rfc web path 1', validators = [DataRequired()])
+    rfcWebPath2 = StringField('This Lg lex rfc web path 2', validators = [DataRequired()])
 
 class AddLanguageListTableForm(WTForm):
     langlist = FieldList(FormField(LanguageListRowForm), min_entries = 5) # Default of at least 5 blank fields

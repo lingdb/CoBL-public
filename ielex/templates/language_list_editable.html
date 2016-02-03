@@ -41,6 +41,8 @@
 		      <th>Mean time depth (yrs)</th>
 		      <th>Std Dev. time depth (yrs)</th>
 		      <th></th>
+		      <th>This Lg lex rfc web path 1</th>
+		      <th>This Lg lex rfc web path 2</th>
 		    </tr>
 		  </thead>
 		  <tbody>
@@ -89,6 +91,8 @@
 		            <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit {{ language.utf8_name.data }} metadata" >
 		          </a>
               </td>
+		      <td>{% form_field language.rfcWebPath1 %}</td>
+		      <td>{% form_field language.rfcWebPath2 %}</td>
 		    </tr>
 		  {% endfor %}
 		  </tbody>
