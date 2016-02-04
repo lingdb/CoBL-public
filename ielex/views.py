@@ -677,6 +677,8 @@ def view_language_wordlist(request, language, wordlist):
             lex_row_form.show_loan_event = (cle is not None)
             lex_row_form.loan_event = cle
 
+            lex_row_form.rfcWebPath1 = language.altname.get('rfcWebPath1', '')
+            lex_row_form.rfcWebPath2 = language.altname.get('rfcWebPath2', '')
             lex_row_form.rfcWebLookup1 = lex.data.get('rfcWebLookup1', '')
             lex_row_form.rfcWebLookup2 = lex.data.get('rfcWebLookup2', '')
 

@@ -90,8 +90,18 @@
 	      <td class="narrow">
 		        {% form_field lexeme.number_cognate_coded id="narrowtext"class="readonlynarrow" %}
 		  </td>
-          <td>{% form_field lexeme.rfcWebLookup1 %}</td>
-          <td>{% form_field lexeme.rfcWebLookup2 %}</td>
+          <td>
+            {% form_field lexeme.rfcWebLookup1 %}
+            {% if lexeme.object_data.rfcWebPath1 and lexeme.data.rfcWebLookup1 %}
+            <a href="{{ lexeme.object_data.rfcWebPath1 }}{{ lexeme.data.rfcWebLookup1 }}" target="_blank"><img src="/ielex/static/buttons/info.png"></a>
+            {% endif %}
+          </td>
+          <td>
+            {% form_field lexeme.rfcWebLookup2 %}
+            {% if lexeme.object_data.rfcWebPath2 and lexeme.data.rfcWebLookup2 %}
+            <a href="{{ lexeme.object_data.rfcWebPath2 }}{{ lexeme.data.rfcWebLookup2 }}" target="_blank"><img src="/ielex/static/buttons/info.png"></a>
+            {% endif %}
+          </td>
           <td>{% form_field lexeme.dubious %}</td>
 	    </tr>
 	    {# endif #}
