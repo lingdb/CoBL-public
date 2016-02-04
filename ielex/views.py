@@ -240,23 +240,6 @@ def get_canonical_language_list(language_list=None, request=None):
         raise Http404
     return language_list
 
-# def get_language_list_form(request):
-#     language_list_name = get_current_language_list_name(request)
-#     if request.method == 'POST':
-#         form = ChooseLanguageListForm(request.POST)
-#         if form.is_valid():
-#             current_list = form.cleaned_data["language_list"]
-#             language_list_name = current_list.name
-#             msg = "Language list selection changed to '%s'" %\
-#                     language_list_name
-#             messages.add_message(request, messages.INFO, msg)
-#     else:
-#         form = ChooseLanguageListForm()
-#     form.fields["language_list"].initial = LanguageList.objects.get(
-#             name=language_list_name).id
-#     return form
-
-
 ############ CHANGED ##############################
 
 @csrf_protect
