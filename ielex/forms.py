@@ -253,6 +253,7 @@ class LexemeRowForm(WTForm):
     cogclass_link = TextField('CogClass Links', validators = [DataRequired()])
     rfcWebLookup1 = StringField('This Lg lex rfc web path 1', validators = [DataRequired()])
     rfcWebLookup2 = StringField('This Lg lex rfc web path 2', validators = [DataRequired()])
+    dubious = BooleanField('Dubious', validators = [DataRequired()])
 	
     #Components for copying buttons
     source_form_2_transliteration = BooleanField('Source Form to Transliteration', validators = [DataRequired()])

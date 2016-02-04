@@ -539,12 +539,6 @@ def view_language_wordlist(request, language, wordlist):
 
             v_dict = dict(v)
 
-            #TODO: temporary fix for problem with HTML checkboxes,
-            #where these return nothing if box unchecked.
-            #FIX: create validation procedure for 'lex_form'.
-            if not('not_swadesh_term' in v_dict.keys()):
-                v_dict['not_swadesh_term'] = ''
-
             try:
 
                 lexm = Lexeme.objects.get(id = int(v_dict['id']))
@@ -570,9 +564,10 @@ def view_language_wordlist(request, language, wordlist):
                     lexm.data = {
                         'transliteration': v_dict['transliteration'],
                         'phoneMic': v_dict['phoneMic'],
-                        'not_swadesh_term': (v_dict['not_swadesh_term']=='y'),
+                        'not_swadesh_term': (v_dict.get('not_swadesh_term','n')=='y'),
                         'rfcWebLookup1': v_dict['rfcWebLookup1'],
-                        'rfcWebLookup2': v_dict['rfcWebLookup2']
+                        'rfcWebLookup2': v_dict['rfcWebLookup2'],
+                        'dubious': (v_dict.get('dubious', 'n')=='y')
                         }
 
                     try:
@@ -663,6 +658,8 @@ def view_language_wordlist(request, language, wordlist):
 
             lex_row_form.rfcWebLookup1 = lex.data.get('rfcWebLookup1', '')
             lex_row_form.rfcWebLookup2 = lex.data.get('rfcWebLookup2', '')
+
+            lex_row_form.dubious = lex.data.get('dubious', '')
 
             lex_table_form.lexemes.append_entry(lex_row_form)
         return lex_table_form
@@ -1044,12 +1041,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
             v_dict = dict(v)
 
-            #TODO: temporary fix for problem with HTML checkboxes,
-            #where these return nothing if box unchecked.
-            #FIX: create validation procedure for 'meang_form'.
-            if not('not_swadesh_term' in v_dict.keys()):
-                v_dict['not_swadesh_term'] = u''
-
             try:
 
                 lexm = Lexeme.objects.get(id=int(v_dict['id']))
@@ -1077,7 +1068,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                     lexm.data = {
                                  'transliteration': v_dict['transliteration'],
                                  'phoneMic': v_dict['phoneMic'],
-                                 'not_swadesh_term': (v_dict['not_swadesh_term']=='y'),
+                                 'not_swadesh_term': (v_dict.get('not_swadesh_term','n')=='y'),
                                  'rfcWebLookup1': v_dict['rfcWebLookup1'],
                                  'rfcWebLookup2': v_dict['rfcWebLookup2']
                                 }

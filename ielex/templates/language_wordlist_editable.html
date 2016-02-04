@@ -42,6 +42,7 @@
 		<th alt="Number of cognate classes">nCog</th>
 		<th>Web dict ID 1</th>
 		<th>Web dict ID 2</th>
+		<th>Dubious</th>
 	  </tr>
 	  {% for lexeme in lex_ed_form.lexemes %}
 	  {# if lexeme.meaning.data #}
@@ -91,6 +92,7 @@
 		  </td>
           <td>{% form_field lexeme.rfcWebLookup1 %}</td>
           <td>{% form_field lexeme.rfcWebLookup2 %}</td>
+          <td>{% form_field lexeme.dubious %}</td>
 	    </tr>
 	    {# endif #}
 	  {% endfor %}

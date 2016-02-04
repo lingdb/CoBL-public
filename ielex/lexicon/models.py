@@ -402,7 +402,7 @@ class Lexeme(models.Model):
 
         isField = lambda x: getattr(self, x) == vdict[x]
         isData = lambda x: self.data.get(x, '') == vdict[x]
-        isY = lambda x: self.data.get(x, '') == (vdict[x] == 'y')
+        isY = lambda x: self.data.get(x, False) == (vdict[x] == 'y')
 
         fields = {
             'source_form': isField,
@@ -413,12 +413,18 @@ class Lexeme(models.Model):
             'transliteration': isData,
             'not_swadesh_term': isY,
             'rfcWebLookup1': isData,
-            'rfcWebLookup2': isData
+            'rfcWebLookup2': isData,
+            'dubious': isY
             }
 
-        for k,_ in vdict.iteritems():
-            if k in fields:
-                if not fields[k](k):
+        for k,f in fields.iteritems():
+            # Fixing boolean fields:
+            if f == isY:
+                if k not in vdict:
+                    vdict[k] = 'n'
+            # Testing for changes:
+            if k in vdict:
+                if not f(k):
                     return False
         return True
 
