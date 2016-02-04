@@ -4,8 +4,8 @@ from string import uppercase, lowercase
 from django.db import models, connection
 from django.db.models import Max, F
 from django.core.urlresolvers import reverse
-## from django.core.cache import cache
-#from django.db import connection ### testing
+# from django.core.cache import cache
+# from django.db import connection ### testing
 from django.db import IntegrityError
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_delete
@@ -15,11 +15,11 @@ from django.utils.encoding import python_2_unicode_compatible
 # from django.contrib import admin
 import jsonfield
 import reversion
-#from reversion.admin import VersionAdmin
+# from reversion.admin import VersionAdmin
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import *
 
-### from https://code.djangoproject.com/ticket/8399
+# from https://code.djangoproject.com/ticket/8399
 try:
     from functools import wraps
 except ImportError:
@@ -36,10 +36,10 @@ def disable_for_loaddata(signal_handler):
                 return
         signal_handler(*args, **kwargs)
     return wrapper
-### end
+# end
 
-## TODO: reinstate the cache stuff, but using a site specific key prefix (maybe
-## the short name of the database
+# TODO: reinstate the cache stuff, but using a site specific key prefix (maybe
+# the short name of the database
 
 TYPE_CHOICES = (
         ("P", "Publication"),
@@ -47,8 +47,8 @@ TYPE_CHOICES = (
         ("E", "Expert"),
         )
 
-RELIABILITY_CHOICES = ( # used by Citation classes
-        #("X", "Unclassified"), # change "X" to "" will force users to make
+RELIABILITY_CHOICES = (  # used by Citation classes
+        # ("X", "Unclassified"), # change "X" to "" will force users to make
         ("A", "High"),         # a selection upon seeing this form
         ("B", "Good (e.g. should be double checked)"),
         ("C", "Doubtful"),
@@ -59,32 +59,35 @@ RELIABILITY_CHOICES = ( # used by Citation classes
 # http://south.aeracode.org/docs/customfields.html#extending-introspection
 # add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])
 
+
 class CharNullField(models.CharField):
-	"""CharField that stores NULL but returns ''
+    """CharField that stores NULL but returns ''
     This is important for uniqueness checks where multiple null values
     are allowed (following ANSI SQL standard). For example, if
     CognateClass objects have an explicit name, it must be unique, but
     having a name is optional."""
-	def to_python(self, value):
-		if isinstance(value, models.CharField):
-			return value
-		if value==None:
-			return ""
-		else:
-			return value
-	def get_prep_value(self, value):
+    def to_python(self, value):
+        if isinstance(value, models.CharField):
+            return value
+        if value is None:
+            return ""
+        else:
+            return value
+
+    def get_prep_value(self, value):
         # this was get_db_prep_value, but that is for database specific things
-		if value=="":
-			return None
-		else:
-			return value
+        if value == "":
+            return None
+        else:
+            return value
+
 
 @reversion.register
 class Source(models.Model):
 
     citation_text = models.TextField(unique=True)
-    type_code = models.CharField(max_length=1, choices=TYPE_CHOICES,
-            default="P")
+    type_code = models.CharField(
+        max_length=1, choices=TYPE_CHOICES, default="P")
     description = models.TextField(blank=True)
     data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
@@ -98,11 +101,12 @@ class Source(models.Model):
     class Meta:
         ordering = ["type_code", "citation_text"]
 
+
 @reversion.register
 class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
-    ascii_name = models.CharField(max_length=128, unique=True,
-            validators=[suitable_for_url])
+    ascii_name = models.CharField(
+        max_length=128, unique=True, validators=[suitable_for_url])
     utf8_name = models.CharField(max_length=128, unique=True)
     description = models.TextField(blank=True, null=True)
     altname = jsonfield.JSONField(blank=True)
@@ -114,7 +118,7 @@ class Language(models.Model):
         return self.utf8_name
 
     def validateBranchLevels(self):
-        levels = ['level0','level1','level2']
+        levels = ['level0', 'level1', 'level2']
         # Making sure all levels exist and have an int in them:
         for level in levels:
             if level in self.altname:
@@ -126,7 +130,7 @@ class Language(models.Model):
                         l = 0
                     self.altname[level] = l
             else:
-                self.altname[level] = 0;
+                self.altname[level] = 0
         # Making sure levels map to an entry of LanguageBranches:
         mustHave = {}
         for level, field in izip(levels, ['family_ix', 'level1_branch_ix']):
@@ -144,9 +148,14 @@ class Language(models.Model):
 
     def is_unchanged(self, **vdict):
 
-        isField = lambda x: getattr(self, x) == vdict[x]
-        isData = lambda x: self.altname.get(x, '') == vdict[x]
-        isY = lambda x: self.altname.get(x, '') == (vdict[x] == 'y')
+        def isField(x):
+            return getattr(self, x) == vdict[x]
+
+        def isData(x):
+            return self.altname.get(x, '') == vdict[x]
+
+        def isY(x):
+            return self.altname.get(x, '') == (vdict[x] == 'y')
 
         fields = {
             'iso_code': isField,
@@ -166,11 +175,12 @@ class Language(models.Model):
             'rfcWebPath2': isData
             }
 
-        for k,_ in vdict.iteritems():
+        for k, _ in vdict.iteritems():
             if k in fields:
                 if not fields[k](k):
                     return False
         return True
+
 
 @reversion.register
 class LanguageBranches(models.Model):
@@ -178,10 +188,12 @@ class LanguageBranches(models.Model):
     level1_branch_ix = models.IntegerField(blank=True)
     level1_branch_name = models.TextField(blank=True, unique=True)
 
+
 @reversion.register
 class Meaning(models.Model):
-    gloss = models.CharField(max_length=64, unique=True, validators=[suitable_for_url])
-    description = models.CharField(max_length=64, blank=True) # show name
+    gloss = models.CharField(
+        max_length=64, unique=True, validators=[suitable_for_url])
+    description = models.CharField(max_length=64, blank=True)  # show name
     notes = models.TextField(blank=True)
     data = jsonfield.JSONField(blank=True)
     percent_coded = models.FloatField(editable=False, default=0)
@@ -208,20 +220,24 @@ class Meaning(models.Model):
     class Meta:
         ordering = ["gloss"]
 
+
 @reversion.register
 @python_2_unicode_compatible
 class CognateClass(models.Model):
     """
     1.  `name` field: This is optional, for manually given names.
-    2.  `root_form` field: Using decorator to ensure Python 2 unicode compatibility.
-        For details, see `django.utils.encoding.python_2_unicode_compatible` at:
+    2.  `root_form` field:
+        Using decorator to ensure Python 2 unicode compatibility.
+        For details see
+        `django.utils.encoding.python_2_unicode_compatible` at:
         https://docs.djangoproject.com/en/dev/ref/utils/
     """
     alias = models.CharField(max_length=3)
     notes = models.TextField(blank=True)
     modified = models.DateTimeField(auto_now=True)
-    name = CharNullField(max_length=128, blank=True, null=True, unique=True,
-            validators=[suitable_for_url])
+    name = CharNullField(
+        max_length=128, blank=True, null=True,
+        unique=True, validators=[suitable_for_url])
     root_form = models.TextField(blank=True)
     root_language = models.TextField(blank=True)
     data = jsonfield.JSONField(blank=True)
@@ -231,14 +247,15 @@ class CognateClass(models.Model):
 
     def update_alias(self, save=True):
         """Reset alias to the first unused letter"""
-        codes = set(uppercase) | set([i+j for i in uppercase for j in
-            lowercase])
-        meanings = Meaning.objects.filter(lexeme__cognate_class=self).distinct()
+        codes = set(uppercase) | \
+            set([i+j for i in uppercase for j in lowercase])
+        meanings = Meaning.objects.filter(
+            lexeme__cognate_class=self).distinct()
         current_aliases = CognateClass.objects.filter(
                 lexeme__meaning__in=meanings).distinct().exclude(
                 id=self.id).values_list("alias", flat=True)
         codes -= set(current_aliases)
-        self.alias = sorted(codes, key=lambda i:(len(i), i))[0]
+        self.alias = sorted(codes, key=lambda i: (len(i), i))[0]
         if save:
             self.save()
         return
@@ -246,7 +263,8 @@ class CognateClass(models.Model):
     def get_meanings(self):
         # some cognate classes have more than one meaning, e.g. "right" ~
         # "rightside", "in" ~ "at"
-        meanings = Meaning.objects.filter(lexeme__cognate_class=self).distinct()
+        meanings = Meaning.objects.filter(
+            lexeme__cognate_class=self).distinct()
         return meanings
 
     def get_meaning(self):
@@ -271,9 +289,14 @@ class CognateClass(models.Model):
 
     def is_unchanged(self, **vdict):
 
-        isField = lambda x: getattr(self, x) == vdict[x]
-        isData = lambda x: self.data.get(x, '') == vdict[x]
-        isY = lambda x: self.data.get(x, '') == (vdict[x] == 'y')
+        def isField(x):
+            return getattr(self, x) == vdict[x]
+
+        def isData(x):
+            return self.data.get(x, '') == vdict[x]
+
+        def isY(x):
+            return self.data.get(x, '') == (vdict[x] == 'y')
 
         fields = {
             'alias': isField,
@@ -286,11 +309,12 @@ class CognateClass(models.Model):
             'loanword': isY
             }
 
-        for k,_ in vdict.iteritems():
+        for k, _ in vdict.iteritems():
             if k in fields:
                 if not fields[k](k):
                     return False
         return True
+
 
 class DyenCognateSet(models.Model):
     cognate_class = models.ForeignKey(CognateClass)
@@ -301,21 +325,22 @@ class DyenCognateSet(models.Model):
         if self.doubtful:
             qmark = " ?"
         else:
-            qmark =""
+            qmark = ""
         return "%s%s" % (self.name, qmark)
+
 
 @reversion.register
 class Lexeme(models.Model):
     language = models.ForeignKey(Language)
     meaning = models.ForeignKey(Meaning, blank=True, null=True)
-    cognate_class = models.ManyToManyField(CognateClass,
-            through="CognateJudgement", blank=True)
+    cognate_class = models.ManyToManyField(
+        CognateClass, through="CognateJudgement", blank=True)
     source_form = models.CharField(max_length=128)
     phon_form = models.CharField(max_length=128, blank=True)
     gloss = models.CharField(max_length=128, blank=True)
     notes = models.TextField(blank=True)
-    source = models.ManyToManyField(Source, through="LexemeCitation",
-            blank=True)
+    source = models.ManyToManyField(
+        Source, through="LexemeCitation", blank=True)
     data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
     number_cognate_coded = models.IntegerField(editable=False, default=0)
@@ -328,8 +353,9 @@ class Lexeme(models.Model):
         data = []
         for cc in self.cognate_class.all():
             data.append(cc.id)
-            if CognateJudgement.objects.get(lexeme=self,
-                    cognate_class=cc).is_excluded:
+            judgement = CognateJudgement.objects.get(
+                lexeme=self, cognate_class=cc)
+            if judgement.is_excluded:
                 data.append("(%s)" % cc.alias)
             else:
                 data.append(cc.alias)
@@ -353,8 +379,9 @@ class Lexeme(models.Model):
             else:
                 template = '<a href="/cognate/%s/">%s</a>'
             return template % (cc_id, alias)
-        return  SafeString(", ".join(format_link(cc_id, alias) for cc_id, alias in
-                        two_by_two(self.denormalized_cognate_classes.split(","))))
+        parts = [format_link(cc_id, alias) for cc_id, alias in
+                 two_by_two(self.denormalized_cognate_classes.split(","))]
+        return SafeString(", ".join(parts))
     # get_cognate_class_links.allow_tags = True # this is only for admin
 
     def is_excluded(self):
@@ -377,7 +404,8 @@ class Lexeme(models.Model):
 
     @property
     def reliability_ratings(self):
-        return set(self.lexemecitation_set.values_list("reliability", flat=True))
+        return set(self.lexemecitation_set.values_list(
+                   "reliability", flat=True))
 
     def get_absolute_url(self, anchor=None):
         """The absolute urls of LexemeCitation, CognateJudgement and
@@ -400,9 +428,14 @@ class Lexeme(models.Model):
 
     def is_unchanged(self, **vdict):
 
-        isField = lambda x: getattr(self, x) == vdict[x]
-        isData = lambda x: self.data.get(x, '') == vdict[x]
-        isY = lambda x: self.data.get(x, False) == (vdict[x] == 'y')
+        def isField(x):
+            return getattr(self, x) == vdict[x]
+
+        def isData(x):
+            return self.data.get(x, '') == vdict[x]
+
+        def isY(x):
+            return self.data.get(x, False) == (vdict[x] == 'y')
 
         fields = {
             'source_form': isField,
@@ -417,7 +450,7 @@ class Lexeme(models.Model):
             'dubious': isY
             }
 
-        for k,f in fields.iteritems():
+        for k, f in fields.iteritems():
             # Fixing boolean fields:
             if f == isY:
                 if k not in vdict:
@@ -430,7 +463,7 @@ class Lexeme(models.Model):
 
     def checkLoanEvent(self):
         """
-        This method was added for #29 and shall return one of these three values:
+        This method was added for #29 and shall return one of three values:
         * In case that there is exactly one CognateClass linked to this lexeme:
           * Return .data.get('loanword', False)
         * Otherwise return None.
@@ -459,13 +492,17 @@ class CognateJudgement(models.Model):
 
     @property
     def reliability_ratings(self):
-        return set(self.cognatejudgementcitation_set.values_list("reliability", flat=True))
+        return set(self.cognatejudgementcitation_set.values_list(
+                   "reliability", flat=True))
 
     @property
     def long_reliability_ratings(self):
-        """An alphabetically sorted list of (rating_code, description) tuples"""
+        """
+        An alphabetically sorted list of (rating_code, description) tuples
+        """
         descriptions = dict(RELIABILITY_CHOICES)
-        return [(rating, descriptions[rating]) for rating in sorted(self.reliability_ratings)]
+        return [(rating, descriptions[rating]) for rating in
+                sorted(self.reliability_ratings)]
 
     @property
     def is_loanword(self):
@@ -474,12 +511,15 @@ class CognateJudgement(models.Model):
 
     @property
     def is_excluded(self):
-        return bool(set(["X","L"]).intersection(self.reliability_ratings)) or \
-                bool(set(["X","L"]).intersection(self.lexeme.reliability_ratings))
+        inRel = bool(set(["X", "L"]).intersection(self.reliability_ratings))
+        inLex = bool(set(["X", "L"]).intersection(
+            self.lexeme.reliability_ratings))
+        return inRel or inLex
 
     def __unicode__(self):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
-                self.cognate_class.alias, self.id)
+                              self.cognate_class.alias, self.id)
+
 
 @reversion.register
 class LanguageList(models.Model):
@@ -493,10 +533,11 @@ class LanguageList(models.Model):
 
     # TODO how can I make this the default ordering?
     """
-    DEFAULT = "all" # all languages
+    DEFAULT = "all"  # all languages
 
-    name = models.CharField(max_length=128, unique=True,
-            validators=[suitable_for_url, standard_reserved_names])
+    name = models.CharField(
+        max_length=128, unique=True,
+        validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
     languages = models.ManyToManyField(Language, through="LanguageListOrder")
     data = jsonfield.JSONField(blank=True)
@@ -517,7 +558,10 @@ class LanguageList(models.Model):
         return
 
     def insert(self, N, language):
-        """Insert another language into a LanguageList ordering before the object position N"""
+        """
+        Insert another language into a LanguageList
+        ordering before the object position N
+        """
         llo = LanguageListOrder.objects.get(
                 language=language,
                 language_list=self)
@@ -538,6 +582,7 @@ class LanguageList(models.Model):
         with a separation of approximately 1.0.  This is a bit slow, so
         it should only be done from time to time."""
         count = self.languagelistorder_set.count()
+
         def jitter(N, N_list):
             """Return a number close to N such that N is not in N_list"""
             while True:
@@ -548,7 +593,8 @@ class LanguageList(models.Model):
                     N += 0.0001
             return
         if count:
-            order_floats = self.languagelistorder_set.values_list("order", flat=True)
+            order_floats = self.languagelistorder_set.values_list(
+                "order", flat=True)
             for i, llo in enumerate(self.languagelistorder_set.all()):
                 if i != llo.order:
                     llo.order = jitter(i, order_floats)
@@ -578,6 +624,7 @@ class LanguageList(models.Model):
     class Meta:
         ordering = ["name"]
 
+
 class LanguageListOrder(models.Model):
 
     language = models.ForeignKey(Language)
@@ -586,21 +633,23 @@ class LanguageListOrder(models.Model):
 
     def __unicode__(self):
         return u"%s:%s(%s)" % (self.language_list.name,
-                self.order,
-                self.language.ascii_name)
+                               self.order,
+                               self.language.ascii_name)
 
     class Meta:
         ordering = ["order"]
         unique_together = (("language_list", "language"),
-                ("language_list", "order"))
+                           ("language_list", "order"))
+
 
 @reversion.register
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
     DEFAULT = "all"
 
-    name = models.CharField(max_length=128, unique=True,
-            validators=[suitable_for_url, standard_reserved_names])
+    name = models.CharField(
+        max_length=128, unique=True,
+        validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
     meanings = models.ManyToManyField(Meaning, through="MeaningListOrder")
     data = jsonfield.JSONField(blank=True)
@@ -621,7 +670,10 @@ class MeaningList(models.Model):
         return
 
     def insert(self, N, meaning):
-        """Insert another meaning into a MeaningList ordering before the object position N"""
+        """
+        Insert another meaning into a MeaningList
+        ordering before the object position N
+        """
         llo = MeaningListOrder.objects.get(
                 meaning=meaning,
                 meaning_list=self)
@@ -642,6 +694,7 @@ class MeaningList(models.Model):
         with a separation of approximately 1.0.  This is a bit slow, so
         it should only be done from time to time."""
         count = self.meaninglistorder_set.count()
+
         def jitter(N, N_list):
             """Return a number close to N such that N is not in N_list"""
             while True:
@@ -652,7 +705,8 @@ class MeaningList(models.Model):
                     N += 0.0001
             return
         if count:
-            order_floats = self.meaninglistorder_set.values_list("order", flat=True)
+            order_floats = self.meaninglistorder_set.values_list(
+                "order", flat=True)
             for i, llo in enumerate(self.meaninglistorder_set.all()):
                 if i != llo.order:
                     llo.order = jitter(i, order_floats)
@@ -682,6 +736,7 @@ class MeaningList(models.Model):
     class Meta:
         ordering = ["name"]
 
+
 class MeaningListOrder(models.Model):
 
     meaning = models.ForeignKey(Meaning)
@@ -690,13 +745,13 @@ class MeaningListOrder(models.Model):
 
     def __unicode__(self):
         return u"%s:%s(%s)" % (self.meaning_list.name,
-                self.order,
-                self.meaning.gloss)
+                               self.order,
+                               self.meaning.gloss)
 
     class Meta:
         ordering = ["order"]
         unique_together = (("meaning_list", "meaning"),
-                ("meaning_list", "order"))
+                           ("meaning_list", "order"))
 
 
 class CognateClassList(models.Model):
@@ -711,14 +766,18 @@ class CognateClassList(models.Model):
 
     DEFAULT = "all"
 
-    name = models.CharField(max_length=128,
-            validators=[suitable_for_url, standard_reserved_names])
+    name = models.CharField(
+        max_length=128,
+        validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
-    cognateclasses = models.ManyToManyField(CognateClass, through="CognateClassListOrder")
+    cognateclasses = models.ManyToManyField(
+        CognateClass, through="CognateClassListOrder")
     modified = models.DateTimeField(auto_now=True)
 
     def append(self, cognateclass):
-        """Add another cognateclass to the end of a CognateClassList ordering"""
+        """
+        Add another cognateclass to the end of a CognateClassList ordering
+        """
         N = self.cognateclasslistorder_set.aggregate(Max("order")).values()[0]
         try:
             N += 1
@@ -732,7 +791,10 @@ class CognateClassList(models.Model):
         return
 
     def insert(self, N, cognateclass):
-        """Insert another cognateclass into a CognateClassList ordering before the object position N"""
+        """
+        Insert another cognateclass into a CognateClassList
+        ordering before the object position N
+        """
         llo = CognateClassListOrder.objects.get(
                 cognateclass=cognateclass,
                 cognateclass_list=self)
@@ -753,6 +815,7 @@ class CognateClassList(models.Model):
         with a separation of approximately 1.0.  This is a bit slow, so
         it should only be done from time to time."""
         count = self.cognateclasslistorder_set.count()
+
         def jitter(N, N_list):
             """Return a number close to N such that N is not in N_list"""
             while True:
@@ -763,7 +826,8 @@ class CognateClassList(models.Model):
                     N += 0.0001
             return
         if count:
-            order_floats = self.cognateclasslistorder_set.values_list("order", flat=True)
+            order_floats = self.cognateclasslistorder_set.values_list(
+                "order", flat=True)
             for i, llo in enumerate(self.cognateclasslistorder_set.all()):
                 if i != llo.order:
                     llo.order = jitter(i, order_floats)
@@ -784,14 +848,12 @@ class CognateClassList(models.Model):
         orderB.save()
         return
 
-    #def get_absolute_url(self):
-    #    return "/meanings/%s/" % self.name
-
     def __unicode__(self):
         return self.name
 
     class Meta:
         ordering = ["name"]
+
 
 class CognateClassListOrder(models.Model):
 
@@ -801,13 +863,13 @@ class CognateClassListOrder(models.Model):
 
     def __unicode__(self):
         return u"%s:%s(%s)" % (self.cognateclass_list.name,
-                self.order,
-                self.cognateclass.alias)
+                               self.order,
+                               self.cognateclass.alias)
 
     class Meta:
         ordering = ["order"]
         unique_together = (("cognateclass_list", "cognateclass"),
-                ("cognateclass_list", "order"))
+                           ("cognateclass_list", "order"))
 
 
 # class GenericCitation(models.Model):
@@ -891,10 +953,12 @@ class LexemeCitation(AbstractBaseCitation):
         return self.lexeme.get_absolute_url(anchor)
 
     def __unicode__(self):
-        return u"%s %s src:%s" % (self.id, self.lexeme.source_form, self.source.id)
+        return u"%s %s src:%s" % \
+            (self.id, self.lexeme.source_form, self.source.id)
 
     class Meta:
         unique_together = (("lexeme", "source"),)
+
 
 @reversion.register
 class CognateClassCitation(AbstractBaseCitation):
@@ -911,11 +975,10 @@ class CognateClassCitation(AbstractBaseCitation):
         except Source.DoesNotExist:
             src = None
         return u"%s cog=%s src=%s" % (self.id, cog, src)
-                # self.cognate_class.id, self.source.id)
 
     def get_absolute_url(self):
         return reverse("cognate-class-citation-detail",
-                kwargs={"pk":self.id})
+                       kwargs={"pk": self.id})
 
     class Meta:
         unique_together = (("cognate_class", "source"),)
@@ -941,6 +1004,7 @@ class CognateClassCitation(AbstractBaseCitation):
 #     except Lexeme.DoesNotExist:
 #         pass # parent has been deleted
 
+
 @disable_for_loaddata
 def update_language_list_all(sender, instance, **kwargs):
     """Update the LanguageList 'all' whenever Language table is changed"""
@@ -954,7 +1018,7 @@ def update_language_list_all(sender, instance, **kwargs):
     if missing_langs:
         # make a new alphabetized list
         default_alpha = LanguageList.DEFAULT+"-alpha"
-        try: # zap the old one
+        try:  # zap the old one
             ll_alpha = LanguageList.objects.get(name=default_alpha)
             ll_alpha.delete()
         except LanguageList.DoesNotExist:
@@ -966,6 +1030,7 @@ def update_language_list_all(sender, instance, **kwargs):
 
 models.signals.post_save.connect(update_language_list_all, sender=Language)
 models.signals.post_delete.connect(update_language_list_all, sender=Language)
+
 
 @disable_for_loaddata
 def update_meaning_list_all(sender, instance, **kwargs):
@@ -995,11 +1060,15 @@ models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
 @disable_for_loaddata
 def update_cognateclass_list_all(sender, instance, **kwargs):
-    """Update the CognateClassList 'all' whenever CognateClass table is changed"""
-    ccl, _ = CognateClassList.objects.get_or_create(name=CognateClassList.DEFAULT)
+    """
+    Update the CognateClassList 'all' whenever CognateClass table is changed
+    """
+    ccl, _ = CognateClassList.objects.get_or_create(
+        name=CognateClassList.DEFAULT)
     ccl.sequentialize()
 
-    missing_cognateclasses = set(CognateClass.objects.all()) - set(ccl.cognateclasses.all())
+    missing_cognateclasses = \
+        set(CognateClass.objects.all()) - set(ccl.cognateclasses.all())
     for cogclass in missing_cognateclasses:
         ccl.append(cogclass)
 
@@ -1016,8 +1085,10 @@ def update_cognateclass_list_all(sender, instance, **kwargs):
             ccl_alpha.append(cgclss)
     return
 
-models.signals.post_save.connect(update_cognateclass_list_all, sender=CognateClass)
-models.signals.post_delete.connect(update_cognateclass_list_all, sender=CognateClass)
+models.signals.post_save.connect(
+    update_cognateclass_list_all, sender=CognateClass)
+models.signals.post_delete.connect(
+    update_cognateclass_list_all, sender=CognateClass)
 
 
 @disable_for_loaddata
@@ -1028,40 +1099,43 @@ def update_denormalized_data(sender, instance, **kwargs):
         elif sender == CognateJudgementCitation:
             try:
                 lexeme = instance.cognate_judgement.lexeme
-            except CognateJudgement.DoesNotExist: # e.g. if the cognate judgement
-                return      # citation is deleted automatically because the cognate
-                            # judgement has been deleted
+            except CognateJudgement.DoesNotExist:
+                # e.g. if the cognate judgement
+                # citation is deleted automatically because the cognate
+                # judgement has been deleted
+                return
         if sender in [CognateJudgement, CognateJudgementCitation]:
             lexeme.set_number_cognate_coded()
         lexeme.set_denormalized_cognate_classes()
     except Lexeme.DoesNotExist:
-        pass # must have been deleted
+        pass  # must have been deleted
     return
 
-models.signals.post_save.connect(update_denormalized_data,
-        sender=CognateJudgement)
-models.signals.post_delete.connect(update_denormalized_data,
-        sender=CognateJudgement)
+models.signals.post_save.connect(
+    update_denormalized_data, sender=CognateJudgement)
+models.signals.post_delete.connect(
+    update_denormalized_data, sender=CognateJudgement)
 
-models.signals.post_save.connect(update_denormalized_data,
-        sender=CognateJudgementCitation)
-models.signals.post_delete.connect(update_denormalized_data,
-        sender=CognateJudgementCitation)
+models.signals.post_save.connect(
+    update_denormalized_data, sender=CognateJudgementCitation)
+models.signals.post_delete.connect(
+    update_denormalized_data, sender=CognateJudgementCitation)
 
-models.signals.post_save.connect(update_denormalized_data,
-        sender=LexemeCitation)
-models.signals.post_delete.connect(update_denormalized_data,
-        sender=LexemeCitation)
+models.signals.post_save.connect(
+    update_denormalized_data, sender=LexemeCitation)
+models.signals.post_delete.connect(
+    update_denormalized_data, sender=LexemeCitation)
+
 
 @disable_for_loaddata
 def update_denormalized_from_lexeme(sender, instance, **kwargs):
     instance.meaning.set_percent_coded()
     return
 
-models.signals.post_save.connect(update_denormalized_from_lexeme,
-        sender=Lexeme)
-models.signals.post_delete.connect(update_denormalized_from_lexeme,
-        sender=Lexeme)
+models.signals.post_save.connect(
+    update_denormalized_from_lexeme, sender=Lexeme)
+models.signals.post_delete.connect(
+    update_denormalized_from_lexeme, sender=Lexeme)
 
 # -- Reversion registration ----------------------------------------
 
