@@ -11,25 +11,24 @@ TEMPLATE_CONTEXT_PROCESSORS setting."""
 from ielex.settings import VERSION
 from ielex import local_settings
 from ielex.lexicon.models import *
-#from ielex.extensional_semantics.models import *
+# from ielex.extensional_semantics.models import *
+
 
 def configuration(request):
     """Various things stored in local_settings.py"""
-    return {"version":VERSION,
-            "current_url":request.get_full_path(),
-            "project_long_name":local_settings.project_long_name,
-            "project_short_name":local_settings.project_short_name,
-            "project_description":local_settings.project_description,
-            "acknowledgements":local_settings.acknowledgements,
-            "semantic_domains":local_settings.semantic_domains,
-            "structural_features":local_settings.structural_features
-            }
+    return {"version": VERSION,
+            "current_url": request.get_full_path(),
+            "project_long_name": local_settings.project_long_name,
+            "project_short_name": local_settings.project_short_name,
+            "project_description": local_settings.project_description,
+            "acknowledgements": local_settings.acknowledgements,
+            "semantic_domains": local_settings.semantic_domains,
+            "structural_features": local_settings.structural_features}
+
 
 def navigation(request):
     return {"current_wordlist_name":
-                    request.session.get("current_wordlist_name",
-                    MeaningList.DEFAULT),
+            request.session.get("current_wordlist_name", MeaningList.DEFAULT),
             "current_language_list_name":
-                    request.session.get("current_language_list_name",
-                    LanguageList.DEFAULT),
-            }
+            request.session.get(
+                "current_language_list_name", LanguageList.DEFAULT)}
