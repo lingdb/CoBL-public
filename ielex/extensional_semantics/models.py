@@ -2,6 +2,7 @@ from django.db import models
 import reversion
 from ielex.lexicon.models import AbstractBaseCitation
 
+
 @reversion.register
 class SemanticRelation(models.Model):
     relation_code = models.CharField(max_length=64)
@@ -16,21 +17,26 @@ class SemanticRelation(models.Model):
     def __unicode__(self):
         return unicode("%s (%s)" % (self.relation_code, self.long_name))
 
+
 @reversion.register
 class SemanticExtension(models.Model):
     lexeme = models.ForeignKey('lexicon.Lexeme')
     relation = models.ForeignKey(SemanticRelation)
-    source = models.ManyToManyField('lexicon.Source', through="SemanticExtensionCitation")
+    source = models.ManyToManyField(
+        'lexicon.Source', through="SemanticExtensionCitation")
     modified = models.DateTimeField(auto_now=True)
 
     def reliability_ratings(self):
-        return set(self.semanticextensioncitation.values_list("reliability", flat=True))
+        return set(
+            self.semanticextensioncitation.values_list(
+                "reliability", flat=True))
 
     def get_absolute_url(self):
         return "/extension/%s/" % self.id
 
     def __unicode__(self):
         return u"%s" % (self.id)
+
 
 @reversion.register
 class SemanticExtensionCitation(AbstractBaseCitation):
@@ -41,10 +47,12 @@ class SemanticExtensionCitation(AbstractBaseCitation):
         return "/citation/extension/%s/" % self.id
 
     def __unicode__(self):
-        return u"<SEC %s src=%s sec=%s>" % (self.id, self.extension.id, self.source.id)
+        return u"<SEC %s src=%s sec=%s>" % \
+            (self.id, self.extension.id, self.source.id)
 
     class Meta:
         unique_together = (("extension", "source"),)
+
 
 @reversion.register
 class SemanticDomain(models.Model):
@@ -56,8 +64,8 @@ class SemanticDomain(models.Model):
 
     name = models.CharField(max_length=999, unique=True)
     description = models.TextField(blank=True, null=True)
-    relation_ids = models.CommaSeparatedIntegerField(blank=True,
-            max_length=999)
+    relation_ids = models.CommaSeparatedIntegerField(
+        blank=True, max_length=999)
     modified = models.DateTimeField(auto_now=True)
 
     def _get_list(self):
@@ -65,6 +73,7 @@ class SemanticDomain(models.Model):
             return [int(i) for i in self.relation_ids.split(",")]
         except ValueError:
             return []
+
     def _set_list(self, listobj):
         self.relation_ids = ",".join([str(i) for i in listobj])
         return
@@ -76,19 +85,25 @@ class SemanticDomain(models.Model):
     class Meta:
         ordering = ["name"]
 
+
 def update_semantic_domain_all(sender, instance, **kwargs):
     try:
         sd = SemanticDomain.objects.get(name=SemanticDomain.DEFAULT)
     except:
-        sd = SemanticDomain.objects.create(name=SemanticDomain.DEFAULT,
-                description="Default semantic domain containing a list of all semantic relations")
-    if sd.relation_id_list != list(SemanticRelation.objects.values_list("id", flat=True)):
+        desc = "Default semantic domain containing a " \
+               "list of all semantic relations"
+        sd = SemanticDomain.objects.create(
+            name=SemanticDomain.DEFAULT, description=desc)
+    compareList = list(SemanticRelation.objects.values_list("id", flat=True))
+    if sd.relation_id_list != compareList:
         sd.relation_id_list = [l.id for l in SemanticRelation.objects.all()]
         sd.save(force_update=True)
     return
 
-models.signals.post_save.connect(update_semantic_domain_all, sender=SemanticRelation)
-models.signals.post_delete.connect(update_semantic_domain_all, sender=SemanticRelation)
+models.signals.post_save.connect(
+    update_semantic_domain_all, sender=SemanticRelation)
+models.signals.post_delete.connect(
+    update_semantic_domain_all, sender=SemanticRelation)
 
 # for modelclass in [SemanticRelation,
 #         SemanticExtension,

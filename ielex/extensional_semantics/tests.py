@@ -6,7 +6,8 @@ from ielex.extensional_semantics.models import *
 from ielex.lexicon.models import Lexeme, Source
 from ielex.settings import semantic_domains as SEMANTIC_DOMAINS
 
-class ExtensionalSemanticsViewTests(TestCase,ViewBaseMethods):
+
+class ExtensionalSemanticsViewTests(TestCase, ViewBaseMethods):
 
     def setUp(self):
         self.client = Client()
