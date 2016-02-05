@@ -15,6 +15,7 @@ formatter = logging.Formatter('%(message)s')
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 
+
 class ViewBaseMethods:
     """
     Must be subclassed along with TestCase in order to be run as part of the
@@ -33,8 +34,10 @@ class ViewBaseMethods:
         if path not in self.seen_links:
             self.seen_links.add(path)
             response = self.client.get(path, follow=True)
-            logger.info("CHECKING: %s [%s] < %s" % (path,
-                response.status_code, parent)) # want to include parent html
+            logger.info(
+                "CHECKING: %s [%s] < %s" %
+                (path, response.status_code,
+                 parent))  # want to include parent html
             self.assertEqual(response.status_code, 200)
             dom = lxml.html.fromstring(response.content)
             for element, attribute, link, pos in dom.iterlinks():
@@ -69,11 +72,12 @@ class ViewBaseMethods:
         root = "/"
         self.seen_links = set()
         lacking_slash = []
+
         def walk_page(path, parent=None):
             if path not in self.seen_links:
                 self.seen_links.add(path)
                 if not path.endswith("/"):
-                    if not path.split("/")[-1].startswith("#"): # anchor
+                    if not path.split("/")[-1].startswith("#"):  # anchor
                         lacking_slash.append((path, parent))
                 response = self.client.get(path, follow=True)
                 dom = lxml.html.fromstring(response.content)
@@ -91,8 +95,7 @@ class ViewBaseMethods:
         self.assertFalse(lacking_slash)
 
 
-
-class ViewTests(TestCase,ViewBaseMethods):
+class ViewTests(TestCase, ViewBaseMethods):
 
     def setUp(self):
         self.client = Client()
@@ -108,9 +111,10 @@ class UrlTests(TestCase):
             try:
                 assert u.name
                 names.append(u.name)
-            except(AttributeError,AssertionError):
-                pass 
+            except(AttributeError, AssertionError):
+                pass
         self.assertEqual(len(names), len(set(names)))
+
 
 class MeaningListTests(TestCase):
 
@@ -123,102 +127,136 @@ class MeaningListTests(TestCase):
             self.meaning_list.append(meaning)
 
     def test_append_to_meaning_list(self):
-        self.assertEqual(self.meanings,
-                list(self.meaning_list.meanings.all().order_by("meaninglistorder")))
+        self.assertEqual(
+            self.meanings,
+            list(self.meaning_list.meanings.all().order_by(
+                "meaninglistorder")))
 
     def test_remove_from_meaning_list(self):
         meaning = self.meanings[0]
         self.meaning_list.remove(meaning)
-        self.assertEqual(self.meanings[1:],
-                list(self.meaning_list.meanings.all().order_by("meaninglistorder")))
+        self.assertEqual(
+            self.meanings[1:],
+            list(self.meaning_list.meanings.all().order_by(
+                "meaninglistorder")))
 
     def test_insert_to_meaning_list(self):
         meaning = self.meanings[-1]
         self.meaning_list.insert(0, meaning)
-        self.assertEqual([self.meanings[i] for i in (3,0,1,2)],
-                list(self.meaning_list.meanings.all().order_by("meaninglistorder")))
+        self.assertEqual(
+            [self.meanings[i] for i in (3, 0, 1, 2)],
+            list(self.meaning_list.meanings.all().order_by(
+                "meaninglistorder")))
 
     def test_swap_meanings(self):
         l1 = self.meanings[1]
         l2 = self.meanings[2]
         self.meaning_list.swap(l1, l2)
-        self.assertEqual([self.meanings[0],self.meanings[2],self.meanings[1],self.meanings[3]],
-                list(self.meaning_list.meanings.all().order_by("meaninglistorder")))
+        self.assertEqual(
+            [self.meanings[0],
+             self.meanings[2],
+             self.meanings[1],
+             self.meanings[3]],
+            list(self.meaning_list.meanings.all().order_by(
+                "meaninglistorder")))
         self.meaning_list.swap(l1, l2)
-        self.assertEqual(self.meanings,
-                list(self.meaning_list.meanings.all().order_by("meaninglistorder")))
+        self.assertEqual(
+            self.meanings,
+            list(self.meaning_list.meanings.all().order_by(
+                "meaninglistorder")))
 
     def test_reorder_view_down(self):
         from ielex.views import move_meaning
         meaning = self.meanings[0]
-        orders =[(1,0,2,3),
-                (1,2,0,3),
-                (1,2,3,0),
-                (0,1,2,3)]
+        orders = [(1, 0, 2, 3),
+                  (1, 2, 0, 3),
+                  (1, 2, 3, 0),
+                  (0, 1, 2, 3)]
         for i, order in enumerate(orders):
             move_meaning(meaning, self.meaning_list, 1)
-            self.assertEqual([self.meanings[i] for i in order],
-                    list(self.meaning_list.meanings.all().order_by("meaninglistorder")))
+            self.assertEqual(
+                [self.meanings[i] for i in order],
+                list(self.meaning_list.meanings.all().order_by(
+                    "meaninglistorder")))
+
 
 class LanguageListTests(TestCase):
 
     def setUp(self):
         self.languages = []
-        self.language_list = LanguageList.objects.create(name="LanguageListTests")
+        self.language_list = LanguageList.objects.create(
+            name="LanguageListTests")
         for NAME in "abcd":
             language = Language.objects.create(ascii_name=NAME, utf8_name=NAME)
             self.languages.append(language)
             self.language_list.append(language)
 
     def test_append_to_language_list(self):
-        self.assertEqual(self.languages,
-                list(self.language_list.languages.all().order_by("languagelistorder")))
+        self.assertEqual(
+            self.languages,
+            list(self.language_list.languages.all().order_by(
+                "languagelistorder")))
 
     def test_remove_from_language_list(self):
         language = self.languages[0]
         self.language_list.remove(language)
-        self.assertEqual(self.languages[1:],
-                list(self.language_list.languages.all().order_by("languagelistorder")))
+        self.assertEqual(
+            self.languages[1:],
+            list(self.language_list.languages.all().order_by(
+                "languagelistorder")))
 
     def test_insert_to_language_list(self):
         language = self.languages[-1]
         self.language_list.insert(0, language)
-        self.assertEqual([self.languages[i] for i in (3,0,1,2)],
-                list(self.language_list.languages.all().order_by("languagelistorder")))
+        self.assertEqual(
+            [self.languages[i] for i in (3, 0, 1, 2)],
+            list(self.language_list.languages.all().order_by(
+                "languagelistorder")))
 
     def test_swap_languages(self):
         l1 = self.languages[1]
         l2 = self.languages[2]
         self.language_list.swap(l1, l2)
-        self.assertEqual([self.languages[0],self.languages[2],self.languages[1],self.languages[3]],
-                list(self.language_list.languages.all().order_by("languagelistorder")))
+        self.assertEqual(
+            [self.languages[0],
+             self.languages[2],
+             self.languages[1],
+             self.languages[3]],
+            list(self.language_list.languages.all().order_by(
+                "languagelistorder")))
         self.language_list.swap(l1, l2)
-        self.assertEqual(self.languages,
-                list(self.language_list.languages.all().order_by("languagelistorder")))
+        self.assertEqual(
+            self.languages,
+            list(self.language_list.languages.all().order_by(
+                "languagelistorder")))
 
     def test_reorder_view_down(self):
         from ielex.views import move_language
         language = self.languages[0]
-        orders =[(1,0,2,3),
-                (1,2,0,3),
-                (1,2,3,0),
-                (0,1,2,3)]
+        orders = [(1, 0, 2, 3),
+                  (1, 2, 0, 3),
+                  (1, 2, 3, 0),
+                  (0, 1, 2, 3)]
         for i, order in enumerate(orders):
             move_language(language, self.language_list, 1)
-            self.assertEqual([self.languages[i] for i in order],
-                    list(self.language_list.languages.all().order_by("languagelistorder")))
+            self.assertEqual(
+                [self.languages[i] for i in order],
+                list(self.language_list.languages.all().order_by(
+                    "languagelistorder")))
 
     def test_reorder_view_up(self):
         from ielex.views import move_language
         language = self.languages[0]
-        orders =[(1,2,3,0),
-                (1,2,0,3),
-                (1,0,2,3),
-                (0,1,2,3)]
+        orders = [(1, 2, 3, 0),
+                  (1, 2, 0, 3),
+                  (1, 0, 2, 3),
+                  (0, 1, 2, 3)]
         for order in orders:
             move_language(language, self.language_list, -1)
-            self.assertEqual([self.languages[i] for i in order],
-                    list(self.language_list.languages.all().order_by("languagelistorder")))
+            self.assertEqual(
+                [self.languages[i] for i in order],
+                list(self.language_list.languages.all().order_by(
+                    "languagelistorder")))
 
 
 class LoginTests(TestCase):
@@ -227,7 +265,7 @@ class LoginTests(TestCase):
         self.client = Client()
         make_basic_objects()
 
-    def test_unauthenticated_edit(self): # proof of concept
+    def test_unauthenticated_edit(self):  # proof of concept
         r = self.client.get("/lexeme/1234/edit/", follow=True)
         # parse r.content to find the <input> buttons
         doc = lxml.html.fromstring(r.content)
@@ -235,6 +273,7 @@ class LoginTests(TestCase):
         names = set(i.name for i in inputs)
         self.assertTrue("username" in names)
         self.assertTrue("password" in names)
+
 
 class ObligatoryCogJudgeCitationTests(TestCase):
 
@@ -266,8 +305,9 @@ class ObligatoryCogJudgeCitationTests(TestCase):
             cogjudge.save()
             return
         self.assertRaises(IntegrityError,
-                make_uncited_cognate_judgement,
-                self.db[Lexeme])
+                          make_uncited_cognate_judgement,
+                          self.db[Lexeme])
+
 
 class SearchTests(TestCase):
 
@@ -288,9 +328,7 @@ class SearchTests(TestCase):
         "Test LIMIT_TO constraint exists and is respected"
         from ielex.settings import LIMIT_TO
         response = self.client.post(
-                "/lexeme/search/", 
-                {"search_fields":"L", "regex":"^a"})
+            "/lexeme/search/",
+            {"search_fields": "L", "regex": "^a"})
         self.assertEqual(LIMIT_TO, 4)
         self.assertTrue(len(response.context["lexemes"]), 4)
-
-

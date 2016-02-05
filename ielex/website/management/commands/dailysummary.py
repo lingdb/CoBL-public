@@ -10,33 +10,38 @@ from reversion.models import Revision
 from ielex.utilities import LexDBManagementCommand
 from ielex.lexicon.models import *
 
+
 class Command(LexDBManagementCommand):
-    help="""Report the changes to the database over the previous N days"""
+    help = """Report the changes to the database over the previous N days"""
     option_list = (
-            make_option("-d", "--dry-run", dest="dry_run",
+            make_option(
+                "-d", "--dry-run", dest="dry_run",
                 action="store_true", default=False,
-                help="Report daily summary to stdout "\
-                "[default: email it to admins]"),
-            make_option("-e", "--no-empty", dest="include_empty",
+                help="Report daily summary to stdout "
+                     "[default: email it to admins]"),
+            make_option(
+                "-e", "--no-empty", dest="include_empty",
                 action="store_false", default=True,
-                help="Suppress reports when there have been no changes "\
-                "[default: show empty]"),
-            make_option("-n", "--num-days", dest="num_days",
+                help="Suppress reports when there have been no changes "
+                     "[default: show empty]"),
+            make_option(
+                "-n", "--num-days", dest="num_days",
                 action="store", default=1, type=int,
                 metavar="N",
-                help="Report the activity for the previous N days "\
-                "[default: 1]"),
+                help="Report the activity for the previous N days "
+                     "[default: 1]"),
             )
 
     def handle(self, **options):
         if options["dry_run"]:
-            io=sys.stdout
+            io = sys.stdout
         else:
-            import StringIO, codecs
+            import StringIO
+            import codecs
             buffer = StringIO.StringIO()
             codecinfo = codecs.lookup("utf8")
-            io = codecs.StreamReaderWriter(buffer,
-                    codecinfo.streamreader, codecinfo.streamwriter)
+            io = codecs.StreamReaderWriter(
+                buffer, codecinfo.streamreader, codecinfo.streamwriter)
         activity_flag = False
         print_report = get_printer(io)
         end_date = datetime.now()
@@ -81,34 +86,35 @@ class Command(LexDBManagementCommand):
             else:
                 print_report(timestamp, "** UNAUTHENTICATED USER **")
             for version in revision.version_set.all():
-                model = version.content_type.model_class() 
+                model = version.content_type.model_class()
                 if model not in boring_models:
                     try:
-                        print_report(" %s %s#%s <%s>" % (version.get_type_display(),
+                        print_report(
+                            " %s %s#%s <%s>" % (
+                                version.get_type_display(),
                                 model.__name__, version.object_id,
                                 version.object_repr))
                     except:
                         print_report(" %s OBJECT UNAVAILABLE",
-                                version.get_type_display())
+                                     version.get_type_display())
                     activity_flag = True
 
         # Send email
         if not options["dry_run"]:
             if activity_flag:
                 io.seek(0)
-                subject = ("Activity report %s" %
-                        strftime(end_date))
+                subject = ("Activity report %s" % strftime(end_date))
                 mail_admins(subject, io.read())
             else:
                 if options["include_empty"]:
-                    subject = ("No activity %s" %
-                            strftime(end_date))
-                    msg = "No activity from %s to %s" % (strftime(start_date),
-                        strftime(end_date))
+                    subject = ("No activity %s" % strftime(end_date))
+                    msg = "No activity from %s to %s" % \
+                        (strftime(start_date), strftime(end_date))
                     mail_admins(subject, msg)
         return
 
 # standard report formatters
+
 
 def get_printer(fileobj):
     def printer(*args, **kwargs):
@@ -117,12 +123,14 @@ def get_printer(fileobj):
         return
     return printer
 
+
 def strfuser(userobj):
     if userobj.last_name:
-        return "%s %s (%s)" % (userobj.first_name, userobj.last_name,
-                userobj.username)
+        return "%s %s (%s)" % \
+            (userobj.first_name, userobj.last_name, userobj.username)
     else:
         return userobj.username
+
 
 def strftime(datetimeobj):
     return datetimeobj.strftime("%Y-%m-%d %H:%M:%S")

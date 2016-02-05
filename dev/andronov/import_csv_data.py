@@ -1,20 +1,20 @@
-## This script should be called from the ipython shell launched using the
-## manage.py script (which sets up the full django environment)
-##
-## 0. From a clean copy of LexDB, run './manage.py syncdb' and
-##    './manage.py migrate' (from the LexDB directory)
-## 1. Open the shell using './manage.py shell'
-## 2. Change the working directory of the ipython shell:
-##    %cd ../dev/andronov
-## 3. Run the script with the data file as an argument:
-##    %run import_csv_data.py data.csv
-## The import will take a while: stare in admiration at the screens of
-## data scrolling past and imagine you're in the matrix. Once it stops:
-## 4. Exit ipython (with 'exit')
-## 5. Run the test server using './manage.py runserver' then open
-##    http://127.0.0.1:8000/ in a browser
-## 6. Go and customise project_long_name, project_short_name in the
-##    ielex/local_settings.py file, and look at the test server again.
+# This script should be called from the ipython shell launched using the
+# manage.py script (which sets up the full django environment)
+#
+# 0. From a clean copy of LexDB, run './manage.py syncdb' and
+#    './manage.py migrate' (from the LexDB directory)
+# 1. Open the shell using './manage.py shell'
+# 2. Change the working directory of the ipython shell:
+#    %cd ../dev/andronov
+# 3. Run the script with the data file as an argument:
+#    %run import_csv_data.py data.csv
+# The import will take a while: stare in admiration at the screens of
+# data scrolling past and imagine you're in the matrix. Once it stops:
+# 4. Exit ipython (with 'exit')
+# 5. Run the test server using './manage.py runserver' then open
+#    http://127.0.0.1:8000/ in a browser
+# 6. Go and customise project_long_name, project_short_name in the
+#    ielex/local_settings.py file, and look at the test server again.
 
 import sys
 import codecs
@@ -23,8 +23,10 @@ from ielex.lexicon.models import *
 
 DATAFILE = "data.csv"
 
-# assert os.path.exists(sys.argv[0]) and sys.argv[0].endswith("import_csv_data.py")
+# assert os.path.exists(sys.argv[0]) \
+#        and sys.argv[0].endswith("import_csv_data.py")
 # assert os.path.exists(sys.argv[1]) and sys.argv[1].endswith("data.csv")
+
 
 def get_next_alias(meaning):
     current_aliases = CognateClass.objects.filter(
@@ -38,13 +40,13 @@ def get_next_alias(meaning):
 data = codecs.open(DATAFILE, "rU", "utf-8")
 header = data.next().rstrip().split("\t")
 
-languages, meaning_ids  = [], []
+languages, meaning_ids = [], []
 
 print("Creating languages")
 for full_name in header[2:]:
     print("-->", full_name)
-    language, created = Language.objects.get_or_create(ascii_name=full_name,
-            utf8_name=full_name)
+    language, created = Language.objects.get_or_create(
+        ascii_name=full_name, utf8_name=full_name)
     languages.append(language)
 
 try:
@@ -65,8 +67,8 @@ for line in data:
         gloss = row[1]
         if gloss.startswith("to "):
             gloss = gloss[3:]
-    meaning, created = Meaning.objects.get_or_create(gloss=gloss,
-            description=gloss)
+    meaning, created = Meaning.objects.get_or_create(
+        gloss=gloss, description=gloss)
     if created:
         meaning_list.append(meaning)
     alias = get_next_alias(meaning)
@@ -75,18 +77,17 @@ for line in data:
         if form:
             if form.startswith("*"):
                 form = form[1:]
-                reliability="L"
+                reliability = "L"
             else:
-                reliability="B"
-            lexeme = Lexeme.objects.create(language=language, meaning=meaning,
-                    source_form=form)
-            LexemeCitation.objects.create(lexeme=lexeme, source=andronov,
-                    reliability=reliability)
-            cognate_judgement = CognateJudgement.objects.create(lexeme=lexeme,
-                    cognate_class=cognate_class)
+                reliability = "B"
+            lexeme = Lexeme.objects.create(
+                language=language, meaning=meaning, source_form=form)
+            LexemeCitation.objects.create(
+                lexeme=lexeme, source=andronov, reliability=reliability)
+            cognate_judgement = CognateJudgement.objects.create(
+                lexeme=lexeme, cognate_class=cognate_class)
             CognateJudgementCitation.objects.create(
                     cognate_judgement=cognate_judgement,
                     source=andronov,
                     reliability=reliability)
             print("--> Added", meaning, language, lexeme, cognate_judgement)
-

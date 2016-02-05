@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from string import uppercase, lowercase
 from itertools import izip
-#from ielex.lexicon.models import Language
+# from ielex.lexicon.models import Language
 try:
     from functools import wraps
 except ImportError:
@@ -12,17 +12,21 @@ from django.core.management.base import NoArgsCommand
 
 codes = list(uppercase) + [i+j for i in uppercase for j in lowercase]
 
+
 def int2alpha(n):
     """Indexes start at 1!"""
     assert n == int(n)
     return codes[n-1]
 
+
 def alpha2int(a):
     """Indexes start at 1!"""
     return codes.index(a)+1
 
+
 def oneline(s):
     return " ".join(s.split()).strip()
+
 
 def next_alias(l, ignore=[]):
     """Find the next unused alias from a list of aliases"""
@@ -33,6 +37,7 @@ def next_alias(l, ignore=[]):
             return alias
     return
 
+
 def two_by_two(I):
     """Return an iterable two-by-two, e.g.:
         [1,2,3,4,5,6] -> (1,2), (3,4), (5,6)
@@ -40,6 +45,7 @@ def two_by_two(I):
     the Lexeme model"""
     args = [iter(I)] * 2
     return izip(*args)
+
 
 def confirm_required(template_name, context_creator, key='__confirm__'):
     """
@@ -72,24 +78,28 @@ def confirm_required(template_name, context_creator, key='__confirm__'):
 
         <form method="POST" action="">
             <input type="hidden" name="__confirm__" value="1" />
-            <input type="submit" value="delete"/> <a href="{{ file.get_absolute_url }}">cancel</a>
+            <input type="submit" value="delete"/>
+            <a href="{{ file.get_absolute_url }}">cancel</a>
         </form>
 
     Source: http://djangosnippets.org/snippets/1922/
     """
     def decorator(func):
         def inner(request, *args, **kwargs):
-            if request.POST.has_key(key):
+            if key in request.POST:
                 return func(request, *args, **kwargs)
             else:
-                context = context_creator and context_creator(request, *args, **kwargs) \
+                context = context_creator \
+                    and context_creator(request, *args, **kwargs) \
                     or RequestContext(request)
                 return render_to_response(template_name, context)
         return wraps(func)(inner)
     return decorator
 
+
 def anchored(url):
     return "%s#active" % url
+
 
 class LexDBManagementCommand(NoArgsCommand):
     """Suppress Django default options from Management commands"""
@@ -110,12 +120,9 @@ class LexDBManagementCommand(NoArgsCommand):
         return
 
 
-
-
-
 if __name__ == "__main__":
     snip_flag = True
-    for i in xrange(1,703):
+    for i in xrange(1, 703):
         s = int2alpha(i)
         if i < 11 or i > 692:
             print i, s
@@ -126,10 +133,10 @@ if __name__ == "__main__":
             pass
         assert alpha2int(s) == i
 
-    l = ["A","B","C"]
+    l = ["A", "B", "C"]
     print l
     print "next_alias(l) -->", next_alias(l)
-    l = ["none","A","B","C"]
+    l = ["none", "A", "B", "C"]
     print l
-    print 'next_alias(l, ignore=["none","new"]) -->', next_alias(l,
-            ignore=["none","new"])
+    print 'next_alias(l, ignore=["none","new"]) -->', \
+          next_alias(l, ignore=["none", "new"])
