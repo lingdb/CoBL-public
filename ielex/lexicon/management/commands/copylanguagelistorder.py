@@ -3,14 +3,17 @@ from django.core.management.base import NoArgsCommand, CommandError
 from ielex.lexicon.models import LanguageList, LanguageListOrder
 from ielex.utilities import LexDBManagementCommand
 
+
 class Command(LexDBManagementCommand):
-    help="""Reorder TARGET language list to match SOURCE"""
+    help = """Reorder TARGET language list to match SOURCE"""
     requires_model_validation = False
     option_list = (
-            make_option("-s", "--source-list", dest="copy_from",
+            make_option(
+                "-s", "--source-list", dest="copy_from",
                 action="store", default="all",
                 help="Name of language list to copy order from [all]"),
-            make_option("-t", "--target-list", dest="copy_to",
+            make_option(
+                "-t", "--target-list", dest="copy_to",
                 action="store", default=None,
                 help="Name of destination language list"),
             )
@@ -40,7 +43,6 @@ class Command(LexDBManagementCommand):
                     language_list=target_list)
             llt.order = LanguageListOrder.objects.get(
                     language=language,
-                    language_list=source_list).order + 0.1 # avoid collisions
+                    language_list=source_list).order + 0.1  # avoid collisions
             llt.save()
         return
-

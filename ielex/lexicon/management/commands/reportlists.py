@@ -3,8 +3,9 @@ from optparse import make_option
 from ielex.lexicon.models import LanguageList, MeaningList
 from ielex.utilities import LexDBManagementCommand
 
+
 class Command(LexDBManagementCommand):
-    help="""Export a nexus file from the database"""
+    help = """Export a nexus file from the database"""
     requires_model_validation = False
     option_list = tuple()
 
@@ -16,4 +17,3 @@ class Command(LexDBManagementCommand):
         for ml in MeaningList.objects.all():
             print("  %s [%s]" % (ml.name, ml.meanings.count()))
         return
-
