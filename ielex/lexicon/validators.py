@@ -7,6 +7,7 @@
 import re
 from django.core.validators import ValidationError
 
+
 def suitable_for_url(value):
     """Test that value contains onlys unreserved characters
     according to RFC3986/2.3:
@@ -20,7 +21,6 @@ def suitable_for_url(value):
     if not match:
         raise ValidationError("""This field can only include characters
                 which are legal in a url: letters, digits and - . _ ~""")
-    return
 
 # this cannot be serialized by django 1.8
 # https://docs.djangoproject.com/en/1.8/topics/migrations/#serializing-values
@@ -29,17 +29,17 @@ def suitable_for_url(value):
 #     def test_reserved_names(value):
 #         if value in names:
 #             raise ValidationError(
-#             "The name `%s' is reserved for system-internal use. Please choose another."
+#             "The name `%s' is reserved for system-internal use. "\
+#             "Please choose another."
 #             % value)
 #         return
 #     return test_reserved_names
 
+
 def standard_reserved_names(value):
-    reserved_names =["all", "all-alpha"]
+    reserved_names = ["all", "all-alpha"]
     if value in reserved_names:
         raise ValidationError(
-        "The name `%s' is reserved for system-internal use. Please choose another."
-        % value)
-    return
-
-
+            "The name `%s' is reserved for system-internal use. "
+            "Please choose another."
+            % value)

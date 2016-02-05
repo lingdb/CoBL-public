@@ -5,7 +5,8 @@ from django.contrib.auth.models import User
 from django.core.validators import ValidationError
 from ielex.lexicon.models import *
 from ielex.lexicon.templatetags.lexicon_utils import wikilink
-#from ielex.lexicon.forms import ChooseNexusOutputForm
+# from ielex.lexicon.forms import ChooseNexusOutputForm
+
 
 def make_basic_objects():
     """Make a basic website with one of each kind of object and return a
@@ -16,21 +17,21 @@ def make_basic_objects():
     User.objects.create_user('testuser', 'test@example.com', 'secret')
     user = User.objects.get(username='testuser')
     source = Source.objects.create(citation_text="SOURCE")
-    language = Language.objects.create(ascii_name="LANGUAGE",
-            utf8_name="LANGUAGE")
+    language = Language.objects.create(
+        ascii_name="LANGUAGE", utf8_name="LANGUAGE")
     meaning = Meaning.objects.create(gloss="MEANING")
-    lexeme = Lexeme.objects.create(source_form="LEXEME", language=language,
-            meaning=meaning)
+    lexeme = Lexeme.objects.create(
+        source_form="LEXEME", language=language, meaning=meaning)
     cogclass = CognateClass.objects.create(alias="X")
-    cogjudge = CognateJudgement.objects.create(lexeme=lexeme,
-            cognate_class=cogclass)
+    cogjudge = CognateJudgement.objects.create(
+        lexeme=lexeme, cognate_class=cogclass)
     cogjudgecit = CognateJudgementCitation.objects.create(
             cognate_judgement=cogjudge,
             source=source, reliability="A")
-    lexemecit = LexemeCitation.objects.create(lexeme=lexeme, source=source,
-            reliability="A")
-    cogclasscit = CognateClassCitation.objects.create(cognate_class=cogclass,
-            source=source, reliability="A")
+    lexemecit = LexemeCitation.objects.create(
+        lexeme=lexeme, source=source, reliability="A")
+    cogclasscit = CognateClassCitation.objects.create(
+        cognate_class=cogclass, source=source, reliability="A")
 
     return {User: user,
             Source: source,
@@ -42,6 +43,7 @@ def make_basic_objects():
             CognateJudgementCitation: cogjudgecit,
             LexemeCitation: lexemecit,
             CognateClassCitation: cogclasscit}
+
 
 class WikilinkTests(TestCase):
     """Test internal links of the format /lexeme/1234/"""
@@ -70,6 +72,7 @@ class WikilinkTests(TestCase):
         dst = "asdf %s asdf %s asdf" % (self.dst1, self.dst2)
         self.assertEqual(wikilink(src), dst)
 
+
 class LexemeGetCognateClassLinksTests(TestCase):
     """Functions to test the string formatting of denormalized cognate
     class information"""
@@ -88,64 +91,70 @@ class LexemeGetCognateClassLinksTests(TestCase):
         self.cognate_class_B = CognateClass.objects.create(alias="B")
         self.cognate_class_L = CognateClass.objects.create(alias="L")
         self.cognate_class_X = CognateClass.objects.create(alias="X")
-        self.lexeme = Lexeme.objects.create(source_form="a",
-                meaning=self.test_meaning,
-                language=self.test_language)
+        self.lexeme = Lexeme.objects.create(
+            source_form="a",
+            meaning=self.test_meaning,
+            language=self.test_language)
 
     def test_one_denormalized_cognate_class(self):
         # lexemes have the correct denormalized cognate class data appended
         # in the case of one cognate class
-        denorm = "%s,%s" % (self.cognate_class_A.id,
-                self.cognate_class_A.alias)
-        CognateJudgement.objects.create(lexeme=self.lexeme,
-                cognate_class=self.cognate_class_A)
+        denorm = "%s,%s" % (
+            self.cognate_class_A.id, self.cognate_class_A.alias)
+        CognateJudgement.objects.create(
+            lexeme=self.lexeme,
+            cognate_class=self.cognate_class_A)
         self.assertEqual(self.lexeme.denormalized_cognate_classes, denorm)
 
     def test_formatting_one_cognate_class(self):
         # CC links for lexemes with one CC are correctly formatted
-        link = self.template % (self.cognate_class_A.id,
-                self.cognate_class_A.alias)
-        CognateJudgement.objects.create(lexeme=self.lexeme,
-                cognate_class=self.cognate_class_A)
+        link = self.template % (
+            self.cognate_class_A.id, self.cognate_class_A.alias)
+        CognateJudgement.objects.create(
+            lexeme=self.lexeme, cognate_class=self.cognate_class_A)
         self.assertEqual(self.lexeme.get_cognate_class_links(), link)
 
     def test_two_denormalized_cognate_class(self):
         # lexemes have the correct denormalized cognate class data appended
         # in the case that the lexeme belongs to two cognate classes
-        denorm = "%s,%s,%s,%s" % (self.cognate_class_A.id,
-                self.cognate_class_A.alias,
-                self.cognate_class_B.id,
-                self.cognate_class_B.alias )
-        CognateJudgement.objects.create(lexeme=self.lexeme,
-                cognate_class=self.cognate_class_A)
-        CognateJudgement.objects.create(lexeme=self.lexeme,
-                cognate_class=self.cognate_class_B)
+        denorm = "%s,%s,%s,%s" % (
+            self.cognate_class_A.id,
+            self.cognate_class_A.alias,
+            self.cognate_class_B.id,
+            self.cognate_class_B.alias)
+        CognateJudgement.objects.create(
+            lexeme=self.lexeme,
+            cognate_class=self.cognate_class_A)
+        CognateJudgement.objects.create(
+            lexeme=self.lexeme,
+            cognate_class=self.cognate_class_B)
         self.assertEqual(self.lexeme.denormalized_cognate_classes, denorm)
 
     def test_two_cognate_classes(self):
         # CC links for lexemes with two CC are correctly formatted
-        link_A = self.template % (self.cognate_class_A.id,
-                self.cognate_class_A.alias)
-        link_B = self.template % (self.cognate_class_B.id,
-                self.cognate_class_B.alias)
+        link_A = self.template % (
+            self.cognate_class_A.id, self.cognate_class_A.alias)
+        link_B = self.template % (
+            self.cognate_class_B.id, self.cognate_class_B.alias)
         link = "%s, %s" % (link_A, link_B)
-        CognateJudgement.objects.create(lexeme=self.lexeme,
-                cognate_class=self.cognate_class_A)
-        CognateJudgement.objects.create(lexeme=self.lexeme,
-                cognate_class=self.cognate_class_B)
+        CognateJudgement.objects.create(
+            lexeme=self.lexeme, cognate_class=self.cognate_class_A)
+        CognateJudgement.objects.create(
+            lexeme=self.lexeme, cognate_class=self.cognate_class_B)
         self.assertEqual(self.lexeme.get_cognate_class_links(), link)
 
     def test_loanword_cognate_class(self):
-        link = self.bracketted_template % (self.cognate_class_L.id,
-                self.cognate_class_L.alias)
+        link = self.bracketted_template % (
+            self.cognate_class_L.id, self.cognate_class_L.alias)
         cognate_judgement = CognateJudgement.objects.create(
                 lexeme=self.lexeme,
                 cognate_class=self.cognate_class_L)
         CognateJudgementCitation.objects.create(
                 source=self.test_source,
-                cognate_judgement=cognate_judgement, 
+                cognate_judgement=cognate_judgement,
                 reliability="L")
         self.assertEqual(self.lexeme.get_cognate_class_links(), link)
+
 
 class CognateClassCodeDenormalizationTests(TestCase):
 
@@ -153,26 +162,27 @@ class CognateClassCodeDenormalizationTests(TestCase):
         self.db = make_basic_objects()
 
     def test_denormalized_cognate_classes_present(self):
-        self.assertEqual(self.db[Lexeme].denormalized_cognate_classes,
-                "1,X")
+        self.assertEqual(
+            self.db[Lexeme].denormalized_cognate_classes, "1,X")
 
     def test_delete_cognate_judgement(self):
         "Test that post_delete hook updates denormalized data"
         cj = self.db[CognateJudgement]
         cj.delete()
         self.assertEqual(self.db[Lexeme].denormalized_cognate_classes,
-                "")
+                         "")
 
     def test_add_cognate_judgement(self):
         "Test that post_save hook updates denormalized data"
         cogclass = CognateClass.objects.create(alias="Y")
-        cogjudge = CognateJudgement.objects.create(lexeme=self.db[Lexeme],
-                cognate_class=cogclass)
+        cogjudge = CognateJudgement.objects.create(
+            lexeme=self.db[Lexeme], cognate_class=cogclass)
         CognateJudgementCitation.objects.create(
-                cognate_judgement=cogjudge,
-                source=self.db[Source], reliability="A")
-        self.assertEqual(self.db[Lexeme].denormalized_cognate_classes,
-                "1,X,2,Y")
+            cognate_judgement=cogjudge,
+            source=self.db[Source], reliability="A")
+        self.assertEqual(
+            self.db[Lexeme].denormalized_cognate_classes, "1,X,2,Y")
+
 
 class SignalsTests(TestCase):
 
@@ -190,22 +200,25 @@ class SignalsTests(TestCase):
 
     def test_update_denormalized_from_lexeme(self):
         self.meaning.percent_coded = 999
-        Lexeme.objects.create(source_form="a",
-                meaning=self.meaning,
-                language=self.language)
+        Lexeme.objects.create(
+            source_form="a",
+            meaning=self.meaning,
+            language=self.language)
         self.assertEqual(self.meaning.percent_coded, 0)
 
     def test_cognate_judgement_signal_triggers_lexeme_signal(self):
         # i.e. that saving a CognateJudgement also triggers
         # the signal to update_denormalized_from_lexeme
-        lexeme = Lexeme.objects.create(source_form="a",
-                meaning=self.meaning,
-                language=self.language)
+        lexeme = Lexeme.objects.create(
+            source_form="a",
+            meaning=self.meaning,
+            language=self.language)
         self.meaning.percent_coded = 999
         CognateJudgement.objects.create(
                 lexeme=lexeme,
                 cognate_class=self.cognate_class_A)
         self.assertEqual(self.meaning.percent_coded, 100)
+
 
 class LanguageListTests(TestCase):
 
@@ -217,8 +230,9 @@ class LanguageListTests(TestCase):
 
     def append_languages(self, lg_names):
         for name in lg_names:
-            self.languagelist.append(Language.objects.create(ascii_name=name,
-                utf8_name=name))
+            self.languagelist.append(
+                Language.objects.create(
+                    ascii_name=name, utf8_name=name))
 
     def setup_language_list(self, lg_names):
         self.make_language_list()
@@ -230,8 +244,9 @@ class LanguageListTests(TestCase):
         self.assertEqual(self.languagelist.languages.count(), 0)
         self.append_languages(lg_names)
         self.assertEqual(self.languagelist.languages.count(), 3)
-        list_names = [l.ascii_name for l in
-                self.languagelist.languages.all().order_by("languagelistorder")]
+        list_names = [
+            l.ascii_name for l in
+            self.languagelist.languages.all().order_by("languagelistorder")]
         self.assertEqual(list_names, lg_names)
 
     def test_move_list_element(self):
@@ -240,8 +255,9 @@ class LanguageListTests(TestCase):
         lang_A = Language.objects.get(ascii_name="Aaa")
         self.languagelist.insert(1, lang_A)
         self.assertEqual(self.languagelist.languages.count(), len(lg_names))
-        self.assertEqual(lang_A,
-                self.languagelist.languages.all().order_by("languagelistorder")[1])
+        self.assertEqual(
+            lang_A,
+            self.languagelist.languages.all().order_by("languagelistorder")[1])
 
     def test_delete_list_element(self):
         lg_names = ["Ccc", "Bbb", "Aaa"]
@@ -269,20 +285,22 @@ class LanguageListTests(TestCase):
         default_alpha = LanguageList.DEFAULT+"-alpha"
         lg_names = ["Ccc", "Bbb", "Aaa"]
         self.setup_language_list(lg_names)
-        self.db[Language].delete() 
+        self.db[Language].delete()
         alpha_list = LanguageList.objects.get(name=default_alpha)
-        alpha_list_names = [l.ascii_name for l in
-                alpha_list.languages.all().order_by("languagelistorder")]
+        alpha_list_names = [
+            l.ascii_name for l in
+            alpha_list.languages.all().order_by("languagelistorder")]
         self.assertNotEqual(lg_names, sorted(lg_names))
         self.assertEqual(alpha_list_names, sorted(lg_names))
 
 # class NexusExportFormTests(TestCase):
-# 
+#
 #     def setUp(self):
 #         self.form = ChooseNexusOutputForm()
-# 
+#
 #     def test_defaults(self):
 #         self.assertTrue(self.form.is_valid())
+
 
 class CognateCitationValidityTests(TestCase):
 
@@ -294,9 +312,10 @@ class CognateCitationValidityTests(TestCase):
                 gloss="test meaning")
         self.source = Source.objects.create(citation_text="a")
         self.cognate_class = CognateClass.objects.create(alias="A")
-        self.lexeme = Lexeme.objects.create(source_form="a",
-                meaning=self.meaning,
-                language=self.language)
+        self.lexeme = Lexeme.objects.create(
+            source_form="a",
+            meaning=self.meaning,
+            language=self.language)
         self.delete = lambda obj: obj.delete()
 
     def test_cant_delete_final_citation(self):
@@ -342,6 +361,7 @@ class CognateCitationValidityTests(TestCase):
         except IntegrityError:
             self.fail("Should be able to delete final citation via cascade")
 
+
 class LexemeCitationValidityTests(TestCase):
 
     def setUp(self):
@@ -354,9 +374,10 @@ class LexemeCitationValidityTests(TestCase):
         self.delete = lambda obj: obj.delete()
 
     def test_cant_delete_final_citation(self):
-        lexeme = Lexeme.objects.create(source_form="a",
-                meaning=self.meaning,
-                language=self.language)
+        lexeme = Lexeme.objects.create(
+            source_form="a",
+            meaning=self.meaning,
+            language=self.language)
         citation = LexemeCitation.objects.create(
                 lexeme=lexeme,
                 source=self.source,
@@ -365,9 +386,10 @@ class LexemeCitationValidityTests(TestCase):
         self.assertEqual(lexeme.source.count(), 1)
 
     def test_can_delete_penultimate_citation(self):
-        lexeme = Lexeme.objects.create(source_form="a",
-                meaning=self.meaning,
-                language=self.language)
+        lexeme = Lexeme.objects.create(
+            source_form="a",
+            meaning=self.meaning,
+            language=self.language)
         citation_1 = LexemeCitation.objects.create(
                 lexeme=lexeme,
                 source=self.source,
@@ -402,6 +424,7 @@ class LexemeCitationValidityTests(TestCase):
         self.assertEqual(Lexeme.objects.count(), 0)
         self.assertEqual(LexemeCitation.objects.count(), 0)
 
+
 class CleanLexemeFormTests(TestCase):
 
     def setUp(self):
@@ -411,20 +434,21 @@ class CleanLexemeFormTests(TestCase):
 
     def test_required_source_form(self):
         form = self.AddLexemeForm({
-            "source_form":"AAA",
-            "language":self.db[Language].id,
-            "meaning":self.db[Meaning].id})
+            "source_form": "AAA",
+            "language": self.db[Language].id,
+            "meaning": self.db[Meaning].id})
         self.assertTrue(form.is_valid())
 
     def test_stripped_whitespace(self):
         form = self.AddLexemeForm({
-            "source_form":"\tAAA\n",
-            "phon_form":" BBB\t",
-            "language":self.db[Language].id,
-            "meaning":self.db[Meaning].id})
+            "source_form": "\tAAA\n",
+            "phon_form": " BBB\t",
+            "language": self.db[Language].id,
+            "meaning": self.db[Meaning].id})
         self.assertTrue(form.is_valid())
         self.assertEqual(form.cleaned_data["source_form"], "AAA")
         self.assertEqual(form.cleaned_data["phon_form"], "BBB")
+
 
 class LanguageFormTests(TestCase):
 
@@ -434,8 +458,8 @@ class LanguageFormTests(TestCase):
 
     def test_stripped_whitespace(self):
         form = self.EditLanguageForm({
-            "ascii_name":"\tAAA\n",
-            "utf8_name":" BBB\t"})
+            "ascii_name": "\tAAA\n",
+            "utf8_name": " BBB\t"})
         self.assertTrue(form.is_valid())
         self.assertEqual(form.cleaned_data["ascii_name"], "AAA")
         self.assertEqual(form.cleaned_data["utf8_name"], "BBB")
@@ -443,24 +467,26 @@ class LanguageFormTests(TestCase):
     def test_invalid_for_url(self):
         for name in ["A/A", u"əŋ", "A A"]:
             form = self.EditLanguageForm({
-                "ascii_name":name,
-                "utf8_name":"BB"})
+                "ascii_name": name,
+                "utf8_name": "BB"})
             self.assertFalse(form.is_valid())
+
 
 class ValidatorTests(TestCase):
 
     def test_reserved_names_validator(self):
-        #validator = reserved_names("all", "all-alpha")
-        for name in ["foo", "bar"]: # good names
+        # validator = reserved_names("all", "all-alpha")
+        for name in ["foo", "bar"]:  # good names
             self.assertIsNone(standard_reserved_names(name))
-        for name in ["all", "all-alpha"]: # bad names
+        for name in ["all", "all-alpha"]:  # bad names
             self.assertRaises(ValidationError, standard_reserved_names, name)
 
     def test_suitable_for_url_validator(self):
-        for name in ["aaa", "a-a", "a_a", "a~"]: # good names
+        for name in ["aaa", "a-a", "a_a", "a~"]:  # good names
             self.assertIsNone(suitable_for_url(name))
-        for name in ["A/A", u"əŋ", "A A"]: # bad names
+        for name in ["A/A", u"əŋ", "A A"]:  # bad names
             self.assertRaises(ValidationError, suitable_for_url, name)
+
 
 class FunctionsTests(TestCase):
 
@@ -474,8 +500,10 @@ class FunctionsTests(TestCase):
             self.assertEqual(code, self.generator.next())
 
     def test_exclude_known_codes(self):
-        Language.objects.create(ascii_name="Qab", utf8_name="Qab", iso_code="qab")
-        Language.objects.create(ascii_name="Qad", utf8_name="Qad", iso_code="qad")
+        Language.objects.create(
+            ascii_name="Qab", utf8_name="Qab", iso_code="qab")
+        Language.objects.create(
+            ascii_name="Qad", utf8_name="Qad", iso_code="qad")
         codes = ["qaa", "qac", "qae"]
         for code in codes:
             self.assertEqual(code, self.generator.next())
@@ -487,6 +515,3 @@ class FunctionsTests(TestCase):
         for line in converted.split("\n"):
             self.assertEqual(line[0], "[")
             self.assertEqual(line[-1], "]")
-
-
-    

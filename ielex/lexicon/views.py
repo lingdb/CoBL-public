@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 # from django.core.urlresolvers import reverse_lazy # avail Django 1.4
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.views.generic import CreateView, UpdateView, TemplateView
-#from django.views.generic import RedirectView
+# from django.views.generic import RedirectView
 from django.contrib import messages
 from ielex import settings
 from ielex.lexicon.models import *
@@ -24,12 +24,13 @@ try:
 except AttributeError:
     pass
 
+
 class FrontpageView(TemplateView):
     template_name = "frontpage.html"
 
     def get_context_data(self, **kwargs):
-        context = super(FrontpageView,
-                self).get_context_data(**kwargs)
+        context = super(
+            FrontpageView, self).get_context_data(**kwargs)
         context["lexemes"] = Lexeme.objects.count()
         context["cognate_classes"] = CognateClass.objects.count()
         context["languages"] = Language.objects.count()
@@ -41,33 +42,36 @@ class FrontpageView(TemplateView):
             pass
         return context
 
+
 class CognateClassCitationUpdateView(UpdateView):
-    model=CognateClassCitation
-    form_class=EditCognateClassCitationForm
-    template_name="generic_update.html"
+    model = CognateClassCitation
+    form_class = EditCognateClassCitationForm
+    template_name = "generic_update.html"
 
     def get_context_data(self, **kwargs):
-        context = super(CognateClassCitationUpdateView,
-                self).get_context_data(**kwargs)
+        context = super(
+            CognateClassCitationUpdateView, self).get_context_data(**kwargs)
         cc_id = context["object"].cognate_class.id
         context["title"] = "New cognate class citation"
         context["heading"] = "Citation to cognate class %s" % cc_id
-        context["cancel_dest"] = reverse("cognate-set",
-                kwargs={"cognate_id":cc_id})
+        context["cancel_dest"] = reverse(
+            "cognate-set", kwargs={"cognate_id": cc_id})
         return context
 
+
 class CognateClassCitationCreateView(CreateView):
-    form_class=EditCognateClassCitationForm
-    template_name="generic_update.html"
+    form_class = EditCognateClassCitationForm
+    template_name = "generic_update.html"
 
     def get_context_data(self, **kwargs):
         cc_id = int(self.kwargs["cognate_id"])
-        context = super(CognateClassCitationCreateView,
-                self).get_context_data(**kwargs)
+        context = super(
+            CognateClassCitationCreateView,
+            self).get_context_data(**kwargs)
         context["title"] = "New cognate class citation"
         context["heading"] = "Citation to cognate class %s" % cc_id
-        context["cancel_dest"] = reverse("cognate-set",
-                kwargs={"cognate_id":cc_id})
+        context["cancel_dest"] = reverse(
+            "cognate-set", kwargs={"cognate_id": cc_id})
         return context
 
     def get_form_kwargs(self):
@@ -78,99 +82,108 @@ class CognateClassCitationCreateView(CreateView):
         cc_id = int(self.kwargs["cognate_id"])
         self.object = CognateClassCitation()
         self.object.cognate_class = CognateClass.objects.get(id=cc_id)
-        kwargs = super(CognateClassCitationCreateView,
-                self).get_form_kwargs()
+        kwargs = super(
+            CognateClassCitationCreateView, self).get_form_kwargs()
         return kwargs
 
-#class CognateClassRedirectView(RedirectView):
+# class CognateClassRedirectView(RedirectView):
+
 
 @login_required
 def cognate_class_citation_delete(request, pk):
     cognate_class_citation = CognateClassCitation.objects.get(id=pk)
     cognate_class_id = cognate_class_citation.cognate_class.id
     cognate_class_citation.delete()
-    return HttpResponseRedirect(reverse('cognate-set',
-        args=[cognate_class_id]))
+    return HttpResponseRedirect(
+        reverse('cognate-set', args=[cognate_class_id]))
+
 
 class NexusExportView(TemplateView):
     template_name = "nexus_list.html"
 
     def get(self, request):
-        defaults = {"unique":1, "reliability":["L","X"], "language_list":1,
-                "meaning_list":1, "dialect":"NN", "ascertainment_marker":0}
-        form =  ChooseNexusOutputForm(defaults)
-        return self.render_to_response({"form":form})
+        defaults = {
+            "unique": 1, "reliability": ["L", "X"], "language_list": 1,
+            "meaning_list": 1, "dialect": "NN", "ascertainment_marker": 0}
+        form = ChooseNexusOutputForm(defaults)
+        return self.render_to_response({"form": form})
 
     def post(self, request):
-        form =  ChooseNexusOutputForm(request.POST)
+        form = ChooseNexusOutputForm(request.POST)
         if form.is_valid():
-            #return HttpResponseRedirect(reverse("nexus-data"))
+            # return HttpResponseRedirect(reverse("nexus-data"))
             return self.write_nexus_view(form)
-        return self.render_to_response({"form":form})
+        return self.render_to_response({"form": form})
 
     def write_nexus_view(self, form):
         """A wrapper to call the `write_nexus` function from a view"""
         # TODO: contributor and sources list
 
         # Create the HttpResponse object with the appropriate header.
-        filename = "%s-%s-%s.nex" % (settings.project_short_name,
-                form.cleaned_data["language_list"].name,
-                form.cleaned_data["meaning_list"].name)
+        filename = "%s-%s-%s.nex" % (
+            settings.project_short_name,
+            form.cleaned_data["language_list"].name,
+            form.cleaned_data["meaning_list"].name)
         response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=%s' % \
-                filename.replace(" ", "_")
+            filename.replace(" ", "_")
 
-        write_nexus(response,
-                form.cleaned_data["language_list"],
-                form.cleaned_data["meaning_list"],
-                set(form.cleaned_data["reliability"]),
-                form.cleaned_data["dialect"],
-                True,
-                form.cleaned_data["ascertainment_marker"]
-                )
+        write_nexus(
+            response,
+            form.cleaned_data["language_list"],
+            form.cleaned_data["meaning_list"],
+            set(form.cleaned_data["reliability"]),
+            form.cleaned_data["dialect"],
+            True,
+            form.cleaned_data["ascertainment_marker"])
         return response
+
 
 class DumpRawDataView(TemplateView):
     template_name = "dump_data.html"
 
     def get(self, request):
-        defaults = {"language_list":1, "meaning_list":1,
-                "reliability":["L","X"]}
-        form =  DumpSnapshotForm(defaults)
-        return self.render_to_response({"form":form})
+        defaults = {
+            "language_list": 1, "meaning_list": 1,
+            "reliability": ["L", "X"]}
+        form = DumpSnapshotForm(defaults)
+        return self.render_to_response({"form": form})
 
     def post(self, request):
-        form =  DumpSnapshotForm(request.POST)
+        form = DumpSnapshotForm(request.POST)
         if form.is_valid():
-            #return HttpResponseRedirect(reverse("nexus-data"))
+            # return HttpResponseRedirect(reverse("nexus-data"))
             return self.dump_cognate_data_view(form)
-        return self.render_to_response({"form":form})
+        return self.render_to_response({"form": form})
 
     def dump_cognate_data_view(self, form):
         """A wrapper to call the `dump_cognate_data` function from a view"""
 
         # Create the HttpResponse object with the appropriate header.
-        filename = "%s-%s-%s-data.csv" % (settings.project_short_name,
-                form.cleaned_data["language_list"].name,
-                form.cleaned_data["meaning_list"].name)
+        filename = "%s-%s-%s-data.csv" % (
+            settings.project_short_name,
+            form.cleaned_data["language_list"].name,
+            form.cleaned_data["meaning_list"].name)
         response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=%s' % \
-                filename.replace(" ", "_")
+            filename.replace(" ", "_")
 
-        dump_cognate_data(response,
-                form.cleaned_data["language_list"],
-                form.cleaned_data["meaning_list"]
-                # set(form.cleaned_data["reliability"]),
-                )
+        dump_cognate_data(
+            response,
+            form.cleaned_data["language_list"],
+            form.cleaned_data["meaning_list"]
+            # set(form.cleaned_data["reliability"]),
+            )
         return response
 
-def write_nexus(fileobj,           # file object
-            language_list_name,    # string
-            meaning_list_name,     # string
-            exclude_ratings,       # set
-            dialect,               # string
-            label_cognate_sets,    # bool
-            ascertainment_marker): # bool
+
+def write_nexus(fileobj,                # file object
+                language_list_name,     # string
+                meaning_list_name,      # string
+                exclude_ratings,        # set
+                dialect,                # string
+                label_cognate_sets,     # bool
+                ascertainment_marker):  # bool
     start_time = time.time()
     dialect_full_name = dict(ChooseNexusOutputForm.DIALECT)[dialect]
 
@@ -183,10 +196,11 @@ def write_nexus(fileobj,           # file object
     meanings = meaning_list.meanings.all().order_by("meaninglistorder")
     max_len = max([len(l) for l in language_names])
 
-    matrix, cognate_class_names, assumptions = construct_matrix(languages,
-            meanings, exclude_ratings, ascertainment_marker)
+    matrix, cognate_class_names, assumptions = construct_matrix(
+        languages, meanings, exclude_ratings, ascertainment_marker)
 
-    print("#NEXUS\n\n[ Generated by: %s ]" % settings.project_long_name, file=fileobj)
+    print("#NEXUS\n\n[ Generated by: %s ]" %
+          settings.project_long_name, file=fileobj)
     try:
         if settings.project_citation:
             print(nexus_comment(settings.project_citation), file=fileobj)
@@ -195,16 +209,17 @@ def write_nexus(fileobj,           # file object
 
     print("[ Language list: %s ]" % language_list_name, file=fileobj)
     print("[ Meaning list: %s ]" % meaning_list_name, file=fileobj)
-    print("[ Exclude rating/s: %s ]" % ", ".join(sorted(exclude_ratings)), file=fileobj)
+    print("[ Exclude rating/s: %s ]" %
+          ", ".join(sorted(exclude_ratings)), file=fileobj)
     print("[ Nexus dialect: %s ]" % dialect_full_name, file=fileobj)
     print("[ Cognate set labels: %s ]" % label_cognate_sets, file=fileobj)
     print("[ Mark meaning sets for ascertainment correction: %s ]" %
-            ascertainment_marker, file=fileobj)
+          ascertainment_marker, file=fileobj)
     print("[ File generated: %s ]\n" % time.strftime("%Y-%m-%d %H:%M:%S",
-            time.localtime()), file=fileobj)
+          time.localtime()), file=fileobj)
 
     if dialect == "NN":
-        max_len += 2 # taxlabels are quoted
+        max_len += 2  # taxlabels are quoted
         print(dedent("""\
             begin taxa;
               dimensions ntax=%s;
@@ -235,7 +250,7 @@ def write_nexus(fileobj,           # file object
               format missing=? datatype=restriction;
               matrix
             """ % (len(languages), " ".join(language_names),
-                len(cognate_class_names))), file=fileobj)
+                     len(cognate_class_names))), file=fileobj)
 
     else:
         assert dialect == "BP"
@@ -245,25 +260,31 @@ def write_nexus(fileobj,           # file object
               taxlabels %s;
               format symbols="01";
               matrix
-            """ % (len(languages), len(cognate_class_names), " ".join(language_names))),
-                    file=fileobj)
+            """ % (len(languages),
+                   len(cognate_class_names), " ".join(language_names))),
+              file=fileobj)
 
     if label_cognate_sets:
-        row = [" "*9] + [str(i).ljust(10) for i in
-                range(len(cognate_class_names))[10::10]]
+        row = [" "*9] + [
+            str(i).ljust(10) for i in
+            range(len(cognate_class_names))[10::10]]
         print("   %s[ %s ]" % (" "*max_len, "".join(row)), file=fileobj)
-        row = [" "*9] + [".         " for i in range(len(cognate_class_names))[10::10]]
+        row = [" "*9] + [
+            ".         " for i in range(len(cognate_class_names))[10::10]]
         print("   %s[ %s ]" % (" "*max_len, "".join(row)), file=fileobj)
 
     # write matrix
     for row in matrix:
         language_name, row = row[0], row[1:]
         if dialect == "NN":
-            quoted = lambda s: "'%s'" % s
+            def quoted(s):
+                return "'%s'" % s
         else:
-            quoted = lambda s: s
+            def quoted(s):
+                return s
         print("    %s %s%s" % (quoted(language_name),
-                " "*(max_len - len(quoted(language_name))), "".join(row)), file=fileobj)
+              " "*(max_len - len(quoted(language_name))),
+              "".join(row)), file=fileobj)
     print("  ;\nend;\n", file=fileobj)
 
     if dialect == "BP":
@@ -299,22 +320,23 @@ def write_nexus(fileobj,           # file object
     print("[ Processing time: %02d:%02d ]" % (minutes, seconds), file=fileobj)
     # print("[ %s ]" % " ".join(sys.argv), file=fileobj)
     print("# Processed %s cognate sets from %s languages" %
-            (len(cognate_class_names), len(matrix)), file=sys.stderr)
+          (len(cognate_class_names), len(matrix)), file=sys.stderr)
     return fileobj
 
+
 def write_delimited(fileobj,
-            language_list_name,
-            meaning_list_name,
-            exclude_ratings,
-            label_cognate_sets):
+                    language_list_name,
+                    meaning_list_name,
+                    exclude_ratings,
+                    label_cognate_sets):
     start_time = time.time()
 
     language_list = LanguageList.objects.get(name=language_list_name)
     languages = language_list.languages.all().order_by("languagelistorder")
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
     meanings = meaning_list.meanings.all().order_by("meaninglistorder")
-    matrix, cognate_class_names, _ = construct_matrix(languages,
-            meanings, exclude_ratings, False) # no ascertainment marker
+    matrix, cognate_class_names, _ = construct_matrix(
+        languages, meanings, exclude_ratings, False)  # no ascertainment marker
     print("\t" + "\t".join(cognate_class_names), file=fileobj)
     for row in matrix:
         print(*row, sep="\t", file=fileobj)
@@ -325,23 +347,25 @@ def write_delimited(fileobj,
     print("# Processing time: %02d:%02d" % (minutes, seconds), file=sys.stderr)
     print("# %s" % " ".join(sys.argv), file=sys.stderr)
     print("# Processed %s cognate sets from %s languages" %
-            (len(cognate_class_names), len(matrix)), file=sys.stderr)
+          (len(cognate_class_names), len(matrix)), file=sys.stderr)
     return fileobj
 
-def construct_matrix(
-    languages,
-    meanings,
-    exclude_ratings,
-    ascertainment_marker):
+
+def construct_matrix(languages,
+                     meanings,
+                     exclude_ratings,
+                     ascertainment_marker):
 
         # synonymous cognate classes (i.e. cognate reflexes representing
         # a single Swadesh meaning)
         cognate_classes = dict()
         for cc, meaning in CognateJudgement.objects.filter(
                 lexeme__language__in=languages, lexeme__meaning__in=meanings
-                ).order_by("lexeme__meaning",
-                "cognate_class").values_list("cognate_class__id",
-                "lexeme__meaning__gloss").distinct():
+                ).order_by(
+                    "lexeme__meaning",
+                    "cognate_class").values_list(
+                        "cognate_class__id",
+                        "lexeme__meaning__gloss").distinct():
             cognate_classes.setdefault(meaning, list()).append(cc)
 
         # lexemes which have been marked as being excluded
@@ -359,27 +383,31 @@ def construct_matrix(
         # languages having a reflex for a cognate set
         data = dict()
         for meaning in meanings:
-            languages_missing_meaning[meaning.gloss] = [language for language in
-                    languages if not
-                    language.lexeme_set.filter(meaning=meaning).exists()]
+            languages_missing_meaning[meaning.gloss] = [
+                language for language in
+                languages if not
+                language.lexeme_set.filter(meaning=meaning).exists()]
             for cc in cognate_classes[meaning.gloss]:
-                matches = [cj.lexeme.language for cj in
-                        CognateJudgement.objects.filter(cognate_class=cc,
+                matches = [
+                    cj.lexeme.language for cj in
+                    CognateJudgement.objects.filter(
+                        cognate_class=cc,
                         lexeme__meaning=meaning) if cj.lexeme.language in
-                        languages and cj.lexeme.id not in exclude_lexemes]
+                    languages and cj.lexeme.id not in exclude_lexemes]
                 if matches:
                     data.setdefault(meaning.gloss, dict())[cc] = matches
 
-        # adds a cc code for all singletons (lexemes which are not registered as
+        # adds a cc code for all singletons
+        # (lexemes which are not registered as
         # belonging to a cognate class), and add to cognate_class_dict
         for lexeme in Lexeme.objects.filter(
                 language__in=languages,
                 meaning__in=meanings,
                 cognate_class__isnull=True):
             if lexeme.id not in exclude_lexemes:
-                cc = ("U", lexeme.id) # use tuple for sorting
-                data[lexeme.meaning.gloss].setdefault(cc,
-                        list()).append(lexeme.language)
+                cc = ("U", lexeme.id)  # use tuple for sorting
+                data[lexeme.meaning.gloss].setdefault(
+                    cc, list()).append(lexeme.language)
 
         def cognate_class_name_formatter(cc, gloss):
             # gloss = cognate_class_dict[cc]
@@ -408,8 +436,8 @@ def construct_matrix(
                 for cc in sorted(data[meaning.gloss]):
                     if ascertainment_marker and make_header:
                         col_num += 1
-                        cognate_class_names.append(cognate_class_name_formatter(cc,
-                            meaning.gloss))
+                        cognate_class_names.append(
+                            cognate_class_name_formatter(cc, meaning.gloss))
                     if language in data[meaning.gloss][cc]:
                         row.append("1")
                     elif language in languages_missing_meaning[meaning.gloss]:
@@ -418,13 +446,15 @@ def construct_matrix(
                         row.append("0")
                 if ascertainment_marker and make_header:
                     end_range = col_num
-                    assumptions.append("charset %s = %s-%s;" %
-                            (meaning.gloss, start_range, end_range))
+                    assumptions.append(
+                        "charset %s = %s-%s;" %
+                        (meaning.gloss, start_range, end_range))
 
             matrix.append(row)
             make_header = False
 
         return matrix, cognate_class_names, assumptions
+
 
 def dump_cognate_data(
             fileobj,
@@ -438,28 +468,34 @@ def dump_cognate_data(
     cognate_judgements = CognateJudgement.objects.filter(
             lexeme__language__in=languages,
             lexeme__meaning__in=meanings
-            ).order_by("lexeme__meaning", "cognate_class__alias", "lexeme__language")
+            ).order_by(
+                "lexeme__meaning",
+                "cognate_class__alias",
+                "lexeme__language")
 
-    print("Processed", cognate_judgements.count(), "cognate judgements",
-            file=sys.stderr)
-    print("cc_alias", "cc_id", "language", "lexeme", "lexeme_id", "status",
-            sep="\t", file=fileobj)
+    print("Processed", cognate_judgements.count(),
+          "cognate judgements", file=sys.stderr)
+    print("cc_alias", "cc_id", "language",
+          "lexeme", "lexeme_id", "status",
+          sep="\t", file=fileobj)
     for cj in cognate_judgements:
-        if ("L" in cj.reliability_ratings) or ("L" in cj.lexeme.reliability_ratings):
+        if ("L" in cj.reliability_ratings) or \
+           ("L" in cj.lexeme.reliability_ratings):
             loanword_flag = "LOAN"
         else:
             loanword_flag = ""
-        if ("X" in cj.reliability_ratings) or ("X" in cj.lexeme.reliability_ratings):
+        if ("X" in cj.reliability_ratings) or \
+           ("X" in cj.lexeme.reliability_ratings):
             if loanword_flag:
                 loanword_flag += ",EXCLUDE"
             else:
                 loanword_flag += "EXCLUDE"
 
         print(cj.lexeme.meaning.gloss+"-"+cj.cognate_class.alias,
-                cj.cognate_class.id, cj.lexeme.language.ascii_name,
-                unicode(cj.lexeme.phon_form.strip() or
-                cj.lexeme.source_form.strip()), cj.lexeme.id,
-                loanword_flag, sep="\t", file=fileobj)
+              cj.cognate_class.id, cj.lexeme.language.ascii_name,
+              unicode(cj.lexeme.phon_form.strip() or
+                      cj.lexeme.source_form.strip()), cj.lexeme.id,
+              loanword_flag, sep="\t", file=fileobj)
     lexemes = Lexeme.objects.filter(
             language__in=languages,
             meaning__in=meanings,
@@ -476,9 +512,10 @@ def dump_cognate_data(
             else:
                 loanword_flag += "EXCLUDE"
         print(lexeme.meaning.gloss,
-                "", lexeme.language.ascii_name,
-                unicode(lexeme.phon_form.strip() or
-                lexeme.source_form.strip()), lexeme.id, loanword_flag,
-                sep="\t", file=fileobj)
+              "", lexeme.language.ascii_name,
+              unicode(lexeme.phon_form.strip() or
+                      lexeme.source_form.strip()),
+              lexeme.id, loanword_flag,
+              sep="\t", file=fileobj)
 
     return fileobj

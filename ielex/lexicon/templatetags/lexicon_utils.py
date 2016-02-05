@@ -6,13 +6,16 @@ import re
 
 register = template.Library()
 
+
 @register.filter
 def in_list(value, a_list):
     return value in a_list
 
+
 @register.filter
 def is_truncated(value, length):
     return len(value.split()) > length
+
 
 @register.filter
 def wikilink(value):
@@ -28,12 +31,14 @@ def wikilink(value):
               (\w+/)+       # multiples of any number of identifier chars + /
             )
             """,
-            re.VERBOSE)
+                             re.VERBOSE)
+
     def wikilink_sub_callback(match_obj):
         link = match_obj.group("wikilink")
         lead = match_obj.group("lead")
         return '%s<a href="%s">%s</a>' % (lead, escape(link), escape(link))
     return mark_safe(WIKILINK_RE.sub(wikilink_sub_callback, value))
+
 
 @register.filter
 def asint(value):
@@ -43,12 +48,13 @@ def asint(value):
     except TypeError:
         return value
 
+
 @register.filter
 def starrating(key):
     """Convert the A|B|C|X|L reliability rating to an image"""
-    ratings = {"A":u"★★★",
-            "B":u"★★",
-            "C":u"★",
-            "X":"X",
-            "L":"L"}
+    ratings = {"A": u"★★★",
+               "B": u"★★",
+               "C": u"★",
+               "X": "X",
+               "L": "L"}
     return ratings[key]
