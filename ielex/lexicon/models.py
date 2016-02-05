@@ -172,7 +172,9 @@ class Language(models.Model):
             'low_stat': isY,
             'representative': isY,
             'rfcWebPath1': isData,
-            'rfcWebPath2': isData
+            'rfcWebPath2': isData,
+            'author': isData,
+            'reviewer': isData
             }
 
         for k, _ in vdict.iteritems():

@@ -314,23 +314,25 @@ def view_language_list(request, language_list=None):
                         'utf8', 'ignore')
 
                     lang.altname = {
-                                 'glottocode': v_dict['glottocode'],
-                                 'variety': v_dict['variety'],
-                                 'foss_stat': (v_dict['foss_stat'] == 'y'),
-                                 'low_stat': (v_dict['low_stat'] == 'y'),
-                                 'soundcompcode': v_dict['soundcompcode'],
-                                 'level0': v_dict['level0'],
-                                 'level1': v_dict['level1'],
-                                 'level2': v_dict['level2'],
-                                 'representative':
-                                 (v_dict['representative'] == 'y'),
-                                 'mean_timedepth_BP_years':
-                                 v_dict['mean_timedepth_BP_years'],
-                                 'std_deviation_timedepth_BP_years':
-                                 v_dict['std_deviation_timedepth_BP_years'],
-                                 'rfcWebPath1': v_dict['rfcWebPath1'],
-                                 'rfcWebPath2': v_dict['rfcWebPath2']
-                                 }
+                        'glottocode': v_dict['glottocode'],
+                        'variety': v_dict['variety'],
+                        'foss_stat': (v_dict['foss_stat'] == 'y'),
+                        'low_stat': (v_dict['low_stat'] == 'y'),
+                        'soundcompcode': v_dict['soundcompcode'],
+                        'level0': v_dict['level0'],
+                        'level1': v_dict['level1'],
+                        'level2': v_dict['level2'],
+                        'representative':
+                        (v_dict['representative'] == 'y'),
+                        'mean_timedepth_BP_years':
+                        v_dict['mean_timedepth_BP_years'],
+                        'std_deviation_timedepth_BP_years':
+                        v_dict['std_deviation_timedepth_BP_years'],
+                        'rfcWebPath1': v_dict['rfcWebPath1'],
+                        'rfcWebPath2': v_dict['rfcWebPath2'],
+                        'author': v_dict['author'],
+                        'reviewer': v_dict['reviewer']
+                        }
 
                     lang.validateBranchLevels()
 
@@ -397,6 +399,8 @@ def view_language_list(request, language_list=None):
                 lang.altname.get('std_deviation_timedepth_BP_years')
             langlist_row_form.rfcWebPath1 = lang.altname.get('rfcWebPath1', '')
             langlist_row_form.rfcWebPath2 = lang.altname.get('rfcWebPath2', '')
+            langlist_row_form.author = lang.altname.get('author', '')
+            langlist_row_form.reviewer = lang.altname.get('reviewer', '')
 
             langlist_table_form.langlist.append_entry(langlist_row_form)
         return langlist_table_form

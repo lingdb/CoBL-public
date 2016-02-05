@@ -262,6 +262,8 @@ class LanguageListRowForm(WTForm):
                               validators=[DataRequired()])
     rfcWebPath2 = StringField('This Lg lex rfc web path 2',
                               validators=[DataRequired()])
+    author = StringField('Author', validators=[DataRequired()])
+    reviewer = StringField('Reviewer', validators=[DataRequired()])
 
 
 class AddLanguageListTableForm(WTForm):
