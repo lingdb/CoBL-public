@@ -14,10 +14,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LanguageBranches',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False,
+                                        auto_created=True, primary_key=True)),
                 ('family_ix', models.IntegerField(blank=True)),
                 ('level1_branch_ix', models.IntegerField(blank=True)),
-                ('level1_branch_name', models.TextField(unique=True, blank=True)),
+                ('level1_branch_name', models.TextField(
+                    unique=True, blank=True)),
             ],
         ),
     ]

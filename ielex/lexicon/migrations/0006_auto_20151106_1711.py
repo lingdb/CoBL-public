@@ -15,6 +15,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='meaning',
             name='gloss',
-            field=models.CharField(unique=True, max_length=64, validators=[ielex.lexicon.validators.suitable_for_url]),
+            field=models.CharField(
+                unique=True, max_length=64,
+                validators=[ielex.lexicon.validators.suitable_for_url]),
         ),
     ]

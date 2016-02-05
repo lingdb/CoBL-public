@@ -167,7 +167,7 @@ def reverse_func(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('lexicon','0010_cognateclass_root_form')]
+    dependencies = [('lexicon', '0010_cognateclass_root_form')]
 
     operations = [
         migrations.RunPython(forwards_func, reverse_func),

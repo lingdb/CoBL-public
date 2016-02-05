@@ -15,6 +15,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='meaninglist',
             name='name',
-            field=models.CharField(unique=True, max_length=128, validators=[ielex.lexicon.validators.suitable_for_url, ielex.lexicon.validators.standard_reserved_names]),
+            field=models.CharField(
+                unique=True, max_length=128,
+                validators=[
+                    ielex.lexicon.validators.suitable_for_url,
+                    ielex.lexicon.validators.standard_reserved_names]),
         ),
     ]
