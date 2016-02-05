@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-from local_settings import *
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -32,7 +31,7 @@ INSTALLED_APPS = (
 
 MIDDLEWARE_CLASSES = (
     # 'django.middleware.transaction.TransactionMiddleware',
-    # "TransactionMiddleware is deprecated in favor of ATOMIC_REQUESTS.",
+    #    "TransactionMiddleware is deprecated in favor of ATOMIC_REQUESTS.",
     'django.middleware.common.CommonMiddleware',  # provides APPEND_SLASH
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -80,7 +79,6 @@ TEMPLATES = [
 # TODO: need this??
 # WSGI_APPLICATION = '...'
 
-
 # Database
 DATABASES = {
     'default': {
@@ -99,10 +97,10 @@ DATABASES = {
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Europe/Amsterdam'  # TODO: For Windows users:
-# …need to set to same as system time zone?
+TIME_ZONE = 'Europe/Amsterdam'  # TODO: # For Windows users:
+#                                 need to set to same as system time zone?
 USE_I18N = False  # Turning this off forces Django optimizations
-# …to avoid loading the internationalization machinery.
+#                   to avoid loading the internationalization machinery.
 # USE_L10N = True
 # USE_TZ = True
 
@@ -139,7 +137,7 @@ STATICFILES_DIRS = (
 #    os.path.join(os.path.dirname(BASE_DIR), 'static'),
 # )
 
-# TODO: need following??
+# TODO: need following?
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -158,22 +156,22 @@ local_settings_path = os.path.join(BASE_DIR, "ielex/local_settings.py")
 if not os.path.exists(local_settings_path):
     # create default local settings
     import random
-    settings_template = file(
-        os.path.join(
-            BASE_DIR, "ielex/local_settings.py")).read()
+    settings_template = file(os.path.join(
+        BASE_DIR, "ielex/local_settings.py")).read()
     key_chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
     secret_key = "".join([random.choice(key_chars) for i in xrange(50)])
     print>>file(local_settings_path, "w"), \
         settings_template.replace("<++>", secret_key)
 
+from local_settings import *
 
 if DEBUG:
     try:
         import debug_toolbar
         MIDDLEWARE_CLASSES += \
-            ('debug_toolbar.middleware.DebugToolbarMiddleware', )
-        INTERNAL_IPS = ('127.0.0.1', )
-        INSTALLED_APPS += ('debug_toolbar', )
+            ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+        INTERNAL_IPS = ('127.0.0.1',)
+        INSTALLED_APPS += ('debug_toolbar',)
         # DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS':False}
     except ImportError:
         pass
