@@ -8,3 +8,4 @@ Werkzeug==0.11.2
 WTForms-SQLAlchemy
 WTForms
 wtforms_components
+six>=1.10.0
