@@ -24,13 +24,12 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <!-- <span class="sr-only">(current)</span> FIXME -->
-        <a class="navbar-brand" href="#" title="IELex2-CognaC"><img src="/logo/cognac_32px.png"></a>
       </div>
       <div class="container">
+        <a class="navbar-brand" href="#" title="IELex2-CognaC"><img src="/logo/cognac_32px.png"></a>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">1 mg all lgs</a></li>
+            <li class="active"><a href="#">1 mg all lgs<span class="sr-only">(current)</span></a></li>
             <li><a href="#">1 mg. all cog. sets</a></li>
             <li><a href="#">1 lg. all mgs</a></li>
             <li><a href="#">1 lg. all mgs</a></li>
@@ -41,6 +40,46 @@
             <li><a href="#"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Info</a></li>
             <li><a href="#"><span class="glyphicon glyphicon-education" aria-hidden="true"></span> Authors</a></li>
             <li><a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Login</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+      <div class="container">
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li>
+              <form class="form-inline">
+                <div class="form-group">
+                  <div class="input-group">
+                    <input type="text" class="form-control" style="width: 50%;" id="exampleInputName1" placeholder="Meaning">
+                    <button
+                      class="form-control input-group-addon"
+                      style="width: 25%;" id="exampleInputName1Btn"
+                      title="Search for a meaning"
+                      data-toggle="tooltip"
+                      data-placement="bottom">
+                      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </li>
+            <li>
+              <form class="form-inline">
+                <div class="form-group">
+                  <div class="input-group">
+                    <input type="text" class="form-control" style="width: 50%;" id="exampleInputName2" placeholder="Language">
+                    <button
+                      class="form-control input-group-addon"
+                      style="width: 25%;" id="exampleInputName1Btn"
+                      title="Search for a language"
+                      data-toggle="tooltip"
+                      data-placement="bottom">
+                      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -59,5 +98,8 @@
     <!-- Include jQuery + bootstrap: -->
     <script src="/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script>
+    $(function(){$('[data-toggle="tooltip"]').tooltip();});
+    </script>
   </body>
 </html>
