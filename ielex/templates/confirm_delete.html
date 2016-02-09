@@ -1,16 +1,18 @@
-{% extends "base_admin.html" %} 
+{% extends "base_admin.html" %}
 
 {% block title %}Confirm delete{% endblock %}
 
 {% block top %}Delete semantic domain ‘{{ domain_name }}’?{% endblock %}
 
 {% block content %}
-
-Delete a named semantic domain (individual semantic relations are preserved).
-
-<form method="POST" action="">{% csrf_token %}
+  Delete a named semantic domain (individual semantic relations are preserved).
+  <form method="POST" action="">
+    {% csrf_token %}
     <input type="hidden" name="__confirm__" value="1" />
-    <input type="submit" value="delete"/> 
-    <a href="{% url 'view-domain-name' domain_name %}/" class="button"><input type="submit" value="cancel" /></a>
-</form>
+    <input type="submit" value="delete"/>
+    <a href="{% url 'view-domain-name' domain_name %}/" class="button">
+      <input type="submit" value="cancel" />
+    </a>
+  </form>
 {% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

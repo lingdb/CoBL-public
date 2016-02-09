@@ -2,32 +2,31 @@
 {% load lexicon_utils %}
 
 <table>
-<tr>
-  <td class="rowname">Source:</td>
-  <td>{{ citation.source.citation_text }}</td>
-</tr>
-{% if citation.pages %}
-<tr>
-  <td class="rowname">
-    {% ifequal citation.source.type_code "P" %}Pages:{% endifequal %}
-    {% ifequal citation.source.type_code "E" %}Affiliation:{% endifequal %}
-    {% ifequal citation.source.type_code "U" %}URL:{% endifequal %}
-  </td>
-  <td>{{citation.pages}}</td>
-</tr>
-{% endif %}
-{% if citation.long_reliability %}
-<tr>
-  <td class="rowname">Reliability:</td>
-  <td>{{ citation.long_reliability }}</td>
-</tr>
-{% endif %}
-{% if citation.comment %}
   <tr>
-    <td class="rowname">Comment:</td>
-    <td>{{ citation.comment|wikilink }}</td>
+    <td class="rowname">Source:</td>
+    <td>{{ citation.source.citation_text }}</td>
   </tr>
-{% endif %}
-
+  {% if citation.pages %}
+    <tr>
+      <td class="rowname">
+        {% ifequal citation.source.type_code "P" %}Pages:{% endifequal %}
+        {% ifequal citation.source.type_code "E" %}Affiliation:{% endifequal %}
+        {% ifequal citation.source.type_code "U" %}URL:{% endifequal %}
+      </td>
+      <td>{{citation.pages}}</td>
+    </tr>
+  {% endif %}
+  {% if citation.long_reliability %}
+    <tr>
+      <td class="rowname">Reliability:</td>
+      <td>{{ citation.long_reliability }}</td>
+    </tr>
+  {% endif %}
+  {% if citation.comment %}
+    <tr>
+      <td class="rowname">Comment:</td>
+      <td>{{ citation.comment|wikilink }}</td>
+    </tr>
+  {% endif %}
 </table>
-{# vim: set ft=htmldjango: #}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

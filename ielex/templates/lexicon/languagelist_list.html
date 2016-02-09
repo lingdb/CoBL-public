@@ -8,31 +8,31 @@
 
 
 {% block content %}
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-  </tr>
-  {% for language_list in language_lists %}
-  <tr class="{% cycle 'odd' 'even' %}">
-    <td>
-      <a href="{% url 'view-language-list' language_list.name %}">{{ language_list.name }}</a>
-    </td>
-    <td>{{ language_list.description|truncatewords_html:10 }}</td>
-    {% if user.is_authenticated and language_list.name != language_list.DEFAULT %}
-    <td>
-      <a href="{% url 'edit-language-list' language_list.name %}">
-        <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit {{ language_list.name }} metadata" />
-      </a>
-    </td>
-    {% endif %}
-  </tr>
-  {% endfor %}
-</table>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+    </tr>
+    {% for language_list in language_lists %}
+      <tr class="{% cycle 'odd' 'even' %}">
+        <td>
+          <a href="{% url 'view-language-list' language_list.name %}">{{ language_list.name }}</a>
+        </td>
+        <td>{{ language_list.description|truncatewords_html:10 }}</td>
+        {% if user.is_authenticated and language_list.name != language_list.DEFAULT %}
+          <td>
+            <a href="{% url 'edit-language-list' language_list.name %}">
+              <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit {{ language_list.name }} metadata" />
+            </a>
+          </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </table>
 {% endblock %}
 
 {% block controls %}
-{# prev-next lexeme by domain #}
-{% include "snippets/go_to.html" %}
+  {# prev-next lexeme by domain #}
+  {% include "snippets/go_to.html" %}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

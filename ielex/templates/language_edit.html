@@ -3,23 +3,21 @@
 {% block title %}{{ language.utf8_name }}{% endblock %}
 
 {% block top %}
-<h1>{{ language.utf8_name }}</h1>
+  <h1>{{ language.utf8_name }}</h1>
 {% endblock %}
 
 {% block content %}
-Leave fields blank for no change (i.e. keeping the [value])
-<form action="" method="POST">{% csrf_token %}
-  <table>
-    {{ form.as_table }}
-    
-  </table>
-  <input type="submit" name="submit" value="Submit" /> 
-  <input type="submit" name="cancel" value="Cancel" /> 
-</form>
+  Leave fields blank for no change (i.e. keeping the [value])
+  <form action="" method="POST">{% csrf_token %}
+    <table>
+      {{ form.as_table }}
+    </table>
+    <input type="submit" name="submit" value="Submit" />
+    <input type="submit" name="cancel" value="Cancel" />
+  </form>
 {% endblock %}
 
 {% block controls %}
-{% include "snippets/go_to.html" %}
+  {% include "snippets/go_to.html" %}
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

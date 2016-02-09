@@ -3,33 +3,34 @@
 {% block title %}Semantic domains{% endblock %}
 
 {% block top %}
-<h1>
-  {{ lexeme.language.utf8_name }} ― {{ lexeme }} ― Semantic domains
-</h1>
+  <h1>
+    {{ lexeme.language.utf8_name }} ― {{ lexeme }} ― Semantic domains
+  </h1>
 {% endblock %}
 
 {% block content %}
-{% if not domains %}
-  {{ lexeme }} is not registered as an extensions of any
-  <a href="{% url 'view-domains' %}">semantic domain</a>
-{% else %}
-  {{ lexeme }} is registered as an extensions of the following
-  <a href="{% url 'view-domains' %}">semantic domains</a>:
-  <ul>
-    {% for domain in domains %}
-    <li><a href="{% url 'lexeme-domain-view' lexeme.id domain.name %}">
-      {{ domain.name }}</a>
-    </li>
-    {% endfor %}
-  </ul>
-{% endif %}
+  {% if not domains %}
+    {{ lexeme }} is not registered as an extensions of any
+    <a href="{% url 'view-domains' %}">semantic domain</a>
+  {% else %}
+    {{ lexeme }} is registered as an extensions of the following
+    <a href="{% url 'view-domains' %}">semantic domains</a>:
+    <ul>
+      {% for domain in domains %}
+        <li>
+          <a href="{% url 'lexeme-domain-view' lexeme.id domain.name %}">{{ domain.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
 {% endblock %}
 
 {% block controls %}
-{% include "snippets/go_to.html" %}
-<ul class="navigation">
-  <li><a href="{% url 'view-lexeme' lexeme.id%}">Back to lexeme ‘{{ lexeme }}’</a></li>
-</ul>
-
+  {% include "snippets/go_to.html" %}
+  <ul class="navigation">
+    <li>
+      <a href="{% url 'view-lexeme' lexeme.id%}">Back to lexeme ‘{{ lexeme }}’</a>
+    </li>
+  </ul>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

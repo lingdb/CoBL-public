@@ -1,159 +1,152 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-
 {% load staticfiles %}
-
 <html lang="en">
-<head>
-	<title>{{ project_short_name }} :: {% block title %}{% endblock %}</title>
-  	<link rel="stylesheet" type="text/css" href="{% static 'css/ielex.css' %}" />
-  	<link rel="stylesheet" type="text/css" media="print" href="{% static 'css/print.css' %}" />
-    <link rel="shortcut icon" type="image/ico" href="{% static 'logo/favicon.ico' %}" />
-  	<script>
+  <head>
+    <title>{{ project_short_name }} :: {% block title %}{% endblock %}</title>
+      <link rel="stylesheet" type="text/css" href="{% static 'css/ielex.css' %}" />
+      <link rel="stylesheet" type="text/css" media="print" href="{% static 'css/print.css' %}" />
+      <link rel="shortcut icon" type="image/ico" href="{% static 'logo/favicon.ico' %}" />
+      <script>
+        (function(){
+          if(window.addEventListener){
+            window.addEventListener('DOMContentLoaded', CopyAcross, false);
+          }else{
+            window.attachEvent('onclick', CopyAcross);
+          }
+        })();
 
-		  (function () {
-			    if (window.addEventListener) {
-			        window.addEventListener('DOMContentLoaded', CopyAcross, false);
-			    } else {
-			        window.attachEvent('onclick', CopyAcross);
-			    }
-			} ());
-
-			function CopyAcross(f) {
-
-			  	if(f.checked) {
-
-			  		var f_id_arr = f.id.split('#');
-			  		var f_id = f_id_arr[0];
-			  		var f_src = f_id_arr[1];
-			  		var f_trg = f_id_arr[2];
-
-			  		if(f_id=='src2translit') {
-			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-			  		}
-			  		if(f_id=='src2root') {
-			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-			  		}
-			  		if(f_id=='translit2src') {
-			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-			  		}
-			  		if(f_id=='phoneMic2phoneTic') {
-			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-			  		}
-			  		if(f_id=='phoneTic2phoneMic') {
-			  			document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-			  		}
-				}
-			};
-
-            function MutexCheckbox(f){
-                if(f.checked){
-                    // Unchecking others if checked…
-                    var f_info = f.name.split('-');
-                    var f_num = f_info[1];
-                    var chckbx_list = document.getElementsByClassName('MutexCheckbox');
-                    Array.prototype.forEach.call(chckbx_list, function(targ_chckbx){
-                        var targ_chckbx_info = targ_chckbx.name.split('-');
-                        var targ_chckbx_num = targ_chckbx_info[1];
-                        if(f.id === targ_chckbx.id) return;
-                        if(f_num !== targ_chckbx_num) return;
-                        if(targ_chckbx.checked){
-                            targ_chckbx.checked = false;
-                        }
-                    });
-                }
-            };
-
-            function ExcludeRows() {
-                var notswad_chckbx_list = document.getElementsByClassName('notswad_checkbox');
-                Array.prototype.forEach.call(notswad_chckbx_list, function(notswad_chckbx_elem) {
-                    if(notswad_chckbx_elem.checked) {
-                        var target = notswad_chckbx_elem.parentElement;
-                        while(target.tagName !== 'TR' && target !== null){
-                            target = target.parentElement;
-                        }
-                        if(target !== null){
-                            target.style.display = "none";
-                        }
-                    }
-                });
+        function CopyAcross(f){
+          if(f.checked){
+            var f_id_arr = f.id.split('#');
+            var f_id = f_id_arr[0];
+            var f_src = f_id_arr[1];
+            var f_trg = f_id_arr[2];
+            if(f_id=='src2translit'){
+              document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
             }
-
-            function MirrorCognateCheckboxes(cbox){
-                var checked = cbox.checked
-                  , cld = cbox.dataset.mirror
-                  , cboxList = document.getElementsByClassName('loan_event');
-                Array.prototype.forEach.call(cboxList, function(c){
-                    if(cld === c.dataset.mirror){
-                        if(c.checked !== checked){
-                            c.checked = checked;
-                        }
-                    }
-                });
+            if(f_id=='src2root'){
+              document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
             }
-  	</script>
-  	{% block meta %}{% endblock %}
-</head>
-<body>
-  	<div id="container">
-      	<div id="logo">
-            <a href="{% url 'view-frontpage' %}"><img src="{% static 'logo/cognac_57px.png' %}" /></a>
-      	</div>
+            if(f_id=='translit2src'){
+              document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
+            }
+            if(f_id=='phoneMic2phoneTic'){
+              document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
+            }
+            if(f_id=='phoneTic2phoneMic'){
+              document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
+            }
+          }
+        };
 
-    	<div id="top">
-	      	<div id="login">
-	        	{% if user.is_authenticated %}
-	        	<a href="{% url 'view-profile' %}">{{ user.username }}</a> <small>[<a href="{% url 'logout' %}">logout</a>]</small>
-	          		{% if user.is_staff %}
-		        	<a href="/admin/"><img src="{% static 'buttons/save-backup.png' %}" alt="Admin site" title="Go to the admin site" /></a>
-	          		{% endif %}
-	        		{% else %}
-	        		<a href="{% url 'login' %}">login</a>
-	        	{% endif %}
-	      	</div>
-	    	<small>{{ project_short_name }}</small>
-	   	{% block top %}{% endblock %}
-    	</div>
+        function MutexCheckbox(f){
+          if(f.checked){
+            // Unchecking others if checked…
+            var f_info = f.name.split('-');
+            var f_num = f_info[1];
+            var chckbx_list = document.getElementsByClassName('MutexCheckbox');
+            Array.prototype.forEach.call(chckbx_list, function(targ_chckbx){
+              var targ_chckbx_info = targ_chckbx.name.split('-');
+              var targ_chckbx_num = targ_chckbx_info[1];
+              if(f.id === targ_chckbx.id) return;
+              if(f_num !== targ_chckbx_num) return;
+              if(targ_chckbx.checked){
+                targ_chckbx.checked = false;
+              }
+            });
+          }
+        };
 
-	    <div id="controls">
-	    {% block controls %}{% endblock %}
-	      <p align="right">
-	        <small>
-	          Language list: <strong>{{ current_language_list_name }}</strong><br />
-	          Wordlist: <strong>{{ current_wordlist_name }}</strong>
-	        </small>
-	      </p>
-	    </div>
+        function ExcludeRows(){
+          var notswad_chckbx_list = document.getElementsByClassName('notswad_checkbox');
+          Array.prototype.forEach.call(notswad_chckbx_list, function(notswad_chckbx_elem){
+            if(notswad_chckbx_elem.checked) {
+              var target = notswad_chckbx_elem.parentElement;
+              while(target.tagName !== 'TR' && target !== null){
+                target = target.parentElement;
+              }
+              if(target !== null){
+                target.style.display = "none";
+              }
+            }
+          });
+        }
 
-	    <div id="content">
-	    	{% block content %}{% endblock %}
-	    </div>
+        function MirrorCognateCheckboxes(cbox){
+          var checked = cbox.checked
+            , cld = cbox.dataset.mirror
+            , cboxList = document.getElementsByClassName('loan_event');
+          Array.prototype.forEach.call(cboxList, function(c){
+            if(cld === c.dataset.mirror){
+              if(c.checked !== checked){
+                c.checked = checked;
+              }
+            }
+          });
+        }
+      </script>
+    {% block meta %}{% endblock %}
+  </head>
+  <body>
+    <div id="container">
+      <div id="logo">
+        <a href="{% url 'view-frontpage' %}"><img src="{% static 'logo/cognac_57px.png' %}" /></a>
+      </div>
 
-    <div id="footer">
-      {# <div id="sitemap"> #}
-      {#   {% block sitemap %} {% endblock %} #}
-      {# </div> #}
-    {% block footer %}
-    <center><small>{{ project_long_name }} (LexDB version {{ version }})</small></center>
-    {% endblock %}
+      <div id="top">
+        <div id="login">
+          {% if user.is_authenticated %}
+          <a href="{% url 'view-profile' %}">{{ user.username }}</a>
+          <small>[<a href="{% url 'logout' %}">logout</a>]</small>
+          {% if user.is_staff %}
+            <a href="/admin/"><img src="{% static 'buttons/save-backup.png' %}" alt="Admin site" title="Go to the admin site" /></a>
+          {% endif %}
+          {% else %}
+            <a href="{% url 'login' %}">login</a>
+          {% endif %}
+        </div>
+        <small>{{ project_short_name }}</small>
+        {% block top %}{% endblock %}
+      </div>
+
+      <div id="controls">
+        {% block controls %}{% endblock %}
+        <p align="right">
+          <small>
+            Language list: <strong>{{ current_language_list_name }}</strong><br />
+            Wordlist: <strong>{{ current_wordlist_name }}</strong>
+          </small>
+        </p>
+      </div>
+
+      <div id="content">
+        {% block content %}{% endblock %}
+      </div>
+
+      <div id="footer">
+        {# <div id="sitemap"> #}
+        {#   {% block sitemap %} {% endblock %} #}
+        {# </div> #}
+      {% block footer %}
+      <center><small>{{ project_long_name }} (LexDB version {{ version }})</small></center>
+      {% endblock %}
+      </div>
     </div>
-  </div>
 
-  {# == Floating messages == #}
-  {% if messages %}
-  <div id="message">
-  	<ul>
-    {% for message in messages %}
-    {% if message.tags == "info" %}{# clicking on info level messages dismisses them #}
-    <li><a href="{{ current_url }}">{{ message }}</a></li>
-    {% else %}{# otherwise include the link as part of the message text #}
-    <li class="prominent">{{ message|safe }}</li>
+    {# == Floating messages == #}
+    {% if messages %}
+    <div id="message">
+      <ul>
+      {% for message in messages %}
+        {% if message.tags == "info" %}{# clicking on info level messages dismisses them #}
+          <li><a href="{{ current_url }}">{{ message }}</a></li>
+        {% else %}{# otherwise include the link as part of the message text #}
+          <li class="prominent">{{ message|safe }}</li>
+        {% endif %}
+      {% endfor %}
+      </ul>
+    </div>
     {% endif %}
-    {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
-
-</body>
+  </body>
 </html>
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

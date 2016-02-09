@@ -1,14 +1,12 @@
 {% extends "base_admin.html" %}
 
 {% block top %}
-<h1>logged out</h1>
+  <h1>logged out</h1>
 {% endblock %}
 
 {% block content %}
-
-<p>You are now logged out</p>
-
-<p><a href="/">Back to database</a></p>
-<p><a href="{% url 'login' %}">Log in again</a></p>
-
+  <p>You are now logged out</p>
+  <p><a href="/">Back to database</a></p>
+  <p><a href="{% url 'login' %}">Log in again</a></p>
 {% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

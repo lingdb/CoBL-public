@@ -3,18 +3,18 @@
 {% block title %}Choose Language{% endblock %}
 
 {% block content %}
-
-<p>Language choice is ambiguous amongst:
-<ul>
-{% for language in languages %}
-  <li><a href="{% url 'language-report' language.ascii_name %}">{{ language.utf8_name }}</a></li>
-{% endfor %}
-</ul>
-</p>
+  <p>Language choice is ambiguous amongst:
+    <ul>
+      {% for language in languages %}
+        <li>
+          <a href="{% url 'language-report' language.ascii_name %}">{{ language.utf8_name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </p>
 {% endblock %}
 
 {% block controls %}
-{% include "snippets/go_to.html" %}
+  {% include "snippets/go_to.html" %}
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

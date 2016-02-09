@@ -2,56 +2,53 @@
 {% load cache %}
 
 {% block title %}{{ project_short_name }}{% endblock %}
-  {% block meta %}{{ google_site_verification|safe }}{% endblock %}
+{% block meta %}{{ google_site_verification|safe }}{% endblock %}
 {% block top %}
-<h1>{{ project_long_name|upper }}</h1>
+  <h1>{{ project_long_name|upper }}</h1>
 {% endblock %}
 
 {% block content %}
-{% if project_description %}
-{{ project_description|safe }}
-{% endif %}
-
-{% cache 500 frontpage_stats %}
-<p> The database contains:
-<table>
-	<tr class="odd">
-          <td><a href={% url 'view-all-languages' %}>Languages</a></td>
-		<td class="rightalign">{{ languages }}</td>
-	</tr>
-	<tr class="even">
-          <td><a href={% url 'view-meanings' %}>Meanings</a></td>
-		<td class="rightalign">{{ meanings }}</td>
-	</tr>
-	<tr class="odd">
-          <td>Words</td>
-		<td class="rightalign">{{ lexemes }}</td>
-	</tr>
-	<tr class="even">
-          <td>Cognate Sets</td>
-		<td class="rightalign">{{ cognate_classes }}</td>
-	</tr>
-	<tr class="odd">
-		<td>Coded Characters</td>
-		<td class="rightalign">{{ coded_characters }}</td>
-	</tr>
-</table>
-</p>
-{% endcache %}
-
+  {% if project_description %}
+    {{ project_description|safe }}
+  {% endif %}
+  {% cache 500 frontpage_stats %}
+  <p>The database contains:
+    <table>
+      <tr class="odd">
+        <td><a href={% url 'view-all-languages' %}>Languages</a></td>
+        <td class="rightalign">{{ languages }}</td>
+      </tr>
+      <tr class="even">
+        <td><a href={% url 'view-meanings' %}>Meanings</a></td>
+        <td class="rightalign">{{ meanings }}</td>
+      </tr>
+      <tr class="odd">
+        <td>Words</td>
+        <td class="rightalign">{{ lexemes }}</td>
+      </tr>
+      <tr class="even">
+        <td>Cognate Sets</td>
+        <td class="rightalign">{{ cognate_classes }}</td>
+      </tr>
+      <tr class="odd">
+        <td>Coded Characters</td>
+        <td class="rightalign">{{ coded_characters }}</td>
+      </tr>
+    </table>
+  </p>
+  {% endcache %}
 {% endblock %}
 
 {% block controls %}
-{% include "snippets/go_to.html" %}
-{% if user.is_authenticated %} {# TODO #}
-<ul class="navigation">
-  <li><a href="/nexus/">Export NEXUS file</a></li>
-</ul>
-{% endif %}
-{% if acknowledgements %}
-<h2>Acknowledgements</h2>
-{{ acknowledgements|safe }}
-{% endif %}
+  {% include "snippets/go_to.html" %}
+  {% if user.is_authenticated %} {# TODO #}
+    <ul class="navigation">
+      <li><a href="/nexus/">Export NEXUS file</a></li>
+    </ul>
+  {% endif %}
+  {% if acknowledgements %}
+    <h2>Acknowledgements</h2>
+    {{ acknowledgements|safe }}
+  {% endif %}
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

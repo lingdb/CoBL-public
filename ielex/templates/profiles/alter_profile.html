@@ -3,12 +3,12 @@
 {% block title %}{{ project_short_name }} User Profile{% endblock %}
 
 {% block top %}
-<h1><small>User profile: {{ the_user.username }}</small></h1>
-<a href="/">Back to database</a>
+  <h1><small>User profile: {{ the_user.username }}</small></h1>
+  <a href="/">Back to database</a>
 {% endblock %}
 
 {% block content %}
-<form action="" method="post">{% csrf_token %}
+  <form action="" method="post">{% csrf_token %}
     <table>
       <tr><td>First name:</td><td>{{ form.first_name }}</td></tr>
       <tr><td>Last name:</td><td>{{ form.last_name }}</td></tr>
@@ -20,5 +20,4 @@
     {% include "buttons/submit-cancel.html" %}
   </form>
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

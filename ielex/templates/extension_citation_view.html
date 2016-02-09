@@ -4,48 +4,46 @@
 {% block title %}Semantic extension citation{% endblock %}
 
 {% block top %}
-<h1>
-  View citation: {{ citation.extension.lexeme.language }} 
-  ‘{{ citation.extension.lexeme }}’ ― {{ citation.extension.relation.relation_code }}
-</h1>
+  <h1>
+    View citation: {{ citation.extension.lexeme.language }}
+    ‘{{ citation.extension.lexeme }}’ ― {{ citation.extension.relation.relation_code }}
+  </h1>
 {% endblock %}
 
 {% block content %}
-<p>
-  {% with citation.extension.semanticextensioncitation_set.count as sec_count %}
-    {% if sec_count > 1 %}
-      One of {{ sec_count }} citations
-    {% else %}
-      Citation 
-    {% endif %}
-  for the {{ citation.extension.lexeme.language }} lexeme 
-  ‘<a href="{{ citation.extension.lexeme.get_absolute_url }}">{{ citation.extension.lexeme }}</a>’ in the function 
-  ‘{{ citation.extension.relation.relation_code }}’:
-  {% endwith %}
-</p>
-
-<table>
-  <tr>
-    <th>Source:</th>
-    <td><a href="{{ citation.source.get_absolute_url }}">{{ citation.source.citation_text }}</a></td>
-  </tr>
-  <tr>
-    <th>Pages:</th>
-    <td>{{ citation.pages }} </td>
-  </tr>
-  <tr>
-    <th>Reliability:</th>
-    <td>{{ citation.long_reliability }} </td>
-  </tr>
-  <tr>
-    <th>Comment:</th>
-    <td>{{ citation.comment|wikilink }} </td>
-  </tr>
-</table>
+  <p>
+    {% with citation.extension.semanticextensioncitation_set.count as sec_count %}
+      {% if sec_count > 1 %}
+        One of {{ sec_count }} citations
+      {% else %}
+        Citation
+      {% endif %}
+      for the {{ citation.extension.lexeme.language }} lexeme
+      ‘<a href="{{ citation.extension.lexeme.get_absolute_url }}">{{ citation.extension.lexeme }}</a>’ in the function
+      ‘{{ citation.extension.relation.relation_code }}’:
+    {% endwith %}
+  </p>
+  <table>
+    <tr>
+      <th>Source:</th>
+      <td><a href="{{ citation.source.get_absolute_url }}">{{ citation.source.citation_text }}</a></td>
+    </tr>
+    <tr>
+      <th>Pages:</th>
+      <td>{{ citation.pages }} </td>
+    </tr>
+    <tr>
+      <th>Reliability:</th>
+      <td>{{ citation.long_reliability }} </td>
+    </tr>
+    <tr>
+      <th>Comment:</th>
+      <td>{{ citation.comment|wikilink }} </td>
+    </tr>
+  </table>
 {% endblock %}
 
 {% block controls %}
-{% include "snippets/go_to.html" %}
+  {% include "snippets/go_to.html" %}
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

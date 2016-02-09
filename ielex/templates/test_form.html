@@ -7,16 +7,15 @@
   <link rel="stylesheet" type="text/css" href="{% static 'css/ielex.css' %}" />
 </head>
 <body>
-    <form action="" method="post">{% csrf_token %}
-        <table>
-            {{ form.as_table }}
-        </table>
-        {% if no_submit_button %}
-        {% else %}
-        <input type="submit" value="Submit">
-        {% endif %}
-    </form>
+  <form action="" method="post">{% csrf_token %}
+    <table>
+      {{ form.as_table }}
+    </table>
+    {% if no_submit_button %}
+    {% else %}
+    <input type="submit" value="Submit">
+    {% endif %}
+  </form>
 </body>
 </html>
-
-
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

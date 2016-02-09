@@ -4,76 +4,73 @@
 {% block title %}{{ project_short_name }} Recent Changes{% endblock %}
 
 {% block top %}
-<h1>View Changes</h1>
+  <h1>View Changes</h1>
 {% endblock %}
 
 {% block content %}
-
-<table>
-{% for revision in changes.object_list %}
-{% if revision.interesting_versions %}
-<tr>
-  <td><b>{{ revision.date_created|date:"d-M-Y G:i"  }}</b></td>
-  <td><b>{{ revision.user.username }}</b></td>
-  {# {% if user.is_authenticated %} #}
-  {# <td><small><a href="/revert/{{ revision.id }}">revert</a></small></td> #}
-  {# {% else %} #}
-  <td>&nbsp;</td>
-  {# {% endif %} #}
-  <td>{{ revision.comment|wikilink|truncatewords_html:1 }}</td>
-</tr>
-  {% for version in revision.interesting_versions %}
-    <tr class="{% cycle 'odd' 'even' %}">
-      <td>{{ version.content_type.name }}</td>
-      <td>
-        {% if version.get_type_display != "Deletion" %}                        
-        {% with version.object.get_absolute_url as obj_url %}
-        {% if obj_url %}
-        <a href="{{ obj_url }}">
-           {{ version.object }}
-        </a>                                                                   
-        {% else %} 
-        &lt;{{ version.object }}&gt;
-        {% endif %}
-        {% endwith %}
-        {% endif %}                                                            
-      </td>                                                                    
-      <td><i>{{ version.get_type_display }}</i></td>
-    </tr>
-  {% endfor %}
-{% endif %}
-{% endfor %}
-</table>
+  <table>
+    {% for revision in changes.object_list %}
+      {% if revision.interesting_versions %}
+        <tr>
+          <td><b>{{ revision.date_created|date:"d-M-Y G:i"  }}</b></td>
+          <td><b>{{ revision.user.username }}</b></td>
+          {# {% if user.is_authenticated %} #}
+          {# <td><small><a href="/revert/{{ revision.id }}">revert</a></small></td> #}
+          {# {% else %} #}
+          <td>&nbsp;</td>
+          {# {% endif %} #}
+          <td>{{ revision.comment|wikilink|truncatewords_html:1 }}</td>
+        </tr>
+        {% for version in revision.interesting_versions %}
+          <tr class="{% cycle 'odd' 'even' %}">
+            <td>{{ version.content_type.name }}</td>
+            <td>
+              {% if version.get_type_display != "Deletion" %}
+                {% with version.object.get_absolute_url as obj_url %}
+                  {% if obj_url %}
+                    <a href="{{ obj_url }}">
+                     {{ version.object }}
+                    </a>
+                  {% else %}
+                    &lt;{{ version.object }}&gt;
+                  {% endif %}
+                {% endwith %}
+              {% endif %}
+            </td>
+            <td><i>{{ version.get_type_display }}</i></td>
+          </tr>
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+  </table>
 {% endblock %}
 
 {% block controls %}
-<div class="pagination">
-  <span class="step-links">
-    {% if changes.has_previous %}
-      <a href="?page={{ changes.previous_page_number }}">previous</a>
-    {% endif %}
-    <span class="current">
-      Page {{ changes.number }} of {{ changes.paginator.num_pages }}.
+  <div class="pagination">
+    <span class="step-links">
+      {% if changes.has_previous %}
+        <a href="?page={{ changes.previous_page_number }}">previous</a>
+      {% endif %}
+      <span class="current">
+        Page {{ changes.number }} of {{ changes.paginator.num_pages }}.
+      </span>
+      {% if changes.has_next %}
+        <a href="?page={{ changes.next_page_number }}">next</a>
+      {% endif %}
     </span>
-    {% if changes.has_next %}
-      <a href="?page={{ changes.next_page_number }}">next</a>
-    {% endif %}
-  </span>
-  <br />
-{% include "snippets/go_to.html" %}
+    <br />
+  {% include "snippets/go_to.html" %}
 
-<hr />
-<h2>Contributors</h2>
-<table>
-{% for contributor, count in contributors %}
-<tr class="{% cycle 'odd' 'even' %}">
-  <td><a href="{% url 'view-changes-user' contributor.username %}">{{ contributor.username }}</a></td>
-  <td>{{ count }}</td>
-</tr>
-{% endfor %}
-</table>
-</div>
-
+  <hr />
+  <h2>Contributors</h2>
+  <table>
+    {% for contributor, count in contributors %}
+      <tr class="{% cycle 'odd' 'even' %}">
+        <td><a href="{% url 'view-changes-user' contributor.username %}">{{ contributor.username }}</a></td>
+        <td>{{ count }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+  </div>
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

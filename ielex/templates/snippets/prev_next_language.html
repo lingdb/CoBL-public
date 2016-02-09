@@ -2,8 +2,8 @@
 <a href="{% url 'view-language-wordlist' prev_language.ascii_name wordlist %}">
   <strong>«&nbsp;{{ prev_language.utf8_name }}</strong>
 </a>
-― 
+―
 <a href="{% url 'view-language-wordlist' next_language.ascii_name wordlist %}">
   <strong>{{ next_language.utf8_name }}&nbsp;»</strong>
 </a>
-</center>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

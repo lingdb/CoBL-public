@@ -1,30 +1,32 @@
 {% extends "base_admin.html" %}
 
 {% block top %}
-<h1>login form</h1>
+  <h1>login form</h1>
 {% endblock %}
 
 {% block content %}
-{% if form.errors %}
-<ul id="message">
-  <li id="message">Username and password do not match. Please try again.</li>
-</ul>
-{% endif %}
-<form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
-  <table>
-    <tr>
-      <td>Username:</td><td><input type="text" name="username" id="id_username" /></td>
-    </tr>
-    <tr>
-      <td>Password:</td><td><input type="password" name="password" id="id_password" /></td>
-    </tr>
-    <tr><td></td><td><input type="submit" value="Log in" /></td></tr>
-  </table>
-  <input type="hidden" name="this_is_the_login_form" value="1" />
-</form>
-<script type="text/javascript">
-  document.getElementById('id_username').focus()
-</script>
+  {% if form.errors %}
+    <ul id="message">
+      <li id="message">Username and password do not match. Please try again.</li>
+    </ul>
+  {% endif %}
+  <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
+    <table>
+      <tr>
+        <td>Username:</td><td><input type="text" name="username" id="id_username" /></td>
+      </tr>
+      <tr>
+        <td>Password:</td><td><input type="password" name="password" id="id_password" /></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><input type="submit" value="Log in" /></td>
+      </tr>
+    </table>
+    <input type="hidden" name="this_is_the_login_form" value="1" />
+  </form>
+  <script type="text/javascript">
+    document.getElementById('id_username').focus()
+  </script>
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

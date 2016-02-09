@@ -3,38 +3,35 @@
 {% block title %}Lexeme citation{% endblock %}
 
 {% block top %}
-<h1>
-  View citation: {{ citation.lexeme }} 
-</h1>
+  <h1>
+    View citation: {{ citation.lexeme }}
+  </h1>
 {% endblock %}
 
 {% block content %}
-<p>
-  {% with citation.lexeme.lexemecitation_set.count as ncitations %}
-    {% if ncitations > 1 %}
-      One of {{ sec_count }} citations
-    {% endif %}
-  {% endwith %}
-</p>
-
-{% include "snippets/citation_detail_table.html" %}
+  <p>
+    {% with citation.lexeme.lexemecitation_set.count as ncitations %}
+      {% if ncitations > 1 %}
+        One of {{ sec_count }} citations
+      {% endif %}
+    {% endwith %}
+  </p>
+  {% include "snippets/citation_detail_table.html" %}
 {% endblock %}
 
 {% block controls %}
-{% include "snippets/go_to.html" %}
-
-<ul class="navigation">
-  <li>
-    <a href="{% url 'view-lexeme' citation.lexeme.id %}">
-      back to lexeme
-    </a>
-  </li>
-  <li>
-    <a href="{% url 'lexeme-edit-citation' citation.lexeme.id citation.id %}">
-      edit this citation
-    </a>
-  </li>
-</ul>
+  {% include "snippets/go_to.html" %}
+  <ul class="navigation">
+    <li>
+      <a href="{% url 'view-lexeme' citation.lexeme.id %}">
+        back to lexeme
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'lexeme-edit-citation' citation.lexeme.id citation.id %}">
+        edit this citation
+      </a>
+    </li>
+  </ul>
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

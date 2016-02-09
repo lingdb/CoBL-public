@@ -8,73 +8,81 @@
 {% block top %}<h1>Language list ‘{{ current_language_list_name }}’</h1>{% endblock %}
 
 {% block content %}
-<table>
-  <thead> {# handy for the print view #}
-    <tr>
-      <th></th>
-      <th>Name</th>
-      <th>ISO-639-3</th>
-      <th>Lexemes</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for language in languages %}
-  <tr class="{% cycle 'odd' 'even' %}">
-    <td>
-        <small>{{ forloop.counter }}</small>
-    </td>
-      <td>
-        {% if user.is_authenticated %}
-          <a href="{% url 'language-edit' language.ascii_name %}">
-            <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit {{ language.utf8_name }} metadata" />
-          </a>
-        {% endif %}
-        <a href="{% url 'language-report' language.ascii_name %}" alt="view lexeme list" title="View wordlist list for {{ language.utf8_name }}">
-          {{ language.utf8_name }}
-        </a>
-      </td>
-      <td>
-        <a href="http://www.ethnologue.com/language/{{ language.iso_code }}" target="_blank">
-          {{ language.iso_code }}
-        </a>
-      </td>
-      <td>
-        {{ language.lexeme_count }}
-      </td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
+  <table>
+    <thead> {# handy for the print view #}
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>ISO-639-3</th>
+        <th>Lexemes</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for language in languages %}
+        <tr class="{% cycle 'odd' 'even' %}">
+          <td>
+            <small>{{ forloop.counter }}</small>
+          </td>
+          <td>
+            {% if user.is_authenticated %}
+              <a href="{% url 'language-edit' language.ascii_name %}">
+                <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit {{ language.utf8_name }} metadata" />
+              </a>
+            {% endif %}
+            <a href="{% url 'language-report' language.ascii_name %}" alt="view lexeme list" title="View wordlist list for {{ language.utf8_name }}">
+              {{ language.utf8_name }}
+            </a>
+          </td>
+          <td>
+            <a href="http://www.ethnologue.com/language/{{ language.iso_code }}" target="_blank">
+              {{ language.iso_code }}
+            </a>
+          </td>
+          <td>
+            {{ language.lexeme_count }}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}
 
 {% block controls %}
-{% include "snippets/go_to.html" %}
-{# include "snippets/change_sort_order.html" #}
-{% if user.is_authenticated %}
-<ul class="navigation">
-<li><a href="{% url 'language-add-new' current_language_list_name %}">new language</a></li>
-</ul>
-<ul class="navigation">
-<li><a href="{% url 'add-language-list' %}">new language list</a></li>
-<li><a href="{% url 'edit-language-list' current_language_list_name %}">
-  edit language list ‘{{ current_language_list_name }}’</a></li>
-<li><a href="{% url 'reorder-language-list' current_language_list_name %}">
-  edit sort order ‘{{ current_language_list_name }}’</a></li>
-</ul>
-{% endif %}
-<p>
-<form action="" method="post">{% csrf_token %}
-<fieldset>
-<legend>Controls</legend>
-<table>
-{{ language_list_form.as_table }}
-</table>
-{% if current_list.description %}
-<b>Description:</b> {{ current_list.description }}
-{% endif %}
-</fieldset>
-</form>
-</p>
+  {% include "snippets/go_to.html" %}
+  {# include "snippets/change_sort_order.html" #}
+  {% if user.is_authenticated %}
+    <ul class="navigation">
+      <li><a href="{% url 'language-add-new' current_language_list_name %}">new language</a></li>
+    </ul>
+    <ul class="navigation">
+      <li>
+        <a href="{% url 'add-language-list' %}">new language list</a>
+      </li>
+      <li>
+        <a href="{% url 'edit-language-list' current_language_list_name %}">
+          edit language list ‘{{ current_language_list_name }}’
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'reorder-language-list' current_language_list_name %}">
+          edit sort order ‘{{ current_language_list_name }}’
+        </a>
+      </li>
+    </ul>
+  {% endif %}
+  <p>
+    <form action="" method="post">
+      {% csrf_token %}
+      <fieldset>
+        <legend>Controls</legend>
+        <table>
+          {{ language_list_form.as_table }}
+        </table>
+        {% if current_list.description %}
+          <b>Description:</b> {{ current_list.description }}
+        {% endif %}
+      </fieldset>
+    </form>
+  </p>
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

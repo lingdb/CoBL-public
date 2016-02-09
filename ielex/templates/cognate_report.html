@@ -8,129 +8,132 @@
 {% block top %}<h1>Cognate class {% firstof cognate_class.name cognate_class.id %}</h1>{% endblock %}
 
 {% block content %}
-<fieldset>
-  {% if action == 'edit-notes' %}
-  <legend>
-    <strong>Notes</strong>
-  </legend>
-  <form action="" method="POST">{% csrf_token %}
-    {{ form.notes }}
-    <input type="submit" name="submit" value="Submit" /> 
-    <input type="submit" name="cancel" value="Cancel" /> 
-  </form>
-  {% else %}
-  <legend>
-    <strong>Notes</strong>
-    {% if user.is_authenticated %}
-    <a href="{% url 'edit-cognate-notes' cognate_class.id %}">
-      <img src="{% static 'buttons/edit-pencil.png' %}" />
-    </a>
-    {% endif %}
-  </legend>
-  {{ cognate_class.notes|wikilink }}
-  {% endif %}
-</fieldset>
-
-
-{% if cognate_class.cognateclasscitation_set.exists %}
-  {% for citation in cognate_class.cognateclasscitation_set.all %}
   <fieldset>
-    <legend>
-      <strong>Citation:
-        <a href="{% url 'view-source' citation.source.id %}">
-        {{ citation.source.citation_text|truncatewords:10 }}
-        </a>
-        Pages:
-      </strong>
-      {{ citation.pages }}
-      <a href="{% url 'cognate-class-citation-detail' citation.id %}">
-        <img src="{% static 'buttons/view.png' %}" alt="View" title="View the citation" />
-      </a>
-      {% if user.is_authenticated %}
-      <a href="{% url 'cognate-citation-edit' citation.id %}">
-        <img src="{% static 'buttons/edit-pencil.png' %}" alt="View" title="Edit the citation" />
-      </a>
-      {% endif %}
-    </legend>
-  {{ citation.comment|wikilink }}
+    {% if action == 'edit-notes' %}
+      <legend>
+        <strong>Notes</strong>
+      </legend>
+      <form action="" method="POST">{% csrf_token %}
+        {{ form.notes }}
+        <input type="submit" name="submit" value="Submit" />
+        <input type="submit" name="cancel" value="Cancel" />
+      </form>
+    {% else %}
+      <legend>
+        <strong>Notes</strong>
+        {% if user.is_authenticated %}
+          <a href="{% url 'edit-cognate-notes' cognate_class.id %}">
+            <img src="{% static 'buttons/edit-pencil.png' %}" />
+          </a>
+        {% endif %}
+      </legend>
+      {{ cognate_class.notes|wikilink }}
+    {% endif %}
   </fieldset>
-  {% endfor %}
-{% endif %}
-
-<table>
-  <thead> {# handy for the print view #}
-    <tr>
-      <th>&nbsp;</th>
-      <th>Language</th>
-      <th>Lexeme</th>
-      <th>Phonological</th>
-      <th>Meaning</th>
-      <th>Notes</th>
-      <th>Rating</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for cj in cj_ordered %} {# cognate_class.cognatejudgement_set.all %} #}
-  <tr class="{% cycle 'odd' 'even' %}">
-      <td>{{ forloop.counter }}</td>
-      <td>
-        <a href="{% url 'language-report' cj.lexeme.language.id %}">
-          {{ cj.lexeme.language.utf8_name }}
-        </a>
-      </td>
-      <td>{{ cj.lexeme.source_form }}</td>
-      <td>{{ cj.lexeme.phon_form }}</td>
-      <td><a href="{% url 'meaning-report' cj.lexeme.meaning.gloss %}">{{ cj.lexeme.meaning.gloss }}</a></td>
-      <td>{{ cj.lexeme.notes|wikilink }}</td>
-      <td>{% for rating, description in cj.long_reliability_ratings %}
-        <span title="{{ description }}">{{ rating|starrating }}</span>
-          {% endfor %}
-      </td>
-      <td>
-        <a href="{% url 'view-lexeme' cj.lexeme.id %}">
-          <img src="{% static 'buttons/view.png' %}" alt="View" title="View/edit the lexical entry" />
-        </a>
-      </td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
+  {% if cognate_class.cognateclasscitation_set.exists %}
+    {% for citation in cognate_class.cognateclasscitation_set.all %}
+      <fieldset>
+        <legend>
+          <strong>Citation:
+            <a href="{% url 'view-source' citation.source.id %}">
+              {{ citation.source.citation_text|truncatewords:10 }}
+            </a>
+            Pages:
+          </strong>
+          {{ citation.pages }}
+          <a href="{% url 'cognate-class-citation-detail' citation.id %}">
+            <img src="{% static 'buttons/view.png' %}" alt="View" title="View the citation" />
+          </a>
+          {% if user.is_authenticated %}
+            <a href="{% url 'cognate-citation-edit' citation.id %}">
+              <img src="{% static 'buttons/edit-pencil.png' %}" alt="View" title="Edit the citation" />
+            </a>
+          {% endif %}
+        </legend>
+        {{ citation.comment|wikilink }}
+      </fieldset>
+    {% endfor %}
+  {% endif %}
+  <table>
+    <thead> {# handy for the print view #}
+      <tr>
+        <th>&nbsp;</th>
+        <th>Language</th>
+        <th>Lexeme</th>
+        <th>Phonological</th>
+        <th>Meaning</th>
+        <th>Notes</th>
+        <th>Rating</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cj in cj_ordered %} {# cognate_class.cognatejudgement_set.all %} #}
+        <tr class="{% cycle 'odd' 'even' %}">
+          <td>{{ forloop.counter }}</td>
+          <td>
+            <a href="{% url 'language-report' cj.lexeme.language.id %}">
+              {{ cj.lexeme.language.utf8_name }}
+            </a>
+          </td>
+          <td>{{ cj.lexeme.source_form }}</td>
+          <td>{{ cj.lexeme.phon_form }}</td>
+          <td><a href="{% url 'meaning-report' cj.lexeme.meaning.gloss %}">{{ cj.lexeme.meaning.gloss }}</a></td>
+          <td>{{ cj.lexeme.notes|wikilink }}</td>
+          <td>
+            {% for rating, description in cj.long_reliability_ratings %}
+              <span title="{{ description }}">{{ rating|starrating }}</span>
+            {% endfor %}
+          </td>
+          <td>
+            <a href="{% url 'view-lexeme' cj.lexeme.id %}">
+              <img src="{% static 'buttons/view.png' %}" alt="View" title="View/edit the lexical entry" />
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}
 
 {% block controls %}
-{% if action == 'edit-name' and user.is_authenticated %}
-  <form action="" method="POST">{% csrf_token %}
-    {{ form.name.errors }}
-    <strong>Cognate class name:</strong><br />{{ form.name }}
-    <input type="submit" name="submit" value="Submit" /> 
-    <input type="submit" name="cancel" value="Cancel" /> 
-  </form>
-{% else %}
-  {% if cognate_class.name %}
-  <p align="right">
-    Cognate class name: <strong>{{ cognate_class.name }}</strong>
+  {% if action == 'edit-name' and user.is_authenticated %}
+    <form action="" method="POST">
+      {% csrf_token %}
+      {{ form.name.errors }}
+      <strong>Cognate class name:</strong><br />{{ form.name }}
+      <input type="submit" name="submit" value="Submit" />
+      <input type="submit" name="cancel" value="Cancel" />
+    </form>
+  {% else %}
+    {% if cognate_class.name %}
+      <p align="right">
+        Cognate class name: <strong>{{ cognate_class.name }}</strong>
+        {% if user.is_authenticated %}
+          <a href="{% url 'edit-cognate-name' cognate_class.id %}">
+            <img src="{% static 'buttons/edit-pencil.png' %}" />
+          </a>
+        {% endif %}
+      {% endif %}
+    </p>
+  {% endif %}
+  {% include "snippets/go_to.html" %}
+  {# include "snippets/change_sort_order.html" #}
+  <ul class="navigation">
     {% if user.is_authenticated %}
-      <a href="{% url 'edit-cognate-name' cognate_class.id %}">
-        <img src="{% static 'buttons/edit-pencil.png' %}" />
-      </a>
+      <li>
+        <a href="{% url 'cognate-class-citation-create' cognate_class.id %}">add citation</a>
+      </li>
     {% endif %}
-  {% endif %}
-  </p>
-{% endif %}
-
-{% include "snippets/go_to.html" %}
-{# include "snippets/change_sort_order.html" #}
-<ul class="navigation">
-  {% if user.is_authenticated %}
-  <li><a href="{% url 'cognate-class-citation-create' cognate_class.id %}">add citation</a></li>
-  {% endif %}
-  {% if not cognate_class.name and user.is_authenticated %}
-  <li><a href="{% url 'edit-cognate-name' cognate_class.id %}">name this cognate class</a></li>
-  {% endif %}
-  {% for meaning in cognate_class.get_meanings %}
-  <li><a href="{% url 'meaning-report' meaning.gloss %}">return to ‘{{ meaning.gloss }}’</a></li>
-  {% endfor %}
-</ul>
+    {% if not cognate_class.name and user.is_authenticated %}
+      <li>
+        <a href="{% url 'edit-cognate-name' cognate_class.id %}">name this cognate class</a>
+      </li>
+    {% endif %}
+    {% for meaning in cognate_class.get_meanings %}
+      <li>
+        <a href="{% url 'meaning-report' meaning.gloss %}">return to ‘{{ meaning.gloss }}’</a>
+      </li>
+    {% endfor %}
+  </ul>
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

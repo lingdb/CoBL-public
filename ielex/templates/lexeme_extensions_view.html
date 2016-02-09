@@ -5,52 +5,57 @@
 {% block title %}Semantic extensions{% endblock %}
 
 {% block top %}
-<h1>
-  Semantic extensions: {{ lexeme }} ({{ lexeme.language.utf8_name }})
-</h1>
+  <h1>
+    Semantic extensions: {{ lexeme }} ({{ lexeme.language.utf8_name }})
+  </h1>
 {% endblock %}
 
 {% block content %}
-<table>
-  <tr>
-    <th>Code</th>
-    <th>Relation</th>
-    <th>Description</th>
-    <th>Citations</th>
-  </tr>
-  {% for extension in lexeme.semanticextension_set.all %}
-  <tr class="{% cycle 'odd' 'even' %}">
-    <td>{{ extension.relation.relation_code }}</td>
-    <td>{{ extension.relation.long_name }}</td>
-    <td>{{ extension.relation.description }}</td>
-    <td>
-      {% for citation in extension.semanticextensioncitation_set.all %}
-      <a href="{{ citation.get_absolute_url }}" alt="{{ citation.source.citation_text }}">
-        [{{ citation.source.id }}]
-      </a>
-      {% endfor %}
-      <a href="{% url 'extension-add-citation' extension.id %}">
-        <img src="{% static 'buttons/add.png' %}" alt="Add citation" title="Add citation" /> 
-      </a>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+  <table>
+    <tr>
+      <th>Code</th>
+      <th>Relation</th>
+      <th>Description</th>
+      <th>Citations</th>
+    </tr>
+    {% for extension in lexeme.semanticextension_set.all %}
+      <tr class="{% cycle 'odd' 'even' %}">
+        <td>{{ extension.relation.relation_code }}</td>
+        <td>{{ extension.relation.long_name }}</td>
+        <td>{{ extension.relation.description }}</td>
+        <td>
+          {% for citation in extension.semanticextensioncitation_set.all %}
+            <a href="{{ citation.get_absolute_url }}" alt="{{ citation.source.citation_text }}">
+              [{{ citation.source.id }}]
+            </a>
+          {% endfor %}
+          <a href="{% url 'extension-add-citation' extension.id %}">
+            <img src="{% static 'buttons/add.png' %}" alt="Add citation" title="Add citation" />
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
 {% endblock %}
 
 {% block controls %}
-{% include "snippets/go_to.html" %}
-<ul class="navigation">
-  <li><a href="{% url 'view-lexeme' lexeme.id %}">Back to lexeme ‘{{ lexeme }}’</a>
-  </li>
-  {% if lexeme.meaning %}
-  <li><a href="{% url 'meaning-report' lexeme.meaning.gloss %}">
-    Back to meaning list ‘{{ lexeme.meaning.gloss }}’</a>
-  </li>
-  {% endif %}
-  <li><a href="{% url 'language-report' lexeme.language.ascii_name %}">
-    Back to language list ‘{{ lexeme.language.utf8_name }}’</a></li>
-</ul>
+  {% include "snippets/go_to.html" %}
+  <ul class="navigation">
+    <li>
+      <a href="{% url 'view-lexeme' lexeme.id %}">Back to lexeme ‘{{ lexeme }}’</a>
+    </li>
+    {% if lexeme.meaning %}
+      <li>
+        <a href="{% url 'meaning-report' lexeme.meaning.gloss %}">
+          Back to meaning list ‘{{ lexeme.meaning.gloss }}’
+        </a>
+      </li>
+    {% endif %}
+    <li>
+      <a href="{% url 'language-report' lexeme.language.ascii_name %}">
+        Back to language list ‘{{ lexeme.language.utf8_name }}’
+      </a>
+    </li>
+  </ul>
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

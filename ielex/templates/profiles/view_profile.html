@@ -13,27 +13,26 @@
     <tr><td>Last name:</td><td>{{ the_user.last_name }}</td></tr>
     <tr><td>Email address:</td><td>{{ the_user.email }}</td></tr>
     {% if user.username == the_user.username %}
-    <tr>
-      <td></td>
-      <td>
-        <a href="{% url 'change-password' %}" class="button">
-          <input type="button" value="Change password">
-        </a>
-        <a href="{% url 'alter-profile' %}" class="button">
-          <input type="button" value="Alter personal information">
-        </a>
-      </td>
-    </tr>
+      <tr>
+        <td></td>
+        <td>
+          <a href="{% url 'change-password' %}" class="button">
+            <input type="button" value="Change password">
+          </a>
+          <a href="{% url 'alter-profile' %}" class="button">
+            <input type="button" value="Alter personal information">
+          </a>
+        </td>
+      </tr>
     {% endif %}
   </table>
   <h2>Permissions</h2>
   <ul>
-  {% for permission in the_user.get_all_permissions %}
-    {% if permission.name %}
-      <li>{{ permission.name }}</li>
-    {% endif %}
-  {% endfor %}
+    {% for permission in the_user.get_all_permissions %}
+      {% if permission.name %}
+        <li>{{ permission.name }}</li>
+      {% endif %}
+    {% endfor %}
   </ul>
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

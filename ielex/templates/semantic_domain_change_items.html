@@ -6,34 +6,32 @@
 {% block top %}<h1>Change relations making up semantic domain: {{ semantic_domain.name }}</h1>{% endblock %}
 
 {% block content %}
-<form action="" method="POST">{% csrf_token %}
-  <table>
-    {{ name_form.as_table }}
-  </table>
-  <table>
-    <tr>
-      <th>Excluded</th>
-      <th>Included</th>
-    </tr>
-    <tr>
-      <td>{{ items_form.excluded_relations }}</td>
-      <td>{{ items_form.included_relations }}</td>
-    </tr> 
-  </table>
-  {# 
-    submit currently has the same action as cancel.
+  <form action="" method="POST">{% csrf_token %}
+    <table>
+      {{ name_form.as_table }}
+    </table>
+    <table>
+      <tr>
+        <th>Excluded</th>
+        <th>Included</th>
+      </tr>
+      <tr>
+        <td>{{ items_form.excluded_relations }}</td>
+        <td>{{ items_form.included_relations }}</td>
+      </tr>
+    </table>
+    {#
+      submit currently has the same action as cancel.
 
-    XXX check that submit works for both form elements; 
-    if not, see edit_language_list.html for solution
-  #}
-  <input type="submit" name="cancel" value="Cancel" />
-  <input type="submit" name="cancel" value="Submit" />
-</form>
+      XXX check that submit works for both form elements;
+      if not, see edit_language_list.html for solution
+    #}
+    <input type="submit" name="cancel" value="Cancel" />
+    <input type="submit" name="cancel" value="Submit" />
+  </form>
 {% endblock %}
 
 {% block controls %}
 {% include "snippets/go_to.html" %}
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
-

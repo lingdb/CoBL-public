@@ -9,38 +9,37 @@
 {% endblock %}
 
 {% block content %}
-{% if action %}
-  <form action="" method="POST">{% csrf_token %}
+  {% if action %}
+    <form action="" method="POST">{% csrf_token %}
+      <table>
+        {{ form.as_table }}
+      </table>
+      <input type="submit" name="submit" value="Submit" />
+      <input type="submit" name="cancel" value="Cancel" />
+    </form>
+  {% else %}
     <table>
-      {{ form.as_table }}
+      <tr>
+        <th>Citation:</th><td>{{ source.citation_text }}</td>
+        {% if user.is_authenticated %}
+          <td>
+            <a href="{% url 'edit-source' source.id %}">
+              <img src="{% static 'buttons/edit.png' %}" alt="Edit" title="Edit" />
+            </a>
+            <img src="{% static 'buttons/delete.png' %}" alt="{% url 'delete-source' source.id %} to delete"
+                title="{% url 'delete-source' source.id %} to delete" />
+          </td>
+        {% endif %}
+      </tr>
+      <tr><th>Type:</th><td>{{ source.get_type_code_display }}</td></tr>
+      <tr><th>Description:</th><td>{{ source.description }}</td></tr>
+      <tr><th>Modified:</th><td>{{ source.modified|date:"r" }}</td></tr>
     </table>
-    <input type="submit" name="submit" value="Submit" /> 
-    <input type="submit" name="cancel" value="Cancel" /> 
-  </form>
-{% else %} 
-<table>
-  <tr>
-    <th>Citation:</th><td>{{ source.citation_text }}</td>
-    {% if user.is_authenticated %}
-    <td>
-      <a href="{% url 'edit-source' source.id %}">
-        <img src="{% static 'buttons/edit.png' %}" alt="Edit" title="Edit" />
-      </a>
-      <img src="{% static 'buttons/delete.png' %}" alt="{% url 'delete-source' source.id %} to delete"
-          title="{% url 'delete-source' source.id %} to delete" />
-    </td>
-    {% endif %}
-  </tr>
-  <tr><th>Type:</th><td>{{ source.get_type_code_display }}</td></tr>
-  <tr><th>Description:</th><td>{{ source.description }}</td></tr>
-  <tr><th>Modified:</th><td>{{ source.modified|date:"r" }}</td></tr>
-</table>
-  {# {% include "snippets/source_report_table.html" %} #}
-{% endif %}
+    {# {% include "snippets/source_report_table.html" %} #}
+  {% endif %}
 {% endblock %}
 
 {% block controls %}
 {% include "snippets/go_to.html" %}
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

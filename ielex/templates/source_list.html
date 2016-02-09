@@ -6,40 +6,46 @@
 {% block title %}List of sources{% endblock %}
 
 {% block top %}
-<h1>Sources</h1>
+  <h1>Sources</h1>
 {% endblock %}
 
 {% block content %}
-{% for type_name, sources in grouped_sources %}
-<h2>{{ type_name }}</h2>
-<p>
-  <table>
-  {% for source in sources %}
-    <tr class="odd"><td><a href="{% url 'view-source' source.id %}">
-      <img src="{% static 'buttons/view.png' %}" alt="Edit" title="Edit this source"/></a></td>
-      <td>{{ source.citation_text }}</td></tr>
-    <tr><td></td><td><em>{{ source.description }}</em></td></tr>
-    <tr><td></td>
-      <td class="rightalign"><small>
-        Lexemes: <strong>{{ source.lexemecitation_set.count }}</strong>
-        Cognate Judgements: <strong>{{ source.cognatejudgementcitation_set.count }}</strong>
-        [{{ source.modified|date:"r"  }}]</small>
-      </td>
-    </tr>
+  {% for type_name, sources in grouped_sources %}
+    <h2>{{ type_name }}</h2>
+    <p>
+      <table>
+        {% for source in sources %}
+          <tr class="odd">
+            <td>
+              <a href="{% url 'view-source' source.id %}">
+                <img src="{% static 'buttons/view.png' %}" alt="Edit" title="Edit this source"/>
+              </a>
+            </td>
+            <td>{{ source.citation_text }}</td></tr>
+          <tr><td></td><td><em>{{ source.description }}</em></td></tr>
+          <tr>
+            <td></td>
+            <td class="rightalign">
+              <small>
+                Lexemes: <strong>{{ source.lexemecitation_set.count }}</strong>
+                Cognate Judgements: <strong>{{ source.cognatejudgementcitation_set.count }}</strong>
+                [{{ source.modified|date:"r"  }}]
+              </small>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </p>
   {% endfor %}
-  </table>
-</p>
-{% endfor %}
 {% endblock %}
 
 
 {% block controls %}
-{% include "snippets/go_to.html" %}
-{% if user.is_authenticated %}
-<ul class="navigation">
-  <li><a href="/source/add/">add new source</a></li>
-</ul>
-{% endif %}
+  {% include "snippets/go_to.html" %}
+  {% if user.is_authenticated %}
+    <ul class="navigation">
+      <li><a href="/source/add/">add new source</a></li>
+    </ul>
+  {% endif %}
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

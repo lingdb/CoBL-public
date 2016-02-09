@@ -3,42 +3,38 @@
 {% load staticfiles %}
 
 <html lang="en">
-
-<head>
+  <head>
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/ielex.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}" />
     <link rel="stylesheet" type="text/css" media="print" href="{% static 'css/print.css' %}" />
-</head>
-<body>
-  <div id="container">
-
-    <div id="top">
-    {% block top %}{% endblock %}
+  </head>
+  <body>
+    <div id="container">
+      <div id="top">
+        {% block top %}{% endblock %}
+      </div>
+      <div id="content">
+        {% block content %}{% endblock %}
+      </div>
+      <div id="footer">
+        {% block footer %}
+          <small>{{ project_long_name }} {{ version }}</small>
+        {% endblock %}
+      </div>
     </div>
-
-    <div id="content">
-    {% block content %}{% endblock %}
-    </div>
-
-    <div id="footer">
-    {% block footer %}
-    <small>{{ project_long_name }} {{ version }}</small>
-    {% endblock %}
-    </div>
-  </div>
-
-  {# == Floating messages == #}
-  {% if messages %}
-  <div id="message">
-    <ul>
-    {% for message in messages %}
-    <li><a href="{{ current_url }}">{{ message }}</a></li>
-    {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
-</body>
+    {# == Floating messages == #}
+    {% if messages %}
+      <div id="message">
+        <ul>
+        {% for message in messages %}
+          <li>
+            <a href="{{ current_url }}">{{ message }}</a>
+          </li>
+        {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </body>
 </html>
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

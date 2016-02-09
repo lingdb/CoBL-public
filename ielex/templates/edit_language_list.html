@@ -5,41 +5,51 @@
 {% block top %}<h1>Add/edit language list</h1>{% endblock %}
 
 {% block content %}
-<form action="" method="POST">{% csrf_token %}
-  <table>
-    {{ name_form.as_table }}
-    <tr><td></td><td><input type="submit" name="name_form" value="Submit" />
-    <input type="submit" name="cancel" value="Cancel" /></td></tr>
-  </table>
-  <table>
-    <tr>
-      <th>Excluded ({{ n_excluded }})</th>
-      <th>Included ({{ n_included }})</th>
-    </tr>
-    <tr>
-      <td>{{ list_form.excluded_languages }}</td>
-      <td>{{ list_form.included_languages }}</td>
-    </tr> 
-    <tr>
-      <td><input type="submit" name="cancel" value="Cancel" /></td>
-      <td><a class="button" href="{% url 'reorder-language-list' current_language_list_name %}">
-          <input type="button" name="sort" value="Change Sort Order" /></a></td>
-    </tr>
-    <tr>
-      <td><input type="submit" name="cancel" value="Finish" /></td>
-    </tr>
-  </table>
-</form>
-
+  <form action="" method="POST">{% csrf_token %}
+    <table>
+      {{ name_form.as_table }}
+      <tr>
+        <td></td>
+        <td>
+          <input type="submit" name="name_form" value="Submit" />
+          <input type="submit" name="cancel" value="Cancel" />
+        </td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <th>Excluded ({{ n_excluded }})</th>
+        <th>Included ({{ n_included }})</th>
+      </tr>
+      <tr>
+        <td>{{ list_form.excluded_languages }}</td>
+        <td>{{ list_form.included_languages }}</td>
+      </tr>
+      <tr>
+        <td><input type="submit" name="cancel" value="Cancel" /></td>
+        <td>
+          <a class="button" href="{% url 'reorder-language-list' current_language_list_name %}">
+            <input type="button" name="sort" value="Change Sort Order" />
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="submit" name="cancel" value="Finish" />
+        </td>
+      </tr>
+    </table>
+  </form>
 {% endblock %}
 
 {% block controls %}
-{% include "snippets/go_to.html" %}
-<ul class="navigation">
-<li><a href="{% url 'reorder-language-list' current_language_list_name %}">
-  edit sort order ‘{{ current_language_list_name }}’</a></li>
-</ul>
+  {% include "snippets/go_to.html" %}
+  <ul class="navigation">
+    <li>
+      <a href="{% url 'reorder-language-list' current_language_list_name %}">
+        edit sort order ‘{{ current_language_list_name }}’
+      </a>
+    </li>
+  </ul>
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
-

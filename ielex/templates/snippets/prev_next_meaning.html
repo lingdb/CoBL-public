@@ -1,11 +1,12 @@
 <center>
-<a href="{% url 'meaning-report' prev_meaning.gloss %}">
-  <strong>«{{ prev_meaning.gloss }}</strong>
-</a>
-<small>(prev) ― {{ meaning.id }} ― (next)</small>
-<a href="{% url 'meaning-report' next_meaning.gloss %}">
-  <strong>{{ next_meaning.gloss }}»</strong>
-</a>
-<br />
-<small>wordlist: <strong>‘{{ current_wordlist_name }}’</strong></small>
+  <a href="{% url 'meaning-report' prev_meaning.gloss %}">
+    <strong>«{{ prev_meaning.gloss }}</strong>
+  </a>
+  <small>(prev) ― {{ meaning.id }} ― (next)</small>
+  <a href="{% url 'meaning-report' next_meaning.gloss %}">
+    <strong>{{ next_meaning.gloss }}»</strong>
+  </a>
+  <br />
+  <small>wordlist: <strong>‘{{ current_wordlist_name }}’</strong></small>
 </center>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

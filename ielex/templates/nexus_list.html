@@ -3,27 +3,25 @@
 {% block title %}{{ project_short_name }} Lexicon NEXUS Export{% endblock %}
 
 {% block top %}
-<h1>NEXUS Export</h1>
+  <h1>NEXUS Export</h1>
 {% endblock %}
 
 {% block content %}
-Download a NEXUS file from a predefined language list. Specify the list of
-languages, the list of meanings, and the level of coding reliability.
-
-<form action="" method="POST">{% csrf_token %}
-  <fieldset>
-    <legend>Export data</legend>
-    <table>
-      {{ form.as_table }}
-    </table>
-    {% include "buttons/submit-cancel.html" %}
-  </fieldset>
-</form>
+  Download a NEXUS file from a predefined language list. Specify the list of
+  languages, the list of meanings, and the level of coding reliability.
+  <form action="" method="POST">{% csrf_token %}
+    <fieldset>
+      <legend>Export data</legend>
+      <table>
+        {{ form.as_table }}
+      </table>
+      {% include "buttons/submit-cancel.html" %}
+    </fieldset>
+  </form>
 {% endblock %}
 
 {% block controls %}
-{% include "snippets/go_to.html" %}
-{# include "snippets/change_sort_order.html" #}
+  {% include "snippets/go_to.html" %}
+  {# include "snippets/change_sort_order.html" #}
 {% endblock %}
-
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
