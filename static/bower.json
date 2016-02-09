@@ -1,0 +1,21 @@
+{
+  "name": "ielex2/static",
+  "authors": [
+    "Jakob Runge <mam09crm@studserv.uni-leipzig.de>"
+  ],
+  "description": "Static files for ielex2 maintained via bower",
+  "main": "",
+  "moduleType": [
+    "amd"
+  ],
+  "license": "BSD2",
+  "homepage": "https://github.com/lingdb/IELex2-CognaC",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
