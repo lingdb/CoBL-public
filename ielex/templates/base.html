@@ -1,111 +1,141 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<!DOCTYPE html>
 {% load staticfiles %}
 <html lang="en">
   <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head -->
     <title>{{ project_short_name }} :: {% block title %}{% endblock %}</title>
-      <link rel="stylesheet" type="text/css" href="{% static 'css/ielex.css' %}" />
-      <link rel="stylesheet" type="text/css" media="print" href="{% static 'css/print.css' %}" />
-      <link rel="shortcut icon" type="image/ico" href="{% static 'logo/favicon.ico' %}" />
-      <script>
-        (function(){
-          if(window.addEventListener){
-            window.addEventListener('DOMContentLoaded', CopyAcross, false);
-          }else{
-            window.attachEvent('onclick', CopyAcross);
-          }
-        })();
-
-        function CopyAcross(f){
-          if(f.checked){
-            var f_id_arr = f.id.split('#');
-            var f_id = f_id_arr[0];
-            var f_src = f_id_arr[1];
-            var f_trg = f_id_arr[2];
-            if(f_id=='src2translit'){
-              document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-            }
-            if(f_id=='src2root'){
-              document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-            }
-            if(f_id=='translit2src'){
-              document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-            }
-            if(f_id=='phoneMic2phoneTic'){
-              document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-            }
-            if(f_id=='phoneTic2phoneMic'){
-              document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-            }
-          }
-        };
-
-        function MutexCheckbox(f){
-          if(f.checked){
-            // Unchecking others if checked…
-            var f_info = f.name.split('-');
-            var f_num = f_info[1];
-            var chckbx_list = document.getElementsByClassName('MutexCheckbox');
-            Array.prototype.forEach.call(chckbx_list, function(targ_chckbx){
-              var targ_chckbx_info = targ_chckbx.name.split('-');
-              var targ_chckbx_num = targ_chckbx_info[1];
-              if(f.id === targ_chckbx.id) return;
-              if(f_num !== targ_chckbx_num) return;
-              if(targ_chckbx.checked){
-                targ_chckbx.checked = false;
-              }
-            });
-          }
-        };
-
-        function ExcludeRows(){
-          var notswad_chckbx_list = document.getElementsByClassName('notswad_checkbox');
-          Array.prototype.forEach.call(notswad_chckbx_list, function(notswad_chckbx_elem){
-            if(notswad_chckbx_elem.checked) {
-              var target = notswad_chckbx_elem.parentElement;
-              while(target.tagName !== 'TR' && target !== null){
-                target = target.parentElement;
-              }
-              if(target !== null){
-                target.style.display = "none";
-              }
-            }
-          });
-        }
-
-        function MirrorCognateCheckboxes(cbox){
-          var checked = cbox.checked
-            , cld = cbox.dataset.mirror
-            , cboxList = document.getElementsByClassName('loan_event');
-          Array.prototype.forEach.call(cboxList, function(c){
-            if(cld === c.dataset.mirror){
-              if(c.checked !== checked){
-                c.checked = checked;
-              }
-            }
-          });
-        }
-      </script>
+    <link rel="stylesheet" type="text/css" href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/custom.css' %}" />
+    <link rel="shortcut icon" type="image/ico" href="{% static 'logo/favicon.ico' %}" />
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
     {% block meta %}{% endblock %}
   </head>
   <body>
-    <div id="container">
-      <div id="logo">
-        <a href="{% url 'view-frontpage' %}"><img src="{% static 'logo/cognac_57px.png' %}" /></a>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="navbar-header">
+        <button
+          type="button"
+          class="navbar-toggle collapsed"
+          data-toggle="collapse"
+          data-target="#navbar"
+          aria-expanded="false"
+          aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
       </div>
-
+      <div class="container-fluid">
+        <a class="navbar-brand"
+          href="#"
+          title="{{ project_short_name }}"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          ><img src="{% static 'logo/cognac_32px.png' %}"></a>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active">
+              <a href="#" title="View 1 meaning in all languages" data-toggle="tooltip" data-placement="bottom">
+                1 mg all lgs<span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" title="View 1 meaning in all cognate sets" data-toggle="tooltip" data-placement="bottom">1 mg. all cog. sets</a>
+            </li>
+            <li>
+              <a href="#" title="View 1 language in all meanings" data-toggle="tooltip" data-placement="bottom">1 lg. all mgs</a>
+            </li>
+            <li>
+              <a href="#" title="List all languages" data-toggle="tooltip" data-placement="bottom">lgs</a>
+            </li>
+            <li>
+              <a href="#" title="List all meanings" data-toggle="tooltip" data-placement="bottom">mgs</a>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Info</a></li>
+            <li><a href="#"><span class="glyphicon glyphicon-education" aria-hidden="true"></span> Authors</a></li>
+            {% if user.is_authenticated %}
+              <li>
+                <a href="{% url 'view-profile' %}" title="View user profile" data-toggle="tooltip" data-placement="bottom">
+                  <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ user.username }}
+                </a>
+              </li>
+              {% if user.is_staff %}
+                <li>
+                  <a href="/admin/" title="Go to the admin site" data-toggle="tooltip" data-placement="bottom">
+                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Admin
+                  </a>
+                </li>
+              {% endif %}
+              <li>
+                <a href="{% url 'logout' %}">
+                  <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Logout
+                </a>
+              </li>
+            {% else %}
+              <li>
+                <a href="{% url 'login' %}">
+                  <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+      <div class="container-fluid">
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li>
+              <form class="form-inline">
+                <div class="form-group">
+                  <div class="input-group">
+                    <input type="text" class="form-control" style="width: 50%;" id="exampleInputName1" placeholder="Meaning">
+                    <button
+                      class="form-control input-group-addon"
+                      style="width: 25%;" id="exampleInputName1Btn"
+                      title="Search for a meaning"
+                      data-toggle="tooltip"
+                      data-placement="bottom">
+                      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </li>
+            <li>
+              <form class="form-inline">
+                <div class="form-group">
+                  <div class="input-group">
+                    <input type="text" class="form-control" style="width: 50%;" id="exampleInputName2" placeholder="Language">
+                    <button
+                      class="form-control input-group-addon"
+                      style="width: 25%;" id="exampleInputName1Btn"
+                      title="Search for a language"
+                      data-toggle="tooltip"
+                      data-placement="bottom">
+                      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+    <!-- BORDER TO MADNESS BELOW -->
+    <div id="container">
       <div id="top">
-        <div id="login">
-          {% if user.is_authenticated %}
-          <a href="{% url 'view-profile' %}">{{ user.username }}</a>
-          <small>[<a href="{% url 'logout' %}">logout</a>]</small>
-          {% if user.is_staff %}
-            <a href="/admin/"><img src="{% static 'buttons/save-backup.png' %}" alt="Admin site" title="Go to the admin site" /></a>
-          {% endif %}
-          {% else %}
-            <a href="{% url 'login' %}">login</a>
-          {% endif %}
-        </div>
-        <small>{{ project_short_name }}</small>
         {% block top %}{% endblock %}
       </div>
 
@@ -121,15 +151,6 @@
 
       <div id="content">
         {% block content %}{% endblock %}
-      </div>
-
-      <div id="footer">
-        {# <div id="sitemap"> #}
-        {#   {% block sitemap %} {% endblock %} #}
-        {# </div> #}
-      {% block footer %}
-      <center><small>{{ project_long_name }} (LexDB version {{ version }})</small></center>
-      {% endblock %}
       </div>
     </div>
 
@@ -147,6 +168,106 @@
       </ul>
     </div>
     {% endif %}
+    {# The Footer: #}
+    <nav class="navbar navbar-default navbar-fixed-bottom">
+      <div class="container-fluid navbar-right" id="footer">
+        {% block footer %}
+          <p class="navbar-text">
+            {{ project_long_name }} (LexDB version {{ version }})
+          </p>
+          <ul class="nav navbar-nav">
+            <li>
+              <a href="https://github.com/lingdb/IELex2-CognaC" target="_blank" id="githubLink">
+                <img src="{% static 'GitHub-Mark-32px.png' %}">
+              </a>
+            </li>
+          </ul>
+        {% endblock %}
+      </div>
+    </nav>
+    <!-- Include jQuery + bootstrap: -->
+    <script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <script>
+      $(function(){$('[data-toggle="tooltip"]').tooltip();});
+      (function(){
+        if(window.addEventListener){
+          window.addEventListener('DOMContentLoaded', CopyAcross, false);
+        }else{
+          window.attachEvent('onclick', CopyAcross);
+        }
+      })();
+
+      function CopyAcross(f){
+        if(f.checked){
+          var f_id_arr = f.id.split('#');
+          var f_id = f_id_arr[0];
+          var f_src = f_id_arr[1];
+          var f_trg = f_id_arr[2];
+          if(f_id=='src2translit'){
+            document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
+          }
+          if(f_id=='src2root'){
+            document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
+          }
+          if(f_id=='translit2src'){
+            document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
+          }
+          if(f_id=='phoneMic2phoneTic'){
+            document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
+          }
+          if(f_id=='phoneTic2phoneMic'){
+            document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
+          }
+        }
+      };
+
+      function MutexCheckbox(f){
+        if(f.checked){
+          // Unchecking others if checked…
+          var f_info = f.name.split('-');
+          var f_num = f_info[1];
+          var chckbx_list = document.getElementsByClassName('MutexCheckbox');
+          Array.prototype.forEach.call(chckbx_list, function(targ_chckbx){
+            var targ_chckbx_info = targ_chckbx.name.split('-');
+            var targ_chckbx_num = targ_chckbx_info[1];
+            if(f.id === targ_chckbx.id) return;
+            if(f_num !== targ_chckbx_num) return;
+            if(targ_chckbx.checked){
+              targ_chckbx.checked = false;
+            }
+          });
+        }
+      };
+
+      function ExcludeRows(){
+        var notswad_chckbx_list = document.getElementsByClassName('notswad_checkbox');
+        Array.prototype.forEach.call(notswad_chckbx_list, function(notswad_chckbx_elem){
+          if(notswad_chckbx_elem.checked) {
+            var target = notswad_chckbx_elem.parentElement;
+            while(target.tagName !== 'TR' && target !== null){
+              target = target.parentElement;
+            }
+            if(target !== null){
+              target.style.display = "none";
+            }
+          }
+        });
+      }
+
+      function MirrorCognateCheckboxes(cbox){
+        var checked = cbox.checked
+          , cld = cbox.dataset.mirror
+          , cboxList = document.getElementsByClassName('loan_event');
+        Array.prototype.forEach.call(cboxList, function(c){
+          if(cld === c.dataset.mirror){
+            if(c.checked !== checked){
+              c.checked = checked;
+            }
+          }
+        });
+      }
+    </script>
   </body>
 </html>
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

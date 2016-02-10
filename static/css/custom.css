@@ -4,3 +4,7 @@ Customizing bootstrap to our site.
 body {
   padding-top: 100px;
 }
+
+#githubLink {
+  padding-top: 10px;
+}
