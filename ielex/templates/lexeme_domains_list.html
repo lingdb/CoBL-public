@@ -27,10 +27,8 @@
 
 {% block controls %}
   {% include "snippets/go_to.html" %}
-  <ul class="navigation">
-    <li>
-      <a href="{% url 'view-lexeme' lexeme.id%}">Back to lexeme ‘{{ lexeme }}’</a>
-    </li>
-  </ul>
+  <li>
+    <a href="{% url 'view-lexeme' lexeme.id%}">Back to lexeme ‘{{ lexeme }}’</a>
+  </li>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

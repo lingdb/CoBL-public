@@ -45,31 +45,7 @@
       {% endfor %}
     </tbody>
   </table>
-{% endblock %}
-
-{% block controls %}
-  {% include "snippets/go_to.html" %}
-  {# include "snippets/change_sort_order.html" #}
-  {% if user.is_authenticated %}
-    <ul class="navigation">
-      <li><a href="{% url 'language-add-new' current_language_list_name %}">new language</a></li>
-    </ul>
-    <ul class="navigation">
-      <li>
-        <a href="{% url 'add-language-list' %}">new language list</a>
-      </li>
-      <li>
-        <a href="{% url 'edit-language-list' current_language_list_name %}">
-          edit language list ‘{{ current_language_list_name }}’
-        </a>
-      </li>
-      <li>
-        <a href="{% url 'reorder-language-list' current_language_list_name %}">
-          edit sort order ‘{{ current_language_list_name }}’
-        </a>
-      </li>
-    </ul>
-  {% endif %}
+  {# TODO REDESIGN THIS #}
   <p>
     <form action="" method="post">
       {% csrf_token %}
@@ -84,5 +60,28 @@
       </fieldset>
     </form>
   </p>
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/go_to.html" %}
+  {# include "snippets/change_sort_order.html" #}
+  {% if user.is_authenticated %}
+    <li>
+      <a href="{% url 'language-add-new' current_language_list_name %}">new language</a>
+    </li>
+    <li>
+      <a href="{% url 'add-language-list' %}">new language list</a>
+    </li>
+    <li>
+      <a href="{% url 'edit-language-list' current_language_list_name %}">
+        edit language list ‘{{ current_language_list_name }}’
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'reorder-language-list' current_language_list_name %}">
+        edit sort order ‘{{ current_language_list_name }}’
+      </a>
+    </li>
+  {% endif %}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

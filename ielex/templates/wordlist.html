@@ -8,63 +8,62 @@
 {% block top %}<h1>Meanings</h1>{% endblock %}
 
 {% block content %}
-<table>
-  <tr>
-    <th>Meaning</th>
-    <th>Show<br>Languages</th>
-    <th>Show<br>Cog. Sets</th>
-    {# <th>Description</th> #}
-    {% if user.is_authenticated %}
-    <th>Edit<br>metadata</th>
-    <th>% Cog.<br>coded</th>
-    {% endif %}
-  </tr>
-  {% for meaning in meanings %}
-    <tr class="{% cycle 'odd' 'even' %}">
-      <td>{{ meaning.gloss }}</td>
-      <td class="mid-align">
-        <a href="{% url 'view-meaning-languages' meaning.gloss current_language_list %}">
-          <img src="{% static 'buttons/edit-pencil.png' %}" alt="edit" title="Edit ‘{{ meaning.gloss }}' by language list" />
-        </a>
-      </td>
-      <td class="mid-align">
-        <a href="{% url 'edit-cogclasses' meaning.gloss %}">
-          <img src="{% static 'buttons/edit-pencil.png' %}" alt="edit" title="Edit cognate classes for ‘{{ meaning.gloss }}'" />
-        </a>
-      </td>
-      {# <td>{{ meaning.notes|linebreaksbr|truncatewords:20 }}</td> #}
+  <table>
+    <tr>
+      <th>Meaning</th>
+      <th>Show<br>Languages</th>
+      <th>Show<br>Cog. Sets</th>
+      {# <th>Description</th> #}
       {% if user.is_authenticated %}
-        <td class="mid-align">
-          <a href="{% url 'edit-meaning' meaning.gloss %}">
-            <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit ‘{{ meaning.gloss }}’ metadata" />
-          </a>
-        </td>
-        <td>{{ meaning.percent_coded|floatformat:1 }}</td>
+      <th>Edit<br>metadata</th>
+      <th>% Cog.<br>coded</th>
       {% endif %}
     </tr>
-  {% endfor %}
-</table>
+    {% for meaning in meanings %}
+      <tr class="{% cycle 'odd' 'even' %}">
+        <td>{{ meaning.gloss }}</td>
+        <td class="mid-align">
+          <a href="{% url 'view-meaning-languages' meaning.gloss current_language_list %}">
+            <img src="{% static 'buttons/edit-pencil.png' %}" alt="edit" title="Edit ‘{{ meaning.gloss }}' by language list" />
+          </a>
+        </td>
+        <td class="mid-align">
+          <a href="{% url 'edit-cogclasses' meaning.gloss %}">
+            <img src="{% static 'buttons/edit-pencil.png' %}" alt="edit" title="Edit cognate classes for ‘{{ meaning.gloss }}'" />
+          </a>
+        </td>
+        {# <td>{{ meaning.notes|linebreaksbr|truncatewords:20 }}</td> #}
+        {% if user.is_authenticated %}
+          <td class="mid-align">
+            <a href="{% url 'edit-meaning' meaning.gloss %}">
+              <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit ‘{{ meaning.gloss }}’ metadata" />
+            </a>
+          </td>
+          <td>{{ meaning.percent_coded|floatformat:1 }}</td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </table>
+  {# TODO REDESIGN THIS #}
+  <p>
+    <form action="" method="post">{% csrf_token %}
+      <fieldset>
+        <legend>Controls<legend>
+        <table>
+          {{ form.as_table }}
+        </table>
+        <p class="help">Limit all results to a predefined set of meanings</p>
+      </fieldset>
+    </form>
+  </p>
 {% endblock %}
 
 
 {% block controls %}
-{% include "snippets/go_to.html" %}
-{% if user.is_authenticated %}
-<ul class="navigation">
-  <li><a href="/meanings/add-new/">add meaning</a></li>
-  <li><a href="/lexeme/search/">search lexemes</a></li>
-</ul>
-{% endif %}
-<p>
-  <form action="" method="post">{% csrf_token %}
-    <fieldset>
-      <legend>Controls<legend>
-      <table>
-        {{ form.as_table }}
-      </table>
-      <p class="help">Limit all results to a predefined set of meanings</p>
-    </fieldset>
-  </form>
-</p>
+  {% include "snippets/go_to.html" %}
+  {% if user.is_authenticated %}
+    <li><a href="/meanings/add-new/">add meaning</a></li>
+    <li><a href="/lexeme/search/">search lexemes</a></li>
+  {% endif %}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

@@ -31,10 +31,9 @@
 {% endblock %}
 
 {% block controls %}
-{# prev-next lexeme by domain #}
-{% include "snippets/go_to.html" %}
-<ul class="navigation">
-  <li><a href="{% url 'add-semantic-domain' %}">Add new semantic domain</a></li>
-</ul>
+  {% include "snippets/go_to.html" %}
+  <li>
+    <a href="{% url 'add-semantic-domain' %}">Add new semantic domain</a>
+  </li>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

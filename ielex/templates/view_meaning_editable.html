@@ -162,12 +162,8 @@
       {% endfor %}
     </table>
   {% endif %}
-{% endblock %}
-
-{% block controls %}
-  {% include "snippets/prev_next_meaning.html" %}
-  {% include "snippets/go_to.html" %}
-  {# include "snippets/change_sort_order.html" #}
+  {% include "snippets/prev_next_meaning.html" %}{# TODO #}
+  {# TODO REDESIGN THIS #}
   <form action="" method="GET">
     {{ filt_form }} <input type="submit" value="Filter">
   </form>
@@ -196,5 +192,10 @@
   <strong>Filter out non-Swadesh terms: <input type="submit" value="Filter" id="filter_non_swadesh" onclick="ExcludeRows()"></strong>
   <h3>Description</h3>
   {{ meaning.notes|linebreaksbr }}
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/go_to.html" %}
+  {# include "snippets/change_sort_order.html" #}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

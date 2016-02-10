@@ -10,9 +10,8 @@
 
 {% block content %}
   <p>Sorry, the requested page ({{ request_path }}) doesn't exist.</p>
+  <img src="{% static 'page_not_found.jpg' %}" alt="Page not found" title="Page not found">
 {% endblock %}
 
-{% block controls%}
-  <img src="{% static 'page_not_found.jpg' %}" alt="Page not found" title="Page not found" width="100%"/>
-{% endblock %}
+{% block controls%}{% endblock %}
 {# vim:ft=htmldjango: #}

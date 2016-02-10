@@ -286,35 +286,33 @@
           </small>
         </fieldset>
       {% endif %}
+  {% include "snippets/prev_next_lexeme.html" %}{# TODO #}
 {% endblock %}
 
 {% block controls %}
-  {% include "snippets/prev_next_lexeme.html" %}
   {% include "snippets/go_to.html" %}
-  <ul class="navigation">
+  {% if lexeme.meaning %}
+    <li>
+      <a href="{% url 'meaning-report' lexeme.meaning.gloss %}">back to meaning list ‘{{ lexeme.meaning.gloss }}’</a>
+    </li>
+  {% endif %}
+  {% if lexeme.semanticextension_set.exists %}
+    <li>
+      <a href="{% url 'lexeme-domains-list' lexeme.id  %}">view semantic exensions</a>
+    </li>
+  {% endif %}
+    <li>
+      <a href="{% url 'language-report' lexeme.language.ascii_name %}">back to ‘{{ lexeme.language.utf8_name }}’ wordlist</a>
+    </li>
+  {% if user.is_authenticated %}
+    <li>
+      <a href="{% url 'language-add-lexeme' lexeme.language.ascii_name %}">add a new lexeme to ‘{{ lexeme.language.utf8_name }}’</a>
+    </li>
     {% if lexeme.meaning %}
       <li>
-        <a href="{% url 'meaning-report' lexeme.meaning.gloss %}">back to meaning list ‘{{ lexeme.meaning.gloss }}’</a>
+        <a href="{% url 'meaning-add-lexeme' lexeme.meaning.gloss %}">add a new lexeme to ‘{{ lexeme.meaning.gloss }}’</a>
       </li>
     {% endif %}
-    {% if lexeme.semanticextension_set.exists %}
-      <li>
-        <a href="{% url 'lexeme-domains-list' lexeme.id  %}">view semantic exensions</a>
-      </li>
-    {% endif %}
-      <li>
-        <a href="{% url 'language-report' lexeme.language.ascii_name %}">back to ‘{{ lexeme.language.utf8_name }}’ wordlist</a>
-      </li>
-    {% if user.is_authenticated %}
-      <li>
-        <a href="{% url 'language-add-lexeme' lexeme.language.ascii_name %}">add a new lexeme to ‘{{ lexeme.language.utf8_name }}’</a>
-      </li>
-      {% if lexeme.meaning %}
-        <li>
-          <a href="{% url 'meaning-add-lexeme' lexeme.meaning.gloss %}">add a new lexeme to ‘{{ lexeme.meaning.gloss }}’</a>
-        </li>
-      {% endif %}
-    {% endif %}
-  </ul>
+  {% endif %}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

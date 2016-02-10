@@ -43,34 +43,34 @@
       {% endif %}
     {% endfor %}
   </table>
+  {# TODO REDESIGN THIS #}
+  <div class="pagination">
+    <hr />
+    <h2>Contributors</h2>
+    <table>
+      {% for contributor, count in contributors %}
+        <tr class="{% cycle 'odd' 'even' %}">
+          <td><a href="{% url 'view-changes-user' contributor.username %}">{{ contributor.username }}</a></td>
+          <td>{{ count }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
 {% endblock %}
 
 {% block controls %}
-  <div class="pagination">
-    <span class="step-links">
-      {% if changes.has_previous %}
+    {% if changes.has_previous %}
+      <li>
         <a href="?page={{ changes.previous_page_number }}">previous</a>
-      {% endif %}
-      <span class="current">
-        Page {{ changes.number }} of {{ changes.paginator.num_pages }}.
-      </span>
-      {% if changes.has_next %}
+      </li>
+    {% endif %}
+    <li class="navbar-text">
+      Page {{ changes.number }} of {{ changes.paginator.num_pages }}.
+    </li>
+    {% if changes.has_next %}
+      <li>
         <a href="?page={{ changes.next_page_number }}">next</a>
-      {% endif %}
-    </span>
-    <br />
-  {% include "snippets/go_to.html" %}
-
-  <hr />
-  <h2>Contributors</h2>
-  <table>
-    {% for contributor, count in contributors %}
-      <tr class="{% cycle 'odd' 'even' %}">
-        <td><a href="{% url 'view-changes-user' contributor.username %}">{{ contributor.username }}</a></td>
-        <td>{{ count }}</td>
-      </tr>
-    {% endfor %}
-  </table>
-  </div>
+      </li>
+    {% endif %}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

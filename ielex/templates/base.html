@@ -36,30 +36,31 @@
       </div>
       <div class="container-fluid">
         <a class="navbar-brand"
-          href="#"
+          href="/"
           title="{{ project_short_name }}"
           data-toggle="tooltip"
           data-placement="bottom"
           ><img src="{% static 'logo/cognac_32px.png' %}"></a>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li{# class="active" #}>
-              <a href="#" title="View 1 meaning in all languages" data-toggle="tooltip" data-placement="bottom">
-                1 mg all lgs{# <span class="sr-only">(current)</span> #}
-              </a>
-            </li>
-            <li>
-              <a href="#" title="View 1 meaning in all cognate sets" data-toggle="tooltip" data-placement="bottom">1 mg. all cog. sets</a>
-            </li>
-            <li>
-              <a href="#" title="View 1 language in all meanings" data-toggle="tooltip" data-placement="bottom">1 lg. all mgs</a>
-            </li>
-            <li>
-              <a href="/languagelist/" title="List all languages" data-toggle="tooltip" data-placement="bottom">lgs</a>
-            </li>
-            <li>
-              <a href="/wordlist/all" title="List all meanings" data-toggle="tooltip" data-placement="bottom">mgs</a>
-            </li>
+{#          <li{# class="active" # }>#}
+{#            <a href="#" title="View 1 meaning in all languages" data-toggle="tooltip" data-placement="bottom">#}
+{#              1 mg all lgs{# <span class="sr-only">(current)</span> #}
+{#            </a>#}
+{#          </li>#}
+{#          <li>#}
+{#            <a href="#" title="View 1 meaning in all cognate sets" data-toggle="tooltip" data-placement="bottom">1 mg. all cog. sets</a>#}
+{#          </li>#}
+{#          <li>#}
+{#            <a href="#" title="View 1 language in all meanings" data-toggle="tooltip" data-placement="bottom">1 lg. all mgs</a>#}
+{#          </li>#}
+{#          <li>#}
+{#            <a href="/languagelist/" title="List all languages" data-toggle="tooltip" data-placement="bottom">lgs</a>#}
+{#          </li>#}
+{#          <li>#}
+{#            <a href="/wordlist/all" title="List all meanings" data-toggle="tooltip" data-placement="bottom">mgs</a>#}
+{#          </li>#}
+            {% block controls %}{% endblock %}
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="#"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Info</a></li>
@@ -92,46 +93,46 @@
           </ul>
         </div><!--/.nav-collapse -->
       </div>
-      <div class="container-fluid">
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li>
-              <form class="form-inline">
-                <div class="form-group">
-                  <div class="input-group">
-                    <input type="text" class="form-control" style="width: 50%;" id="exampleInputName1" placeholder="Meaning">
-                    <button
-                      class="form-control input-group-addon"
-                      style="width: 25%;" id="exampleInputName1Btn"
-                      title="Search for a meaning"
-                      data-toggle="tooltip"
-                      data-placement="bottom">
-                      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </li>
-            <li>
-              <form class="form-inline">
-                <div class="form-group">
-                  <div class="input-group">
-                    <input type="text" class="form-control" style="width: 50%;" id="exampleInputName2" placeholder="Language">
-                    <button
-                      class="form-control input-group-addon"
-                      style="width: 25%;" id="exampleInputName1Btn"
-                      title="Search for a language"
-                      data-toggle="tooltip"
-                      data-placement="bottom">
-                      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </li>
-          </ul>
-        </div>{# .nav-collapse #}
-      </div>
+{#    <div class="container-fluid">#}
+{#      <div id="navbar" class="navbar-collapse collapse">#}
+{#        <ul class="nav navbar-nav">#}
+{#          <li>#}
+{#            <form class="form-inline">#}
+{#              <div class="form-group">#}
+{#                <div class="input-group">#}
+{#                  <input type="text" class="form-control" style="width: 50%;" id="exampleInputName1" placeholder="Meaning">#}
+{#                  <button#}
+{#                    class="form-control input-group-addon"#}
+{#                    style="width: 25%;" id="exampleInputName1Btn"#}
+{#                    title="Search for a meaning"#}
+{#                    data-toggle="tooltip"#}
+{#                    data-placement="bottom">#}
+{#                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>#}
+{#                  </button>#}
+{#                </div>#}
+{#              </div>#}
+{#            </form>#}
+{#          </li>#}
+{#          <li>#}
+{#            <form class="form-inline">#}
+{#              <div class="form-group">#}
+{#                <div class="input-group">#}
+{#                  <input type="text" class="form-control" style="width: 50%;" id="exampleInputName2" placeholder="Language">#}
+{#                  <button#}
+{#                    class="form-control input-group-addon"#}
+{#                    style="width: 25%;" id="exampleInputName1Btn"#}
+{#                    title="Search for a language"#}
+{#                    data-toggle="tooltip"#}
+{#                    data-placement="bottom">#}
+{#                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>#}
+{#                  </button>#}
+{#                </div>#}
+{#              </div>#}
+{#            </form>#}
+{#          </li>#}
+{#        </ul>#}
+{#      </div>{# .nav-collapse #}
+{#    </div>#}
     </nav>
     {# Flash messages #}
     <div class="container-fluid" id="message">
@@ -158,7 +159,6 @@
         {% block top %}{% endblock %}
       </div>
       <div id="controls">
-        {% block controls %}{% endblock %}
         <p align="right">
           <small>
             Language list: <strong>{{ current_language_list_name }}</strong><br />

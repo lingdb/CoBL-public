@@ -37,18 +37,17 @@
     </table>
   </p>
   {% endcache %}
+  {# TODO REDESIGN THIS #}
+  {% if acknowledgements %}
+    <h2>Acknowledgements</h2>
+    {{ acknowledgements|safe }}
+  {% endif %}
 {% endblock %}
 
 {% block controls %}
   {% include "snippets/go_to.html" %}
-  {% if user.is_authenticated %} {# TODO #}
-    <ul class="navigation">
-      <li><a href="/nexus/">Export NEXUS file</a></li>
-    </ul>
-  {% endif %}
-  {% if acknowledgements %}
-    <h2>Acknowledgements</h2>
-    {{ acknowledgements|safe }}
+  {% if user.is_authenticated %}
+    <li><a href="/nexus/">Export NEXUS file</a></li>
   {% endif %}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

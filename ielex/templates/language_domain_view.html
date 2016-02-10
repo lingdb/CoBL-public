@@ -33,15 +33,7 @@
       {% endfor %}
     </tbody>
   </table>
-{% endblock %}
-
-{% block controls %}
-  {% include "snippets/go_to.html" %}
-  <ul class="navigation">
-    <li>
-      <a href="/language/{{ language.ascii_name }}">Back to language list ‘{{ language.utf8_name }}’</a>
-    </li>
-  </ul>
+  {# TODO REDESIGN THIS #}
   <form action="" method="post">
     {% csrf_token %}
     <fieldset>
@@ -51,5 +43,12 @@
       </table>
     </fieldset>
   </form>
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/go_to.html" %}
+  <li>
+    <a href="/language/{{ language.ascii_name }}">Back to language list ‘{{ language.utf8_name }}’</a>
+  </li>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

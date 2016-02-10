@@ -41,26 +41,8 @@
     {% endfor %}
   </table>
   <p>Count: {{ lexemes|length }}</p>
-{% endblock %}
-
-
-{% block controls %}
-  {% include "snippets/prev_next_language.html" %}
-  {% include "snippets/go_to.html" %}
-  <strong>{{ language.utf8_name }}:</strong>
-  <ul class="navigation">
-    <li>
-      <a href="{% url 'language-edit' language.ascii_name %}">edit language entry</a>
-    </li>
-    <li>
-      <a href="{% url 'language-add-lexeme' language.ascii_name %}">add a new lexeme</a>
-    </li>
-    {% if semantic_domains %}
-      <li>
-        <a href="{% url 'language-domains-list' language.ascii_name %}">view semantic domains</a>
-      </li>
-    {% endif %}
-  </ul>
+  {% include "snippets/prev_next_language.html" %}{# TODO #}
+  {# TODO REDESIGN THIS #}
   {% if language.description %}
     <small>
       <fieldset>
@@ -82,5 +64,22 @@
       </fieldset>
     </form>
   </p>
+{% endblock %}
+
+
+{% block controls %}
+  {% include "snippets/go_to.html" %}
+  <li class="navbar-text">{{ language.utf8_name }}:</li>
+  <li>
+    <a href="{% url 'language-edit' language.ascii_name %}">edit language entry</a>
+  </li>
+  <li>
+    <a href="{% url 'language-add-lexeme' language.ascii_name %}">add a new lexeme</a>
+  </li>
+  {% if semantic_domains %}
+    <li>
+      <a href="{% url 'language-domains-list' language.ascii_name %}">view semantic domains</a>
+    </li>
+  {% endif %}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

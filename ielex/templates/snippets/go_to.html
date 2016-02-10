@@ -1,24 +1,26 @@
-<p>
-  <ul class="navigation">
-    {% if prev_page %}
-      <li>
-        <a href="{{ prev_page }}">previous page</a>
-      </li>
-    {% endif %}
-    <li>
-      <a href={% url 'view-language-list' current_language_list_name %}>view languages</a>
-    </li>
-    <li>
-      <a href={% url 'view-wordlist' current_wordlist_name %}>view meanings</a>
-    </li>
-    {% if semantic_domains %}
-      <li>
-        <a href={% url 'view-domains' %}>view domains</a>
-      </li>
-    {% endif %}
-    <li><a href={% url 'view-sources' %}>view sources</a></li>
-    <li><a href={% url 'lexeme-search' %}>search lexemes</a></li>
-    <li><a href={% url 'view-changes' %}>recent changes</a></li>
-  </ul>
-</p>
+{% if prev_page %}
+  <li>
+    <a href="{{ prev_page }}">Previous page</a>
+  </li>
+{% endif %}
+<li>
+  <a href={% url 'view-language-list' current_language_list_name %}>View languages</a>
+</li>
+<li>
+  <a href={% url 'view-wordlist' current_wordlist_name %}>View meanings</a>
+</li>
+{% if semantic_domains %}
+  <li>
+    <a href={% url 'view-domains' %}>View domains</a>
+  </li>
+{% endif %}
+<li>
+  <a href={% url 'view-sources' %}>View sources</a>
+</li>
+<li>
+  <a href={% url 'lexeme-search' %}>Search lexemes</a>
+</li>
+<li>
+  <a href={% url 'view-changes' %}>Recent changes</a>
+</li>
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

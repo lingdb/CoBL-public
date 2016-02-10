@@ -6,32 +6,32 @@
 {% block top %}<h1>Object history</h1>{% endblock %}
 
 {% block content %}
-<p><strong>Object:</strong> <a href="{{ object.get_absolute_url }}">{{ object }}</a></p>
-<fieldset>
-  <legend><strong> Versions </strong></legend>
-<table>
-  <tr>
-  {% for field in fields %}
-    <th class="column_header">{{ field }}</th>
-  {% endfor %}
-  </tr>
-  {% for version in versions %}
-  <tr class="{% cycle 'odd' 'even' %}">
-    {% for item in version %}
-      {% if forloop.last %}
-      <td><a href="{% url 'revert-item' item %}">revert</a></td>
-      {% else %}
-        <td>{{ item }}</td>
-      {% endif %}
+  <p><strong>Object:</strong> <a href="{{ object.get_absolute_url }}">{{ object }}</a></p>
+  <fieldset>
+    <legend><strong> Versions </strong></legend>
+  <table>
+    <tr>
+    {% for field in fields %}
+      <th class="column_header">{{ field }}</th>
     {% endfor %}
-  </tr>
-  {% endfor %}
-</table>
-</fieldset>
+    </tr>
+    {% for version in versions %}
+    <tr class="{% cycle 'odd' 'even' %}">
+      {% for item in version %}
+        {% if forloop.last %}
+        <td><a href="{% url 'revert-item' item %}">revert</a></td>
+        {% else %}
+          <td>{{ item }}</td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+  </fieldset>
+  {% include "snippets/prev_next_meaning.html" %}{# TODO #}
 {% endblock %}
 
 {% block controls %}
-{% include "snippets/prev_next_meaning.html" %}
-{% include "snippets/go_to.html" %}
+  {% include "snippets/go_to.html" %}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
