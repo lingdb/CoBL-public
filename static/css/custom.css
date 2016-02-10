@@ -5,7 +5,14 @@ body {
   padding-top: 100px;
 }
 
-#githubLink, .navbar-brand {
+.navbar-brand {
   padding-top: 9px;
   padding-bottom: 9px;
+}
+
+#githubLink, #glyphiconsLink {
+  padding-top: 9px;
+  padding-bottom: 9px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
