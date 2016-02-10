@@ -9,7 +9,9 @@
 
 {% block content %}
   {% if project_description %}
-    {{ project_description|safe }}
+    <div class="well">
+      {{ project_description|safe }}
+    </div>
   {% endif %}
   {% cache 500 frontpage_stats %}
   <p>The database contains:

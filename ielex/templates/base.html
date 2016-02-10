@@ -155,19 +155,18 @@
     </div>
     {# BORDER TO MADNESS BELOW #}
     <div id="container-fluid">
-      <div id="top">
-        {% block top %}{% endblock %}
+      {% block top %}{% endblock %}
+      <div id="content" class="panel">
+        <div class="panel-body">
+          {% block content %}{% endblock %}
+        </div>
       </div>
-      <div id="controls">
-        <p align="right">
-          <small>
-            Language list: <strong>{{ current_language_list_name }}</strong><br />
+      <div class="panel">
+        <div class="panel-body">
+            Language list: <strong>{{ current_language_list_name }}</strong>
+            <br>
             Wordlist: <strong>{{ current_wordlist_name }}</strong>
-          </small>
-        </p>
-      </div>
-      <div id="content">
-        {% block content %}{% endblock %}
+        </div>
       </div>
     </div>
     {# The Footer: #}
