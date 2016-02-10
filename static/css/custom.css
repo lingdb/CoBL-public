@@ -5,7 +5,7 @@ body {
   padding-top: 100px;
 }
 
-#githubLink {
+#githubLink, .navbar-brand {
   padding-top: 9px;
   padding-bottom: 9px;
 }
