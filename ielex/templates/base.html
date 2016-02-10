@@ -43,9 +43,9 @@
           ><img src="{% static 'logo/cognac_32px.png' %}"></a>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active">
+            <li{# class="active" #}>
               <a href="#" title="View 1 meaning in all languages" data-toggle="tooltip" data-placement="bottom">
-                1 mg all lgs<span class="sr-only">(current)</span>
+                1 mg all lgs{# <span class="sr-only">(current)</span> #}
               </a>
             </li>
             <li>
@@ -55,10 +55,10 @@
               <a href="#" title="View 1 language in all meanings" data-toggle="tooltip" data-placement="bottom">1 lg. all mgs</a>
             </li>
             <li>
-              <a href="#" title="List all languages" data-toggle="tooltip" data-placement="bottom">lgs</a>
+              <a href="/languagelist/" title="List all languages" data-toggle="tooltip" data-placement="bottom">lgs</a>
             </li>
             <li>
-              <a href="#" title="List all meanings" data-toggle="tooltip" data-placement="bottom">mgs</a>
+              <a href="/wordlist/all" title="List all meanings" data-toggle="tooltip" data-placement="bottom">mgs</a>
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
