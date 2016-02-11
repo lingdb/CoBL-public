@@ -1,18 +1,21 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-
+{% extends "base.html" %}
 {% load staticfiles %}
+{% block title %}Page unavailable{% endblock %}
+{% block top %}
+  <h1>Page unavailable</h1>
+{% endblock %}
 
-<html lang="en">
-  <head>
-    <title>Page unavailable</title>
-  </head>
-  <body>
-    <center>
-      <img src="%{ static 'server_error.png' %}" alt="Server error" title="Server error">
-      <h1>Page unavailable</h1>
-      <p>Something has gone wrong.</p>
-      <p>The relevant organs have been notified.</p>
-    </center>
-  </body>
-</html>
+{% block content %}
+  <div class="row">
+    <div class="col-md-4">
+      <div class="well">
+        Something has gone wrong.<br>
+        The relevant organs have been notified.
+      </div>
+      <img src="{% static 'server_error.png' %}" alt="Server error" title="Server error">
+    </div>
+  </div>
+{% endblock %}
+
+{% block controls%}{% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

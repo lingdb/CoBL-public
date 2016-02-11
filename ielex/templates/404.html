@@ -1,17 +1,20 @@
 {% extends "base.html" %}
-
 {% load staticfiles %}
-
 {% block title %}Page not found{% endblock %}
-
 {% block top %}
   <h1>Page not found</h1>
 {% endblock %}
 
 {% block content %}
-  <p>Sorry, the requested page ({{ request_path }}) doesn't exist.</p>
-  <img src="{% static 'page_not_found.jpg' %}" alt="Page not found" title="Page not found">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="well">
+        Sorry, the requested page <code>{{ request_path }}</code> doesn't exist.
+      </div>
+      <img src="{% static 'page_not_found.jpg' %}" alt="Page not found" title="Page not found">
+    </div>
+  </div>
 {% endblock %}
 
 {% block controls%}{% endblock %}
-{# vim:ft=htmldjango: #}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
