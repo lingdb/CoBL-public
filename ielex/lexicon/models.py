@@ -174,14 +174,57 @@ class Language(models.Model):
             'rfcWebPath1': isData,
             'rfcWebPath2': isData,
             'author': isData,
-            'reviewer': isData
-            }
+            'reviewer': isData}
 
         for k, _ in vdict.iteritems():
             if k in fields:
                 if not fields[k](k):
                     return False
         return True
+
+    def setDelta(self, **vdict):
+        """
+            Alter a models attributes by giving a vdict
+            similar to the one used for is_unchanged.
+        """
+
+        def setField(x):
+            setattr(self, x, vdict[x])
+
+        def setData(x):
+            self.altname[x] = vdict[x]
+
+        def setY(x):
+            self.altname[x] = (vdict[x] == 'y')
+
+        fields = {
+            'iso_code': setField,
+            'utf8_name': setField,
+            'glottocode': setData,
+            'variety': setData,
+            'foss_stat': setY,
+            'low_stat': setY,
+            'soundcompcode': setData,
+            'level0': setData,
+            'level1': setData,
+            'level2': setData,
+            'representative': setY,
+            'mean_timedepth_BP_years': setData,
+            'std_deviation_timedepth_BP_years': setData,
+            'rfcWebPath1': setData,
+            'rfcWebPath2': setData,
+            'author': setData,
+            'reviewer': setData}
+
+        # Escaping special fields:
+        if 'ascii_name' in vdict:
+            vdict['utf8_name'] = vdict['ascii_name'].encode('utf8', 'ignore')
+            del vdict['ascii_name']
+
+        # Setting fields:
+        for k, _ in vdict.iteritems():
+            if k in fields:
+                fields[k](k)
 
 
 @reversion.register

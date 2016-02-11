@@ -309,30 +309,7 @@ def view_language_list(request, language_list=None):
 
                 if not lang.is_unchanged(**v_dict):
 
-                    lang.iso_code = v_dict['iso_code']
-                    lang.utf8_name = v_dict['ascii_name'].encode(
-                        'utf8', 'ignore')
-
-                    lang.altname = {
-                        'glottocode': v_dict['glottocode'],
-                        'variety': v_dict['variety'],
-                        'foss_stat': (v_dict['foss_stat'] == 'y'),
-                        'low_stat': (v_dict['low_stat'] == 'y'),
-                        'soundcompcode': v_dict['soundcompcode'],
-                        'level0': v_dict['level0'],
-                        'level1': v_dict['level1'],
-                        'level2': v_dict['level2'],
-                        'representative':
-                        (v_dict['representative'] == 'y'),
-                        'mean_timedepth_BP_years':
-                        v_dict['mean_timedepth_BP_years'],
-                        'std_deviation_timedepth_BP_years':
-                        v_dict['std_deviation_timedepth_BP_years'],
-                        'rfcWebPath1': v_dict['rfcWebPath1'],
-                        'rfcWebPath2': v_dict['rfcWebPath2'],
-                        'author': v_dict['author'],
-                        'reviewer': v_dict['reviewer']
-                        }
+                    lang.setDelta(**v_dict)
 
                     lang.validateBranchLevels()
 
