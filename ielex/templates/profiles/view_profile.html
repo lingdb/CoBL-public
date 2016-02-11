@@ -3,36 +3,57 @@
 {% block title %}{{ project_short_name }} User Profile{% endblock %}
 
 {% block top %}
-<h1><small>User profile: {{ the_user.username }}</small></h1>
-<a href="/">Back to database</a>
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <h1>User profile: <strong>{{ the_user.username }}</strong></h1>
+      <a href="/">Back to database</a>
+    </div>
+  </div>
 {% endblock %}
 
 {% block content %}
-  <table>
-    <tr><td>First name:</td><td>{{ the_user.first_name }}</td></tr>
-    <tr><td>Last name:</td><td>{{ the_user.last_name }}</td></tr>
-    <tr><td>Email address:</td><td>{{ the_user.email }}</td></tr>
-    {% if user.username == the_user.username %}
-      <tr>
-        <td></td>
-        <td>
-          <a href="{% url 'change-password' %}" class="button">
-            <input type="button" value="Change password">
-          </a>
-          <a href="{% url 'alter-profile' %}" class="button">
-            <input type="button" value="Alter personal information">
-          </a>
-        </td>
-      </tr>
-    {% endif %}
-  </table>
-  <h2>Permissions</h2>
-  <ul>
-    {% for permission in the_user.get_all_permissions %}
-      {% if permission.name %}
-        <li>{{ permission.name }}</li>
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <table class="table">
+        <tbody>
+          <tr>
+            <th>First name:</th>
+            <td>{{ the_user.first_name }}</td>
+          </tr>
+          <tr>
+            <th>Last name:</th>
+            <td>{{ the_user.last_name }}</td>
+          </tr>
+          <tr>
+            <th>Email address:</th>
+            <td>{{ the_user.email }}</td>
+          </tr>
+          {% if user.username == the_user.username %}
+            <tr>
+              <td></td>
+              <td>
+                <a href="{% url 'change-password' %}" class="btn btn-default">
+                  Change password
+                </a>
+                <a href="{% url 'alter-profile' %}" class="btn btn-default">
+                  Alter personal information
+                </a>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+      {% if the_user.get_all_permissions %}
+        <h2>Permissions</h2>
+        <ul>
+          {% for permission in the_user.get_all_permissions %}
+            {% if permission.name %}
+              <li>{{ permission.name }}</li>
+            {% endif %}
+          {% endfor %}
+        </ul>
       {% endif %}
-    {% endfor %}
-  </ul>
+    </div>
+  </div>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
