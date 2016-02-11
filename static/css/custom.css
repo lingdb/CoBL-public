@@ -3,6 +3,7 @@ Customizing bootstrap to our site.
 */
 body {
   padding-top: 60px;
+  padding-bottom: 60px;
 }
 
 .navbar-brand {
