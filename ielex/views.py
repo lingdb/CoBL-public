@@ -407,7 +407,7 @@ def view_language_list(request, language_list=None):
 
     languages_editabletable_form = fill_langstable_from_DB(languages)
 
-    return render_template(request, "language_list_editable.html",
+    return render_template(request, "language_list.html",
                            {"languages": languages,
                             "language_list_form": form,
                             'lang_ed_form': languages_editabletable_form,
