@@ -144,25 +144,22 @@
             </button>
             {{ message }}
           </div>
-          {# <li><a href="{{ current_url }}">{{ message }}</a></li> #}
         {% else %}{# otherwise include the link as part of the message text #}
           <div class="alert alert-danger" role="alert">
             {{ message|safe }}
           </div>
-          {# <li class="prominent">{{ message|safe }}</li> #}
         {% endif %}
       {% endfor %}
     </div>
-    {# BORDER TO MADNESS BELOW #}
-    <div id="container-fluid">
+    <div id="blockTop" class="container-fluid">
       {% block top %}{% endblock %}
-      <div id="content" class="panel">
-        <div class="panel-body">
-          {% block content %}{% endblock %}
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-body">
+    </div>
+    <div id="blockContent" class="container-fluid">
+      {% block content %}{% endblock %}
+    </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-2">
             Language list: <strong>{{ current_language_list_name }}</strong>
             <br>
             Wordlist: <strong>{{ current_wordlist_name }}</strong>
