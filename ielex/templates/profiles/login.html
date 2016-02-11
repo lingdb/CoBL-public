@@ -1,32 +1,36 @@
 {% extends "base_admin.html" %}
 
 {% block top %}
-  <h1>login form</h1>
+  <div class="row">
+    <h1 class="col-md-2 col-md-offset-5">login form</h1>
+  </div>
 {% endblock %}
 
 {% block content %}
-  {% if form.errors %}
-    <ul id="message">
-      <li id="message">Username and password do not match. Please try again.</li>
-    </ul>
-  {% endif %}
-  <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
-    <table>
-      <tr>
-        <td>Username:</td><td><input type="text" name="username" id="id_username" /></td>
-      </tr>
-      <tr>
-        <td>Password:</td><td><input type="password" name="password" id="id_password" /></td>
-      </tr>
-      <tr>
-        <td></td>
-        <td><input type="submit" value="Log in" /></td>
-      </tr>
-    </table>
-    <input type="hidden" name="this_is_the_login_form" value="1" />
-  </form>
-  <script type="text/javascript">
-    document.getElementById('id_username').focus()
-  </script>
+  <div class="row">
+    <div class="col-md-2 col-md-offset-5">
+      {% if form.errors %}
+        <div class="alert alert-danger alert-dismissable fade in" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+          Username and password do not match. Please try again.
+        </div>
+      {% endif %}
+      <form action="{{ app_path }}" method="post" id="login-form" class="well">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input type="text" name="username" id="id_username" autofocus>
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" name="password" id="id_password">
+        </div>
+        <button type="submit" class="btn btn-default">Log in</button>
+        <input type="hidden" name="this_is_the_login_form" value="1">
+      </form>
+    </div>
+  </div>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
