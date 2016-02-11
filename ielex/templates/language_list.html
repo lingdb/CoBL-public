@@ -52,18 +52,18 @@
     </div>
   </div>
   {% if user.is_authenticated and user.is_staff %}
+    <hr>
     <div class="row">
       <div class="col-md-12">
-        <form action="" method="POST" name="langlist_ed_form" >
+        <form action="" method="POST" name="langlist_ed_form">
           {% csrf_token %}
-          <div class="langlist_form">
-            <input type="submit" value="Submit" name="langlist_form">
-            <br>
-            <a href="{% url 'view-language-list' current_list.name %}"> undo</a>
-            <br>
+          <div class="form-group">
+            <label for="langlist_form">Save table?</label>
+            <a href="{% url 'view-language-list' current_list.name %}" class="btn btn-danger"> undo</a>
+            <input type="submit" value="Submit" name="langlist_form" class="btn btn-primary">
           </div>
           <table class="table table-striped" id="editable">
-            <thead> {# handy for the print view #}
+            <thead>
               <tr class="mid-align">
                 <th></th>
                 <th>Name</th>
@@ -115,9 +115,10 @@
                 <tr>
                   <td>{{ forloop.counter }}</td>
                   <td>
+                    {% form_field language.ascii_name class="language_name hide" %}
                     <a href="{% url 'language-report' language.ascii_name.data %}" alt="view lexeme list"
                       title="View wordlist list for {{ language.utf8_name.data }}">
-                      {% form_field language.ascii_name class="language_name" %}
+                      {{ language.utf8_name.data }}
                     </a>
                   </td>
                   <td>{% form_field language.variety size="8" %}</td>
@@ -175,47 +176,47 @@
       </div>
     </div>
   {% else %}
-  <div class="row">
-    <div class="col-md-4">
-      <table class="table table-striped">
-        <thead> {# handy for the print view #}
-          <tr>
-            <th></th>
-            <th>Name</th>
-            <th>ISO-639-3</th>
-            <th>Lexemes</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for language in languages %}
+    <div class="row">
+      <div class="col-md-4">
+        <table class="table table-striped">
+          <thead>
             <tr>
-              <td>
-                <small>{{ forloop.counter }}</small>
-              </td>
-              <td>
-                {% if user.is_authenticated %}
-                  <a href="{% url 'language-edit' language.ascii_name %}">
-                    <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit {{ language.utf8_name }} metadata">
-                  </a>
-                {% endif %}
-                <a href="{% url 'language-report' language.ascii_name %}" alt="view lexeme list" title="View wordlist list for {{ language.utf8_name }}">
-                  {{ language.utf8_name }}
-                </a>
-              </td>
-              <td>
-                <a href="http://www.ethnologue.com/language/{{ language.iso_code }}" target="_blank">
-                  {{ language.iso_code }}
-                </a>
-              </td>
-              <td>
-                {{ language.lexeme_count }}
-              </td>
+              <th></th>
+              <th>Name</th>
+              <th>ISO-639-3</th>
+              <th>Lexemes</th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {% for language in languages %}
+              <tr>
+                <td>
+                  <small>{{ forloop.counter }}</small>
+                </td>
+                <td>
+                  {% if user.is_authenticated %}
+                    <a href="{% url 'language-edit' language.ascii_name %}">
+                      <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit {{ language.utf8_name }} metadata">
+                    </a>
+                  {% endif %}
+                  <a href="{% url 'language-report' language.ascii_name %}" alt="view lexeme list" title="View wordlist list for {{ language.utf8_name }}">
+                    {{ language.utf8_name }}
+                  </a>
+                </td>
+                <td>
+                  <a href="http://www.ethnologue.com/language/{{ language.iso_code }}" target="_blank">
+                    {{ language.iso_code }}
+                  </a>
+                </td>
+                <td>
+                  {{ language.lexeme_count }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
   {% endif %}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
