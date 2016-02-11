@@ -57,7 +57,7 @@
             <td>{% form_field lexeme.source_form id="source_form" class="mediumtext" %}</td>
             <td>
               <a href="{% url 'view-lexeme' lexeme.id.data %}">
-                <img src="{% static 'buttons/view.png' %}" alt="View" title="View detailed information on lexeme" />
+                <img src="{% static 'buttons/view.png' %}" alt="View" title="View detailed information on lexeme">
               </a>
             </td>
             <td>
@@ -143,7 +143,7 @@
           <td>{{ lexeme.notes|truncatewords:5 }}</td>
           <td>
             <a href="{% url 'view-lexeme' lexeme.id %}">
-              <img src="{% static 'buttons/view.png' %}" alt="View" title="View detailed information on lexeme" />
+              <img src="{% static 'buttons/view.png' %}" alt="View" title="View detailed information on lexeme">
             </a>
             {{ lexeme.number_cognate_coded }}
           </td>

@@ -21,7 +21,7 @@
     {% if user.is_authenticated and wordlist.name != wordlist.DEFAULT %}
     <td>
       <a href="{% url 'edit-wordlist' wordlist.name %}">
-        <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit {{ wordlist.name }} metadata" />
+        <img src="{% static 'buttons/edit.png' %}" alt="edit" title="Edit {{ wordlist.name }} metadata">
       </a>
     </td>
     {% endif %}

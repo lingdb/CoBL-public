@@ -14,8 +14,8 @@
       <table>
         {{ form.as_table }}
       </table>
-      <input type="submit" name="submit" value="Submit" />
-      <input type="submit" name="cancel" value="Cancel" />
+      <input type="submit" name="submit" value="Submit">
+      <input type="submit" name="cancel" value="Cancel">
     </form>
   {% else %}
     <table>
@@ -24,10 +24,10 @@
         {% if user.is_authenticated %}
           <td>
             <a href="{% url 'edit-source' source.id %}">
-              <img src="{% static 'buttons/edit.png' %}" alt="Edit" title="Edit" />
+              <img src="{% static 'buttons/edit.png' %}" alt="Edit" title="Edit">
             </a>
             <img src="{% static 'buttons/delete.png' %}" alt="{% url 'delete-source' source.id %} to delete"
-                title="{% url 'delete-source' source.id %} to delete" />
+                title="{% url 'delete-source' source.id %} to delete">
           </td>
         {% endif %}
       </tr>

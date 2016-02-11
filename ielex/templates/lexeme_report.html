@@ -28,11 +28,11 @@
       <legend>
         {% if user.is_authenticated %}
           <a href="{% url 'edit-lexeme' lexeme.id %}">
-            <img src="{% static 'buttons/edit-pencil.png' %}" alt="Edit" title="Edit" />
+            <img src="{% static 'buttons/edit-pencil.png' %}" alt="Edit" title="Edit">
           </a>
           <img src="{% static 'buttons/delete.png' %}"
             alt="To delete lexeme add /delete/to url (use with care!)"
-            title="To delete lexeme add /delete/ to url (use with care!)" />
+            title="To delete lexeme add /delete/ to url (use with care!)">
         {% endif %}
       </legend>
       <table>
@@ -96,13 +96,13 @@
         <fieldset>
           <legend>
             <a href="{% url 'lexeme-edit-citation' lexeme.id citation.id %}">
-              <img src="{% static 'buttons/edit-link.png' %}" alt="Edit" title="Edit citation details" />
+              <img src="{% static 'buttons/edit-link.png' %}" alt="Edit" title="Edit citation details">
             </a>
             {% if lexeme.lexemecitation_set.count == 1 %}
-              <img src="{% static 'buttons/delink.png' %}" alt="Can't delink" title="Can't delink final citation" />
+              <img src="{% static 'buttons/delink.png' %}" alt="Can't delink" title="Can't delink final citation">
             {% else %}
               <a href="{% url 'lexeme-delink-citation' lexeme.id citation.id %}">
-                <img src="{% static 'buttons/delink.png' %}" alt="Delink" title="Delink citation" />
+                <img src="{% static 'buttons/delink.png' %}" alt="Delink" title="Delink citation">
               </a>
             {% endif %}
           </legend>
@@ -114,18 +114,18 @@
         <legend>
           {% if user.is_authenticated %}
             <a href="{% url 'lexeme-edit-citation' lexeme.id citation.id %}">
-              <img src="{% static 'buttons/edit-link.png' %}" alt="Edit" title="Edit citation details" />
+              <img src="{% static 'buttons/edit-link.png' %}" alt="Edit" title="Edit citation details">
             </a>
             {% if lexeme.lexemecitation_set.count == 1 %}
-              <img src="{% static 'buttons/delink.png' %}" alt="Can't delink" title="Can't delink final citation" />
+              <img src="{% static 'buttons/delink.png' %}" alt="Can't delink" title="Can't delink final citation">
             {% else %}
               <a href="{% url 'lexeme-delink-citation' lexeme.id citation.id %}">
-                <img src="{% static 'buttons/delink.png' %}" alt="Delink" title="Delink citation" />
+                <img src="{% static 'buttons/delink.png' %}" alt="Delink" title="Delink citation">
               </a>
             {% endif %}
           {% endif %}
           <a href="{% url 'view-source' citation.source.id %}">
-            <img src="{% static 'buttons/view-big.png' %}", alt="View source", title="View source" />
+            <img src="{% static 'buttons/view-big.png' %}", alt="View source", title="View source">
           </a>
         </legend>
         {% include "snippets/citation_report.html" %}
@@ -148,14 +148,14 @@
         <legend>
           <strong>Add link to source</strong>
           <a href="{% url 'lexeme-add-citation' lexeme.id %}">
-            <img src="{% static 'buttons/add-link.png' %}" alt="Add" title="Add link to citation" />
+            <img src="{% static 'buttons/add-link.png' %}" alt="Add" title="Add link to citation">
           </a>
         </legend>
-        <small>Add a link to a source already in the database</small><br />
+        <small>Add a link to a source already in the database</small><br>
         <strong>Add link to new Source</strong>
         <a href="{% url 'lexeme-add-new-source' lexeme.id %}">
-          <img src="{% static 'buttons/add.png' %}" alt="Add new source" title="Add citation to new source" />
-        </a><br />
+          <img src="{% static 'buttons/add.png' %}" alt="Add new source" title="Add citation to new source">
+        </a><br>
         <small>Add a new source to the database and link to it</small>
       </fieldset>
     {% endif %}
@@ -169,7 +169,7 @@
             <strong>Cognate Class {{ cj.cognate_class.alias }}</strong>
             {% if user.is_authenticated %}
               <a href="{% url 'lexeme-delink-cognate' lexeme.id cj.id %}">
-                <img src="{% static 'buttons/delink.png' %}" alt="Delink" title="Delink cognate from this lexeme" />
+                <img src="{% static 'buttons/delink.png' %}" alt="Delink" title="Delink cognate from this lexeme">
               </a>
             {% endif %}
           </legend>
@@ -190,18 +190,18 @@
                   <legend>
                     {% if user.is_authenticated %}
                       <a href="{% url 'lexeme-edit-cognate-citation' lexeme.id citation.id %}">
-                        <img src="{% static 'buttons/edit-link.png' %}" alt="Edit" title="Edit cognate citation details" />
+                        <img src="{% static 'buttons/edit-link.png' %}" alt="Edit" title="Edit cognate citation details">
                       </a>
                       {% if cj.cognatejudgementcitation_set.count == 1 %}
-                        <img src="{% static 'buttons/delink.png' %}" alt="Can't delink" title="Can't delink final citation" />
+                        <img src="{% static 'buttons/delink.png' %}" alt="Can't delink" title="Can't delink final citation">
                       {% else %}
                         <a href="{% url 'lexeme-delink-cognate-citation' lexeme.id citation.id %}">
-                          <img src="{% static 'buttons/delink.png' %}" alt="Delink" title="Delink cognate citation" />
+                          <img src="{% static 'buttons/delink.png' %}" alt="Delink" title="Delink cognate citation">
                         </a>
                       {% endif %}
                     {% endif %}
                     <a href="{% url 'view-source' citation.source.id %}">
-                      <img src="{% static 'buttons/view-big.png' %}", alt="View source", title="View source" />
+                      <img src="{% static 'buttons/view-big.png' %}", alt="View source", title="View source">
                     </a>
                   </legend>
                   {% include "snippets/citation_report.html" %}
@@ -212,18 +212,18 @@
                 <legend>
                   {% if user.is_authenticated %}
                     <a href="{% url 'lexeme-edit-cognate-citation' lexeme.id citation.id %}">
-                      <img src="{% static 'buttons/edit-link.png' %}" alt="Edit" title="Edit cognate citation details" />
+                      <img src="{% static 'buttons/edit-link.png' %}" alt="Edit" title="Edit cognate citation details">
                     </a>
                     {% if cj.cognatejudgementcitation_set.count == 1 %}
-                      <img src="{% static 'buttons/delink.png' %}" alt="Can't delink" title="Can't delink final citation" />
+                      <img src="{% static 'buttons/delink.png' %}" alt="Can't delink" title="Can't delink final citation">
                     {% else %}
                       <a href="{% url 'lexeme-delink-cognate-citation' lexeme.id citation.id %}">
-                        <img src="{% static 'buttons/delink.png' %}" alt="Delink" title="Delink cognate citation" />
+                        <img src="{% static 'buttons/delink.png' %}" alt="Delink" title="Delink cognate citation">
                       </a>
                     {% endif %}
                   {% endif %}
                   <a href="{% url 'view-source' citation.source.id %}">
-                    <img src="{% static 'buttons/view-big.png' %}", alt="View source", title="View source" />
+                    <img src="{% static 'buttons/view-big.png' %}", alt="View source", title="View source">
                   </a>
                 </legend>
                 {% include "snippets/citation_report.html" %}
@@ -245,14 +245,14 @@
                 <legend>
                   <strong>Add link to source</strong>
                   <a href="{% url 'lexeme-add-cognate-citation' lexeme.id cj.id %}#active">
-                    <img src="{% static 'buttons/add-link.png' %}" alt="Add" title="Add link to citation" />
+                    <img src="{% static 'buttons/add-link.png' %}" alt="Add" title="Add link to citation">
                   </a>
                 </legend>
-                <small>Add a link to a source already in the database</small><br />
+                <small>Add a link to a source already in the database</small><br>
                 <strong>Add link to new Source</strong>
                 <a href="{% url 'cogjudge-add-new-source' cj.id %}">
-                  <img src="{% static 'buttons/add.png' %}" alt="Add new source" title="Add citation to new source" />
-                </a><br />
+                  <img src="{% static 'buttons/add.png' %}" alt="Add new source" title="Add citation to new source">
+                </a><br>
                 <small>Add a new source to the database and link to it</small>
               </fieldset>
             {% endif %}
@@ -264,7 +264,7 @@
           <legend>
             <strong>Add link to cognate class</strong>
             <a href="{% url 'lexeme-add-cognate' lexeme.id %}#lexeme_{{ lexeme.id }}">
-              <img src="{% static 'buttons/add-link.png' %}" alt="Add new cognate judgement" title="Add new cognate judgement" />
+              <img src="{% static 'buttons/add-link.png' %}" alt="Add new cognate judgement" title="Add new cognate judgement">
             </a>
           </legend>
           <small>
@@ -277,7 +277,7 @@
           </small>
           <strong>Add link to new cognate class</strong>
           <a href="{% url 'lexeme-add-new-cognate' lexeme.id %}">
-            <img src="{% static 'buttons/add-link.png' %}" alt="Add new cognate judgement" title="Add cognate judgement to new cognate class" />
+            <img src="{% static 'buttons/add-link.png' %}" alt="Add new cognate judgement" title="Add cognate judgement to new cognate class">
           </a>
           <small>
             <ul>

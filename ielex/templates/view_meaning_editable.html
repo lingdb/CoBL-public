@@ -54,7 +54,7 @@
             <td>{% form_field lexeme.source_form id="source_form" class="mediumtext" %}</td>
             <td>
               <a href="{% url 'view-lexeme' lexeme.id.data %}">
-                <img src="{% static 'buttons/view.png' %}" alt="View" title="View/edit the lexical entry" />
+                <img src="{% static 'buttons/view.png' %}" alt="View" title="View/edit the lexical entry">
               </a>
             </td>
             <td>
@@ -81,7 +81,7 @@
                 {% if user.is_authenticated %}
                   {% ifnotequal add_cognate_judgement|asint lexeme.id.data|asint %}
                     <a href="{% url 'lexeme-add-cognate' lexeme.id.data %}#lexeme_{{ lexeme.id.data }}">
-                      <img src="{% static 'buttons/add.png' %}" alt="Add" title="Add another cognate class" />
+                      <img src="{% static 'buttons/add.png' %}" alt="Add" title="Add another cognate class">
                     </a>
                   {% else %}
                     <form action="" method="post">{% csrf_token %}
@@ -135,7 +135,7 @@
             {{ lexeme.notes|wikilink|truncatewords_html:5 }}
             {% if lexeme.notes|is_truncated:5 %}
             <a href="{% url 'view-lexeme' lexeme.id %}" title="{{ lexeme.notes }}">
-              <img src="{% static 'buttons/view.png' %}" title="{{ lexeme.notes }}" />
+              <img src="{% static 'buttons/view.png' %}" title="{{ lexeme.notes }}">
             </a>
             {% endif %}
           </td>
@@ -144,7 +144,7 @@
             {% if user.is_authenticated %}
               {% ifnotequal add_cognate_judgement|asint lexeme.id|asint %}
               <a href="{% url 'lexeme-add-cognate' lexeme.id %}#lexeme_{{ lexeme.id }}">
-                <img src="{% static 'buttons/add.png' %}" alt="Add" title="Add another cognate class" />
+                <img src="{% static 'buttons/add.png' %}" alt="Add" title="Add another cognate class">
               </a>
               {% else %}
               <form action="" method="post">{% csrf_token %}
@@ -155,7 +155,7 @@
           </td>
           <td>
             <a href="{% url 'view-lexeme' lexeme.id %}">
-              <img src="{% static 'buttons/view.png' %}" alt="View" title="View/edit the lexical entry" />
+              <img src="{% static 'buttons/view.png' %}" alt="View" title="View/edit the lexical entry">
             </a>
           </td>
         </tr>
@@ -188,7 +188,7 @@
     </li>
   </ul>
   <p>Cognate judgements are added on this page, but deleted by the lexeme view
-    (use the <img src="{% static 'buttons/view.png' %}" alt="" title="View/Edit the lexical entry" /> button)</p>
+    (use the <img src="{% static 'buttons/view.png' %}" alt="" title="View/Edit the lexical entry"> button)</p>
   <strong>Filter out non-Swadesh terms: <input type="submit" value="Filter" id="filter_non_swadesh" onclick="ExcludeRows()"></strong>
   <h3>Description</h3>
   {{ meaning.notes|linebreaksbr }}

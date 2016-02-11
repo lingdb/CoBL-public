@@ -7,10 +7,10 @@
 
 {% block content %}
   <form action="" method="POST">{% csrf_token %}
-    <input type="submit" name="submit" value="Move up" /><br />
-    {{ form.language }}<br />
-    <input type="submit" name="submit" value="Move down" /><br />
-    <input type="submit" name="submit" value="Finish" />
+    <input type="submit" name="submit" value="Move up"><br>
+    {{ form.language }}<br>
+    <input type="submit" name="submit" value="Move down"><br>
+    <input type="submit" name="submit" value="Finish">
   </form>
 {% endblock %}
 

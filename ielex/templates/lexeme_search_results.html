@@ -34,13 +34,13 @@
           {{ lexeme.notes|wikilink|truncatewords_html:5 }}
           {% if lexeme.notes|is_truncated:5 %}
           <a href="/lexeme/{{ lexeme.id }}" title="{{ lexeme.notes }}">
-            <img src="{% static 'buttons/view.png' %}" title="{{ lexeme.notes }}" />
+            <img src="{% static 'buttons/view.png' %}" title="{{ lexeme.notes }}">
           </a>
           {% endif %}
         </td>
         <td>
           <a href="{% url 'view-lexeme' lexeme.id %}">
-            <img src="{% static 'buttons/view.png' %}" alt="View" title="View lexeme" />
+            <img src="{% static 'buttons/view.png' %}" alt="View" title="View lexeme">
           <a>
         </td>
       </tr>
