@@ -1,83 +1,234 @@
-{% extends "base.html" %}
+{%extends "base.html" %}
 
 {% load staticfiles %}
 {% load lexicon_utils %}
+{% load wtforms %}
 
-{% block title %}{{ meaning.gloss }}{% endblock %}
+{% block title %}
+  {{ meaning.gloss }}
+{% endblock %}
 
-{% block top %}<h1>{{ meaning.gloss }}</h1>{% endblock %}
-
-{% block content %}
-  <table>
-    <tr>
-      <th>ID</th>
-      <th>Language</th>
-      <th>Source Form</th>
-      <th>Phonological Form</th>
-      <th>Notes</th>
-      <th>Cognate<br>Class<br>Label</th>
-      <th></th>
-    </tr>
-    {% for lexeme in lexemes %}
-      <tr class="{% cycle 'odd' 'even' %}">
-        <td id="lexeme_{{ lexeme.id }}">{{ lexeme.language.id }}</td>
-        <td><a href="{% url 'language-report' lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
-        <td>{{ lexeme.source_form }}</td>
-        <td>{{ lexeme.phon_form }}</td>
-        <td>
-          {{ lexeme.notes|wikilink|truncatewords_html:5 }}
-          {% if lexeme.notes|is_truncated:5 %}
-          <a href="{% url 'view-lexeme' lexeme.id %}" title="{{ lexeme.notes }}">
-            <img src="{% static 'buttons/view.png' %}" title="{{ lexeme.notes }}">
-          </a>
-          {% endif %}
-        </td>
-        <td>
-          {{ lexeme.get_cognate_class_links }}
-          {% if user.is_authenticated %}
-            {% ifnotequal add_cognate_judgement|asint lexeme.id|asint %}
-            <a href="{% url 'lexeme-add-cognate' lexeme.id %}#lexeme_{{ lexeme.id }}">
-              <img src="{% static 'buttons/add.png' %}" alt="Add" title="Add another cognate class">
-            </a>
-            {% else %}
-            <form action="" method="post">{% csrf_token %}
-                {{ cognate_form.cognate_class }}
-            </form>
-            {% endifnotequal %}
-          {% endif %}
-        </td>
-        <td>
-          <a href="{% url 'view-lexeme' lexeme.id %}">
-            <img src="{% static 'buttons/view.png' %}" alt="View" title="View/edit the lexical entry">
-          </a>
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
-  {% include "snippets/prev_next_meaning.html" %}{# TODO #}
-  {# TODO REDESIGN THIS #}
-  <p>
-    <form action="" method="post">{% csrf_token %}
-      <table>
-        {{ language_form.as_table }}
-      </table>
-    </form>
-  </p>
-  <ul class="navigation">
-    {% if add_cognate_judgement  %}
-      <li><a href="{% url 'meaning-report' meaning.gloss %}/">return to normal view</a></li>
-    {% endif %}
-    <li><a href="{% url 'lexeme-search' %}">search lexemes</a></li>
-    <li><a href="{% url 'meaning-add-lexeme' meaning.gloss %}">add a new lexeme</a></li>
-  </ul>
-  <p>Cognate judgements are added on this page, but deleted by the lexeme view (use the <img src="{% static 'buttons/view.png' %}" alt="" title="View/Edit the lexical entry"> button)</p>
-
-  <h3>Description</h3>
-  {{ meaning.notes|linebreaksbr }}
+{% block top %}
+  <h1>{{ meaning.gloss }}</h1>
 {% endblock %}
 
 {% block controls %}
   {% include "snippets/go_to.html" %}
   {# include "snippets/change_sort_order.html" #}
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-4">
+      <form class="form-inline" action="" method="GET">
+        <div class="form-group">
+          {{ filt_form }}
+          <input type="submit" value="Filter" class="btn btn-default">
+        </div>
+      </form>
+      <form class="form-inline" action="" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          <table>
+            {{ language_form.as_table }}
+          </table>
+        </div>
+      </form>
+      <form class="form-inline">
+        <div class="form-group">
+          <label for="excludeButton">Filter out non-Swadesh terms:</label>
+          <input name="excludeButton" type="submit" value="Filter" id="filter_non_swadesh" onclick="ExcludeRows()" class="btn btn-default">
+        </div>
+      </form>
+    </div>
+    <div class="col-md-2">
+      {% include "snippets/prev_next_meaning.html" %}
+      <div class="list-group">
+        {% if add_cognate_judgement  %}
+          <a class="list-group-item" href="{% url 'meaning-report' meaning.gloss %}/">return to normal view</a>
+        {% endif %}
+        <a class="list-group-item" href="{% url 'lexeme-search' %}">search lexemes</a>
+        <a class="list-group-item" href="{% url 'meaning-add-lexeme' meaning.gloss %}">add a new lexeme</a>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          Cognate judgements are added on this page, but deleted by the lexeme view
+          (use the <span class="glyphicon glyphicon-search" title="View/Edit the lexical entry"></span> button)
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">Description</div>
+        <div class="panel-body">
+          {{ meaning.notes|linebreaksbr }}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% if user.is_authenticated %}
+    <div class="row">
+      <div class="col-md-12">
+        <form action="" method="POST" name="lex_ed_form">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="langlist_form">Save table?</label>
+            <a href="{% url 'view-meaning-languages' meaning.gloss current_language_list.name %}" class="btn btn-danger"> undo</a>
+            <input type="submit" value="Submit" name="meang_form" class="btn btn-primary">
+          </div>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th class="hide"></th>
+                <th>ID</th>
+                <th>Language</th>
+                <th>Orthog.</th>
+                <th></th>
+                <th></th>
+                <th>Translit.</th>
+                <th>Not<br>Swh<br></th>
+                <th>PhoneMic</th>
+                <th></th>
+                <th>PhoneTic</th>
+                <th alt="Language specific">Gloss</th>
+                <th>Notes</th>
+                <th>Cog.<br>Alias</th>
+                <th>loan</th>
+                <th>excl</th>
+                <th>Loan<br>Event</th>
+                <th></th>
+                <th>Root</th>
+                <th alt="Number of cognate classes">nCog</th>
+                <th>Web dict ID 1</th>
+                <th>Web dict ID 2</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for lexeme in lex_ed_form.lexemes %}
+                <tr>
+                  <td class="hide">{{ lexeme.id }}</td>
+                  <td>{{ lexeme.data.language_id }}</td>
+                  <td>
+                    <a href="{% url 'language-report' lexeme.language_asciiname.data %}">
+                      {{ lexeme.data.language_utf8name }}
+                    </a>
+                  </td>
+                  <td>{% form_field lexeme.source_form id="source_form" class="mediumtext" %}</td>
+                  <td>
+                    <a href="{% url 'view-lexeme' lexeme.id.data %}" title="View/edit the lexical entry">
+                      <span class="glyphicon glyphicon-search"></span>
+                    </a>
+                  </td>
+                  <td>
+                    <button class="leftcheckarrow btn btn-xs" id="translit2src#{{lexeme.transliteration.name}}#{{lexeme.source_form.name}}" onclick="CopyAcross(this)">
+                      <span class="glyphicon glyphicon-chevron-left"></span>
+                    </button>
+                    <button class="rightcheckarrow btn btn-xs" id="src2translit#{{lexeme.source_form.name}}#{{lexeme.transliteration.name}}" onclick="CopyAcross(this)">
+                      <span class="glyphicon glyphicon-chevron-right"></span>
+                    </button>
+                  </td>
+                  <td>{% form_field lexeme.transliteration id="transliteration" size="8" %}</td>
+                  <td>{% form_field lexeme.not_swadesh_term class="notswad_checkbox" %}</td>
+                  <td>{% form_field lexeme.phoneMic id="phoneMic" size="8" %}</td>
+                  <td>
+                    <button class="leftcheckarrow btn btn-xs" id="phoneTic2phoneMic#{{lexeme.phon_form.name}}#{{lexeme.phoneMic.name}}" onclick="CopyAcross(this)">
+                      <span class="glyphicon glyphicon-chevron-left"></span>
+                    </button>
+                    <button class="rightcheckarrow btn btn-xs" id="phoneMic2phoneTic#{{lexeme.phoneMic.name}}#{{lexeme.phon_form.name}}" onclick="CopyAcross(this)">
+                      <span class="glyphicon glyphicon-chevron-right"></span>
+                    </button>
+                  </td>
+                  <td>{% form_field lexeme.phon_form id="phoneTic" size="8" %}</td>
+                  <td>{% form_field lexeme.gloss %}</td>
+                  <td>{% form_field lexeme.notes %}</td>
+                  <td>
+                    <div class="narrow_form">
+                      {{ lexeme.cognate_class_links.data }}
+                      {% if user.is_authenticated %}
+                        {% ifnotequal add_cognate_judgement|asint lexeme.id.data|asint %}
+                          <a href="{% url 'lexeme-add-cognate' lexeme.id.data %}#lexeme_{{ lexeme.id.data }}"
+                             title="Add another cognate class">
+                            <span class="glyphicon glyphicon-plus-sign"></span>
+                          </a>
+                        {% else %}
+                          <form action="" method="post">
+                            {% csrf_token %}
+                            {{ cognate_form.cognate_class }}
+                          </form>
+                        {% endifnotequal %}
+                      {% endif %}
+                    </div>
+                  </td>
+                  <td>{% form_field lexeme.is_loan disabled="disabled" %}</td>
+                  <td>{% form_field lexeme.is_excluded disabled="disabled" %}</td>
+                  <td>
+                    {% if lexeme.object_data.show_loan_event %}
+                      {% form_field lexeme.loan_event disabled="disabled" %}
+                    {% endif %}
+                  </td>
+                  <td>
+                    <button class="rightcheckarrow btn btn-xs"
+                            id="src2root#{{lexeme.source_form.name}}#{{lexeme.root_form.name}}"
+                            onclick="CopyAcross(this)">
+                      <strong>O</strong>
+                      <span class="glyphicon glyphicon-chevron-right"></span>
+                    </button>
+                  </td>
+                  <td>{% form_field lexeme.root_form id="rootform" %}</td>
+                  <td class="narrow">
+                    <span class="badge">{{ lexeme.data.number_cognate_coded }}</span>
+                  </td>
+                  <td>{% form_field lexeme.rfcWebLookup1 size="4" %}</td>
+                  <td>{% form_field lexeme.rfcWebLookup2 size="4" %}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </form>
+      </div>
+    </div>
+  {% else %}
+    <div class="row">
+      <div class="col-md-6">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Language</th>
+              <th>Source Form</th>
+              <th>Phonological Form</th>
+              <th>Notes</th>
+              <th>Cognate Class Label</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for lexeme in lexemes %}
+              <tr class="{% cycle 'odd' 'even' %}">
+                <td id="lexeme_{{ lexeme.id }}">{{ lexeme.language.id }}</td>
+                <td><a href="{% url 'language-report' lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
+                <td>{{ lexeme.source_form }}</td>
+                <td>{{ lexeme.phon_form }}</td>
+                <td>
+                  {{ lexeme.notes|wikilink|truncatewords_html:5 }}
+                  {% if lexeme.notes|is_truncated:5 %}
+                  <a href="{% url 'view-lexeme' lexeme.id %}" title="{{ lexeme.notes }}">
+                    <span class="glyphicon glyphicon-search"></span>
+                  </a>
+                  {% endif %}
+                </td>
+                <td>{{ lexeme.get_cognate_class_links }}</td>
+                <td>
+                  <a href="{% url 'view-lexeme' lexeme.id %}" title="View/edit the lexical entry">
+                    <span class="glyphicon glyphicon-search"></span>
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endif %}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

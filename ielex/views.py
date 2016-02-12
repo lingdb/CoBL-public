@@ -1171,7 +1171,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     lexemes_editabletable_form = fill_lexemestable_from_DB(lexemes)
 
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
-    return render_template(request, "view_meaning_editable.html",
+    return render_template(request, "view_meaning.html",
                            {"meaning": meaning,
                             "prev_meaning": prev_meaning,
                             "next_meaning": next_meaning,

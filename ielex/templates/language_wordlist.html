@@ -128,12 +128,12 @@
                     </a>
                   </td>
                   <td>
-                    <button class="leftcheckarrow btn btn-xs" type="checkbox"
+                    <button class="leftcheckarrow btn btn-xs"
                             id="translit2src#{{lexeme.transliteration.name}}#{{lexeme.source_form.name}}"
                             onclick="CopyAcross(this)">
                       <span class="glyphicon glyphicon-chevron-left"></span>
                     </button>
-                    <button class="rightcheckarrow btn btn-xs" type="checkbox"
+                    <button class="rightcheckarrow btn btn-xs"
                             id="src2translit#{{lexeme.source_form.name}}#{{lexeme.transliteration.name}}"
                             onclick="CopyAcross(this)">
                       <span class="glyphicon glyphicon-chevron-right"></span>
@@ -143,12 +143,12 @@
                   <td>{% form_field lexeme.not_swadesh_term class="notswad_checkbox" %}</td>
                   <td>{% form_field lexeme.phoneMic id="phoneMic" size="8" %}</td>
                   <td>
-                    <button class="leftcheckarrow btn btn-xs" type="checkbox"
+                    <button class="leftcheckarrow btn btn-xs"
                             id="phoneTic2phoneMic#{{lexeme.phon_form.name}}#{{lexeme.phoneMic.name}}"
                             onclick="CopyAcross(this)">
                       <span class="glyphicon glyphicon-chevron-left"></span>
                     </button>
-                    <button class="rightcheckarrow btn btn-xs" type="checkbox"
+                    <button class="rightcheckarrow btn btn-xs"
                             id="phoneMic2phoneTic#{{lexeme.phoneMic.name}}#{{lexeme.phon_form.name}}"
                             onclick="CopyAcross(this)">
                       <span class="glyphicon glyphicon-chevron-right"></span>
@@ -165,7 +165,7 @@
                     {% endif %}
                   </td>
                   <td>
-                    <button class="rightcheckarrow btn btn-xs" type="checkbox"
+                    <button class="rightcheckarrow btn btn-xs"
                             id="src2root#{{lexeme.source_form.name}}#{{lexeme.root_form.name}}"
                             onclick="CopyAcross(this)">
                       <strong>O</strong>
