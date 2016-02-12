@@ -1060,7 +1060,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                         # only if it has been changed during this POST
                         # Here: collect only forms
                         # which have been changed during this POST
-                        if cogclass.root_formo != rtfrm:
+                        if cogclass.root_form != rtfrm:
                             cogclass_changed_rootform_map[ccid] = rtfrm
 
                 if not lexm.is_unchanged(**v_dict):
