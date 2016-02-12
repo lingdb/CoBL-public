@@ -195,7 +195,7 @@ class Language(models.Model):
             self.altname[x] = vdict[x]
 
         def setY(x):
-            self.altname[x] = (vdict[x] == 'y')
+            self.altname[x] = (vdict.get(x, 'n') == 'y')
 
         fields = {
             'iso_code': setField,
@@ -505,6 +505,40 @@ class Lexeme(models.Model):
                 if not f(k):
                     return False
         return True
+
+    def setDelta(self, **vdict):
+        """
+            Alter a models attributes by giving a vdict
+            similar to the one used for is_unchanged.
+        """
+
+        def setField(x):
+            setattr(self, x, vdict[x])
+
+        def setData(x):
+            self.data[x] = vdict[x]
+
+        def setY(x):
+            self.data[x] = (vdict.get(x, 'n') == 'y')
+
+        fields = {
+            'language': setField,
+            'source_form': setField,
+            'phon_form': setField,
+            'gloss': setField,
+            'notes': setField,
+            'number_cognate_coded': setField,
+            'transliteration': setData,
+            'phoneMic': setData,
+            'not_swadesh_term': setY,
+            'rfcWebLookup1': setData,
+            'rfcWebLookup2': setData,
+            'dubious': setY}
+
+        # Setting fields:
+        for k, _ in vdict.iteritems():
+            if k in fields:
+                fields[k](k)
 
     def checkLoanEvent(self):
         """

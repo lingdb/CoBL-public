@@ -549,21 +549,7 @@ def view_language_wordlist(request, language, wordlist):
                             cogclass_changed_rootform_map[ccid] = rtfrm
 
                 if not lexm.is_unchanged(**v_dict):
-                    lexm.language = language
-                    lexm.source_form = v_dict['source_form']
-                    lexm.phon_form = v_dict['phon_form']
-                    lexm.gloss = v_dict['gloss']
-                    lexm.notes = v_dict['notes']
-                    lexm.number_cognate_coded = v_dict['number_cognate_coded']
-                    lexm.data = {
-                        'transliteration': v_dict['transliteration'],
-                        'phoneMic': v_dict['phoneMic'],
-                        'not_swadesh_term':
-                        (v_dict.get('not_swadesh_term', 'n') == 'y'),
-                        'rfcWebLookup1': v_dict['rfcWebLookup1'],
-                        'rfcWebLookup2': v_dict['rfcWebLookup2'],
-                        'dubious': (v_dict.get('dubious', 'n') == 'y')}
-
+                    lexm.setDelta(**v_dict)
                     try:
                         lexm.save()
                     except Exception, e:
@@ -672,7 +658,7 @@ def view_language_wordlist(request, language, wordlist):
 
     prev_language, next_language = \
         get_prev_and_next_languages(request, language)
-    return render_template(request, "language_wordlist_editable.html",
+    return render_template(request, "language_wordlist.html",
                            {"language": language,
                             "lexemes": lexemes,
                             "prev_language": prev_language,
@@ -1078,25 +1064,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                             cogclass_changed_rootform_map[ccid] = rtfrm
 
                 if not lexm.is_unchanged(**v_dict):
-
-                    # TODO: ascii encoding is OK here
-                    # as there are no problematic characters ?
-                    lexm.language = Language.objects.get(
-                        utf8_name=v_dict['language_utf8name'].encode(
-                            'ascii', 'ignore'))
-                    lexm.source_form = v_dict['source_form']
-                    lexm.phon_form = v_dict['phon_form']
-                    lexm.gloss = v_dict['gloss']
-                    lexm.notes = v_dict['notes']
-                    lexm.number_cognate_coded = v_dict['number_cognate_coded']
-                    lexm.data = {
-                                 'transliteration': v_dict['transliteration'],
-                                 'phoneMic': v_dict['phoneMic'],
-                                 'not_swadesh_term':
-                                 (v_dict.get('not_swadesh_term', 'n') == 'y'),
-                                 'rfcWebLookup1': v_dict['rfcWebLookup1'],
-                                 'rfcWebLookup2': v_dict['rfcWebLookup2']
-                                }
+                    lexm.setDelta(**v_dict)
                     try:
                         lexm.save()
                     except Exception, e:
