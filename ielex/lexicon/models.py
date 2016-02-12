@@ -360,6 +360,36 @@ class CognateClass(models.Model):
                     return False
         return True
 
+    def setDelta(self, **vdict):
+        """
+            Alter a models attributes by giving a vdict
+            similar to the one used for is_unchanged.
+        """
+
+        def setField(x):
+            setattr(self, x, vdict[x])
+
+        def setData(x):
+            self.data[x] = vdict[x]
+
+        def setY(x):
+            self.data[x] = (vdict.get(x, 'n') == 'y')
+
+        fields = {
+            'alias': setField,
+            'notes': setField,
+            'root_form': setField,
+            'root_language': setField,
+            'gloss_in_root_lang': setData,
+            'loanword': setY,
+            'loan_source': setData,
+            'loan_notes': setData}
+
+        # Setting fields:
+        for k, _ in vdict.iteritems():
+            if k in fields:
+                fields[k](k)
+
 
 class DyenCognateSet(models.Model):
     cognate_class = models.ForeignKey(CognateClass)

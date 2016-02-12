@@ -4,53 +4,104 @@
 {% load lexicon_utils %}
 {% load wtforms %}
 
-{% block title %}Cognate classes for {{ meaning }}{% endblock %}
+{% block title %}
+  Cognate classes for {{ meaning }}
+{% endblock %}
 
-{% block top %}<h1>Cognate classes for {{ meaning }}</h1>{% endblock %}
-
-{% block content %}
-	<form action="" method="POST" name="cogclass_ed_form" id="cogclass_ed_form">{% csrf_token %}
-		<div class="lex_form">
-      <input type="submit" value="Submit" name="cogclass_form">
-      <br>
-      <a href="{% url 'edit-cogclasses' meaning %}"> Cancel</a>
-      <br>
-		</div>
-		<table id="editable">
-			<tr class="mid-align">
-        <th>ID</th>
-        <th>Cog.<br>Alias</th>
-        <th>Root</th>
-        <th>Root<br>Language</th>
-        <th>Root<br>Gloss</th>
-        {# <th>Modified</th> #}
-        {# <th>Name</th> #}
-        <th>Root<br>Notes</th>
-        <th>Loan<br>Event</th>
-        <th>Loan<br>Source Lg.</th>
-        <th>Loan<br>Notes</th>
-      </tr>
-		  <tbody>
-        {% for cc in cogclass_editable_form.cogclass %}
-          <tr>
-            <td>{% form_field cc.cogclass_id class="readonlynarrow" id="narrowtext" %}</td>
-            <td><a href="{{cc.object_data.absolute_url}}">{% form_field cc.alias class="readonlynarrow" id="narrowtext" %}</a></td>
-            <td>{% form_field cc.root_form class="mediumtext" %}</td>
-            <td>{% form_field cc.root_language class="linked" %}</td>
-            <td>{% form_field cc.gloss_in_root_lang class="mediumtext" %}</td>
-            <td class="widetext">{% form_field cc.notes class="widetext" id="widetext" %}</td>
-            <td>{% form_field cc.loanword %}</td>
-            <td>{% form_field cc.loan_source %}</td>
-            <td class="widetext">{% form_field cc.loan_notes %}</td>
-          </tr>
-        {% endfor %}
-		  </tbody>
-		</table>
-	</form>
+{% block top %}
+  <h1>Cognate classes for {{ meaning }}</h1>
 {% endblock %}
 
 {% block controls %}
   {% include "snippets/go_to.html" %}
   {# include "snippets/change_sort_order.html" #}
+{% endblock %}
+
+{% block content %}
+  {% if user.is_authenticated %}
+    <div class="row">
+      <div class="col-md-8">
+        <form action="" method="POST" name="cogclass_ed_form" id="cogclass_ed_form">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="langlist_form">Save table?</label>
+            <a href="{% url 'edit-cogclasses' meaning %}" class="btn btn-danger"> Cancel</a>
+            <input type="submit" value="Submit" name="cogclass_form" class="btn btn-primary">
+          </div>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Cog.<br>Alias</th>
+                <th>Root</th>
+                <th>Root<br>Language</th>
+                <th>Root<br>Gloss</th>
+                <th>Root<br>Notes</th>
+                <th>Loan<br>Event</th>
+                <th>Loan<br>Source Lg.</th>
+                <th>Loan<br>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for cc in cogclass_editable_form.cogclass %}
+                <tr>
+                  <td>{{ cc.data.cogclass_id }}{% form_field cc.cogclass_id class="hide" %}</td>
+                  <td>
+                    <a href="{{cc.object_data.absolute_url}}">
+                      {{ cc.data.alias }}
+                    </a>
+                  </td>
+                  <td>{% form_field cc.root_form %}</td>
+                  <td>{% form_field cc.root_language %}</td>
+                  <td>{% form_field cc.gloss_in_root_lang %}</td>
+                  <td>{% form_field cc.notes %}</td>
+                  <td>{% form_field cc.loanword %}</td>
+                  <td>{% form_field cc.loan_source %}</td>
+                  <td>{% form_field cc.loan_notes %}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </form>
+      </div>
+    </div>
+  {% else %}
+    <div class="row">
+      <div class="col-md-8">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Cog.<br>Alias</th>
+              <th>Root</th>
+              <th>Root<br>Language</th>
+              <th>Root<br>Gloss</th>
+              <th>Root<br>Notes</th>
+              <th>Loan<br>Event</th>
+              <th>Loan<br>Source Lg.</th>
+              <th>Loan<br>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for cc in cogclass_editable_form.cogclass %}
+              <tr>
+                <td>{{ cc.data.cogclass_id }}</td>
+                <td>
+                  <a href="{{cc.object_data.absolute_url}}">{{ cc.data.alias }}</a>
+                </td>
+                <td>{{ cc.data.root_form }}</td>
+                <td>{{ cc.data.root_language }}</td>
+                <td>{{ cc.data.gloss_in_root_lang }}</td>
+                <td>{{ cc.data.notes }}</td>
+                <td>{{ cc.data.loanword }}</td>
+                <td>{{ cc.data.loan_source }}</td>
+                <td>{{ cc.data.loan_notes }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endif %}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

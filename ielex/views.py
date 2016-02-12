@@ -1228,18 +1228,7 @@ def view_cognateclasses(request, meaning):
 
                 if not cogclass.is_unchanged(**v_dict):
 
-                    cogclass.alias = v_dict['alias']
-                    # cogclass.modified = v_dict['modified']
-                    cogclass.notes = v_dict['notes']
-
-                    cogclass.root_form = v_dict['root_form']
-                    cogclass.root_language = v_dict['root_language']
-
-                    cogclass.data = {'gloss_in_root_lang':
-                                     v_dict['gloss_in_root_lang'],
-                                     'loanword': (v_dict['loanword'] == 'y'),
-                                     'loan_source': v_dict['loan_source'],
-                                     'loan_notes': v_dict['loan_notes']}
+                    cogclass.setDelta(**v_dict)
 
                     try:
                         cogclass.save()  # force_update=True)
