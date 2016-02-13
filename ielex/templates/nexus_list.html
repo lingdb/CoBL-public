@@ -1,23 +1,32 @@
 {% extends "base.html" %}
 
-{% block title %}{{ project_short_name }} Lexicon NEXUS Export{% endblock %}
+{% block title %}
+  {{ project_short_name }} Lexicon NEXUS Export
+{% endblock %}
 
 {% block top %}
   <h1>NEXUS Export</h1>
 {% endblock %}
 
 {% block content %}
-  Download a NEXUS file from a predefined language list. Specify the list of
-  languages, the list of meanings, and the level of coding reliability.
-  <form action="" method="POST">{% csrf_token %}
-    <fieldset>
-      <legend>Export data</legend>
-      <table>
-        {{ form.as_table }}
-      </table>
-      {% include "buttons/submit-cancel.html" %}
-    </fieldset>
-  </form>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="well">
+        Download a NEXUS file from a predefined language list. Specify the list of
+        languages, the list of meanings, and the level of coding reliability.
+      </div>
+      <form action="" method="POST">
+        {% csrf_token %}
+        <fieldset>
+          <legend>Export data</legend>
+          <table>
+            {{ form.as_table }}
+          </table>
+          <input type="submit" name="submit" value="Submit" class="btn btn-primary">
+        </fieldset>
+      </form>
+    </div>
+  </div>
 {% endblock %}
 
 {% block controls %}

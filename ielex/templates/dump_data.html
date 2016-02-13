@@ -1,9 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}{{ project_short_name }} Dump Raw Data{% endblock %}
+{% block title %}
+  {{ project_short_name }} Dump Raw Data
+{% endblock %}
 
 {% block top %}
   <h1>Dump Raw Data</h1>
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/go_to.html" %}
+  {# include "snippets/change_sort_order.html" #}
 {% endblock %}
 
 {% block content %}
@@ -18,10 +25,5 @@
   </form>
   <p>This function exports the phonological form of the lexeme by default, but
   where that is unavailable it falls back to the form from the source</p>
-{% endblock %}
-
-{% block controls %}
-  {% include "snippets/go_to.html" %}
-  {# include "snippets/change_sort_order.html" #}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
