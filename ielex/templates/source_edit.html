@@ -5,41 +5,67 @@
 {% block title %}{% if action %}{{ action|title }}{% endif %} Source{% endblock %}
 
 {% block top %}
-<h1>{% if action %}{{ action|title }}{% endif %} Source</h1>
-{% endblock %}
-
-{% block content %}
-  {% if action %}
-    <form action="" method="POST">{% csrf_token %}
-      <table>
-        {{ form.as_table }}
-      </table>
-      <input type="submit" name="submit" value="Submit">
-      <input type="submit" name="cancel" value="Cancel">
-    </form>
-  {% else %}
-    <table>
-      <tr>
-        <th>Citation:</th><td>{{ source.citation_text }}</td>
-        {% if user.is_authenticated %}
-          <td>
-            <a href="{% url 'edit-source' source.id %}">
-              <img src="{% static 'buttons/edit.png' %}" alt="Edit" title="Edit">
-            </a>
-            <img src="{% static 'buttons/delete.png' %}" alt="{% url 'delete-source' source.id %} to delete"
-                title="{% url 'delete-source' source.id %} to delete">
-          </td>
-        {% endif %}
-      </tr>
-      <tr><th>Type:</th><td>{{ source.get_type_code_display }}</td></tr>
-      <tr><th>Description:</th><td>{{ source.description }}</td></tr>
-      <tr><th>Modified:</th><td>{{ source.modified|date:"r" }}</td></tr>
-    </table>
-    {# {% include "snippets/source_report_table.html" %} #}
-  {% endif %}
+  <h1>
+    {% if action %}
+      {{ action|title }}
+    {% endif %} Source
+  </h1>
 {% endblock %}
 
 {% block controls %}
   {% include "snippets/go_to.html" %}
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-6">
+      {% if action %}
+        <form action="" method="POST">
+          {% csrf_token %}
+          <div class="form-group">
+            <table class="table">
+              {{ form.as_table }}
+            </table>
+          </div>
+          <input type="submit" name="submit" value="Submit" class="btn btn-primary">
+          <input type="submit" name="cancel" value="Cancel" class="btn btn-danger">
+        </form>
+      {% else %}
+        <table class="table">
+          <tr>
+            <th>Citation:</th>
+            <td>
+              {{ source.citation_text }}
+              {% if user.is_authenticated %}
+                <div class="pull-right">
+                  <a href="{% url 'edit-source' source.id %}" title="Edit" class="btn btn-default btn-xs">
+                    <span class="glyphicon glyphicon-edit"></span>
+                  </a>
+                  <div class="btn btn-danger btn-xs" title="{% url 'delete-source' source.id %} to delete">
+                    <span class="glyphicon glyphicon-remove-sign"></span>
+                  </div>
+                </div>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th>Type:</th>
+            <td>{{ source.get_type_code_display }}</td>
+          </tr>
+          {% if source.description %}
+            <tr>
+              <th>Description:</th>
+              <td>{{ source.description }}</td>
+            </tr>
+          {% endif %}
+          <tr>
+            <th>Modified:</th>
+            <td>{{ source.modified|date:"r" }}</td>
+          </tr>
+        </table>
+        {# {% include "snippets/source_report_table.html" %} #}
+      {% endif %}
+    </div>
+  </div>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

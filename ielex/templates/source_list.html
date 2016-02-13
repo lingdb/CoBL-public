@@ -3,47 +3,65 @@
 
 {% load staticfiles %}
 
-{% block title %}List of sources{% endblock %}
+{% block title %}
+  List of sources
+{% endblock %}
 
 {% block top %}
   <h1>Sources</h1>
 {% endblock %}
-
-{% block content %}
-  {% for type_name, sources in grouped_sources %}
-    <h2>{{ type_name }}</h2>
-    <p>
-      <table>
-        {% for source in sources %}
-          <tr class="odd">
-            <td>
-              <a href="{% url 'view-source' source.id %}">
-                <img src="{% static 'buttons/view.png' %}" alt="Edit" title="Edit this source">
-              </a>
-            </td>
-            <td>{{ source.citation_text }}</td></tr>
-          <tr><td></td><td><em>{{ source.description }}</em></td></tr>
-          <tr>
-            <td></td>
-            <td class="rightalign">
-              <small>
-                Lexemes: <strong>{{ source.lexemecitation_set.count }}</strong>
-                Cognate Judgements: <strong>{{ source.cognatejudgementcitation_set.count }}</strong>
-                [{{ source.modified|date:"r"  }}]
-              </small>
-            </td>
-          </tr>
-        {% endfor %}
-      </table>
-    </p>
-  {% endfor %}
-{% endblock %}
-
 
 {% block controls %}
   {% include "snippets/go_to.html" %}
   {% if user.is_authenticated %}
     <li><a href="/source/add/">add new source</a></li>
   {% endif %}
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-6">
+      {% for type_name, sources in grouped_sources %}
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h2 class="panel-title">
+              {{ type_name }}
+            </h2>
+          </div>
+          <div class="panel-body">
+            {% for source in sources %}
+              <dl class="well">
+                <a href="{% url 'view-source' source.id %}" title="Edit this source" class="pull-right">
+                  <span class="glyphicon glyphicon-search"></span>
+                </a>
+                <dt>
+                  Citation text:
+                </dt>
+                <dd>
+                  {{ source.citation_text }}
+                </dd>
+                {% if source.description %}
+                  <dt>
+                    Notes:
+                  </dt>
+                  <dd>
+                    <em>{{ source.description }}</em>
+                  </dd>
+                {% endif %}
+                <dt>
+                  Usage:
+                </dt>
+                <dd>
+                  Lexemes: <strong>{{ source.lexemecitation_set.count }}</strong>
+                  Cognate Judgements: <strong>{{ source.cognatejudgementcitation_set.count }}</strong>
+                  [{{ source.modified|date:"r"  }}]
+                </dd>
+              </dl>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
