@@ -2,317 +2,418 @@
 
 {% load staticfiles %}
 {% load lexicon_utils %}
-{% block title %}Lexeme report{% endblock %}
+{% block title %}
+  Lexeme report
+{% endblock %}
 
 {% block top %}
   <h1>{{ lexeme.language.utf8_name }}: {% include "snippets/lexeme_form.html" %}</h1>
-{% endblock %}
-
-{% block content %}
-  <h2>Lexeme data</h2>
-  {% ifequal action "edit" %}
-    <form action="" method="post" id="active">{% csrf_token %}
-      <fieldset>
-        <table>
-          {{ form.as_table }}
-          <tr>
-            <td class="rowname">Cognate codes:</td>
-            <td>{{ lexeme.get_cognate_class_links }}</td>
-          </tr>
-        </table>
-        {% include "buttons/submit-gloss-cancel.html" %}
-      </fieldset>
-    </form>
-  {% else %}
-    <fieldset>
-      <legend>
-        {% if user.is_authenticated %}
-          <a href="{% url 'edit-lexeme' lexeme.id %}">
-            <img src="{% static 'buttons/edit-pencil.png' %}" alt="Edit" title="Edit">
-          </a>
-          <img src="{% static 'buttons/delete.png' %}"
-            alt="To delete lexeme add /delete/to url (use with care!)"
-            title="To delete lexeme add /delete/ to url (use with care!)">
-        {% endif %}
-      </legend>
-      <table>
-        <tr>
-          <td class="rowname">Language:</td>
-          <td><a href="{% url 'language-report' lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
-        </tr>
-        <tr>
-          <td class="rowname">Meaning:</td>
-          <td><a href="{% url 'meaning-report' lexeme.meaning.gloss %}#lexeme_{{ lexeme.id }}">{{ lexeme.meaning.gloss }}</a></td>
-        </tr>
-        <tr>
-          <td class="rowname">Source form:</td>
-          <td>{{ lexeme.source_form }}</td>
-        </tr>
-        <tr>
-          <td class="rowname">Phonological form:</td>
-          <td>{{ lexeme.phon_form }}</td>
-        </tr>
-        <tr>
-          <td class="rowname">Gloss:</td>
-          <td>{{ lexeme.gloss }}</td>
-        </tr>
-        {% if lexeme.semanticextension_set.count %}
-          <tr>
-            <td class="rowname">Semantic extension/s:</td>
-            <td>
-              {% for extension in lexeme.semanticextension_set.all %}
-                {{ extension.relation.relation_code }}
-                {% if not forloop.last %},{% endif %}
-              {% endfor %}
-            </td>
-          </tr>
-        {% endif %}
-        <tr>
-          <td class="rowname">Notes:</td>
-          <td>{{ lexeme.notes|wikilink }}</td>
-        </tr>
-        <tr>
-          <td class="rowname">Cognate codes:</td>
-          <td>{{ lexeme.get_cognate_class_links }}</td>
-        </tr>
-      </table>
-    </fieldset>
-  {% endifequal %}
-  {# -- Sources ------------------------------------------------------- #}
-  <h2>Source{{ lexeme.lexemecitation_set.count|pluralize}} of lexical data</h2>
-  {% for citation in lexeme.lexemecitation_set.all %}
-    {% ifequal citation.id active_citation_id %}
-      {% ifequal action "edit-citation" %}
-        <form action="" method="post" id="active">{% csrf_token %}
-          <fieldset>
-            <table>
-              {{ citation.source.citation_text }}
-              {{ form.as_table }}
-            </table>
-            {% include "buttons/submit-gloss-cancel.html" %}
-          </fieldset>
-        </form>
-      {% else %}
-        <fieldset>
-          <legend>
-            <a href="{% url 'lexeme-edit-citation' lexeme.id citation.id %}">
-              <img src="{% static 'buttons/edit-link.png' %}" alt="Edit" title="Edit citation details">
-            </a>
-            {% if lexeme.lexemecitation_set.count == 1 %}
-              <img src="{% static 'buttons/delink.png' %}" alt="Can't delink" title="Can't delink final citation">
-            {% else %}
-              <a href="{% url 'lexeme-delink-citation' lexeme.id citation.id %}">
-                <img src="{% static 'buttons/delink.png' %}" alt="Delink" title="Delink citation">
-              </a>
-            {% endif %}
-          </legend>
-          {% include "snippets/citation_report.html" %}
-        </fieldset>
-      {% endifequal %}
-    {% else %}
-      <fieldset id="lexemecitation_{{ citation.id}}">
-        <legend>
-          {% if user.is_authenticated %}
-            <a href="{% url 'lexeme-edit-citation' lexeme.id citation.id %}">
-              <img src="{% static 'buttons/edit-link.png' %}" alt="Edit" title="Edit citation details">
-            </a>
-            {% if lexeme.lexemecitation_set.count == 1 %}
-              <img src="{% static 'buttons/delink.png' %}" alt="Can't delink" title="Can't delink final citation">
-            {% else %}
-              <a href="{% url 'lexeme-delink-citation' lexeme.id citation.id %}">
-                <img src="{% static 'buttons/delink.png' %}" alt="Delink" title="Delink citation">
-              </a>
-            {% endif %}
-          {% endif %}
-          <a href="{% url 'view-source' citation.source.id %}">
-            <img src="{% static 'buttons/view-big.png' %}", alt="View source", title="View source">
-          </a>
-        </legend>
-        {% include "snippets/citation_report.html" %}
-      </fieldset>
-    {% endifequal %}
-  {% endfor %}
-  {% ifequal action "add-citation" %}
-    <form action="" method="post" id="active">
-      {% csrf_token %}
-      <fieldset>
-        <table>
-          {{ form.as_table }}
-        </table>
-        {% include "buttons/submit-gloss-cancel.html" %}
-      </fieldset>
-    </form>
-  {% else %}
-    {% if user.is_authenticated %}
-      <fieldset>
-        <legend>
-          <strong>Add link to source</strong>
-          <a href="{% url 'lexeme-add-citation' lexeme.id %}">
-            <img src="{% static 'buttons/add-link.png' %}" alt="Add" title="Add link to citation">
-          </a>
-        </legend>
-        <small>Add a link to a source already in the database</small><br>
-        <strong>Add link to new Source</strong>
-        <a href="{% url 'lexeme-add-new-source' lexeme.id %}">
-          <img src="{% static 'buttons/add.png' %}" alt="Add new source" title="Add citation to new source">
-        </a><br>
-        <small>Add a new source to the database and link to it</small>
-      </fieldset>
-    {% endif %}
-  {% endifequal %}
-  {# -- Cognate judgements -------------------------------------------- #}
-  <h2>Cognate coding</h2>
-  {% if lexeme.cognatejudgement_set.count %}
-    {% for cj in lexeme.cognatejudgement_set.all %}
-      <fieldset id="cognatejudgement_{{ cj.id }}">
-          <legend>
-            <strong>Cognate Class {{ cj.cognate_class.alias }}</strong>
-            {% if user.is_authenticated %}
-              <a href="{% url 'lexeme-delink-cognate' lexeme.id cj.id %}">
-                <img src="{% static 'buttons/delink.png' %}" alt="Delink" title="Delink cognate from this lexeme">
-              </a>
-            {% endif %}
-          </legend>
-        {% for citation in cj.cognatejudgementcitation_set.all %}
-          {% ifequal action "edit-cognate-citation" %}
-              {% ifequal citation.id active_citation_id %}
-                <form action="" method="post" id="active">{% csrf_token %}
-                  <fieldset>
-                    <table>
-                      {{ citation.source.citation_text }}
-                      {{ form.as_table }}
-                    </table>
-                    {% include "buttons/submit-gloss-cancel.html" %}
-                  </fieldset>
-                </form>
-              {% else %}
-                <fieldset>
-                  <legend>
-                    {% if user.is_authenticated %}
-                      <a href="{% url 'lexeme-edit-cognate-citation' lexeme.id citation.id %}">
-                        <img src="{% static 'buttons/edit-link.png' %}" alt="Edit" title="Edit cognate citation details">
-                      </a>
-                      {% if cj.cognatejudgementcitation_set.count == 1 %}
-                        <img src="{% static 'buttons/delink.png' %}" alt="Can't delink" title="Can't delink final citation">
-                      {% else %}
-                        <a href="{% url 'lexeme-delink-cognate-citation' lexeme.id citation.id %}">
-                          <img src="{% static 'buttons/delink.png' %}" alt="Delink" title="Delink cognate citation">
-                        </a>
-                      {% endif %}
-                    {% endif %}
-                    <a href="{% url 'view-source' citation.source.id %}">
-                      <img src="{% static 'buttons/view-big.png' %}", alt="View source", title="View source">
-                    </a>
-                  </legend>
-                  {% include "snippets/citation_report.html" %}
-                </fieldset>
-              {% endifequal %}
-            {% else %}
-              <fieldset id="cognatejudgementcitation_{{ citation.id }}">
-                <legend>
-                  {% if user.is_authenticated %}
-                    <a href="{% url 'lexeme-edit-cognate-citation' lexeme.id citation.id %}">
-                      <img src="{% static 'buttons/edit-link.png' %}" alt="Edit" title="Edit cognate citation details">
-                    </a>
-                    {% if cj.cognatejudgementcitation_set.count == 1 %}
-                      <img src="{% static 'buttons/delink.png' %}" alt="Can't delink" title="Can't delink final citation">
-                    {% else %}
-                      <a href="{% url 'lexeme-delink-cognate-citation' lexeme.id citation.id %}">
-                        <img src="{% static 'buttons/delink.png' %}" alt="Delink" title="Delink cognate citation">
-                      </a>
-                    {% endif %}
-                  {% endif %}
-                  <a href="{% url 'view-source' citation.source.id %}">
-                    <img src="{% static 'buttons/view-big.png' %}", alt="View source", title="View source">
-                  </a>
-                </legend>
-                {% include "snippets/citation_report.html" %}
-              </fieldset>
-            {% endifequal %}
-          {% endfor %}
-          {% ifequal active_cogjudge_citation_id cj.id %}
-            <form action="" method="post" id="active">{% csrf_token %}
-              <fieldset>
-                <table>
-                  {{ form.as_table }}
-                </table>
-                {% include "buttons/submit-gloss-cancel.html" %}
-              </fieldset>
-            </form>
-          {% else %}
-            {% if user.is_authenticated %}
-              <fieldset>
-                <legend>
-                  <strong>Add link to source</strong>
-                  <a href="{% url 'lexeme-add-cognate-citation' lexeme.id cj.id %}#active">
-                    <img src="{% static 'buttons/add-link.png' %}" alt="Add" title="Add link to citation">
-                  </a>
-                </legend>
-                <small>Add a link to a source already in the database</small><br>
-                <strong>Add link to new Source</strong>
-                <a href="{% url 'cogjudge-add-new-source' cj.id %}">
-                  <img src="{% static 'buttons/add.png' %}" alt="Add new source" title="Add citation to new source">
-                </a><br>
-                <small>Add a new source to the database and link to it</small>
-              </fieldset>
-            {% endif %}
-          {% endifequal %}
-        {% endfor %}
-      {% endif %}
-      {% if user.is_authenticated %}
-        <fieldset>
-          <legend>
-            <strong>Add link to cognate class</strong>
-            <a href="{% url 'lexeme-add-cognate' lexeme.id %}#lexeme_{{ lexeme.id }}">
-              <img src="{% static 'buttons/add-link.png' %}" alt="Add new cognate judgement" title="Add new cognate judgement">
-            </a>
-          </legend>
-          <small>
-            <ul>
-              <li>This is additional to judgments already made. </li>
-              <li>After adding a new cognate judgement it is normally appropriate to
-              delete the other ones (forms <em>can</em> belong to more than one
-              class, but usually shouldn't)</li>
-            </ul>
-          </small>
-          <strong>Add link to new cognate class</strong>
-          <a href="{% url 'lexeme-add-new-cognate' lexeme.id %}">
-            <img src="{% static 'buttons/add-link.png' %}" alt="Add new cognate judgement" title="Add cognate judgement to new cognate class">
-          </a>
-          <small>
-            <ul>
-              <li>Create a link to a new, hitherto unseen cognate class.</li>
-            </ul>
-          </small>
-        </fieldset>
-      {% endif %}
-  {% include "snippets/prev_next_lexeme.html" %}{# TODO #}
 {% endblock %}
 
 {% block controls %}
   {% include "snippets/go_to.html" %}
   {% if lexeme.meaning %}
     <li>
-      <a href="{% url 'meaning-report' lexeme.meaning.gloss %}">back to meaning list ‘{{ lexeme.meaning.gloss }}’</a>
+      <a href="{% url 'meaning-report' lexeme.meaning.gloss %}"
+         title="back to meaning list ‘{{ lexeme.meaning.gloss }}’">
+        <span class="glyphicon glyphicon-arrow-left"></span>
+        meaning list ‘{{ lexeme.meaning.gloss }}’
+      </a>
     </li>
   {% endif %}
   {% if lexeme.semanticextension_set.exists %}
     <li>
-      <a href="{% url 'lexeme-domains-list' lexeme.id  %}">view semantic exensions</a>
+      <a href="{% url 'lexeme-domains-list' lexeme.id  %}"
+         title="view semantic exensions">
+        <span class="glyphicon glyphicon-search"></span>
+        semantic exensions
+      </a>
     </li>
   {% endif %}
     <li>
-      <a href="{% url 'language-report' lexeme.language.ascii_name %}">back to ‘{{ lexeme.language.utf8_name }}’ wordlist</a>
+      <a href="{% url 'language-report' lexeme.language.ascii_name %}"
+         title="back to ‘{{ lexeme.language.utf8_name }}’ wordlist">
+        <span class="glyphicon glyphicon-arrow-left"></span>
+        ‘{{ lexeme.language.utf8_name }}’ wordlist
+      </a>
     </li>
   {% if user.is_authenticated %}
     <li>
-      <a href="{% url 'language-add-lexeme' lexeme.language.ascii_name %}">add a new lexeme to ‘{{ lexeme.language.utf8_name }}’</a>
+      <a href="{% url 'language-add-lexeme' lexeme.language.ascii_name %}"
+         title="add a new lexeme to ‘{{ lexeme.language.utf8_name }}’">
+        <span class="glyphicon glyphicon-plus"></span>
+        to ‘{{ lexeme.language.utf8_name }}’
+      </a>
     </li>
     {% if lexeme.meaning %}
       <li>
-        <a href="{% url 'meaning-add-lexeme' lexeme.meaning.gloss %}">add a new lexeme to ‘{{ lexeme.meaning.gloss }}’</a>
+        <a href="{% url 'meaning-add-lexeme' lexeme.meaning.gloss %}"
+           title="add a new lexeme to ‘{{ lexeme.meaning.gloss }}’">
+          <span class="glyphicon glyphicon-plus"></span>
+          to ‘{{ lexeme.meaning.gloss }}’
+        </a>
       </li>
     {% endif %}
   {% endif %}
+{% endblock %}
+
+{% block content %}
+  {% include "snippets/prev_next_lexeme.html" %}
+  <div class="row">
+    <div class="col-md-4">
+      <h2>Lexeme data</h2>
+      {% ifequal action "edit" %}
+        <form action="" method="post" id="active">
+          {% csrf_token %}
+          <fieldset>
+            <table class="table">
+              {{ form.as_table }}
+              <tr>
+                <td class="rowname">Cognate codes:</td>
+                <td>{{ lexeme.get_cognate_class_links }}</td>
+              </tr>
+            </table>
+            {% include "buttons/submit-gloss-cancel.html" %}
+          </fieldset>
+        </form>
+      {% else %}
+        {% if user.is_authenticated %}
+          <a href="{% url 'edit-lexeme' lexeme.id %}" title="Edit" class="btn btn-primary">
+            <span class="glyphicon glyphicon-edit">
+          </a>
+          <div title="Edit" class="btn btn-danger" title="To delete lexeme add /delete/ to url (use with care!)">
+            <span class="glyphicon glyphicon-remove-sign">
+          </div>
+        {% endif %}
+        <table class="table">
+          <tr>
+            <th>Language:</th>
+            <td>
+              <a href="{% url 'language-report' lexeme.language.ascii_name %}">
+                {{ lexeme.language.utf8_name }}
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <th>Meaning:</th>
+            <td>
+              <a href="{% url 'meaning-report' lexeme.meaning.gloss %}#lexeme_{{ lexeme.id }}">
+                {{ lexeme.meaning.gloss }}
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <th>Source form:</th>
+            <td>{{ lexeme.source_form }}</td>
+          </tr>
+          <tr>
+            <th>Phonological form:</th>
+            <td>{{ lexeme.phon_form }}</td>
+          </tr>
+          <tr>
+            <th>Gloss:</th>
+            <td>{{ lexeme.gloss }}</td>
+          </tr>
+          {% if lexeme.semanticextension_set.count %}
+            <tr>
+              <th>Semantic extension/s:</th>
+              <td>
+                {% for extension in lexeme.semanticextension_set.all %}
+                  {{ extension.relation.relation_code }}
+                  {% if not forloop.last %},{% endif %}
+                {% endfor %}
+              </td>
+            </tr>
+          {% endif %}
+          <tr>
+            <th>Notes:</th>
+            <td>{{ lexeme.notes|wikilink }}</td>
+          </tr>
+          <tr>
+            <th>Cognate codes:</th>
+            <td>{{ lexeme.get_cognate_class_links }}</td>
+          </tr>
+        </table>
+      {% endifequal %}
+    </div>
+  </div>
+  {# -- Sources ------------------------------------------------------- #}
+  <div class="row">
+    <div class="col-md-6">
+      <h2>Source{{ lexeme.lexemecitation_set.count|pluralize}} of lexical data</h2>
+      {% for citation in lexeme.lexemecitation_set.all %}
+        {% ifequal citation.id active_citation_id %}
+          {% ifequal action "edit-citation" %}
+            <form action="" method="post" id="active">
+              {% csrf_token %}
+              <fieldset>
+                <table class="table">
+                  {{ citation.source.citation_text }}
+                  {{ form.as_table }}
+                </table>
+                {% include "buttons/submit-gloss-cancel.html" %}
+              </fieldset>
+            </form>
+          {% else %}
+            <div class="panel panel-default" id="lexemecitation_{{ citation.id}}">
+              <div class="panel-heading">
+                <a href="{% url 'lexeme-edit-citation' lexeme.id citation.id %}"
+                   title="Edit citation details"
+                   class="btn btn-primary">
+                  <span class="glyphicon glyphicon-tag"></span>
+                  <span class="glyphicon glyphicon-edit"></span>
+                </a>
+                {% if lexeme.lexemecitation_set.count == 1 %}
+                  <div class="btn btn-danger"
+                       title="Can't delink final citation">
+                    <span class="glyphicon glyphicon-tag"></span>
+                    <span class="glyphicon glyphicon-remove-sign"></span>
+                  </div>
+                {% else %}
+                  <a href="{% url 'lexeme-delink-citation' lexeme.id citation.id %}"
+                     title="Delink citation"
+                     class="btn btn-danger">
+                    <span class="glyphicon glyphicon-tag"></span>
+                    <span class="glyphicon glyphicon-remove-sign"></span>
+                  </a>
+                {% endif %}
+              </div>
+              <div class="panel-body">
+                {% include "snippets/citation_report.html" %}
+              </div>
+            </div>
+          {% endifequal %}
+        {% else %}
+          <div class="panel panel-default" id="lexemecitation_{{ citation.id}}">
+            <div class="panel-heading">
+              {% if user.is_authenticated %}
+                <a href="{% url 'lexeme-edit-citation' lexeme.id citation.id %}"
+                  title="Edit citation details"
+                   class="btn btn-primary">
+                  <span class="glyphicon glyphicon-tag"></span>
+                  <span class="glyphicon glyphicon-edit"></span>
+                </a>
+                {% if lexeme.lexemecitation_set.count == 1 %}
+                  <div class="btn btn-danger"
+                       title="Can't delink final citation">
+                    <span class="glyphicon glyphicon-tag"></span>
+                    <span class="glyphicon glyphicon-remove-sign"></span>
+                  </div>
+                {% else %}
+                  <a href="{% url 'lexeme-delink-citation' lexeme.id citation.id %}"
+                     title="Delink citation"
+                     class="btn btn-danger">
+                    <span class="glyphicon glyphicon-tag"></span>
+                    <span class="glyphicon glyphicon-remove-sign"></span>
+                  </a>
+                {% endif %}
+              {% endif %}
+              <a href="{% url 'view-source' citation.source.id %}"
+                 title="View source"
+                 class="btn btn-default">
+                <span class="glyphicon glyphicon-search"></span>
+              </a>
+            </div>
+            <div class="panel-body">
+              {% include "snippets/citation_report.html" %}
+            </div>
+          </div>
+        {% endifequal %}
+      {% endfor %}
+      {% ifequal action "add-citation" %}
+        <form action="" method="post" id="active">
+          {% csrf_token %}
+          <fieldset>
+            <table>
+              {{ form.as_table }}
+            </table>
+            {% include "buttons/submit-gloss-cancel.html" %}
+          </fieldset>
+        </form>
+      {% else %}
+        {% if user.is_authenticated %}
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <strong>Add link to source</strong>
+              <a href="{% url 'lexeme-add-citation' lexeme.id %}"
+                 title="Add link to citation"
+                 class="btn btn-success">
+                <span class="glyphicon glyphicon-tag"></span>
+                <span class="glyphicon glyphicon-plus"></span>
+              </a>
+            </div>
+            <div class="panel-body">
+              <small>Add a link to a source already in the database</small><br>
+              <strong>Add link to new Source</strong>
+              <a href="{% url 'lexeme-add-new-source' lexeme.id %}" title="Add citation to new source">
+                <span class="glyphicon glyphicon-plus"></span>
+              </a><br>
+              <small>Add a new source to the database and link to it</small>
+            </div>
+          </div>
+        {% endif %}
+      {% endifequal %}
+    </div>
+  {# -- Cognate judgements -------------------------------------------- #}
+    <div class="col-md-6">
+      <h2>Cognate coding</h2>
+        {% if lexeme.cognatejudgement_set.count %}
+          {% for cj in lexeme.cognatejudgement_set.all %}
+            <h3 id="cognatejudgement_{{ cj.id }}">
+              Cognate Class {{ cj.cognate_class.alias }}
+              {% if user.is_authenticated %}
+                <a href="{% url 'lexeme-delink-cognate' lexeme.id cj.id %}"
+                   title="Delink cognate from this lexeme"
+                   class="btn btn-danger">
+                  <span class="glyphicon glyphicon-tag"></span>
+                  <span class="glyphicon glyphicon-remove-sign"></span>
+                </a>
+              {% endif %}
+            </h3>
+            {% for citation in cj.cognatejudgementcitation_set.all %}
+              {% ifequal action "edit-cognate-citation" %}
+                  {% ifequal citation.id active_citation_id %}
+                    <form action="" method="post" id="active">
+                      {% csrf_token %}
+                      <fieldset>
+                        <table class="table">
+                          {{ citation.source.citation_text }}
+                          {{ form.as_table }}
+                        </table>
+                        {% include "buttons/submit-gloss-cancel.html" %}
+                      </fieldset>
+                    </form>
+                  {% else %}
+                    <fieldset>
+                      <legend>
+                        {% if user.is_authenticated %}
+                          <a href="{% url 'lexeme-edit-cognate-citation' lexeme.id citation.id %}"
+                            title="Edit cognate citation details"
+                            class="btn btn-primary">
+                            <span class="glyphicon glyphicon-tag"></span>
+                            <span class="glyphicon glyphicon-edit"></span>
+                          </a>
+                          {% if cj.cognatejudgementcitation_set.count == 1 %}
+                            <div class="btn btn-danger" title="Can't delink final citation">
+                              <span class="glyphicon glyphicon-tag"></span>
+                              <span class="glyphicon glyphicon-remove-sign"></span>
+                            </div>
+                          {% else %}
+                            <a href="{% url 'lexeme-delink-cognate-citation' lexeme.id citation.id %}"
+                               title="Delink cognate citation" class="btn btn-danger">
+                              <span class="glyphicon glyphicon-tag"></span>
+                              <span class="glyphicon glyphicon-remove-sign"></span>
+                            </a>
+                          {% endif %}
+                        {% endif %}
+                        <a href="{% url 'view-source' citation.source.id %}"
+                           title="View source" class="btn btn-default">
+                          <span class="glyphicon glyphicon-search"></span>
+                        </a>
+                      </legend>
+                      {% include "snippets/citation_report.html" %}
+                    </fieldset>
+                  {% endifequal %}
+                {% else %}
+                  {% if user.is_authenticated %}
+                    <a href="{% url 'lexeme-edit-cognate-citation' lexeme.id citation.id %}"
+                       title="Edit cognate citation details"
+                       class="btn btn-primary">
+                      <span class="glyphicon glyphicon-tag"></span>
+                      <span class="glyphicon glyphicon-edit"></span>
+                    </a>
+                    {% if cj.cognatejudgementcitation_set.count == 1 %}
+                      <div class="btn btn-danger" title="Can't delink final citation">
+                        <span class="glyphicon glyphicon-tag"></span>
+                        <span class="glyphicon glyphicon-remove-sign"></span>
+                      </div>
+                    {% else %}
+                      <a href="{% url 'lexeme-delink-cognate-citation' lexeme.id citation.id %}"
+                         title="Delink cognate citation"
+                         class="btn btn-danger">
+                        <span class="glyphicon glyphicon-tag"></span>
+                        <span class="glyphicon glyphicon-remove-sign"></span>
+                      </a>
+                    {% endif %}
+                  {% endif %}
+                  <a href="{% url 'view-source' citation.source.id %}"
+                     title="View source" class="btn btn-default">
+                    <span class="glyphicon glyphicon-search"></span>
+                  </a>
+                  {% include "snippets/citation_report.html" %}
+                {% endifequal %}
+              {% endfor %}
+              {% ifequal active_cogjudge_citation_id cj.id %}
+                <form action="" method="post" id="active">{% csrf_token %}
+                  <fieldset>
+                    <table>
+                      {{ form.as_table }}
+                    </table>
+                    {% include "buttons/submit-gloss-cancel.html" %}
+                  </fieldset>
+                </form>
+              {% else %}
+                {% if user.is_authenticated %}
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <strong>Add link to source</strong>
+                      <a href="{% url 'lexeme-add-cognate-citation' lexeme.id cj.id %}#active"
+                         title="Add link to citation"
+                         class="btn btn-success">
+                        <span class="glyphicon glyphicon-tag"></span>
+                        <span class="glyphicon glyphicon-plus"></span>
+                      </a>
+                    </div>
+                    <div class="panel-body">
+                      <small>Add a link to a source already in the database</small><br>
+                      <strong>Add link to new Source</strong>
+                      <a href="{% url 'cogjudge-add-new-source' cj.id %}" title="Add citation to new source">
+                        <span class="glyphicon glyphicon-plus"></span>
+                      </a><br>
+                      <small>Add a new source to the database and link to it</small>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endifequal %}
+            {% endfor %}
+          {% endif %}
+          {% if user.is_authenticated %}
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <strong>Add link to cognate class</strong>
+                <a href="{% url 'lexeme-add-cognate' lexeme.id %}#lexeme_{{ lexeme.id }}"
+                   title="Add new cognate judgement"
+                   class="btn btn-success">
+                  <span class="glyphicon glyphicon-tag"></span>
+                  <span class="glyphicon glyphicon-plus"></span>
+                </a>
+              </div>
+              <div class="panel-body">
+                <ul>
+                  <li>This is additional to judgments already made.</li>
+                  <li>After adding a new cognate judgement it is normally appropriate to
+                  delete the other ones (forms <em>can</em> belong to more than one
+                  class, but usually shouldn't)</li>
+                </ul>
+              </div>
+            </div>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <strong>Add link to new cognate class</strong>
+                <a href="{% url 'lexeme-add-new-cognate' lexeme.id %}"
+                   title="Add cognate judgement to new cognate class"
+                   class="btn btn-success">
+                  <span class="glyphicon glyphicon-tag"></span>
+                  <span class="glyphicon glyphicon-plus"></span>
+                </a>
+              </div>
+              <div class="panel-body">
+                Create a link to a new, hitherto unseen cognate class.
+              </div>
+            </div>
+          {% endif %}
+      </div>
+    </div>
+  </div>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

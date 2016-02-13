@@ -1,30 +1,29 @@
 {# used by ../lexeme_report.html #}
 {% load lexicon_utils %}
-
-<table>
+<table class="table">
   <tr>
-    <td class="rowname">Source:</td>
+    <th>Source:</th>
     <td>{{ citation.source.citation_text }}</td>
   </tr>
   {% if citation.pages %}
     <tr>
-      <td class="rowname">
+      <th>
         {% ifequal citation.source.type_code "P" %}Pages:{% endifequal %}
         {% ifequal citation.source.type_code "E" %}Affiliation:{% endifequal %}
         {% ifequal citation.source.type_code "U" %}URL:{% endifequal %}
-      </td>
+      </th>
       <td>{{citation.pages}}</td>
     </tr>
   {% endif %}
   {% if citation.long_reliability %}
     <tr>
-      <td class="rowname">Reliability:</td>
+      <th>Reliability:</th>
       <td>{{ citation.long_reliability }}</td>
     </tr>
   {% endif %}
   {% if citation.comment %}
     <tr>
-      <td class="rowname">Comment:</td>
+      <th>Comment:</th>
       <td>{{ citation.comment|wikilink }}</td>
     </tr>
   {% endif %}
