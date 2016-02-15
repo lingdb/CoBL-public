@@ -22,21 +22,7 @@ function CopyAcross(f){
       return true;
     }
   });
-//if(f_id=='src2translit'){
-//  document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-//}
-//if(f_id=='src2root'){
-//  document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-//}
-//if(f_id=='translit2src'){
-//  document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-//}
-//if(f_id=='phoneMic2phoneTic'){
-//  document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-//}
-//if(f_id=='phoneTic2phoneMic'){
-//  document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-//}
+  f.preventDefault();
 };
 
 function MutexCheckbox(f){
