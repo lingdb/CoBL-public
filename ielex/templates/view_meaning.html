@@ -9,23 +9,31 @@
 {% endblock %}
 
 {% block top %}
-  <h1>{{ meaning.gloss }}</h1>
+  <div class="row">
+    <div class="col-md-4">
+      <h1>
+        {{ meaning.gloss }}
+        <a href="{% url 'meaning-add-lexeme' meaning.gloss %}"
+           class="btn btn-default btn-xs"
+           data-toggle="tooltip" data-placement="bottom"
+           title="add a new lexeme">
+          <span class="glyphicon glyphicon-plus-sign"></span>
+        </a>
+      </h1>
+    </div>
+    <div class="col-md-4">
+      {% include "snippets/prev_next_meaning.html" %}
+    </div>
+  </div>
 {% endblock %}
 
 {% block controls %}
   {% include "snippets/go_to.html" %}
-  {# include "snippets/change_sort_order.html" #}
 {% endblock %}
 
 {% block content %}
   <div class="row">
     <div class="col-md-4">
-      <form class="form-inline" action="" method="GET">
-        <div class="form-group">
-          {{ filt_form }}
-          <input type="submit" value="Filter" class="btn btn-default">
-        </div>
-      </form>
       <form class="form-inline" action="" method="POST">
         {% csrf_token %}
         <div class="form-group">
@@ -34,36 +42,14 @@
           </table>
         </div>
       </form>
+    </div>
+    <div class="col-md-4">
       <form class="form-inline">
         <div class="form-group">
           <label for="excludeButton">Filter out non-Swadesh terms:</label>
           <input name="excludeButton" type="submit" value="Filter" id="filter_non_swadesh" onclick="ExcludeRows()" class="btn btn-default">
         </div>
       </form>
-    </div>
-    <div class="col-md-2">
-      {% include "snippets/prev_next_meaning.html" %}
-      <div class="list-group">
-        {% if add_cognate_judgement  %}
-          <a class="list-group-item" href="{% url 'meaning-report' meaning.gloss %}/">return to normal view</a>
-        {% endif %}
-        <a class="list-group-item" href="{% url 'lexeme-search' %}">search lexemes</a>
-        <a class="list-group-item" href="{% url 'meaning-add-lexeme' meaning.gloss %}">add a new lexeme</a>
-      </div>
-      <div class="panel panel-default">
-        <div class="panel-body">
-          Cognate judgements are added on this page, but deleted by the lexeme view
-          (use the <span class="glyphicon glyphicon-search" title="View/Edit the lexical entry"></span> button)
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="panel panel-default">
-        <div class="panel-heading">Description</div>
-        <div class="panel-body">
-          {{ meaning.notes|linebreaksbr }}
-        </div>
-      </div>
     </div>
   </div>
   {% if user.is_authenticated %}
@@ -76,7 +62,7 @@
             <a href="{% url 'view-meaning-languages' meaning.gloss current_language_list.name %}" class="btn btn-danger"> undo</a>
             <input type="submit" value="Submit" name="meang_form" class="btn btn-primary">
           </div>
-          <table class="table table-striped">
+          <table class="table table-striped table-condensed">
             <thead>
               <tr>
                 <th class="hide"></th>
@@ -139,7 +125,7 @@
                     </button>
                   </td>
                   <td>{% form_field lexeme.phon_form id="phoneTic" size="8" %}</td>
-                  <td>{% form_field lexeme.gloss %}</td>
+                  <td>{% form_field lexeme.gloss size="4" %}</td>
                   <td>{% form_field lexeme.notes %}</td>
                   <td>
                     <div class="narrow_form">

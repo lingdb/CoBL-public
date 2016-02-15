@@ -8,18 +8,27 @@
 {% endblock %}
 
 {% block top %}
-  <h1>{{ language.utf8_name }} ({{ wordlist }})</h1>
+  <div class="row">
+    <div class="col-md-3">
+      <h1 {% if language.description %}data-toggle="tooltip" data-placement="bottom" title="{{ language.description }}"{% endif %}>
+        {{ language.utf8_name }} ({{ wordlist }})
+        <a href="{% url 'language-add-lexeme' language.ascii_name %}"
+           class="btn btn-default btn-xs"
+           data-toggle="tooltip" data-placement="top"
+           title="add a new lexeme">
+          <span class="glyphicon glyphicon-plus-sign"></span>
+        </a>
+        <span class="badge">{{ lexemes|length }}</span>
+      </h1>
+    </div>
+    <div class="col-md-4">
+      {% include "snippets/prev_next_language.html" %}
+    </div>
+  </div>
 {% endblock %}
 
 {% block controls %}
   {% include "snippets/go_to.html" %}
-  <li class="navbar-text"><strong>{{ language.utf8_name }}:</strong></li>
-  <li>
-    <a href="{% url 'language-edit' language.ascii_name %}">edit language entry</a>
-  </li>
-  <li>
-    <a href="{% url 'language-add-lexeme' language.ascii_name %}">add a new lexeme</a>
-  </li>
   {% if semantic_domains %}
     <li>
       <a href="{% url 'language-domains-list' language.ascii_name %}">view semantic domains</a>
@@ -30,42 +39,23 @@
 {% block content %}
   <div class="row">
     <div class="col-md-4">
-      {% if language.description %}
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            Description:
-          </div>
-          <div class="panel-body">
-            {{ language.description }}
-          </div>
-        </div>
-      {% endif %}
-      <form class="form-inline" action="" method="GET">
-        {{ filt_form }}
-        <button type="submit" class="btn btn-default">Filter</button>
-      </form>
-
       <form action="" method="POST" name="wordlist_form">
         {% csrf_token %}
         <input class="hidden" value="change-wordlist" name="changewordlist">
         <div class="form-group">
-          <legend>Change wordlist<legend>
           <table>
             {{ wrdlst_form.as_table }}
           </table>
-          <p class="help">Limit all results to a predefined set of meanings</p>
         </div>
       </form>
+    </div>
+    <div class="col-md-4">
       <form class="form-inline">
         <div class="form-group">
           <label for="excludeButton">Filter out non-Swadesh terms:</label>
           <input name="excludeButton" type="submit" value="Filter" id="filter_non_swadesh" onclick="ExcludeRows()" class="btn btn-default">
         </div>
       </form>
-    </div>
-    <div class="col-md-2">
-      <p>Count: <span class="badge">{{ lexemes|length }}</span></p>
-      {% include "snippets/prev_next_language.html" %}
     </div>
   </div>
   {% if user.is_authenticated %}
@@ -78,7 +68,7 @@
             <a href="{% url 'view-language-wordlist' language.ascii_name wordlist.name %}" class="btn btn-danger"> undo</a>
             <input type="submit" value="Submit" name="lex_form" class="btn btn-primary">
           </div>
-          <table class="table table-striped" id="editable">
+          <table class="table table-striped table-condensed" id="editable">
             <thead>
               <tr>
                 <th>ID</th>

@@ -4,10 +4,10 @@
   </li>
 {% endif %}
 <li>
-  <a href={% url 'view-language-list' current_language_list_name %}>View languages</a>
+  <a href={% url 'view-language-list' current_language_list_name %}>Lgs Rfc.</a>
 </li>
 <li>
-  <a href={% url 'view-wordlist' current_wordlist_name %}>View meanings</a>
+  <a href={% url 'view-wordlist' current_wordlist_name %}>Mgs Rfc.</a>
 </li>
 {% if semantic_domains %}
   <li>
@@ -15,12 +15,6 @@
   </li>
 {% endif %}
 <li>
-  <a href={% url 'view-sources' %}>View sources</a>
-</li>
-<li>
-  <a href={% url 'lexeme-search' %}>Search lexemes</a>
-</li>
-<li>
-  <a href={% url 'view-changes' %}>Recent changes</a>
+  <a href={% url 'view-sources' %}>Sources Rfc.</a>
 </li>
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

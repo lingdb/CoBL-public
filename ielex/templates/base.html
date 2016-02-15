@@ -63,8 +63,16 @@
             {% block controls %}{% endblock %}
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Info</a></li>
-            <li><a href="#"><span class="glyphicon glyphicon-education" aria-hidden="true"></span> Authors</a></li>
+            <li>
+              <a href="#" data-toggle="tooltip" data-placement="bottom" title="Info">
+                <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              </a>
+            </li>
+            <li>
+              <a href="#" data-toggle="tooltip" data-placement="bottom" title="Authors">
+                <span class="glyphicon glyphicon-education" aria-hidden="true"></span>
+              </a>
+            </li>
             {% if user.is_authenticated %}
               <li>
                 <a href="{% url 'view-profile' %}" title="View user profile" data-toggle="tooltip" data-placement="bottom">
@@ -74,19 +82,24 @@
               {% if user.is_staff %}
                 <li>
                   <a href="/admin/" title="Go to the admin site" data-toggle="tooltip" data-placement="bottom">
-                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Admin
+                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                  </a>
+                </li>
+                <li>
+                  <a href={% url 'view-changes' %} data-toggle="tooltip" data-placement="bottom" title="Recent changes">
+                    <span class="glyphicon glyphicon-time"></span>
                   </a>
                 </li>
               {% endif %}
               <li>
-                <a href="{% url 'logout' %}">
-                  <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Logout
+                <a href="{% url 'logout' %}" data-toggle="tooltip" data-placement="bottom" title="Logout">
+                  <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
                 </a>
               </li>
             {% else %}
               <li>
-                <a href="{% url 'login' %}">
-                  <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Login
+                <a href="{% url 'login' %}" data-toggle="tooltip" data-placement="bottom" title="Login">
+                  <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
                 </a>
               </li>
             {% endif %}

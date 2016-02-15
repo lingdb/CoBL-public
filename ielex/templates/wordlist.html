@@ -8,15 +8,21 @@
 {% endblock %}
 
 {% block top %}
-  <h1>Meanings</h1>
+  <h1>
+    Meanings
+    {% if user.is_authenticated %}
+      <a href="/meanings/add-new/"
+         class="btn btn-default btn-xs"
+         data-toggle="tooltip" data-placement="bottom"
+         title="add meaning">
+        <span class="glyphicon glyphicon-plus-sign"></span>
+      </a>
+    {% endif %}
+  </h1>
 {% endblock %}
 
 {% block controls %}
   {% include "snippets/go_to.html" %}
-  {% if user.is_authenticated %}
-    <li><a href="/meanings/add-new/">add meaning</a></li>
-    <li><a href="/lexeme/search/">search lexemes</a></li>
-  {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -25,11 +31,9 @@
       <form action="" method="post">
         {% csrf_token %}
         <div class="form-group">
-            <legend>Controls<legend>
-            <table>
-              {{ form.as_table }}
-            </table>
-            <p class="help">Limit all results to a predefined set of meanings</p>
+          <table>
+            {{ form.as_table }}
+          </table>
         </div>
       </form>
     </div>
