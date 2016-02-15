@@ -22,7 +22,6 @@ function CopyAcross(f){
       return true;
     }
   });
-  f.preventDefault();
 };
 
 function MutexCheckbox(f){

@@ -131,34 +131,34 @@
                     </a>
                   </td>
                   <td>
-                    <button class="leftcheckarrow btn btn-xs"
+                    <button class="leftcheckarrow btn btn-xs" type="button"
                             id="translit2src#{{lexeme.transliteration.name}}#{{lexeme.source_form.name}}"
                             onclick="CopyAcross(this)">
-                      <span class="glyphicon glyphicon-chevron-left"></span>
+                      <span class="glyphicon glyphicon-step-backward"></span>
                     </button>
                   </td>
                   <td>
-                    <button class="rightcheckarrow btn btn-xs"
+                    <button class="rightcheckarrow btn btn-xs" type="button"
                             id="src2translit#{{lexeme.source_form.name}}#{{lexeme.transliteration.name}}"
                             onclick="CopyAcross(this)">
-                      <span class="glyphicon glyphicon-chevron-right"></span>
+                      <span class="glyphicon glyphicon-step-forward"></span>
                     </button>
                   </td>
                   <td>{% form_field lexeme.transliteration id="transliteration" class="form-control" %}</td>
                   <td>{% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" %}</td>
                   <td>{% form_field lexeme.phoneMic id="phoneMic" size="8" class="form-control" %}</td>
                   <td>
-                    <button class="leftcheckarrow btn btn-xs inline"
+                    <button class="leftcheckarrow btn btn-xs inline" type="button"
                             id="phoneTic2phoneMic#{{lexeme.phon_form.name}}#{{lexeme.phoneMic.name}}"
                             onclick="CopyAcross(this)">
-                      <span class="glyphicon glyphicon-chevron-left"></span>
+                      <span class="glyphicon glyphicon-step-backward"></span>
                     </button>
                   </td>
                   <td>
-                    <button class="rightcheckarrow btn btn-xs inline"
+                    <button class="rightcheckarrow btn btn-xs inline" type="button"
                             id="phoneMic2phoneTic#{{lexeme.phoneMic.name}}#{{lexeme.phon_form.name}}"
                             onclick="CopyAcross(this)">
-                      <span class="glyphicon glyphicon-chevron-right"></span>
+                      <span class="glyphicon glyphicon-step-forward"></span>
                     </button>
                   </td>
                   <td>{% form_field lexeme.phon_form id="phoneTic" size="8" class="form-control" %}</td>
@@ -172,7 +172,7 @@
                     {% endif %}
                   </td>
                   <td>
-                    <button class="rightcheckarrow btn btn-xs"
+                    <button class="rightcheckarrow btn btn-xs" type="button"
                             id="src2root#{{lexeme.source_form.name}}#{{lexeme.root_form.name}}"
                             onclick="CopyAcross(this)">
                       <span class="glyphicon glyphicon-fast-forward"></span>
@@ -183,7 +183,7 @@
                     <span class="badge">{{ lexeme.data.number_cognate_coded }}</span>
                   </td>
                   <td>
-                    <button class="rightcheckarrow btn btn-xs"
+                    <button class="rightcheckarrow btn btn-xs" type="button"
                             id="src2root#{{lexeme.source_form.name}}#{{lexeme.rfcWebLookup1.name}}"
                             onclick="CopyAcross(this)">
                       <span class="glyphicon glyphicon-fast-forward"></span>
@@ -193,7 +193,7 @@
                     {% form_field lexeme.rfcWebLookup1 class="form-control" %}
                   </td>
                   <td>
-                    <button class="rightcheckarrow btn btn-xs"
+                    <button class="rightcheckarrow btn btn-xs" type="button"
                             id="src2root#{{lexeme.source_form.name}}#{{lexeme.rfcWebLookup2.name}}"
                             onclick="CopyAcross(this)">
                       <span class="glyphicon glyphicon-fast-forward"></span>
