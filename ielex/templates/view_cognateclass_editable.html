@@ -51,13 +51,13 @@
                       {{ cc.data.alias }}
                     </a>
                   </td>
-                  <td>{% form_field cc.root_form %}</td>
-                  <td>{% form_field cc.root_language %}</td>
-                  <td>{% form_field cc.gloss_in_root_lang %}</td>
-                  <td>{% form_field cc.notes %}</td>
-                  <td>{% form_field cc.loanword %}</td>
-                  <td>{% form_field cc.loan_source %}</td>
-                  <td>{% form_field cc.loan_notes %}</td>
+                  <td>{% form_field cc.root_form class="form-control" %}</td>
+                  <td>{% form_field cc.root_language class="form-control" %}</td>
+                  <td>{% form_field cc.gloss_in_root_lang class="form-control" %}</td>
+                  <td>{% form_field cc.notes class="form-control" %}</td>
+                  <td>{% form_field cc.loanword class="form-control" %}</td>
+                  <td>{% form_field cc.loan_source class="form-control" %}</td>
+                  <td>{% form_field cc.loan_notes class="form-control" %}</td>
                 </tr>
               {% endfor %}
             </tbody>

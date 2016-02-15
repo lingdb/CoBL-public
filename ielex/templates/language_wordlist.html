@@ -61,7 +61,7 @@
   {% if user.is_authenticated %}
     <div class="row">
       <div class="col-md-12">
-        <form action="" method="POST" name="lex_ed_form" id="lex_ed_form_copyacross" >
+        <form action="" method="POST" name="lex_ed_form" id="lex_ed_form_copyacross">
           {% csrf_token %}
           <div class="form-group">
             <label for="langlist_form">Save table?</label>
@@ -75,12 +75,11 @@
                 <th>Meaning</th>
                 <th></th>
                 <th>Orthographic</th>
-                <th></th>
-                <th></th>
+                <th colspan="3"></th>
                 <th>Transliteration</th>
                 <th>Not<br>Swh<br></th>
                 <th>PhoneMic</th>
-                <th></th>
+                <th colspan="2"></th>
                 <th>PhoneTic</th>
                 <th alt="Language specific">Gloss</th>
                 <th>Notes</th>
@@ -90,7 +89,9 @@
                 <th></th>
                 <th>Root</th>
                 <th alt="Number of cognate classes">nCog</th>
+                <th></th>
                 <th>Web dict ID 1</th>
+                <th></th>
                 <th>Web dict ID 2</th>
                 <th>Dubious</th>
               </tr>
@@ -111,7 +112,7 @@
                       <span class="glyphicon glyphicon-info-sign"></span>
                     </a>
                   </td>
-                  <td>{% form_field lexeme.source_form id="source_form" class="mediumtext" %}</td>
+                  <td>{% form_field lexeme.source_form id="source_form" class="form-control" %}</td>
                   <td>
                     <a href="{% url 'view-lexeme' lexeme.id.data %}" title="View detailed information on lexeme">
                       <span class="glyphicon glyphicon-search"></span>
@@ -123,35 +124,39 @@
                             onclick="CopyAcross(this)">
                       <span class="glyphicon glyphicon-chevron-left"></span>
                     </button>
+                  </td>
+                  <td>
                     <button class="rightcheckarrow btn btn-xs"
                             id="src2translit#{{lexeme.source_form.name}}#{{lexeme.transliteration.name}}"
                             onclick="CopyAcross(this)">
                       <span class="glyphicon glyphicon-chevron-right"></span>
                     </button>
                   </td>
-                  <td>{% form_field lexeme.transliteration id="transliteration" class="mediumtext" %}</td>
-                  <td>{% form_field lexeme.not_swadesh_term class="notswad_checkbox" %}</td>
-                  <td>{% form_field lexeme.phoneMic id="phoneMic" size="8" %}</td>
+                  <td>{% form_field lexeme.transliteration id="transliteration" class="form-control" %}</td>
+                  <td>{% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" %}</td>
+                  <td>{% form_field lexeme.phoneMic id="phoneMic" size="8" class="form-control" %}</td>
                   <td>
-                    <button class="leftcheckarrow btn btn-xs"
+                    <button class="leftcheckarrow btn btn-xs inline"
                             id="phoneTic2phoneMic#{{lexeme.phon_form.name}}#{{lexeme.phoneMic.name}}"
                             onclick="CopyAcross(this)">
                       <span class="glyphicon glyphicon-chevron-left"></span>
                     </button>
-                    <button class="rightcheckarrow btn btn-xs"
+                  </td>
+                  <td>
+                    <button class="rightcheckarrow btn btn-xs inline"
                             id="phoneMic2phoneTic#{{lexeme.phoneMic.name}}#{{lexeme.phon_form.name}}"
                             onclick="CopyAcross(this)">
                       <span class="glyphicon glyphicon-chevron-right"></span>
                     </button>
                   </td>
-                  <td>{% form_field lexeme.phon_form id="phoneTic" size="8" %}</td>
-                  <td>{% form_field lexeme.gloss size="8" %}</td>
-                  <td>{% form_field lexeme.notes %}</td>
-                  <td>{% form_field lexeme.is_loan disabled="disabled" %}</td>
-                  <td>{% form_field lexeme.is_excluded disabled="disabled" %}</td>
+                  <td>{% form_field lexeme.phon_form id="phoneTic" size="8" class="form-control" %}</td>
+                  <td>{% form_field lexeme.gloss size="8" class="form-control" %}</td>
+                  <td>{% form_field lexeme.notes class="form-control" %}</td>
+                  <td>{% form_field lexeme.is_loan disabled="disabled" class="form-control" %}</td>
+                  <td>{% form_field lexeme.is_excluded disabled="disabled" class="form-control" %}</td>
                   <td>
                     {% if lexeme.object_data.show_loan_event %}
-                      {% form_field lexeme.loan_event disabled="disabled" %}
+                      {% form_field lexeme.loan_event disabled="disabled" class="form-control" %}
                     {% endif %}
                   </td>
                   <td>
@@ -162,12 +167,20 @@
                       <span class="glyphicon glyphicon-chevron-right"></span>
                     </button>
                   </td>
-                  <td>{% form_field lexeme.root_form class="mediumtext" id="rootform" %}</td>
+                  <td>{% form_field lexeme.root_form class="form-control" id="rootform" %}</td>
                   <td class="narrow">
                     <span class="badge">{{ lexeme.data.number_cognate_coded }}</span>
                   </td>
                   <td>
-                    {% form_field lexeme.rfcWebLookup1 size="4" %}
+                    <button class="rightcheckarrow btn btn-xs"
+                            id="src2root#{{lexeme.source_form.name}}#{{lexeme.rfcWebLookup1.name}}"
+                            onclick="CopyAcross(this)">
+                      <strong>O</strong>
+                      <span class="glyphicon glyphicon-chevron-right"></span>
+                    </button>
+                  </td>
+                  <td>
+                    {% form_field lexeme.rfcWebLookup1 class="form-control" %}
                     {% if lexeme.object_data.rfcWebPath1 and lexeme.data.rfcWebLookup1 %}
                       <a href="{{ lexeme.object_data.rfcWebPath1 }}{{ lexeme.data.rfcWebLookup1 }}" target="_blank">
                         <span class="glyphicon glyphicon-info-sign"></span>
@@ -175,14 +188,22 @@
                     {% endif %}
                   </td>
                   <td>
-                    {% form_field lexeme.rfcWebLookup2 size="4" %}
+                    <button class="rightcheckarrow btn btn-xs"
+                            id="src2root#{{lexeme.source_form.name}}#{{lexeme.rfcWebLookup2.name}}"
+                            onclick="CopyAcross(this)">
+                      <strong>O</strong>
+                      <span class="glyphicon glyphicon-chevron-right"></span>
+                    </button>
+                  </td>
+                  <td>
+                    {% form_field lexeme.rfcWebLookup2 class="form-control" %}
                     {% if lexeme.object_data.rfcWebPath2 and lexeme.data.rfcWebLookup2 %}
                       <a href="{{ lexeme.object_data.rfcWebPath2 }}{{ lexeme.data.rfcWebLookup2 }}" target="_blank">
                         <span class="glyphicon glyphicon-info-sign"></span>
                       </a>
                     {% endif %}
                   </td>
-                  <td>{% form_field lexeme.dubious %}</td>
+                  <td>{% form_field lexeme.dubious class="form-control" %}</td>
                 </tr>
               {% endfor %}
             </tbody>

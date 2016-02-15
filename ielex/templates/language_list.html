@@ -121,25 +121,25 @@
                       {{ language.utf8_name.data }}
                     </a>
                   </td>
-                  <td>{% form_field language.variety size="8" %}</td>
+                  <td>{% form_field language.variety size="8" class="form-control" %}</td>
                   <td><span class="badge">{{ language.data.excess_count }}</span></td>
                   <td><span class="badge">{{ language.data.mgs_count    }}</span></td>
                   <td><span class="badge">{{ language.data.lex_count    }}</span></td>
                   <td><span class="badge">{{ language.data.entd_count   }}</span></td>
                   <td>
                     <div class="centralised_checkbox">
-                      {% form_field language.representative %}
+                      {% form_field language.representative class="form-control" %}
                     </div>
                   </td>
-                  <td>{% form_field language.foss_stat onclick="MutexCheckbox(this)" class="MutexCheckbox" %}</td>
-                  <td>{% form_field language.low_stat onclick="MutexCheckbox(this)" class="MutexCheckbox" %}</td>
+                  <td>{% form_field language.foss_stat onclick="MutexCheckbox(this)" class="MutexCheckbox form-control" %}</td>
+                  <td>{% form_field language.low_stat onclick="MutexCheckbox(this)" class="MutexCheckbox form-control" %}</td>
                   <td>
                     {% if language.iso_code.data %}
                       <a href="http://en.wikipedia.org/wiki/ISO_639:{{ language.iso_code.data }}" target="_blank">
                         {{ language.iso_code.data }}
                       </a>
                     {% else %}
-                      {% form_field language.iso_code maxlength="3" size="3"%}
+                      {% form_field language.iso_code maxlength="3" size="3" class="form-control" %}
                     {% endif %}
                   </td>
                   <td>
@@ -148,15 +148,15 @@
                         {{ language.data.glottocode }}
                       </a>
                     {% else %}
-                      {% form_field language.glottocode maxlength="8" size="8" %}
+                      {% form_field language.glottocode maxlength="8" size="8" class="form-control" %}
                     {% endif %}
                   </td>
-                  <td>{% form_field language.level0 class="languageBranch" maxlength="1" size="1" %}</td>
-                  <td>{% form_field language.level1 class="languageBranch" maxlength="1" size="1" %}</td>
-                  <td>{% form_field language.level2 class="languageBranch" maxlength="1" size="1" %}</td>
-                  <td>{% form_field language.soundcompcode size="8" %}</td>
-                  <td>{% form_field language.mean_timedepth_BP_years maxlength="4" size="4" %}</td>
-                  <td>{% form_field language.std_deviation_timedepth_BP_years maxlength="4" size="4" %}</td>
+                  <td>{% form_field language.level0 class="languageBranch form-control" maxlength="1" size="1" %}</td>
+                  <td>{% form_field language.level1 class="languageBranch form-control" maxlength="1" size="1" %}</td>
+                  <td>{% form_field language.level2 class="languageBranch form-control" maxlength="1" size="1" %}</td>
+                  <td>{% form_field language.soundcompcode size="8" class="form-control" %}</td>
+                  <td>{% form_field language.mean_timedepth_BP_years maxlength="4" size="4" class="form-control" %}</td>
+                  <td>{% form_field language.std_deviation_timedepth_BP_years maxlength="4" size="4" class="form-control" %}</td>
                   <td>
                     <a href="{% url 'language-edit' language.ascii_name.data %}"
                        title="Edit {{ language.utf8_name.data }} metadata"
@@ -164,10 +164,10 @@
                       <span class="glyphicon glyphicon-edit"></span>
                     </a>
                   </td>
-                  <td>{% form_field language.rfcWebPath1 %}</td>
-                  <td>{% form_field language.rfcWebPath2 %}</td>
-                  <td>{% form_field language.author size="8" %}</td>
-                  <td>{% form_field language.reviewer size="8" %}</td>
+                  <td>{% form_field language.rfcWebPath1 size="4" class="form-control" %}</td>
+                  <td>{% form_field language.rfcWebPath2 size="4" class="form-control" %}</td>
+                  <td>{% form_field language.author size="8" class="form-control" %}</td>
+                  <td>{% form_field language.reviewer size="8" class="form-control" %}</td>
                 </tr>
               {% endfor %}
             </tbody>
