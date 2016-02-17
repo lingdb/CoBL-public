@@ -16,19 +16,35 @@
   {# include "snippets/change_sort_order.html" #}
   {% if user.is_authenticated %}
     <li>
-      <a href="{% url 'language-add-new' current_language_list_name %}">new language</a>
-    </li>
-    <li>
-      <a href="{% url 'add-language-list' %}">new language list</a>
-    </li>
-    <li>
-      <a href="{% url 'edit-language-list' current_language_list_name %}">
-        edit language list ‘{{ current_language_list_name }}’
+      <a href="{% url 'language-add-new' current_language_list_name %}"
+         data-toggle="tooltip" data-placement="bottom"
+         title="Add new language">
+        <span class="glyphicon glyphicon-plus"></span>
+        lg
       </a>
     </li>
     <li>
-      <a href="{% url 'reorder-language-list' current_language_list_name %}">
-        edit sort order ‘{{ current_language_list_name }}’
+      <a href="{% url 'add-language-list' %}"
+         data-toggle="tooltip" data-placement="bottom"
+         title="New language list">
+        <span class="glyphicon glyphicon-plus"></span>
+        lg list
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'edit-language-list' current_language_list_name %}"
+         data-toggle="tooltip" data-placement="bottom"
+         title="Edit language list">
+        <span class="glyphicon glyphicon-edit"></span>
+        lg list ‘{{ current_language_list_name }}’
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'reorder-language-list' current_language_list_name %}"
+         data-toggle="tooltip" data-placement="bottom"
+         title="Edit sort order">
+        <span class="glyphicon glyphicon-edit"></span>
+        sort order ‘{{ current_language_list_name }}’
       </a>
     </li>
   {% endif %}
