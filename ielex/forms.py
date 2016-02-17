@@ -6,9 +6,10 @@ from ielex.lexicon.models import *
 from ielex.lexicon.validators import suitable_for_url
 # from ielex.extensional_semantics.models import *
 
-from wtforms import StringField, IntegerField, FieldList,\
-    FormField, TextField,\
-    BooleanField, DateTimeField
+from wtforms import StringField, IntegerField, \
+    FieldList,  FormField, \
+    TextField, BooleanField, \
+    DateTimeField, DecimalField
 from wtforms.validators import DataRequired
 from wtforms_components import read_only
 from wtforms.form import Form as WTForm
@@ -387,7 +388,13 @@ class MeaningTableFilterForm(forms.ModelForm):
         fields = ['language']
 
 
-###################################################
+class MeaningListRowForm(WTForm):
+    gloss = StringField('Gloss', validators=[DataRequired()])
+    description = StringField('Description', validators=[DataRequired()])
+    notes = StringField('Notes', validators=[DataRequired()])
+    percent_coded = DecimalField('Percentage coded',
+                                 validators=[DataRequired()])
+    lex_count = IntegerField('Lexeme Count', validators=[DataRequired()])
 
 
 class ChooseSourceForm(forms.Form):

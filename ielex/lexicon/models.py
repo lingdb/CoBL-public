@@ -265,6 +265,41 @@ class Meaning(models.Model):
     class Meta:
         ordering = ["gloss"]
 
+    def is_unchanged(self, **vdict):
+
+        def isField(x):
+            return getattr(self, x) == vdict[x]
+
+        fields = {
+            'gloss': isField,
+            'description': isField,
+            'notes': isField}
+
+        for k, _ in vdict.iteritems():
+            if k in fields:
+                if not fields[k](k):
+                    return False
+        return True
+
+    def setDelta(self, **vdict):
+        """
+            Alter a models attributes by giving a vdict
+            similar to the one used for is_unchanged.
+        """
+
+        def setField(x):
+            setattr(self, x, vdict[x])
+
+        fields = {
+            'gloss': setField,
+            'description': setField,
+            'notes': setField}
+
+        # Setting fields:
+        for k, _ in vdict.iteritems():
+            if k in fields:
+                fields[k](k)
+
 
 @reversion.register
 @python_2_unicode_compatible

@@ -837,7 +837,15 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
         form = ChooseMeaningListForm()
     form.fields["meaning_list"].initial = wordlist.id
 
-    meanings = wordlist.meanings.all().order_by("meaninglistorder")
+    meanings = []  # :: [MeaningListRowForm]
+    for meaning in wordlist.meanings.all().order_by("meaninglistorder"):
+        mlrf = MeaningListRowForm(
+            gloss=meaning.gloss,
+            description=meaning.description,
+            notes=meaning.notes,
+            percent_coded=meaning.percent_coded,
+            lex_count=Lexeme.objects.filter(meaning=meaning).count())
+        meanings.append(mlrf)
     current_language_list = request.session.get(
         "current_language_list_name", LanguageList.DEFAULT)
     return render_template(request, "wordlist.html",
