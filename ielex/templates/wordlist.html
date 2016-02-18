@@ -2,6 +2,7 @@
 
 {% load staticfiles %}
 {% load lexicon_utils %}
+{% load wtforms %}
 
 {% block title %}
   Word list
@@ -39,60 +40,85 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-md-6">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Meaning</th>
-            <th>Show<br>Languages</th>
-            <th>Show<br>Cog. Sets</th>
-            {% if user.is_authenticated %}
-            <th>Edit<br>metadata</th>
-            <th>% Cog.<br>coded</th>
-            <th data-toggle="tooltip" data-placement="bottom"
-                title="Number of lexemes">Lex.</th>
-            {% endif %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for meaning in meanings %}
+    <div class="col-md-8">
+      <form action="" method="post">
+        {% if user.is_authenticated and user.is_staff %}
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="wordlist">Save table?</label>
+            <input type="submit" value="Submit" name="wordlist" class="btn btn-primary">
+          </div>
+        {% endif %}
+        <table class="table table-striped">
+          <thead>
             <tr>
-              <td>{{ meaning.data.gloss }}</td>
-              <td>
-                <a href="{% url 'view-meaning-languages' meaning.data.gloss current_language_list %}"
-                   title="Edit ‘{{ meaning.data.gloss }}' by language list">
-                  <span class="glyphicon glyphicon-edit"></span>
-                </a>
-              </td>
-              <td>
-                <a href="{% url 'edit-cogclasses' meaning.data.gloss %}"
-                   title="Edit cognate classes for ‘{{ meaning.data.gloss }}'">
-                  <span class="glyphicon glyphicon-edit"></span>
-                </a>
-              </td>
-              {# <td>{{ meaning.notes|linebreaksbr|truncatewords:20 }}</td> #}
+              <th>Meaning</th>
+              <th>Description</th>
+              <th>Notes</th>
+              <th>Show<br>Languages</th>
+              <th>Show<br>Cog. Sets</th>
               {% if user.is_authenticated %}
+              <th>Edit<br>metadata</th>
+              <th>% Cog.<br>coded</th>
+              <th data-toggle="tooltip" data-placement="bottom"
+                  title="Number of lexemes">Lex.</th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for meaning in mltf.meanings %}
+              <tr>
+                {% if user.is_authenticated and user.is_staff %}
+                  {% form_field meaning.meaningId class="hide" %}
+                  <td>
+                    {% form_field meaning.gloss class="form-control" size="4" %}
+                  </td>
+                  <td>
+                    {% form_field meaning.desc class="form-control" size="8"%}
+                  </td>
+                  <td>
+                    {% form_field meaning.notes class="form-control" %}
+                  </td>
+                {% else %}
+                  <td>{{ meaning.data.gloss }}</td>
+                  <td>{{ meaning.data.desc }}</td>
+                  <td>{{ meaning.data.notes }}</td>
+                {% endif %}
                 <td>
-                  <a href="{% url 'edit-meaning' meaning.data.gloss %}"
-                     title="Edit ‘{{ meaning.data.gloss }}’ metadata">
+                  <a href="{% url 'view-meaning-languages' meaning.data.gloss current_language_list %}"
+                     title="Edit ‘{{ meaning.data.gloss }}' by language list">
                     <span class="glyphicon glyphicon-edit"></span>
                   </a>
                 </td>
                 <td>
-                  <span class="badge">
-                    {{ meaning.data.percent_coded|floatformat:1 }}
-                  </span>
+                  <a href="{% url 'edit-cogclasses' meaning.data.gloss %}"
+                     title="Edit cognate classes for ‘{{ meaning.data.gloss }}'">
+                    <span class="glyphicon glyphicon-edit"></span>
+                  </a>
                 </td>
-                <td>
-                  <span class="badge">
-                    {{ meaning.data.lex_count }}
-                  </span>
-                </td>
-              {% endif %}
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+                {% if user.is_authenticated %}
+                  <td>
+                    <a href="{% url 'edit-meaning' meaning.data.gloss %}"
+                       title="Edit ‘{{ meaning.data.gloss }}’ metadata">
+                      <span class="glyphicon glyphicon-edit"></span>
+                    </a>
+                  </td>
+                  <td>
+                    <span class="badge">
+                      {{ meaning.data.percent_coded|floatformat:1 }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge">
+                      {{ meaning.data.lex_count }}
+                    </span>
+                  </td>
+                {% endif %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </form>
     </div>
   </div>
 {% endblock %}

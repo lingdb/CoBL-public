@@ -821,35 +821,48 @@ def view_wordlists(request):
                            {"wordlists": wordlists})
 
 
+@csrf_protect
 def view_wordlist(request, wordlist=MeaningList.DEFAULT):
     wordlist = MeaningList.objects.get(name=wordlist)
     request.session["current_wordlist_name"] = wordlist.name
+    form = ChooseMeaningListForm()
     if request.method == 'POST':
-        form = ChooseMeaningListForm(request.POST)
-        if form.is_valid():
-            wordlist = form.cleaned_data["meaning_list"]
-            request.session["current_wordlist_name"] = wordlist.name
-            msg = u"Wordlist selection changed to ‘%s’" % wordlist.name
-            messages.add_message(request, messages.INFO, msg)
-            return HttpResponseRedirect(reverse("view-wordlist",
-                                        args=[wordlist.name]))
-    else:
-        form = ChooseMeaningListForm()
+        if 'wordlist' in request.POST:
+            mltf = MeaningListTableForm(request.POST)
+            ms = [m.data for m in mltf.meanings]
+            for m in ms:
+                try:
+                    meaning = Meaning.objects.get(id=m['meaningId'])
+                    if not meaning.is_unchanged(**m):
+                        meaning.setDelta(**m)
+                        try:
+                            meaning.save()
+                        except Exception, e:
+                            print('Exception while saving POST: ', e)
+                except Exception, e:
+                    print('Exception while accessing Meaning object: ',
+                          e, '; POST items are: ', m)
+        elif 'meaning_list' in request.POST:
+            form = ChooseMeaningListForm(request.POST)
+            if form.is_valid():
+                wordlist = form.cleaned_data["meaning_list"]
+                request.session["current_wordlist_name"] = wordlist.name
+                msg = u"Wordlist selection changed to ‘%s’" % wordlist.name
+                messages.add_message(request, messages.INFO, msg)
+                return HttpResponseRedirect(reverse("view-wordlist",
+                                            args=[wordlist.name]))
     form.fields["meaning_list"].initial = wordlist.id
 
-    meanings = []  # :: [MeaningListRowForm]
+    mltf = MeaningListTableForm()
     for meaning in wordlist.meanings.all().order_by("meaninglistorder"):
-        mlrf = MeaningListRowForm(
-            gloss=meaning.gloss,
-            description=meaning.description,
-            notes=meaning.notes,
-            percent_coded=meaning.percent_coded,
-            lex_count=Lexeme.objects.filter(meaning=meaning).count())
-        meanings.append(mlrf)
+        meaning.meaningId = meaning.id
+        meaning.lex_count = Lexeme.objects.filter(meaning=meaning).count()
+        meaning.desc = meaning.description
+        mltf.meanings.append_entry(meaning)
     current_language_list = request.session.get(
         "current_language_list_name", LanguageList.DEFAULT)
     return render_template(request, "wordlist.html",
-                           {"meanings": meanings,
+                           {"mltf": mltf,
                             "form": form,
                             "current_language_list": current_language_list})
 

@@ -238,7 +238,7 @@ class LanguageBranches(models.Model):
 class Meaning(models.Model):
     gloss = models.CharField(
         max_length=64, unique=True, validators=[suitable_for_url])
-    description = models.CharField(max_length=64, blank=True)  # show name
+    description = models.CharField(max_length=64, blank=True)
     notes = models.TextField(blank=True)
     data = jsonfield.JSONField(blank=True)
     percent_coded = models.FloatField(editable=False, default=0)
@@ -270,6 +270,9 @@ class Meaning(models.Model):
         def isField(x):
             return getattr(self, x) == vdict[x]
 
+        if 'desc' in vdict:
+            vdict['description'] = vdict['desc']
+
         fields = {
             'gloss': isField,
             'description': isField,
@@ -294,6 +297,9 @@ class Meaning(models.Model):
             'gloss': setField,
             'description': setField,
             'notes': setField}
+
+        if 'desc' in vdict:
+            vdict['description'] = vdict['desc']
 
         # Setting fields:
         for k, _ in vdict.iteritems():
