@@ -857,6 +857,10 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
     for meaning in wordlist.meanings.all().order_by("meaninglistorder"):
         meaning.meaningId = meaning.id
         meaning.lex_count = Lexeme.objects.filter(meaning=meaning).count()
+        # MADNESS BELOW
+        cjs = CognateJudgement.objects.filter(lexeme__meaning__id=meaning.id).all()
+        meaning.cog_count = len(set([cj.cognate_class_id for cj in cjs]))
+        # MADNESS ABOVE
         meaning.desc = meaning.description
         mltf.meanings.append_entry(meaning)
     current_language_list = request.session.get(
@@ -1222,8 +1226,6 @@ def view_cognateclasses(request, meaning):
 
         request_form_dict = process_postrequest_form(request.POST)
 
-        # TODO: need to check validity of input
-        # if lex_ed_form.is_valid():
         v_dict = defaultdict(str)
         for k, v in request_form_dict.items():
 
@@ -1252,10 +1254,8 @@ def view_cognateclasses(request, meaning):
                     cogclass.setDelta(**v_dict)
 
                     try:
-                        cogclass.save()  # force_update=True)
-                        # TODO: WHY is this necessary?s
-                        # Because no explicit ID in the transaction?
-                    except Exception, e:  # Lexeme.DoesNotExist:
+                        cogclass.save()
+                    except Exception, e:
                         print(
                             'Exception while saving CognateClass object: ', e)
 

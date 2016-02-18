@@ -60,8 +60,10 @@
               {% if user.is_authenticated %}
               <th>Edit<br>metadata</th>
               <th>% Cog.<br>coded</th>
-              <th data-toggle="tooltip" data-placement="bottom"
+              <th data-toggle="tooltip" data-placement="bottom" data-container="body"
                   title="Number of lexemes">Lex.</th>
+              <th data-toggle="tooltip" data-placement="bottom" data-container="body"
+                  title="Number of Cognate Classes">Cog.</th>
               {% endif %}
             </tr>
           </thead>
@@ -111,6 +113,11 @@
                   <td>
                     <span class="badge">
                       {{ meaning.data.lex_count }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge">
+                      {{ meaning.data.cog_count }}
                     </span>
                   </td>
                 {% endif %}
