@@ -858,7 +858,8 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
         meaning.meaningId = meaning.id
         meaning.lex_count = Lexeme.objects.filter(meaning=meaning).count()
         # MADNESS BELOW
-        cjs = CognateJudgement.objects.filter(lexeme__meaning__id=meaning.id).all()
+        cjs = CognateJudgement.objects.filter(
+            lexeme__meaning__id=meaning.id).all()
         meaning.cog_count = len(set([cj.cognate_class_id for cj in cjs]))
         # MADNESS ABOVE
         meaning.desc = meaning.description

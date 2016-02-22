@@ -397,7 +397,8 @@ class MeaningListRowForm(WTForm):
     percent_coded = DecimalField('Percentage coded',
                                  validators=[DataRequired()])
     lex_count = IntegerField('Lexeme Count', validators=[DataRequired()])
-    cog_count = IntegerField('Cognate Class Count', validators=[DataRequired()])
+    cog_count = IntegerField('Cognate Class Count',
+                             validators=[DataRequired()])
 
 
 class MeaningListTableForm(WTForm):
