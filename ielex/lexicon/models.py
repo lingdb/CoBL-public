@@ -795,7 +795,7 @@ class LanguageListOrder(models.Model):
 @reversion.register
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
-    DEFAULT = "all"
+    DEFAULT = "Jena200"
 
     name = models.CharField(
         max_length=128, unique=True,

@@ -62,7 +62,7 @@ urlpatterns = patterns(
 
     # Language
     url(r'^language/%(LANGUAGE)s/$' % R, view_language_wordlist,
-        {"wordlist": "all"}, name="language-report"),
+        {"wordlist": "Jena200"}, name="language-report"),
     url(r'^language/%(LANGUAGE)s/wordlist/%(WORDLIST)s/$' % R,
         view_language_wordlist, name="view-language-wordlist"),
     url(r'^language/%(LANGUAGE)s/edit/$' % R, edit_language,
@@ -89,7 +89,7 @@ urlpatterns = patterns(
     url(r'^wordlist/%(WORDLIST)s/reorder/$' % R, reorder_wordlist,
         name="reorder-wordlist"),
     url(r'^meanings/$', view_wordlist,
-        {"wordlist": "all"}, name="view-meanings"),
+        {"wordlist": "Jena200"}, name="view-meanings"),
     url(r'^meanings/add-new/$', meaning_add_new, name="meaning-add-new"),
     url(r'^meaning/%(MEANING)s/edit/$' % R, edit_meaning,
         name="edit-meaning"),
