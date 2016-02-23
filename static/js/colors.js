@@ -45,6 +45,30 @@
       colorAll(module.colorNotFound, o.notFounds);
       colorAll(module.colorAlone, o.alones);
     };
+    module.findToColor = function(rows, getKey){
+      var toColor = {colorGroups: [], notFounds: [], alones: []},
+          buckets = {}; // :: cText -> [window.Element]
+      //Filling buckets and notFounds:
+      rows.each(function(){
+        var cText = getKey(this);
+        if(!cText){
+          toColor.notFounds.push(this);
+        }else if(cText in buckets){
+          buckets[cText].push(this);
+        }else{
+          buckets[cText] = [this];
+        }
+      });
+      //Distributing buckets into colorGroups and alones:
+      _.each(buckets, function(xs){
+        if(xs.length === 1){
+          toColor.alones.push(xs);
+        }else{
+          toColor.colorGroups.push(xs);
+        }
+      });
+      return toColor;
+    };
     //Exporting:
     return module;
   });
