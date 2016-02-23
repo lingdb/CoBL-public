@@ -1,6 +1,6 @@
 (function(){
   "use strict";
-  return define([], function(){
+  return define(['lodash','jquery'], function(_, $){
     /**
       Colors that supposedly form a maximally dissimilar set.
       Sources:
@@ -9,17 +9,40 @@
       http://godsnotwheregodsnot.blogspot.de/2012/09/color-distribution-methodology.html
       https://github.com/lingdb/IELex2-CognaC/issues/80
     */
-    var cs = ['#E7CBCB', '#CBE7E7', '#E7D2CB', '#CBE0E7', '#E7D9CB', '#CBD9E7',
-              '#E7E0CB', '#CBD2E7', '#E7E7CB', '#CBCBE7', '#E0E7CB', '#D2CBE7',
-              '#D9E7CB', '#D9CBE7', '#D2E7CB', '#E0CBE7', '#CBE7CB', '#E7CBE7',
-              '#CBE7D2', '#E7CBE0', '#CBE7D9', '#E7CBD9', '#CBE7E0', '#E7CBD2'],
-        cNotFound = '#FFFFFF',
-        cAlone = '#D2D2D2';
-    //Exporting:
-    return {
-      colors: cs,
-      colorNotFound: cNotFound,
-      colorAlone: cAlone
+    var module = {
+      colors: ['#E7CBCB', '#CBE7E7', '#E7D2CB', '#CBE0E7', '#E7D9CB', '#CBD9E7',
+               '#E7E0CB', '#CBD2E7', '#E7E7CB', '#CBCBE7', '#E0E7CB', '#D2CBE7',
+               '#D9E7CB', '#D9CBE7', '#D2E7CB', '#E0CBE7', '#CBE7CB', '#E7CBE7',
+               '#CBE7D2', '#E7CBE0', '#CBE7D9', '#E7CBD9', '#CBE7E0', '#E7CBD2'],
+      colorNotFound: '#FFFFFF',
+      colorAlone: '#D2D2D2'
     };
+    //Computed additions to module:
+    module.allColors = _.concat(module.colors, module.colorNotFound, module.colorAlone);
+    //Module methods:
+    module.colorize = function(o){
+      var defaults = {
+        colorGroups: [], // :: [[$ | window.Element]]
+        notFounds: [],   // :: [$ | window.Element]
+        alones: []};     // :: [$ | window.Element]
+      //Merging o and defaults:
+      o = _.assign(defaults, o);
+      //Coloring stuff:
+      var colorAll = function(color, xs){
+        _.each(xs, function(x){
+          if(x instanceof window.Element){
+            x = $(x);
+          }
+          if(x instanceof $){
+            $.css('background-color', color);
+          }
+        });
+      };
+      _.zipWith(module.colors, o.colorGroups, colorAll);
+      colorAll(module.colorNotFound, o.notFounds);
+      colorAll(module.colorAlone, o.alones);
+    };
+    //Exporting:
+    return module;
   });
 })();
