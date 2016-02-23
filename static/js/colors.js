@@ -29,12 +29,15 @@
       o = _.assign(defaults, o);
       //Coloring stuff:
       var colorAll = function(color, xs){
+        if(_.isUndefined(color) || _.isUndefined(xs) || xs.length === 0){
+          return;
+        }
         _.each(xs, function(x){
           if(x instanceof window.Element){
             x = $(x);
           }
           if(x instanceof $){
-            $.css('background-color', color);
+            x.css('background-color', color);
           }
         });
       };

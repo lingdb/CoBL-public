@@ -62,7 +62,7 @@
             <a href="{% url 'view-meaning-languages' meaning.gloss current_language_list.name %}" class="btn btn-danger"> undo</a>
             <input type="submit" value="Submit" name="meang_form" class="btn btn-primary">
           </div>
-          <table class="table table-striped table-condensed">
+          <table class="table table-condensed" id="viewMeaningLanguages">
             <thead>
               <tr>
                 <th class="hide"></th>
@@ -132,7 +132,7 @@
                   <td>{% form_field lexeme.transliteration id="transliteration" size="8" class="form-control" %}</td>
                   <td>{% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" %}</td>
                   <td>
-                    <div class="narrow_form">
+                    <div class="cognateClasses">
                       {{ lexeme.cognate_class_links.data }}
                       {% if user.is_authenticated %}
                         {% ifnotequal add_cognate_judgement|asint lexeme.id.data|asint %}

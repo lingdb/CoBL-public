@@ -13,12 +13,8 @@
       'jquery': {exports: '$'}
     }
   });
-  requirejs(['require','jquery','lodash','js/base','js/colors'], function(require, $, _){
-    var cells = [];
-    _.each(require('js/colors').allColors, function(c){
-      console.log('Got a color: ', c);
-      cells.push('<li style="background-color: '+c+';">Lorem ipsum</li>');
-    });
-    $('body').append('<ul>'+cells.join('')+'</ul>');
+  requirejs(['require','jquery','lodash',
+             'js/base','js/viewMeaningLanguages'],
+            function(require, $, _){
   });
 })();
