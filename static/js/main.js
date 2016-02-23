@@ -14,7 +14,9 @@
     }
   });
   requirejs(['require','jquery','lodash',
-             'js/base','js/viewMeaningLanguages'],
+             'js/base',
+             'js/viewMeaningLanguages',
+             'js/viewLanguageMeanings'],
             function(require, $, _){
   });
 })();
