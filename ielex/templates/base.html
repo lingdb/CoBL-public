@@ -207,10 +207,13 @@
         {% endblock %}
       </div>
     </nav>
-    {# Include jQuery + bootstrap: #}
-    <script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
-    <script src="{% static 'bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'js/base.js' %}"></script>
+    {# Including javascript: #}
+    {% if debug %}
+      <script src="{% static 'bower_components/requirejs/require.js' %}"
+              data-main="{% static 'js/main.js' %}"></script>
+    {% else %}
+      <script src="{% static 'minified.js' %}"></script>
+    {% endif %}
   </body>
 </html>
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

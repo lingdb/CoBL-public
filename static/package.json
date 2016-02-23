@@ -1,0 +1,18 @@
+{
+  "name": "ielex2static",
+  "version": "1.0.0",
+  "description": "Static files for ielex2 maintained via npm",
+  "repository": "https://github.com/lingdb/IELex2-CognaC",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jakob Runge <mam09crm@studserv.uni-leipzig.de>",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-requirejs": "^0.4.4",
+    "grunt-contrib-watch": "^0.6.1"
+  }
+}
