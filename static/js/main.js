@@ -16,7 +16,10 @@
   requirejs(['require','jquery','lodash',
              'js/base',
              'js/viewMeaningLanguages',
-             'js/viewLanguageMeanings'],
+             'js/viewLanguageMeanings',
+             'js/viewTableFilter'],
             function(require, $, _){
+    //Initializing viewTableFilter:
+    require('js/viewTableFilter').init('table.viewTableFilter');
   });
 })();
