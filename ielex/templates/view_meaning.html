@@ -86,13 +86,124 @@
                 <th alt="Language specific">Gloss</th>
                 <th>Notes</th>
               </tr>
+              <tr>
+                <th class="hide"></th>
+                <th>
+                  <div class="btn btn-xs btn-default sortIntText"
+                       data-selector=".sortLanguageId">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <input type="text" class="filterText form-control"
+                         data-selector=".languageName">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".languageName">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th></th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".lexemeSourceForm">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemeSourceForm input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th colspan="3"></th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".lexemeTransliteration">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemeTransliteration input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <button type="button" class="filterSwadesh btn btn-xs btn-default"
+                          data-selector=".lexemeSwadeshTerm">
+                    <span class="glyphicon glyphicon-remove-sign"></span>
+                  </button>
+                </th>
+                <th>
+                  <input type="text" class="filterCognate form-control"
+                         data-selector=".cognateClasses" size="1">
+                </th>
+                <th>
+                  <button type="button" class="filterBool btn btn-xs btn-default"
+                          data-selector=".lexemeIsLoan">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                  </button>
+                </th>
+                <th>
+                  <button type="button" class="filterBool btn btn-xs btn-default"
+                          data-selector=".lexemeIsExcluded">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                  </button>
+                </th>
+                <th>
+                  <button type="button" class="filterBool btn btn-xs btn-default"
+                          data-selector=".lexemeShowLoanEvent">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                  </button>
+                </th>
+                <th></th>
+                <th>
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".lexemeRootForm">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemeRootForm input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <div class="btn btn-xs btn-default sortIntText"
+                       data-selector=".lexemeNCog">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".lexemePhoneMic">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemePhoneMic input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th colspan="2"></th>
+                <th>
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".lexemePhoneTic">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemePhoneTic input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".lexemeGloss">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemeGloss input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".lexemeNotes">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemeNotes input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+              </tr>
             </thead>
             <tbody>
               {% for lexeme in lex_ed_form.lexemes %}
                 <tr>
                   <td class="hide">{{ lexeme.id }}</td>
-                  <td>{{ lexeme.data.language_id }}</td>
-                  <td>
+                  <td class="sortLanguageId">{{ lexeme.data.language_id }}</td>
+                  <td class="languageName">
                     <a href="{% url 'language-report' lexeme.language_asciiname.data %}">
                       {{ lexeme.data.language_utf8name }}
                     </a>
@@ -109,7 +220,9 @@
                       </a>
                     {% endif %}
                   </td>
-                  <td>{% form_field lexeme.source_form id="source_form" class="form-control" %}</td>
+                  <td class="lexemeSourceForm">
+                    {% form_field lexeme.source_form id="source_form" class="form-control" %}
+                  </td>
                   <td>
                     <a href="{% url 'view-lexeme' lexeme.id.data %}" title="View/edit the lexical entry">
                       <span class="glyphicon glyphicon-search"></span>
@@ -129,8 +242,12 @@
                       <span class="glyphicon glyphicon-step-forward"></span>
                     </button>
                   </td>
-                  <td>{% form_field lexeme.transliteration id="transliteration" size="8" class="form-control" %}</td>
-                  <td>{% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" %}</td>
+                  <td class="lexemeTransliteration">
+                    {% form_field lexeme.transliteration id="transliteration" size="8" class="form-control" %}
+                  </td>
+                  <td class="lexemeSwadeshTerm">
+                    {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" %}
+                  </td>
                   <td>
                     <div class="cognateClasses">
                       {{ lexeme.cognate_class_links.data }}
@@ -149,9 +266,13 @@
                       {% endif %}
                     </div>
                   </td>
-                  <td>{% form_field lexeme.is_loan disabled="disabled" class="form-control" %}</td>
-                  <td>{% form_field lexeme.is_excluded disabled="disabled" class="form-control" %}</td>
-                  <td>
+                  <td class="lexemeIsLoan">
+                    {% form_field lexeme.is_loan disabled="disabled" class="form-control" %}
+                  </td>
+                  <td class="lexemeIsExcluded">
+                    {% form_field lexeme.is_excluded disabled="disabled" class="form-control" %}
+                  </td>
+                  <td class="lexemeShowLoanEvent">
                     {% if lexeme.object_data.show_loan_event %}
                       {% form_field lexeme.loan_event disabled="disabled" class="form-control" %}
                     {% endif %}
@@ -163,11 +284,15 @@
                       <span class="glyphicon glyphicon-fast-forward"></span>
                     </button>
                   </td>
-                  <td>{% form_field lexeme.root_form id="rootform" class="form-control" %}</td>
-                  <td class="narrow">
+                  <td class="lexemeRootForm">
+                    {% form_field lexeme.root_form id="rootform" class="form-control" %}
+                  </td>
+                  <td class="lexemeNCog">
                     <span class="badge">{{ lexeme.data.number_cognate_coded }}</span>
                   </td>
-                  <td>{% form_field lexeme.phoneMic id="phoneMic" size="8" class="form-control" %}</td>
+                  <td class="lexemePhoneMic">
+                    {% form_field lexeme.phoneMic id="phoneMic" size="8" class="form-control" %}
+                  </td>
                   <td>
                     <button class="leftcheckarrow btn btn-xs" type="button"
                             id="phoneTic2phoneMic#{{lexeme.phon_form.name}}#{{lexeme.phoneMic.name}}"
@@ -182,9 +307,15 @@
                       <span class="glyphicon glyphicon-step-forward"></span>
                     </button>
                   </td>
-                  <td>{% form_field lexeme.phon_form id="phoneTic" size="8" class="form-control" %}</td>
-                  <td>{% form_field lexeme.gloss size="4" class="form-control" %}</td>
-                  <td>{% form_field lexeme.notes class="form-control" %}</td>
+                  <td class="lexemePhoneTic">
+                    {% form_field lexeme.phon_form id="phoneTic" size="8" class="form-control" %}
+                  </td>
+                  <td class="lexemeGloss">
+                    {% form_field lexeme.gloss size="4" class="form-control" %}
+                  </td>
+                  <td class="lexemeNotes">
+                    {% form_field lexeme.notes class="form-control" %}
+                  </td>
                 </tr>
               {% endfor %}
             </tbody>
