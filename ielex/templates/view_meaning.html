@@ -105,7 +105,7 @@
                 <th></th>
                 <th>
                   <input type="text" class="filterInput form-control"
-                         data-selector=".lexemeSourceForm">
+                         data-selector=".lexemeSourceForm input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".lexemeSourceForm input">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -114,44 +114,45 @@
                 <th colspan="3"></th>
                 <th>
                   <input type="text" class="filterInput form-control"
-                         data-selector=".lexemeTransliteration">
+                         data-selector=".lexemeTransliteration input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".lexemeTransliteration input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 </th>
                 <th>
-                  <button type="button" class="filterSwadesh btn btn-xs btn-default"
-                          data-selector=".lexemeSwadeshTerm">
+                  <button type="button" class="filterBool btn btn-xs btn-danger"
+                          data-selector=".lexemeSwadeshTerm input">
                     <span class="glyphicon glyphicon-remove-sign"></span>
                   </button>
                 </th>
                 <th>
-                  <input type="text" class="filterCognate form-control"
-                         data-selector=".cognateClasses" size="1">
+                  <input type="text" class="filterText form-control"
+                         data-selector=".cognateClasses"
+                         size="1" style="padding-left: 2px; padding-right: 2px;">
                 </th>
                 <th>
                   <button type="button" class="filterBool btn btn-xs btn-default"
-                          data-selector=".lexemeIsLoan">
+                          data-selector=".lexemeIsLoan input">
                     <span class="glyphicon glyphicon-question-sign"></span>
                   </button>
                 </th>
                 <th>
                   <button type="button" class="filterBool btn btn-xs btn-default"
-                          data-selector=".lexemeIsExcluded">
+                          data-selector=".lexemeIsExcluded input">
                     <span class="glyphicon glyphicon-question-sign"></span>
                   </button>
                 </th>
                 <th>
                   <button type="button" class="filterBool btn btn-xs btn-default"
-                          data-selector=".lexemeShowLoanEvent">
+                          data-selector=".lexemeShowLoanEvent input">
                     <span class="glyphicon glyphicon-question-sign"></span>
                   </button>
                 </th>
                 <th></th>
                 <th>
                   <input type="text" class="filterInput form-control narrow"
-                         data-selector=".lexemeRootForm">
+                         data-selector=".lexemeRootForm input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".lexemeRootForm input">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -165,7 +166,7 @@
                 </th>
                 <th>
                   <input type="text" class="filterInput form-control narrow"
-                         data-selector=".lexemePhoneMic">
+                         data-selector=".lexemePhoneMic input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".lexemePhoneMic input">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -174,7 +175,7 @@
                 <th colspan="2"></th>
                 <th>
                   <input type="text" class="filterInput form-control narrow"
-                         data-selector=".lexemePhoneTic">
+                         data-selector=".lexemePhoneTic input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".lexemePhoneTic input">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -182,7 +183,7 @@
                 </th>
                 <th>
                   <input type="text" class="filterInput form-control narrow"
-                         data-selector=".lexemeGloss">
+                         data-selector=".lexemeGloss input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".lexemeGloss input">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -190,7 +191,7 @@
                 </th>
                 <th>
                   <input type="text" class="filterInput form-control narrow"
-                         data-selector=".lexemeNotes">
+                         data-selector=".lexemeNotes input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".lexemeNotes input">
                     <span class="glyphicon glyphicon-sort"></span>

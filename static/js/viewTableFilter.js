@@ -10,8 +10,7 @@
       that select the elements to sort/filter by relative to each tr in the tbody.
     */
     var module = {
-      inputClasses: ['filterText', 'filterInput', 'filterSwadesh',
-                     'filterCognate', 'filterBool'],
+      inputClasses: ['filterText', 'filterInput', 'filterBool'],
       btnClasses: ['sortInput','sortText','sortIntText']
     };
     /**
@@ -31,7 +30,7 @@
           if(inputClass in module){
             table.find('input.'+inputClass).each(function(){
               var input = $(this);
-              input.change(function(){
+              input.keyup(function(){
                 module[inputClass](input, table);
               });
             });
@@ -40,6 +39,8 @@
               button.click(function(){
                 module[inputClass](button, table);
               });
+              //Initial filtering for buttons:
+              module[inputClass](button, table, true);
             });
           }else{
             console.log('inputClass not implemented:', inputClass);
@@ -144,6 +145,124 @@
         return row.find(selector).val();
       };
     });
+    /**
+      The filterPredicates :: id string -> ($ ∧ row) -> Bool
+      is used to filter rows using all selectors.
+      Predicates shall return True if something needs to be hidden.
+    */
+    var filterPredicates = {};
+    /**
+      @param table :: $ ∧ table
+      The general filter function
+      used by the modules specialised filter functions.
+    */
+    var filter = function(table){
+      table.find('tbody > tr').each(function(){
+        var row = $(this);
+        var hide = _.some(filterPredicates, function(λ){
+          return λ(row);
+        });
+        if(hide){
+          row.addClass('hide');
+        }else{
+          row.removeClass('hide');
+        }
+      });
+    };
+    /**
+      @param prefix :: string
+      @param mkPredicate :: (selector string, RegExp) -> $ ∧ row -> Bool
+    */
+    var mkStringFilter = function(prefix, mkPredicate){
+      return function(input, table){
+        var selector = input.data('selector');
+        var id = prefix+selector;
+        if(input.val() === ''){
+          delete filterPredicates[id];
+        }else{
+          var re = new RegExp(input.val());
+          filterPredicates[id] = mkPredicate(selector, re);
+        }
+        filter(table);
+      };
+    };
+    /**
+      @param input :: $ ∧ input.filterText
+      @param table :: $ ∧ table
+    */
+    module.filterText = mkStringFilter('filterText', function(selector, re){
+      return function(row){
+        var text = row.find(selector).text().trim();
+        return text.match(re) === null;
+      };
+    });
+    /**
+      @param input :: $ ∧ input.filterText
+      @param table :: $ ∧ table
+    */
+    module.filterInput = mkStringFilter('filterInput', function(selector, re){
+      return function(row){
+        var text = row.find(selector).val().trim();
+        return text.match(re) === null;
+      };
+    });
+    /**
+      @param input :: $ ∧ button.filterBool
+      @param table :: $ ∧ table
+      @param initial :: Bool
+      If initial is set filterBool shall not change the buttons content.
+    */
+    module.filterBool = function(btn, table, initial){
+      //Find wanted kind of filter:
+      var span = btn.find('.glyphicon');
+      var wanted;
+      if(initial !== true){
+        if(span.hasClass('glyphicon-remove-sign')){
+          wanted = null; // remove -> question
+        }else if(span.hasClass('glyphicon-ok-sign')){
+          wanted = false; // ok -> remove
+        }else if(span.hasClass('glyphicon-question-sign')){
+          wanted = true; // question -> ok
+        }
+      }else{
+        if(span.hasClass('glyphicon-remove-sign')){
+          wanted = false; // remove -> remove
+        }else if(span.hasClass('glyphicon-ok-sign')){
+          wanted = true; // ok -> ok
+        }else if(span.hasClass('glyphicon-question-sign')){
+          wanted = null; // question -> question
+        }
+      }
+      //Adjust button if not initial:
+      if(initial !== true){
+        if(wanted === null){
+          // remove -> question
+          btn.removeClass('btn-danger').addClass('btn-default')
+             .html('<span class="glyphicon glyphicon-question-sign"></span>');
+        }else if(wanted){
+          // question -> ok
+          btn.removeClass('btn-default').addClass('btn-success')
+             .html('<span class="glyphicon glyphicon-ok-sign"></span>');
+        }else{
+          // ok -> remove
+          btn.removeClass('btn-success').addClass('btn-danger')
+             .html('<span class="glyphicon glyphicon-remove-sign"></span>');
+        }
+      }
+      //Un-/Registering filter function:
+      var selector = btn.data('selector');
+      var id = 'filterBool'+selector;
+      if(wanted === null){
+        delete filterPredicates[id];
+      }else{
+        filterPredicates[id] = function(row){
+          var checked = row.find(selector).prop('checked');
+          return checked !== wanted;
+        };
+      }
+      //Filtering
+      filter(table);
+    };
     //Finished module:
     return module;
   });
