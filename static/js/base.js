@@ -41,21 +41,6 @@
     });
   };
 
-  window.ExcludeRows = function(){
-    var notswad_chckbx_list = document.getElementsByClassName('notswad_checkbox');
-    Array.prototype.forEach.call(notswad_chckbx_list, function(notswad_chckbx_elem){
-      if(notswad_chckbx_elem.checked) {
-        var target = notswad_chckbx_elem.parentElement;
-        while(target.tagName !== 'TR' && target !== null){
-          target = target.parentElement;
-        }
-        if(target !== null){
-          target.style.display = "none";
-        }
-      }
-    });
-  };
-
   window.MirrorCognateCheckboxes = function(cbox){
     var checked = cbox.checked,
         cld = cbox.dataset.mirror,
