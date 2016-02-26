@@ -78,9 +78,9 @@
             <a href="{% url 'view-language-list' current_list.name %}" class="btn btn-danger"> undo</a>
             <input type="submit" value="Submit" name="langlist_form" class="btn btn-primary">
           </div>
-          <table class="table table-striped">
+          <table class="table table-striped viewTableFilter">
             <thead>
-              <tr class="mid-align">
+              <tr>
                 <th></th>
                 <th>Name</th>
                 <th>Variety</th>
@@ -125,31 +125,170 @@
                 <th>Author</th>
                 <th>Reviewer</th>
               </tr>
+              <tr>
+                <th>
+                  <div class="btn btn-xs btn-default sortIntText"
+                       data-selector=".entryNo">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <input type="text" class="filterText form-control"
+                         data-selector=".languageName">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".languageName">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".languageVariety input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".languageVariety input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <div class="btn btn-xs btn-default sortIntText"
+                       data-selector=".languageExcessCount">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <div class="btn btn-xs btn-default sortIntText"
+                       data-selector=".languageMgsCount">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <div class="btn btn-xs btn-default sortIntText"
+                       data-selector=".languageLexCount">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <div class="btn btn-xs btn-default sortIntText"
+                       data-selector=".languageEntdCount">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <button type="button" class="filterBool btn btn-xs btn-default"
+                          data-selector=".languageRepresentative input">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                  </button>
+                </th>
+                <th>
+                  <button type="button" class="filterBool btn btn-xs btn-default"
+                          data-selector=".languageFossStat input">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                  </button>
+                </th>
+                <th>
+                  <button type="button" class="filterBool btn btn-xs btn-default"
+                          data-selector=".languageLowStat input">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                  </button>
+                </th>
+                <th>
+                  <input type="text" class="filterText form-control"
+                         data-selector=".languageIsoCode">
+                </th>
+                <th>
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".languageGlottocode">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".languageGlottocode">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageLevel0 input">
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageLevel1 input">
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageLevel2 input">
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".languageSndCompCode input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".languageSndCompCode input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageMeanTimeDepth input">
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageStdDeviationTimeDepth input">
+                </th>
+                <th></th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageRfcWebPath1 input">
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageRfcWebPath2 input">
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageAuthor input">
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageReviewer input">
+                </th>
+              </tr>
             </thead>
             <tbody>
               {% for language in lang_ed_form.langlist %}
                 <tr>
-                  <td>{{ forloop.counter }}</td>
-                  <td>
+                  <td class="entryNo">
+                    {{ forloop.counter }}
+                  </td>
+                  <td class="languageName">
                     {% form_field language.ascii_name class="language_name hide" %}
                     <a href="{% url 'language-report' language.ascii_name.data %}" alt="view lexeme list"
                       title="View wordlist list for {{ language.utf8_name.data }}">
                       {{ language.utf8_name.data }}
                     </a>
                   </td>
-                  <td>{% form_field language.variety size="8" class="form-control" %}</td>
-                  <td><span class="badge">{{ language.data.excess_count }}</span></td>
-                  <td><span class="badge">{{ language.data.mgs_count    }}</span></td>
-                  <td><span class="badge">{{ language.data.lex_count    }}</span></td>
-                  <td><span class="badge">{{ language.data.entd_count   }}</span></td>
-                  <td>
+                  <td class="languageVariety">
+                    {% form_field language.variety size="8" class="form-control" %}
+                  </td>
+                  <td class="languageExcessCount">
+                    <span class="badge">{{ language.data.excess_count }}</span>
+                  </td>
+                  <td class="languageMgsCount">
+                    <span class="badge">{{ language.data.mgs_count    }}</span>
+                  </td>
+                  <td class="languageLexCount">
+                    <span class="badge">{{ language.data.lex_count    }}</span>
+                  </td>
+                  <td class="languageEntdCount">
+                    <span class="badge">{{ language.data.entd_count   }}</span>
+                  </td>
+                  <td class="languageRepresentative">
                     <div class="centralised_checkbox">
                       {% form_field language.representative class="form-control" %}
                     </div>
                   </td>
-                  <td>{% form_field language.foss_stat onclick="MutexCheckbox(this)" class="MutexCheckbox form-control" %}</td>
-                  <td>{% form_field language.low_stat onclick="MutexCheckbox(this)" class="MutexCheckbox form-control" %}</td>
-                  <td>
+                  <td class="languageFossStat">
+                    {% form_field language.foss_stat onclick="MutexCheckbox(this)" class="MutexCheckbox form-control" %}
+                  </td>
+                  <td class="languageLowStat">
+                    {% form_field language.low_stat onclick="MutexCheckbox(this)" class="MutexCheckbox form-control" %}
+                  </td>
+                  <td class="languageIsoCode">
                     {% if language.iso_code.data %}
                       <a href="http://en.wikipedia.org/wiki/ISO_639:{{ language.iso_code.data }}" target="_blank">
                         {{ language.iso_code.data }}
@@ -158,7 +297,7 @@
                       {% form_field language.iso_code maxlength="3" size="3" class="form-control" %}
                     {% endif %}
                   </td>
-                  <td>
+                  <td class="languageGlottocode">
                     {% if language.data.glottocode %}
                       <a href="http://glottolog.org/resource/languoid/id/{{ language.data.glottocode }}" target="_blank">
                         {{ language.data.glottocode }}
@@ -167,12 +306,24 @@
                       {% form_field language.glottocode maxlength="8" size="8" class="form-control" %}
                     {% endif %}
                   </td>
-                  <td>{% form_field language.level0 class="languageBranch form-control" maxlength="1" size="1" %}</td>
-                  <td>{% form_field language.level1 class="languageBranch form-control" maxlength="1" size="1" %}</td>
-                  <td>{% form_field language.level2 class="languageBranch form-control" maxlength="1" size="1" %}</td>
-                  <td>{% form_field language.soundcompcode size="8" class="form-control" %}</td>
-                  <td>{% form_field language.mean_timedepth_BP_years maxlength="4" size="4" class="form-control" %}</td>
-                  <td>{% form_field language.std_deviation_timedepth_BP_years maxlength="4" size="4" class="form-control" %}</td>
+                  <td class="languageLevel0">
+                    {% form_field language.level0 class="languageBranch form-control" maxlength="1" size="1" %}
+                  </td>
+                  <td class="languageLevel1">
+                    {% form_field language.level1 class="languageBranch form-control" maxlength="1" size="1" %}
+                  </td>
+                  <td class="languageLevel2">
+                    {% form_field language.level2 class="languageBranch form-control" maxlength="1" size="1" %}
+                  </td>
+                  <td class="languageSndCompCode">
+                    {% form_field language.soundcompcode size="8" class="form-control" %}
+                  </td>
+                  <td class="languageMeanTimeDepth">
+                    {% form_field language.mean_timedepth_BP_years maxlength="4" size="4" class="form-control" %}
+                  </td>
+                  <td class="languageStdDeviationTimeDepth">
+                    {% form_field language.std_deviation_timedepth_BP_years maxlength="4" size="4" class="form-control" %}
+                  </td>
                   <td>
                     <a href="{% url 'language-edit' language.ascii_name.data %}"
                        title="Edit {{ language.utf8_name.data }} metadata"
@@ -180,10 +331,18 @@
                       <span class="glyphicon glyphicon-edit"></span>
                     </a>
                   </td>
-                  <td>{% form_field language.rfcWebPath1 size="4" class="form-control" %}</td>
-                  <td>{% form_field language.rfcWebPath2 size="4" class="form-control" %}</td>
-                  <td>{% form_field language.author size="8" class="form-control" %}</td>
-                  <td>{% form_field language.reviewer size="8" class="form-control" %}</td>
+                  <td class="languageRfcWebPath1">
+                    {% form_field language.rfcWebPath1 size="4" class="form-control" %}
+                  </td>
+                  <td class="languageRfcWebPath2">
+                    {% form_field language.rfcWebPath2 size="4" class="form-control" %}
+                  </td>
+                  <td class="languageAuthor">
+                    {% form_field language.author size="8" class="form-control" %}
+                  </td>
+                  <td class="languageReviewer">
+                    {% form_field language.reviewer size="8" class="form-control" %}
+                  </td>
                 </tr>
               {% endfor %}
             </tbody>
