@@ -1394,11 +1394,11 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
 
     def DELETE_CITATION_WARNING_MSG():
         messages.add_message(
-                request,
-                messages.WARNING,
-                oneline("""Deletion of the final citation is not allowed. If
-                you need to, add a new one before deleting the current
-                one."""))
+            request,
+            messages.WARNING,
+            oneline("""Deletion of the final citation is not allowed. If
+            you need to, add a new one before deleting the current
+            one."""))
 
     def DELETE_COGJUDGE_WARNING_MSG(citation):
         msg = Template(oneline("""Deletion of final cognate citation is not
@@ -1407,9 +1407,9 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
         context = RequestContext(request)
         context["alias"] = citation.cognate_judgement.cognate_class.alias
         messages.add_message(
-                request,
-                messages.WARNING,
-                msg.render(context))
+            request,
+            messages.WARNING,
+            msg.render(context))
 
     def warn_if_lacking_cognate_judgement_citation():
         for cognate_judgement in CognateJudgement.objects.filter(
@@ -1480,11 +1480,11 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = LexemeCitation(
-                            lexeme=lexeme,
-                            source=cd["source"],
-                            pages=cd["pages"],
-                            reliability=cd["reliability"],
-                            comment=cd["comment"])
+                        lexeme=lexeme,
+                        source=cd["source"],
+                        pages=cd["pages"],
+                        reliability=cd["reliability"],
+                        comment=cd["comment"])
                     try:
                         citation.save()
                         # messages.add_message(
@@ -1493,11 +1493,11 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         #         oneline("Citation successfully added"))
                     except IntegrityError:
                         messages.add_message(
-                                request,
-                                messages.WARNING,
-                                oneline("""Lexeme citations must be unique.
-                                    This source is already cited for this
-                                    lexeme."""))
+                            request,
+                            messages.WARNING,
+                            oneline("""Lexeme citations must be unique.
+                                This source is already cited for this
+                                lexeme."""))
                     request.session["previous_citation_id"] = citation.id
                     return HttpResponseRedirect(
                         get_redirect_url(form, citation))
@@ -1509,11 +1509,11 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 if form.is_valid():
                     cd = form.cleaned_data
                     citation = LexemeCitation(
-                            lexeme=lexeme,
-                            source=cd["source"],
-                            pages=cd["pages"],
-                            reliability=cd["reliability"],
-                            comment=cd["comment"])
+                        lexeme=lexeme,
+                        source=cd["source"],
+                        pages=cd["pages"],
+                        reliability=cd["reliability"],
+                        comment=cd["comment"])
                     citation.save()
                     request.session["previous_citation_id"] = citation.id
                     return HttpResponseRedirect(
@@ -1563,11 +1563,11 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 languagelist = get_canonical_language_list(
                         get_current_language_list_name(request), request)
                 redirect_url = '%s#lexeme_%s' % (
-                        reverse("view-meaning-languages-add-cognate",
-                                args=[lexeme.meaning.gloss,
-                                      languagelist,
-                                      lexeme.id]),
-                        lexeme.id)
+                    reverse("view-meaning-languages-add-cognate",
+                            args=[lexeme.meaning.gloss,
+                                  languagelist,
+                                  lexeme.id]),
+                    lexeme.id)
                 return HttpResponseRedirect(redirect_url)
             else:
                 assert not action
@@ -1584,9 +1584,9 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "edit-citation":
                 citation = LexemeCitation.objects.get(id=citation_id)
                 form = EditCitationForm(
-                            initial={"pages": citation.pages,
-                                     "reliability": citation.reliability,
-                                     "comment": citation.comment})
+                    initial={"pages": citation.pages,
+                             "reliability": citation.reliability,
+                             "comment": citation.comment})
             elif action in ("add-citation", "add-new-citation"):
                 previous_citation_id = request.session.get(
                     "previous_citation_id")
@@ -1594,9 +1594,9 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     citation = LexemeCitation.objects.get(
                         id=previous_citation_id)
                     form = AddCitationForm(
-                                initial={"source": citation.source.id,
-                                         "pages": citation.pages,
-                                         "reliability": citation.reliability})
+                        initial={"source": citation.source.id,
+                                 "pages": citation.pages,
+                                 "reliability": citation.reliability})
                     # "comment":citation.comment})
                 except LexemeCitation.DoesNotExist:
                     form = AddCitationForm()
@@ -1605,9 +1605,9 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             elif action == "edit-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 form = EditCitationForm(
-                            initial={"pages": citation.pages,
-                                     "reliability": citation.reliability,
-                                     "comment": citation.comment})
+                    initial={"pages": citation.pages,
+                             "reliability": citation.reliability,
+                             "comment": citation.comment})
             elif action == "delink-cognate":
                 cj = CognateJudgement.objects.get(id=cogjudge_id)
                 cj.delete()
@@ -1619,22 +1619,22 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     citation = CognateJudgementCitation.objects.get(
                         id=previous_citation_id)
                     form = AddCitationForm(
-                                initial={"source": citation.source.id,
-                                         "pages": citation.pages,
-                                         "reliability": citation.reliability})
+                        initial={"source": citation.source.id,
+                                 "pages": citation.pages,
+                                 "reliability": citation.reliability})
                     # "comment":citation.comment})
                 except CognateJudgementCitation.DoesNotExist:
                     form = AddCitationForm()
                 # form = AddCitationForm()
             elif action == "add-cognate":
                 languagelist = get_canonical_language_list(
-                        get_current_language_list_name(request), request)
+                    get_current_language_list_name(request), request)
                 redirect_url = '%s#lexeme_%s' % (
-                        reverse("view-meaning-languages-add-cognate",
-                                args=[lexeme.meaning.gloss,
-                                      languagelist,
-                                      lexeme.id]),
-                        lexeme.id)
+                    reverse("view-meaning-languages-add-cognate",
+                            args=[lexeme.meaning.gloss,
+                                  languagelist,
+                                  lexeme.id]),
+                    lexeme.id)
                 return HttpResponseRedirect(redirect_url)
                 # redirect_url = '%s#lexeme_%s' % (reverse("meaning-report",
                 #        args=[lexeme.meaning.gloss]), lexeme.id)
@@ -1656,12 +1656,12 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 return HttpResponseRedirect(redirect_url)
             elif action == "add-new-cognate":
                 current_aliases = CognateClass.objects.filter(
-                        lexeme__in=Lexeme.objects.filter(
-                            meaning=lexeme.meaning)
-                        ).distinct().values_list("alias", flat=True)
+                    lexeme__in=Lexeme.objects.filter(
+                        meaning=lexeme.meaning)
+                    ).distinct().values_list("alias", flat=True)
                 new_alias = next_alias(list(current_aliases))
                 cognate_class = CognateClass.objects.create(
-                        alias=new_alias)
+                    alias=new_alias)
                 cj = CognateJudgement.objects.create(
                     lexeme=lexeme, cognate_class=cognate_class)
                 return HttpResponseRedirect(anchored(
@@ -1710,27 +1710,27 @@ def lexeme_duplicate(request, lexeme_id):
 
     if done_split:
         new_lexeme = Lexeme.objects.create(
-                language=original_lexeme.language,
-                meaning=original_lexeme.meaning,
-                source_form=new_source_form,
-                phon_form=new_phon_form,
-                notes=original_lexeme.notes)
+            language=original_lexeme.language,
+            meaning=original_lexeme.meaning,
+            source_form=new_source_form,
+            phon_form=new_phon_form,
+            notes=original_lexeme.notes)
         for lc in original_lexeme.lexemecitation_set.all():
             LexemeCitation.objects.create(
-                    lexeme=new_lexeme,
-                    source=lc.source,
-                    pages=lc.pages,
-                    reliability=lc.reliability)
+                lexeme=new_lexeme,
+                source=lc.source,
+                pages=lc.pages,
+                reliability=lc.reliability)
         for cj in original_lexeme.cognatejudgement_set.all():
             new_cj = CognateJudgement.objects.create(
-                    lexeme=new_lexeme,
-                    cognate_class=cj.cognate_class)
+                lexeme=new_lexeme,
+                cognate_class=cj.cognate_class)
             for cjc in cj.cognatejudgementcitation_set.all():
                 CognateJudgementCitation.objects.create(
-                        cognate_judgement=new_cj,
-                        source=cjc.source,
-                        pages=cjc.pages,
-                        reliability=cjc.reliability)
+                    cognate_judgement=new_cj,
+                    source=cjc.source,
+                    pages=cjc.pages,
+                    reliability=cjc.reliability)
 
         original_lexeme.source_form = original_source_form
         original_lexeme.phon_form = original_phon_form
@@ -1820,9 +1820,9 @@ def redirect_lexeme_citation(request, lexeme_id):
 def cognate_report(request, cognate_id=0, meaning=None, code=None,
                    cognate_name=None, action=""):
     form_dict = {
-            "edit-name": EditCognateClassNameForm,
-            "edit-notes": EditCognateClassNotesForm
-            }
+        "edit-name": EditCognateClassNameForm,
+        "edit-notes": EditCognateClassNotesForm
+        }
     if cognate_id:
         cognate_class = CognateClass.objects.get(id=int(cognate_id))
     elif cognate_name:
