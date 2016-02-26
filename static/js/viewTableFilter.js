@@ -180,7 +180,7 @@
         if(input.val() === ''){
           delete filterPredicates[id];
         }else{
-          var re = new RegExp(input.val());
+          var re = new RegExp(input.val(), "i");
           filterPredicates[id] = mkPredicate(selector, re);
         }
         filter(table);
