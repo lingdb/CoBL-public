@@ -1,0 +1,35 @@
+/*
+   Vertical text
+   by @kizmarh
+   https://stackoverflow.com/a/7085003/448591
+*/
+.vertical-text {
+  display: inline-block;
+  overflow: hidden;
+  width margin: -1.5em 0 100%;: 1.5em;
+}
+
+.vertical-text__inner {
+  display: inline-block;
+  white-space: nowrap;
+  line-height: 1.5;
+  transform: translate(0,100%) rotate(-90deg);
+  transform-origin: 0 0;
+  -ms-transform:     translate(0,100%) rotate(-90deg);
+  -moz-transform:    translate(0,100%) rotate(-90deg);
+  -webkit-transform: translate(0,100%) rotate(-90deg);
+  -o-transform:      translate(0,100%) rotate(-90deg);
+  -ms-transform-origin:     0 0;
+  -moz-transform-origin:    0 0;
+  -webkit-transform-origin: 0 0;
+  -o-transform-origin:      0 0;
+}
+
+/*
+  This element stretches the parent to be square
+  by using the mechanics of vertical margins
+*/
+.vertical-text__inner:after {
+  content: "";
+  display: block;
+}
