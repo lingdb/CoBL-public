@@ -52,9 +52,8 @@
         <table class="table table-striped viewTableFilter">
           <thead>
             <tr>
+              <th></th>
               <th>Meaning</th>
-              <th>Description</th>
-              <th>Notes</th>
               <th>Show<br>Languages</th>
               <th>Show<br>Cog. Sets</th>
               {% if user.is_authenticated %}
@@ -68,27 +67,12 @@
             </tr>
             {% if user.is_authenticated %}
               <tr>
+              <th></th>
                 <th>
                   <input type="text" class="filterInput form-control"
                          data-selector=".meaningGloss input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".meaningGloss input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".meaningDesc input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".meaningDesc input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".meaningNotes textarea">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".meaningNotes textarea">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 </th>
@@ -119,14 +103,16 @@
               <tr>
                 {% if user.is_authenticated and user.is_staff %}
                   {% form_field meaning.meaningId class="hide" %}
+                  <td>
+                    {% if meaning.data.gloss %}
+                      <a href="https://github.com/lingdb/IELex2-CognaC/wiki/{{ meaning.data.gloss }}"
+                         title="View wiki page." target="_blank">
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                      </a>
+                    {% endif %}
+                  </td>
                   <td class="meaningGloss">
                     {% form_field meaning.gloss class="form-control" size="4" %}
-                  </td>
-                  <td class="meaningDesc">
-                    {% form_field meaning.desc class="form-control" size="8"%}
-                  </td>
-                  <td class="meaningNotes">
-                    {% form_field meaning.notes class="form-control" %}
                   </td>
                 {% else %}
                   <td class="meaningGloss">

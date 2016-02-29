@@ -13,12 +13,6 @@
     <div class="col-md-4">
       <h1>
         {{ meaning.gloss }}
-        <a href="{% url 'meaning-add-lexeme' meaning.gloss %}"
-           class="btn btn-default btn-xs"
-           data-toggle="tooltip" data-placement="bottom"
-           title="add a new lexeme">
-          <span class="glyphicon glyphicon-plus-sign"></span>
-        </a>
       </h1>
     </div>
     <div class="col-md-4">
@@ -49,17 +43,21 @@
       <div class="col-md-12">
         <form action="" method="POST" name="lex_ed_form">
           {% csrf_token %}
-          <div class="form-group">
-            <label for="langlist_form">Save table?</label>
-            <a href="{% url 'view-meaning-languages' meaning.gloss current_language_list.name %}" class="btn btn-danger"> undo</a>
-            <input type="submit" value="Submit" name="meang_form" class="btn btn-primary">
+          <div class="form-group pull-right">
+            <a href="{% url 'meaning-add-lexeme' meaning.gloss %}"
+               class="btn btn-default space-right"
+               data-toggle="tooltip" data-placement="bottom"
+               title="add a new lexeme">
+              <span class="glyphicon glyphicon-plus-sign"></span>
+            </a>
+            <a href="{% url 'view-meaning-languages' meaning.gloss current_language_list.name %}" class="btn btn-default">Undo</a>
+            <input type="submit" value="Save" name="meang_form" class="btn btn-danger">
           </div>
           <table class="table table-condensed viewTableFilter"
                  id="viewMeaningLanguages">
             <thead>
               <tr>
                 <th class="hide"></th>
-                <th>ID</th>
                 <th>Language</th>
                 <th></th>
                 <th>Orthog.</th>
@@ -80,12 +78,6 @@
               </tr>
               <tr>
                 <th class="hide"></th>
-                <th>
-                  <div class="btn btn-xs btn-default sortIntText"
-                       data-selector=".sortLanguageId">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
                 <th>
                   <input type="text" class="filterText form-control"
                          data-selector=".languageName">
@@ -194,7 +186,6 @@
               {% for lexeme in lex_ed_form.lexemes %}
                 <tr>
                   <td class="hide">{{ lexeme.id }}</td>
-                  <td class="sortLanguageId">{{ lexeme.data.language_id }}</td>
                   <td class="languageName">
                     <a href="{% url 'language-report' lexeme.language_asciiname.data %}">
                       {{ lexeme.data.language_utf8name }}

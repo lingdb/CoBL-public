@@ -12,13 +12,6 @@
     <div class="col-md-3">
       <h1 {% if language.description %}data-toggle="tooltip" data-placement="bottom" title="{{ language.description }}"{% endif %}>
         {{ language.utf8_name }} ({{ wordlist }})
-        <a href="{% url 'language-add-lexeme' language.ascii_name %}"
-           class="btn btn-default btn-xs"
-           data-toggle="tooltip" data-placement="top"
-           title="add a new lexeme">
-          <span class="glyphicon glyphicon-plus-sign"></span>
-        </a>
-        <span class="badge">{{ lexemes|length }}</span>
       </h1>
     </div>
     <div class="col-md-4">
@@ -55,16 +48,21 @@
       <div class="col-md-12">
         <form action="" method="POST" name="lex_ed_form" id="lex_ed_form_copyacross">
           {% csrf_token %}
-          <div class="form-group">
-            <label for="langlist_form">Save table?</label>
-            <a href="{% url 'view-language-wordlist' language.ascii_name wordlist.name %}" class="btn btn-danger"> undo</a>
-            <input type="submit" value="Submit" name="lex_form" class="btn btn-primary">
+          <div class="form-group pull-right">
+            <span class="badge important">{{ lexemes|length }}</span>
+            <a href="{% url 'language-add-lexeme' language.ascii_name %}"
+               class="btn btn-default space-right"
+               data-toggle="tooltip" data-placement="top"
+               title="add a new lexeme">
+              <span class="glyphicon glyphicon-plus-sign"></span>
+            </a>
+            <a href="{% url 'view-language-wordlist' language.ascii_name wordlist.name %}" class="btn btn-default">Undo</a>
+            <input type="submit" value="Save" name="lex_form" class="btn btn-danger">
           </div>
           <table class="table table-condensed viewTableFilter"
                  id="viewLanguageMeanings">
             <thead>
               <tr>
-                <th>ID</th>
                 <th></th>
                 <th colspan="2">Meaning</th>
                 <th>Orthographic</th>
@@ -73,7 +71,7 @@
                 <th>Not<br>Swh<br></th>
                 <th>loan</th>
                 <th>excl</th>
-                <th>Loan<br>Event</th>
+                <th>Loan<br>Evt</th>
                 <th>Root</th>
                 <th alt="Number of cognate classes">nCog</th>
                 <th>PhoneMic</th>
@@ -82,18 +80,12 @@
                 <th alt="Language specific">Gloss</th>
                 <th>Notes</th>
                 <th></th>
-                <th>Web dict ID 1</th>
+                <th>Dict ID 1</th>
                 <th></th>
-                <th>Web dict ID 2</th>
+                <th>Dict ID 2</th>
                 <th>Dubious</th>
               </tr>
               <tr>
-                <th>
-                  <div class="btn btn-xs btn-default sortIntText"
-                       data-selector=".lexemeMeaningId">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
                 <th></th>
                 <th colspan="2">
                   <input type="text" class="filterText form-control narrow"
@@ -153,6 +145,8 @@
                   </div>
                 </th>
                 <th>
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".lexemeNumCogCoded" size="1">
                   <div class="btn btn-xs btn-default sortIntText"
                        data-selector=".lexemeNumCogCoded">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -211,7 +205,6 @@
                 <tr class="content_row"
                     data-lexemeid="{{ lexeme.data.meaning_id }}">
                   <td class="hide">{{ lexeme.id }}</td>
-                  <td class="lexemeMeaningId">{{ lexeme.data.meaning_id }}</td>
                   <td>
                     <a href="https://github.com/lingdb/IELex2-CognaC/wiki/{{ lexeme.data.meaning }}"
                        title="View wiki page." target="_blank">
