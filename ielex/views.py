@@ -599,8 +599,8 @@ def view_language_wordlist(request, language, wordlist):
 
     for lexeme in lexemes:
         lexeme.temporary_sort_order = MeaningListOrder.objects.get(
-                meaning_list=wordlist,
-                meaning=lexeme.meaning).order
+            meaning_list=wordlist,
+            meaning=lexeme.meaning).order
     lexemes = sorted(lexemes, key=lambda l: l.temporary_sort_order)
 
     def fill_lexemestable_from_DB(lexms):
