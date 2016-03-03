@@ -72,7 +72,8 @@
                 <th>loan</th>
                 <th>excl</th>
                 <th>Loan<br>Evt</th>
-                <th>Root</th>
+                <th>Root Form</th>
+                <th>Root Language</th>
                 <th alt="Number of cognate classes">nCog</th>
                 <th>PhoneMic</th>
                 <th colspan="2"></th>
@@ -141,6 +142,14 @@
                          data-selector=".lexemeRootForm input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".lexemeRootForm input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".lexemeRootLanguage input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemeRootLanguage input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 </th>
@@ -269,6 +278,9 @@
                   </td>
                   <td class="lexemeRootForm">
                     {% form_field lexeme.root_form class="form-control" id="rootform" %}
+                  </td>
+                  <td class="lexemeRootLanguage">
+                    {% form_field lexeme.root_language class="form-control" id="rootlanguage" %}
                   </td>
                   <td class="lexemeNumCogCoded">
                     <span class="badge">

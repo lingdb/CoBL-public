@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import division
 from itertools import izip
 from string import uppercase, lowercase
@@ -622,6 +623,21 @@ class Lexeme(models.Model):
             for c in self.cognate_class.all():
                 return c.data.get('loanword', False)
         return None
+
+    def getCognateClassData(self):
+        """
+        This method was added for #90 and shall returns
+        gathered cc data for a lexeme.
+        @return {id: …, root_form: …, root_language: …}
+        """
+        ccs = self.cognate_class.all()
+        ids = [str(cc.id) for cc in ccs]
+        rfs = [cc.root_form for cc in ccs]
+        rls = [cc.root_language for cc in ccs]
+        return {
+            'id':            ','.join(ids),
+            'root_form':     ','.join(rfs),
+            'root_language': ','.join(rls)}
 
 
 @reversion.register

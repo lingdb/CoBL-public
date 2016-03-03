@@ -623,13 +623,10 @@ def view_language_wordlist(request, language, wordlist):
             lex_row_form.notes = lex.notes
             lex_row_form.number_cognate_coded = lex.number_cognate_coded
 
-            cogclass_ids = [i[0] for i in list2ntuple(
-                2, lex.denormalized_cognate_classes.split(','))]
-            cogclass_map = {cc_id: CognateClass.objects.filter(
-                id=int(cc_id))[0].root_form
-                for cc_id in cogclass_ids if cc_id}
-            lex_row_form.root_form = ','.join(
-                [v for v in cogclass_map.values() if v])
+            # CC dependant data:
+            cData = lex.getCognateClassData()
+            lex_row_form.root_form = cData['root_form']
+            lex_row_form.root_language = cData['root_language']
 
             lex_row_form.phoneMic = lex.data.get('phoneMic', '')
             lex_row_form.transliteration = \
@@ -1177,13 +1174,10 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             lex_row_form.rfcWebLookup1 = lex.data.get('rfcWebLookup1', u'')
             lex_row_form.rfcWebLookup2 = lex.data.get('rfcWebLookup2', u'')
 
-            # Adding CognateClass.root_form to the form
-            cogclass_ids = [i[0] for i in list2ntuple(
-                2, lex.denormalized_cognate_classes.split(','))]
-            cogclass_map = {cc_id: CognateClass.objects.filter(
-                id=int(cc_id))[0].root_form for cc_id in cogclass_ids if cc_id}
-            lex_row_form.root_form = ','.join(
-                [v for v in cogclass_map.values() if v])
+            # CC dependant data:
+            cData = lex.getCognateClassData()
+            lex_row_form.root_form = cData['root_form']
+            lex_row_form.root_language = cData['root_language']
 
             lex_row_form.phoneMic = lex.data.get('phoneMic', u'')
             lex_row_form.transliteration = lex.data.get(
