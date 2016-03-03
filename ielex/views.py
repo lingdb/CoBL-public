@@ -517,11 +517,6 @@ def view_language_wordlist(request, language, wordlist):
 
         request_form_dict = process_postrequest_form(request.POST)
 
-        # TODO: hack to update CognateClass.root_form
-        # only if it has been changed during this POST
-        # Here: initialise map for recording changed items plus cog class id
-        cogclass_changed_rootform_map = defaultdict(str)
-
         # TODO: need to check validity of input
         # if lex_ed_form.is_valid():
         for k, v in request_form_dict.items():
@@ -532,21 +527,8 @@ def view_language_wordlist(request, language, wordlist):
 
                 lexm = Lexeme.objects.get(id=int(v_dict['id']))
 
-                # Saving CognateClass.root_form
-                cClasses = lexm.denormalized_cognate_classes.split(',')
-                cogclassid_rootform = zip(
-                    [i[0] for i in list2ntuple(2, cClasses)],
-                    v_dict['root_form'].split(','))
-                for ccid, rtfrm in cogclassid_rootform:
-                    if ccid:
-                        cogclass = CognateClass.objects.get(id=int(ccid))
-
-                        # TODO: hack to update CognateClass.root_form
-                        # only if it has been changed during this POST
-                        # Here: collect only forms
-                        # which have been changed during this POST
-                        if cogclass.root_form != rtfrm:
-                            cogclass_changed_rootform_map[ccid] = rtfrm
+                # Saving CognateClass data:
+                lexm.setCognateClassData(**v_dict);
 
                 if not lexm.is_unchanged(**v_dict):
                     lexm.setDelta(**v_dict)
@@ -559,18 +541,6 @@ def view_language_wordlist(request, language, wordlist):
             except Exception, e:
                 print('Exception while accessing Lexeme object: ',
                       e, '; POST items are: ', v_dict)
-
-        # Now update the CognateClass
-        # TODO: hack to update CognateClass.root_form
-        # only if it has been changed during this POST
-        # Here: update root forms which were changed during this POST
-        for k, v in cogclass_changed_rootform_map.items():
-            cogclass = CognateClass.objects.get(id=int(k))
-            cogclass.root_form = v
-            try:
-                cogclass.save()
-            except Exception, e:
-                print('Exception while saving CognateClass object: ', e)
 
         return HttpResponseRedirect(reverse("view-language-wordlist",
                                     args=[language.ascii_name, wordlist.name]))
@@ -625,6 +595,7 @@ def view_language_wordlist(request, language, wordlist):
 
             # CC dependant data:
             cData = lex.getCognateClassData()
+            lex_row_form.cog_class_ids = cData['id']
             lex_row_form.root_form = cData['root_form']
             lex_row_form.root_language = cData['root_language']
 
@@ -1055,11 +1026,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
         request_form_dict = process_postrequest_form(request.POST)
 
-        # TODO: hack to update CognateClass.root_form
-        # only if it has been changed during this POST
-        # Here: initialise map for recording changed items plus cog class id
-        cogclass_changed_rootform_map = defaultdict(str)
-
         # TODO: need to check validity of input
         # if lex_ed_form.is_valid():
         for k, v in request_form_dict.items():
@@ -1070,21 +1036,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
                 lexm = Lexeme.objects.get(id=int(v_dict['id']))
 
-                # Saving CognateClass.root_form
-                cClasses = lexm.denormalized_cognate_classes.split(',')
-                cogclassid_rootform = zip(
-                    [i[0] for i in list2ntuple(2, cClasses)],
-                    v_dict['root_form'].split(','))
-                for ccid, rtfrm in cogclassid_rootform:
-                    if ccid:
-                        cogclass = CognateClass.objects.get(id=int(ccid))
-
-                        # TODO: hack to update CognateClass.root_form
-                        # only if it has been changed during this POST
-                        # Here: collect only forms
-                        # which have been changed during this POST
-                        if cogclass.root_form != rtfrm:
-                            cogclass_changed_rootform_map[ccid] = rtfrm
+                # Saving CognateClass data:
+                lexm.setCognateClassData(**v_dict);
 
                 if not lexm.is_unchanged(**v_dict):
                     lexm.setDelta(**v_dict)
@@ -1098,18 +1051,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             except Exception, e:
                 print('Exception while accessing Lexeme object: ',
                       e, '; POST items are: ', v_dict)
-
-        # Now update the CognateClass
-        # TODO: hack to update CognateClass.root_form only if
-        # it has been changed during this POST
-        # Here: update root forms which were changed during this POST
-        for k, v in cogclass_changed_rootform_map.items():
-            cogclass = CognateClass.objects.get(id=int(k))
-            cogclass.root_form = v
-            try:
-                cogclass.save()
-            except Exception, e:
-                print('Exception while saving CognateClass object: ', e)
 
         return HttpResponseRedirect(
             reverse("view-meaning-languages",
@@ -1176,6 +1117,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
             # CC dependant data:
             cData = lex.getCognateClassData()
+            lex_row_form.cog_class_ids = cData['id']
             lex_row_form.root_form = cData['root_form']
             lex_row_form.root_language = cData['root_language']
 

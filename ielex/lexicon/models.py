@@ -639,6 +639,28 @@ class Lexeme(models.Model):
             'root_form':     ','.join(rfs),
             'root_language': ','.join(rls)}
 
+    def setCognateClassData(self, **ccData):
+        """
+        This method was added for #90 and shall save
+        potentially changed cc data for a lexeme.
+        @param ccData :: {id: …, root_form: …, root_language: …}
+        """
+        tuples = izip(
+            ccData['cog_class_ids'].split(','),
+            ccData['root_form'].split(','),
+            ccData['root_language'].split(','))
+        for (id, root_form, root_language) in tuples:
+            if id == '':
+                continue
+            cc = CognateClass.objects.get(id=int(id))
+            if cc.root_form != root_form or cc.root_language != root_language:
+                try:
+                    cc.root_form = root_form
+                    cc.root_language = root_language
+                    cc.save()
+                except Exception, e:
+                    print('Exception while saving CognateClass: ', e)
+
 
 @reversion.register
 class CognateJudgement(models.Model):

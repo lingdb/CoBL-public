@@ -313,6 +313,7 @@ class LexemeRowForm(WTForm):
     phoneMic_2_phon_form = BooleanField('PhoneMic to PhoneTic',
                                         validators=[DataRequired()])
 
+    cog_class_ids = StringField('Root Form', validators=[DataRequired()])
     root_form = StringField('Root Form', validators=[DataRequired()])
     root_language = StringField('Root Language', validators=[DataRequired()])
 
