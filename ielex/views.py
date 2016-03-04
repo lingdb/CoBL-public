@@ -528,7 +528,7 @@ def view_language_wordlist(request, language, wordlist):
                 lexm = Lexeme.objects.get(id=int(v_dict['id']))
 
                 # Saving CognateClass data:
-                lexm.setCognateClassData(**v_dict);
+                lexm.setCognateClassData(**v_dict)
 
                 if not lexm.is_unchanged(**v_dict):
                     lexm.setDelta(**v_dict)
@@ -1037,7 +1037,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                 lexm = Lexeme.objects.get(id=int(v_dict['id']))
 
                 # Saving CognateClass data:
-                lexm.setCognateClassData(**v_dict);
+                lexm.setCognateClassData(**v_dict)
 
                 if not lexm.is_unchanged(**v_dict):
                     lexm.setDelta(**v_dict)
