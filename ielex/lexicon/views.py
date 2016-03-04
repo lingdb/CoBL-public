@@ -12,6 +12,7 @@ from django.views.generic import CreateView, UpdateView, TemplateView
 from django.contrib import messages
 from ielex import settings
 from ielex.lexicon.models import *
+from ielex.lexicon.defaultModels import *
 from ielex.lexicon.functions import local_iso_code_generator
 from ielex.shortcuts import render_template
 from ielex.forms import EditCognateClassCitationForm

@@ -43,19 +43,17 @@ def disable_for_loaddata(signal_handler):
 # the short name of the database
 
 TYPE_CHOICES = (
-        ("P", "Publication"),
-        ("U", "URL"),
-        ("E", "Expert"),
-        )
+    ("P", "Publication"),
+    ("U", "URL"),
+    ("E", "Expert"))
 
 RELIABILITY_CHOICES = (  # used by Citation classes
-        # ("X", "Unclassified"), # change "X" to "" will force users to make
-        ("A", "High"),         # a selection upon seeing this form
-        ("B", "Good (e.g. should be double checked)"),
-        ("C", "Doubtful"),
-        ("L", "Loanword"),
-        ("X", "Exclude (e.g. not the Swadesh term)"),
-        )
+    # ("X", "Unclassified"), # change "X" to "" will force users to make
+    ("A", "High"),         # a selection upon seeing this form
+    ("B", "Good (e.g. should be double checked)"),
+    ("C", "Doubtful"),
+    ("L", "Loanword"),
+    ("X", "Exclude (e.g. not the Swadesh term)"))
 
 # http://south.aeracode.org/docs/customfields.html#extending-introspection
 # add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])

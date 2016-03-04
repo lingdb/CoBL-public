@@ -44,26 +44,27 @@
           ><img src="{% static 'logo/cognac_32px.png' %}"></a>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-{#          <li{# class="active" # }>#}
-{#            <a href="#" title="View 1 meaning in all languages" data-toggle="tooltip" data-placement="bottom">#}
-{#              1 mg all lgs{# <span class="sr-only">(current)</span> #}
-{#            </a>#}
-{#          </li>#}
-{#          <li>#}
-{#            <a href="#" title="View 1 meaning in all cognate sets" data-toggle="tooltip" data-placement="bottom">1 mg. all cog. sets</a>#}
-{#          </li>#}
-{#          <li>#}
-{#            <a href="#" title="View 1 language in all meanings" data-toggle="tooltip" data-placement="bottom">1 lg. all mgs</a>#}
-{#          </li>#}
-{#          <li>#}
-{#            <a href="/languagelist/" title="List all languages" data-toggle="tooltip" data-placement="bottom">lgs</a>#}
-{#          </li>#}
-{#          <li>#}
-{#            <a href="/wordlist/all" title="List all meanings" data-toggle="tooltip" data-placement="bottom">mgs</a>#}
-{#          </li>#}
-            {% block controls %}{% endblock %}
+            <li>
+              <a href="/meaning/" title="View 1 meaning in all languages" data-toggle="tooltip" data-placement="bottom">
+                <img src="{% static '1w.png' %}">
+                1 mg all lgs
+              </a>
+            </li>
+            <li>
+              <a href="/cognateclasslist/" title="View 1 meaning in all cognate sets" data-toggle="tooltip" data-placement="bottom">
+                <img src="{% static '1c.png' %}">
+                1 mg. all cog. sets
+              </a>
+            </li>
+            <li>
+              <a href="/language/" title="View 1 language in all meanings" data-toggle="tooltip" data-placement="bottom">
+                <img src="{% static '1l.png' %}">
+                1 lg. all mgs
+              </a>
+            </li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
+            {% block controls %}{% endblock %}
             <li>
               <a href="#" data-toggle="tooltip" data-placement="bottom" title="Info">
                 <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>

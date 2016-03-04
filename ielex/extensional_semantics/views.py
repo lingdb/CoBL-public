@@ -258,7 +258,6 @@ def add_semantic_domain(request):
 def goto_language_domain_form(request, domain):
     """Returns a tuple (redirect, form), only one of which is valid"""
     redirect = None
-    # language_list_name = get_current_language_list_name(request)
     if request.method == 'POST':
         form = ChooseLanguageForm(request.POST)
         if form.is_valid():

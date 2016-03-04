@@ -21,6 +21,7 @@ from reversion.models import Revision, Version
 from ielex.settings import LIMIT_TO
 from ielex.forms import *
 from ielex.lexicon.models import *
+from ielex.lexicon.defaultModels import *
 # from ielex.citations.models import *
 from ielex.extensional_semantics.views import *
 from ielex.shortcuts import render_template
@@ -155,21 +156,12 @@ def get_canonical_language(language, request=None):
     return language
 
 
-def get_current_language_list_name(request):
-    """Get the name of the current language list from session. This is
-    only be be used by navigation functions (e.g.
-    get_previous_and_next_languages) which don't take part in the RESTful url
-    scheme"""
-    return request.session.get("language_list_name", LanguageList.DEFAULT)
-
-
 def get_prev_and_next_languages(request, current_language, language_list=None):
-    # XXX language_list argument is not currently dispatched to this function
-    # TODO this needs to be fixed (solution: get it from session variable)
     if language_list:
         language_list = LanguageList.objects.get(name=language_list)
     else:
-        language_list = LanguageList.objects.get(name=LanguageList.DEFAULT)
+        language_list = LanguageList.objects.get(
+            name=getDefaultLanguagelist(request))
 
     ids = list(language_list.languages.values_list(
             "id", flat=True).order_by("languagelistorder"))
@@ -186,22 +178,17 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
 
 
 def get_prev_and_next_meanings(request, current_meaning):
-    # We'll let this one use the session variable (kind of cheating...)
-    meaning_list = request.session.get(
-        "current_wordlist_name", MeaningList.DEFAULT)
+    meaning_list = getDefaultWordlist(request)
     meaning_list = MeaningList.objects.get(name=meaning_list)
     meanings = list(meaning_list.meanings.all().order_by("meaninglistorder"))
 
     ids = [m.id for m in meanings]
     current_idx = ids.index(current_meaning.id)
     prev_meaning = meanings[current_idx-1]
-    # prev_meaning = Meaning.objects.get(id=ids[current_idx-1])
     try:
         next_meaning = meanings[current_idx+1]
-        # next_meaning = Meaning.objects.get(id=ids[current_idx+1])
     except IndexError:
         next_meaning = meanings[0]
-        # next_meaning = Meaning.objects.get(id=ids[0])
     return (prev_meaning, next_meaning)
 
 
@@ -257,7 +244,7 @@ def get_canonical_language_list(language_list=None, request=None):
 @csrf_protect
 def view_language_list(request, language_list=None):
     current_list = get_canonical_language_list(language_list, request)
-    request.session["current_language_list_name"] = current_list.name
+    setDefaultLanguagelist(request, current_list.name)
     languages = current_list.languages.all().order_by("languagelistorder")
     languages = languages.annotate(
         meaning_count=Count("lexeme__meaning", distinct=True))
@@ -276,7 +263,7 @@ def view_language_list(request, language_list=None):
         form = ChooseLanguageListForm(request.POST)
         if form.is_valid():
             current_list = form.cleaned_data["language_list"]
-            request.session["current_language_list_name"] = current_list.name
+            setDefaultLanguagelist(request, current_list.name)
             msg = u"Language list selection changed to ‘%s’" % \
                 current_list.name
             messages.add_message(request, messages.INFO, msg)
@@ -392,7 +379,7 @@ def view_language_list(request, language_list=None):
 
 
 def reorder_language_list(request, language_list):
-    language_id = request.session.get("current_language_id", None)
+    language_id = getDefaultLanguageId(request)
     language_list = LanguageList.objects.get(name=language_list)
     languages = language_list.languages.all().order_by("languagelistorder")
     ReorderForm = make_reorder_languagelist_form(languages)
@@ -400,7 +387,7 @@ def reorder_language_list(request, language_list):
         form = ReorderForm(request.POST, initial={"language": language_id})
         if form.is_valid():
             language_id = int(form.cleaned_data["language"])
-            request.session["current_language_id"] = language_id
+            setDefaultLanguageId(request, language_id)
             language = Language.objects.get(id=language_id)
             if form.data["submit"] == "Finish":
                 language_list.sequentialize()
@@ -447,6 +434,8 @@ def move_language(language, language_list, direction):
 
 @csrf_protect
 def view_language_wordlist(request, language, wordlist):
+    setDefaultLanguage(request, language)
+    setDefaultWordlist(request, wordlist)
     wordlist = MeaningList.objects.get(name=wordlist)
 
     # TODO: need to move this out of views.py, eg into forms.py ?
@@ -503,7 +492,7 @@ def view_language_wordlist(request, language, wordlist):
         wrdlst_form = ChooseMeaningListForm(request.POST)
         if wrdlst_form.is_valid():
             wordlist = wrdlst_form.cleaned_data["meaning_list"]
-            request.session["current_wordlist_name"] = wordlist.name
+            setDefaultWordlist(request, wordlist.name)
             msg = u"Wordlist selection changed to ‘%s’" % wordlist.name
             messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(
@@ -792,7 +781,7 @@ def view_wordlists(request):
 @csrf_protect
 def view_wordlist(request, wordlist=MeaningList.DEFAULT):
     wordlist = MeaningList.objects.get(name=wordlist)
-    request.session["current_wordlist_name"] = wordlist.name
+    setDefaultWordlist(request, wordlist.name)
     form = ChooseMeaningListForm()
     if request.method == 'POST':
         if 'wordlist' in request.POST:
@@ -814,7 +803,7 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
             form = ChooseMeaningListForm(request.POST)
             if form.is_valid():
                 wordlist = form.cleaned_data["meaning_list"]
-                request.session["current_wordlist_name"] = wordlist.name
+                setDefaultWordlist(request, wordlist.name)
                 msg = u"Wordlist selection changed to ‘%s’" % wordlist.name
                 messages.add_message(request, messages.INFO, msg)
                 return HttpResponseRedirect(reverse("view-wordlist",
@@ -832,8 +821,7 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
         # MADNESS ABOVE
         meaning.desc = meaning.description
         mltf.meanings.append_entry(meaning)
-    current_language_list = request.session.get(
-        "current_language_list_name", LanguageList.DEFAULT)
+    current_language_list = getDefaultLanguagelist(request)
     return render_template(request, "wordlist.html",
                            {"mltf": mltf,
                             "form": form,
@@ -863,7 +851,7 @@ def edit_wordlist(request, wordlist):
 
 @login_required
 def reorder_wordlist(request, wordlist):
-    meaning_id = request.session.get("current_meaning_id", None)
+    meaning_id = getDefaultMeaningId(request)
     wordlist = MeaningList.objects.get(name=wordlist)
     meanings = wordlist.meanings.all().order_by("meaninglistorder")
 
@@ -872,7 +860,7 @@ def reorder_wordlist(request, wordlist):
         form = ReorderForm(request.POST, initial={"meaning": meaning_id})
         if form.is_valid():
             meaning_id = int(form.cleaned_data["meaning"])
-            request.session["current_meaning_id"] = meaning_id
+            setDefaultMeaningId(request, meaning_id)
             meaning = Meaning.objects.get(id=meaning_id)
             if form.data["submit"] == "Finish":
                 return HttpResponseRedirect(reverse("view-wordlist",
@@ -953,11 +941,12 @@ def edit_meaning(request, meaning):
 
 @csrf_protect
 def view_meaning(request, meaning, language_list, lexeme_id=None):
+    setDefaultMeaning(request, meaning)
+    setDefaultLanguagelist(request, language_list)
 
     # Normalize calling parameters
     canonical_gloss = get_canonical_meaning(meaning).gloss
     current_language_list = get_canonical_language_list(language_list, request)
-    request.session["current_language_list_name"] = current_language_list.name
     mNonCan = meaning != canonical_gloss
     lNonCur = language_list != current_language_list.name
     if mNonCan or lNonCur:
@@ -989,8 +978,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             msg = u"Language list selection changed to ‘%s’" %\
                 current_language_list.name
             messages.add_message(request, messages.INFO, msg)
-            request.session["current_language_list_name"] =\
-                current_language_list.name
+            setDefaultLanguagelist(request, current_language_list.name)
             return HttpResponseRedirect(
                 reverse("view-meaning-languages",
                         args=[canonical_gloss, current_language_list.name]))
@@ -1148,6 +1136,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
 @csrf_protect
 def view_cognateclasses(request, meaning):
+    setDefaultMeaning(request, meaning)
 
     def process_postrequest_form(multidict):
         res = defaultdict(list)
@@ -1497,7 +1486,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         get_redirect_url(form, citation))
             elif action == "add-cognate":
                 languagelist = get_canonical_language_list(
-                        get_current_language_list_name(request), request)
+                        getDefaultLanguagelist(request), request)
                 redirect_url = '%s#lexeme_%s' % (
                     reverse("view-meaning-languages-add-cognate",
                             args=[lexeme.meaning.gloss,
@@ -1564,7 +1553,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 # form = AddCitationForm()
             elif action == "add-cognate":
                 languagelist = get_canonical_language_list(
-                    get_current_language_list_name(request), request)
+                    getDefaultLanguagelist(request), request)
                 redirect_url = '%s#lexeme_%s' % (
                     reverse("view-meaning-languages-add-cognate",
                             args=[lexeme.meaning.gloss,
@@ -1926,3 +1915,20 @@ def lexeme_search(request):
         form = SearchLexemeForm()
     return render_template(request, "lexeme_search.html",
                            {"form": form})
+
+
+def viewDefaultLanguage(request):
+    language = getDefaultLanguage(request)
+    wordlist = getDefaultWordlist(request)
+    return view_language_wordlist(request, language, wordlist)
+
+
+def viewDefaultMeaning(request):
+    meaning = getDefaultMeaning(request)
+    languagelist = getDefaultLanguagelist(request)
+    return view_meaning(request, meaning, languagelist)
+
+
+def viewDefaultCognateClassList(request):
+    meaning = getDefaultMeaning(request)
+    return view_cognateclasses(request, meaning)

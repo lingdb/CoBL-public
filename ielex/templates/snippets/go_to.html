@@ -1,13 +1,28 @@
 {% if prev_page %}
   <li>
-    <a href="{{ prev_page }}">Previous page</a>
+    <a href="{{ prev_page }}"
+       title="View previous page"
+       data-toggle="tooltip"
+       data-placement="bottom">
+      Previous page
+    </a>
   </li>
 {% endif %}
 <li>
-  <a href={% url 'view-language-list' current_language_list_name %}>Lgs Rfc.</a>
+  <a href={% url 'view-language-list' current_language_list_name %}
+     title="View list of languages"
+     data-toggle="tooltip"
+     data-placement="bottom">
+    Lgs Rfc.
+  </a>
 </li>
 <li>
-  <a href={% url 'view-wordlist' current_wordlist_name %}>Mgs Rfc.</a>
+  <a href={% url 'view-wordlist' current_wordlist_name %}
+     title="View list of meanings"
+     data-toggle="tooltip"
+     data-placement="bottom">
+    Mgs Rfc.
+  </a>
 </li>
 {% if semantic_domains %}
   <li>
@@ -15,6 +30,11 @@
   </li>
 {% endif %}
 <li>
-  <a href={% url 'view-sources' %}>Sources Rfc.</a>
+  <a href={% url 'view-sources' %}
+     title="View list of sources"
+     data-toggle="tooltip"
+     data-placement="bottom">
+    Sources Rfc.
+  </a>
 </li>
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

@@ -61,6 +61,7 @@ urlpatterns = patterns(
         name="view-language-lists"),
 
     # Language
+    url(r'^language/$' % R, viewDefaultLanguage),
     url(r'^language/%(LANGUAGE)s/$' % R, view_language_wordlist,
         {"wordlist": "Jena200"}, name="language-report"),
     url(r'^language/%(LANGUAGE)s/wordlist/%(WORDLIST)s/$' % R,
@@ -113,6 +114,7 @@ urlpatterns = patterns(
     url(r'^meaning/%(MEANING)s/language/%(LANGUAGE)s/add-lexeme/' % R,
         lexeme_add, {"return_to": "/meaning/%(meaning)s/"},
         name="meaning-language-add-lexeme"),
+    url(r'^meaning/$' % R, viewDefaultMeaning),
 
     # Lexemes
     url(r'^lexeme/add/', lexeme_add, {"return_to": "/meanings/"}),
@@ -195,13 +197,9 @@ urlpatterns = patterns(
     url(r'^cognate/%(COGNATE_NAME)s/$' % R, cognate_report),
     url(r'^meaning/%(MEANING)s/cognate/(?P<code>[A-Z]+[0-9]*)/$' % R,
         cognate_report),
+    url(r'^cognateclasslist/$' % R, viewDefaultCognateClassList),
     url(r'^meaning/%(MEANING)s/cognateclasslist/$' % R,
         view_cognateclasses, name="edit-cogclasses"),
-    # TODO better url:
-    # url(r'^meaning/%(MEANING)s/cognate/(?P<code>[A-Z]+[0-9]*)/$' % R,
-    #        cognate_report),
-    # TODO allow cognate sets to be renamed (e.g. to give distinctive codes to
-    # loanwords)
 
     # Cognate citation :: detail
     url(r'^cognate/citation/(?P<pk>\d+)/$',
