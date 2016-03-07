@@ -233,6 +233,45 @@ class LanguageBranches(models.Model):
     level1_branch_name = models.TextField(blank=True, unique=True)
     hexColor = models.CharField(max_length=6, blank=True)
 
+    def is_unchanged(self, **vdict):
+
+        def isInt(x):
+            return getattr(self, x) == int(vdict[x])
+
+        def isString(x):
+            return getattr(self, x) == vdict[x]
+
+        fields = {
+            'family_ix': isInt,
+            'level1_branch_ix': isInt,
+            'level1_branch_name': isString,
+            'hexColor': isInt}
+
+        for k, _ in vdict.iteritems():
+            if k in fields:
+                if not fields[k](k):
+                    return False
+        return True
+
+    def setDelta(self, **vdict):
+
+        def setInt(x):
+            setattr(self, x, int(vdict[x]))
+
+        def isString(x):
+            setattr(self, x, vdict[x])
+
+        fields = {
+            'family_ix': setInt,
+            'level1_branch_ix': setInt,
+            'level1_branch_name': setString,
+            'hexColor': setInt}
+
+        # Setting fields:
+        for k, _ in vdict.iteritems():
+            if k in fields:
+                fields[k](k)
+
 
 @reversion.register
 class Meaning(models.Model):

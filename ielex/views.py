@@ -359,6 +359,41 @@ def view_language_list(request, language_list=None):
                             "current_list": current_list})
 
 
+@csrf_protect
+def view_languageBranches(request):
+    if request.method == 'POST':
+        form = LanguageBranchesTableForm(request.POST)
+        for entry in form.languageBranches:
+            data = entry.data
+            try:
+                branch = LanguageBranches.objects.get(
+                    level1_branch_name=data['id_name'])
+                if not branch.is_unchanged(**data):
+                    branch.setDelta(**data)
+                    try:
+                        branch.save()
+                    except Exception, e:
+                        print('Exception while saving POST:', e)
+            except Exception, e:
+                print('Exception while accessing LanguageBranches object: ',
+                      e, '; POST items are: ', data)
+    else:
+        form = LanguageBranchesTableForm()
+        for branch in LanguageBranches.objects.all():
+
+            branchForm = LanguageBranchesRowForm(
+                family_ix=branch.family_ix,
+                level1_branch_ix=branch.level1_branch_ix,
+                level1_branch_name=branch.level1_branch_name,
+                hexColor=branch.hexColor,
+                id_name=branch.level1_branch_name)
+
+            form.languageBranches.append_entry(branchForm)
+        return render_template(request,
+                               "languageBranches.html",
+                               {'branches': form})
+
+
 def reorder_language_list(request, language_list):
     language_id = getDefaultLanguageId(request)
     language_list = LanguageList.objects.get(name=language_list)

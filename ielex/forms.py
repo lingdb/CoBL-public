@@ -273,6 +273,22 @@ class AddLanguageListTableForm(WTForm):
     langlist = FieldList(FormField(LanguageListRowForm), min_entries=5)
 
 
+class LanguageBranchesRowForm(WTForm):
+    family_ix = IntegerField('Family Ix', validators=[DataRequired()])
+    level1_branch_ix = IntegerField('Level1 Branch Ix',
+                                    validators=[DataRequired()])
+    level1_branch_name = StringField('Level 1 Branch Name',
+                                     validators=[DataRequired()])
+    hexColor = StringField('hexColor', validators=[DataRequired()])
+    # id_name mirrors level1_branch_name
+    id_name = StringField('Id Name',
+                           validators=[DataRequired()])
+
+
+class LanguageBranchesTableForm(WTForm):
+    languageBranches = FieldList(FormField(LanguageListRowForm))
+
+
 class LexemeRowForm(WTForm):
     id = IntegerField('Lexeme Id', validators=[DataRequired()])
     language_id = StringField('Language Id', validators=[DataRequired()])

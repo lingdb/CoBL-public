@@ -1,0 +1,91 @@
+{% extends "base.html"%}
+
+{% load staticfiles %}
+{% load wtforms %}
+
+{% block title %}
+  Language Branches
+{% endblock %}
+
+{% block top %}
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/go_to.html" %}
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-12">
+      {% if user.is_authenticated %}
+        <form action="" method="POST">
+          {% csrf_token %}
+          <div class="form-group pull-right">
+            <a href="/languageBranches/" class="btn btn-default">Undo</a>
+            <input type="submit" value="Save"
+                   name="lex_form" class="btn btn-danger">
+          </div>
+          <table class="table table-condensed">
+            <thead>
+              <tr>
+                <th>Branch name</th>
+                <th>Level 1 branch ix</th>
+                <th>Family ix</th>
+                <th>Color (hex)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for branch in branches.languageBranches %}
+                <tr>
+                  {% form_field branch.level1_original_branch_name class="hide" %}
+                  <td>
+                    {% form_field branch.family_ix %}
+                  </td>
+                  <td>
+                    {% form_field branch.level1_branch_ix %}
+                  </td>
+                  <td>
+                    {% form_field branch.level1_branch_name %}
+                  </td>
+                  <td>
+                    {% form_field branch.hexColor %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </form>
+      {% else %}
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>Branch name</th>
+              <th>Level 1 branch ix</th>
+              <th>Family ix</th>
+              <th>Color (hex)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for branch in branches.languageBranches %}
+              <tr>
+                <td>
+                  {{ branch.data.family_ix }}
+                </td>
+                <td>
+                  {{ branch.data.level1_branch_ix }}
+                </td>
+                <td>
+                  {{ branch.data.level1_branch_name }}
+                </td>
+                <td>
+                  {{ branch.data.hexColor }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    <div class="col-md-12">
+  </div>
+{% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

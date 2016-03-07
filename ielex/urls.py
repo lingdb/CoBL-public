@@ -82,6 +82,9 @@ urlpatterns = patterns(
     url(r'^languagelist/%(LANGUAGELIST)s/add-new/$' % R, language_add_new,
         name="language-add-new"),
 
+    # Language Branches:
+    url(r'^languageBranches/$' % R, view_languageBranches),
+
     # Meanings (aka wordlist)
     url(r'^wordlists/$', view_wordlists, name="view-wordlists"),
     url(r'^wordlist/%(WORDLIST)s/$' % R, view_wordlist, name="view-wordlist"),
