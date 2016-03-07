@@ -315,7 +315,9 @@ class LexemeRowForm(WTForm):
 
     cog_class_ids = StringField('Root Form', validators=[DataRequired()])
     root_form = StringField('Root Form', validators=[DataRequired()])
+    rootFormCompare = StringField('Root Form Compare')
     root_language = StringField('Root Language', validators=[DataRequired()])
+    rootLanguageCompare = StringField('Root Language Compare')
 
     # Exclusion booleans:
     is_excluded = BooleanField('Is Excluded', validators=[DataRequired()])

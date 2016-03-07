@@ -15,6 +15,7 @@
   });
   requirejs(['require','jquery','lodash',
              'js/base',
+             'js/mirrorTextInputs',
              'js/viewMeaningLanguages',
              'js/viewLanguageMeanings',
              'js/viewTableFilter'],

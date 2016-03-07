@@ -280,10 +280,10 @@
                     {% form_field lexeme.cog_class_ids %}
                   </td>
                   <td class="lexemeRootForm">
-                    {% form_field lexeme.root_form class="form-control" id="rootform" %}
+                    {% form_field lexeme.root_form class="form-control mirrorTextInput" id="rootform" data-compare=lexeme.data.rootFormCompare %}
                   </td>
                   <td class="lexemeRootLanguage">
-                    {% form_field lexeme.root_language class="form-control" id="rootlanguage" %}
+                    {% form_field lexeme.root_language class="form-control mirrorTextInput" id="rootlanguage" data-compare=lexeme.data.rootLanguageCompare %}
                   </td>
                   <td class="lexemeNumCogCoded">
                     <span class="badge">

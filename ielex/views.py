@@ -586,7 +586,9 @@ def view_language_wordlist(request, language, wordlist):
             cData = lex.getCognateClassData()
             lex_row_form.cog_class_ids = cData['id']
             lex_row_form.root_form = cData['root_form']
+            lex_row_form.rootFormCompare = 'rootForm-'+cData['id']
             lex_row_form.root_language = cData['root_language']
+            lex_row_form.rootLanguageCompare = 'rootLanguage-'+cData['id']
 
             lex_row_form.phoneMic = lex.data.get('phoneMic', '')
             lex_row_form.transliteration = \
@@ -1107,7 +1109,9 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             cData = lex.getCognateClassData()
             lex_row_form.cog_class_ids = cData['id']
             lex_row_form.root_form = cData['root_form']
+            lex_row_form.rootFormCompare = 'rootForm-'+cData['id']
             lex_row_form.root_language = cData['root_language']
+            lex_row_form.rootLanguageCompare = 'rootLanguage-'+cData['id']
 
             lex_row_form.phoneMic = lex.data.get('phoneMic', u'')
             lex_row_form.transliteration = lex.data.get(
