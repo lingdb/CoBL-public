@@ -7,7 +7,7 @@ from ielex.lexicon.validators import suitable_for_url
 # from ielex.extensional_semantics.models import *
 
 from wtforms import StringField, IntegerField, \
-    FieldList,  FormField, \
+    FieldList, FormField, \
     TextField, BooleanField, \
     DateTimeField, DecimalField, \
     TextAreaField

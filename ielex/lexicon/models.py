@@ -231,6 +231,7 @@ class LanguageBranches(models.Model):
     family_ix = models.IntegerField(blank=True)
     level1_branch_ix = models.IntegerField(blank=True)
     level1_branch_name = models.TextField(blank=True, unique=True)
+    hexColor = models.CharField(max_length=6, blank=True)
 
 
 @reversion.register
