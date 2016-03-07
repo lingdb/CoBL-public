@@ -250,15 +250,6 @@ def view_language_list(request, language_list=None):
         meaning_count=Count("lexeme__meaning", distinct=True))
     languages = languages.annotate(entry_count=Count("lexeme", distinct=True))
 
-    def process_postrequest_form(multidict):
-        res = defaultdict(list)
-        for key in multidict.keys():
-            if not(key in ['langlist_form', 'csrfmiddlewaretoken']):
-                outer_key = ''.join(key.split('-')[0:2])
-                inner_key = key.split('-')[-1]
-                res[outer_key].append((inner_key, multidict.getlist(key)[0]))
-        return res
-
     if request.method == 'POST' and not ('langlist_form' in request.POST):
         form = ChooseLanguageListForm(request.POST)
         if form.is_valid():
@@ -275,28 +266,18 @@ def view_language_list(request, language_list=None):
 
     if (request.method == 'POST') and ('langlist_form' in request.POST):
 
-        request_form_dict = process_postrequest_form(request.POST)
+        languageListTableForm = AddLanguageListTableForm(request.POST)
 
-        # TODO: need to check validity of input
-        # if lex_ed_form.is_valid():
-        for k, v in request_form_dict.items():
+        for entry in languageListTableForm.langlist:
 
-            v_dict = dict(v)
-
-            # TODO: temporary fix for problem with HTML checkboxes,
-            # where these return nothing if box unchecked.
-            # FIX: create validation procedure for 'lex_form'.
-            for k in ['representative', 'foss_stat', 'low_stat']:
-                if not(k in v_dict.keys()):
-                    v_dict[k] = ''
-
+            data = entry.data
             try:
 
-                lang = Language.objects.get(ascii_name=v_dict['ascii_name'])
+                lang = Language.objects.get(ascii_name=data['ascii_name'])
 
-                if not lang.is_unchanged(**v_dict):
+                if not lang.is_unchanged(**data):
 
-                    lang.setDelta(**v_dict)
+                    lang.setDelta(**data)
 
                     lang.validateBranchLevels()
 
@@ -310,7 +291,7 @@ def view_language_list(request, language_list=None):
 
             except Exception, e:
                 print('Exception while accessing Language object: ',
-                      e, '; POST items are: ', v_dict)
+                      e, '; POST items are: ', data)
 
         return HttpResponseRedirect(
             reverse("view-language-list", args=[current_list.name]))
@@ -438,16 +419,6 @@ def view_language_wordlist(request, language, wordlist):
     setDefaultWordlist(request, wordlist)
     wordlist = MeaningList.objects.get(name=wordlist)
 
-    # TODO: need to move this out of views.py, eg into forms.py ?
-    def process_postrequest_form(multidict):
-        res = defaultdict(list)
-        for key in multidict.keys():
-            if not(key in ['lex_form', 'csrfmiddlewaretoken']):
-                outer_key = ''.join(key.split('-')[0:2])
-                inner_key = key.split('-')[-1]
-                res[outer_key].append((inner_key, multidict.getlist(key)[0]))
-        return res
-
     def is_lexform(multidict):
 
         standard_keyset = set(['source_form', 'phon_form', 'gloss',
@@ -504,23 +475,21 @@ def view_language_wordlist(request, language, wordlist):
 
     if (request.method == 'POST') and ('lex_form' in request.POST):
 
-        request_form_dict = process_postrequest_form(request.POST)
+        lexemesTableForm = AddLexemesTableForm(request.POST)
 
-        # TODO: need to check validity of input
-        # if lex_ed_form.is_valid():
-        for k, v in request_form_dict.items():
+        for entry in lexemesTableForm.lexemes:
 
-            v_dict = dict(v)
+            data = entry.data
 
             try:
 
-                lexm = Lexeme.objects.get(id=int(v_dict['id']))
+                lexm = Lexeme.objects.get(id=int(data['id']))
 
                 # Saving CognateClass data:
-                lexm.setCognateClassData(**v_dict)
+                lexm.setCognateClassData(**data)
 
-                if not lexm.is_unchanged(**v_dict):
-                    lexm.setDelta(**v_dict)
+                if not lexm.is_unchanged(**data):
+                    lexm.setDelta(**data)
                     try:
                         lexm.save()
                     except Exception, e:
@@ -529,7 +498,7 @@ def view_language_wordlist(request, language, wordlist):
                     pass
             except Exception, e:
                 print('Exception while accessing Lexeme object: ',
-                      e, '; POST items are: ', v_dict)
+                      e, '; POST items are: ', data)
 
         return HttpResponseRedirect(reverse("view-language-wordlist",
                                     args=[language.ascii_name, wordlist.name]))
@@ -958,16 +927,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     else:
         meaning = Meaning.objects.get(gloss=meaning)
 
-    # TODO: need to move this out of views.py, eg into forms.py ?
-    def process_postrequest_form(multidict):
-        res = defaultdict(list)
-        for key in multidict.keys():
-            if not(key in ['meang_form', 'csrfmiddlewaretoken']):
-                outer_key = ''.join(key.split('-')[0:2])
-                inner_key = key.split('-')[-1]
-                res[outer_key].append((inner_key, multidict.getlist(key)[0]))
-        return res
-
     def list2ntuple(n, iterable, fillvals=None):
         init_tuples = [iter(iterable)] * n
         return izip_longest(fillvalue=fillvals, *init_tuples)
@@ -1014,23 +973,20 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
     if request.method == 'POST' and 'meang_form' in request.POST:
 
-        request_form_dict = process_postrequest_form(request.POST)
+        lexemesTableForm = AddLexemesTableForm(request.POST)
 
-        # TODO: need to check validity of input
-        # if lex_ed_form.is_valid():
-        for k, v in request_form_dict.items():
-
-            v_dict = dict(v)
+        for entry in lexemesTableForm.lexemes:
+            data = entry.data
 
             try:
 
-                lexm = Lexeme.objects.get(id=int(v_dict['id']))
+                lexm = Lexeme.objects.get(id=int(data['id']))
 
                 # Saving CognateClass data:
-                lexm.setCognateClassData(**v_dict)
+                lexm.setCognateClassData(**data)
 
-                if not lexm.is_unchanged(**v_dict):
-                    lexm.setDelta(**v_dict)
+                if not lexm.is_unchanged(**data):
+                    lexm.setDelta(**data)
                     try:
                         lexm.save()
                     except Exception, e:
@@ -1040,7 +996,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
             except Exception, e:
                 print('Exception while accessing Lexeme object: ',
-                      e, '; POST items are: ', v_dict)
+                      e, '; POST items are: ', data)
 
         return HttpResponseRedirect(
             reverse("view-meaning-languages",
@@ -1142,46 +1098,20 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 def view_cognateclasses(request, meaning):
     setDefaultMeaning(request, meaning)
 
-    def process_postrequest_form(multidict):
-        res = defaultdict(list)
-        for key in multidict.keys():
-            if not(key in ['cogclass_form', 'csrfmiddlewaretoken']):
-                outer_key = ''.join(key.split('-')[0:2])
-                inner_key = key.split('-')[-1]
-                res[outer_key].append((inner_key, multidict.getlist(key)[0]))
-        return res
-
     if (request.method == 'POST') and 'cogclass_form' in request.POST:
-        # is_meaningform(request.POST):
 
-        request_form_dict = process_postrequest_form(request.POST)
+        cogClassTableForm = AddCogClassTableForm(request.POST)
 
-        v_dict = defaultdict(str)
-        for k, v in request_form_dict.items():
-
-            v_dict = dict(v)
-
-            # TODO: temporary fix for problem with HTML checkboxes,
-            # where these return nothing if box unchecked
-            # FIX: create validation procedure for these forms.
-            # Refernces:
-            # (1) https://github.com/wtforms/wtforms/issues/188
-            # (2) https://github.com/wtforms/wtforms/issues/141
-            if not('loanword' in v_dict.keys()):
-                v_dict['loanword'] = ''
+        for entry in cogClassTableForm.cogclass:
+            data = entry.data
 
             try:
-                # NB. the following works and is an interesting instance
-                # of updating the database,
-                # but we probably don't want to do this specific instance.
-                # >meang = Meaning.objects.create(gloss = v_dict['meaning'])
-
                 cogclass = CognateClass.objects.get(
-                    id=int(v_dict['cogclass_id']))
+                    id=int(data['cogclass_id']))
 
-                if not cogclass.is_unchanged(**v_dict):
+                if not cogclass.is_unchanged(**data):
 
-                    cogclass.setDelta(**v_dict)
+                    cogclass.setDelta(**data)
 
                     try:
                         cogclass.save()
@@ -1194,7 +1124,7 @@ def view_cognateclasses(request, meaning):
 
             except Exception, e:
                 print('Exception while accessing CognateClass object: ',
-                      e, '; problem items are: ', v_dict)
+                      e, '; problem items are: ', data)
 
         return HttpResponseRedirect(reverse('edit-cogclasses', args=[meaning]))
 
