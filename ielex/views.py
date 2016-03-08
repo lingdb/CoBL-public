@@ -363,11 +363,12 @@ def view_language_list(request, language_list=None):
 def view_languageBranches(request):
     if request.method == 'POST':
         form = LanguageBranchesTableForm(request.POST)
+        print('DEBUG', 'Got a POST', request.POST, form, form.languageBranches, form.languageBranches.entries)
         for entry in form.languageBranches:
             data = entry.data
             try:
                 branch = LanguageBranches.objects.get(
-                    level1_branch_name=data['id_name'])
+                    level1_branch_name=data['idField'])
                 if not branch.is_unchanged(**data):
                     branch.setDelta(**data)
                     try:
@@ -377,21 +378,21 @@ def view_languageBranches(request):
             except Exception, e:
                 print('Exception while accessing LanguageBranches object: ',
                       e, '; POST items are: ', data)
-    else:
-        form = LanguageBranchesTableForm()
-        for branch in LanguageBranches.objects.all():
 
-            branchForm = LanguageBranchesRowForm(
-                family_ix=branch.family_ix,
-                level1_branch_ix=branch.level1_branch_ix,
-                level1_branch_name=branch.level1_branch_name,
-                hexColor=branch.hexColor,
-                id_name=branch.level1_branch_name)
+    form = LanguageBranchesTableForm()
+    for branch in LanguageBranches.objects.all():
 
-            form.languageBranches.append_entry(branchForm)
-        return render_template(request,
-                               "languageBranches.html",
-                               {'branches': form})
+        branchForm = LanguageBranchesRowForm(
+            idField=branch.id,
+            family_ix=branch.family_ix,
+            level1_branch_ix=branch.level1_branch_ix,
+            level1_branch_name=branch.level1_branch_name,
+            hexColor=branch.hexColor)
+
+        form.languageBranches.entries.append(branchForm)
+    return render_template(request,
+                           "languageBranches.html",
+                           {'branches': form})
 
 
 def reorder_language_list(request, language_list):

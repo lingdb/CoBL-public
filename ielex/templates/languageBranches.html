@@ -18,7 +18,7 @@
   <div class="row">
     <div class="col-md-12">
       {% if user.is_authenticated %}
-        <form action="" method="POST">
+        <form action="" method="POST" data-toggle="validator">
           {% csrf_token %}
           <div class="form-group pull-right">
             <a href="/languageBranches/" class="btn btn-default">Undo</a>
@@ -37,18 +37,22 @@
             <tbody>
               {% for branch in branches.languageBranches %}
                 <tr>
-                  {% form_field branch.level1_original_branch_name class="hide" %}
-                  <td>
-                    {% form_field branch.family_ix %}
+                  <td class="hide">
+                    {% form_field branch.idField %}
                   </td>
                   <td>
-                    {% form_field branch.level1_branch_ix %}
+                    {% form_field branch.family_ix class="form-control" %}
                   </td>
                   <td>
-                    {% form_field branch.level1_branch_name %}
+                    {% form_field branch.level1_branch_ix class="form-control" %}
                   </td>
                   <td>
-                    {% form_field branch.hexColor %}
+                    {% form_field branch.level1_branch_name class="form-control" %}
+                  </td>
+                  <td {% if branch.hexColor.data %}
+                          style='background-color: "#{{ branch.hexColor.data }}";'
+                      {% endif %}>
+                    {% form_field branch.hexColor class="form-control" pattern="[0123456789abcdefABCDEF]{6}" %}
                   </td>
                 </tr>
               {% endfor %}
@@ -69,16 +73,18 @@
             {% for branch in branches.languageBranches %}
               <tr>
                 <td>
-                  {{ branch.data.family_ix }}
+                  {{ branch.family_ix.data }}
                 </td>
                 <td>
-                  {{ branch.data.level1_branch_ix }}
+                  {{ branch.level1_branch_ix.data }}
                 </td>
                 <td>
-                  {{ branch.data.level1_branch_name }}
+                  {{ branch.level1_branch_name.data }}
                 </td>
-                <td>
-                  {{ branch.data.hexColor }}
+                <td {% if branch.hexColor.data %}
+                        style='background-color: "#{{ branch.hexColor.data }}";'
+                    {% endif %}>
+                  {{ branch.hexColor.data }}
                 </td>
               </tr>
             {% endfor %}
