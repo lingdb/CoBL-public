@@ -1866,3 +1866,19 @@ def viewDefaultMeaning(request):
 def viewDefaultCognateClassList(request):
     meaning = getDefaultMeaning(request)
     return view_cognateclasses(request, meaning)
+
+
+def viewAbout(request, page):
+    """
+    @param page :: str
+    This function renders an about page.
+    """
+    content = '\n'.join([
+        '## Hello World!', '',
+        '* foo',
+        '* bar',
+        '* baz'
+        ])
+    return render_template(request, "about.html",
+                           {'title': page,
+                            'content': content})

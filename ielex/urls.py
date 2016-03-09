@@ -201,6 +201,9 @@ urlpatterns = patterns(
     url(r'^meaning/%(MEANING)s/cognateclasslist/$' % R,
         view_cognateclasses, name="edit-cogclasses"),
 
+    # About pages:
+    url(r'about/(.+)/' % R, viewAbout),
+
     # Cognate citation :: detail
     url(r'^cognate/citation/(?P<pk>\d+)/$',
         DetailView.as_view(
