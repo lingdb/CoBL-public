@@ -1877,20 +1877,23 @@ def viewAbout(request, page):
     content = '\n'.join([
         '## Error', '',
         'Sorry, we could not deliver the requested content.',
-        'Maybe you have more luck consulting the [wiki](https://github.com/lingdb/CoBL/wiki).'
+        'Maybe you have more luck consulting the ' +
+        '[wiki](https://github.com/lingdb/CoBL/wiki).'
         ])
     pageTitleMap = {
         'contact': 'Contact',
         'furtherInfo': 'Further Info'
         }
     pageUrlMap = {
-        'contact': 'https://raw.githubusercontent.com/wiki/lingdb/CoBL/About-Page:-Contact.md',
-        'furtherInfo': 'https://raw.githubusercontent.com/wiki/lingdb/CoBL/About-Page:-Further-Info.md'
+        'contact': 'https://raw.githubusercontent.com' +
+                   '/wiki/lingdb/CoBL/About-Page:-Contact.md',
+        'furtherInfo': 'https://raw.githubusercontent.com' +
+                       '/wiki/lingdb/CoBL/About-Page:-Further-Info.md'
         }
     if page in pageUrlMap:
         r = requests.get(pageUrlMap[page])
         if r.status_code == requests.codes.ok:
-          content = r.content
+            content = r.content
     return render_template(request, "about.html",
                            {'title': pageTitleMap.get(page, 'Error'),
                             'content': content})
