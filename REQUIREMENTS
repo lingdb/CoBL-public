@@ -9,3 +9,4 @@ WTForms-SQLAlchemy
 WTForms
 wtforms_components
 six>=1.10.0
+requests==2.9.1
