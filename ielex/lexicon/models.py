@@ -245,7 +245,7 @@ class LanguageBranches(models.Model):
             'family_ix': isInt,
             'level1_branch_ix': isInt,
             'level1_branch_name': isString,
-            'hexColor': isInt}
+            'hexColor': isString}
 
         for k, _ in vdict.iteritems():
             if k in fields:
@@ -258,14 +258,14 @@ class LanguageBranches(models.Model):
         def setInt(x):
             setattr(self, x, int(vdict[x]))
 
-        def isString(x):
+        def setString(x):
             setattr(self, x, vdict[x])
 
         fields = {
             'family_ix': setInt,
             'level1_branch_ix': setInt,
             'level1_branch_name': setString,
-            'hexColor': setInt}
+            'hexColor': setString}
 
         # Setting fields:
         for k, _ in vdict.iteritems():

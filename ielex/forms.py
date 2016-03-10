@@ -283,7 +283,7 @@ class LanguageBranchesRowForm(WTForm):
 
 
 class LanguageBranchesTableForm(WTForm):
-    languageBranches = FieldList(FormField(LanguageListRowForm))
+    elements = FieldList(FormField(LanguageBranchesRowForm))
 
 
 class LexemeRowForm(WTForm):

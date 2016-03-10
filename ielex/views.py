@@ -360,12 +360,10 @@ def view_language_list(request, language_list=None):
 def view_languageBranches(request):
     if request.method == 'POST':
         form = LanguageBranchesTableForm(request.POST)
-        print('DEBUG', 'Got a POST', request.POST, form, form.languageBranches, form.languageBranches.entries)
-        for entry in form.languageBranches:
+        for entry in form.elements:
             data = entry.data
             try:
-                branch = LanguageBranches.objects.get(
-                    level1_branch_name=data['idField'])
+                branch = LanguageBranches.objects.get(id=data['idField'])
                 if not branch.is_unchanged(**data):
                     branch.setDelta(**data)
                     try:
@@ -379,14 +377,9 @@ def view_languageBranches(request):
     form = LanguageBranchesTableForm()
     for branch in LanguageBranches.objects.all():
 
-        branchForm = LanguageBranchesRowForm(
-            idField=branch.id,
-            family_ix=branch.family_ix,
-            level1_branch_ix=branch.level1_branch_ix,
-            level1_branch_name=branch.level1_branch_name,
-            hexColor=branch.hexColor)
+        branch.idField = branch.id
+        form.elements.append_entry(branch)
 
-        form.languageBranches.entries.append(branchForm)
     return render_template(request,
                            "languageBranches.html",
                            {'branches': form})
