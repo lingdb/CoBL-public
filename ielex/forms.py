@@ -269,8 +269,7 @@ class LanguageListRowForm(WTForm):
 
 
 class AddLanguageListTableForm(WTForm):
-    # Default of at least 5 blank fields
-    langlist = FieldList(FormField(LanguageListRowForm), min_entries=5)
+    langlist = FieldList(FormField(LanguageListRowForm))
 
 
 class LanguageBranchesRowForm(WTForm):
@@ -349,7 +348,7 @@ class LexemeRowForm(WTForm):
 
 class AddLexemesTableForm(WTForm):
     # Default of at least 5 blank fields
-    lexemes = FieldList(FormField(LexemeRowForm), min_entries=5)
+    lexemes = FieldList(FormField(LexemeRowForm))
 
 
 # TODO: return to this if/when moving to Python 3
@@ -390,7 +389,7 @@ class CogClassRowForm(WTForm):
 
 class AddCogClassTableForm(WTForm):
     # Default of at least 5 blank fields
-    cogclass = FieldList(FormField(CogClassRowForm), min_entries=5)
+    cogclass = FieldList(FormField(CogClassRowForm))
 
 
 class LexemeTableFilterForm(forms.ModelForm):

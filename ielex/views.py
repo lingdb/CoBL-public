@@ -304,10 +304,6 @@ def view_language_list(request, language_list=None):
 
         langlist_table_form = AddLanguageListTableForm()
 
-        # Pop off any blank fields already in lexemes
-        while len(langlist_table_form.langlist) > 0:
-            langlist_table_form.langlist.pop_entry()
-
         for lang in langs:
 
             langlist_row_form = LanguageListRowForm()
@@ -571,10 +567,6 @@ def view_language_wordlist(request, language, wordlist):
     def fill_lexemestable_from_DB(lexms):
 
         lex_table_form = AddLexemesTableForm()
-
-        # Pop off any blank fields already in lexemes
-        while len(lex_table_form.lexemes) > 0:
-            lex_table_form.lexemes.pop_entry()
 
         for lex in lexms:
 
@@ -1067,10 +1059,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
         lex_table_form = AddLexemesTableForm()
 
-        # Pop off any blank fields already in lexemes
-        while len(lex_table_form.lexemes) > 0:
-            lex_table_form.lexemes.pop_entry()
-
         for lex in lexms:
 
             lex_row_form = LexemeRowForm()
@@ -1171,10 +1159,6 @@ def view_cognateclasses(request, meaning):
     def fill_cogclass_table_from_DB(cc_ordered):
 
         cogclass_table_form = AddCogClassTableForm()
-
-        # Pop off any blank fields already in lexemes
-        while len(cogclass_table_form.cogclass) > 0:
-            cogclass_table_form.cogclass.pop_entry()
 
         for cc in cc_ordered:
 
