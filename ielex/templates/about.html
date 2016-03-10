@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load wtforms %}
+
+{% block title %}
+  {{ title }}
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/go_to.html" %}
+{% endblock %}
+
+{% block top %}
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    {# Because of markdown make sure no spaces are added to content! #}
+    <div class="col-md-12 well markdown">{{ content }}</div>
+  </div>
+{% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

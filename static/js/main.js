@@ -5,12 +5,14 @@
     paths: {
       'jquery': 'bower_components/jquery/dist/jquery.min',
       'bootstrap': 'bower_components/bootstrap/dist/js/bootstrap.min',
-      'lodash': 'bower_components/lodash/dist/lodash.min'
+      'lodash': 'bower_components/lodash/dist/lodash.min',
+      'markdown-it': 'bower_components/markdown-it/dist/markdown-it.min'
     },
     shim: {
       'bootstrap': {deps: ['jquery']},
       'lodash': {exports: '_'},
-      'jquery': {exports: '$'}
+      'jquery': {exports: '$'},
+      'markdown-it': {deps: ['jquery']}
     }
   });
   requirejs(['require','jquery','lodash',
@@ -18,9 +20,18 @@
              'js/mirrorTextInputs',
              'js/viewMeaningLanguages',
              'js/viewLanguageMeanings',
-             'js/viewTableFilter'],
+             'js/viewTableFilter',
+             'js/viewMarkDown'],
             function(require, $, _){
     //Initializing viewTableFilter:
     require('js/viewTableFilter').init('table.viewTableFilter');
+    //Rendering MarkDown:
+    (function(viewMarkDown){
+      $('.markdown').each(function(){
+        var target = $(this);
+        viewMarkDown.render(target);
+        target.removeClass('markdown');
+      });
+    })(require('js/viewMarkDown'));
   });
 })();
