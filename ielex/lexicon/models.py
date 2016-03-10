@@ -142,6 +142,22 @@ class Language(models.Model):
             for level in levels:
                 self.altname[level] = 0
 
+    def getLanguageBranch(self):
+        """
+        @return branch :: LanguageBranches | None
+        """
+        try:
+            wanted = {
+                'family_ix': self.altname['level0'],
+                'level1_branch_ix': self.altname['level1']}
+            print('DEBUG getLanguageBranch(…)', wanted)
+            b = LanguageBranches.objects.get(**wanted)
+            print('DEBUG',b)
+            return b
+        except:
+            pass
+        return None
+
     class Meta:
         ordering = ["ascii_name"]
 
@@ -271,6 +287,18 @@ class LanguageBranches(models.Model):
         for k, _ in vdict.iteritems():
             if k in fields:
                 fields[k](k)
+
+    def getColor(self):
+        if self.hexColor == '':
+            if self.level1_branch_ix != 0:
+                try:
+                    b = LanguageBranches.objects.get(
+                        family_ix=self.family_ix,
+                        level1_branch_ix=self.level1_branch_ix)
+                    return b.getColor()
+                except:
+                    pass
+        return self.hexColor
 
 
 @reversion.register

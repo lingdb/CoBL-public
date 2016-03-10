@@ -58,6 +58,7 @@
             <thead>
               <tr>
                 <th class="hide"></th>
+                <th></th>
                 <th>Language</th>
                 <th></th>
                 <th>Orthog.</th>
@@ -79,6 +80,7 @@
               </tr>
               <tr>
                 <th class="hide"></th>
+                <th></th>
                 <th>
                   <input type="text" class="filterText form-control"
                          data-selector=".languageName">
@@ -195,6 +197,11 @@
               {% for lexeme in lex_ed_form.lexemes %}
                 <tr>
                   <td class="hide">{{ lexeme.id }}</td>
+                  <td class="languageBranchColor"
+                      {% if lexeme.languageBranchColor %}
+                        style="background-color: #{{ lexeme.languageBranchColor }};"
+                      {% endif %}
+                    >{{ lexeme.languageBranchColor }}</td>
                   <td class="languageName">
                     <a href="{% url 'language-report' lexeme.language_asciiname.data %}">
                       {{ lexeme.data.language_utf8name }}
