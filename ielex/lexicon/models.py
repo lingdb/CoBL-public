@@ -147,13 +147,9 @@ class Language(models.Model):
         @return branch :: LanguageBranches | None
         """
         try:
-            wanted = {
-                'family_ix': self.altname['level0'],
-                'level1_branch_ix': self.altname['level1']}
-            print('DEBUG getLanguageBranch(…)', wanted)
-            b = LanguageBranches.objects.get(**wanted)
-            print('DEBUG',b)
-            return b
+            return LanguageBranches.objects.get(
+                family_ix=self.altname['level0'],
+                level1_branch_ix=self.altname['level1'])
         except:
             pass
         return None
@@ -297,7 +293,8 @@ class LanguageBranches(models.Model):
                         level1_branch_ix=self.level1_branch_ix)
                     return b.getColor()
                 except:
-                    pass
+                    # On error color is white:
+                    return 'ffffff'
         return self.hexColor
 
 

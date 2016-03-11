@@ -56,3 +56,11 @@ table.viewTableFilter>tbody>tr>td {
   /* Preserve white-space as it is */
   white-space: pre;
 }
+
+/* Relates to #92 */
+.table .languageBranchColor {
+  width: 4px;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+}

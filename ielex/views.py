@@ -1071,8 +1071,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
             # Branch color for #92
             b = lex.language.getLanguageBranch()
-            if b != None:
-                lex_row_form.languageBranchColor =  b.getColor()
+            if b:
+                lex_row_form.languageBranchColor = b.getColor()
             else:  # FIXME DEBUG
                 print('NO BRANCH FOR LANGUAGE:', lex.language.utf8_name)
 
