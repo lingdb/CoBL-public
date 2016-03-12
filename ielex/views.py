@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.db.models import Q, Max, Count
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import redirect
@@ -512,16 +512,20 @@ def view_language_wordlist(request, language, wordlist):
                 lexm = Lexeme.objects.get(id=int(data['id']))
 
                 # Saving CognateClass data:
-                lexm.setCognateClassData(**data)
+                with transaction.atomic():
+                    try:
+                        lexm.setCognateClassData(**data)
+                    except Exception, e:
+                        print('Exception while saving CognateClassData, ', e)
 
                 if not lexm.is_unchanged(**data):
-                    lexm.setDelta(**data)
-                    try:
-                        lexm.save()
-                    except Exception, e:
-                        print('Exception while saving POST: ', e)
-                else:
-                    pass
+                    with transaction.atomic():
+                        try:
+                            lexm.setDelta(**data)
+                            lexm.save()
+                        except Exception, e:
+                            print('Exception while saving POST: ', e)
+
             except Exception, e:
                 print('Exception while accessing Lexeme object: ',
                       e, '; POST items are: ', data)
@@ -599,7 +603,7 @@ def view_language_wordlist(request, language, wordlist):
             lex_row_form.rfcWebLookup1 = lex.data.get('rfcWebLookup1', '')
             lex_row_form.rfcWebLookup2 = lex.data.get('rfcWebLookup2', '')
 
-            lex_row_form.dubious = lex.data.get('dubious', '')
+            lex_row_form.dubious = lex.data.get('dubious', False)
 
             lex_table_form.lexemes.append_entry(lex_row_form)
         return lex_table_form
@@ -1073,8 +1077,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             b = lex.language.getLanguageBranch()
             if b:
                 lex_row_form.languageBranchColor = b.getColor()
-            else:  # FIXME DEBUG
-                print('NO BRANCH FOR LANGUAGE:', lex.language.utf8_name)
 
             lex_row_form.is_excluded = lex.is_excluded()
             lex_row_form.is_loan = lex.is_loan()

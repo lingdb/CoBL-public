@@ -166,7 +166,7 @@ class Language(models.Model):
             return self.altname.get(x, '') == vdict[x]
 
         def isY(x):
-            return self.altname.get(x, '') == (vdict[x] == 'y')
+            return self.altname.get(x, False) == vdict.get(x, False)
 
         fields = {
             'iso_code': isField,
@@ -206,7 +206,7 @@ class Language(models.Model):
             self.altname[x] = vdict[x]
 
         def setY(x):
-            self.altname[x] = (vdict.get(x, 'n') == 'y')
+            self.altname[x] = vdict.get(x, False)
 
         fields = {
             'iso_code': setField,
@@ -446,7 +446,7 @@ class CognateClass(models.Model):
             return self.data.get(x, '') == vdict[x]
 
         def isY(x):
-            return self.data.get(x, '') == (vdict[x] == 'y')
+            return self.data.get(x, False) == vdict.get(x, False)
 
         fields = {
             'alias': isField,
@@ -478,7 +478,7 @@ class CognateClass(models.Model):
             self.data[x] = vdict[x]
 
         def setY(x):
-            self.data[x] = (vdict.get(x, 'n') == 'y')
+            self.data[x] = vdict.get(x, False)
 
         fields = {
             'alias': setField,
@@ -615,7 +615,7 @@ class Lexeme(models.Model):
             return self.data.get(x, '') == vdict[x]
 
         def isY(x):
-            return self.data.get(x, False) == (vdict[x] == 'y')
+            return self.data.get(x, False) == vdict.get(x, False)
 
         fields = {
             'source_form': isField,
@@ -630,15 +630,18 @@ class Lexeme(models.Model):
             'dubious': isY
             }
 
-        for k, f in fields.iteritems():
-            # Fixing boolean fields:
-            if f == isY:
-                if k not in vdict:
-                    vdict[k] = 'n'
-            # Testing for changes:
-            if k in vdict:
-                if not f(k):
-                    return False
+        try:
+            for k, f in fields.iteritems():
+                # Fixing boolean fields:
+                if f == isY:
+                    if k not in vdict:
+                        vdict[k] = False
+                # Testing for changes:
+                if k in vdict:
+                    if not f(k):
+                        return False
+        except Exception, e:
+            print('Problem in Lexeme.is_unchanged():', e)
         return True
 
     def setDelta(self, **vdict):
@@ -654,17 +657,15 @@ class Lexeme(models.Model):
             self.data[x] = vdict[x]
 
         def setY(x):
-            self.data[x] = (vdict.get(x, 'n') == 'y')
+            self.data[x] = vdict.get(x, False)
 
         fields = {
-            'language': setField,
             'source_form': setField,
             'phon_form': setField,
             'gloss': setField,
             'notes': setField,
-            'number_cognate_coded': setField,
-            'transliteration': setData,
             'phoneMic': setData,
+            'transliteration': setData,
             'not_swadesh_term': setY,
             'rfcWebLookup1': setData,
             'rfcWebLookup2': setData,
