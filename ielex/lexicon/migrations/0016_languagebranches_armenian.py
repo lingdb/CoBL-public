@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
+
 def forwards_func(apps, schema_editor):
     LanguageBranches = apps.get_model("lexicon", "LanguageBranches")
     print('Adding Armenian LanguageBranch')
@@ -16,7 +17,8 @@ def forwards_func(apps, schema_editor):
 
 def reverse_func(apps, schema_editor):
     LanguageBranches = apps.get_model("lexicon", "LanguageBranches")
-    branch = LanguageBranches.objects.get(family_ix=9, level1_branch_ix=3, level1_branch_name='Armenian')
+    branch = LanguageBranches.objects.get(
+        family_ix=9, level1_branch_ix=3, level1_branch_name='Armenian')
     branch.delete()
 
 
