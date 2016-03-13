@@ -1074,9 +1074,9 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             lex_row_form.number_cognate_coded = lex.number_cognate_coded
 
             # Branch color for #92
-            b = lex.language.getLanguageBranch()
-            if b:
-                lex_row_form.languageBranchColor = b.getColor()
+#           b = lex.language.getLanguageBranch()
+#           if b:
+#               lex_row_form.languageBranchColor = b.getColor()
 
             lex_row_form.is_excluded = lex.is_excluded()
             lex_row_form.is_loan = lex.is_loan()
