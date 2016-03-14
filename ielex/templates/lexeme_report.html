@@ -15,9 +15,10 @@
   {% if lexeme.meaning %}
     <li>
       <a href="{% url 'meaning-report' lexeme.meaning.gloss %}"
-         title="back to meaning list ‘{{ lexeme.meaning.gloss }}’">
+         title="back to meaning list ‘{{ lexeme.meaning.gloss }}’"
+         data-toggle="tooltip" data-placement="bottom">
         <span class="glyphicon glyphicon-arrow-left"></span>
-        meaning list ‘{{ lexeme.meaning.gloss }}’
+        ‘{{ lexeme.meaning.gloss }}’
       </a>
     </li>
   {% endif %}
@@ -32,25 +33,28 @@
   {% endif %}
     <li>
       <a href="{% url 'language-report' lexeme.language.ascii_name %}"
-         title="back to ‘{{ lexeme.language.utf8_name }}’ wordlist">
+         title="back to ‘{{ lexeme.language.utf8_name }}’ wordlist"
+         data-toggle="tooltip" data-placement="bottom">
         <span class="glyphicon glyphicon-arrow-left"></span>
-        ‘{{ lexeme.language.utf8_name }}’ wordlist
+        ‘{{ lexeme.language.utf8_name }}’
       </a>
     </li>
   {% if user.is_authenticated %}
     <li>
       <a href="{% url 'language-add-lexeme' lexeme.language.ascii_name %}"
-         title="add a new lexeme to ‘{{ lexeme.language.utf8_name }}’">
+         title="add a new lexeme to ‘{{ lexeme.language.utf8_name }}’"
+         data-toggle="tooltip" data-placement="bottom">
         <span class="glyphicon glyphicon-plus"></span>
-        to ‘{{ lexeme.language.utf8_name }}’
+        ‘{{ lexeme.language.utf8_name }}’
       </a>
     </li>
     {% if lexeme.meaning %}
       <li>
         <a href="{% url 'meaning-add-lexeme' lexeme.meaning.gloss %}"
-           title="add a new lexeme to ‘{{ lexeme.meaning.gloss }}’">
+           title="add a new lexeme to ‘{{ lexeme.meaning.gloss }}’"
+           data-toggle="tooltip" data-placement="bottom">
           <span class="glyphicon glyphicon-plus"></span>
-          to ‘{{ lexeme.meaning.gloss }}’
+          ‘{{ lexeme.meaning.gloss }}’
         </a>
       </li>
     {% endif %}
@@ -81,7 +85,9 @@
           <a href="{% url 'edit-lexeme' lexeme.id %}" title="Edit" class="btn btn-primary">
             <span class="glyphicon glyphicon-edit">
           </a>
-          <div title="Edit" class="btn btn-danger" title="To delete lexeme add /delete/ to url (use with care!)">
+          <div class="btn btn-danger"
+               title="To delete lexeme add /delete/ to url (use with care!)"
+               data-toggle="tooltip" data-placement="bottom">
             <span class="glyphicon glyphicon-remove-sign">
           </div>
         {% endif %}
