@@ -698,6 +698,8 @@ class Lexeme(models.Model):
         ids = [str(cc.id) for cc in ccs]
         rfs = [cc.root_form for cc in ccs]
         rls = [cc.root_language for cc in ccs]
+        if len(ids) == 0:
+            return None
         return {
             'id':            ','.join(ids),
             'root_form':     ','.join(rfs),

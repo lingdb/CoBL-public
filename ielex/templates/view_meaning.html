@@ -277,13 +277,19 @@
                     {% endif %}
                   </td>
                   <td class="hide lexemeCogClassIds">
-                    {% form_field lexeme.cog_class_ids %}
+                    {% if lexeme.cog_class_ids.data %}
+                      {% form_field lexeme.cog_class_ids %}
+                    {% endif %}
                   </td>
                   <td class="lexemeRootForm">
-                    {% form_field lexeme.root_form id="rootform" class="form-control mirrorTextInput" data-compare=lexeme.data.rootFormCompare %}
+                    {% if lexeme.data.rootFormCompare %}
+                      {% form_field lexeme.root_form id="rootform" class="form-control mirrorTextInput" data-compare=lexeme.data.rootFormCompare %}
+                    {% endif %}
                   </td>
                   <td class="lexemeRootLanguage">
-                    {% form_field lexeme.root_language class="form-control mirrorTextInput" id="rootlanguage" data-compare=lexeme.data.rootLanguageCompare %}
+                    {% if lexeme.data.rootLanguageCompare %}
+                      {% form_field lexeme.root_language class="form-control mirrorTextInput" id="rootlanguage" data-compare=lexeme.data.rootLanguageCompare %}
+                    {% endif %}
                   </td>
                   <td class="lexemeNCog">
                     <span class="badge">{{ lexeme.data.number_cognate_coded }}</span>
