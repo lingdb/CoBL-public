@@ -120,6 +120,7 @@
                     {% form_field cc.cogclass_id class="hide" %}
                   </td>
                   <td class="cogClassAlias">
+                    {% form_field cc.alias class="hide" %}
                     <a href="{{cc.object_data.absolute_url}}">
                       {{ cc.data.alias }}
                     </a>
