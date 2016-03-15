@@ -19,6 +19,7 @@ To install CoBL yourself, the following dependencies must be provided:
 * [git](https://git-scm.com/) to clone the repo.
 
 To install follow these steps:
+
 1. Make sure you've got PostgreSQL up and running with a database to use for CoBL.
 2. Get hold of a recent database dump.
    If you have access to the lingdb server you will find recent ones in `/srv/container/postgres/backup` as `.bz2` files.
@@ -26,6 +27,7 @@ To install follow these steps:
    If you're using the container setup you can use the [lingdb/postgres](https://github.com/lingdb/container/tree/master/postgres) container for this task.
 3. Clone CoBL into a directory of your choice.
    Make sure to also provide potential submodules:
+
    ```
    git submodule init
    git submodule update --recursive
@@ -48,6 +50,7 @@ To install follow these steps:
     and will not require the minified JavaScript so the grunt step isn't strictly necessary.
     If it is set to `False`, CoBL will use the minified JavaScript and will not provide static files itself. In this case an additional nginx to serve static files is a good choice.
   * Set the database connection settings to something like this:
+
     ```
     DATABASES = {
         'default': {
