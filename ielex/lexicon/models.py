@@ -581,8 +581,7 @@ class Lexeme(models.Model):
 
     @property
     def reliability_ratings(self):
-        return set(self.lexemecitation_set.values_list(
-                   "reliability", flat=True))
+        return set([lc.reliability for lc in self.lexemecitation_set.all()])
 
     def get_absolute_url(self, anchor=None):
         """The absolute urls of LexemeCitation, CognateJudgement and
