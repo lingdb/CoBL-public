@@ -408,7 +408,6 @@ class CognateClass(models.Model):
         self.alias = sorted(codes, key=lambda i: (len(i), i))[0]
         if save:
             self.save()
-        return
 
     def get_meanings(self):
         # some cognate classes have more than one meaning, e.g. "right" ~
