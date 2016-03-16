@@ -543,7 +543,7 @@ def view_language_wordlist(request, language, wordlist):
         ).select_related(
         "meaning").order_by(
         "meaning__gloss").prefetch_related(
-        "cognate_class")  # .is_excluded() benefits from this
+        "cognatejudgement_set","cognate_class")
     # decorate (with a temporary attribute)
 
     # TODO: move this out of views

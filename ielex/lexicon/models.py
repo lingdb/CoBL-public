@@ -565,8 +565,7 @@ class Lexeme(models.Model):
 
     def is_excluded(self):
         # Tests is_exc for #29
-        js = CognateJudgement.objects.filter(lexeme=self).all()
-        for j in js:
+        for j in self.cognatejudgement_set.all():
             if j.is_excluded:
                 if not j.is_loanword:
                     return True
@@ -574,8 +573,7 @@ class Lexeme(models.Model):
 
     def is_loan(self):
         # Tests is_loan for #29
-        js = CognateJudgement.objects.filter(lexeme=self).all()
-        for j in js:
+        for j in self.cognatejudgement_set.all():
                 if j.is_excluded:
                     if j.is_loanword:
                         return True
