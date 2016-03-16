@@ -1236,27 +1236,6 @@ class CognateClassCitation(AbstractBaseCitation):
     class Meta:
         unique_together = (("cognate_class", "source"),)
 
-# @receiver(post_delete, sender=CognateJudgementCitation)
-# def check_cognate_judgement_has_citation(sender, instance, **kwargs):
-#     try:
-#         if instance.cognate_judgement.source.count() == 0:
-#             instance.save() # reinstate object
-#             raise IntegrityError(
-#                     "This deletion would leave parent without citations")
-#     except CognateJudgement.DoesNotExist:
-#         pass # parent has been deleted
-#
-# @receiver(post_delete, sender=LexemeCitation)
-# def check_lexeme_has_citation(sender, instance, **kwargs):
-#     #_delete = getattr(instance.lexeme, "_delete", False)
-#     try:
-#         if instance.lexeme.source.count() == 0:
-#             instance.save() # reinstate object
-#             raise IntegrityError(
-#                     "This deletion would leave parent without citations")
-#     except Lexeme.DoesNotExist:
-#         pass # parent has been deleted
-
 
 @disable_for_loaddata
 def update_language_list_all(sender, instance, **kwargs):
