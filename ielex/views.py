@@ -1209,28 +1209,23 @@ def view_cognateclasses(request, meaning):
             cogclass_table_form.cogclass.append_entry(cogclass_row_form)
         return cogclass_table_form
 
+    ccl_ordered = []
+
+    cogclass_bymeaning = CognateClass.objects.filter(
+        cognatejudgement__lexeme__meaning__gloss=meaning)
+    cogclass_bymeaning_ids = set([i.pk for i in cogclass_bymeaning])
+
     # This is a clunky way of sorting; currently assumes LanguageList
     # 'all' (maybe make this configurable?)
     cognateclass_list = CognateClassList.objects.get(
         name=CognateClassList.DEFAULT)
+    cognateClasses = cognateclass_list.cognateclasses.all().order_by("alias")
 
-    def iter_orderedcoglist():
-        ccl_ordered = []
-        ccl_ordered_extend = ccl_ordered.extend
-        cogClasses = cognateclass_list.cognateclasses
-        coglist_ordered = cogClasses.all().order_by("alias")
-        CognateClass_objects_filter = CognateClass.objects.filter
-        cogclass_bymeaning = CognateClass.objects.filter(
-            cognatejudgement__lexeme__meaning__gloss=meaning)
-        cogclass_bymeaning_ids = [i.pk for i in cogclass_bymeaning]
-        for cogclass in coglist_ordered:
-            cogclass_pk = cogclass.pk
-            if cogclass_pk in cogclass_bymeaning_ids:
-                cc = CognateClass_objects_filter(pk=cogclass_pk).distinct()
-                ccl_ordered_extend(list(cc))
-        return ccl_ordered
+    for cogclass in cognateClasses:
+        if cogclass.pk in cogclass_bymeaning_ids:
+            cc = CognateClass.objects.filter(pk=cogclass.pk).distinct()
+            ccl_ordered.extend(list(cc))
 
-    ccl_ordered = iter_orderedcoglist()
     cogclass_editabletable_form = fill_cogclass_table_from_DB(ccl_ordered)
 
     return render_template(request, "view_cognateclass_editable.html",
