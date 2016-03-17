@@ -543,7 +543,9 @@ def view_language_wordlist(request, language, wordlist):
         ).select_related(
         "meaning").order_by(
         "meaning__gloss").prefetch_related(
-        "cognatejudgement_set", "cognate_class", "lexemecitation_set")
+        "cognatejudgement_set",
+        "cognatejudgement_set__cognatejudgementcitation_set",
+        "cognate_class", "lexemecitation_set")
 
     # TODO: move this out of views
     # filter by 'language' or 'meaning'

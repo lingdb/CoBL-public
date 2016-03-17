@@ -742,8 +742,8 @@ class CognateJudgement(models.Model):
 
     @property
     def reliability_ratings(self):
-        return set(self.cognatejudgementcitation_set.values_list(
-                   "reliability", flat=True))
+        return set([cj.reliability
+                    for cj in self.cognatejudgementcitation_set.all()])
 
     @property
     def long_reliability_ratings(self):
