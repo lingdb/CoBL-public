@@ -9,11 +9,24 @@
   </li>
 {% endif %}
 <li>
+  <a href="#">
+    Rfc.:
+  </a>
+</li>
+<li>
+  <a href="/languageBranches/"
+     title="View list of language branches"
+     data-toggle="tooltip"
+     data-placement="bottom">
+    <span class="glyphicon glyphicon-tree-deciduous"></span>
+  </a>
+</li>
+<li>
   <a href={% url 'view-language-list' current_language_list_name %}
      title="View list of languages"
      data-toggle="tooltip"
      data-placement="bottom">
-    Lgs Rfc.
+    Languages
   </a>
 </li>
 <li>
@@ -21,7 +34,7 @@
      title="View list of meanings"
      data-toggle="tooltip"
      data-placement="bottom">
-    Mgs Rfc.
+    Meanings
   </a>
 </li>
 {% if semantic_domains %}
@@ -34,15 +47,7 @@
      title="View list of sources"
      data-toggle="tooltip"
      data-placement="bottom">
-    Sources Rfc.
-  </a>
-</li>
-<li>
-  <a href="/languageBranches/"
-     title="View list of language branches"
-     data-toggle="tooltip"
-     data-placement="bottom">
-    <span class="glyphicon glyphicon-tree-deciduous"></span>
+    Sources
   </a>
 </li>
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

@@ -375,7 +375,9 @@ def view_languageBranches(request):
                       e, '; POST items are: ', data)
 
     form = LanguageBranchesTableForm()
-    for branch in LanguageBranches.objects.all():
+    branches = LanguageBranches.objects.order_by(
+        "family_ix", "level1_branch_ix").all()
+    for branch in branches:
 
         branch.idField = branch.id
         form.elements.append_entry(branch)
