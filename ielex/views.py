@@ -1046,7 +1046,15 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         meaning=meaning,
         language__in=current_language_list.languages.all(),
         language__languagelistorder__language_list=current_language_list
-        ).order_by("language__languagelistorder").select_related("language")
+        ).order_by(
+        "language__languagelistorder"
+        ).select_related(
+        "language",
+        "meaning").prefetch_related(
+        "cognatejudgement_set",
+        "cognatejudgement_set__cognatejudgementcitation_set",
+        "lexemecitation_set",
+        "cognate_class")
 
     cognate_form.fields[
         "cognate_class"].queryset = CognateClass.objects.filter(
