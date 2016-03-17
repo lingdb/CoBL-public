@@ -544,13 +544,11 @@ def view_language_wordlist(request, language, wordlist):
         "meaning").order_by(
         "meaning__gloss").prefetch_related(
         "cognatejudgement_set", "cognate_class", "lexemecitation_set")
-    # decorate (with a temporary attribute)
 
     # TODO: move this out of views
     # filter by 'language' or 'meaning'
     filt_form = LexemeTableFilterForm(request.GET)
     if filt_form.is_valid():
-        # print lexemes.filter(meaning=int(request.GET.get('meaning')))
         if request.GET.get('meaning'):
             lexemes = lexemes.filter(meaning=int(request.GET.get('meaning')))
         if request.GET.get('cognate_class'):
@@ -558,11 +556,13 @@ def view_language_wordlist(request, language, wordlist):
             lexemes = lexemes.filter(
                 cognate_class=request.GET.get('cognate_class'))
 
-    for lexeme in lexemes:
-        lexeme.temporary_sort_order = MeaningListOrder.objects.get(
-            meaning_list=wordlist,
-            meaning=lexeme.meaning).order
-    lexemes = sorted(lexemes, key=lambda l: l.temporary_sort_order)
+    # Sorting lexemes by MeaningListOrder:
+    meaningOrderMap = dict(
+        MeaningListOrder.objects.filter(
+            meaning__in=wordlist.meanings.all(),
+            meaning_list=wordlist).values_list("meaning_id", "order"))
+    lexemes = sorted(
+        lexemes, key=lambda l: meaningOrderMap.get(l.meaning.id, 0))
 
     def fill_lexemestable_from_DB(lexms):
 
