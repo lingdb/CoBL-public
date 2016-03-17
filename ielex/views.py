@@ -818,17 +818,18 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
     form.fields["meaning_list"].initial = wordlist.id
 
     mltf = MeaningListTableForm()
-    for meaning in wordlist.meanings.all().order_by("meaninglistorder"):
+    meanings = wordlist.meanings.order_by("meaninglistorder").all()
+    for meaning in meanings:
         meaning.meaningId = meaning.id
         meaning.lex_count = Lexeme.objects.filter(meaning=meaning).count()
-        # MADNESS BELOW
-        cjs = CognateJudgement.objects.filter(
-            lexeme__meaning__id=meaning.id).all()
-        meaning.cog_count = len(set([cj.cognate_class_id for cj in cjs]))
-        # MADNESS ABOVE
+        meaning.cog_count = CognateJudgement.objects.filter(
+            lexeme__meaning__id=meaning.id).distinct(
+            "cognate_class_id").count()
         meaning.desc = meaning.description
         mltf.meanings.append_entry(meaning)
+
     current_language_list = getDefaultLanguagelist(request)
+
     return render_template(request, "wordlist.html",
                            {"mltf": mltf,
                             "form": form,
