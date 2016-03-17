@@ -1041,12 +1041,13 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     else:
         pass  # TODO
 
-    # Get lexemes, respecting 'languages'
-    # lexemes = Lexeme.objects.filter(meaning=meaning,
-    #         language__id__in=current_language_list.language_id_list)
-    lexemes = get_ordered_lexemes(
-        meaning, current_language_list,
-        "language", "meaning")  # , "cognatejudgement_set")
+    # Gather lexemes:
+    lexemes = Lexeme.objects.filter(
+        meaning=meaning,
+        language__in=current_language_list.languages.all(),
+        language__languagelistorder__language_list=current_language_list
+        ).order_by("language__languagelistorder").select_related("language")
+
     cognate_form.fields[
         "cognate_class"].queryset = CognateClass.objects.filter(
             lexeme__in=lexemes).distinct()
@@ -1249,17 +1250,6 @@ def delete_meaning(request, meaning):
     return HttpResponseRedirect(reverse("view-meanings"))
 
 # -- /lexeme/ -------------------------------------------------------------
-
-
-def get_ordered_lexemes(meaning, language_list, *select_related_fields):
-    lexemes = Lexeme.objects.filter(
-        meaning=meaning,
-        language__in=language_list.languages.all()).filter(
-            language__languagelistorder__language_list=language_list
-            ).select_related(
-                *select_related_fields).order_by(
-                    "language__languagelistorder")
-    return lexemes
 
 
 def view_lexeme(request, lexeme_id):
