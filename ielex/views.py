@@ -246,10 +246,10 @@ def get_canonical_language_list(language_list=None, request=None):
 def view_language_list(request, language_list=None):
     current_list = get_canonical_language_list(language_list, request)
     setDefaultLanguagelist(request, current_list.name)
-    languages = current_list.languages.all().order_by("languagelistorder")
-    languages = languages.annotate(
-        meaning_count=Count("lexeme__meaning", distinct=True))
-    languages = languages.annotate(entry_count=Count("lexeme", distinct=True))
+    languages = current_list.languages.all().order_by(
+        "languagelistorder"
+        ).prefetch_related(
+        "lexeme_set", "lexeme_set__meaning")
 
     if request.method == 'POST' and not ('langlist_form' in request.POST):
         form = ChooseLanguageListForm(request.POST)
@@ -315,14 +315,18 @@ def view_language_list(request, language_list=None):
             # as there are no problematic characters ?
             langlist_row_form.utf8_name = lang.utf8_name.encode(
                 "ascii", "ignore")
-            nonLexCount = Lexeme.objects.filter(
-                language=lang,
-                data__icontains='not_swadesh_term": true').count()
-            langlist_row_form.lex_count = lang.entry_count - nonLexCount
-            langlist_row_form.mgs_count = lang.meaning_count
-            langlist_row_form.entd_count = lang.entry_count
+
+            # Computing counts:
+            nonLexCount = len([l for l in lang.lexeme_set.all()
+                               if l.data.get('not_swadesh_term', False)])
+            entryCount = len(lang.lexeme_set.all())
+            meaningCount = len(set(
+                lex.meaning.id for lex in lang.lexeme_set.all()))
+            langlist_row_form.lex_count = entryCount - nonLexCount
+            langlist_row_form.mgs_count = meaningCount
+            langlist_row_form.entd_count = entryCount
             langlist_row_form.excess_count = \
-                (lang.entry_count - nonLexCount) - lang.meaning_count
+                (entryCount - nonLexCount) - meaningCount
 
             langlist_row_form.glottocode = lang.altname.get('glottocode', '')
             langlist_row_form.variety = lang.altname.get('variety', '')
