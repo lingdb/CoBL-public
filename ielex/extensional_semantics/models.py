@@ -76,7 +76,7 @@ class SemanticDomain(models.Model):
 
     def _set_list(self, listobj):
         self.relation_ids = ",".join([str(i) for i in listobj])
-        return
+
     relation_id_list = property(_get_list, _set_list)
 
     def __unicode__(self):
@@ -98,7 +98,6 @@ def update_semantic_domain_all(sender, instance, **kwargs):
     if sd.relation_id_list != compareList:
         sd.relation_id_list = [l.id for l in SemanticRelation.objects.all()]
         sd.save(force_update=True)
-    return
 
 models.signals.post_save.connect(
     update_semantic_domain_all, sender=SemanticRelation)

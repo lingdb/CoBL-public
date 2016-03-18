@@ -35,7 +35,7 @@ def next_alias(l, ignore=[]):
     for alias in codes:
         if alias not in l+ignore:
             return alias
-    return
+    return None
 
 
 def two_by_two(I):
@@ -117,7 +117,6 @@ class LexDBManagementCommand(NoArgsCommand):
         assert not hasattr(options, "settings")
         assert not hasattr(options, "pythonpath")
         self.execute(*args, **options.__dict__)
-        return
 
 
 if __name__ == "__main__":

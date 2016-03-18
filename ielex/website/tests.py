@@ -49,7 +49,6 @@ class ViewBaseMethods:
                         new_links.append(link)
             for link in new_links:
                 self.walk_page(link, path)
-        return
 
     def test_unauthenticated_walk(self):
         "Test that an unauthenticated user can follow every link"
@@ -85,7 +84,7 @@ class ViewBaseMethods:
                     if element.tag == "a" and link.startswith("/"):
                         if link not in self.seen_links:
                             walk_page(link, path)
-            return
+
         walk_page(root)
         if lacking_slash:
             logger.info("\n === LACKING SLASH ===")
@@ -303,7 +302,7 @@ class ObligatoryCogJudgeCitationTests(TestCase):
                     lexeme=lexeme,
                     cognate_class=self.new_cogclass)
             cogjudge.save()
-            return
+
         self.assertRaises(IntegrityError,
                           make_uncited_cognate_judgement,
                           self.db[Lexeme])

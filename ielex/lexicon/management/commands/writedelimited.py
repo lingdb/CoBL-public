@@ -53,4 +53,3 @@ class Command(LexDBManagementCommand):
             options["unique"],
             options["exclude_invariant"])
         fileobj.close()
-        return

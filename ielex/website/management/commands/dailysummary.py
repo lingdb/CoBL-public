@@ -111,7 +111,6 @@ class Command(LexDBManagementCommand):
                     msg = "No activity from %s to %s" % \
                         (strftime(start_date), strftime(end_date))
                     mail_admins(subject, msg)
-        return
 
 # standard report formatters
 
@@ -120,7 +119,7 @@ def get_printer(fileobj):
     def printer(*args, **kwargs):
         kwargs["file"] = fileobj
         print(*args, **kwargs)
-        return
+
     return printer
 
 

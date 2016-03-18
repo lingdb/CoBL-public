@@ -321,7 +321,6 @@ class Meaning(models.Model):
             self.percent_coded = 0
         if self.percent_coded != old_value:
             self.save()
-        return
 
     def __unicode__(self):
         return self.gloss.upper()
@@ -541,14 +540,12 @@ class Lexeme(models.Model):
         self.denormalized_cognate_classes = ",".join(str(e) for e in data)
         if self.denormalized_cognate_classes != old_value:
             self.save()
-        return
 
     def set_number_cognate_coded(self):
         old_number = self.number_cognate_coded
         self.number_cognate_coded = self.cognate_class.count()
         if self.number_cognate_coded != old_number:
             self.save()
-        return
 
     def get_cognate_class_links(self):
         def format_link(cc_id, alias):
@@ -732,10 +729,6 @@ class CognateJudgement(models.Model):
     data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
-    # def get_absolute_url(self):
-    #     return "/meaning/%s/%s/%s/" % (self.lexeme.meaning.gloss,
-    #             self.lexeme.id, self.id)
-
     def get_absolute_url(self):
         anchor = "cognatejudgement_%s" % self.id
         return self.lexeme.get_absolute_url(anchor)
@@ -805,7 +798,6 @@ class LanguageList(models.Model):
                 language=language,
                 language_list=self,
                 order=N)
-        return
 
     def insert(self, N, language):
         """
@@ -818,14 +810,12 @@ class LanguageList(models.Model):
         target = self.languagelistorder_set.all()[N]
         llo.order = target.order - 0.0001
         llo.save()
-        return
 
     def remove(self, language):
         llo = LanguageListOrder.objects.get(
                 language=language,
                 language_list=self)
         llo.delete()
-        return
 
     def sequentialize(self):
         """Sequentialize the order fields of a LanguageListOrder set
@@ -841,7 +831,7 @@ class LanguageList(models.Model):
                     return N
                 except AssertionError:
                     N += 0.0001
-            return
+
         if count:
             order_floats = self.languagelistorder_set.values_list(
                 "order", flat=True)
@@ -849,7 +839,6 @@ class LanguageList(models.Model):
                 if i != llo.order:
                     llo.order = jitter(i, order_floats)
                     llo.save()
-        return
 
     def swap(self, languageA, languageB):
         """Swap the order of two languages"""
@@ -863,7 +852,6 @@ class LanguageList(models.Model):
         orderA.order, orderB.order = orderB.order, orderA.order
         orderA.save()
         orderB.save()
-        return
 
     def get_absolute_url(self):
         return "/languages/%s/" % self.name
@@ -917,7 +905,6 @@ class MeaningList(models.Model):
                 meaning=meaning,
                 meaning_list=self,
                 order=N)
-        return
 
     def insert(self, N, meaning):
         """
@@ -930,14 +917,12 @@ class MeaningList(models.Model):
         target = self.meaninglistorder_set.all()[N]
         llo.order = target.order - 0.0001
         llo.save()
-        return
 
     def remove(self, meaning):
         llo = MeaningListOrder.objects.get(
                 meaning=meaning,
                 meaning_list=self)
         llo.delete()
-        return
 
     def sequentialize(self):
         """Sequentialize the order fields of a MeaningListOrder set
@@ -953,7 +938,7 @@ class MeaningList(models.Model):
                     return N
                 except AssertionError:
                     N += 0.0001
-            return
+
         if count:
             order_floats = self.meaninglistorder_set.values_list(
                 "order", flat=True)
@@ -961,7 +946,6 @@ class MeaningList(models.Model):
                 if i != llo.order:
                     llo.order = jitter(i, order_floats)
                     llo.save()
-        return
 
     def swap(self, meaningA, meaningB):
         """Swap the order of two meanings"""
@@ -975,7 +959,6 @@ class MeaningList(models.Model):
         orderA.order, orderB.order = orderB.order, orderA.order
         orderA.save()
         orderB.save()
-        return
 
     def get_absolute_url(self):
         return "/meanings/%s/" % self.name
@@ -1038,7 +1021,6 @@ class CognateClassList(models.Model):
                 cognateclass=cognateclass,
                 cognateclass_list=self,
                 order=N)
-        return
 
     def insert(self, N, cognateclass):
         """
@@ -1051,14 +1033,12 @@ class CognateClassList(models.Model):
         target = self.cognateclassorder_set.all()[N]
         llo.order = target.order - 0.0001
         llo.save()
-        return
 
     def remove(self, cognateclass):
         llo = CognateClassListOrder.objects.get(
                 cognateclass=cognateclass,
                 cognateclass_list=self)
         llo.delete()
-        return
 
     def sequentialize(self):
         """Sequentialize the order fields of a CognateClassListOrder set
@@ -1074,7 +1054,7 @@ class CognateClassList(models.Model):
                     return N
                 except AssertionError:
                     N += 0.0001
-            return
+
         if count:
             order_floats = self.cognateclasslistorder_set.values_list(
                 "order", flat=True)
@@ -1082,7 +1062,6 @@ class CognateClassList(models.Model):
                 if i != llo.order:
                     llo.order = jitter(i, order_floats)
                     llo.save()
-        return
 
     def swap(self, cognateclassA, cognateclassB):
         """Swap the order of two meanings"""
@@ -1096,7 +1075,6 @@ class CognateClassList(models.Model):
         orderA.order, orderB.order = orderB.order, orderA.order
         orderA.save()
         orderB.save()
-        return
 
     def __unicode__(self):
         return self.name
@@ -1255,7 +1233,6 @@ def update_language_list_all(sender, instance, **kwargs):
         ll_alpha = LanguageList.objects.create(name=default_alpha)
         for language in Language.objects.all().order_by("ascii_name"):
             ll_alpha.append(language)
-    return
 
 models.signals.post_save.connect(update_language_list_all, sender=Language)
 models.signals.post_delete.connect(update_language_list_all, sender=Language)
@@ -1281,7 +1258,6 @@ def update_meaning_list_all(sender, instance, **kwargs):
         ml_alpha = MeaningList.objects.create(name=default_alpha)
         for meaning in Meaning.objects.all().order_by("gloss"):
             ml_alpha.append(meaning)
-    return
 
 models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
 models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
@@ -1312,7 +1288,6 @@ def update_cognateclass_list_all(sender, instance, **kwargs):
         ccl_alpha = CognateClassList.objects.create(name=default_alpha)
         for cgclss in CognateClass.objects.all().order_by("alias"):
             ccl_alpha.append(cgclss)
-    return
 
 models.signals.post_save.connect(
     update_cognateclass_list_all, sender=CognateClass)
@@ -1338,7 +1313,6 @@ def update_denormalized_data(sender, instance, **kwargs):
         lexeme.set_denormalized_cognate_classes()
     except Lexeme.DoesNotExist:
         pass  # must have been deleted
-    return
 
 models.signals.post_save.connect(
     update_denormalized_data, sender=CognateJudgement)
@@ -1359,7 +1333,6 @@ models.signals.post_delete.connect(
 @disable_for_loaddata
 def update_denormalized_from_lexeme(sender, instance, **kwargs):
     instance.meaning.set_percent_coded()
-    return
 
 models.signals.post_save.connect(
     update_denormalized_from_lexeme, sender=Lexeme)

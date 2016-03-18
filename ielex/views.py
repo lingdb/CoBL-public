@@ -218,7 +218,6 @@ def update_object_from_form(model_object, form):
     assert set(form.cleaned_data).issubset(set(model_object.__dict__))
     model_object.__dict__.update(form.cleaned_data)
     model_object.save()
-    return
 
 # -- /language(s)/ ----------------------------------------------------------
 
@@ -442,7 +441,6 @@ def move_language(language, language_list, direction):
             language_list.swap(language, neighbour)
         except IndexError:
             language_list.insert(0, language)
-    return
 
 
 @csrf_protect
@@ -912,7 +910,6 @@ def move_meaning(meaning, wordlist, direction):
             wordlist.swap(meaning, neighbour)
         except IndexError:
             wordlist.insert(0, meaning)
-    return
 
 
 @login_required

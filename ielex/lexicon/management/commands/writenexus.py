@@ -53,4 +53,3 @@ class Command(LexDBManagementCommand):
             True,  # label cognate sets
             options["ascertainment_marker"])
         fileobj.close()
-        return

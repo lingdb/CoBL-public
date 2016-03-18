@@ -45,4 +45,3 @@ class Command(LexDBManagementCommand):
                     language=language,
                     language_list=source_list).order + 0.1  # avoid collisions
             llt.save()
-        return
