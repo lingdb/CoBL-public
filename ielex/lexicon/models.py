@@ -102,6 +102,66 @@ class Source(models.Model):
 
 
 @reversion.register
+class LanguageBranches(models.Model):
+    family_ix = models.IntegerField(blank=True)
+    level1_branch_ix = models.IntegerField(blank=True)
+    level1_branch_name = models.TextField(blank=True, unique=True)
+    hexColor = models.CharField(max_length=6, blank=True)
+
+    def is_unchanged(self, **vdict):
+
+        def isInt(x):
+            return getattr(self, x) == int(vdict[x])
+
+        def isString(x):
+            return getattr(self, x) == vdict[x]
+
+        fields = {
+            'family_ix': isInt,
+            'level1_branch_ix': isInt,
+            'level1_branch_name': isString,
+            'hexColor': isString}
+
+        for k, _ in vdict.iteritems():
+            if k in fields:
+                if not fields[k](k):
+                    return False
+        return True
+
+    def setDelta(self, **vdict):
+
+        def setInt(x):
+            setattr(self, x, int(vdict[x]))
+
+        def setString(x):
+            setattr(self, x, vdict[x])
+
+        fields = {
+            'family_ix': setInt,
+            'level1_branch_ix': setInt,
+            'level1_branch_name': setString,
+            'hexColor': setString}
+
+        # Setting fields:
+        for k, _ in vdict.iteritems():
+            if k in fields:
+                fields[k](k)
+
+    def getColor(self):
+        if self.hexColor == '':
+            if self.level1_branch_ix != 0:
+                try:
+                    b = LanguageBranches.objects.get(
+                        family_ix=self.family_ix,
+                        level1_branch_ix=self.level1_branch_ix)
+                    return b.getColor()
+                except:
+                    # On error color is white:
+                    return 'ffffff'
+        return self.hexColor
+
+
+@reversion.register
 class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
     ascii_name = models.CharField(
@@ -109,6 +169,7 @@ class Language(models.Model):
     utf8_name = models.CharField(max_length=128, unique=True)
     description = models.TextField(blank=True, null=True)
     altname = jsonfield.JSONField(blank=True)
+    languageBranch = models.ForeignKey(LanguageBranches, null=True)
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
@@ -142,17 +203,30 @@ class Language(models.Model):
             for level in levels:
                 self.altname[level] = 0
 
-    def getLanguageBranch(self):
+    def updateLanguageBranch(self):
         """
+        Updates Language.languageBranch
         @return branch :: LanguageBranches | None
         """
         try:
-            return LanguageBranches.objects.get(
+            branch = LanguageBranches.objects.get(
                 family_ix=self.altname['level0'],
                 level1_branch_ix=self.altname['level1'])
+            if self.languageBranch is not None:
+                if branch.id == self.languageBranch.id:
+                    return
+            self.languageBranch = branch
+            try:
+                self.save()
+            except:
+                pass
         except:
-            pass
-        return None
+            if self.languageBranch is not None:
+                self.languageBranch = None
+                try:
+                    self.save()
+                except:
+                    pass
 
     class Meta:
         ordering = ["ascii_name"]
@@ -236,66 +310,6 @@ class Language(models.Model):
         for k, _ in vdict.iteritems():
             if k in fields:
                 fields[k](k)
-
-
-@reversion.register
-class LanguageBranches(models.Model):
-    family_ix = models.IntegerField(blank=True)
-    level1_branch_ix = models.IntegerField(blank=True)
-    level1_branch_name = models.TextField(blank=True, unique=True)
-    hexColor = models.CharField(max_length=6, blank=True)
-
-    def is_unchanged(self, **vdict):
-
-        def isInt(x):
-            return getattr(self, x) == int(vdict[x])
-
-        def isString(x):
-            return getattr(self, x) == vdict[x]
-
-        fields = {
-            'family_ix': isInt,
-            'level1_branch_ix': isInt,
-            'level1_branch_name': isString,
-            'hexColor': isString}
-
-        for k, _ in vdict.iteritems():
-            if k in fields:
-                if not fields[k](k):
-                    return False
-        return True
-
-    def setDelta(self, **vdict):
-
-        def setInt(x):
-            setattr(self, x, int(vdict[x]))
-
-        def setString(x):
-            setattr(self, x, vdict[x])
-
-        fields = {
-            'family_ix': setInt,
-            'level1_branch_ix': setInt,
-            'level1_branch_name': setString,
-            'hexColor': setString}
-
-        # Setting fields:
-        for k, _ in vdict.iteritems():
-            if k in fields:
-                fields[k](k)
-
-    def getColor(self):
-        if self.hexColor == '':
-            if self.level1_branch_ix != 0:
-                try:
-                    b = LanguageBranches.objects.get(
-                        family_ix=self.family_ix,
-                        level1_branch_ix=self.level1_branch_ix)
-                    return b.getColor()
-                except:
-                    # On error color is white:
-                    return 'ffffff'
-        return self.hexColor
 
 
 @reversion.register
