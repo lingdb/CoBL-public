@@ -1059,6 +1059,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         ).select_related(
         "language",
         "meaning").prefetch_related(
+        "language__languageBranch",
         "cognatejudgement_set",
         "cognatejudgement_set__cognatejudgementcitation_set",
         "lexemecitation_set",
@@ -1101,9 +1102,9 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             lex_row_form.number_cognate_coded = lex.number_cognate_coded
 
             # Branch color for #92
-            b = lex.language.languageBranch
-            if b:
-                lex_row_form.languageBranchColor = b.getColor()
+            branch = lex.language.languageBranch
+            if branch is not None:
+                lex_row_form.languageBranchColor = branch.getColor()
 
             lex_row_form.is_excluded = lex.is_excluded()
             lex_row_form.is_loan = lex.is_loan()

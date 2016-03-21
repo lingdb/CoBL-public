@@ -147,17 +147,26 @@ class LanguageBranches(models.Model):
             if k in fields:
                 fields[k](k)
 
+    def getParent(self):
+        """
+        Tries to fetch the parent of a branch.
+        @return LanguageBranches | None
+        """
+        if self.level1_branch_ix == 0:
+            return None
+        try:
+            return LanguageBranches.objects.get(
+                family_ix=self.family_ix,
+                level1_branch_ix=0)
+        except:
+            return None
+
     def getColor(self):
         if self.hexColor == '':
-            if self.level1_branch_ix != 0:
-                try:
-                    b = LanguageBranches.objects.get(
-                        family_ix=self.family_ix,
-                        level1_branch_ix=self.level1_branch_ix)
-                    return b.getColor()
-                except:
-                    # On error color is white:
-                    return 'ffffff'
+            parent = self.getParent()
+            if parent is not None:
+                return parent.getColor()
+            return 'ffffff'
         return self.hexColor
 
 
