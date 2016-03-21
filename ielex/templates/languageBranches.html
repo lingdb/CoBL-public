@@ -86,7 +86,7 @@
                           style='background-color: #{{ branch.hexColor.data }};'
                       {% endif %}
                       class="hexColor">
-                    {% form_field branch.hexColor class="form-control" pattern="[0123456789abcdefABCDEF]{6}" placeholder="c0ffee" %}
+                    {% form_field branch.hexColor class="form-control" pattern="[0123456789abcdefABCDEF]{6}" placeholder="c0ffee" style="width: 6em;" %}
                   </td>
                 </tr>
               {% endfor %}
