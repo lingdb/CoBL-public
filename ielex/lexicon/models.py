@@ -206,6 +206,9 @@ class Language(models.Model):
     def updateLanguageBranch(self):
         """
         Updates Language.languageBranch
+        It makes sense to call this when:
+        * The level* indices of a Language are changed.
+        * The LanguageBranches change.
         @return branch :: LanguageBranches | None
         """
         try:

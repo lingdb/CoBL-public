@@ -280,6 +280,7 @@ def view_language_list(request, language_list=None):
                     lang.setDelta(**data)
 
                     lang.validateBranchLevels()
+                    lang.updateLanguageBranch()
 
                     try:
                         lang.save()
@@ -376,6 +377,9 @@ def view_languageBranches(request):
             except Exception, e:
                 print('Exception while accessing LanguageBranches object: ',
                       e, '; POST items are: ', data)
+        # Since the LanguageBranches changed, we update the Languages:
+        for l in Language.objects.all():
+            l.updateLanguageBranch()
 
     form = LanguageBranchesTableForm()
     branches = LanguageBranches.objects.order_by(
