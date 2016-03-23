@@ -910,6 +910,7 @@ class LanguageListOrder(models.Model):
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
     DEFAULT = "Jena200"
+    ALL = "all"
 
     name = models.CharField(
         max_length=128, unique=True,
@@ -1266,7 +1267,7 @@ models.signals.post_delete.connect(update_language_list_all, sender=Language)
 
 @disable_for_loaddata
 def update_meaning_list_all(sender, instance, **kwargs):
-    ml, _ = MeaningList.objects.get_or_create(name=MeaningList.DEFAULT)
+    ml, _ = MeaningList.objects.get_or_create(name=MeaningList.ALL)
     ml.sequentialize()
 
     missing_meanings = set(Meaning.objects.all()) - set(ml.meanings.all())
