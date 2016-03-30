@@ -802,7 +802,8 @@ class LanguageList(models.Model):
 
     # TODO how can I make this the default ordering?
     """
-    DEFAULT = "all"  # all languages
+    DEFAULT = "2016-02-17_144"
+    ALL = "all"
 
     name = models.CharField(
         max_length=128, unique=True,
@@ -1242,7 +1243,7 @@ class CognateClassCitation(AbstractBaseCitation):
 @disable_for_loaddata
 def update_language_list_all(sender, instance, **kwargs):
     """Update the LanguageList 'all' whenever Language table is changed"""
-    ll, _ = LanguageList.objects.get_or_create(name=LanguageList.DEFAULT)
+    ll, _ = LanguageList.objects.get_or_create(name=LanguageList.ALL)
     ll.sequentialize()
 
     missing_langs = set(Language.objects.all()) - set(ll.languages.all())
