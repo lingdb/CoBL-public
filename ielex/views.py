@@ -957,6 +957,8 @@ def edit_meaning(request, meaning):
 @csrf_protect
 def view_meaning(request, meaning, language_list, lexeme_id=None):
     setDefaultMeaning(request, meaning)
+    if language_list is None:
+        language_list = getDefaultLanguagelist(request)
     setDefaultLanguagelist(request, language_list)
 
     # Normalize calling parameters
