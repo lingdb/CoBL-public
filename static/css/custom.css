@@ -64,3 +64,13 @@ table.viewTableFilter>tbody>tr>td {
   padding: 0px;
   margin: 0px;
 }
+
+/* Relates to #31 */
+table.floatThead-table {
+  border-top: none;
+  border-bottom: none;
+  background-color: #FFF;
+}
+.floatThead-container {
+  padding-top: 55px;
+}

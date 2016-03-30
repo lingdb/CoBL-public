@@ -24,6 +24,7 @@
     "almond": "^0.3.1",
     "rjs": "^2.1.22",
     "lodash": "^4.5.1",
-    "markdown-it": "^6.0.0"
+    "markdown-it": "^6.0.0",
+    "jquery.floatThead": "floatThead#^1.4.0"
   }
 }

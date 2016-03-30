@@ -4,12 +4,14 @@
     baseUrl: '/ielex/static/',
     paths: {
       'jquery': 'bower_components/jquery/dist/jquery.min',
+      'floatThead': 'bower_components/jquery.floatThead/dist/jquery.floatThead.min',
       'bootstrap': 'bower_components/bootstrap/dist/js/bootstrap.min',
       'lodash': 'bower_components/lodash/dist/lodash.min',
       'markdown-it': 'bower_components/markdown-it/dist/markdown-it.min'
     },
     shim: {
       'bootstrap': {deps: ['jquery']},
+      'floatThead': {deps: ['jquery']},
       'lodash': {exports: '_'},
       'jquery': {exports: '$'},
       'markdown-it': {deps: ['jquery']}

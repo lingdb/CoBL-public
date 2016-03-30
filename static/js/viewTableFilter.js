@@ -1,6 +1,6 @@
 (function(){
   "use strict";
-  return define(['jquery','lodash'], function($, _){
+  return define(['jquery','lodash','floatThead'], function($, _){
     /*
       This view can be used to filter and sort tables.
       The table is expected to contain input elements
@@ -22,6 +22,8 @@
       if(el instanceof window.Element || _.isString(el)){
         el = $(el);
       }
+      //floatThead for #31:
+      el.floatThead({position: 'absolute'});
       //Actual init work:
       el.each(function(){
         var table = $(this);
