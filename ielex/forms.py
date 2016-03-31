@@ -523,3 +523,16 @@ class SearchLexemeForm(forms.Form):
         required=False, widget=forms.SelectMultiple(
             attrs={"size": min(40, Language.objects.count())}),
         help_text=u"no selection → all")
+
+
+class AuthorRowForm(WTForm):
+    idField = IntegerField('Id')
+    surname = StringField('Author Surname', validators=[DataRequired()])
+    firstNames = StringField('Author First names', validators=[DataRequired()])
+    email = StringField('Email address', validators=[DataRequired()])
+    website = StringField('Personal website URL', validators=[DataRequired()])
+    initials = StringField('Initials', validators=[DataRequired()])
+
+
+class AuthorTableForm(WTForm):
+    elements = FieldList(FormField(AuthorRowForm))
