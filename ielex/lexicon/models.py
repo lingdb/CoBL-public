@@ -1128,33 +1128,6 @@ class CognateClassListOrder(models.Model):
                            ("cognateclass_list", "order"))
 
 
-# class GenericCitation(models.Model):
-#     # This would have been a good way to do it, but it's going to be too
-#     # difficult to convert the ManyToMany fields in the current models to use
-#     # this instead of the old classes.
-#     source = models.ForeignKey(Source)
-#     content_type = models.ForeignKey(ContentType)
-#     object_id = models.PositiveIntegerField()
-#     content_object = generic.GenericForeignKey('content_type',
-#                     'object_id')
-#     pages = models.CharField(max_length=128, blank=True)
-#     reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
-#     comment = models.TextField(blank=True)
-#     modified = models.DateTimeField(auto_now=True)
-#
-#     def long_reliability(self):
-#         try:
-#             description = dict(RELIABILITY_CHOICES)[self.reliability]
-#         except KeyError:
-#             description = ""
-#         return description
-#
-#     class Meta:
-#         unique_together = (("content_type", "object_id", "source"),)
-#         ## Can't use a "content_object" in a unique_together constraint
-#
-# # reversion.register(GenericCitation)
-
 class AbstractBaseCitation(models.Model):
     """Abstract base class for citation models
     The source field has to be in the subclasses in order for the
@@ -1179,10 +1152,6 @@ class AbstractBaseCitation(models.Model):
 class CognateJudgementCitation(AbstractBaseCitation):
     cognate_judgement = models.ForeignKey(CognateJudgement)
     source = models.ForeignKey(Source)
-
-    # def get_absolute_url(self):
-    #     return reverse("cognate-judgement-citation-detail",
-    #             kwargs={"pk":self.id})
 
     def get_absolute_url(self):
         anchor = "cognatejudgementcitation_%s" % self.id
@@ -1367,12 +1336,19 @@ models.signals.post_save.connect(
 models.signals.post_delete.connect(
     update_denormalized_from_lexeme, sender=Lexeme)
 
-# -- Reversion registration ----------------------------------------
 
-# once we're upgraded to 1.5.1 this might not be necessary anymore
-# for modelclass in [Source, Language, Meaning, CognateClass, Lexeme,
-#         CognateJudgement, LanguageList, LanguageListOrder,
-#         CognateJudgementCitation, CognateClassCitation, LexemeCitation,
-#         MeaningList]:
-#     if not reversion.is_registered(modelclass):
-#         reversion.register(modelclass)
+@reversion.register
+class Author(models.Model):
+    # See https://github.com/lingdb/CoBL/issues/106
+    # We leave out the ix field in favour
+    # of the id field provided by reversion.
+    # Author Surname
+    surname = models.TextField(blank=True)
+    # Author First names
+    firstNames = models.TextField(blank=True)
+    # Email address
+    email = models.TextField(blank=True)
+    # Personal website URL
+    website = models.TextField(blank=True)
+    # Initials
+    initials = models.TextField(blank=True)
