@@ -44,9 +44,9 @@
       <form action="" method="post">
         {% if user.is_authenticated and user.is_staff %}
           {% csrf_token %}
-          <div class="form-group">
-            <label for="wordlist">Save table?</label>
-            <input type="submit" value="Submit" name="wordlist" class="btn btn-primary">
+          <div class="form-group pull-right">
+            <a href="." class="btn btn-default">undo</a>
+            <input type="submit" value="Save" name="wordlist" class="btn btn-danger">
           </div>
         {% endif %}
         <table class="table table-striped viewTableFilter">

@@ -71,7 +71,7 @@
                 <th>Loan<br>Event</th>
                 <th>Root Form</th>
                 <th>Root Language</th>
-                <th alt="Number of cognate classes">nCog</th>
+                <th alt="Number of cognate classes" style="width: 80px;">nCog</th>
                 <th>PhoneMic</th>
                 <th colspan="2"></th>
                 <th>PhoneTic</th>
@@ -153,6 +153,8 @@
                   </div>
                 </th>
                 <th>
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".lexemeNCog" size="1">
                   <div class="btn btn-xs btn-default sortIntText"
                        data-selector=".lexemeNCog">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -249,7 +251,6 @@
                   </td>
                   <td>
                     <div class="cognateClasses">
-                      {{ lexeme.cognate_class_links.data }}
                       {% if user.is_authenticated %}
                         {% ifnotequal add_cognate_judgement|asint lexeme.id.data|asint %}
                           <a href="{% url 'lexeme-add-cognate' lexeme.id.data %}#lexeme_{{ lexeme.id.data }}"
@@ -263,6 +264,7 @@
                           </form>
                         {% endifnotequal %}
                       {% endif %}
+                      {{ lexeme.cognate_class_links.data }}
                     </div>
                   </td>
                   <td class="lexemeIsLoan">
@@ -292,7 +294,11 @@
                     {% endif %}
                   </td>
                   <td class="lexemeNCog">
-                    <span class="badge">{{ lexeme.data.number_cognate_coded }}</span>
+                    <center>
+                      <span class="badge">
+                        {{ lexeme.data.number_cognate_coded }}
+                      </span>
+                    </center>
                   </td>
                   <td class="lexemePhoneMic">
                     {% form_field lexeme.phoneMic id="phoneMic" size="8" class="form-control" %}

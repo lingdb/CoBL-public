@@ -49,6 +49,7 @@ table .form-control {
 table.viewTableFilter>thead>tr>td ,
 table.viewTableFilter>tbody>tr>td {
   padding: 1px;
+  vertical-align: middle;
 }
 
 /* Markdown content pre rendering: */
@@ -59,10 +60,9 @@ table.viewTableFilter>tbody>tr>td {
 
 /* Relates to #92 */
 .table .languageBranchColor {
-  width: 4px;
+  width: 8px;
   border: 0px;
   padding: 0px;
-  margin: 0px;
 }
 
 /* Relates to #31 */
@@ -73,4 +73,16 @@ table.floatThead-table {
 }
 .floatThead-container {
   padding-top: 55px;
+}
+
+.inline {
+  display: inline;
+}
+
+.cognateClasses, .languageName, .cogClassAlias {
+  font-size: 18px;
+}
+
+#footer, #footer>div {
+  margin: 0px;
 }

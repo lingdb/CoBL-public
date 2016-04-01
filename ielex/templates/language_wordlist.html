@@ -74,7 +74,7 @@
                 <th>Loan<br>Evt</th>
                 <th>Root Form</th>
                 <th>Root Language</th>
-                <th alt="Number of cognate classes">nCog</th>
+                <th alt="Number of cognate classes" style="width: 80px;">nCog</th>
                 <th>PhoneMic</th>
                 <th colspan="2"></th>
                 <th>PhoneTic</th>
@@ -82,9 +82,11 @@
                 <th>Notes</th>
                 <th></th>
                 <th>Dict ID 1</th>
+                <!--
                 <th></th>
                 <th>Dict ID 2</th>
-                <th>Dubious</th>
+                -->
+                <th alt="Dubious">Dub?</th>
               </tr>
               <tr>
                 <th></th>
@@ -196,11 +198,13 @@
                   <input type="text" class="filterInput form-control"
                          data-selector=".lexemeRfcWebLookup1 input">
                 </th>
+                <!--
                 <th></th>
                 <th>
                   <input type="text" class="filterInput form-control"
                          data-selector=".lexemeRfcWebLookup2 input">
                 </th>
+                -->
                 <th>
                   <button type="button" class="filterBool btn btn-xs btn-default"
                           data-selector=".lexemeDubious input">
@@ -221,7 +225,7 @@
                     </a>
                   </td>
                   <td class="lexemeMeaning">
-                    <a href="{% url 'meaning-report' lexeme.meaning_id.data %}">
+                    <a href="{% url 'meaning-report' lexeme.meaning_id.data %}" style="font-size: 18px;">
                       {{ lexeme.data.meaning }}
                     </a>
                   </td>
@@ -292,9 +296,11 @@
                     {% endif %}
                   </td>
                   <td class="lexemeNumCogCoded">
-                    <span class="badge">
-                      {{ lexeme.data.number_cognate_coded }}
-                    </span>
+                    <center>
+                      <span class="badge">
+                        {{ lexeme.data.number_cognate_coded }}
+                      </span>
+                    </center>
                   </td>
                   <td class="lexemePhoneMic">
                     {% form_field lexeme.phoneMic id="phoneMic" size="8" class="form-control" %}
@@ -332,6 +338,7 @@
                   <td class="lexemeRfcWebLookup1">
                     {% form_field lexeme.rfcWebLookup1 class="form-control" %}
                   </td>
+                  <!--
                   <td>
                     <button class="rightcheckarrow btn btn-xs" type="button"
                             id="src2root#{{lexeme.source_form.name}}#{{lexeme.rfcWebLookup2.name}}"
@@ -342,6 +349,7 @@
                   <td class="lexemeRfcWebLookup2">
                     {% form_field lexeme.rfcWebLookup2 class="form-control" %}
                   </td>
+                  -->
                   <td class="lexemeDubious">
                     {% form_field lexeme.dubious class="form-control" %}
                   </td>

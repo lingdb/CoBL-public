@@ -177,18 +177,14 @@
     <div id="blockContent" class="container-fluid">
       {% block content %}{% endblock %}
     </div>
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-2">
+    {# The Footer: #}
+    <nav class="navbar navbar-default navbar-bottom" id="footer">
+      <div class="container-fluid navbar-left">
             Language list: <strong>{{ current_language_list_name }}</strong>
             <br>
             Wordlist: <strong>{{ current_wordlist_name }}</strong>
-        </div>
       </div>
-    </div>
-    {# The Footer: #}
-    <nav class="navbar navbar-default navbar-fixed-bottom">
-      <div class="container-fluid navbar-right" id="footer">
+      <div class="container-fluid navbar-right">
         {% block footer %}
           <p class="navbar-text">
             {{ project_long_name }} (LexDB version {{ version }})

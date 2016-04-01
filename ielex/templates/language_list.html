@@ -21,7 +21,6 @@
       <form action="" method="post">
         {% csrf_token %}
         <fieldset>
-          <legend>Controls</legend>
           <table classs="table">
             {{ language_list_form.as_table }}
           </table>
@@ -70,10 +69,9 @@
       <div class="col-md-12">
         <form action="" method="POST" name="langlist_ed_form">
           {% csrf_token %}
-          <div class="form-group">
-            <label for="langlist_form">Save table?</label>
-            <a href="{% url 'view-language-list' current_list.name %}" class="btn btn-danger"> undo</a>
-            <input type="submit" value="Submit" name="langlist_form" class="btn btn-primary">
+          <div class="form-group pull-right">
+            <a href="{% url 'view-language-list' current_list.name %}" class="btn btn-default"> undo</a>
+            <input type="submit" value="Save" name="langlist_form" class="btn btn-danger">
           </div>
           <table class="table table-striped viewTableFilter">
             <thead>
@@ -81,6 +79,26 @@
                 <th></th>
                 <th>Name</th>
                 <th>Variety</th>
+                <th></th>
+                <th>ISO</th>
+                <th style="width: 100px;">Glotto</th>
+                <th data-toggle="tooltip" data-placement="bottom" data-container="body" title="Mean time depth (yrs)">
+                  Mean TD (yrs)
+                </th>
+                <th data-toggle="tooltip" data-placement="bottom" data-container="body" title="Std Dev. time depth (yrs)">
+                  Std Dev. (yrs)
+                </th>
+                <th data-toggle="tooltip" data-placement="bottom" data-container="body" title="Representative">
+                  Rep.
+                </th>
+                <th>Foss.<br>Stat.</th>
+                <th>Low.<br>Stat.</th>
+                <th>Web path 1</th>
+                <!--
+                <th>Web path 2</th>
+                -->
+                <th>Author</th>
+                <th>Reviewer</th>
                 <th data-toggle="tooltip" data-placement="bottom" data-container="body" title="(#lexemes - #meanings)">
                   Too<br>many{# Lex.-Mgs #}
                 </th>
@@ -93,13 +111,6 @@
                 <th data-toggle="tooltip" data-placement="bottom" data-container="body" title="Number of entries">
                   Entd{# Number of entries per language #}
                   </th>
-                <th data-toggle="tooltip" data-placement="bottom" data-container="body" title="Representative">
-                  Rep.
-                </th>
-                <th>Foss.<br>Stat.</th>
-                <th>Low.<br>Stat.</th>
-                <th>ISO</th>
-                <th>Glotto</th>
                 <th data-toggle="tooltip" data-placement="bottom" data-container="body" title="Level 0 branch">
                   Lv 0
                 </th>
@@ -110,17 +121,6 @@
                   Lv 2
                 </th>
                 <th>SndComp<br>code</th>
-                <th data-toggle="tooltip" data-placement="bottom" data-container="body" title="Mean time depth (yrs)">
-                  Mean TD (yrs)
-                </th>
-                <th data-toggle="tooltip" data-placement="bottom" data-container="body" title="Std Dev. time depth (yrs)">
-                  Std Dev. (yrs)
-                </th>
-                <th></th>
-                <th>Web path 1</th>
-                <th>Web path 2</th>
-                <th>Author</th>
-                <th>Reviewer</th>
               </tr>
               <tr>
                 <th>
@@ -144,6 +144,63 @@
                        data-selector=".languageVariety input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
+                </th>
+                <th></th>
+                <th>
+                  <input type="text" class="filterText form-control"
+                         data-selector=".languageIsoCode" style="width: 3em;">
+                </th>
+                <th>
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".languageGlottocode">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".languageGlottocode">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageMeanTimeDepth input" style="width: 4em;">
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageStdDeviationTimeDepth input" style="width: 4em;">
+                </th>
+                <th>
+                  <button type="button" class="filterBool btn btn-xs btn-default"
+                          data-selector=".languageRepresentative input">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                  </button>
+                </th>
+                <th>
+                  <button type="button" class="filterBool btn btn-xs btn-default"
+                          data-selector=".languageFossStat input">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                  </button>
+                </th>
+                <th>
+                  <button type="button" class="filterBool btn btn-xs btn-default"
+                          data-selector=".languageLowStat input">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                  </button>
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageRfcWebPath1 input">
+                </th>
+                <!--
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageRfcWebPath2 input">
+                </th>
+                -->
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageAuthor input">
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageReviewer input">
                 </th>
                 <th>
                   <div class="btn btn-xs btn-default sortIntText"
@@ -170,46 +227,16 @@
                   </div>
                 </th>
                 <th>
-                  <button type="button" class="filterBool btn btn-xs btn-default"
-                          data-selector=".languageRepresentative input">
-                    <span class="glyphicon glyphicon-question-sign"></span>
-                  </button>
-                </th>
-                <th>
-                  <button type="button" class="filterBool btn btn-xs btn-default"
-                          data-selector=".languageFossStat input">
-                    <span class="glyphicon glyphicon-question-sign"></span>
-                  </button>
-                </th>
-                <th>
-                  <button type="button" class="filterBool btn btn-xs btn-default"
-                          data-selector=".languageLowStat input">
-                    <span class="glyphicon glyphicon-question-sign"></span>
-                  </button>
-                </th>
-                <th>
-                  <input type="text" class="filterText form-control"
-                         data-selector=".languageIsoCode">
-                </th>
-                <th>
-                  <input type="text" class="filterText form-control narrow"
-                         data-selector=".languageGlottocode">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".languageGlottocode">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageLevel0 input" style="width: 1.5em;">
                 </th>
                 <th>
                   <input type="text" class="filterInput form-control"
-                         data-selector=".languageLevel0 input">
+                         data-selector=".languageLevel1 input" style="width: 1.5em;">
                 </th>
                 <th>
                   <input type="text" class="filterInput form-control"
-                         data-selector=".languageLevel1 input">
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".languageLevel2 input">
+                         data-selector=".languageLevel2 input" style="width: 1.5em;">
                 </th>
                 <th>
                   <input type="text" class="filterInput form-control narrow"
@@ -218,31 +245,6 @@
                        data-selector=".languageSndCompCode input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".languageMeanTimeDepth input">
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".languageStdDeviationTimeDepth input">
-                </th>
-                <th></th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".languageRfcWebPath1 input">
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".languageRfcWebPath2 input">
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".languageAuthor input">
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".languageReviewer input">
                 </th>
               </tr>
             </thead>
@@ -262,37 +264,21 @@
                   <td class="languageVariety">
                     {% form_field language.variety size="8" class="form-control" %}
                   </td>
-                  <td class="languageExcessCount">
-                    <span class="badge">{{ language.data.excess_count }}</span>
+                  <td>
+                    <a href="{% url 'language-edit' language.ascii_name.data %}"
+                       title="Edit {{ language.utf8_name.data }} metadata"
+                       data-toggle="tooltip" data-placement="top">
+                      <span class="glyphicon glyphicon-edit"></span>
+                    </a>
                   </td>
-                  <td class="languageMgsCount">
-                    <span class="badge">{{ language.data.mgs_count }}</span>
-                  </td>
-                  <td class="languageLexCount">
-                    <span class="badge">{{ language.data.lex_count }}</span>
-                  </td>
-                  <td class="languageEntdCount">
-                    <span class="badge">{{ language.data.entd_count }}</span>
-                  </td>
-                  <td class="languageRepresentative">
-                    <div class="centralised_checkbox">
-                      {% form_field language.representative class="form-control" %}
-                    </div>
-                  </td>
-                  <td class="languageFossStat">
-                    {% form_field language.foss_stat onclick="MutexCheckbox(this)" class="MutexCheckbox form-control" %}
-                  </td>
-                  <td class="languageLowStat">
-                    {% form_field language.low_stat onclick="MutexCheckbox(this)" class="MutexCheckbox form-control" %}
-                  </td>
-                  <td class="languageIsoCode">
+                  <td class="languageIsoCode" style="padding-left: 0.5em;">
                     {% if language.iso_code.data %}
                       <a href="http://en.wikipedia.org/wiki/ISO_639:{{ language.iso_code.data }}" target="_blank">
                         {{ language.iso_code.data }}
                       </a>
                       {% form_field language.iso_code class="hide" %}
                     {% else %}
-                      {% form_field language.iso_code maxlength="3" size="3" class="form-control" %}
+                      {% form_field language.iso_code maxlength="3" size="3" class="form-control" style="width: 3em;" %}
                     {% endif %}
                   </td>
                   <td class="languageGlottocode">
@@ -305,42 +291,74 @@
                       {% form_field language.glottocode maxlength="8" size="8" class="form-control" %}
                     {% endif %}
                   </td>
-                  <td class="languageLevel0">
-                    {% form_field language.level0 class="languageBranch form-control" maxlength="1" size="1" %}
-                  </td>
-                  <td class="languageLevel1">
-                    {% form_field language.level1 class="languageBranch form-control" maxlength="1" size="1" %}
-                  </td>
-                  <td class="languageLevel2">
-                    {% form_field language.level2 class="languageBranch form-control" maxlength="1" size="1" %}
-                  </td>
-                  <td class="languageSndCompCode">
-                    {% form_field language.soundcompcode size="8" class="form-control" %}
-                  </td>
                   <td class="languageMeanTimeDepth">
-                    {% form_field language.mean_timedepth_BP_years maxlength="4" size="4" class="form-control" %}
+                    {% form_field language.mean_timedepth_BP_years maxlength="4" size="4" class="form-control" style="width: 4em;" %}
                   </td>
                   <td class="languageStdDeviationTimeDepth">
-                    {% form_field language.std_deviation_timedepth_BP_years maxlength="4" size="4" class="form-control" %}
+                    {% form_field language.std_deviation_timedepth_BP_years maxlength="4" size="4" class="form-control" style="width: 4em;" %}
                   </td>
-                  <td>
-                    <a href="{% url 'language-edit' language.ascii_name.data %}"
-                       title="Edit {{ language.utf8_name.data }} metadata"
-                       data-toggle="tooltip" data-placement="top">
-                      <span class="glyphicon glyphicon-edit"></span>
-                    </a>
+                  <td class="languageRepresentative">
+                    <div class="centralised_checkbox">
+                      {% form_field language.representative class="form-control" %}
+                    </div>
+                  </td>
+                  <td class="languageFossStat">
+                    {% form_field language.foss_stat onclick="MutexCheckbox(this)" class="MutexCheckbox form-control" %}
+                  </td>
+                  <td class="languageLowStat">
+                    {% form_field language.low_stat onclick="MutexCheckbox(this)" class="MutexCheckbox form-control" %}
                   </td>
                   <td class="languageRfcWebPath1">
                     {% form_field language.rfcWebPath1 size="4" class="form-control" %}
                   </td>
+                  <!--
                   <td class="languageRfcWebPath2">
                     {% form_field language.rfcWebPath2 size="4" class="form-control" %}
                   </td>
+                  -->
                   <td class="languageAuthor">
                     {% form_field language.author size="8" class="form-control" %}
                   </td>
                   <td class="languageReviewer">
                     {% form_field language.reviewer size="8" class="form-control" %}
+                  </td>
+                  <td class="languageExcessCount">
+                    <center>
+                      <span class="badge">{{ language.data.excess_count }}</span>
+                    </center>
+                  </td>
+                  <td class="languageMgsCount">
+                    <center>
+                      <span class="badge">{{ language.data.mgs_count }}</span>
+                    </center>
+                  </td>
+                  <td class="languageLexCount">
+                    <center>
+                      <span class="badge">{{ language.data.lex_count }}</span>
+                    </center>
+                  </td>
+                  <td class="languageEntdCount">
+                    <center>
+                      <span class="badge">{{ language.data.entd_count }}</span>
+                    </center>
+                  </td>
+                  <td class="languageLevel0">
+                    <center>
+                      {% form_field language.level0 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" %}
+                    </center>
+                  </td>
+                  <td class="languageLevel1">
+                    <center>
+                      {% form_field language.level1 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" %}
+                    </center>
+                  </td>
+                  <td class="languageLevel2">
+                    <center>
+                      {% form_field language.level2 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" %}
+                    </center>
+                  </td>
+                  <td class="languageSndCompCode">
+                    {% form_field language.soundcompcode size="8" class="form-control" %}
                   </td>
                 </tr>
               {% endfor %}

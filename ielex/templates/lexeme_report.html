@@ -12,53 +12,6 @@
 
 {% block controls %}
   {% include "snippets/go_to.html" %}
-  {% if lexeme.meaning %}
-    <li>
-      <a href="{% url 'meaning-report' lexeme.meaning.gloss %}"
-         title="back to meaning list ‘{{ lexeme.meaning.gloss }}’"
-         data-toggle="tooltip" data-placement="bottom">
-        <span class="glyphicon glyphicon-arrow-left"></span>
-        ‘{{ lexeme.meaning.gloss }}’
-      </a>
-    </li>
-  {% endif %}
-  {% if lexeme.semanticextension_set.exists %}
-    <li>
-      <a href="{% url 'lexeme-domains-list' lexeme.id  %}"
-         title="view semantic exensions">
-        <span class="glyphicon glyphicon-search"></span>
-        semantic exensions
-      </a>
-    </li>
-  {% endif %}
-    <li>
-      <a href="{% url 'language-report' lexeme.language.ascii_name %}"
-         title="back to ‘{{ lexeme.language.utf8_name }}’ wordlist"
-         data-toggle="tooltip" data-placement="bottom">
-        <span class="glyphicon glyphicon-arrow-left"></span>
-        ‘{{ lexeme.language.utf8_name }}’
-      </a>
-    </li>
-  {% if user.is_authenticated %}
-    <li>
-      <a href="{% url 'language-add-lexeme' lexeme.language.ascii_name %}"
-         title="add a new lexeme to ‘{{ lexeme.language.utf8_name }}’"
-         data-toggle="tooltip" data-placement="bottom">
-        <span class="glyphicon glyphicon-plus"></span>
-        ‘{{ lexeme.language.utf8_name }}’
-      </a>
-    </li>
-    {% if lexeme.meaning %}
-      <li>
-        <a href="{% url 'meaning-add-lexeme' lexeme.meaning.gloss %}"
-           title="add a new lexeme to ‘{{ lexeme.meaning.gloss }}’"
-           data-toggle="tooltip" data-placement="bottom">
-          <span class="glyphicon glyphicon-plus"></span>
-          ‘{{ lexeme.meaning.gloss }}’
-        </a>
-      </li>
-    {% endif %}
-  {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -141,6 +94,50 @@
           </tr>
         </table>
       {% endifequal %}
+    </div>
+    <div class="col-md-4">
+      {% if lexeme.meaning %}
+        <a href="{% url 'meaning-report' lexeme.meaning.gloss %}"
+           title="back to meaning list ‘{{ lexeme.meaning.gloss }}’"
+           data-toggle="tooltip" data-placement="bottom"
+           class="btn btn-default">
+          <span class="glyphicon glyphicon-arrow-left"></span>
+          ‘{{ lexeme.meaning.gloss }}’
+        </a>
+      {% endif %}
+      {% if lexeme.semanticextension_set.exists %}
+        <a href="{% url 'lexeme-domains-list' lexeme.id  %}"
+           title="view semantic exensions"
+           class="btn btn-default">
+          <span class="glyphicon glyphicon-search"></span>
+          semantic exensions
+        </a>
+      {% endif %}
+        <a href="{% url 'language-report' lexeme.language.ascii_name %}"
+           title="back to ‘{{ lexeme.language.utf8_name }}’ wordlist"
+           data-toggle="tooltip" data-placement="bottom"
+           class="btn btn-default">
+          <span class="glyphicon glyphicon-arrow-left"></span>
+          ‘{{ lexeme.language.utf8_name }}’
+        </a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'language-add-lexeme' lexeme.language.ascii_name %}"
+           title="add a new lexeme to ‘{{ lexeme.language.utf8_name }}’"
+           data-toggle="tooltip" data-placement="bottom"
+           class="btn btn-default">
+          <span class="glyphicon glyphicon-plus"></span>
+          ‘{{ lexeme.language.utf8_name }}’
+        </a>
+        {% if lexeme.meaning %}
+          <a href="{% url 'meaning-add-lexeme' lexeme.meaning.gloss %}"
+             title="add a new lexeme to ‘{{ lexeme.meaning.gloss }}’"
+             data-toggle="tooltip" data-placement="bottom"
+             class="btn btn-default">
+            <span class="glyphicon glyphicon-plus"></span>
+            ‘{{ lexeme.meaning.gloss }}’
+          </a>
+        {% endif %}
+      {% endif %}
     </div>
   </div>
   {# -- Sources ------------------------------------------------------- #}
@@ -240,7 +237,7 @@
         {% if user.is_authenticated %}
           <div class="panel panel-default">
             <div class="panel-heading">
-              <strong>Add link to source</strong>
+              <strong>Add link to existing source</strong>
               <a href="{% url 'lexeme-add-citation' lexeme.id %}"
                  title="Add link to citation"
                  class="btn btn-success">
@@ -249,12 +246,10 @@
               </a>
             </div>
             <div class="panel-body">
-              <small>Add a link to a source already in the database</small><br>
               <strong>Add link to new Source</strong>
               <a href="{% url 'lexeme-add-new-source' lexeme.id %}" title="Add citation to new source">
                 <span class="glyphicon glyphicon-plus"></span>
               </a><br>
-              <small>Add a new source to the database and link to it</small>
             </div>
           </div>
         {% endif %}
@@ -362,7 +357,7 @@
                 {% if user.is_authenticated %}
                   <div class="panel panel-default">
                     <div class="panel-heading">
-                      <strong>Add link to source</strong>
+                      <strong>Add link to existing source</strong>
                       <a href="{% url 'lexeme-add-cognate-citation' lexeme.id cj.id %}#active"
                          title="Add link to citation"
                          class="btn btn-success">
@@ -371,12 +366,10 @@
                       </a>
                     </div>
                     <div class="panel-body">
-                      <small>Add a link to a source already in the database</small><br>
                       <strong>Add link to new Source</strong>
                       <a href="{% url 'cogjudge-add-new-source' cj.id %}" title="Add citation to new source">
                         <span class="glyphicon glyphicon-plus"></span>
                       </a><br>
-                      <small>Add a new source to the database and link to it</small>
                     </div>
                   </div>
                 {% endif %}
@@ -399,7 +392,7 @@
                   <li>This is additional to judgments already made.</li>
                   <li>After adding a new cognate judgement it is normally appropriate to
                   delete the other ones (forms <em>can</em> belong to more than one
-                  class, but usually shouldn't)</li>
+                  class, but usually shouldn't, except if the form is a compound of two roots, e.g. "stone head" for head in Irish)</li>
                 </ul>
               </div>
             </div>
