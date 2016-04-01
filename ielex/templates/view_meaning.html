@@ -9,11 +9,6 @@
 {% endblock %}
 
 {% block top %}
-  <div class="row">
-    <div class="col-md-12">
-      {% include "snippets/prev_next_meaning.html" %}
-    </div>
-  </div>
 {% endblock %}
 
 {% block controls %}
@@ -63,6 +58,7 @@
             <a href="{% url 'view-meaning-languages' meaning.gloss current_language_list.name %}" class="btn btn-default">Undo</a>
             <input type="submit" value="Save" name="meang_form" class="btn btn-danger">
           </div>
+          {% include "snippets/prev_next_meaning.html" %}
           <table class="table table-condensed viewTableFilter"
                  id="viewMeaningLanguages">
             <thead>

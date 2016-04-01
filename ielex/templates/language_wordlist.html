@@ -8,11 +8,6 @@
 {% endblock %}
 
 {% block top %}
-  <div class="row">
-    <div class="col-md-12">
-      {% include "snippets/prev_next_language.html" %}
-    </div>
-  </div>
 {% endblock %}
 
 {% block controls %}
@@ -68,6 +63,7 @@
             <a href="{% url 'view-language-wordlist' language.ascii_name wordlist.name %}" class="btn btn-default">Undo</a>
             <input type="submit" value="Save" name="lex_form" class="btn btn-danger">
           </div>
+          {% include "snippets/prev_next_language.html" %}
           <table class="table table-condensed viewTableFilter"
                  id="viewLanguageMeanings">
             <thead>

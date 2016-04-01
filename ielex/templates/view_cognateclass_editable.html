@@ -9,11 +9,6 @@
 {% endblock %}
 
 {% block top %}
-  <div class="row">
-    <div class="col-md-12">
-      {% include "snippets/prev_next_meaning.html" %}
-    </div>
-  </div>
 {% endblock %}
 
 {% block controls %}
@@ -30,6 +25,7 @@
             <a href="{% url 'edit-cogclasses' meaning %}" class="btn btn-default">undo</a>
             <input type="submit" value="Save" name="cogclass_form" class="btn btn-danger">
           </div>
+          {% include "snippets/prev_next_meaning.html" %}
           <table class="table table-striped table-condensed viewTableFilter">
             <thead>
               <tr>
