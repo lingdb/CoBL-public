@@ -64,6 +64,12 @@ table.viewTableFilter>tbody>tr>td {
   border: 0px;
   padding: 0px;
 }
+.table .languageBranchColorSpace {
+  width: 4px;
+  background-color: white;
+  border: 0px;
+  padding: 0px;
+}
 
 /* Relates to #31 */
 table.floatThead-table {

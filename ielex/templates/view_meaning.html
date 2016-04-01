@@ -68,7 +68,7 @@
             <thead>
               <tr>
                 <th class="hide"></th>
-                <th class="languageBranchColor"></th>
+                <th class="languageBranchColor" colspan="2"></th>
                 <th>Language</th>
                 <th></th>
                 <th>Orthog.</th>
@@ -90,7 +90,7 @@
               </tr>
               <tr>
                 <th class="hide"></th>
-                <th class="languageBranchColor"></th>
+                <th class="languageBranchColor" colspan="2"></th>
                 <th>
                   <input type="text" class="filterText form-control"
                          data-selector=".languageName">
@@ -214,6 +214,7 @@
                         style="background-color: #{{ lexeme.object_data.languageBranchColor }};"
                       {% endif %}
                     ></td>
+                  <td class="languageBranchColorSpace"></td>
                   <td class="languageName">
                     <a href="{% url 'language-report' lexeme.language_asciiname.data %}">
                       {{ lexeme.data.language_utf8name }}
