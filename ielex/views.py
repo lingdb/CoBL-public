@@ -1938,3 +1938,17 @@ def viewAbout(request, page):
     return render_template(request, "about.html",
                            {'title': pageTitleMap.get(page, 'Error'),
                             'content': content})
+
+
+def viewAuthors(request):
+    if request.method == 'POST':
+        pass  # FIXME IMPLEMENT
+
+    authors = Author.objects.all()
+    form = AuthorTableForm()
+    for author in authors:
+
+        author.idField = author.id
+        form.elements.append_entry(author)
+
+    return render_template(request, "authors.html", {'authors': form})

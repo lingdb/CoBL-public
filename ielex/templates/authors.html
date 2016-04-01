@@ -1,0 +1,100 @@
+{% extends "base.html"%}
+
+{% load staticfiles %}
+{% load wtforms %}
+
+{% block title %}
+  Authors
+{% endblock %}
+
+{% block top %}
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/go_to.html" %}
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-12">
+      {% if user.is_authenticated and user.is_staff %}
+        <form action="" method="POST" name="authors">
+          {% csrf_token %}
+          <div class="form-group pull-right">
+            <a href="/authors/" class="btn btn-default">Undo</a>
+            <input type="submit" value="Save" class="btn btn-danger">
+          </div>
+          <table class="table table-condensed viewTableFilter">
+            <thead>
+              <tr>
+                <th>Initials</th>
+                <th>Surname</th>
+                <th>First names</th>
+                <th>Email</th>
+                <th>Website</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for author in authors.elements %}
+                <tr>
+                  <td class="hide">
+                    {% form_field author.idField required="required" %}
+                  </td>
+                  <td class="initials">
+                    {% form_field author.initials class="form-control" required="required" pattern="[0-9]+" %}
+                  </td>
+                  <td class="surname">
+                    {% form_field author.surname class="form-control" required="required" pattern="[0-9]+" %}
+                  </td>
+                  <td class="firstNames">
+                    {% form_field author.firstNames class="form-control" required="required" %}
+                  </td>
+                  <td class="email">
+                    {% form_field author.email class="form-control" required="required" %}
+                  </td>
+                  <td class="website">
+                    {% form_field author.website class="form-control" required="required" %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </form>
+      {% else %}
+        <table class="table table-condensed viewTableFilter">
+          <thead>
+            <tr>
+                <th>Initials</th>
+                <th>Surname</th>
+                <th>First names</th>
+                <th>Email</th>
+                <th>Website</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for author in authors.elements %}
+              <tr>
+                <td class="initials">
+                  {{ author.initials.data }}
+                </td>
+                <td class="surname">
+                  {{ author.surname.data }}
+                </td>
+                <td class="firstNames">
+                  {{ author.firstNames.data }}
+                </td>
+                <td class="email">
+                  {{ author.email.data }}
+                </td>
+                <td class="website">
+                  {{ author.website.data }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    <div class="col-md-12">
+  </div>
+{% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

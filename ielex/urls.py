@@ -207,6 +207,9 @@ urlpatterns = patterns(
     # About pages:
     url(r'about/(.+)/' % R, viewAbout),
 
+    # Authors:
+    url(r'^authors/$' % R, viewAuthors),
+
     # Cognate citation :: detail
     url(r'^cognate/citation/(?P<pk>\d+)/$',
         DetailView.as_view(
