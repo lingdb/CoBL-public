@@ -11,7 +11,9 @@ TEMPLATE_CONTEXT_PROCESSORS setting."""
 from ielex.settings import VERSION
 from ielex import local_settings
 from ielex.lexicon.models import *
-# from ielex.extensional_semantics.models import *
+from ielex.lexicon.defaultModels import (
+    getDefaultWordlist, getDefaultLanguagelist
+)
 
 
 def configuration(request):
@@ -28,7 +30,8 @@ def configuration(request):
 
 def navigation(request):
     return {"current_wordlist_name":
-            request.session.get("current_wordlist_name", MeaningList.DEFAULT),
+            request.session.get(
+                "current_wordlist_name", getDefaultWordlist(request)),
             "current_language_list_name":
             request.session.get(
-                "current_language_list_name", LanguageList.DEFAULT)}
+                "current_language_list_name", getDefaultLanguagelist(request))}

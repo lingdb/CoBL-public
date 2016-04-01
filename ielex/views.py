@@ -184,7 +184,10 @@ def get_prev_and_next_meanings(request, current_meaning):
     meanings = list(meaning_list.meanings.all().order_by("meaninglistorder"))
 
     ids = [m.id for m in meanings]
-    current_idx = ids.index(current_meaning.id)
+    try:
+        current_idx = ids.index(current_meaning.id)
+    except ValueError:
+        current_idx = 0
     prev_meaning = meanings[current_idx-1]
     try:
         next_meaning = meanings[current_idx+1]
@@ -201,7 +204,10 @@ def get_prev_and_next_lexemes(request, current_lexeme):
         language=current_lexeme.language).order_by(
             "meaning", "phon_form", "source_form", "id"))
     ids = [l.id for l in lexemes]
-    current_idx = ids.index(current_lexeme.id)
+    try:
+        current_idx = ids.index(current_lexeme.id)
+    except ValueError:
+        current_idx = 0
     prev_lexeme = lexemes[current_idx-1]
     try:
         next_lexeme = lexemes[current_idx+1]
@@ -249,20 +255,6 @@ def view_language_list(request, language_list=None):
         "languagelistorder"
         ).prefetch_related(
         "lexeme_set", "lexeme_set__meaning")
-
-    if request.method == 'POST' and not ('langlist_form' in request.POST):
-        form = ChooseLanguageListForm(request.POST)
-        if form.is_valid():
-            current_list = form.cleaned_data["language_list"]
-            setDefaultLanguagelist(request, current_list.name)
-            msg = u"Language list selection changed to ‘%s’" % \
-                current_list.name
-            messages.add_message(request, messages.INFO, msg)
-            return HttpResponseRedirect(
-                reverse("view-language-list", args=[current_list.name]))
-    else:
-        form = ChooseLanguageListForm()
-    form.fields["language_list"].initial = current_list.id
 
     if (request.method == 'POST') and ('langlist_form' in request.POST):
 
@@ -353,11 +345,13 @@ def view_language_list(request, language_list=None):
 
     languages_editabletable_form = fill_langstable_from_DB(languages)
 
+    otherLanguageLists = LanguageList.objects.exclude(name=current_list).all()
+
     return render_template(request, "language_list.html",
                            {"languages": languages,
-                            "language_list_form": form,
                             'lang_ed_form': languages_editabletable_form,
-                            "current_list": current_list})
+                            "current_list": current_list,
+                            "otherLanguageLists": otherLanguageLists})
 
 
 @csrf_protect
@@ -492,21 +486,6 @@ def view_language_wordlist(request, language, wordlist):
             reverse("view-language-wordlist",
                     args=[language.ascii_name, wordlist.name]))
 
-    # change wordlist
-    if request.method == 'POST' and not ('lex_form' in request.POST):
-        wrdlst_form = ChooseMeaningListForm(request.POST)
-        if wrdlst_form.is_valid():
-            wordlist = wrdlst_form.cleaned_data["meaning_list"]
-            setDefaultWordlist(request, wordlist.name)
-            msg = u"Wordlist selection changed to ‘%s’" % wordlist.name
-            messages.add_message(request, messages.INFO, msg)
-            return HttpResponseRedirect(
-                reverse("view-language-wordlist",
-                        args=[language.ascii_name, wordlist.name]))
-    else:
-        wrdlst_form = ChooseMeaningListForm()
-    wrdlst_form.fields["meaning_list"].initial = wordlist.id
-
     if (request.method == 'POST') and ('lex_form' in request.POST):
 
         lexemesTableForm = AddLexemesTableForm(request.POST)
@@ -628,6 +607,8 @@ def view_language_wordlist(request, language, wordlist):
 
     lexemes_editabletable_form = fill_lexemestable_from_DB(lexemes)
 
+    otherMeaningLists = MeaningList.objects.exclude(id=wordlist.id).all()
+
     prev_language, next_language = \
         get_prev_and_next_languages(request, language)
     return render_template(request, "language_wordlist.html",
@@ -636,7 +617,7 @@ def view_language_wordlist(request, language, wordlist):
                             "prev_language": prev_language,
                             "next_language": next_language,
                             "wordlist": wordlist,
-                            "wrdlst_form": wrdlst_form,
+                            "otherMeaningLists": otherMeaningLists,
                             'lex_ed_form': lexemes_editabletable_form,
                             'filt_form': filt_form})
 
@@ -797,7 +778,6 @@ def view_wordlists(request):
 def view_wordlist(request, wordlist=MeaningList.DEFAULT):
     wordlist = MeaningList.objects.get(name=wordlist)
     setDefaultWordlist(request, wordlist.name)
-    form = ChooseMeaningListForm()
     if request.method == 'POST':
         if 'wordlist' in request.POST:
             mltf = MeaningListTableForm(request.POST)
@@ -814,16 +794,6 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
                 except Exception, e:
                     print('Exception while accessing Meaning object: ',
                           e, '; POST items are: ', m)
-        elif 'meaning_list' in request.POST:
-            form = ChooseMeaningListForm(request.POST)
-            if form.is_valid():
-                wordlist = form.cleaned_data["meaning_list"]
-                setDefaultWordlist(request, wordlist.name)
-                msg = u"Wordlist selection changed to ‘%s’" % wordlist.name
-                messages.add_message(request, messages.INFO, msg)
-                return HttpResponseRedirect(reverse("view-wordlist",
-                                            args=[wordlist.name]))
-    form.fields["meaning_list"].initial = wordlist.id
 
     mltf = MeaningListTableForm()
     meanings = wordlist.meanings.order_by("meaninglistorder").all()
@@ -838,9 +808,12 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
 
     current_language_list = getDefaultLanguagelist(request)
 
+    otherMeaningLists = MeaningList.objects.exclude(id=wordlist.id).all()
+
     return render_template(request, "wordlist.html",
                            {"mltf": mltf,
-                            "form": form,
+                            "wordlist": wordlist,
+                            "otherMeaningLists": otherMeaningLists,
                             "current_language_list": current_language_list})
 
 
@@ -976,22 +949,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     def list2ntuple(n, iterable, fillvals=None):
         init_tuples = [iter(iterable)] * n
         return izip_longest(fillvalue=fillvals, *init_tuples)
-
-    # Change language list form
-    if request.method == 'POST' and not ('meang_form' in request.POST):
-        language_form = ChooseLanguageListForm(request.POST)
-        if language_form.is_valid():
-            current_language_list = language_form.cleaned_data["language_list"]
-            msg = u"Language list selection changed to ‘%s’" %\
-                current_language_list.name
-            messages.add_message(request, messages.INFO, msg)
-            setDefaultLanguagelist(request, current_language_list.name)
-            return HttpResponseRedirect(
-                reverse("view-meaning-languages",
-                        args=[canonical_gloss, current_language_list.name]))
-    else:
-        language_form = ChooseLanguageListForm()
-    language_form.fields["language_list"].initial = current_language_list.id
 
     # Cognate class judgement button
     if request.method == 'POST' and not ('meang_form' in request.POST):
@@ -1142,18 +1099,21 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
     lexemes_editabletable_form = fill_lexemestable_from_DB(lexemes)
 
+    otherLanguageLists = LanguageList.objects.exclude(
+        id=current_language_list.id).all()
+
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
     return render_template(request, "view_meaning.html",
                            {"meaning": meaning,
                             "prev_meaning": prev_meaning,
                             "next_meaning": next_meaning,
                             "lexemes": lexemes,
-                            "language_form": language_form,
                             "current_language_list": current_language_list,
+                            "otherLanguageLists": otherLanguageLists,
                             "cognate_form": cognate_form,
                             "add_cognate_judgement": lexeme_id,
-                            'lex_ed_form': lexemes_editabletable_form,
-                            'filt_form': filt_form})
+                            "lex_ed_form": lexemes_editabletable_form,
+                            "filt_form": filt_form})
 
 
 @csrf_protect

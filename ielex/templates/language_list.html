@@ -12,24 +12,34 @@
 {% endblock %}
 
 {% block controls %}
+  <li class="navbar-text">
+    List:
+  </li>
+  <li class="navbar-text dropdown"
+      title="Select language list"
+      data-toggle="tooltip"
+      data-placement="bottom">
+    <button class="btn btn-default dropdown-toggle"
+            type="button" id="languageListSelection"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="true"
+            style="padding: 0px;">
+      {{ current_list }}
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="languageListSelection"
+        style="overflow-y: scroll; height: 23em;">
+      {% for ll in otherLanguageLists %}
+        <li><a href="/languagelist/{{ ll.name }}">{{ ll.name }}</a></li>
+      {% endfor %}
+    </ul>
+  </li>
   {% include "snippets/go_to.html" %}
 {% endblock %}
 
 {% block content %}
   <div class="row">
-    <div class="col-md-4">
-      <form action="" method="post">
-        {% csrf_token %}
-        <fieldset>
-          <table classs="table">
-            {{ language_list_form.as_table }}
-          </table>
-          {% if current_list.description %}
-            <b>Description:</b> {{ current_list.description }}
-          {% endif %}
-        </fieldset>
-      </form>
-    </div>
     {% if user.is_authenticated %}
       <div class="col-md-4">
         <a href="{% url 'language-add-new' current_language_list_name %}"

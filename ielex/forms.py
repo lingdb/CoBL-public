@@ -183,14 +183,6 @@ class ChooseLanguageForm(forms.Form):
         widget=forms.Select(attrs={"onchange": "this.form.submit()"}))
 
 
-class ChooseLanguageListForm(forms.Form):
-    language_list = ChooseLanguageListField(
-            queryset=LanguageList.objects.all(),
-            empty_label=None,
-            widget=forms.Select(
-                attrs={"onchange": "this.form.submit()"}))
-
-
 class AddLanguageListForm(forms.ModelForm):
     help_text = "The new language list will start as a clone of this one"
     language_list = ChooseLanguageListField(
@@ -225,14 +217,6 @@ class EditLanguageListMembersForm(forms.Form):
             queryset=Language.objects.all(),
             widget=forms.Select(
                 attrs={"size": 20, "onchange": "this.form.submit()"}))
-
-
-class ChooseMeaningListForm(forms.Form):
-    meaning_list = ChooseMeaningListField(
-            queryset=MeaningList.objects.all(),
-            empty_label=None,
-            widget=forms.Select(
-                attrs={"onchange": "this.form.submit()"}))
 
 
 class LanguageListRowForm(WTForm):
