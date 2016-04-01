@@ -9,7 +9,11 @@
 {% endblock %}
 
 {% block top %}
-  <h1>{{ meaning }}</h1>
+  <div class="row">
+    <div class="col-md-12">
+      {% include "snippets/prev_next_meaning.html" %}
+    </div>
+  </div>
 {% endblock %}
 
 {% block controls %}

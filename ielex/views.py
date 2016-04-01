@@ -1199,8 +1199,13 @@ def view_cognateclasses(request, meaning):
 
     cogclass_editabletable_form = fill_cogclass_table_from_DB(ccl_ordered)
 
+    meaning = Meaning.objects.get(gloss=meaning)
+    prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
+
     return render_template(request, "view_cognateclass_editable.html",
                            {"meaning": meaning,
+                            "prev_meaning": prev_meaning,
+                            "next_meaning": next_meaning,
                             "cogclass_editable_form":
                                 cogclass_editabletable_form})
 

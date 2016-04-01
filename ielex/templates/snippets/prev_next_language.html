@@ -3,6 +3,10 @@
     <strong>«&nbsp;{{ prev_language.utf8_name }}</strong>
   </a>
   ―
+  <h1 class="inline" {% if language.description %}data-toggle="tooltip" data-placement="bottom" title="{{ language.description }}"{% endif %}>
+    {{ language.utf8_name }}
+  </h1>
+  ―
   <a href="{% url 'view-language-wordlist' next_language.ascii_name wordlist %}">
     <strong>{{ next_language.utf8_name }}&nbsp;»</strong>
   </a>
