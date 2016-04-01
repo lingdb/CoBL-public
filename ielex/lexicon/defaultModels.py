@@ -111,6 +111,21 @@ def getDefaultWordlist(request):
     return request.session.get('defaultWordlist', MeaningList.DEFAULT)
 
 
+def getDefaultWordlistId(request):
+    """
+    @return defaultWordlistId int
+    """
+    wl = getDefaultWordlist(request)
+    try:
+        ids = MeaningList.objects.values_list(
+            'id', flat=True).filter(name=wl).all()
+        if len(ids) == 1:
+            return ids[0]
+    except:
+        pass
+    return 1  # id of MeaningList `all`
+
+
 def setDefaultWordlist(request, wordlist):
     """
     @param wordlist :: MeaningList | str | unicode
@@ -129,6 +144,21 @@ def getDefaultLanguagelist(request):
     @return defaultLanguagelist :: str | unicode
     """
     return request.session.get('defaultLanguagelist', LanguageList.DEFAULT)
+
+
+def getDefaultLanguagelistId(request):
+    """
+    @return defaultLanguagelistId int
+    """
+    ll = getDefaultLanguagelist(request)
+    try:
+        ids = LanguageList.objects.values_list(
+            'id', flat=True).filter(name=ll).all()
+        if len(ids) == 1:
+            return ids[0]
+    except:
+        pass
+    return 1  # id of LanguageList `all`
 
 
 def setDefaultLanguagelist(request, languagelist):

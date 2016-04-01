@@ -18,6 +18,9 @@ from ielex.shortcuts import render_template
 from ielex.forms import EditCognateClassCitationForm
 from ielex.lexicon.forms import ChooseNexusOutputForm, DumpSnapshotForm
 from ielex.lexicon.functions import nexus_comment
+from ielex.lexicon.defaultModels import (
+    getDefaultWordlistId, getDefaultLanguagelistId
+)
 
 try:
     if settings.default_language_list != "all":
@@ -104,8 +107,12 @@ class NexusExportView(TemplateView):
 
     def get(self, request):
         defaults = {
-            "unique": 1, "reliability": ["L", "X"], "language_list": 1,
-            "meaning_list": 1, "dialect": "NN", "ascertainment_marker": 0}
+            "unique": 1,
+            "reliability": ["L", "X"],
+            "language_list": getDefaultLanguagelistId(request),
+            "meaning_list": getDefaultWordlistId(request),
+            "dialect": "NN",
+            "ascertainment_marker": 0}
         form = ChooseNexusOutputForm(defaults)
         return self.render_to_response({"form": form})
 
