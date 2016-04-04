@@ -117,28 +117,22 @@
           <tbody>
             {% for meaning in mltf.meanings %}
               <tr>
+                <td>
+                  {% if meaning.data.gloss %}
+                    <a href="https://github.com/lingdb/IELex2-CognaC/wiki/{{ meaning.data.gloss }}"
+                       title="View wiki page." target="_blank">
+                      <span class="glyphicon glyphicon-info-sign"></span>
+                    </a>
+                  {% endif %}
+                </td>
                 {% if user.is_authenticated and user.is_staff %}
                   {% form_field meaning.meaningId class="hide" %}
-                  <td>
-                    {% if meaning.data.gloss %}
-                      <a href="https://github.com/lingdb/IELex2-CognaC/wiki/{{ meaning.data.gloss }}"
-                         title="View wiki page." target="_blank">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                      </a>
-                    {% endif %}
-                  </td>
                   <td class="meaningGloss">
                     {% form_field meaning.gloss class="form-control" size="4" %}
                   </td>
                 {% else %}
                   <td class="meaningGloss">
                     {{ meaning.data.gloss }}
-                  </td>
-                  <td class="meaningDesc">
-                    {{ meaning.data.desc }}
-                  </td>
-                  <td class="meaningNotes">
-                    {{ meaning.data.notes }}
                   </td>
                 {% endif %}
                 <td>
