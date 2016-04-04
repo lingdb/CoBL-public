@@ -1150,9 +1150,6 @@ def view_cognateclasses(request, meaning):
 
         return HttpResponseRedirect(reverse('edit-cogclasses', args=[meaning]))
 
-    else:
-        pass  # TODO
-
     def fill_cogclass_table_from_DB(cc_ordered):
 
         cogclass_table_form = AddCogClassTableForm()
@@ -1191,6 +1188,10 @@ def view_cognateclasses(request, meaning):
     cognateclass_list = CognateClassList.objects.get(
         name=CognateClassList.DEFAULT)
     cognateClasses = cognateclass_list.cognateclasses.all().order_by("alias")
+
+    def cmpLen(x, y):  # Fixing sort order for #98
+        return len(x.alias) - len(y.alias)
+    cognateClasses = sorted(cognateClasses, cmp=cmpLen)
 
     for cogclass in cognateClasses:
         if cogclass.pk in cogclass_bymeaning_ids:
