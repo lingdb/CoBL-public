@@ -30,6 +30,7 @@
                 <th>Family ix</th>
                 <th>Level 1 branch ix</th>
                 <th>Branch name</th>
+                <th>Short name</th>
                 <th>Color (hex)</th>
               </tr>
               <tr>
@@ -59,6 +60,14 @@
                 </th>
                 <th>
                   <input type="text" class="filterInput form-control narrow"
+                         data-selector=".shortName input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".shortName input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control narrow"
                          data-selector=".hexColor input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".hexColor input">
@@ -82,8 +91,11 @@
                   <td class="level1_branch_name">
                     {% form_field branch.level1_branch_name class="form-control" required="required" %}
                   </td>
+                  <td class="shortName">
+                    {% form_field branch.shortName class="form-control" %}
+                  </td>
                   <td {% if branch.hexColor.data %}
-                          style='background-color: #{{ branch.hexColor.data }};'
+                        style='background-color: #{{ branch.hexColor.data }};'
                       {% endif %}
                       class="hexColor">
                     {% form_field branch.hexColor class="form-control" pattern="[0123456789abcdefABCDEF]{6}" placeholder="c0ffee" style="width: 6em;" %}

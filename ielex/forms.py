@@ -263,6 +263,7 @@ class LanguageBranchesRowForm(WTForm):
                                     validators=[DataRequired()])
     level1_branch_name = StringField('Level 1 Branch Name',
                                      validators=[DataRequired()])
+    shortName = StringField('Short name', validators=[DataRequired()])
     hexColor = StringField('hexColor', validators=[DataRequired()])
 
 

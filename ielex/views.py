@@ -1104,17 +1104,19 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         id=current_language_list.id).all()
 
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
-    return render_template(request, "view_meaning.html",
-                           {"meaning": meaning,
-                            "prev_meaning": prev_meaning,
-                            "next_meaning": next_meaning,
-                            "lexemes": lexemes,
-                            "current_language_list": current_language_list,
-                            "otherLanguageLists": otherLanguageLists,
-                            "cognate_form": cognate_form,
-                            "add_cognate_judgement": lexeme_id,
-                            "lex_ed_form": lexemes_editabletable_form,
-                            "filt_form": filt_form})
+    return render_template(
+        request, "view_meaning.html",
+        {"meaning": meaning,
+         "prev_meaning": prev_meaning,
+         "next_meaning": next_meaning,
+         "lexemes": lexemes,
+         "current_language_list": current_language_list,
+         "otherLanguageLists": otherLanguageLists,
+         "cognate_form": cognate_form,
+         "add_cognate_judgement": lexeme_id,
+         "lex_ed_form": lexemes_editabletable_form,
+         "filt_form": filt_form,
+         "languageBranches": LanguageBranches.objects.all()})
 
 
 @csrf_protect

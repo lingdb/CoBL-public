@@ -107,6 +107,7 @@ class LanguageBranches(models.Model):
     level1_branch_ix = models.IntegerField(blank=True)
     level1_branch_name = models.TextField(blank=True, unique=True)
     hexColor = models.CharField(max_length=6, blank=True)
+    shortName = models.CharField(max_length=5, blank=True)
 
     def is_unchanged(self, **vdict):
 
@@ -120,6 +121,7 @@ class LanguageBranches(models.Model):
             'family_ix': isInt,
             'level1_branch_ix': isInt,
             'level1_branch_name': isString,
+            'shortName': isString,
             'hexColor': isString}
 
         for k, _ in vdict.iteritems():
@@ -140,6 +142,7 @@ class LanguageBranches(models.Model):
             'family_ix': setInt,
             'level1_branch_ix': setInt,
             'level1_branch_name': setString,
+            'shortName': setString,
             'hexColor': setString}
 
         # Setting fields:
