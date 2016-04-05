@@ -172,6 +172,17 @@ class LanguageBranches(models.Model):
             return 'ffffff'
         return self.hexColor
 
+    def getTreeIds(self):
+        """
+        @return [id]
+        Returns a list of all ids that are subbranches of self as well as it's own id.
+        """
+        req = {'family_ix': self.family_ix}
+        if self.level1_branch_ix != 0:
+            req['level1_branch_ix'] = self.level1_branch_ix
+        return LanguageBranches.objects.values_list(
+            "id", flat=True).filter(**req)
+
 
 @reversion.register
 class Language(models.Model):

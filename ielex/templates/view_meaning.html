@@ -63,7 +63,7 @@
           <ul id="languageBranchFilter">
             {% for branch in languageBranches %}
               {% if branch.shortName %}
-                <li class="inline">
+                <li class="inline" data-treeids="{{ branch.getTreeIds|join:"," }}">
                   <span class="badge" style="background-color: #{{ branch.hexColor }};">
                     {{ branch.shortName }}
                   </span>
