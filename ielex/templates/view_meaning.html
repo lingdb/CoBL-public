@@ -59,6 +59,11 @@
             <input type="submit" value="Save" name="meang_form" class="btn btn-danger">
           </div>
           {% include "snippets/prev_next_meaning.html" %}
+          <ul id="languageBranchFilter">
+            <li class="inline"><span class="badge">Gmc</span></li>
+            <li class="inline"><span class="badge">Rce</span></li>
+            <li class="inline"><span class="badge">BSv</span></li>
+          </ul>
           <table class="table table-condensed viewTableFilter"
                  id="viewMeaningLanguages">
             <thead>
@@ -208,6 +213,9 @@
                   <td class="languageBranchColor"
                       {% if lexeme.object_data.languageBranchColor %}
                         style="background-color: #{{ lexeme.object_data.languageBranchColor }};"
+                      {% endif %}
+                      {% if lexeme.object_data.languageBranchId %}
+                        data-languagebranchid="{{ lexeme.object_data.languageBranchId }}"
                       {% endif %}
                     ></td>
                   <td class="languageBranchColorSpace"></td>

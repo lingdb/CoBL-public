@@ -1064,6 +1064,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             branch = lex.language.languageBranch
             if branch is not None:
                 lex_row_form.languageBranchColor = branch.getColor()
+                lex_row_form.languageBranchId = branch.id
 
             lex_row_form.is_excluded = lex.is_excluded()
             lex_row_form.is_loan = lex.is_loan()
