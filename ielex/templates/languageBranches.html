@@ -112,6 +112,7 @@
               <th>Level 1 branch ix</th>
               <th>Family ix</th>
               <th>Branch name</th>
+              <th>Short name</th>
               <th>Color (hex)</th>
             </tr>
             <tr>
@@ -141,6 +142,14 @@
               </th>
               <th>
                 <input type="text" class="filterText form-control narrow"
+                       data-selector=".shortName">
+                <div class="btn btn-xs btn-default sortText"
+                     data-selector=".shortName">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              <th>
+                <input type="text" class="filterText form-control narrow"
                        data-selector=".hexColor">
                 <div class="btn btn-xs btn-default sortText"
                      data-selector=".hexColor">
@@ -160,6 +169,9 @@
                 </td>
                 <td class="level1_branch_name">
                   {{ branch.level1_branch_name.data }}
+                </td>
+                <td class="shortName">
+                  {{ branch.shortName.data }}
                 </td>
                 <td {% if branch.hexColor.data %}
                       style='background-color: #{{ branch.hexColor.data }};'
