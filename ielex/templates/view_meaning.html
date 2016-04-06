@@ -60,7 +60,7 @@
           </div>
           {% include "snippets/prev_next_meaning.html" %}
           {% if languageBranches %}
-          <ul id="languageBranchFilter">
+          <ul id="languageBranchFilter" data-selector=".languageBranchColor">
             {% for branch in languageBranches %}
               {% if branch.shortName %}
                 <li class="inline" data-treeids="{{ branch.getTreeIds|join:"," }}">
