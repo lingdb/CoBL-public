@@ -22,29 +22,29 @@
       {% if user.is_authenticated and user.is_staff %}
         <form action="" method="POST" name="authors">
           {% csrf_token %}
-          <div class="pull-left"
-               data-toggle="tooltip"
-               data-placement="bottom"
-               title="Add new author">
-            <button type="button"
-                    data-toggle="modal"
-                    data-target="#addAuthorModal"
-                    class="btn btn-default">
-              <span class="glyphicon glyphicon-plus"></span>
-            </a>
-          </div>
-          <div class="pull-left"
-               data-toggle="tooltip"
-               data-placement="bottom"
-               title="Delete author">
-            <button type="button"
-                    data-toggle="modal"
-                    data-target="#deleteAuthorModal"
-                    class="btn btn-default">
-              <span class="glyphicon glyphicon-minus"></span>
-            </a>
-          </div>
           <div class="form-group pull-right">
+            <div class="inline"
+                 data-toggle="tooltip"
+                 data-placement="bottom"
+                 title="Add new author">
+              <button type="button"
+                      data-toggle="modal"
+                      data-target="#addAuthorModal"
+                      class="btn btn-default">
+                <span class="glyphicon glyphicon-plus"></span>
+              </a>
+            </div>
+            <div class="inline"
+                 data-toggle="tooltip"
+                 data-placement="bottom"
+                 title="Delete author">
+              <button type="button"
+                      data-toggle="modal"
+                      data-target="#deleteAuthorModal"
+                      class="btn btn-default">
+                <span class="glyphicon glyphicon-minus"></span>
+              </a>
+            </div>
             <a href="/authors/" class="btn btn-default">Undo</a>
             <input type="submit" name="authors"
                    value="Save" class="btn btn-danger">
