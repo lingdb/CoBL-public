@@ -1911,12 +1911,13 @@ def viewAbout(request, page):
 
 @csrf_protect
 def viewAuthors(request):
+    messages = []
     if request.method == 'POST':
         '''
         We need to distinguish several cases here:
         * Creation of a new author
         * Modification of an existing author
-        * Maybe deletion of an author?!
+        * Deletion of an author
         '''
         if 'addAuthor' in request.POST:
             authorCreationForm = AuthorCreationForm(request.POST)
@@ -1927,8 +1928,33 @@ def viewAuthors(request):
                     newAuthor.save(force_insert=True)
             except Exception, e:
                 print('Problem creating author:', e)
+                messages.append('Sorry, the server could not '
+                                'create new author as requested.')
+        elif 'authors' in request.POST:
+            authorData = AuthorTableForm(request.POST)
+            try:
+                authorData.validate()
+                for entry in authorData.elements:
+                    data = entry.data
+                    try:
+                        with transaction.atomic():
+                            author = Author.objects.get(
+                                id=int(data['idField']))
+                            if not author.is_unchanged(**data):
+                                author.setDelta(**data)
+                                author.save()
+                    except Exception, e:
+                        print('Problem while saving author: ', e)
+                        messages.append(
+                            'Problem saving author data: %s' % data)
+            except Exception, e:
+                print('Problem updating authors:', e)
+                messages.append('Sorry, the server had problems '
+                                'updating at least one author.')
         else:
             print('Cannot handle POST request in viewAuthors():', request)
+            messages.append(
+                'Sorry, the server did not understand the request.')
 
     authors = Author.objects.all()
     form = AuthorTableForm()
@@ -1937,4 +1963,6 @@ def viewAuthors(request):
         author.idField = author.id
         form.elements.append_entry(author)
 
-    return render_template(request, "authors.html", {'authors': form})
+    return render_template(
+        request, "authors.html",
+        {'authors': form, 'messages': messages})

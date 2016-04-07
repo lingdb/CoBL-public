@@ -511,12 +511,12 @@ class SearchLexemeForm(forms.Form):
 
 
 class AuthorRowForm(WTForm):
-    idField = IntegerField('Id')
+    idField = IntegerField('Id', validators=[DataRequired()])
+    initials = StringField('Initials', validators=[DataRequired()])
     surname = StringField('Author Surname', validators=[DataRequired()])
     firstNames = StringField('Author First names', validators=[DataRequired()])
-    email = StringField('Email address', validators=[DataRequired()])
-    website = StringField('Personal website URL', validators=[DataRequired()])
-    initials = StringField('Initials', validators=[DataRequired()])
+    email = StringField('Email address', validators=[Email()])
+    website = StringField('Personal website URL')
 
 
 class AuthorTableForm(WTForm):

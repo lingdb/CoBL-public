@@ -1367,3 +1367,24 @@ class Author(models.Model):
     website = models.TextField(blank=True)
     # Initials
     initials = models.TextField(blank=True, unique=True)
+
+    def is_unchanged(self, **vdict):
+        fields = ['surname', 'firstNames', 'email', 'website', 'initials']
+
+        for f in fields:
+            if f in vdict:
+                if vdict[f] != getattr(self, f):
+                    return False
+
+        return True
+
+    def setDelta(self, **vdict):
+        """
+            Alter a models attributes by giving a vdict
+            similar to the one used for is_unchanged.
+        """
+        fields = ['surname', 'firstNames', 'email', 'website', 'initials']
+
+        for f in fields:
+            if f in vdict:
+                setattr(self, f, vdict[f])
