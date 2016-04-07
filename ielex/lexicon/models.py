@@ -1362,8 +1362,8 @@ class Author(models.Model):
     # Author First names
     firstNames = models.TextField(blank=True)
     # Email address
-    email = models.TextField(blank=True)
+    email = models.TextField(blank=True, unique=True)
     # Personal website URL
     website = models.TextField(blank=True)
     # Initials
-    initials = models.TextField(blank=True)
+    initials = models.TextField(blank=True, unique=True)

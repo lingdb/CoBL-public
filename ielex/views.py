@@ -1923,7 +1923,8 @@ def viewAuthors(request):
             try:
                 authorCreationForm.validate()
                 newAuthor = Author(**authorCreationForm.data)
-                newAuthor.save(force_insert=True)
+                with transaction.atomic():
+                    newAuthor.save(force_insert=True)
             except Exception, e:
                 print('Problem creating author:', e)
         else:
