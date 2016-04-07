@@ -529,3 +529,7 @@ class AuthorCreationForm(WTForm):
     firstNames = StringField('Author First names', validators=[DataRequired()])
     email = StringField('Email address', validators=[Email()])
     website = StringField('Personal website URL')
+
+
+class AuthorDeletionForm(WTForm):
+    initials = StringField('Initials', validators=[DataRequired()])

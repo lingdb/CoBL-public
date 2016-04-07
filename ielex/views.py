@@ -1951,6 +1951,21 @@ def viewAuthors(request):
                 print('Problem updating authors:', e)
                 messages.append('Sorry, the server had problems '
                                 'updating at least one author.')
+        elif 'deleteAuthor' in request.POST:
+            deleteAuthor = AuthorDeletionForm(request.POST)
+            try:
+                deleteAuthor.validate()
+                with transaction.atomic():
+                    # Making sure the author exists:
+                    author = Author.objects.get(
+                        initials=deleteAuthor.data['initials'])
+                    # Make sure to update things referencing the author here!
+                    # Deleting the author:
+                    Author.objects.filter(id=author.id).delete()
+            except Exception, e:
+                print('Problem deleting author:', e)
+                messages.append('Sorry, the server had problems '
+                                'deleting the requested author.')
         else:
             print('Cannot handle POST request in viewAuthors():', request)
             messages.append(
