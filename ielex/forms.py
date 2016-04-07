@@ -11,7 +11,7 @@ from wtforms import StringField, IntegerField, \
     TextField, BooleanField, \
     DateTimeField, DecimalField, \
     TextAreaField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Email
 from wtforms_components import read_only
 from wtforms.form import Form as WTForm
 from wtforms.ext.django.orm import model_form
@@ -521,3 +521,11 @@ class AuthorRowForm(WTForm):
 
 class AuthorTableForm(WTForm):
     elements = FieldList(FormField(AuthorRowForm))
+
+
+class AuthorCreationForm(WTForm):
+    initials = StringField('Initials', validators=[DataRequired()])
+    surname = StringField('Author Surname', validators=[DataRequired()])
+    firstNames = StringField('Author First names', validators=[DataRequired()])
+    email = StringField('Email address', validators=[Email()])
+    website = StringField('Personal website URL')

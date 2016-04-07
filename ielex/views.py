@@ -1909,9 +1909,25 @@ def viewAbout(request, page):
                             'content': content})
 
 
+@csrf_protect
 def viewAuthors(request):
     if request.method == 'POST':
-        pass  # FIXME IMPLEMENT
+        '''
+        We need to distinguish several cases here:
+        * Creation of a new author
+        * Modification of an existing author
+        * Maybe deletion of an author?!
+        '''
+        if 'addAuthor' in request.POST:
+            authorCreationForm = AuthorCreationForm(request.POST)
+            try:
+                authorCreationForm.validate()
+                newAuthor = Author(**authorCreationForm.data)
+                newAuthor.save(force_insert=True)
+            except Exception, e:
+                print('Problem creating author:', e)
+        else:
+            print('Cannot handle POST request in viewAuthors():', request)
 
     authors = Author.objects.all()
     form = AuthorTableForm()
