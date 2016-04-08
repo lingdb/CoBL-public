@@ -4,7 +4,7 @@
 {% load wtforms %}
 
 {% block title %}
-  Language list ‘{{ current_language_list_name }}’
+  Language list: {{ current_language_list_name }}
 {% endblock %}
 
 {% block top %}
@@ -54,7 +54,7 @@
             <a href="{% url 'view-language-list' current_list.name %}" class="btn btn-default"> undo</a>
             <input type="submit" value="Save" name="langlist_form" class="btn btn-danger">
           </div>
-          <h1 class="inline">Language list ‘{{ current_language_list_name }}’</h1>
+          <h1 class="inline">Language list: {{ current_language_list_name }}</h1>
           {% if user.is_authenticated %}
             <a href="{% url 'language-add-new' current_language_list_name %}"
                class="btn btn-default"
