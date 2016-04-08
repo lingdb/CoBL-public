@@ -101,6 +101,12 @@
                 <th data-toggle="tooltip" data-placement="bottom" data-container="body" title="Std Dev. time depth (yrs)">
                   Std Dev. (yrs)
                 </th>
+                <th data-toggle="tooltip" data-placement="bottom" data-container="body" title="Earliest Time-Depth Bound">
+                  Earliest
+                </th>
+                <th data-toggle="tooltip" data-placement="bottom" data-container="body" title="Latest Time-Depth Bound">
+                  Latest
+                </th>
                 <th data-toggle="tooltip" data-placement="bottom" data-container="body" title="Representative">
                   Rep.
                 </th>
@@ -186,6 +192,14 @@
                 <th>
                   <input type="text" class="filterInput form-control"
                          data-selector=".languageStdDeviationTimeDepth input" style="width: 4em;">
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageEarliestTimeDepthBound input" style="width: 4em;">
+                </th>
+                <th>
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageLatestTimeDepthBound input" style="width: 4em;">
                 </th>
                 <th>
                   <button type="button" class="filterBool btn btn-xs btn-default"
@@ -316,10 +330,16 @@
                     {% endif %}
                   </td>
                   <td class="languageMeanTimeDepth">
-                    {% form_field language.mean_timedepth_BP_years maxlength="4" size="4" class="form-control" style="width: 4em;" %}
+                    {% form_field language.mean_timedepth_BP_years maxlength="4" size="4" class="form-control" style="width: 4em;" pattern="[0-9]{4}" %}
                   </td>
                   <td class="languageStdDeviationTimeDepth">
-                    {% form_field language.std_deviation_timedepth_BP_years maxlength="4" size="4" class="form-control" style="width: 4em;" %}
+                    {% form_field language.std_deviation_timedepth_BP_years maxlength="4" size="4" class="form-control" style="width: 4em;" pattern="[0-9]{4}" %}
+                  </td>
+                  <td class="languageEarliestTimeDepthBound">
+                    {% form_field language.earliestTimeDepthBound maxlength="4" size="4" class="form-control" style="width: 4em;" pattern="[0-9]{4}" %}
+                  </td>
+                  <td class="languageLatestTimeDepthBound">
+                    {% form_field language.latestTimeDepthBound maxlength="4" size="4" class="form-control" style="width: 4em;" pattern="[0-9]{4}" %}
                   </td>
                   <td class="languageRepresentative">
                     <div class="centralised_checkbox">

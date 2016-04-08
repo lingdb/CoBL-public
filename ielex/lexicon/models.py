@@ -195,6 +195,8 @@ class Language(models.Model):
     altname = jsonfield.JSONField(blank=True)
     languageBranch = models.ForeignKey(LanguageBranches, null=True)
     beastName = models.CharField(max_length=128, blank=True)  # #130
+    earliestTimeDepthBound = models.IntegerField(null=True)  # #128
+    latestTimeDepthBound = models.IntegerField(null=True)  # #128
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
