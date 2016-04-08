@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-import datetime
-import textwrap
 import bisect
+import csv
+import datetime
 import re
 import requests
+import textwrap
+import time
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -289,8 +291,9 @@ def view_language_list(request, language_list=None):
         return HttpResponseRedirect(
             reverse("view-language-list", args=[current_list.name]))
 
-    else:
-        pass  # TODO
+    elif (request.method == 'GET') and ('exportCsv' in request.GET):
+        # Handle csv export iff desired:
+        return exportLanguageListCsv(request, languages)
 
     def fill_langstable_from_DB(langs):
 
@@ -352,6 +355,30 @@ def view_language_list(request, language_list=None):
                             'lang_ed_form': languages_editabletable_form,
                             "current_list": current_list,
                             "otherLanguageLists": otherLanguageLists})
+
+
+@csrf_protect
+def exportLanguageListCsv(request, languages=[]):
+    """
+      @param languages :: [Language]
+    """
+    fields = request.GET['exportCsv'].split(',')
+    rows = [l.getCsvRow(*fields) for l in languages]
+    rows.insert(0, ['"'+f+'"' for f in fields])  # Add headline
+    # Composing .csv data:
+    data = '\n'.join([','.join(row) for row in rows])
+    # Filename:
+    filename = "%s.%s.csv" % \
+        (datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d'),
+         getDefaultLanguagelist(request))
+    # Answering request:
+    response = HttpResponse(data)
+    response['Content-Disposition'] = ('attachment;filename="%s"' % filename)
+    response['Control-Type'] = 'text/csv; charset=utf-8'
+    response['Pragma'] = 'public'
+    response['Expires'] = 0
+    response['Cache-Control'] = 'must-revalidate, post-check=0, pre-check=0'
+    return response
 
 
 @csrf_protect

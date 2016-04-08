@@ -34,6 +34,13 @@
       {% endfor %}
     </ul>
   </li>
+  <li>
+    <a href="?exportCsv=utf8_name,mean_timedepth_BP_years,std_deviation_timedepth_BP_years,level0,level1"
+       title="Download current language list as .csv"
+       data-toggle="tooltip" data-placement="bottom">
+      <span class="glyphicon glyphicon-download-alt"></span>
+    </a>
+  </li>
   {% include "snippets/go_to.html" %}
 {% endblock %}
 

@@ -338,6 +338,50 @@ class Language(models.Model):
             if k in fields:
                 fields[k](k)
 
+    def getCsvRow(self, *fields):
+        '''
+        @return row :: [str]
+        '''
+        def getField(f):
+            x = getattr(self, f, '')
+            if x is None:
+                return '""'
+            return '"'+str(x)+'"'
+
+        def getData(f):
+            x = self.altname[f]
+            if x is None:
+                return '""'
+            return '"'+str(x)+'"'
+
+        def getY(f):
+            return '1' if self.altname[f] else '0'
+
+        fieldDesc = {
+            'iso_code': getField,
+            'utf8_name': getField,
+            'glottocode': getData,
+            'variety': getData,
+            'foss_stat': getY,
+            'low_stat': getY,
+            'soundcompcode': getData,
+            'level0': getData,
+            'level1': getData,
+            'level2': getData,
+            'representative': getY,
+            'mean_timedepth_BP_years': getData,
+            'std_deviation_timedepth_BP_years': getData,
+            'rfcWebPath1': getData,
+            'rfcWebPath2': getData,
+            'author': getData,
+            'reviewer': getData}
+
+        row = []
+        for f in fields:
+            if f in fieldDesc:
+                row.append(fieldDesc[f](f))
+        return row
+
 
 @reversion.register
 class Meaning(models.Model):
