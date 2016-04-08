@@ -290,7 +290,9 @@ class Language(models.Model):
             'rfcWebPath2': isData,
             'author': isData,
             'reviewer': isData,
-            'beastName': isField}
+            'beastName': isField,
+            'earliestTimeDepthBound': isField,
+            'latestTimeDepthBound': isField}
 
         for k, _ in vdict.iteritems():
             if k in fields:
@@ -331,7 +333,9 @@ class Language(models.Model):
             'rfcWebPath2': setData,
             'author': setData,
             'reviewer': setData,
-            'beastName': setField}
+            'beastName': setField,
+            'earliestTimeDepthBound': setField,
+            'latestTimeDepthBound': setField}
 
         # Escaping special fields:
         if 'ascii_name' in vdict:
