@@ -90,6 +90,7 @@
               <tr>
                 <th></th>
                 <th>Name</th>
+                <th>Beast name</th>
                 <th>Variety</th>
                 <th></th>
                 <th>ISO</th>
@@ -146,6 +147,14 @@
                          data-selector=".languageName">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".languageName">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </th>
+                <th>
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".beastName">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".beastName">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 </th>
@@ -272,6 +281,9 @@
                       title="View wordlist list for {{ language.utf8_name.data }}">
                       {{ language.utf8_name.data }}
                     </a>
+                  </td>
+                  <td class="beastName">
+                    {% form_field language.beastName class="form-control" %}
                   </td>
                   <td class="languageVariety">
                     {% form_field language.variety size="8" class="form-control" %}

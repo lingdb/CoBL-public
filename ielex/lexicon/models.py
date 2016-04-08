@@ -194,6 +194,7 @@ class Language(models.Model):
     description = models.TextField(blank=True, null=True)
     altname = jsonfield.JSONField(blank=True)
     languageBranch = models.ForeignKey(LanguageBranches, null=True)
+    beastName = models.CharField(max_length=128, blank=True)  # #130
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
@@ -286,7 +287,8 @@ class Language(models.Model):
             'rfcWebPath1': isData,
             'rfcWebPath2': isData,
             'author': isData,
-            'reviewer': isData}
+            'reviewer': isData,
+            'beastName': isField}
 
         for k, _ in vdict.iteritems():
             if k in fields:
@@ -326,7 +328,8 @@ class Language(models.Model):
             'rfcWebPath1': setData,
             'rfcWebPath2': setData,
             'author': setData,
-            'reviewer': setData}
+            'reviewer': setData,
+            'beastName': setField}
 
         # Escaping special fields:
         if 'ascii_name' in vdict:

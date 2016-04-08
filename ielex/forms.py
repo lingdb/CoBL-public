@@ -250,6 +250,7 @@ class LanguageListRowForm(WTForm):
                               validators=[DataRequired()])
     author = StringField('Author', validators=[DataRequired()])
     reviewer = StringField('Reviewer', validators=[DataRequired()])
+    beastName = StringField('Beast name', validators=[DataRequired()])
 
 
 class AddLanguageListTableForm(WTForm):

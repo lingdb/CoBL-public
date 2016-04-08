@@ -342,6 +342,7 @@ def view_language_list(request, language_list=None):
             langlist_row_form.rfcWebPath2 = lang.altname.get('rfcWebPath2', '')
             langlist_row_form.author = lang.altname.get('author', '')
             langlist_row_form.reviewer = lang.altname.get('reviewer', '')
+            langlist_row_form.beastName = lang.beastName
 
             langlist_table_form.langlist.append_entry(langlist_row_form)
         return langlist_table_form
