@@ -1,0 +1,12 @@
+{% load staticfiles %}
+{% load lexicon_utils %}
+{% load wtforms %}
+
+<td class="lexemeGloss">
+  {% if user.is_authenticated %}
+    {% form_field lexeme.gloss size="4" class="form-control" %}
+  {% elif lexeme.gloss.data %}
+    {{ lexeme.gloss.data }}
+  {% endif %}
+</td>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

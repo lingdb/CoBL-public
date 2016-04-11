@@ -1,0 +1,18 @@
+<th>
+  {% if user.is_authenticated %}
+    <input type="text" class="filterInput form-control narrow"
+           data-selector=".lexemeNotes input">
+    <div class="btn btn-xs btn-default sortInput"
+         data-selector=".lexemeNotes input">
+      <span class="glyphicon glyphicon-sort"></span>
+    </div>
+  {% else %}
+    <input type="text" class="filterText form-control narrow"
+           data-selector=".lexemeNotes">
+    <div class="btn btn-xs btn-default sortText"
+         data-selector=".lexemeNotes">
+      <span class="glyphicon glyphicon-sort"></span>
+    </div>
+  {% endif %}
+</th>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

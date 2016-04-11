@@ -43,9 +43,9 @@
     <div class="col-md-4">
     </div>
   </div>
-  {% if user.is_authenticated %}
-    <div class="row">
-      <div class="col-md-12">
+  <div class="row">
+    <div class="col-md-12">
+      {% if user.is_authenticated %}
         <form action="" method="POST" name="lex_ed_form">
           {% csrf_token %}
           <div class="form-group pull-right">
@@ -58,346 +58,99 @@
             <a href="{% url 'view-meaning-languages' meaning.gloss current_language_list.name %}" class="btn btn-default">Undo</a>
             <input type="submit" value="Save" name="meang_form" class="btn btn-danger">
           </div>
-          {% include "snippets/prev_next_meaning.html" %}
-          {% if languageBranches %}
-          <ul id="languageBranchFilter" data-selector=".languageBranchColor">
-            {% for branch in languageBranches %}
-              {% if branch.shortName %}
-                <li class="inline" data-treeids="{{ branch.getTreeIds|join:"," }}">
-                  <span class="badge" style="background-color: #{{ branch.hexColor }};">
-                    {{ branch.shortName }}
-                  </span>
-                </li>
-              {% endif %}
-            {% endfor %}
-          </ul>
-          {% endif %}
-          <table class="table table-condensed viewTableFilter"
-                 id="viewMeaningLanguages">
-            <thead>
-              <tr>
-                <th class="hide"></th>
-                <th class="languageBranchColor" colspan="2"></th>
-                <th>Language</th>
-                <th></th>
-                <th>Orthog.</th>
-                <th colspan="3"></th>
-                <th>Translit.</th>
-                <th>Not<br>Swh<br></th>
-                <th>Cog.<br>Alias</th>
-                <th>loan</th>
-                <th>excl</th>
-                <th>Loan<br>Event</th>
-                <th>Root Form</th>
-                <th>Root Language</th>
-                <th alt="Number of cognate classes" style="width: 80px;">nCog</th>
-                <th>PhoneMic</th>
-                <th colspan="2"></th>
-                <th>PhoneTic</th>
-                <th alt="Language specific">Gloss</th>
-                <th>Notes</th>
-              </tr>
-              <tr>
-                <th class="hide"></th>
-                <th class="languageBranchColor" colspan="2"></th>
-                <th>
-                  <input type="text" class="filterText form-control"
-                         data-selector=".languageName">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".languageName">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th></th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".lexemeSourceForm input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".lexemeSourceForm input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th colspan="3"></th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".lexemeTransliteration input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".lexemeTransliteration input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th>
-                  <button type="button" class="filterBool btn btn-xs btn-danger"
-                          data-selector=".lexemeSwadeshTerm input">
-                    <span class="glyphicon glyphicon-remove-sign"></span>
-                  </button>
-                </th>
-                <th>
-                  <input type="text" class="filterText form-control"
-                         data-selector=".cognateClasses"
-                         size="1" style="padding-left: 2px; padding-right: 2px;">
-                </th>
-                <th>
-                  <button type="button" class="filterBool btn btn-xs btn-default"
-                          data-selector=".lexemeIsLoan input">
-                    <span class="glyphicon glyphicon-question-sign"></span>
-                  </button>
-                </th>
-                <th>
-                  <button type="button" class="filterBool btn btn-xs btn-default"
-                          data-selector=".lexemeIsExcluded input">
-                    <span class="glyphicon glyphicon-question-sign"></span>
-                  </button>
-                </th>
-                <th>
-                  <button type="button" class="filterBool btn btn-xs btn-default"
-                          data-selector=".lexemeShowLoanEvent input">
-                    <span class="glyphicon glyphicon-question-sign"></span>
-                  </button>
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control narrow"
-                         data-selector=".lexemeRootForm input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".lexemeRootForm input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control narrow"
-                         data-selector=".lexemeRootLanguage input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".lexemeRootLanguage input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th>
-                  <input type="text" class="filterText form-control narrow"
-                         data-selector=".lexemeNCog" size="1">
-                  <div class="btn btn-xs btn-default sortIntText"
-                       data-selector=".lexemeNCog">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control narrow"
-                         data-selector=".lexemePhoneMic input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".lexemePhoneMic input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th colspan="2"></th>
-                <th>
-                  <input type="text" class="filterInput form-control narrow"
-                         data-selector=".lexemePhoneTic input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".lexemePhoneTic input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control narrow"
-                         data-selector=".lexemeGloss input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".lexemeGloss input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control narrow"
-                         data-selector=".lexemeNotes input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".lexemeNotes input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for lexeme in lex_ed_form.lexemes %}
-                <tr>
-                  <td class="hide">{{ lexeme.id }}</td>
-                  <td class="languageBranchColor"
-                      {% if lexeme.object_data.languageBranchColor %}
-                        style="background-color: #{{ lexeme.object_data.languageBranchColor }};"
-                      {% endif %}
-                      {% if lexeme.object_data.languageBranchId %}
-                        data-languagebranchid="{{ lexeme.object_data.languageBranchId }}"
-                      {% endif %}
-                    ></td>
-                  <td class="languageBranchColorSpace"></td>
-                  <td class="languageName">
-                    <a href="{% url 'language-report' lexeme.language_asciiname.data %}">
-                      {{ lexeme.data.language_utf8name }}
-                    </a>
-                  </td>
-                  <td>
-                    {% if lexeme.object_data.rfcWebPath1 and lexeme.data.rfcWebLookup1 %}
-                      <a href="{{ lexeme.object_data.rfcWebPath1 }}{{ lexeme.data.rfcWebLookup1 }}" target="_blank">
-                        <span class="glyphicon glyphicon-link"></span>
-                      </a>
-                    {% endif %}
-                    {% if lexeme.object_data.rfcWebPath2 and lexeme.data.rfcWebLookup2 %}
-                      <a href="{{ lexeme.object_data.rfcWebPath2 }}{{ lexeme.data.rfcWebLookup2 }}" target="_blank">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                      </a>
-                    {% endif %}
-                  </td>
-                  <td class="lexemeSourceForm">
-                    {% form_field lexeme.source_form id="source_form" class="form-control" %}
-                  </td>
-                  <td>
-                    <a href="{% url 'view-lexeme' lexeme.id.data %}" title="View/edit the lexical entry">
-                      <span class="glyphicon glyphicon-search"></span>
-                    </a>
-                  </td>
-                  <td>
-                    <button class="leftcheckarrow btn btn-xs" type="button"
-                            id="translit2src#{{lexeme.transliteration.name}}#{{lexeme.source_form.name}}"
-                            onclick="CopyAcross(this)">
-                      <span class="glyphicon glyphicon-step-backward"></span>
-                    </button>
-                  </td>
-                  <td>
-                    <button class="rightcheckarrow btn btn-xs" type="button"
-                            id="src2translit#{{lexeme.source_form.name}}#{{lexeme.transliteration.name}}"
-                            onclick="CopyAcross(this)">
-                      <span class="glyphicon glyphicon-step-forward"></span>
-                    </button>
-                  </td>
-                  <td class="lexemeTransliteration">
-                    {% form_field lexeme.transliteration id="transliteration" size="8" class="form-control" %}
-                  </td>
-                  <td class="lexemeSwadeshTerm">
-                    {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" %}
-                  </td>
-                  <td>
-                    <div class="cognateClasses">
-                      {% if user.is_authenticated %}
-                        {% ifnotequal add_cognate_judgement|asint lexeme.id.data|asint %}
-                          <a href="{% url 'lexeme-add-cognate' lexeme.id.data %}#lexeme_{{ lexeme.id.data }}"
-                             title="Add another cognate class">
-                            <span class="glyphicon glyphicon-plus-sign"></span>
-                          </a>
-                        {% else %}
-                          <form action="" method="post">
-                            {% csrf_token %}
-                            {{ cognate_form.cognate_class }}
-                          </form>
-                        {% endifnotequal %}
-                      {% endif %}
-                      {{ lexeme.cognate_class_links.data }}
-                    </div>
-                  </td>
-                  <td class="lexemeIsLoan">
-                    {% form_field lexeme.is_loan disabled="disabled" class="form-control" %}
-                  </td>
-                  <td class="lexemeIsExcluded">
-                    {% form_field lexeme.is_excluded disabled="disabled" class="form-control" %}
-                  </td>
-                  <td class="lexemeShowLoanEvent">
-                    {% if lexeme.object_data.show_loan_event %}
-                      {% form_field lexeme.loan_event disabled="disabled" class="form-control" %}
-                    {% endif %}
-                  </td>
-                  <td class="hide lexemeCogClassIds">
-                    {% if lexeme.cog_class_ids.data %}
-                      {% form_field lexeme.cog_class_ids %}
-                    {% endif %}
-                  </td>
-                  <td class="lexemeRootForm">
-                    {% if lexeme.data.rootFormCompare %}
-                      {% form_field lexeme.root_form id="rootform" class="form-control mirrorTextInput" data-compare=lexeme.data.rootFormCompare %}
-                    {% endif %}
-                  </td>
-                  <td class="lexemeRootLanguage">
-                    {% if lexeme.data.rootLanguageCompare %}
-                      {% form_field lexeme.root_language class="form-control mirrorTextInput" id="rootlanguage" data-compare=lexeme.data.rootLanguageCompare %}
-                    {% endif %}
-                  </td>
-                  <td class="lexemeNCog">
-                    <center>
-                      <span class="badge">
-                        {{ lexeme.data.number_cognate_coded }}
-                      </span>
-                    </center>
-                  </td>
-                  <td class="lexemePhoneMic">
-                    {% form_field lexeme.phoneMic id="phoneMic" size="8" class="form-control" %}
-                  </td>
-                  <td>
-                    <button class="leftcheckarrow btn btn-xs" type="button"
-                            id="phoneTic2phoneMic#{{lexeme.phon_form.name}}#{{lexeme.phoneMic.name}}"
-                            onclick="CopyAcross(this)">
-                      <span class="glyphicon glyphicon-step-backward"></span>
-                    </button>
-                  </td>
-                  <td>
-                    <button class="rightcheckarrow btn btn-xs" type="button"
-                            id="phoneMic2phoneTic#{{lexeme.phoneMic.name}}#{{lexeme.phon_form.name}}"
-                            onclick="CopyAcross(this)">
-                      <span class="glyphicon glyphicon-step-forward"></span>
-                    </button>
-                  </td>
-                  <td class="lexemePhoneTic">
-                    {% form_field lexeme.phon_form id="phoneTic" size="8" class="form-control" %}
-                  </td>
-                  <td class="lexemeGloss">
-                    {% form_field lexeme.gloss size="4" class="form-control" %}
-                  </td>
-                  <td class="lexemeNotes">
-                    {% form_field lexeme.notes class="form-control" %}
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </form>
-      </div>
-    </div>
-  {% else %}
-    <div class="row">
-      <div class="col-md-6">
-        <table class="table table-striped">
+      {% endif %}
+        {% include "snippets/prev_next_meaning.html" %}
+        {% if languageBranches %}
+        <ul id="languageBranchFilter" data-selector=".languageBranchColor">
+          {% for branch in languageBranches %}
+            {% if branch.shortName %}
+              <li class="inline" data-treeids="{{ branch.getTreeIds|join:"," }}">
+                <span class="badge" style="background-color: #{{ branch.hexColor }};">
+                  {{ branch.shortName }}
+                </span>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+        {% endif %}
+        <table class="table table-condensed viewTableFilter"
+               id="viewMeaningLanguages">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Language</th>
-              <th>Source Form</th>
-              <th>Phonological Form</th>
-              <th>Notes</th>
-              <th>Cognate Class Label</th>
-              <th></th>
+              {% include "view_meaning/lexemeid_title.html" %}
+              {% include "view_meaning/branchcolor_title.html" %}
+              {% include "view_meaning/languagename_title.html" %}
+              {% include "view_meaning/sourceform_title.html" %}
+              {% include "view_meaning/lexemeeditcopy_title.html" %}
+              {% include "view_meaning/transliteration_title.html" %}
+              {% include "view_meaning/swadesh_title.html" %}
+              {% include "view_meaning/cognateclasses_title.html" %}
+              {% include "view_meaning/isloan_title.html" %}
+              {% include "view_meaning/isexcluded_title.html" %}
+              {% include "view_meaning/loanevent_title.html" %}
+              {% include "view_meaning/rootform_title.html" %}
+              {% include "view_meaning/rootlanguage_title.html" %}
+              {% include "view_meaning/ncog_title.html" %}
+              {% include "view_meaning/phonemic_title.html" %}
+              {% include "view_meaning/phonecopy_title.html" %}
+              {% include "view_meaning/phonetic_title.html" %}
+              {% include "view_meaning/gloss_title.html" %}
+              {% include "view_meaning/notes_title.html" %}
+            </tr>
+            <tr>
+              {% include "view_meaning/lexemeid_filter.html" %}
+              {% include "view_meaning/branchcolor_filter.html" %}
+              {% include "view_meaning/languagename_filter.html" %}
+              {% include "view_meaning/sourceform_filter.html" %}
+              {% include "view_meaning/lexemeeditcopy_filter.html" %}
+              {% include "view_meaning/transliteration_filter.html" %}
+              {% include "view_meaning/swadesh_filter.html" %}
+              {% include "view_meaning/cognateclasses_filter.html" %}
+              {% include "view_meaning/isloan_filter.html" %}
+              {% include "view_meaning/isexcluded_filter.html" %}
+              {% include "view_meaning/loanevent_filter.html" %}
+              {% include "view_meaning/cogclassids_filter.html" %}
+              {% include "view_meaning/rootform_filter.html" %}
+              {% include "view_meaning/rootlanguage_filter.html" %}
+              {% include "view_meaning/ncog_filter.html" %}
+              {% include "view_meaning/phonemic_filter.html" %}
+              {% include "view_meaning/phonecopy_filter.html" %}
+              {% include "view_meaning/phonetic_filter.html" %}
+              {% include "view_meaning/gloss_filter.html" %}
+              {% include "view_meaning/notes_filter.html" %}
             </tr>
           </thead>
           <tbody>
-            {% for lexeme in lexemes %}
-              <tr class="{% cycle 'odd' 'even' %}">
-                <td id="lexeme_{{ lexeme.id }}">{{ lexeme.language.id }}</td>
-                <td><a href="{% url 'language-report' lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
-                <td>{{ lexeme.source_form }}</td>
-                <td>{{ lexeme.phon_form }}</td>
-                <td>
-                  {{ lexeme.notes|wikilink|truncatewords_html:5 }}
-                  {% if lexeme.notes|is_truncated:5 %}
-                  <a href="{% url 'view-lexeme' lexeme.id %}" title="{{ lexeme.notes }}">
-                    <span class="glyphicon glyphicon-search"></span>
-                  </a>
-                  {% endif %}
-                </td>
-                <td>{{ lexeme.get_cognate_class_links }}</td>
-                <td>
-                  <a href="{% url 'view-lexeme' lexeme.id %}" title="View/edit the lexical entry">
-                    <span class="glyphicon glyphicon-search"></span>
-                  </a>
-                </td>
+            {% for lexeme in lex_ed_form.lexemes %}
+              <tr>
+                {% include "view_meaning/lexemeid_data.html" %}
+                {% include "view_meaning/branchcolor_data.html" %}
+                {% include "view_meaning/languagename_data.html" %}
+                {% include "view_meaning/sourceform_data.html" %}
+                {% include "view_meaning/lexemeeditcopy_data.html" %}
+                {% include "view_meaning/transliteration_data.html" %}
+                {% include "view_meaning/swadesh_data.html" %}
+                {% include "view_meaning/cognateclasses_data.html" %}
+                {% include "view_meaning/isloan_data.html" %}
+                {% include "view_meaning/isexcluded_data.html" %}
+                {% include "view_meaning/loanevent_data.html" %}
+                {% include "view_meaning/cogclassids_data.html" %}
+                {% include "view_meaning/rootform_data.html" %}
+                {% include "view_meaning/rootlanguage_data.html" %}
+                {% include "view_meaning/ncog_data.html" %}
+                {% include "view_meaning/phonemic_data.html" %}
+                {% include "view_meaning/phonecopy_data.html" %}
+                {% include "view_meaning/phonetic_data.html" %}
+                {% include "view_meaning/gloss_data.html" %}
+                {% include "view_meaning/notes_data.html" %}
               </tr>
             {% endfor %}
           </tbody>
         </table>
-      </div>
+      {% if user.is_authenticated %}
+        </form>
+      {% endif %}
     </div>
-  {% endif %}
+  </div>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

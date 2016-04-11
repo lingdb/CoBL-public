@@ -1,0 +1,12 @@
+{% load staticfiles %}
+{% load lexicon_utils %}
+{% load wtforms %}
+
+<td class="hide lexemeCogClassIds">
+  {% if user.is_authenticated %}
+    {% if lexeme.cog_class_ids.data %}
+      {% form_field lexeme.cog_class_ids %}
+    {% endif %}
+  {% endif %}
+</td>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

@@ -1,0 +1,12 @@
+{% load staticfiles %}
+{% load lexicon_utils %}
+{% load wtforms %}
+
+<td class="lexemeSwadeshTerm">
+  {% if user.is_authenticated %}
+    {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" %}
+  {% else %}
+    {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" disabled="disabled" %}
+  {% endif %}
+</td>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
