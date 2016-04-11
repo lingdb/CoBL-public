@@ -1135,6 +1135,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         id=current_language_list.id).all()
 
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
+    languageBranches = LanguageBranches.objects.filter(
+        level1_branch_ix=0).exclude(shortName='').all()
     return render_template(
         request, "view_meaning.html",
         {"meaning": meaning,
@@ -1147,7 +1149,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
          "add_cognate_judgement": lexeme_id,
          "lex_ed_form": lexemes_editabletable_form,
          "filt_form": filt_form,
-         "languageBranches": LanguageBranches.objects.all()})
+         "languageBranches": languageBranches})
 
 
 @csrf_protect
