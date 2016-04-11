@@ -50,7 +50,7 @@
           el.click(function(){
             var inserted = changeSet(ids);
             if(inserted){
-              el.css('opacity', '0.5');
+              el.css('opacity', '0.25');
             }else{
               el.css('opacity', '1');
             }
