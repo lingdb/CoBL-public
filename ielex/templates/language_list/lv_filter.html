@@ -1,0 +1,40 @@
+<th>
+  {% if user.is_authenticated and user.is_staff %}
+    <input type="text"
+           class="filterInput form-control"
+           data-selector=".languageLevel0 input"
+           style="width: 1.5em;">
+  {% else %}
+    <input type="text"
+           class="filterText form-control"
+           data-selector=".languageLevel0"
+           style="width: 1.5em;">
+  {% endif %}
+</th>
+<th>
+  {% if user.is_authenticated and user.is_staff %}
+    <input type="text"
+           class="filterInput form-control"
+           data-selector=".languageLevel1 input"
+           style="width: 1.5em;">
+  {% else %}
+    <input type="text"
+           class="filterText form-control"
+           data-selector=".languageLevel1"
+           style="width: 1.5em;">
+  {% endif %}
+</th>
+<th>
+  {% if user.is_authenticated and user.is_staff %}
+    <input type="text"
+           class="filterInput form-control"
+           data-selector=".languageLevel2 input"
+           style="width: 1.5em;">
+  {% else %}
+    <input type="text"
+           class="filterText form-control"
+           data-selector=".languageLevel2"
+           style="width: 1.5em;">
+  {% endif %}
+</th>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

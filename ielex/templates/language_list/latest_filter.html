@@ -1,0 +1,14 @@
+<th>
+  {% if user.is_authenticated and user.is_staff %}
+    <input type="text"
+           class="filterInput form-control"
+           data-selector=".languageLatestTimeDepthBound input"
+           style="width: 4em;">
+  {% else %}
+    <input type="text"
+           class="filterText form-control"
+           data-selector=".languageLatestTimeDepthBound"
+           style="width: 4em;">
+  {% endif %}
+</th>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

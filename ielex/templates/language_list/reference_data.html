@@ -1,0 +1,14 @@
+{% load lexicon_utils %}
+{% load staticfiles %}
+{% load wtforms %}
+
+<td class="languageRepresentative">
+  <div class="centralised_checkbox">
+    {% if user.is_authenticated and user.is_staff %}
+      {% form_field language.representative class="form-control" %}
+    {% else %}
+      {% form_field language.representative class="form-control" disabled="disabled" %}
+    {% endif %}
+  </div>
+</td>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

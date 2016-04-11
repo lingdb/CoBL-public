@@ -1,0 +1,16 @@
+{% load lexicon_utils %}
+{% load staticfiles %}
+{% load wtforms %}
+
+<td class="languageIsoCode" style="padding-left: 0.5em;">
+  {% if language.iso_code.data %}
+    <a href="http://en.wikipedia.org/wiki/ISO_639:{{ language.iso_code.data }}"
+       target="_blank">
+      {{ language.iso_code.data }}
+    </a>
+    {% form_field language.iso_code class="hide" %}
+  {% elif user.is_authenticated and user.is_staff %}
+    {% form_field language.iso_code maxlength="3" size="3" class="form-control" style="width: 3em;" %}
+  {% endif %}
+</td>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

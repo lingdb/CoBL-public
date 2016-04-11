@@ -1,0 +1,25 @@
+<th>
+  {% if user.is_authenticated and user.is_staff %}
+    <input type="text"
+           class="filterInput form-control"
+           data-selector=".languageRfcWebPath1 input">
+  {% else %}
+    <input type="text"
+           class="filterText form-control"
+           data-selector=".languageRfcWebPath1">
+  {% endif %}
+</th>
+<!--
+<th>
+  {% if user.is_authenticated and user.is_staff %}
+    <input type="text"
+           class="filterInput form-control"
+           data-selector=".languageRfcWebPath2 input">
+  {% else %}
+    <input type="text"
+           class="filterText form-control"
+           data-selector=".languageRfcWebPath2">
+  {% endif %}
+</th>
+-->
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

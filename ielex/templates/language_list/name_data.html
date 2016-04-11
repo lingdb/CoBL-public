@@ -1,0 +1,15 @@
+{% load lexicon_utils %}
+{% load staticfiles %}
+{% load wtforms %}
+
+<td class="languageName">
+  {% if user.is_authenticated and user.is_staff %}
+    {% form_field language.ascii_name class="language_name hide" %}
+  {% endif %}
+  <a href="{% url 'language-report' language.ascii_name.data %}"
+     alt="view lexeme list"
+     title="View wordlist list for {{ language.utf8_name.data }}">
+    {{ language.utf8_name.data }}
+  </a>
+</td>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

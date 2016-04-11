@@ -1,0 +1,21 @@
+{% load lexicon_utils %}
+{% load staticfiles %}
+{% load wtforms %}
+
+<td class="languageRfcWebPath1">
+  {% if user.is_authenticated and user.is_staff %}
+    {% form_field language.rfcWebPath1 size="4" class="form-control" %}
+  {% elif language.rfcWebPath1.data %}
+    {{ language.rfcWebPath1.data }}
+  {% endif %}
+</td>
+<!--
+<td class="languageRfcWebPath2">
+  {% if user.is_authenticated and user.is_staff %}
+    {% form_field language.rfcWebPath2 size="4" class="form-control" %}
+  {% elif language.rfcWebPath2.data %}
+    {{ language.rfcWebPath2.data }}
+  {% endif %}
+</td>
+-->
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
