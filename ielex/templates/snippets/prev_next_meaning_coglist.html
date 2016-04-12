@@ -1,0 +1,10 @@
+<center>
+  <a href="{% url 'edit-cogclasses' prev_meaning.gloss %}">
+    <strong>«{{ prev_meaning.gloss }}</strong>
+  </a>
+  <small>(prev) ― <h1 class="inline">{{ meaning.gloss }}</h1> ― (next)</small>
+  <a href="{% url 'edit-cogclasses' next_meaning.gloss %}">
+    <strong>{{ next_meaning.gloss }}»</strong>
+  </a>
+</center>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
