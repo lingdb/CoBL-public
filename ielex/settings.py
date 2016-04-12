@@ -5,13 +5,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 VERSION = "1.0"
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECURITY WARNING: don't run with debug turned on in production!
-
-# SECRET_KEY = '##' ## Secret key is set in local_settings.py
-# DEBUG = False ## Debug is set in local_settings.py
-# ALLOWED_HOSTS = []
-
 # Application definition
 
 INSTALLED_APPS = (
@@ -58,11 +51,10 @@ TEMPLATES = [
                 'ielex.context_processors.configuration',
                 'ielex.context_processors.navigation',
             ],
-            'loaders': [
-                'django.template.loaders.filesystem.Loader',
-                'django.template.loaders.app_directories.Loader',
-                # 'django.template.loaders.eggs.load_template_source',
-            ],
+            'loaders': [('django.template.loaders.cached.Loader',
+                         ['django.template.loaders.filesystem.Loader',
+                          'django.template.loaders.app_directories.Loader']
+                         )],
             'debug': False,  # reset in local_settings.py
         },
     },
@@ -144,6 +136,11 @@ if DEBUG:
         INTERNAL_IPS = ('127.0.0.1',)
         INSTALLED_APPS += ('debug_toolbar',)
         # DEBUG_TOOLBAR_CONFIG = {'INTERCEPT_REDIRECTS':False}
+        # Disable cached Loader:
+        loaders = TEMPLATES[0]['OPTIONS']['loaders']
+        if loaders[0][0] == 'django.template.loaders.cached.Loader':
+            TEMPLATES[0]['OPTIONS']['loaders'] = loaders[0][1]
+            print('Disabled cached Loader.')
     except ImportError:
         pass
     TEMPLATES[0]["OPTIONS"]["debug"] = True
