@@ -1,0 +1,9 @@
+{% load staticfiles %}
+{% load wtforms %}
+
+<td class="lexemeLoanEvent">
+  {% if lexeme.object_data.show_loan_event %}
+    {% form_field lexeme.loan_event disabled="disabled" class="form-control" %}
+  {% endif %}
+</td>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

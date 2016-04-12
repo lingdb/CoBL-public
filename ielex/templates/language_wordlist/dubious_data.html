@@ -1,0 +1,11 @@
+{% load staticfiles %}
+{% load wtforms %}
+
+<td class="lexemeDubious">
+  {% if user.is_authenticated %}
+    {% form_field lexeme.dubious class="form-control" %}
+  {% else %}
+    {% form_field lexeme.dubious class="form-control" disabled="disabled" %}
+  {% endif %}
+</td>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

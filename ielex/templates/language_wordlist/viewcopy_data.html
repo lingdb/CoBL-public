@@ -1,0 +1,27 @@
+{% load staticfiles %}
+{% load wtforms %}
+
+<td>
+  <a href="{% url 'view-lexeme' lexeme.id.data %}" title="View detailed information on lexeme">
+    <span class="glyphicon glyphicon-search"></span>
+  </a>
+</td>
+<td>
+  {% if user.is_authenticated %}
+    <button class="leftcheckarrow btn btn-xs" type="button"
+            id="translit2src#{{lexeme.transliteration.name}}#{{lexeme.source_form.name}}"
+            onclick="CopyAcross(this)">
+      <span class="glyphicon glyphicon-step-backward"></span>
+    </button>
+  {% endif %}
+</td>
+<td>
+  {% if user.is_authenticated %}
+    <button class="rightcheckarrow btn btn-xs" type="button"
+            id="src2translit#{{lexeme.source_form.name}}#{{lexeme.transliteration.name}}"
+            onclick="CopyAcross(this)">
+      <span class="glyphicon glyphicon-step-forward"></span>
+    </button>
+  {% endif %}
+</td>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

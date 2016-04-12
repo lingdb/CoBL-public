@@ -1,0 +1,15 @@
+{% load staticfiles %}
+{% load wtforms %}
+
+<td>
+  <a href="https://github.com/lingdb/IELex2-CognaC/wiki/{{ lexeme.data.meaning }}"
+     title="View wiki page." target="_blank">
+    <span class="glyphicon glyphicon-info-sign"></span>
+  </a>
+</td>
+<td class="lexemeMeaning">
+  <a href="{% url 'meaning-report' lexeme.meaning_id.data %}" style="font-size: 18px;">
+    {{ lexeme.data.meaning }}
+  </a>
+</td>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

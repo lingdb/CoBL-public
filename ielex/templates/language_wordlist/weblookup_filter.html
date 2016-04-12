@@ -1,0 +1,27 @@
+<th></th>
+<th>
+  {% if user.is_authenticated %}
+    <input type="text"
+           class="filterInput form-control"
+           data-selector=".lexemeRfcWebLookup1 input">
+  {% else %}
+    <input type="text"
+           class="filterText form-control"
+           data-selector=".lexemeRfcWebLookup1">
+  {% endif %}
+</th>
+<!--
+<th></th>
+<th>
+  {% if user.is_authenticated %}
+    <input type="text"
+           class="filterInput form-control"
+           data-selector=".lexemeRfcWebLookup2 input">
+  {% else %}
+    <input type="text"
+           class="filterText form-control"
+           data-selector=".lexemeRfcWebLookup2">
+  {% endif %}
+</th>
+-->
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

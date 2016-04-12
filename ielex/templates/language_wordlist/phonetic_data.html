@@ -1,0 +1,11 @@
+{% load staticfiles %}
+{% load wtforms %}
+
+<td class="lexemePhonForm">
+  {% if user.is_authenticated %}
+    {% form_field lexeme.phon_form id="phoneTic" size="8" class="form-control" %}
+  {% elif lexeme.phon_form.data %}
+    {{ lexeme.phon_form.data }}
+  {% endif %}
+</td>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
