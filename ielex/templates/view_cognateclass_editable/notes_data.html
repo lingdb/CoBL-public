@@ -1,0 +1,12 @@
+{% load staticfiles %}
+{% load lexicon_utils %}
+{% load wtforms %}
+
+<td class="cogNotes">
+  {% if user.is_authenticated %}
+    {% form_field cc.notes class="form-control" %}
+  {% elif cc.notes.data %}
+    {{ cc.notes.data }}
+  {% endif %}
+</td>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

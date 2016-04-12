@@ -1,0 +1,11 @@
+{% load staticfiles %}
+{% load lexicon_utils %}
+{% load wtforms %}
+
+<td class="cogClassAlias" style="padding-left: 1em;">
+  {% form_field cc.alias class="hide" %}
+  <a href="{{cc.object_data.absolute_url}}">
+    {{ cc.data.alias }}
+  </a>
+</td>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

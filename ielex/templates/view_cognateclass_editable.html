@@ -16,179 +16,62 @@
 {% endblock %}
 
 {% block content %}
-  {% if user.is_authenticated %}
-    <div class="row">
-      <div class="col-md-10">
-        <form action="" method="POST" name="cogclass_ed_form" id="cogclass_ed_form">
-          {% csrf_token %}
-          <div class="form-group pull-right">
-            <a href="{% url 'edit-cogclasses' meaning %}" class="btn btn-default">undo</a>
-            <input type="submit" value="Save" name="cogclass_form" class="btn btn-danger">
-          </div>
-          {% include "snippets/prev_next_meaning.html" %}
-          <table class="table table-striped table-condensed viewTableFilter">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th style="width: 80px;">Cog.<br>Alias</th>
-                <th>Root</th>
-                <th>Root<br>Language</th>
-                <th>Root<br>Gloss</th>
-                <th>Root<br>Notes</th>
-                <th>Loan<br>Event</th>
-                <th>Loan<br>Source Lg.</th>
-                <th>Loan<br>Notes</th>
-              </tr>
-              <tr>
-                <th>
-                  <div class="btn btn-xs btn-default sortIntText"
-                       data-selector=".cogClassId">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th>
-                  <input type="text" class="filterText form-control narrow"
-                         data-selector=".cogClassAlias"
-                         style="width: 2em;">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".cogClassAlias">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".cogRootForm input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".cogRootForm input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".cogRootLang input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".cogRootLang input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".cogGlossInRootLang input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".cogGlossInRootLang input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".cogNotes input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".cogNotes input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th>
-                  <button type="button" class="filterBool btn btn-xs btn-default"
-                          data-selector=".cogLoanword input">
-                    <span class="glyphicon glyphicon-question-sign"></span>
-                  </button>
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".cogLoanSource input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".cogLoanSource input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-                <th>
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".cogLoanNotes input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".cogLoanNotes input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for cc in cogclass_editable_form.cogclass %}
-                <tr>
-                  <td class="cogClassId">
-                    {{ cc.data.cogclass_id }}
-                    {% form_field cc.cogclass_id class="hide" %}
-                  </td>
-                  <td class="cogClassAlias" style="padding-left: 1em;">
-                    {% form_field cc.alias class="hide" %}
-                    <a href="{{cc.object_data.absolute_url}}">
-                      {{ cc.data.alias }}
-                    </a>
-                  </td>
-                  <td class="cogRootForm">
-                    {% form_field cc.root_form class="form-control" %}
-                  </td>
-                  <td class="cogRootLang">
-                    {% form_field cc.root_language class="form-control" %}
-                  </td>
-                  <td class="cogGlossInRootLang">
-                    {% form_field cc.gloss_in_root_lang class="form-control" %}
-                  </td>
-                  <td class="cogNotes">
-                    {% form_field cc.notes class="form-control" %}
-                  </td>
-                  <td class="cogLoanword">
-                    {% form_field cc.loanword class="form-control" %}
-                  </td>
-                  <td class="cogLoanSource">
-                    {% form_field cc.loan_source class="form-control" %}
-                  </td>
-                  <td class="cogLoanNotes">
-                    {% form_field cc.loan_notes class="form-control" %}
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </form>
-      </div>
-    </div>
-  {% else %}
-    <div class="row">
-      <div class="col-md-8">
-        <table class="table table-striped">
+  <div class="row">
+    <div class="col-md-10">
+      {% if user.is_authenticated %}
+      <form action="" method="POST" name="cogclass_ed_form" id="cogclass_ed_form">
+        {% csrf_token %}
+        <div class="form-group pull-right">
+          <a href="{% url 'edit-cogclasses' meaning %}" class="btn btn-default">undo</a>
+          <input type="submit" value="Save" name="cogclass_form" class="btn btn-danger">
+        </div>
+      {% endif %}
+        {% include "snippets/prev_next_meaning.html" %}
+        <table class="table table-striped table-condensed viewTableFilter">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Cog.<br>Alias</th>
-              <th>Root</th>
-              <th>Root<br>Language</th>
-              <th>Root<br>Gloss</th>
-              <th>Root<br>Notes</th>
-              <th>Loan<br>Event</th>
-              <th>Loan<br>Source Lg.</th>
-              <th>Loan<br>Notes</th>
+              {% include "view_cognateclass_editable/id_title.html" %}
+              {% include "view_cognateclass_editable/alias_title.html" %}
+              {% include "view_cognateclass_editable/rootform_title.html" %}
+              {% include "view_cognateclass_editable/rootlang_title.html" %}
+              {% include "view_cognateclass_editable/glossinrootlang_title.html" %}
+              {% include "view_cognateclass_editable/notes_title.html" %}
+              {% include "view_cognateclass_editable/loanword_title.html" %}
+              {% include "view_cognateclass_editable/loansource_title.html" %}
+              {% include "view_cognateclass_editable/loannotes_title.html" %}
+            </tr>
+            <tr>
+              {% include "view_cognateclass_editable/id_filter.html" %}
+              {% include "view_cognateclass_editable/alias_filter.html" %}
+              {% include "view_cognateclass_editable/rootform_filter.html" %}
+              {% include "view_cognateclass_editable/rootlang_filter.html" %}
+              {% include "view_cognateclass_editable/glossinrootlang_filter.html" %}
+              {% include "view_cognateclass_editable/notes_filter.html" %}
+              {% include "view_cognateclass_editable/loanword_filter.html" %}
+              {% include "view_cognateclass_editable/loansource_filter.html" %}
+              {% include "view_cognateclass_editable/loannotes_filter.html" %}
             </tr>
           </thead>
           <tbody>
             {% for cc in cogclass_editable_form.cogclass %}
               <tr>
-                <td>{{ cc.data.cogclass_id }}</td>
-                <td>
-                  <a href="{{cc.object_data.absolute_url}}">{{ cc.data.alias }}</a>
-                </td>
-                <td>{{ cc.data.root_form }}</td>
-                <td>{{ cc.data.root_language }}</td>
-                <td>{{ cc.data.gloss_in_root_lang }}</td>
-                <td>{{ cc.data.notes }}</td>
-                <td>{{ cc.data.loanword }}</td>
-                <td>{{ cc.data.loan_source }}</td>
-                <td>{{ cc.data.loan_notes }}</td>
+                {% include "view_cognateclass_editable/id_data.html" %}
+                {% include "view_cognateclass_editable/alias_data.html" %}
+                {% include "view_cognateclass_editable/rootform_data.html" %}
+                {% include "view_cognateclass_editable/rootlang_data.html" %}
+                {% include "view_cognateclass_editable/glossinrootlang_data.html" %}
+                {% include "view_cognateclass_editable/notes_data.html" %}
+                {% include "view_cognateclass_editable/loanword_data.html" %}
+                {% include "view_cognateclass_editable/loansource_data.html" %}
+                {% include "view_cognateclass_editable/loannotes_data.html" %}
               </tr>
             {% endfor %}
           </tbody>
         </table>
-      </div>
+      {% if user.is_authenticated %}
+        </form>
+      {% endif %}
     </div>
-  {% endif %}
+  </div>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

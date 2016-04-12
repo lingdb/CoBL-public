@@ -1,0 +1,12 @@
+{% load staticfiles %}
+{% load lexicon_utils %}
+{% load wtforms %}
+
+<td class="cogLoanword">
+  {% if user.is_authenticated %}
+    {% form_field cc.loanword class="form-control" %}
+  {% else %}
+    {% form_field cc.loanword class="form-control" disabled="disabled" %}
+  {% endif %}
+</td>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
