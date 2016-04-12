@@ -30,8 +30,6 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    # 'django.middleware.transaction.TransactionMiddleware',
-    #    "TransactionMiddleware is deprecated in favor of ATOMIC_REQUESTS.",
     'django.middleware.common.CommonMiddleware',  # provides APPEND_SLASH
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -39,11 +37,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'ielex.middleware.NoBlankLinesMiddleware',  # does this cost much speed?
     'reversion.middleware.RevisionMiddleware',
-
-    # TODO: check whether these could be included.
-    # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'django.middleware.security.SecurityMiddleware',
 )
 
 ROOT_URLCONF = 'ielex.urls'
@@ -74,10 +67,6 @@ TEMPLATES = [
         },
     },
 ]
-
-
-# TODO: need this??
-# WSGI_APPLICATION = '...'
 
 # Database
 DATABASES = {
@@ -133,24 +122,6 @@ STATICFILES_FINDERS = (
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
-# STATICFILES_DIRS = (
-#    os.path.join(os.path.dirname(BASE_DIR), 'static'),
-# )
-
-# TODO: need following?
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-# MEDIA_URL = '/media/'
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-
 
 local_settings_path = os.path.join(BASE_DIR, "ielex/local_settings.py")
 if not os.path.exists(local_settings_path):
