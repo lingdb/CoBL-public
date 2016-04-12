@@ -87,82 +87,629 @@
         <table class="table table-striped viewTableFilter">
           <thead>
             <tr>
-              {% include "language_list/entryno_title.html" %}
-              {% include "language_list/name_title.html" %}
-              {% include "language_list/beast_title.html" %}
-              {% include "language_list/variety_title.html" %}
+              {# entryno_title.html #}
+              <th></th>
+              {# name_title.html #}
+              <th>Name</th>
+              {# beast_title.html #}
+              <th>Beast name</th>
+              {# variety_title.html #}
+              <th>Variety</th>
               <th></th>{# title for edit #}
-              {% include "language_list/iso_title.html" %}
-              {% include "language_list/glotto_title.html" %}
-              {% include "language_list/meantd_title.html" %}
-              {% include "language_list/stddev_title.html" %}
-              {% include "language_list/earliest_title.html" %}
-              {% include "language_list/latest_title.html" %}
-              {% include "language_list/reference_title.html" %}
-              {% include "language_list/fossstat_title.html" %}
-              {% include "language_list/lowstat_title.html" %}
-              {% include "language_list/webpath_title.html" %}
-              {% include "language_list/author_title.html" %}
-              {% include "language_list/reviewer_title.html" %}
-              {% include "language_list/toomany_title.html" %}
-              {% include "language_list/mgs_title.html" %}
-              {% include "language_list/lex_title.html" %}
-              {% include "language_list/entd_title.html" %}
-              {% include "language_list/lv_title.html" %}
-              {% include "language_list/sndcomp_title.html" %}
+              {# iso_title.html #}
+              <th>ISO</th>
+              {# glotto_title.html #}
+              <th style="width: 100px;">Glotto</th>
+              {# meantd_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Mean time depth (yrs)">
+                Mean TD (yrs)
+              </th>
+              {# stddev_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Std Dev. time depth (yrs)">
+                Std Dev. (yrs)
+              </th>
+              {# earliest_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Earliest Time-Depth Bound">
+                Earliest
+              </th>
+              {# latest_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Latest Time-Depth Bound">
+                Latest
+              </th>
+              {# reference_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Reference">
+                Ref.
+              </th>
+              {# fossstat_title.html #}
+              <th>Foss.<br>Stat.</th>
+              {# lowstat_title.html #}
+              <th>Low.<br>Stat.</th>
+              {# webpath_title.html #}
+              <th>Web path 1</th>
+              <!--
+              <th>Web path 2</th>
+              -->
+              {# author_title.html #}
+              <th>Author</th>
+              {# reviewer_title.html #}
+              <th>Reviewer</th>
+              {# toomany_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="(#lexemes - #meanings)">
+                Too<br>many{# Lex.-Mgs #}
+              </th>
+              {# mgs_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of meanings">
+                Mgs{# Number of meanings per language #}
+              </th>
+              {# lex_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of lexemes">
+                Lex.{# Number of lexemes per language #}
+              </th>
+              {# entd_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of entries">
+                Entd{# Number of entries per language #}
+              </th>
+              {# lv_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Level 0 branch">
+                Lv 0
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Level 1 branch">
+                Lv 1
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Level 2 branch">
+                Lv 2
+              </th>
+              {# sndcomp_title.html #}
+              <th>SndComp<br>code</th>
             </tr>
             <tr>
-              {% include "language_list/entryno_filter.html" %}
-              {% include "language_list/name_filter.html" %}
-              {% include "language_list/beast_filter.html" %}
-              {% include "language_list/variety_filter.html" %}
+              {# entryno_filter.html #}
+              <th>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".entryNo">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              {# name_filter.html #}
+              <th>
+                <input type="text" class="filterText form-control"
+                       data-selector=".languageName">
+                <div class="btn btn-xs btn-default sortText"
+                     data-selector=".languageName">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              {# beast_filter.html #}
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".beastName input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".beastName input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".beastName">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".beastName">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              {# variety_filter.html #}
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".languageVariety input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".languageVariety input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".languageVariety">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".languageVariety">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
               <th></th>{# filter for edit #}
-              {% include "language_list/iso_filter.html" %}
-              {% include "language_list/glotto_filter.html" %}
-              {% include "language_list/meantd_filter.html" %}
-              {% include "language_list/stddev_filter.html" %}
-              {% include "language_list/earliest_filter.html" %}
-              {% include "language_list/latest_filter.html" %}
-              {% include "language_list/reference_filter.html" %}
-              {% include "language_list/fossstat_filter.html" %}
-              {% include "language_list/lowstat_filter.html" %}
-              {% include "language_list/webpath_filter.html" %}
-              {% include "language_list/author_filter.html" %}
-              {% include "language_list/reviewer_filter.html" %}
-              {% include "language_list/toomany_filter.html" %}
-              {% include "language_list/mgs_filter.html" %}
-              {% include "language_list/lex_filter.html" %}
-              {% include "language_list/entd_filter.html" %}
-              {% include "language_list/lv_filter.html" %}
-              {% include "language_list/sndcomp_filter.html" %}
+              {# iso_filter.html #}
+              <th>
+                <input type="text"
+                       class="filterText form-control"
+                       data-selector=".languageIsoCode"
+                       style="width: 3em;">
+              </th>
+              {# glotto_filter.html #}
+              <th>
+                <input type="text"
+                       class="filterText form-control narrow"
+                       data-selector=".languageGlottocode">
+                <div class="btn btn-xs btn-default sortText"
+                     data-selector=".languageGlottocode">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              {# meantd_filter.html #}
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageMeanTimeDepth input"
+                         style="width: 4em;">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageMeanTimeDepth"
+                         style="width: 4em;">
+                {% endif %}
+              </th>
+              {# stddev_filter.html #}
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageStdDeviationTimeDepth input"
+                         style="width: 4em;">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageStdDeviationTimeDepth"
+                         style="width: 4em;">
+                {% endif %}
+              </th>
+              {# earliest_filter.html #}
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageEarliestTimeDepthBound input"
+                         style="width: 4em;">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageEarliestTimeDepthBound"
+                         style="width: 4em;">
+                {% endif %}
+              </th>
+              {# latest_filter.html #}
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageLatestTimeDepthBound input"
+                         style="width: 4em;">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageLatestTimeDepthBound"
+                         style="width: 4em;">
+                {% endif %}
+              </th>
+              {# reference_filter.html #}
+              <th>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".languageRepresentative input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </th>
+              {# fossstat_filter.html #}
+              <th>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".languageFossStat input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </th>
+              {# lowstat_filter.html #}
+              <th>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".languageLowStat input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </th>
+              {# webpath_filter.html #}
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageRfcWebPath1 input">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageRfcWebPath1">
+                {% endif %}
+              </th>
+              <!--
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageRfcWebPath2 input">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageRfcWebPath2">
+                {% endif %}
+              </th>
+              -->
+              {# author_filter.html #}
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageAuthor input">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageAuthor">
+                {% endif %}
+              </th>
+              {# reviewer_filter.html #}
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageReviewer input">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageReviewer">
+                {% endif %}
+              </th>
+              {# toomany_filter.html #}
+              <th>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageExcessCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              {# mgs_filter.html #}
+              <th>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageMgsCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              {# lex_filter.html #}
+              <th>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageLexCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              {# entd_filter.html #}
+              <th>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageEntdCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              {# lv_filter.html #}
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageLevel0 input"
+                         style="width: 1.5em;">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageLevel0"
+                         style="width: 1.5em;">
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageLevel1 input"
+                         style="width: 1.5em;">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageLevel1"
+                         style="width: 1.5em;">
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageLevel2 input"
+                         style="width: 1.5em;">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageLevel2"
+                         style="width: 1.5em;">
+                {% endif %}
+              </th>
+              {# sndcomp_filter.html #}
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control narrow"
+                         data-selector=".languageSndCompCode input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".languageSndCompCode input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control narrow"
+                         data-selector=".languageSndCompCode">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".languageSndCompCode">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
             </tr>
           </thead>
           <tbody>
             {% for language in lang_ed_form.langlist %}
               <tr>
-                {% include "language_list/entryno_data.html" %}
-                {% include "language_list/name_data.html" %}
-                {% include "language_list/beast_data.html" %}
-                {% include "language_list/variety_data.html" %}
-                {% include "language_list/edit_data.html" %}
-                {% include "language_list/iso_data.html" %}
-                {% include "language_list/glotto_data.html" %}
-                {% include "language_list/meantd_data.html" %}
-                {% include "language_list/stddev_data.html" %}
-                {% include "language_list/earliest_data.html" %}
-                {% include "language_list/latest_data.html" %}
-                {% include "language_list/reference_data.html" %}
-                {% include "language_list/fossstat_data.html" %}
-                {% include "language_list/lowstat_data.html" %}
-                {% include "language_list/webpath_data.html" %}
-                {% include "language_list/author_data.html" %}
-                {% include "language_list/reviewer_data.html" %}
-                {% include "language_list/toomany_data.html" %}
-                {% include "language_list/mgs_data.html" %}
-                {% include "language_list/lex_data.html" %}
-                {% include "language_list/entd_data.html" %}
-                {% include "language_list/lv_data.html" %}
-                {% include "language_list/sndcomp_data.html" %}
+                {# entryno_data.html #}
+                <td class="entryNo">
+                  {{ forloop.counter }}
+                </td>
+                {# name_data.html #}
+                <td class="languageName">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.ascii_name class="language_name hide" %}
+                  {% endif %}
+                  <a href="{% url 'language-report' language.ascii_name.data %}"
+                     alt="view lexeme list"
+                     title="View wordlist list for {{ language.utf8_name.data }}">
+                    {{ language.utf8_name.data }}
+                  </a>
+                </td>
+                {# beast_data.html #}
+                <td class="beastName">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.beastName class="form-control" %}
+                  {% else %}
+                    {{ language.beastName.data }}
+                  {% endif %}
+                </td>
+                {# variety_data.html #}
+                <td class="languageVariety">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.variety size="8" class="form-control" %}
+                  {% elif language.variety.data %}
+                    {{ language.variety.data }}
+                  {% endif %}
+                </td>
+                {# edit_data.html #}
+                <td>
+                  {% if user.is_authenticated and user.is_staff %}
+                    <a href="{% url 'language-edit' language.ascii_name.data %}"
+                       title="Edit {{ language.utf8_name.data }} metadata"
+                       data-toggle="tooltip"
+                       data-placement="top">
+                      <span class="glyphicon glyphicon-edit"></span>
+                    </a>
+                  {% endif %}
+                </td>
+                {# iso_data.html #}
+                <td class="languageIsoCode" style="padding-left: 0.5em;">
+                  {% if language.iso_code.data %}
+                    <a href="http://en.wikipedia.org/wiki/ISO_639:{{ language.iso_code.data }}"
+                       target="_blank">
+                      {{ language.iso_code.data }}
+                    </a>
+                    {% form_field language.iso_code class="hide" %}
+                  {% elif user.is_authenticated and user.is_staff %}
+                    {% form_field language.iso_code maxlength="3" size="3" class="form-control" style="width: 3em;" %}
+                  {% endif %}
+                </td>
+                {# glotto_data.html #}
+                <td class="languageGlottocode">
+                  {% if language.data.glottocode %}
+                    <a href="http://glottolog.org/resource/languoid/id/{{ language.data.glottocode }}"
+                       target="_blank">
+                      {{ language.data.glottocode }}
+                    </a>
+                    {% form_field language.glottocode class="hide" %}
+                  {% elif user.is_authenticated and user.is_staff %}
+                    {% form_field language.glottocode maxlength="8" size="8" class="form-control" %}
+                  {% endif %}
+                </td>
+                {# meantd_data.html #}
+                <td class="languageMeanTimeDepth">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.mean_timedepth_BP_years maxlength="4" size="4" class="form-control" style="width: 4em;" pattern="[0-9]{0,4}" %}
+                  {% elif language.mean_timedepth_BP_years.data %}
+                    {{ language.mean_timedepth_BP_years.data }}
+                  {% endif %}
+                </td>
+                {# stddev_data.html #}
+                <td class="languageStdDeviationTimeDepth">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.std_deviation_timedepth_BP_years maxlength="4" size="4" class="form-control" style="width: 4em;" pattern="[0-9]{0,4}" %}
+                  {% elif language.std_deviation_timedepth_BP_years.data %}
+                    {{ language.std_deviation_timedepth_BP_years.data }}
+                  {% endif %}
+                </td>
+                {# earliest_data.html #}
+                <td class="languageEarliestTimeDepthBound">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.earliestTimeDepthBound maxlength="4" size="4" class="form-control" style="width: 4em;" pattern="[0-9]{0,4}" %}
+                  {% else %}
+                    {% if language.earliestTimeDepthBound.data %}
+                      {{ language.earliestTimeDepthBound.data }}
+                    {% endif %}
+                  {% endif %}
+                </td>
+                {# latest_data.html #}
+                <td class="languageLatestTimeDepthBound">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.latestTimeDepthBound maxlength="4" size="4" class="form-control" style="width: 4em;" pattern="[0-9]{0,4}" %}
+                  {% elif language.latestTimeDepthBound.data %}
+                    {{ language.latestTimeDepthBound.data }}
+                  {% endif %}
+                </td>
+                {# reference_data.html #}
+                <td class="languageRepresentative">
+                  <div class="centralised_checkbox">
+                    {% if user.is_authenticated and user.is_staff %}
+                      {% form_field language.representative class="form-control" %}
+                    {% else %}
+                      {% form_field language.representative class="form-control" disabled="disabled" %}
+                    {% endif %}
+                  </div>
+                </td>
+                {# fossstat_data.html #}
+                <td class="languageFossStat">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.foss_stat onclick="MutexCheckbox(this)" class="MutexCheckbox form-control" %}
+                  {% else %}
+                    {% form_field language.foss_stat disabled="disabled" class="form-control" %}
+                  {% endif %}
+                </td>
+                {# lowstat_data.html #}
+                <td class="languageLowStat">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.low_stat onclick="MutexCheckbox(this)" class="MutexCheckbox form-control" %}
+                  {% else %}
+                    {% form_field language.low_stat class="form-control" disabled="disabled" %}
+                  {% endif %}
+                </td>
+                {# webpath_data.html #}
+                <td class="languageRfcWebPath1">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.rfcWebPath1 size="4" class="form-control" %}
+                  {% elif language.rfcWebPath1.data %}
+                    {{ language.rfcWebPath1.data }}
+                  {% endif %}
+                </td>
+                <!--
+                <td class="languageRfcWebPath2">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.rfcWebPath2 size="4" class="form-control" %}
+                  {% elif language.rfcWebPath2.data %}
+                    {{ language.rfcWebPath2.data }}
+                  {% endif %}
+                </td>
+                -->
+                {# author_data.html #}
+                <td class="languageAuthor">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.author size="8" class="form-control" %}
+                  {% else %}
+                    {{ language.author.data }}
+                  {% endif %}
+                </td>
+                {# reviewer_data.html #}
+                <td class="languageReviewer">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.reviewer size="8" class="form-control" %}
+                  {% elif language.reviewer.data %}
+                    {{ language.reviewer.data }}
+                  {% endif %}
+                </td>
+                {# toomany_data.html #}
+                <td class="languageExcessCount">
+                  <center>
+                    <span class="badge">{{ language.data.excess_count }}</span>
+                  </center>
+                </td>
+                {# mgs_data.html #}
+                <td class="languageMgsCount">
+                  <center>
+                    <span class="badge">{{ language.data.mgs_count }}</span>
+                  </center>
+                </td>
+                {# lex_data.html #}
+                <td class="languageLexCount">
+                  <center>
+                    <span class="badge">{{ language.data.lex_count }}</span>
+                  </center>
+                </td>
+                {# entd_data.html #}
+                <td class="languageEntdCount">
+                  <center>
+                    <span class="badge">{{ language.data.entd_count }}</span>
+                  </center>
+                </td>
+                {# lv_data.html #}
+                <td class="languageLevel0">
+                  <center>
+                    {% if user.is_authenticated and user.is_staff %}
+                      {% form_field language.level0 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" %}
+                    {% elif language.level0.data %}
+                      {{ language.level0.data }}
+                    {% endif %}
+                  </center>
+                </td>
+                <td class="languageLevel1">
+                  <center>
+                    {% if user.is_authenticated and user.is_staff %}
+                      {% form_field language.level1 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" %}
+                    {% elif language.level1.data %}
+                      {{ language.level1.data }}
+                    {% endif %}
+                  </center>
+                </td>
+                <td class="languageLevel2">
+                  <center>
+                    {% if user.is_authenticated and user.is_staff %}
+                      {% form_field language.level2 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" %}
+                    {% elif language.level2.data %}
+                      {{ language.level2.data }}
+                    {% endif %}
+                  </center>
+                </td>
+                {# sndcomp_data.html #}
+                <td class="languageSndCompCode">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.soundcompcode size="8" class="form-control" %}
+                  {% elif language.soundcompcode.data %}
+                    {{ language.soundcompcode.data }}
+                  {% endif %}
+                </td>
               </tr>
             {% endfor %}
           </tbody>

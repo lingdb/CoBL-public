@@ -30,40 +30,246 @@
         <table class="table table-striped table-condensed viewTableFilter">
           <thead>
             <tr>
-              {% include "view_cognateclass_editable/id_title.html" %}
-              {% include "view_cognateclass_editable/alias_title.html" %}
-              {% include "view_cognateclass_editable/rootform_title.html" %}
-              {% include "view_cognateclass_editable/rootlang_title.html" %}
-              {% include "view_cognateclass_editable/glossinrootlang_title.html" %}
-              {% include "view_cognateclass_editable/notes_title.html" %}
-              {% include "view_cognateclass_editable/loanword_title.html" %}
-              {% include "view_cognateclass_editable/loansource_title.html" %}
-              {% include "view_cognateclass_editable/loannotes_title.html" %}
+              {# id_title.html #}
+              <th>ID</th>
+              {# alias_title.html #}
+              <th style="width: 80px;">Cog.<br>Alias</th>
+              {# rootform_title.html #}
+              <th>Root</th>
+              {# rootlang_title.html #}
+              <th>Root<br>Language</th>
+              {# glossinrootlang_title.html #}
+              <th>Root<br>Gloss</th>
+              {# notes_title.html #}
+              <th>Root<br>Notes</th>
+              {# loanword_title.html #}
+              <th>Loan<br>Event</th>
+              {# loansource_title.html #}
+              <th>Loan<br>Source Lg.</th>
+              {# loannotes_title.html #}
+              <th>Loan<br>Notes</th>
             </tr>
             <tr>
-              {% include "view_cognateclass_editable/id_filter.html" %}
-              {% include "view_cognateclass_editable/alias_filter.html" %}
-              {% include "view_cognateclass_editable/rootform_filter.html" %}
-              {% include "view_cognateclass_editable/rootlang_filter.html" %}
-              {% include "view_cognateclass_editable/glossinrootlang_filter.html" %}
-              {% include "view_cognateclass_editable/notes_filter.html" %}
-              {% include "view_cognateclass_editable/loanword_filter.html" %}
-              {% include "view_cognateclass_editable/loansource_filter.html" %}
-              {% include "view_cognateclass_editable/loannotes_filter.html" %}
+              {# id_filter.html #}
+              <th>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".cogClassId">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              {# alias_filter.html #}
+              <th>
+                <input type="text"s
+                       class="filterText form-control narrow"
+                       data-selector=".cogClassAlias"
+                       style="width: 2em;">
+                <div class="btn btn-xs btn-default sortText"
+                     data-selector=".cogClassAlias">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              {# rootform_filter.html #}
+              <th>
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".cogRootForm input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".cogRootForm input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".cogRootForm">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".cogRootForm">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              {# rootlang_filter.html #}
+              <th>
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".cogRootLang input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".cogRootLang input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".cogRootLang">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".cogRootLang">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              {# glossinrootlang_filter.html #}
+              <th>
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".cogGlossInRootLang input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".cogGlossInRootLang input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".cogGlossInRootLang">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".cogGlossInRootLang">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              {# notes_filter.html #}
+              <th>
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".cogNotes input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".cogNotes input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".cogNotes">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".cogNotes">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              {# loanword_filter.html #}
+              <th>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".cogLoanword input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </th>
+              {# loansource_filter.html #}
+              <th>
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".cogLoanSource input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".cogLoanSource input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".cogLoanSource">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".cogLoanSource">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              {# loannotes_filter.html #}
+              <th>
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".cogLoanNotes input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".cogLoanNotes input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".cogLoanNotes">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".cogLoanNotes">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
             </tr>
           </thead>
           <tbody>
             {% for cc in cogclass_editable_form.cogclass %}
               <tr>
-                {% include "view_cognateclass_editable/id_data.html" %}
-                {% include "view_cognateclass_editable/alias_data.html" %}
-                {% include "view_cognateclass_editable/rootform_data.html" %}
-                {% include "view_cognateclass_editable/rootlang_data.html" %}
-                {% include "view_cognateclass_editable/glossinrootlang_data.html" %}
-                {% include "view_cognateclass_editable/notes_data.html" %}
-                {% include "view_cognateclass_editable/loanword_data.html" %}
-                {% include "view_cognateclass_editable/loansource_data.html" %}
-                {% include "view_cognateclass_editable/loannotes_data.html" %}
+                {# id_data.html #}
+                <td class="cogClassId">
+                  {{ cc.data.cogclass_id }}
+                  {% if user.is_authenticated %}
+                    {% form_field cc.cogclass_id class="hide" %}
+                  {% endif %}
+                </td>
+                {# alias_data.html #}
+                <td class="cogClassAlias" style="padding-left: 1em;">
+                  {% form_field cc.alias class="hide" %}
+                  <a href="{{cc.object_data.absolute_url}}">
+                    {{ cc.data.alias }}
+                  </a>
+                </td>
+                {# rootform_data.html #}
+                <td class="cogRootForm">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.root_form class="form-control" %}
+                  {% elif cc.root_form.data %}
+                    {{ cc.root_form.data }}
+                  {% endif %}
+                </td>
+                {# rootlang_data.html #}
+                <td class="cogRootLang">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.root_language class="form-control" %}
+                  {% elif cc.root_language.data %}
+                    {{ cc.root_language.data }}
+                  {% endif %}
+                </td>
+                {# glossinrootlang_data.html #}
+                <td class="cogGlossInRootLang">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.gloss_in_root_lang class="form-control" %}
+                  {% elif cc.gloss_in_root_lang.data %}
+                    {{ cc.gloss_in_root_lang.data }}
+                  {% endif %}
+                </td>
+                {# notes_data.html #}
+                <td class="cogNotes">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.notes class="form-control" %}
+                  {% elif cc.notes.data %}
+                    {{ cc.notes.data }}
+                  {% endif %}
+                </td>
+                {# loanword_data.html #}
+                <td class="cogLoanword">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.loanword class="form-control" %}
+                  {% else %}
+                    {% form_field cc.loanword class="form-control" disabled="disabled" %}
+                  {% endif %}
+                </td>
+                {# loansource_data.html #}
+                <td class="cogLoanSource">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.loan_source class="form-control" %}
+                  {% elif cc.loan_source.data %}
+                    {{ cc.loan_source.data }}
+                  {% endif %}
+                </td>
+                {# loannotes_data.html #}
+                <td class="cogLoanNotes">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.loan_notes class="form-control" %}
+                  {% elif cc.loan_notes.data %}
+                    {{ cc.loan_notes.data }}
+                  {% endif %}
+                </td>
               </tr>
             {% endfor %}
           </tbody>

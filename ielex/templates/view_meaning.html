@@ -77,72 +77,476 @@
                id="viewMeaningLanguages">
           <thead>
             <tr>
-              {% include "view_meaning/lexemeid_title.html" %}
-              {% include "view_meaning/branchcolor_title.html" %}
-              {% include "view_meaning/languagename_title.html" %}
-              {% include "view_meaning/sourceform_title.html" %}
-              {% include "view_meaning/lexemeeditcopy_title.html" %}
-              {% include "view_meaning/transliteration_title.html" %}
-              {% include "view_meaning/swadesh_title.html" %}
-              {% include "view_meaning/cognateclasses_title.html" %}
-              {% include "view_meaning/isloan_title.html" %}
-              {% include "view_meaning/isexcluded_title.html" %}
-              {% include "view_meaning/loanevent_title.html" %}
-              {% include "view_meaning/rootform_title.html" %}
-              {% include "view_meaning/rootlanguage_title.html" %}
-              {% include "view_meaning/ncog_title.html" %}
-              {% include "view_meaning/phonemic_title.html" %}
-              {% include "view_meaning/phonecopy_title.html" %}
-              {% include "view_meaning/phonetic_title.html" %}
-              {% include "view_meaning/gloss_title.html" %}
-              {% include "view_meaning/notes_title.html" %}
+              {# lexemeid_title.html #}
+              <th class="hide"></th>
+              {# branchcolor_title.html #}
+              <th class="languageBranchColor" colspan="2"></th>
+              {# languagename_title.html #}
+              <th>Language</th>
+              <th></th>
+              {# sourceform_title.html #}
+              <th>Orthog.</th>
+              {# lexemeeditcopy_title.html #}
+              <th colspan="3"></th>
+              {# transliteration_title.html #}
+              <th>Translit.</th>
+              {# swadesh_title.html #}
+              <th>Not<br>Swh<br></th>
+              {# cognateclasses_title.html #}
+              <th>Cog.<br>Alias</th>
+              {# isloan_title.html #}
+              <th>loan</th>
+              {# isexcluded_title.html #}
+              <th>excl</th>
+              {# loanevent_title.html #}
+              <th>Loan<br>Event</th>
+              {# rootform_title.html #}
+              <th>Root Form</th>
+              {# rootlanguage_title.html #}
+              <th>Root Language</th>
+              {# ncog_title.html #}
+              <th title="Number of cognate classes"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  style="width: 80px;">nCog</th>
+              {# phonemic_title.html #}
+              <th>PhoneMic</th>
+              {# phonecopy_title.html #}
+              <th colspan="2"></th>
+              {# phonetic_title.html #}
+              <th>PhoneTic</th>
+              {# gloss_title.html #}
+              <th alt="Language specific">Gloss</th>
+              {# notes_title.html #}
+              <th>Notes</th>
             </tr>
             <tr>
-              {% include "view_meaning/lexemeid_filter.html" %}
-              {% include "view_meaning/branchcolor_filter.html" %}
-              {% include "view_meaning/languagename_filter.html" %}
-              {% include "view_meaning/sourceform_filter.html" %}
-              {% include "view_meaning/lexemeeditcopy_filter.html" %}
-              {% include "view_meaning/transliteration_filter.html" %}
-              {% include "view_meaning/swadesh_filter.html" %}
-              {% include "view_meaning/cognateclasses_filter.html" %}
-              {% include "view_meaning/isloan_filter.html" %}
-              {% include "view_meaning/isexcluded_filter.html" %}
-              {% include "view_meaning/loanevent_filter.html" %}
-              {% include "view_meaning/cogclassids_filter.html" %}
-              {% include "view_meaning/rootform_filter.html" %}
-              {% include "view_meaning/rootlanguage_filter.html" %}
-              {% include "view_meaning/ncog_filter.html" %}
-              {% include "view_meaning/phonemic_filter.html" %}
-              {% include "view_meaning/phonecopy_filter.html" %}
-              {% include "view_meaning/phonetic_filter.html" %}
-              {% include "view_meaning/gloss_filter.html" %}
-              {% include "view_meaning/notes_filter.html" %}
+              {# lexemeid_filter.html #}
+              <th class="hide"></th>
+              {# branchcolor_filter.html #}
+              <th class="languageBranchColor" colspan="2"></th>
+              {# languagename_filter.html #}
+              <th>
+                <input type="text" class="filterText form-control"
+                       data-selector=".languageName">
+                <div class="btn btn-xs btn-default sortText"
+                     data-selector=".languageName">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              <th></th>
+              {# sourceform_filter.html #}
+              <th>
+                {% if user.is_authenticated %}
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".lexemeSourceForm input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemeSourceForm input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control"
+                         data-selector=".lexemeSourceForm">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".lexemeSourceForm">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              {# lexemeeditcopy_filter.html #}
+              <th colspan="3"></th>
+              {# transliteration_filter.html #}
+              <th>
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".lexemeTransliteration input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemeTransliteration input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".lexemeTransliteration">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".lexemeTransliteration">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              {# swadesh_filter.html #}
+              <th>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-danger"
+                        data-selector=".lexemeSwadeshTerm input">
+                  <span class="glyphicon glyphicon-remove-sign"></span>
+                </button>
+              </th>
+              {# cognateclasses_filter.html #}
+              <th>
+                <input type="text"
+                       class="filterText form-control"
+                       data-selector=".cognateClasses"
+                       size="1"
+                       style="padding-left: 2px; padding-right: 2px;">
+              </th>
+              {# isloan_filter.html #}
+              <th>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".lexemeIsLoan input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </th>
+              {# isexcluded_filter.html #}
+              <th>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".lexemeIsExcluded input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </th>
+              {# loanevent_filter.html #}
+              <th>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".lexemeShowLoanEvent input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </th>
+              {# rootform_filter.html #}
+              <th>
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control narrow"
+                         data-selector=".lexemeRootForm input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemeRootForm input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control narrow"
+                         data-selector=".lexemeRootForm">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".lexemeRootForm">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              {# rootlanguage_filter.html #}
+              <th>
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control narrow"
+                         data-selector=".lexemeRootLanguage input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemeRootLanguage input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filtersText form-control narrow"
+                         data-selector=".lexemeRootLanguage">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".lexemeRootLanguage">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              {# ncog_filter.html #}
+              <th>
+                <input type="text" class="filterText form-control narrow"
+                       data-selector=".lexemeNCog" size="1">
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".lexemeNCog">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              {# phonemic_filter.html #}
+              <th>
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control narrow"
+                         data-selector=".lexemePhoneMic input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemePhoneMic input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control narrow"
+                         data-selector=".lexemePhoneMic">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".lexemePhoneMic">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              {# phonecopy_filter.html #}
+              <th colspan="2"></th>
+              {# phonetic_filter.html #}
+              <th>
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control narrow"
+                         data-selector=".lexemePhoneTic input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemePhoneTic input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control narrow"
+                         data-selector=".lexemePhoneTic">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".lexemePhoneTic">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              {# gloss_filter.html #}
+              <th>
+                {% if user.is_authenticated %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".lexemeGloss input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemeGloss input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".lexemeGloss">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".lexemeGloss">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              {# notes_filter.html #}
+              <th>
+                {% if user.is_authenticated %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".lexemeNotes input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".lexemeNotes input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".lexemeNotes">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".lexemeNotes">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
             </tr>
           </thead>
           <tbody>
             {% for lexeme in lex_ed_form.lexemes %}
               <tr>
-                {% include "view_meaning/lexemeid_data.html" %}
-                {% include "view_meaning/branchcolor_data.html" %}
-                {% include "view_meaning/languagename_data.html" %}
-                {% include "view_meaning/sourceform_data.html" %}
-                {% include "view_meaning/lexemeeditcopy_data.html" %}
-                {% include "view_meaning/transliteration_data.html" %}
-                {% include "view_meaning/swadesh_data.html" %}
-                {% include "view_meaning/cognateclasses_data.html" %}
-                {% include "view_meaning/isloan_data.html" %}
-                {% include "view_meaning/isexcluded_data.html" %}
-                {% include "view_meaning/loanevent_data.html" %}
-                {% include "view_meaning/cogclassids_data.html" %}
-                {% include "view_meaning/rootform_data.html" %}
-                {% include "view_meaning/rootlanguage_data.html" %}
-                {% include "view_meaning/ncog_data.html" %}
-                {% include "view_meaning/phonemic_data.html" %}
-                {% include "view_meaning/phonecopy_data.html" %}
-                {% include "view_meaning/phonetic_data.html" %}
-                {% include "view_meaning/gloss_data.html" %}
-                {% include "view_meaning/notes_data.html" %}
+                {# lexemeid_data.html #}
+                <td class="hide">
+                  {% if user.is_authenticated %}
+                    {{ lexeme.id }}
+                  {% endif %}
+                </td>
+                {# branchcolor_data.html #}
+                <td class="languageBranchColor"
+                    {% if lexeme.object_data.languageBranchColor %}
+                      style="background-color: #{{ lexeme.object_data.languageBranchColor }};"
+                    {% endif %}
+                    {% if lexeme.object_data.languageBranchId %}
+                      data-languagebranchid="{{ lexeme.object_data.languageBranchId }}"
+                    {% endif %}
+                  ></td>
+                <td class="languageBranchColorSpace"></td>
+                {# languagename_data.html #}
+                <td class="languageName">
+                  <a href="{% url 'language-report' lexeme.language_asciiname.data %}">
+                    {{ lexeme.data.language_utf8name }}
+                  </a>
+                </td>
+                <td>
+                  {% if lexeme.object_data.rfcWebPath1 and lexeme.data.rfcWebLookup1 %}
+                    <a href="{{ lexeme.object_data.rfcWebPath1 }}{{ lexeme.data.rfcWebLookup1 }}" target="_blank">
+                      <span class="glyphicon glyphicon-link"></span>
+                    </a>
+                  {% endif %}
+                  {% if lexeme.object_data.rfcWebPath2 and lexeme.data.rfcWebLookup2 %}
+                    <a href="{{ lexeme.object_data.rfcWebPath2 }}{{ lexeme.data.rfcWebLookup2 }}" target="_blank">
+                      <span class="glyphicon glyphicon-info-sign"></span>
+                    </a>
+                  {% endif %}
+                </td>
+                {# sourceform_data.html #}
+                <td class="lexemeSourceForm">
+                  {% if user.is_authenticated %}
+                    {% form_field lexeme.source_form id="source_form" class="form-control" %}
+                  {% elif lexeme.source_form.data %}
+                    {{ lexeme.source_form.data }}
+                  {% endif %}
+                </td>
+                {# lexemeeditcopy_data.html #}
+                <td>
+                  {% if user.is_authenticated %}
+                    <a href="{% url 'view-lexeme' lexeme.id.data %}"
+                       title="View/edit the lexical entry">
+                      <span class="glyphicon glyphicon-search"></span>
+                    </a>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if user.is_authenticated %}
+                    <button class="leftcheckarrow btn btn-xs"
+                            type="button"
+                            id="translit2src#{{lexeme.transliteration.name}}#{{lexeme.source_form.name}}"
+                            onclick="CopyAcross(this)">
+                      <span class="glyphicon glyphicon-step-backward"></span>
+                    </button>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if user.is_authenticated %}
+                    <button class="rightcheckarrow btn btn-xs"
+                            type="button"
+                            id="src2translit#{{lexeme.source_form.name}}#{{lexeme.transliteration.name}}"
+                            onclick="CopyAcross(this)">
+                      <span class="glyphicon glyphicon-step-forward"></span>
+                    </button>
+                  {% endif %}
+                </td>
+                {# transliteration_data.html #}
+                <td class="lexemeTransliteration">
+                  {% if user.is_authenticated %}
+                    {% form_field lexeme.transliteration id="transliteration" size="8" class="form-control" %}
+                  {% elif lexeme.transliteration.data %}
+                    {{ lexeme.transliteration.data }}
+                  {% endif %}
+                </td>
+                {# swadesh_data.html #}
+                <td class="lexemeSwadeshTerm">
+                  {% if user.is_authenticated %}
+                    {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" %}
+                  {% else %}
+                    {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" disabled="disabled" %}
+                  {% endif %}
+                </td>
+                {# cognateclasses_data.html #}
+                <td>
+                  <div class="cognateClasses">
+                    {% if user.is_authenticated %}
+                      {% ifnotequal add_cognate_judgement|asint lexeme.id.data|asint %}
+                        <a href="{% url 'lexeme-add-cognate' lexeme.id.data %}#lexeme_{{ lexeme.id.data }}"
+                           title="Add another cognate class">
+                          <span class="glyphicon glyphicon-plus-sign"></span>
+                        </a>
+                      {% else %}
+                        <form action="" method="post">
+                          {% csrf_token %}
+                          {{ cognate_form.cognate_class }}
+                        </form>
+                      {% endifnotequal %}
+                    {% endif %}
+                    {{ lexeme.cognate_class_links.data }}
+                  </div>
+                </td>
+                {# isloan_data.html #}
+                <td class="lexemeIsLoan">
+                  {% form_field lexeme.is_loan disabled="disabled" class="form-control" %}
+                </td>
+                {# isexcluded_data.html #}
+                <td class="lexemeIsExcluded">
+                  {% form_field lexeme.is_excluded disabled="disabled" class="form-control" %}
+                </td>
+                {# loanevent_data.html #}
+                <td class="lexemeShowLoanEvent">
+                  {% if lexeme.object_data.show_loan_event %}
+                    {% form_field lexeme.loan_event disabled="disabled" class="form-control" %}
+                  {% endif %}
+                </td>
+                {# rootform_data.html #}
+                <td class="lexemeRootForm">
+                  {% if lexeme.data.rootFormCompare %}
+                    {% if user.is_authenticated %}
+                      {% form_field lexeme.root_form id="rootform" class="form-control mirrorTextInput" data-compare=lexeme.data.rootFormCompare %}
+                    {% else %}
+                      {{ lexeme.root_form.data }}
+                    {% endif %}
+                  {% endif %}
+                </td>
+                {# rootlanguage_data.html #}
+                <td class="lexemeRootLanguage">
+                  {% if lexeme.data.rootLanguageCompare %}
+                    {% if user.is_authenticated %}
+                      {% form_field lexeme.root_language class="form-control mirrorTextInput" id="rootlanguage" data-compare=lexeme.data.rootLanguageCompare %}
+                    {% else %}
+                      {{ lexeme.root_languages.data }}
+                    {% endif %}
+                  {% endif %}
+                </td>
+                {# ncog_data.html #}
+                <td class="lexemeNCog">
+                  <center>
+                    <span class="badge">
+                      {{ lexeme.data.number_cognate_coded }}
+                    </span>
+                  </center>
+                </td>
+                {# phonemic_data.html #}
+                <td class="lexemePhoneMic">
+                  {% if user.is_authenticated %}
+                    {% form_field lexeme.phoneMic id="phoneMic" size="8" class="form-control" %}
+                  {% elif lexeme.phoneMic.data %}
+                    {{ lexeme.phoneMic.data }}
+                  {% endif %}
+                </td>
+                {# phonecopy_data.html #}
+                <td>
+                  {% if user.is_authenticated %}
+                    <button class="leftcheckarrow btn btn-xs"
+                            type="button"
+                            id="phoneTic2phoneMic#{{lexeme.phon_form.name}}#{{lexeme.phoneMic.name}}"
+                            onclick="CopyAcross(this)">
+                      <span class="glyphicon glyphicon-step-backward"></span>
+                    </button>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if user.is_authenticated %}
+                    <button class="rightcheckarrow btn btn-xs"
+                            type="button"
+                            id="phoneMic2phoneTic#{{lexeme.phoneMic.name}}#{{lexeme.phon_form.name}}"
+                            onclick="CopyAcross(this)">
+                      <span class="glyphicon glyphicon-step-forward"></span>
+                    </button>
+                  {% endif %}
+                </td>
+                {# phonetic_data.html #}
+                <td class="lexemePhoneTic">
+                  {% if user.is_authenticated %}
+                    {% form_field lexeme.phon_form id="phoneTic" size="8" class="form-control" %}
+                  {% elif lexeme.phon_form.data %}
+                    {{ lexeme.phon_form.data }}
+                  {% endif %}
+                </td>
+                {# gloss_data.html #}
+                <td class="lexemeGloss">
+                  {% if user.is_authenticated %}
+                    {% form_field lexeme.gloss size="4" class="form-control" %}
+                  {% elif lexeme.gloss.data %}
+                    {{ lexeme.gloss.data }}
+                  {% endif %}
+                </td>
+                {# notes_data.html #}
+                <td class="lexemeNotes">
+                  {% if user.is_authenticated %}
+                    {% form_field lexeme.notes class="form-control" %}
+                  {% elif lexeme.notes.data %}
+                    {{ lexeme.notes.data }}
+                  {% endif %}
+                </td>
               </tr>
             {% endfor %}
           </tbody>
