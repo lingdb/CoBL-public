@@ -11,29 +11,7 @@
 {% endblock %}
 
 {% block controls %}
-  <li class="navbar-text">
-    List:
-  </li>
-  <li class="navbar-text dropdown"
-      title="Select language list"
-      data-toggle="tooltip"
-      data-placement="bottom">
-    <button class="btn btn-default dropdown-toggle"
-            type="button" id="languageListSelection"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="true"
-            style="padding: 0px;">
-      {{ current_list }}
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" aria-labelledby="languageListSelection"
-        style="overflow-y: scroll; height: 23em;">
-      {% for ll in otherLanguageLists %}
-        <li><a href="/languagelist/{{ ll.name }}">{{ ll.name }}</a></li>
-      {% endfor %}
-    </ul>
-  </li>
+  {% include "snippets/defaultSelections.html" %}
   <li>
     <a href="?exportCsv=utf8_name,mean_timedepth_BP_years,std_deviation_timedepth_BP_years,level0,level1"
        title="Download current language list as .csv"

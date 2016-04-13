@@ -11,33 +11,7 @@
 {% endblock %}
 
 {% block controls %}
-  <li class="navbar-text">
-    List:
-  </li>
-  <li class="navbar-text dropdown"
-      title="Select meaning list"
-      data-toggle="tooltip"
-      data-placement="bottom">
-    <button class="btn btn-default dropdown-toggle"
-            type="button" id="meaningListSelection"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="true"
-            style="padding: 0px;">
-      {{ wordlist.name }}
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" aria-labelledby="meaningListSelection"
-        style="overflow-y: scroll; height: 23em;">
-      {% for m in otherMeaningLists %}
-        <li>
-          <a href="{% url 'view-language-wordlist' language.ascii_name m.name %}">
-            {{ m.name }}
-          </a>
-        </li>
-      {% endfor %}
-    </ul>
-  </li>
+  {% include "snippets/defaultSelections.html" %}
   {% include "snippets/go_to.html" %}
   {% if semantic_domains %}
     <li>

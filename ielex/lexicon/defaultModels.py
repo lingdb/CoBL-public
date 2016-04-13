@@ -172,3 +172,33 @@ def setDefaultLanguagelist(request, languagelist):
         request.session['defaultLanguagelist'] = languagelist
         return True
     return False
+
+
+def getDefaultDict(request):
+    """
+    Produces a dictionary that carries the current defaults
+    as well as the currently not choosen entries.
+    """
+    defaults = {
+        'defaultLanguage': getDefaultLanguage(request),
+        'defaultMeaning': getDefaultMeaning(request),
+        'defaultWordlist': getDefaultWordlist(request),
+        'defaultLanguagelist': getDefaultLanguagelist(request),
+        }
+    defaults['otherLanguages'] = \
+        Language.objects.exclude(
+            utf8_name=defaults['defaultLanguage']).values_list(
+            'utf8_name', flat=True)
+    defaults['otherMeanings'] = \
+        Meaning.objects.exclude(
+            gloss=defaults['defaultMeaning']).values_list(
+            'gloss', flat=True)
+    defaults['otherWordlists'] = \
+        MeaningList.objects.exclude(
+            name=defaults['defaultWordlist']).values_list(
+            'name', flat=True)
+    defaults['otherLanguagelists'] = \
+        LanguageList.objects.exclude(
+            name=defaults['defaultLanguagelist']).values_list(
+            'name', flat=True)
+    return defaults

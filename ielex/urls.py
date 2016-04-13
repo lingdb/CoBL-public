@@ -210,6 +210,9 @@ urlpatterns = patterns(
     # Authors:
     url(r'^authors/$' % R, viewAuthors),
 
+    # Changing defaults:
+    url(r'^changeDefaults/$' % R, changeDefaults),
+
     # Cognate citation :: detail
     url(r'^cognate/citation/(?P<pk>\d+)/$',
         DetailView.as_view(

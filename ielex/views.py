@@ -837,15 +837,9 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
         meaning.desc = meaning.description
         mltf.meanings.append_entry(meaning)
 
-    current_language_list = getDefaultLanguagelist(request)
-
-    otherMeaningLists = MeaningList.objects.exclude(id=wordlist.id).all()
-
     return render_template(request, "wordlist.html",
                            {"mltf": mltf,
-                            "wordlist": wordlist,
-                            "otherMeaningLists": otherMeaningLists,
-                            "current_language_list": current_language_list})
+                            "wordlist": wordlist})
 
 
 @login_required
@@ -1131,9 +1125,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
     lexemes_editabletable_form = fill_lexemestable_from_DB(lexemes)
 
-    otherLanguageLists = LanguageList.objects.exclude(
-        id=current_language_list.id).all()
-
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
     languageBranches = LanguageBranches.objects.filter(
         level1_branch_ix=0).exclude(shortName='').all()
@@ -1143,8 +1134,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
          "prev_meaning": prev_meaning,
          "next_meaning": next_meaning,
          "lexemes": lexemes,
-         "current_language_list": current_language_list,
-         "otherLanguageLists": otherLanguageLists,
          "cognate_form": cognate_form,
          "add_cognate_judgement": lexeme_id,
          "lex_ed_form": lexemes_editabletable_form,
@@ -2014,3 +2003,19 @@ def viewAuthors(request):
     return render_template(
         request, "authors.html",
         {'authors': form, 'messages': messages})
+
+
+def changeDefaults(request):
+    # Defaults that can be changed:
+    actions = {
+        'language': setDefaultLanguage,
+        'meaning': setDefaultMeaning,
+        'wordlist': setDefaultWordlist,
+        'languagelist': setDefaultLanguagelist}
+    # Changing defaults for given parameters:
+    for k, v in actions.iteritems():
+        if k in request.GET:
+            v(request, request.GET[k])
+    # Url to redirect clients to:
+    url = request.GET['url'] if 'url' in request.GET else '/'
+    return redirect(url)

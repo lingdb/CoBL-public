@@ -46,6 +46,7 @@
 {% endblock %}
 
 {% block controls %}
+  {% include "snippets/defaultSelections.html" %}
   {% include "snippets/go_to.html" %}
   <li>
     <a href="/language/{{ language.ascii_name }}">Back to language list ‘{{ language.utf8_name }}’</a>

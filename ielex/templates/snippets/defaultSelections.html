@@ -1,0 +1,47 @@
+<li class="navbar-text">
+  List:
+</li>
+<li class="navbar-text dropdown"
+    title="Select language list"
+    data-toggle="tooltip"
+    data-placement="bottom">
+  <button class="btn btn-default dropdown-toggle"
+          type="button" id="languageListSelection"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="true"
+          style="padding: 0px;">
+    {{ defaultLanguagelist }}
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="languageListSelection"
+      style="overflow-y: scroll; height: 23em;">
+    {% for l in otherLanguagelists %}
+      <li>
+        <a href="/changeDefaults/?url={{ request.get_full_path }}&languagelist={{ l }}">{{ l }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</li>
+<li class="navbar-text dropdown"
+    title="Select meaning list"
+    data-toggle="tooltip"
+    data-placement="bottom">
+  <button class="btn btn-default dropdown-toggle"
+          type="button" id="meaningListSelection"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="true"
+          style="padding: 0px;">
+    {{ defaultWordlist }}
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="meaningListSelection"
+      style="overflow-y: scroll; height: 23em;">
+    {% for w in otherWordlists %}
+      <li>
+        <a href="/changeDefaults/?url={{ request.get_full_path }}&wordlist={{ w }}">{{ w }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</li>

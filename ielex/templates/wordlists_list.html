@@ -31,6 +31,7 @@
 {% endblock %}
 
 {% block controls %}
+  {% include "snippets/defaultSelections.html" %}
   {% include "snippets/go_to.html" %}
   <li>
     <a href="{% url 'add-semantic-domain' %}">Add new semantic domain</a>
