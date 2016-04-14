@@ -29,24 +29,6 @@ except AttributeError:
     pass
 
 
-class FrontpageView(TemplateView):
-    template_name = "frontpage.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(
-            FrontpageView, self).get_context_data(**kwargs)
-        context["lexemes"] = Lexeme.objects.count()
-        context["cognate_classes"] = CognateClass.objects.count()
-        context["languages"] = Language.objects.count()
-        context["meanings"] = Meaning.objects.count()
-        context["coded_characters"] = CognateJudgement.objects.count()
-        try:
-            context["google_site_verification"] = settings.META_TAGS
-        except AttributeError:
-            pass
-        return context
-
-
 class CognateClassCitationUpdateView(UpdateView):
     model = CognateClassCitation
     form_class = EditCognateClassCitationForm

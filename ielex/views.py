@@ -21,7 +21,7 @@ from django.template import Template
 from django.template.loader import get_template
 from reversion.models import Revision, Version
 # from reversion import revision
-from ielex.settings import LIMIT_TO
+from ielex.settings import LIMIT_TO, META_TAGS
 from ielex.forms import *
 from ielex.lexicon.models import *
 from ielex.lexicon.defaultModels import *
@@ -2019,3 +2019,14 @@ def changeDefaults(request):
     # Url to redirect clients to:
     url = request.GET['url'] if 'url' in request.GET else '/'
     return redirect(url)
+
+
+def view_frontpage(request):
+    return render_template(
+        request, "frontpage.html",
+        {"lexemes": Lexeme.objects.count(),
+         "cognate_classes": CognateClass.objects.count(),
+         "languages": Language.objects.count(),
+         "meanings": Meaning.objects.count(),
+         "coded_characters": CognateJudgement.objects.count(),
+         "google_site_verification": META_TAGS})

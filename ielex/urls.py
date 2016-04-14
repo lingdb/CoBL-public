@@ -35,7 +35,7 @@ R = {
 urlpatterns = patterns(
     '',
     # Front Page
-    url(r'^$', FrontpageView.as_view(), name="view-frontpage"),
+    url(r'^$', view_frontpage, name="view-frontpage"),
     url(r'^changes/$', view_changes, name="view-changes"),
     url(r'^changes/%(USERNAME)s/$' % R, view_changes,
         name="view-changes-user"),
