@@ -15,79 +15,84 @@
   {% include "snippets/defaultSelections.html" %}
   {% include "snippets/go_to.html" %}
   {# include "snippets/change_sort_order.html" #}
-  {% if user.is_authenticated %}
-    <li>
-      <a href="{% url 'cognate-class-citation-create' cognate_class.id %}">add citation</a>
-    </li>
-  {% endif %}
-  {% if not cognate_class.name and user.is_authenticated %}
-    <li>
-      <a href="{% url 'edit-cognate-name' cognate_class.id %}">name this cognate class</a>
-    </li>
-  {% endif %}
-  {% for meaning in cognate_class.get_meanings %}
-    <li>
-      <a href="{% url 'meaning-report' meaning.gloss %}">return to ‘{{ meaning.gloss }}’</a>
-    </li>
-  {% endfor %}
 {% endblock %}
 
 {% block content %}
   <div class="row">
-      {% if action == 'edit-name' and user.is_authenticated %}
-        <form action="" method="POST">
-          {% csrf_token %}
-          {{ form.name.errors }}
-          <strong>Cognate class name:</strong><br>{{ form.name }}
-          <input type="submit" name="submit" value="Submit">
-          <input type="submit" name="cancel" value="Cancel">
-        </form>
-      {% else %}
-        {% if cognate_class.name %}
-          <p align="right">
-            Cognate class name: <strong>{{ cognate_class.name }}</strong>
+    <div class="pull-right">
+      {% if user.is_authenticated %}
+        <a class="btn btn-default"
+           href="{% url 'cognate-class-citation-create' cognate_class.id %}">
+          add citation
+        </a>
+      {% endif %}
+      {% if not cognate_class.name and user.is_authenticated %}
+        <a class="btn btn-default"
+           href="{% url 'edit-cognate-name' cognate_class.id %}">
+          name this cognate class
+        </a>
+      {% endif %}
+      {% for meaning in cognate_class.get_meanings %}
+        <a class="btn btn-default"
+           href="{% url 'meaning-report' meaning.gloss %}">
+          return to ‘{{ meaning.gloss }}’
+        </a>
+      {% endfor %}
+    </div>
+    {% if action == 'edit-name' and user.is_authenticated %}
+      <form action="" method="POST">
+        {% csrf_token %}
+        {{ form.name.errors }}
+        <strong>Cognate class name:</strong><br>{{ form.name }}
+        <input type="submit" name="submit" value="Submit">
+        <input type="submit" name="cancel" value="Cancel">
+      </form>
+    {% else %}
+      {% if cognate_class.name %}
+        <p align="right">
+          Cognate class name: <strong>{{ cognate_class.name }}</strong>
+          {% if user.is_authenticated %}
+            <a href="{% url 'edit-cognate-name' cognate_class.id %}">
+              <img src="{% static 'buttons/edit-pencil.png' %}">
+            </a>
+          {% endif %}
+        {% endif %}
+      </p>
+    {% endif %}
+    {% if action == 'edit-notes' %}
+      <div class="col-md-4">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <strong>Notes</strong>
+          </div>
+          <div class="panel-body">
+            <form action="" method="POST">
+              {% csrf_token %}
+              {{ form.notes }}
+              <br>
+              <input type="submit" name="submit" value="Submit" class="btn btn-primary">
+              <input type="submit" name="cancel" value="Cancel" class="btn btn-danger">
+            </form>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="col-md-4">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <strong>Notes</strong>
             {% if user.is_authenticated %}
-              <a href="{% url 'edit-cognate-name' cognate_class.id %}">
-                <img src="{% static 'buttons/edit-pencil.png' %}">
+              <a href="{% url 'edit-cognate-notes' cognate_class.id %}">
+                <span class="glyphicon glyphicon-edit"></span>
               </a>
             {% endif %}
-          {% endif %}
-        </p>
-      {% endif %}
-      {% if action == 'edit-notes' %}
-        <div class="col-md-4">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <strong>Notes</strong>
-            </div>
-            <div class="panel-body">
-              <form action="" method="POST">
-                {% csrf_token %}
-                {{ form.notes }}
-                <br>
-                <input type="submit" name="submit" value="Submit" class="btn btn-primary">
-                <input type="submit" name="cancel" value="Cancel" class="btn btn-danger">
-              </form>
-            </div>
+          </div>
+          <div class="panel-body">
+            {{ cognate_class.notes|wikilink }}
           </div>
         </div>
-      {% else %}
-        <div class="col-md-4">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <strong>Notes</strong>
-              {% if user.is_authenticated %}
-                <a href="{% url 'edit-cognate-notes' cognate_class.id %}">
-                  <span class="glyphicon glyphicon-edit"></span>
-                </a>
-              {% endif %}
-            </div>
-            <div class="panel-body">
-              {{ cognate_class.notes|wikilink }}
-            </div>
-          </div>
-        </div>
-      {% endif %}
+      </div>
+    {% endif %}
     {% if cognate_class.cognateclasscitation_set.exists %}
       {% for citation in cognate_class.cognateclasscitation_set.all %}
         <div class="col-md-12">
