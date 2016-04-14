@@ -10,23 +10,37 @@
 {% endblock %}
 
 {% block controls %}
-    {% if changes.has_previous %}
-      <li>
-        <a href="?page={{ changes.previous_page_number }}">previous</a>
-      </li>
-    {% endif %}
-    <li class="navbar-text">
-      Page {{ changes.number }} of {{ changes.paginator.num_pages }}.
-    </li>
-    {% if changes.has_next %}
-      <li>
-        <a href="?page={{ changes.next_page_number }}">next</a>
-      </li>
-    {% endif %}
+  {% include "snippets/defaultSelections.html" %}
+  {% include "snippets/go_to.html" %}
 {% endblock %}
 
 {% block content %}
   <div class="row">
+    <div class="pull-right">
+      <ul class="pagination">
+          {% if changes.has_previous %}
+            <li>
+              <a href="?page={{ changes.previous_page_number }}"
+                 aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+          {% endif %}
+          <li>
+            <a href="#">
+              Page {{ changes.number }} of {{ changes.paginator.num_pages }}.
+            </a>
+          </li>
+          {% if changes.has_next %}
+            <li>
+              <a href="?page={{ changes.next_page_number }}"
+                 aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+    </div>
     <div class="col-md-4">
       <table class="table table-bordered">
         {% for revision in changes.object_list %}
