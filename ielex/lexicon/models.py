@@ -55,6 +55,12 @@ RELIABILITY_CHOICES = (  # used by Citation classes
     ("L", "Loanword"),
     ("X", "Exclude (e.g. not the Swadesh term)"))
 
+DISTRIBUTION_CHOICES = (  # used by LanguageBranches
+    ("U", "Uniform"),
+    ("N", "Normal"),
+    ("L", "Log normal"),
+    ("O", "Offset log normal"))
+
 # http://south.aeracode.org/docs/customfields.html#extending-introspection
 # add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])
 
@@ -104,10 +110,38 @@ class Source(models.Model):
 @reversion.register
 class LanguageBranches(models.Model):
     family_ix = models.IntegerField(blank=True)
-    level1_branch_ix = models.IntegerField(blank=True)
+    level1_branch_ix = models.IntegerField(default=0)
+    level2_branch_ix = models.IntegerField(default=0)
+    level3_branch_ix = models.IntegerField(default=0)
     level1_branch_name = models.TextField(blank=True, unique=True)
     hexColor = models.CharField(max_length=6, blank=True)
     shortName = models.CharField(max_length=5, blank=True)
+    # Will decide wether to include this in the export:
+    export = models.BooleanField(default=0)
+    # No spaces allowed in the following:
+    taxonsetName = models.CharField(max_length=100, blank=True)
+    # Latest plausible date divergence had not yet begun:
+    atMost = models.IntegerField(null=True)
+    # Earliest plausible date divergence could have begun by:
+    atLeast = models.IntegerField(null=True)
+    # Distribution type used:
+    distribution = models.CharField(
+        max_length=1, choices=DISTRIBUTION_CHOICES, default="O")
+    # For [offset] log normal distribution:
+    logNormalOffset = models.IntegerField(null=True)
+    logNormalMean = models.IntegerField(null=True)
+    logNormalStDev = models.IntegerField(null=True)
+    # For normal distribution:
+    normalMean = models.IntegerField(null=True)
+    normalStDev = models.IntegerField(null=True)
+    # For uniform distribution:
+    uniformUpper = models.IntegerField(null=True)
+    uniformLower = models.IntegerField(null=True)
+    # For linking against SndComp levels:
+    sndcompLevel0 = models.IntegerField(default=0)
+    sndcompLevel1 = models.IntegerField(default=0)
+    sndcompLevel2 = models.IntegerField(default=0)
+    sndcompLevel3 = models.IntegerField(default=0)
 
     def is_unchanged(self, **vdict):
 
@@ -120,9 +154,27 @@ class LanguageBranches(models.Model):
         fields = {
             'family_ix': isInt,
             'level1_branch_ix': isInt,
+            'level2_branch_ix': isInt,
+            'level3_branch_ix': isInt,
             'level1_branch_name': isString,
             'shortName': isString,
-            'hexColor': isString}
+            'hexColor': isString,
+            'export': isString,
+            'taxonsetName': isString,
+            'atMost': isInt,
+            'atLeast': isInt,
+            'distribution': isString,
+            'logNormalOffset': isInt,
+            'logNormalMean': isInt,
+            'logNormalStDev': isInt,
+            'normalMean': isInt,
+            'normalStDev': isInt,
+            'uniformUpper': isInt,
+            'uniformLower': isInt,
+            'sndcompLevel0': isInt,
+            'sndcompLevel1': isInt,
+            'sndcompLevel2': isInt,
+            'sndcompLevel3': isInt}
 
         for k, _ in vdict.iteritems():
             if k in fields:
@@ -141,9 +193,27 @@ class LanguageBranches(models.Model):
         fields = {
             'family_ix': setInt,
             'level1_branch_ix': setInt,
+            'level2_branch_ix': setInt,
+            'level3_branch_ix': setInt,
             'level1_branch_name': setString,
             'shortName': setString,
-            'hexColor': setString}
+            'hexColor': setString,
+            'export': setString,
+            'taxonsetName': setString,
+            'atMost': setInt,
+            'atLeast': setInt,
+            'dsettribution': setString,
+            'logNormalOffset': setInt,
+            'logNormalMean': setInt,
+            'logNormalStDev': setInt,
+            'normalMean': setInt,
+            'normalStDev': setInt,
+            'uniformUpper': setInt,
+            'uniformLower': setInt,
+            'sndcompLevel0': setInt,
+            'sndcompLevel1': setInt,
+            'sndcompLevel2': setInt,
+            'sndcompLevel3': setInt}
 
         # Setting fields:
         for k, _ in vdict.iteritems():

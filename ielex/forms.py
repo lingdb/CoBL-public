@@ -10,7 +10,7 @@ from wtforms import StringField, IntegerField, \
     FieldList, FormField, \
     TextField, BooleanField, \
     DateTimeField, DecimalField, \
-    TextAreaField
+    TextAreaField, SelectField
 from wtforms.validators import DataRequired, Email
 from wtforms_components import read_only
 from wtforms.form import Form as WTForm
@@ -267,10 +267,34 @@ class LanguageBranchesRowForm(WTForm):
     family_ix = IntegerField('Family Ix', validators=[DataRequired()])
     level1_branch_ix = IntegerField('Level1 Branch Ix',
                                     validators=[DataRequired()])
+    level2_branch_ix = IntegerField('Level2 Branch Ix',
+                                    validators=[DataRequired()])
+    level3_branch_ix = IntegerField('Level3 Branch Ix',
+                                    validators=[DataRequired()])
     level1_branch_name = StringField('Level 1 Branch Name',
                                      validators=[DataRequired()])
     shortName = StringField('Short name', validators=[DataRequired()])
     hexColor = StringField('hexColor', validators=[DataRequired()])
+    export = BooleanField('Export?', validators=[DataRequired()])
+    taxonsetName = StringField('Texonset name', validators=[DataRequired()])
+    atMost = IntegerField('At most?', validators=[DataRequired()])
+    atLeast = IntegerField('At least?', validators=[DataRequired()])
+    distribution = SelectField('Distribution type', choices=DISTRIBUTION_CHOICES)
+    logNormalOffset = IntegerField('[Offset]', validators=[DataRequired()])
+    logNormalMean = IntegerField('Mean', validators=[DataRequired()])
+    logNormalStDev = IntegerField('StDev', validators=[DataRequired()])
+    normalMean = IntegerField('Mean', validators=[DataRequired()])
+    normalStDev = IntegerField('StDev', validators=[DataRequired()])
+    uniformUpper = IntegerField('Upper', validators=[DataRequired()])
+    uniformLower = IntegerField('Lower', validators=[DataRequired()])
+    sndcompLevel0 = IntegerField('SndComp Level 0',
+                                 validators=[DataRequired()])
+    sndcompLevel1 = IntegerField('SndComp Level 1',
+                                 validators=[DataRequired()])
+    sndcompLevel2 = IntegerField('SndComp Level 2',
+                                 validators=[DataRequired()])
+    sndcompLevel3 = IntegerField('SndComp Level 3',
+                                 validators=[DataRequired()])
 
 
 class LanguageBranchesTableForm(WTForm):

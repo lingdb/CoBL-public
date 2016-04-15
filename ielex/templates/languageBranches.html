@@ -17,7 +17,7 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
       {% if user.is_authenticated and user.is_staff %}
         <form action="" method="POST" name="languageBranches">
           {% csrf_token %}
@@ -30,8 +30,69 @@
               <tr>
                 <th>Level 0</th>
                 <th>Level 1 branch ix</th>
+                <th>Level 2 branch ix</th>
+                <th>Level 3 branch ix</th>
                 <th>Branch name</th>
                 <th>Short name</th>
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="Boolean to decide wether it will be included in the export">
+                  Export?
+                </th>
+                <th>Taxonset name</th>
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="Latest plausible date at which divergence had not yet begun">
+                  At most?
+                </th>
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="Earliest plausible date divergence could have begun by">
+                  At least?
+                </th>
+                <th>Distribution type</th>
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="Offset for log normal distribution">
+                  [Offset]
+                </th><!-- DATE TOOLTIP -->
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="Mean for log normal distribution">
+                  Mean
+                </th><!-- DATE TOOLTIP -->
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="StDev for log normal distribution">
+                  StDev
+                </th><!-- DATE TOOLTIP -->
+                <!-- For normal: -->
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="Mean for normal distribution">
+                  Mean
+                </th><!-- DATE TOOLTIP -->
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="StDev for normal distribution">
+                  StDev
+                </th><!-- DATE TOOLTIP -->
+                <!-- For Uniform: -->
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="Upper bound for uniform distribution type">
+                  Upper
+                </th><!-- DATE TOOLTIP -->
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="Lower bound for uniform distribution type">
+                  Lower
+                </th><!-- DATE TOOLTIP -->
+                {# For SndComp reference: #}
+                <th>SndComp Level 0</th>
+                <th>SndComp Level 1</th>
+                <th>SndComp Level 2</th>
+                <th>SndComp Level 3</th>
                 <th>Colour (hex)</th>
               </tr>
               <tr>
@@ -89,11 +150,65 @@
                   <td class="level1_branch_ix">
                     {% form_field branch.level1_branch_ix class="form-control" required="required" pattern="[0-9]+" style="width: 2em;" %}
                   </td>
+                  <td class="level2_branch_ix">
+                    {% form_field branch.level2_branch_ix class="form-control" required="required" pattern="[0-9]+" style="width: 2em;" %}
+                  </td>
+                  <td class="level2_branch_ix">
+                    {% form_field branch.level2_branch_ix class="form-control" required="required" pattern="[0-9]+" style="width: 2em;" %}
+                  </td>
                   <td class="level1_branch_name">
                     {% form_field branch.level1_branch_name class="form-control" required="required" %}
                   </td>
                   <td class="shortName">
                     {% form_field branch.shortName class="form-control" style="width: 4em;" %}
+                  </td>
+                  <td class="export">
+                    {% form_field branch.export class="form-control" %}
+                  </td>
+                  <td class="taxonsetName">
+                    {% form_field branch.taxonsetName class="form-control" pattern="^[^ ]*$" %}
+                  </td>
+                  <td class="atMost">
+                    {% form_field branch.atMost class="form-control" pattern="^[0-9]{0,4}$" %}
+                  </td>
+                  <td class="atLeast">
+                    {% form_field branch.atLeast class="form-control" pattern="^[0-9]{0,4}$" %}
+                  </td>
+                  <td class="distribution">
+                    {% form_field branch.distribution class="form-control" %}
+                  </td>
+                  <td class="logNormalOffset">
+                    {% form_field branch.logNormalOffset class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  </td>
+                  <td class="logNormalMean">
+                    {% form_field branch.logNormalMean class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  </td>
+                  <td class="logNormalStDev">
+                    {% form_field branch.logNormalStDev class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  </td>
+                  <td class="normalMean">
+                    {% form_field branch.normalMean class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  </td>
+                  <td class="normalStDev">
+                    {% form_field branch.normalStDev class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  </td>
+                  <td class="uniformUpper">
+                    {% form_field branch.uniformUpper class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  </td>
+                  <td class="uniformLower">
+                    {% form_field branch.uniformLower class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  </td>
+                  <td class="sndcompLevel0">
+                    {% form_field branch.sndcompLevel0 class="form-control" pattern="^[0-9]{0,1}$" %}
+                  </td>
+                  <td class="sndcompLevel1">
+                    {% form_field branch.sndcompLevel1 class="form-control" pattern="^[0-9]{0,1}$" %}
+                  </td>
+                  <td class="sndcompLevel2">
+                    {% form_field branch.sndcompLevel2 class="form-control" pattern="^[0-9]{0,1}$" %}
+                  </td>
+                  <td class="sndcompLevel3">
+                    {% form_field branch.sndcompLevel3 class="form-control" pattern="^[0-9]{0,1}$" %}
                   </td>
                   <td {% if branch.hexColor.data %}
                         style='background-color: #{{ branch.hexColor.data }};'
