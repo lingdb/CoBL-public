@@ -205,7 +205,7 @@ class Language(models.Model):
         return self.utf8_name
 
     def validateBranchLevels(self):
-        levels = ['level0', 'level1', 'level2']
+        levels = ['level0', 'level1', 'level2', 'level3']
         # Making sure all levels exist and have an int in them:
         for level in levels:
             if level in self.altname:
@@ -281,6 +281,7 @@ class Language(models.Model):
             'level0': isData,
             'level1': isData,
             'level2': isData,
+            'level3': isData,
             'mean_timedepth_BP_years': isData,
             'std_deviation_timedepth_BP_years': isData,
             'foss_stat': isY,
@@ -326,6 +327,7 @@ class Language(models.Model):
             'level0': setData,
             'level1': setData,
             'level2': setData,
+            'level3': setData,
             'representative': setY,
             'mean_timedepth_BP_years': setData,
             'std_deviation_timedepth_BP_years': setData,

@@ -332,6 +332,7 @@ def view_language_list(request, language_list=None):
             langlist_row_form.level0 = lang.altname.get('level0', '')
             langlist_row_form.level1 = lang.altname.get('level1', '')
             langlist_row_form.level2 = lang.altname.get('level2', '')
+            langlist_row_form.level3 = lang.altname.get('level3', '')
             langlist_row_form.representative = \
                 lang.altname.get('representative', '')
             langlist_row_form.mean_timedepth_BP_years = \

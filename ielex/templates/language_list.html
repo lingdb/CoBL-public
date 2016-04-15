@@ -173,6 +173,12 @@
                   title="Level 2 branch">
                 Lv 2
               </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Level 3 branch">
+                Lv 3
+              </th>
               {# sndcomp_title.html #}
               <th>SndComp<br>code</th>
             </tr>
@@ -677,6 +683,15 @@
                       {% form_field language.level2 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" %}
                     {% elif language.level2.data %}
                       {{ language.level2.data }}
+                    {% endif %}
+                  </center>
+                </td>
+                <td class="languageLevel2">
+                  <center>
+                    {% if user.is_authenticated and user.is_staff %}
+                      {% form_field language.level3 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" %}
+                    {% elif language.level3.data %}
+                      {{ language.level3.data }}
                     {% endif %}
                   </center>
                 </td>
