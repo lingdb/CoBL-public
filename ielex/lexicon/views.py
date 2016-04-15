@@ -363,10 +363,17 @@ def construct_matrix(languages,
                 lexeme__language__in=languages,
                 reliability__in=exclude_ratings).values_list(
                 "lexeme__id", flat=True))
-        exclude_lexemes &= set(CognateJudgementCitation.objects.filter(
+        exclude_lexemes |= set(CognateJudgementCitation.objects.filter(
                 cognate_judgement__lexeme__language__in=languages,
                 reliability__in=exclude_ratings).values_list(
                 "cognate_judgement__lexeme__id", flat=True))
+
+        # excluding lexemes that are marked as not_swadesh_term
+        # in their data fields:
+        for l in Lexeme.objects.all():
+            if 'not_swadesh_term' in l.data:
+                if l.data['not_swadesh_term']:
+                    exclude_lexemes.add(l.id)
 
         # languages lacking any lexeme for a meaning
         languages_missing_meaning = dict()
