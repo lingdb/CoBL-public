@@ -146,7 +146,10 @@ class LanguageBranches(models.Model):
     def is_unchanged(self, **vdict):
 
         def isInt(x):
-            return getattr(self, x) == int(vdict[x])
+            entry = vdict[x]
+            if entry is not None:
+                entry = int(entry)
+            return getattr(self, x) == entry
 
         def isString(x):
             return getattr(self, x) == vdict[x]
@@ -185,7 +188,10 @@ class LanguageBranches(models.Model):
     def setDelta(self, **vdict):
 
         def setInt(x):
-            setattr(self, x, int(vdict[x]))
+            entry = vdict[x]
+            if entry is not None:
+                entry = int(entry)
+            setattr(self, x, entry)
 
         def setString(x):
             setattr(self, x, vdict[x])

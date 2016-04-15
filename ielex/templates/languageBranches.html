@@ -25,418 +25,623 @@
             <a href="/languageBranches/" class="btn btn-default">Undo</a>
             <input type="submit" value="Save" class="btn btn-danger">
           </div>
-          <table class="table table-condensed viewTableFilter">
-            <thead>
-              <tr>
-                <th>Level 0</th>
-                <th>Level 1 branch ix</th>
-                <th>Level 2 branch ix</th>
-                <th>Level 3 branch ix</th>
-                <th>Branch name</th>
-                <th>Short name</th>
-                <th data-toggle="tooltip"
-                    data-placement="bottom"
-                    title="Boolean to decide wether it will be included in the export">
-                  Export?
-                </th>
-                <th>Taxonset name</th>
-                <th data-toggle="tooltip"
-                    data-placement="bottom"
-                    title="Latest plausible date at which divergence had not yet begun">
-                  At most?
-                </th>
-                <th data-toggle="tooltip"
-                    data-placement="bottom"
-                    title="Earliest plausible date divergence could have begun by">
-                  At least?
-                </th>
-                <th>Distribution type</th>
-                <th data-toggle="tooltip"
-                    data-placement="bottom"
-                    title="Offset for log normal distribution">
-                  [Offset]
-                </th><!-- DATE TOOLTIP -->
-                <th data-toggle="tooltip"
-                    data-placement="bottom"
-                    title="Mean for log normal distribution">
-                  Mean
-                </th><!-- DATE TOOLTIP -->
-                <th data-toggle="tooltip"
-                    data-placement="bottom"
-                    title="StDev for log normal distribution">
-                  StDev
-                </th><!-- DATE TOOLTIP -->
-                <!-- For normal: -->
-                <th data-toggle="tooltip"
-                    data-placement="bottom"
-                    title="Mean for normal distribution">
-                  Mean
-                </th><!-- DATE TOOLTIP -->
-                <th data-toggle="tooltip"
-                    data-placement="bottom"
-                    title="StDev for normal distribution">
-                  StDev
-                </th><!-- DATE TOOLTIP -->
-                <!-- For Uniform: -->
-                <th data-toggle="tooltip"
-                    data-placement="bottom"
-                    title="Upper bound for uniform distribution type">
-                  Upper
-                </th><!-- DATE TOOLTIP -->
-                <th data-toggle="tooltip"
-                    data-placement="bottom"
-                    title="Lower bound for uniform distribution type">
-                  Lower
-                </th><!-- DATE TOOLTIP -->
-                {# For SndComp reference: #}
-                <th>SndComp Level 0</th>
-                <th>SndComp Level 1</th>
-                <th>SndComp Level 2</th>
-                <th>SndComp Level 3</th>
-                <th>Colour (hex)</th>
-              </tr>
-              <tr>
-                <th>
+      {% endif %}
+        <table class="table table-condensed viewTableFilter">
+          <thead>
+            <tr>
+              <th>Level 0</th>
+              <th>Level 1 branch ix</th>
+              <th>Level 2 branch ix</th>
+              <th>Level 3 branch ix</th>
+              <th>Branch name</th>
+              <th>Short name</th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="Boolean to decide wether it will be included in the export">
+                Export?
+              </th>
+              <th>Taxonset name</th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="Latest plausible date at which divergence had not yet begun">
+                At most?
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="Earliest plausible date divergence could have begun by">
+                At least?
+              </th>
+              <th>Distribution type</th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="Offset for log normal distribution">
+                [Offset]
+              </th><!-- DATE TOOLTIP -->
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="Mean for log normal distribution">
+                Mean
+              </th><!-- DATE TOOLTIP -->
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="StDev for log normal distribution">
+                StDev
+              </th><!-- DATE TOOLTIP -->
+              <!-- For normal: -->
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="Mean for normal distribution">
+                Mean
+              </th><!-- DATE TOOLTIP -->
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="StDev for normal distribution">
+                StDev
+              </th><!-- DATE TOOLTIP -->
+              <!-- For Uniform: -->
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="Upper bound for uniform distribution type">
+                Upper
+              </th><!-- DATE TOOLTIP -->
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="Lower bound for uniform distribution type">
+                Lower
+              </th><!-- DATE TOOLTIP -->
+              {# For SndComp reference: #}
+              <th>SndComp Level 0</th>
+              <th>SndComp Level 1</th>
+              <th>SndComp Level 2</th>
+              <th>SndComp Level 3</th>
+              <th>Colour (hex)</th>
+            </tr>
+            <tr>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".family_ix input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".family_ix input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".family_ix">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".family_ix">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".level1_branch_ix input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".level1_branch_ix input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".level1_branch_ix">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".level1_branch_ix">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".level2_branch_ix input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".level2_branch_ix input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".level2_branch_ix">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".level2_branch_ix">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".level3_branch_ix input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".level3_branch_ix input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".level3_branch_ix">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".level3_branch_ix">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".level1_branch_name input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".level1_branch_name input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".level1_branch_name">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".level1_branch_name">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".shortName input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".shortName input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
-                  <button type="button"
-                          class="filterBool btn btn-xs btn-default"
-                          data-selector=".export input">
-                    <span class="glyphicon glyphicon-question-sign"></span>
-                  </button>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".shortName">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".shortName">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".export input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".taxonsetName input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".taxonsetName input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".taxonsetName">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".taxonsetName">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".atMost input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".atMost input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".atMost">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".atMost">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".atLeast input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".atLeast input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
-                  {# No filtering for selections implemented. #}
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".atLeast">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".atLeast">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {# No filtering for selections implemented. #}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".logNormalOffset input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".logNormalOffset input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".logNormalOffset">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".logNormalOffset">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".logNormalMean input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".logNormalMean input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".logNormalMean">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".logNormalMean">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".logNormalStDev input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".logNormalStDev input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".logNormalStDev">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".logNormalStDev">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".normalMean input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".normalMean input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".normalMean">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".normalMean">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".normalStDev input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".normalStDev input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".normalStDev">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".normalStDev">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".uniformUpper input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".uniformUpper input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".uniformUpper">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".uniformUpper">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".uniformLower input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".uniformLower input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".uniformLower">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".uniformLower">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".sndcompLevel0 input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".sndcompLevel0 input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".sndcompLevel0">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".sndcompLevel0">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".sndcompLevel1 input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".sndcompLevel1 input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".sndcompLevel1">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".sndcompLevel1">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".sndcompLevel2 input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".sndcompLevel2 input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".sndcompLevel2">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".sndcompLevel2">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".sndcompLevel3 input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".sndcompLevel3 input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-                <th>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".sndcompLevel3">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".sndcompLevel3">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".hexColor input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".hexColor input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for branch in branches.elements %}
-                <tr>
-                  <td class="hide">
-                    {% form_field branch.idField required="required" %}
-                  </td>
-                  <td class="family_ix">
-                    {% form_field branch.family_ix class="form-control" required="required" pattern="[0-9]+" style="width: 2em;" %}
-                  </td>
-                  <td class="level1_branch_ix">
-                    {% form_field branch.level1_branch_ix class="form-control" required="required" pattern="[0-9]+" style="width: 2em;" %}
-                  </td>
-                  <td class="level2_branch_ix">
-                    {% form_field branch.level2_branch_ix class="form-control" required="required" pattern="[0-9]+" style="width: 2em;" %}
-                  </td>
-                  <td class="level2_branch_ix">
-                    {% form_field branch.level2_branch_ix class="form-control" required="required" pattern="[0-9]+" style="width: 2em;" %}
-                  </td>
-                  <td class="level1_branch_name">
-                    {% form_field branch.level1_branch_name class="form-control" required="required" %}
-                  </td>
-                  <td class="shortName">
-                    {% form_field branch.shortName class="form-control" style="width: 4em;" %}
-                  </td>
-                  <td class="export">
-                    {% form_field branch.export class="form-control" %}
-                  </td>
-                  <td class="taxonsetName">
-                    {% form_field branch.taxonsetName class="form-control" pattern="^[^ ]*$" %}
-                  </td>
-                  <td class="atMost">
-                    {% form_field branch.atMost class="form-control" pattern="^[0-9]{0,4}$" %}
-                  </td>
-                  <td class="atLeast">
-                    {% form_field branch.atLeast class="form-control" pattern="^[0-9]{0,4}$" %}
-                  </td>
-                  <td class="distribution">
-                    {% form_field branch.distribution class="form-control" %}
-                  </td>
-                  <td class="logNormalOffset">
-                    {% form_field branch.logNormalOffset class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
-                  </td>
-                  <td class="logNormalMean">
-                    {% form_field branch.logNormalMean class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
-                  </td>
-                  <td class="logNormalStDev">
-                    {% form_field branch.logNormalStDev class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
-                  </td>
-                  <td class="normalMean">
-                    {% form_field branch.normalMean class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
-                  </td>
-                  <td class="normalStDev">
-                    {% form_field branch.normalStDev class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
-                  </td>
-                  <td class="uniformUpper">
-                    {% form_field branch.uniformUpper class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
-                  </td>
-                  <td class="uniformLower">
-                    {% form_field branch.uniformLower class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
-                  </td>
-                  <td class="sndcompLevel0">
-                    {% form_field branch.sndcompLevel0 class="form-control" pattern="^[0-9]{0,1}$" %}
-                  </td>
-                  <td class="sndcompLevel1">
-                    {% form_field branch.sndcompLevel1 class="form-control" pattern="^[0-9]{0,1}$" %}
-                  </td>
-                  <td class="sndcompLevel2">
-                    {% form_field branch.sndcompLevel2 class="form-control" pattern="^[0-9]{0,1}$" %}
-                  </td>
-                  <td class="sndcompLevel3">
-                    {% form_field branch.sndcompLevel3 class="form-control" pattern="^[0-9]{0,1}$" %}
-                  </td>
-                  <td {% if branch.hexColor.data %}
-                        style='background-color: #{{ branch.hexColor.data }};'
-                      {% endif %}
-                      class="hexColor">
-                    {% form_field branch.hexColor class="form-control" pattern="[0123456789abcdefABCDEF]{6}" placeholder="c0ffee" style="width: 6em;" %}
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </form>
-      {% else %}
-        <table class="table table-condensed viewTableFilter">
-          <thead>
-            <tr>
-              <th>Level 1 branch ix</th>
-              <th>Family ix</th>
-              <th>Branch name</th>
-              <th>Short name</th>
-              <th>Color (hex)</th>
-            </tr>
-            <tr>
-              <th>
-                <input type="text" class="filterText form-control narrow"
-                       data-selector=".family_ix">
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".family_ix">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </th>
-              <th>
-                <input type="text" class="filterText form-control narrow"
-                       data-selector=".level1_branch_ix">
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".level1_branch_ix">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </th>
-              <th>
-                <input type="text" class="filterText form-control narrow"
-                       data-selector=".level1_branch_name">
-                <div class="btn btn-xs btn-default sortText"
-                     data-selector=".level1_branch_name">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </th>
-              <th>
-                <input type="text" class="filterText form-control narrow"
-                       data-selector=".shortName">
-                <div class="btn btn-xs btn-default sortText"
-                     data-selector=".shortName">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </th>
-              <th>
-                <input type="text" class="filterText form-control narrow"
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".hexColor">
+                  <div class="btn btn-xs btn-default sortText"
                        data-selector=".hexColor">
-                <div class="btn btn-xs btn-default sortText"
-                     data-selector=".hexColor">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
               </th>
             </tr>
           </thead>
           <tbody>
             {% for branch in branches.elements %}
               <tr>
+                <td class="hide">
+                  {% form_field branch.idField required="required" %}
+                </td>
                 <td class="family_ix">
-                  {{ branch.family_ix.data }}
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.family_ix class="form-control" required="required" pattern="[0-9]+" style="width: 2em;" %}
+                  {% elif branch.family_ix.data %}
+                    {{ branch.family_ix.data }}
+                  {% endif %}
                 </td>
                 <td class="level1_branch_ix">
-                  {{ branch.level1_branch_ix.data }}
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.level1_branch_ix class="form-control" required="required" pattern="[0-9]+" style="width: 2em;" %}
+                  {% elif branch.level1_branch_ix.data %}
+                    {{ branch.level1_branch_ix.data }}
+                  {% endif %}
+                </td>
+                <td class="level2_branch_ix">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.level2_branch_ix class="form-control" required="required" pattern="[0-9]+" style="width: 2em;" %}
+                  {% elif branch.level2_branch_ix.data %}
+                    {{ branch.level2_branch_ix.data }}
+                  {% endif %}
+                </td>
+                <td class="level2_branch_ix">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.level2_branch_ix class="form-control" required="required" pattern="[0-9]+" style="width: 2em;" %}
+                  {% elif branch.level2_branch_ix.data %}
+                    {{ branch.level2_branch_ix.data }}
+                  {% endif %}
                 </td>
                 <td class="level1_branch_name">
-                  {{ branch.level1_branch_name.data }}
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.level1_branch_name class="form-control" required="required" %}
+                  {% elif branch.level1_branch_name.data %}
+                    {{ branch.level1_branch_name.data }}
+                  {% endif %}
                 </td>
                 <td class="shortName">
-                  {{ branch.shortName.data }}
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.shortName class="form-control" style="width: 4em;" %}
+                  {% elif branch.shortName.data %}
+                    {{ branch.shortName.data }}
+                  {% endif %}
+                </td>
+                <td class="export">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.export class="form-control" %}
+                  {% else %}
+                    {% form_field branch.export class="form-control" disabled="disabled" %}
+                  {% endif %}
+                </td>
+                <td class="taxonsetName">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.taxonsetName class="form-control" pattern="^[^ ]*$" %}
+                  {% elif branch.taxonsetName.data %}
+                    {{ branch.taxonsetName.data }}
+                  {% endif %}
+                </td>
+                <td class="atMost">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.atMost class="form-control" pattern="^[0-9]{0,4}$" %}
+                  {% elif branch.atMost.data %}
+                    {{ branch.atMost.data }}
+                  {% endif %}
+                </td>
+                <td class="atLeast">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.atLeast class="form-control" pattern="^[0-9]{0,4}$" %}
+                  {% elif branch.atLeast.data %}
+                    {{ branch.atLeast.data }}
+                  {% endif %}
+                </td>
+                <td class="distribution">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.distribution class="form-control" %}
+                  {% elif branch.distribution.data %}
+                    {{ branch.distribution.data }}
+                  {% endif %}
+                </td>
+                <td class="logNormalOffset">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.logNormalOffset class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif branch.logNormalOffset.data %}
+                    {{ branch.logNormalOffset.data }}
+                  {% endif %}
+                </td>
+                <td class="logNormalMean">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.logNormalMean class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif branch.logNormalMean.data %}
+                    {{ branch.logNormalMean.data }}
+                  {% endif %}
+                </td>
+                <td class="logNormalStDev">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.logNormalStDev class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif branch.logNormalStDev.data %}
+                    {{ branch.logNormalStDev.data }}
+                  {% endif %}
+                </td>
+                <td class="normalMean">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.normalMean class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif branch.normalMean.data %}
+                    {{ branch.normalMean.data }}
+                  {% endif %}
+                </td>
+                <td class="normalStDev">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.normalStDev class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif branch.normalStDev.data %}
+                    {{ branch.normalStDev.data }}
+                  {% endif %}
+                </td>
+                <td class="uniformUpper">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.uniformUpper class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif branch.uniformUpper.data %}
+                    {{ branch.uniformUpper.data }}
+                  {% endif %}
+                </td>
+                <td class="uniformLower">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.uniformLower class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif branch.uniformLower.data %}
+                    {{ branch.uniformLower.data }}
+                  {% endif %}
+                </td>
+                <td class="sndcompLevel0">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.sndcompLevel0 class="form-control" pattern="^[0-9]{0,1}$" %}
+                  {% elif branch.sndcompLevel0.data %}
+                    {{ branch.sndcompLevel0.data }}
+                  {% endif %}
+                </td>
+                <td class="sndcompLevel1">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.sndcompLevel1 class="form-control" pattern="^[0-9]{0,1}$" %}
+                  {% elif branch.sndcompLevel1.data %}
+                    {{ branch.sndcompLevel1.data }}
+                  {% endif %}
+                </td>
+                <td class="sndcompLevel2">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.sndcompLevel2 class="form-control" pattern="^[0-9]{0,1}$" %}
+                  {% elif branch.sndcompLevel2.data %}
+                    {{ branch.sndcompLevel2.data }}
+                  {% endif %}
+                </td>
+                <td class="sndcompLevel3">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.sndcompLevel3 class="form-control" pattern="^[0-9]{0,1}$" %}
+                  {% elif branch.sndcompLevel3.data %}
+                    {{ branch.sndcompLevel3.data }}
+                  {% endif %}
                 </td>
                 <td {% if branch.hexColor.data %}
                       style='background-color: #{{ branch.hexColor.data }};'
                     {% endif %}
                     class="hexColor">
-                  {{ branch.hexColor.data }}
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.hexColor class="form-control" pattern="[0123456789abcdefABCDEF]{6}" placeholder="c0ffee" style="width: 6em;" %}
+                  {% elif branch.hexColor.data %}
+                    {{branch.hexColor.data}}
+                  {% endif %}
                 </td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
+      {% if user.is_authenticated and user.is_staff %}
+        </form>
       {% endif %}
   </div>
 {% endblock %}
