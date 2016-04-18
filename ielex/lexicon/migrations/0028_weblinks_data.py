@@ -14,7 +14,7 @@ def forwards_func(apps, schema_editor):
     with open('./ielex/lexicon/migrations/0028_weblinks_data.json') as f:
         data = json.load(f)
         print('0028_weblinks_data.json loaded.')
-        print('Checking %s lexemes…' % len(data['lexemes']))
+        print('Checking %s lexemes..' % len(data['lexemes']))
         for ldata in data['lexemes']:
             lexeme = Lexeme.objects.get(id=ldata['id'])
             changed = False
@@ -28,12 +28,12 @@ def forwards_func(apps, schema_editor):
                 print('Changed lexeme: ', lexeme.id)
             else:
                 print('Ignored lexeme: ', lexeme.id)
-        print('Checking %s languages…' % len(data['languages']))
+        print('Checking %s languages..' % len(data['languages']))
         for ldata in data['languages']:
             language = Language.objects.get(id=ldata['id'])
             changed = False
             for f in ['rfcWebPath1', 'rfcWebPath2']:
-                if language.altname.get(fa ,'') == '':
+                if language.altname.get(f ,'') == '':
                     if ldata.get(f, '') != '':
                         language.altname[f] = ldata[f]
                         changed = True
