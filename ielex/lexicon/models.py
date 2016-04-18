@@ -732,7 +732,15 @@ class Lexeme(models.Model):
         return SafeString(", ".join(parts))
     # get_cognate_class_links.allow_tags = True # this is only for admin
 
-    def is_excluded(self):
+    def is_excluded_lexeme(self):
+        # Tests is_exc for #88
+        return ('X' in self.reliability_ratings)
+
+    def is_loan_lexeme(self):
+        # Tests is_loan for #88
+        return ('L' in self.reliability_ratings)
+
+    def is_excluded_cognate(self):
         # Tests is_exc for #29
         for j in self.cognatejudgement_set.all():
             if j.is_excluded:
@@ -740,12 +748,12 @@ class Lexeme(models.Model):
                     return True
         return False
 
-    def is_loan(self):
+    def is_loan_cognate(self):
         # Tests is_loan for #29
         for j in self.cognatejudgement_set.all():
-                if j.is_excluded:
-                    if j.is_loanword:
-                        return True
+            if j.is_excluded:
+                if j.is_loanword:
+                    return True
         return False
 
     @property

@@ -279,7 +279,8 @@ class LanguageBranchesRowForm(WTForm):
     taxonsetName = StringField('Texonset name', validators=[DataRequired()])
     atMost = IntegerField('At most?', validators=[DataRequired()])
     atLeast = IntegerField('At least?', validators=[DataRequired()])
-    distribution = SelectField('Distribution type', choices=DISTRIBUTION_CHOICES)
+    distribution = SelectField(
+        'Distribution type', choices=DISTRIBUTION_CHOICES)
     logNormalOffset = IntegerField('[Offset]', validators=[DataRequired()])
     logNormalMean = IntegerField('Mean', validators=[DataRequired()])
     logNormalStDev = IntegerField('StDev', validators=[DataRequired()])
@@ -348,8 +349,14 @@ class LexemeRowForm(WTForm):
     rootLanguageCompare = StringField('Root Language Compare')
 
     # Exclusion booleans:
-    is_excluded = BooleanField('Is Excluded', validators=[DataRequired()])
-    is_loan = BooleanField('Is Loan', validators=[DataRequired()])
+    is_excluded_lexeme = BooleanField(
+        'Is Excluded via LexemeCitation', validators=[DataRequired()])
+    is_loan_lexeme = BooleanField(
+        'Is Loan via LexemeCitation', validators=[DataRequired()])
+    is_excluded_cognate = BooleanField(
+        'Is Excluded via CognateJudgement', validators=[DataRequired()])
+    is_loan_cognate = BooleanField(
+        'Is Loan via CognateJudgement', validators=[DataRequired()])
 
     # LoanEvent for #29:
     loan_event = BooleanField('Loan Event', validators=[DataRequired()])

@@ -55,10 +55,14 @@
               <th>Transliteration</th>
               {# notswadesh_title.html #}
               <th>Not<br>Swh<br></th>
-              {# isloan_title.html #}
-              <th>loan</th>
-              {# isexcluded_title.html #}
-              <th>excl</th>
+              {# isloan_lexeme_title.html #}
+              <th>loan lex.</th>
+              {# isexcluded_lexeme_title.html #}
+              <th>excl lex.</th>
+              {# isloan_cognate_title.html #}
+              <th>loan cog.</th>
+              {# isexcluded_cognate_title.html #}
+              <th>excl cog.</th>
               {# loanevent_title.html #}
               <th>Loan<br>Evt</th>
               {# rootform_title.html #}
@@ -157,17 +161,31 @@
                   <span class="glyphicon glyphicon-remove-sign"></span>
                 </button>
               </th>
-              {# isloan_filter.html #}
+              {# isloan_lexeme_filter.html #}
               <th>
                 <button type="button" class="filterBool btn btn-xs btn-default"
-                        data-selector=".lexemeIsLoan input">
+                        data-selector=".lexemeIsLoanLexeme input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </th>
-              {# isexcluded_filter.html #}
+              {# isexcluded_lexeme_filter.html #}
               <th>
                 <button type="button" class="filterBool btn btn-xs btn-default"
-                        data-selector=".lexemeIsExcluded input">
+                        data-selector=".lexemeIsExcludedLexeme input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </th>
+              {# isloan_cognate_filter.html #}
+              <th>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".lexemeIsLoanCognate input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </th>
+              {# isexcluded_cognate_filter.html #}
+              <th>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".lexemeIsExcludedCognate input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </th>
@@ -400,13 +418,21 @@
                     {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
-                {# isloan_data.html #}
-                <td class="lexemeIsLoan">
-                  {% form_field lexeme.is_loan disabled="disabled" class="form-control" %}
+                {# isloan_lexeme_data.html #}
+                <td class="lexemeIsLoanLexeme">
+                  {% form_field lexeme.is_loan_lexeme disabled="disabled" class="form-control" %}
                 </td>
-                {# isexcluded_data.html #}
-                <td class="lexemeIsExcluded">
-                  {% form_field lexeme.is_excluded disabled="disabled" class="form-control" %}
+                {# isexcluded_lexeme_data.html #}
+                <td class="lexemeIsExcludedLexeme">
+                  {% form_field lexeme.is_excluded_lexeme disabled="disabled" class="form-control" %}
+                </td>
+                {# isloan_cognate_data.html #}
+                <td class="lexemeIsLoanCognate">
+                  {% form_field lexeme.is_loan_cognate disabled="disabled" class="form-control" %}
+                </td>
+                {# isexcluded_cognate_data.html #}
+                <td class="lexemeIsExcludedCognate">
+                  {% form_field lexeme.is_excluded_cognate disabled="disabled" class="form-control" %}
                 </td>
                 {# loanevent_data.html #}
                 <td class="lexemeLoanEvent">

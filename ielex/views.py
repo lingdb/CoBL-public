@@ -621,8 +621,10 @@ def view_language_wordlist(request, language, wordlist):
             lex_row_form.not_swadesh_term = \
                 lex.data.get('not_swadesh_term', '')
 
-            lex_row_form.is_excluded = lex.is_excluded()
-            lex_row_form.is_loan = lex.is_loan()
+            lex_row_form.is_excluded_lexeme = lex.is_excluded_lexeme()
+            lex_row_form.is_loan_lexeme = lex.is_loan_lexeme()
+            lex_row_form.is_excluded_cognate = lex.is_excluded_cognate()
+            lex_row_form.is_loan_cognate = lex.is_loan_cognate()
 
             cle = lex.checkLoanEvent()
             lex_row_form.show_loan_event = (cle is not None)
@@ -1093,8 +1095,10 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                 lex_row_form.languageBranchColor = branch.getColor()
                 lex_row_form.languageBranchId = branch.id
 
-            lex_row_form.is_excluded = lex.is_excluded()
-            lex_row_form.is_loan = lex.is_loan()
+            lex_row_form.is_excluded_lexeme = lex.is_excluded_lexeme()
+            lex_row_form.is_loan_lexeme = lex.is_loan_lexeme()
+            lex_row_form.is_excluded_cognate = lex.is_excluded_cognate()
+            lex_row_form.is_loan_cognate = lex.is_loan_cognate()
 
             cle = lex.checkLoanEvent()
             lex_row_form.show_loan_event = (cle is not None)
