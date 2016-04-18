@@ -539,8 +539,7 @@
                     {{ lexeme.rfcWebLookup1.data }}
                   {% endif %}
                 </td>
-                <!--
-                <td>
+                <td class="hide">
                   {% if user.is_authenticated %}
                     <button class="rightcheckarrow btn btn-xs"
                             type="button"
@@ -550,14 +549,13 @@
                     </button>
                   {% endif %}
                 </td>
-                <td class="lexemeRfcWebLookup2">
+                <td class="lexemeRfcWebLookup2 hide">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.rfcWebLookup2 class="form-control" %}
                   {% elif lexeme.rfcWebLookup2.data %}
                     {{ lexeme.rfcWebLookup2.data }}
                   {% endif %}
                 </td>
-                -->
                 {# dubious_data.html #}
                 <td class="lexemeDubious">
                   {% if user.is_authenticated %}
