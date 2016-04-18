@@ -549,49 +549,49 @@
                     {{ branch.distribution.data }}
                   {% endif %}
                 </td>
-                <td class="logNormalOffset">
+                <td class="logNormalOffset reflectDistribution" data-allowed="O">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field branch.logNormalOffset class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif branch.logNormalOffset.data %}
                     {{ branch.logNormalOffset.data }}
                   {% endif %}
                 </td>
-                <td class="logNormalMean">
+                <td class="logNormalMean reflectDistribution" data-allowed="OL">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field branch.logNormalMean class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif branch.logNormalMean.data %}
                     {{ branch.logNormalMean.data }}
                   {% endif %}
                 </td>
-                <td class="logNormalStDev">
+                <td class="logNormalStDev reflectDistribution" data-allowed="OL">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field branch.logNormalStDev class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif branch.logNormalStDev.data %}
                     {{ branch.logNormalStDev.data }}
                   {% endif %}
                 </td>
-                <td class="normalMean">
+                <td class="normalMean reflectDistribution" data-allowed="N">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field branch.normalMean class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif branch.normalMean.data %}
                     {{ branch.normalMean.data }}
                   {% endif %}
                 </td>
-                <td class="normalStDev">
+                <td class="normalStDev reflectDistribution" data-allowed="N">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field branch.normalStDev class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif branch.normalStDev.data %}
                     {{ branch.normalStDev.data }}
                   {% endif %}
                 </td>
-                <td class="uniformUpper">
+                <td class="uniformUpper reflectDistribution" data-allowed="U">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field branch.uniformUpper class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif branch.uniformUpper.data %}
                     {{ branch.uniformUpper.data }}
                   {% endif %}
                 </td>
-                <td class="uniformLower">
+                <td class="uniformLower reflectDistribution" data-allowed="U">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field branch.uniformLower class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif branch.uniformLower.data %}
