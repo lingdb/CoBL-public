@@ -76,21 +76,21 @@
               <th>Lex. loan</th>
               {# isexcluded_lexeme_title.html #}
               <th>Lex. excl</th>
+              {# ncog_title.html #}
+              <th title="Number of cognate classes"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  style="width: 80px;">nCog</th>
+              {# rootform_title.html #}
+              <th>Root Form</th>
+              {# rootlanguage_title.html #}
+              <th>Root Language</th>
               {# isloan_cognate_title.html #}
               <th>Cog. loan</th>
               {# isexcluded_cognate_title.html #}
               <th>Cog. excl</th>
               {# loanevent_title.html #}
               <th>Loan<br>Event</th>
-              {# rootform_title.html #}
-              <th>Root Form</th>
-              {# rootlanguage_title.html #}
-              <th>Root Language</th>
-              {# ncog_title.html #}
-              <th title="Number of cognate classes"
-                  data-toggle="tooltip"
-                  data-placement="bottom"
-                  style="width: 80px;">nCog</th>
               {# phonemic_title.html #}
               <th>PhoneMic</th>
               {# phonecopy_title.html #}
@@ -189,28 +189,14 @@
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </th>
-              {# isloan_cognate_filter.html #}
+              {# ncog_filter.html #}
               <th>
-                <button type="button"
-                        class="filterBool btn btn-xs btn-default"
-                        data-selector=".lexemeIsLoanCognate input">
-                  <span class="glyphicon glyphicon-question-sign"></span>
-                </button>
-              </th>
-              {# isexcluded_cognate_filter.html #}
-              <th>
-                <button type="button"
-                        class="filterBool btn btn-xs btn-default"
-                        data-selector=".lexemeIsExcludedCognate input">
-                  <span class="glyphicon glyphicon-question-sign"></span>
-                </button>
-              </th>
-              {# loanevent_filter.html #}
-              <th>
-                <button type="button" class="filterBool btn btn-xs btn-default"
-                        data-selector=".lexemeShowLoanEvent input">
-                  <span class="glyphicon glyphicon-question-sign"></span>
-                </button>
+                <input type="text" class="filterText form-control narrow"
+                       data-selector=".lexemeNCog" size="1">
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".lexemeNCog">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
               </th>
               {# rootform_filter.html #}
               <th>
@@ -252,14 +238,28 @@
                   </div>
                 {% endif %}
               </th>
-              {# ncog_filter.html #}
+              {# isloan_cognate_filter.html #}
               <th>
-                <input type="text" class="filterText form-control narrow"
-                       data-selector=".lexemeNCog" size="1">
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".lexemeNCog">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".lexemeIsLoanCognate input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </th>
+              {# isexcluded_cognate_filter.html #}
+              <th>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".lexemeIsExcludedCognate input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </th>
+              {# loanevent_filter.html #}
+              <th>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".lexemeShowLoanEvent input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
               </th>
               {# phonemic_filter.html #}
               <th>
@@ -458,19 +458,13 @@
                 <td class="lexemeIsExcludedLexeme">
                   {% form_field lexeme.is_excluded_lexeme disabled="disabled" class="form-control" %}
                 </td>
-                {# isloan_cognate_data.html #}
-                <td class="lexemeIsLoanCognate">
-                  {% form_field lexeme.is_loan_cognate disabled="disabled" class="form-control" %}
-                </td>
-                {# isexcluded_cognate_data.html #}
-                <td class="lexemeIsExcludedCognate">
-                  {% form_field lexeme.is_excluded_cognate disabled="disabled" class="form-control" %}
-                </td>
-                {# loanevent_data.html #}
-                <td class="lexemeShowLoanEvent">
-                  {% if lexeme.object_data.show_loan_event %}
-                    {% form_field lexeme.loan_event disabled="disabled" class="form-control" %}
-                  {% endif %}
+                {# ncog_data.html #}
+                <td class="lexemeNCog">
+                  <center>
+                    <span class="badge">
+                      {{ lexeme.data.number_cognate_coded }}
+                    </span>
+                  </center>
                 </td>
                 {# rootform_data.html #}
                 <td class="lexemeRootForm">
@@ -492,13 +486,19 @@
                     {% endif %}
                   {% endif %}
                 </td>
-                {# ncog_data.html #}
-                <td class="lexemeNCog">
-                  <center>
-                    <span class="badge">
-                      {{ lexeme.data.number_cognate_coded }}
-                    </span>
-                  </center>
+                {# isloan_cognate_data.html #}
+                <td class="lexemeIsLoanCognate">
+                  {% form_field lexeme.is_loan_cognate disabled="disabled" class="form-control" %}
+                </td>
+                {# isexcluded_cognate_data.html #}
+                <td class="lexemeIsExcludedCognate">
+                  {% form_field lexeme.is_excluded_cognate disabled="disabled" class="form-control" %}
+                </td>
+                {# loanevent_data.html #}
+                <td class="lexemeShowLoanEvent">
+                  {% if lexeme.object_data.show_loan_event %}
+                    {% form_field lexeme.loan_event disabled="disabled" class="form-control" %}
+                  {% endif %}
                 </td>
                 {# phonemic_data.html #}
                 <td class="lexemePhoneMic">
