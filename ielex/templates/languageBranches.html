@@ -493,11 +493,11 @@
                     {{ branch.level2_branch_ix.data }}
                   {% endif %}
                 </td>
-                <td class="level2_branch_ix">
+                <td class="level3_branch_ix">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field branch.level2_branch_ix class="form-control" required="required" pattern="[0-9]+" style="width: 2em;" %}
-                  {% elif branch.level2_branch_ix.data %}
-                    {{ branch.level2_branch_ix.data }}
+                    {% form_field branch.level3_branch_ix class="form-control" required="required" pattern="[0-9]+" style="width: 2em;" %}
+                  {% elif branch.level3_branch_ix.data %}
+                    {{ branch.level3_branch_ix.data }}
                   {% endif %}
                 </td>
                 <td class="level1_branch_name">

@@ -393,13 +393,14 @@ def view_languageBranches(request):
         for entry in form.elements:
             data = entry.data
             try:
-                branch = LanguageBranches.objects.get(id=data['idField'])
-                if not branch.is_unchanged(**data):
-                    branch.setDelta(**data)
-                    try:
-                        branch.save()
-                    except Exception, e:
-                        print('Exception while saving POST:', e)
+                with transaction.atomic():
+                    branch = LanguageBranches.objects.get(id=data['idField'])
+                    if not branch.is_unchanged(**data):
+                        branch.setDelta(**data)
+                        try:
+                            branch.save()
+                        except Exception, e:
+                            print('Exception while saving POST:', e)
             except Exception, e:
                 print('Exception while accessing LanguageBranches object: ',
                       e, '; POST items are: ', data)
