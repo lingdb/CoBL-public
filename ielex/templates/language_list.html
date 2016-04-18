@@ -126,12 +126,26 @@
               <th>Author</th>
               {# reviewer_title.html #}
               <th>Reviewer</th>
-              {# toomany_title.html #}
+              {# entd_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="(#lexemes - #meanings)">
-                Too<br>many{# Lex.-Mgs #}
+                  title="Number of entries">
+                Entd{# Number of entries per language #}
+              </th>
+              {# notSwh_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of exluded lexemes per language">
+                Not Swh{# Number of excluded lexemes per language #}
+              </th>
+              {# lex_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of lexemes">
+                Swh Lex.{# Number of lexemes per language #}
               </th>
               {# mgs_title.html #}
               <th data-toggle="tooltip"
@@ -140,19 +154,12 @@
                   title="Number of meanings">
                 Mgs{# Number of meanings per language #}
               </th>
-              {# lex_title.html #}
+              {# toomany_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Number of lexemes">
-                Lex.{# Number of lexemes per language #}
-              </th>
-              {# entd_title.html #}
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Number of entries">
-                Entd{# Number of entries per language #}
+                  title="(#lexemes - #meanings)">
+                Too<br>many{# Lex.-Mgs #}
               </th>
               {# lv_title.html #}
               <th data-toggle="tooltip"
@@ -382,17 +389,17 @@
                          data-selector=".languageReviewer">
                 {% endif %}
               </th>
-              {# toomany_filter.html #}
+              {# entd_filter.html #}
               <th>
                 <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".languageExcessCount">
+                     data-selector=".languageEntdCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </th>
-              {# mgs_filter.html #}
+              {# notSwh_filter.html #}
               <th>
                 <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".languageMgsCount">
+                     data-selector=".languageNotSwhCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </th>
@@ -403,10 +410,17 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </th>
-              {# entd_filter.html #}
+              {# mgs_filter.html #}
               <th>
                 <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".languageEntdCount">
+                     data-selector=".languageMgsCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              {# toomany_filter.html #}
+              <th>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageExcessCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </th>
@@ -634,10 +648,22 @@
                     {{ language.reviewer.data }}
                   {% endif %}
                 </td>
-                {# toomany_data.html #}
-                <td class="languageExcessCount">
+                {# entd_data.html #}
+                <td class="languageEntdCount">
                   <center>
-                    <span class="badge">{{ language.data.excess_count }}</span>
+                    <span class="badge">{{ language.data.entd_count }}</span>
+                  </center>
+                </td>
+                {# notSwh_data.html #}
+                <th class="languageNotSwhCount">
+                  <center>
+                    <span class="badge">{{ language.data.notSwh_count }}</span>
+                  </center>
+                </th>
+                {# lex_data.html #}
+                <td class="languageLexCount">
+                  <center>
+                    <span class="badge">{{ language.data.lex_count }}</span>
                   </center>
                 </td>
                 {# mgs_data.html #}
@@ -646,16 +672,10 @@
                     <span class="badge">{{ language.data.mgs_count }}</span>
                   </center>
                 </td>
-                {# lex_data.html #}
-                <td class="languageLexCount">
+                {# toomany_data.html #}
+                <td class="languageExcessCount">
                   <center>
-                    <span class="badge">{{ language.data.lex_count }}</span>
-                  </center>
-                </td>
-                {# entd_data.html #}
-                <td class="languageEntdCount">
-                  <center>
-                    <span class="badge">{{ language.data.entd_count }}</span>
+                    <span class="badge">{{ language.data.excess_count }}</span>
                   </center>
                 </td>
                 {# lv_data.html #}

@@ -317,9 +317,10 @@ def view_language_list(request, language_list=None):
             entryCount = len(lang.lexeme_set.all())
             meaningCount = len(set(
                 lex.meaning.id for lex in lang.lexeme_set.all()))
+            langlist_row_form.entd_count = entryCount
+            langlist_row_form.notSwh_count = nonLexCount
             langlist_row_form.lex_count = entryCount - nonLexCount
             langlist_row_form.mgs_count = meaningCount
-            langlist_row_form.entd_count = entryCount
             langlist_row_form.excess_count = \
                 (entryCount - nonLexCount) - meaningCount
 

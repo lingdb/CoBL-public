@@ -237,6 +237,7 @@ class LanguageListRowForm(WTForm):
     representative = BooleanField('Representative',
                                   validators=[DataRequired()])
     mgs_count = IntegerField('Meaning Count', validators=[DataRequired()])
+    notSwh_count = IntegerField('Not Swadesh Count', validators=[DataRequired()])
     lex_count = IntegerField('Lexeme Count', validators=[DataRequired()])
     entd_count = IntegerField('Entry Count', validators=[DataRequired()])
     excess_count = IntegerField('Excess Count', validators=[DataRequired()])
