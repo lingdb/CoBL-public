@@ -34,13 +34,15 @@
               <th>Lv 2</th>
               <th>Lv 3</th>
               <th>Branch name</th>
+              <th>Disp only?</th>
+              <th>Colour (hex)</th>
               <th>Abbr</th>
+              <th>Taxonset name</th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   title="Boolean to decide wether it will be included in the export">
                 Exp?
               </th>
-              <th>Taxonset name</th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   title="Latest plausible date at which divergence had not yet begun">
@@ -94,7 +96,6 @@
               <th>SC 1</th>
               <th>SC 2</th>
               <th>SC 3</th>
-              <th>Colour (hex)</th>
             </tr>
             <tr>
               <th>
@@ -183,6 +184,30 @@
                 {% endif %}
               </th>
               <th>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".dispOnly input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".hexColor input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".hexColor input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".hexColor">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".hexColor">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".shortName input">
@@ -200,13 +225,6 @@
                 {% endif %}
               </th>
               <th>
-                <button type="button"
-                        class="filterBool btn btn-xs btn-default"
-                        data-selector=".export input">
-                  <span class="glyphicon glyphicon-question-sign"></span>
-                </button>
-              </th>
-              <th>
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".taxonsetName input">
@@ -222,6 +240,13 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
+              </th>
+              <th>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".export input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
               </th>
               <th>
                 {% if user.is_authenticated and user.is_staff %}
@@ -447,23 +472,6 @@
                   </div>
                 {% endif %}
               </th>
-              <th>
-                {% if user.is_authenticated and user.is_staff %}
-                  <input type="text" class="filterInput form-control narrow"
-                         data-selector=".hexColor input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".hexColor input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% else %}
-                  <input type="text" class="filterText form-control narrow"
-                         data-selector=".hexColor">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".hexColor">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% endif %}
-              </th>
             </tr>
           </thead>
           <tbody>
@@ -502,9 +510,26 @@
                 </td>
                 <td class="level1_branch_name">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field branch.level1_branch_name class="form-control" required="required" style="width: 6em;" %}
+                    {% form_field branch.level1_branch_name class="form-control" required="required" style="width: 10em;" %}
                   {% elif branch.level1_branch_name.data %}
                     {{ branch.level1_branch_name.data }}
+                  {% endif %}
+                </td>
+                <td class="dispOnly">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.export class="form-control" %} <!-- FIXME add display field! -->
+                  {% else %}
+                    {% form_field branch.export class="form-control" disabled="disabled" %} <!-- FIXME add display field! -->
+                  {% endif %}
+                </td>
+                <td {% if branch.hexColor.data %}
+                      style='background-color: #{{ branch.hexColor.data }};'
+                    {% endif %}
+                    class="hexColor">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.hexColor class="form-control" pattern="[0123456789abcdefABCDEF]{6}" placeholder="c0ffee" style="width: 4.5em;" %}
+                  {% elif branch.hexColor.data %}
+                    {{branch.hexColor.data}}
                   {% endif %}
                 </td>
                 <td class="shortName">
@@ -514,18 +539,18 @@
                     {{ branch.shortName.data }}
                   {% endif %}
                 </td>
+                <td class="taxonsetName">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field branch.taxonsetName class="form-control" pattern="^[^ ]*$" style="width: 10em;" %}
+                  {% elif branch.taxonsetName.data %}
+                    {{ branch.taxonsetName.data }}
+                  {% endif %}
+                </td>
                 <td class="export">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field branch.export class="form-control" %}
                   {% else %}
                     {% form_field branch.export class="form-control" disabled="disabled" %}
-                  {% endif %}
-                </td>
-                <td class="taxonsetName">
-                  {% if user.is_authenticated and user.is_staff %}
-                    {% form_field branch.taxonsetName class="form-control" pattern="^[^ ]*$" %}
-                  {% elif branch.taxonsetName.data %}
-                    {{ branch.taxonsetName.data }}
                   {% endif %}
                 </td>
                 <td class="atMost">
@@ -624,16 +649,6 @@
                     {% form_field branch.sndcompLevel3 class="form-control" pattern="^[0-9]{0,1}$" %}
                   {% elif branch.sndcompLevel3.data %}
                     {{ branch.sndcompLevel3.data }}
-                  {% endif %}
-                </td>
-                <td {% if branch.hexColor.data %}
-                      style='background-color: #{{ branch.hexColor.data }};'
-                    {% endif %}
-                    class="hexColor">
-                  {% if user.is_authenticated and user.is_staff %}
-                    {% form_field branch.hexColor class="form-control" pattern="[0123456789abcdefABCDEF]{6}" placeholder="c0ffee" style="width: 4.5em;" %}
-                  {% elif branch.hexColor.data %}
-                    {{branch.hexColor.data}}
                   {% endif %}
                 </td>
               </tr>
