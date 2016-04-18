@@ -2005,6 +2005,7 @@ def viewAuthors(request):
     for author in authors:
 
         author.idField = author.id
+        author.displayEmail = " [ AT ] ".join(author.email.split("@"))
         form.elements.append_entry(author)
 
     return render_template(
