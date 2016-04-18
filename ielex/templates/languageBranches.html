@@ -29,16 +29,16 @@
         <table class="table table-condensed viewTableFilter">
           <thead>
             <tr>
-              <th>Level 0</th>
-              <th>Level 1 branch ix</th>
-              <th>Level 2 branch ix</th>
-              <th>Level 3 branch ix</th>
+              <th>Lv 0</th>
+              <th>Lv 1</th>
+              <th>Lv 2</th>
+              <th>Lv 3</th>
               <th>Branch name</th>
-              <th>Short name</th>
+              <th>Abbr</th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   title="Boolean to decide wether it will be included in the export">
-                Export?
+                Exp?
               </th>
               <th>Taxonset name</th>
               <th data-toggle="tooltip"
@@ -60,40 +60,40 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   title="Mean for log normal distribution">
-                Mean
+                LogN Mean
               </th><!-- DATE TOOLTIP -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   title="StDev for log normal distribution">
-                StDev
+                LogN StDev
               </th><!-- DATE TOOLTIP -->
               <!-- For normal: -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   title="Mean for normal distribution">
-                Mean
+                Norm Mean
               </th><!-- DATE TOOLTIP -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   title="StDev for normal distribution">
-                StDev
+                Norm StDev
               </th><!-- DATE TOOLTIP -->
               <!-- For Uniform: -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   title="Upper bound for uniform distribution type">
-                Upper
+                Univ Upper
               </th><!-- DATE TOOLTIP -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   title="Lower bound for uniform distribution type">
-                Lower
+                Univ Lower
               </th><!-- DATE TOOLTIP -->
               {# For SndComp reference: #}
-              <th>SndComp Level 0</th>
-              <th>SndComp Level 1</th>
-              <th>SndComp Level 2</th>
-              <th>SndComp Level 3</th>
+              <th>SC 0</th>
+              <th>SC 1</th>
+              <th>SC 2</th>
+              <th>SC 3</th>
               <th>Colour (hex)</th>
             </tr>
             <tr>
@@ -502,14 +502,14 @@
                 </td>
                 <td class="level1_branch_name">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field branch.level1_branch_name class="form-control" required="required" %}
+                    {% form_field branch.level1_branch_name class="form-control" required="required" style="width: 6em;" %}
                   {% elif branch.level1_branch_name.data %}
                     {{ branch.level1_branch_name.data }}
                   {% endif %}
                 </td>
                 <td class="shortName">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field branch.shortName class="form-control" style="width: 4em;" %}
+                    {% form_field branch.shortName class="form-control" style="width: 3em;" %}
                   {% elif branch.shortName.data %}
                     {{ branch.shortName.data }}
                   {% endif %}
@@ -631,7 +631,7 @@
                     {% endif %}
                     class="hexColor">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field branch.hexColor class="form-control" pattern="[0123456789abcdefABCDEF]{6}" placeholder="c0ffee" style="width: 6em;" %}
+                    {% form_field branch.hexColor class="form-control" pattern="[0123456789abcdefABCDEF]{6}" placeholder="c0ffee" style="width: 4.5em;" %}
                   {% elif branch.hexColor.data %}
                     {{branch.hexColor.data}}
                   {% endif %}
