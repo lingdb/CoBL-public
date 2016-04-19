@@ -79,7 +79,12 @@
                     {% form_field author.email class="form-control" %}
                   </td>
                   <td class="website">
-                    {% form_field author.website class="form-control" %}
+                    {% form_field author.website class="form-control inline" style="width: 90%;" %}
+                    {% if author.website.data %}
+                      <a href="{{ author.website.data }}" target="_blank">
+                        <span class="glyphicon glyphicon-link"></span>
+                      </a>
+                    {% endif %}
                   </td>
                 </tr>
               {% endfor %}
@@ -113,7 +118,11 @@
                   {{ author.object_data.displayEmail }}
                 </td>
                 <td class="website">
-                  {{ author.website.data }}
+                  {% if author.website.data %}
+                    <a href="{{ author.website.data }}" target="_blank">
+                      <span class="glyphicon glyphicon-link"></span>
+                    </a>
+                  {% endif %}
                 </td>
               </tr>
             {% endfor %}
