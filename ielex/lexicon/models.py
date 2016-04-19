@@ -275,6 +275,134 @@ class LanguageBranches(models.Model):
 
 
 @reversion.register
+class Clade(models.Model):
+    '''
+    This model was added for #153
+    and shall be used to track clade constraints.
+    '''
+    family_ix = models.IntegerField(blank=True)
+    level1_branch_ix = models.IntegerField(default=0)
+    level2_branch_ix = models.IntegerField(default=0)
+    level3_branch_ix = models.IntegerField(default=0)
+    level1_branch_name = models.TextField(blank=True, unique=True)
+    hexColor = models.CharField(max_length=6, blank=True)
+    shortName = models.CharField(max_length=5, blank=True)
+    # Will decide wether to include this in the export:
+    export = models.BooleanField(default=0)
+    # Will decide wether to include the date in the export:
+    exportDate = models.BooleanField(default=0)
+    # No spaces allowed in the following:
+    taxonsetName = models.CharField(max_length=100, blank=True)
+    # Latest plausible date divergence had not yet begun:
+    atMost = models.IntegerField(null=True)
+    # Earliest plausible date divergence could have begun by:
+    atLeast = models.IntegerField(null=True)
+    # Distribution type used:
+    distribution = models.CharField(
+        max_length=1, choices=DISTRIBUTION_CHOICES, default="_")
+    # For [offset] log normal distribution:
+    logNormalOffset = models.IntegerField(null=True)
+    logNormalMean = models.IntegerField(null=True)
+    logNormalStDev = models.IntegerField(null=True)
+    # For normal distribution:
+    normalMean = models.IntegerField(null=True)
+    normalStDev = models.IntegerField(null=True)
+    # For uniform distribution:
+    uniformUpper = models.IntegerField(null=True)
+    uniformLower = models.IntegerField(null=True)
+    # For linking against SndComp levels:
+    cladeLevel0 = models.IntegerField(default=0)
+    cladeLevel1 = models.IntegerField(default=0)
+    cladeLevel2 = models.IntegerField(default=0)
+    cladeLevel3 = models.IntegerField(default=0)
+
+    def is_unchanged(self, **vdict):
+
+        def isInt(x):
+            entry = vdict[x]
+            if entry is not None:
+                entry = int(entry)
+            return getattr(self, x) == entry
+
+        def isString(x):
+            return getattr(self, x) == vdict[x]
+
+        fields = {
+            'family_ix': isInt,
+            'level1_branch_ix': isInt,
+            'level2_branch_ix': isInt,
+            'level3_branch_ix': isInt,
+            'level1_branch_name': isString,
+            'shortName': isString,
+            'hexColor': isString,
+            'export': isString,
+            'exportDate': isString,
+            'taxonsetName': isString,
+            'atMost': isInt,
+            'atLeast': isInt,
+            'distribution': isString,
+            'logNormalOffset': isInt,
+            'logNormalMean': isInt,
+            'logNormalStDev': isInt,
+            'normalMean': isInt,
+            'normalStDev': isInt,
+            'uniformUpper': isInt,
+            'uniformLower': isInt,
+            'cladeLevel0': isInt,
+            'cladeLevel1': isInt,
+            'cladeLevel2': isInt,
+            'cladeLevel3': isInt}
+
+        for k, _ in vdict.iteritems():
+            if k in fields:
+                if not fields[k](k):
+                    return False
+        return True
+
+    def setDelta(self, **vdict):
+
+        def setInt(x):
+            entry = vdict[x]
+            if entry is not None:
+                entry = int(entry)
+            setattr(self, x, entry)
+
+        def setString(x):
+            setattr(self, x, vdict[x])
+
+        fields = {
+            'family_ix': setInt,
+            'level1_branch_ix': setInt,
+            'level2_branch_ix': setInt,
+            'level3_branch_ix': setInt,
+            'level1_branch_name': setString,
+            'shortName': setString,
+            'hexColor': setString,
+            'export': setString,
+            'exportDate': setString,
+            'taxonsetName': setString,
+            'atMost': setInt,
+            'atLeast': setInt,
+            'distribution': setString,
+            'logNormalOffset': setInt,
+            'logNormalMean': setInt,
+            'logNormalStDev': setInt,
+            'normalMean': setInt,
+            'normalStDev': setInt,
+            'uniformUpper': setInt,
+            'uniformLower': setInt,
+            'cladeLevel0': setInt,
+            'cladeLevel1': setInt,
+            'cladeLevel2': setInt,
+            'cladeLevel3': setInt}
+
+        # Setting fields:
+        for k, _ in vdict.iteritems():
+            if k in fields:
+                fields[k](k)
+
+
+@reversion.register
 class Language(models.Model):
     iso_code = models.CharField(max_length=3, blank=True)
     ascii_name = models.CharField(
