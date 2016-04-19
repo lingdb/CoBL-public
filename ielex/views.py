@@ -1913,6 +1913,8 @@ def viewAbout(request, page):
     @param page :: str
     This function renders an about page.
     """
+    if page == 'statistics':
+        return viewStatistics(request)
     content = '\n'.join([
         '## Error', '',
         'Sorry, we could not deliver the requested content.',
@@ -1921,13 +1923,14 @@ def viewAbout(request, page):
         ])
     pageTitleMap = {
         'contact': 'Contact',
-        'furtherInfo': 'Further Info'
+        'furtherInfo': 'Further Info',
+        'home': 'Home'
         }
+    baseUrl = 'https://raw.githubusercontent.com/wiki/lingdb/CoBL/'
     pageUrlMap = {
-        'contact': 'https://raw.githubusercontent.com' +
-                   '/wiki/lingdb/CoBL/About-Page:-Contact.md',
-        'furtherInfo': 'https://raw.githubusercontent.com' +
-                       '/wiki/lingdb/CoBL/About-Page:-Further-Info.md'
+        'contact': baseUrl + 'About-Page:-Contact.md',
+        'furtherInfo': baseUrl + 'About-Page:-Further-Info.md',
+        'home': baseUrl + 'About-Page:-Home.md'
         }
     if page in pageUrlMap:
         r = requests.get(pageUrlMap[page])
@@ -1936,6 +1939,17 @@ def viewAbout(request, page):
     return render_template(request, "about.html",
                            {'title': pageTitleMap.get(page, 'Error'),
                             'content': content})
+
+
+def viewStatistics(request):
+    return render_template(
+        request, "statistics.html",
+        {"lexemes": Lexeme.objects.count(),
+         "cognate_classes": CognateClass.objects.count(),
+         "languages": Language.objects.count(),
+         "meanings": Meaning.objects.count(),
+         "coded_characters": CognateJudgement.objects.count(),
+         "google_site_verification": META_TAGS})
 
 
 @csrf_protect
@@ -2030,11 +2044,4 @@ def changeDefaults(request):
 
 
 def view_frontpage(request):
-    return render_template(
-        request, "frontpage.html",
-        {"lexemes": Lexeme.objects.count(),
-         "cognate_classes": CognateClass.objects.count(),
-         "languages": Language.objects.count(),
-         "meanings": Meaning.objects.count(),
-         "coded_characters": CognateJudgement.objects.count(),
-         "google_site_verification": META_TAGS})
+    return viewAbout(request, 'home')
