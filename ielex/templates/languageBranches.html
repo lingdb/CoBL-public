@@ -517,9 +517,9 @@
                 </td>
                 <td class="dispOnly">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field branch.export class="form-control" %} <!-- FIXME add display field! -->
+                    {% form_field branch.export class="form-control" %}
                   {% else %}
-                    {% form_field branch.export class="form-control" disabled="disabled" %} <!-- FIXME add display field! -->
+                    {% form_field branch.export class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
                 <td {% if branch.hexColor.data %}
@@ -569,7 +569,7 @@
                 </td>
                 <td class="distribution">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field branch.distribution class="form-control" %}
+                    {% form_field branch.distribution class="form-control distributionSelection" %}
                   {% elif branch.distribution.data %}
                     {{ branch.distribution.data }}
                   {% endif %}
