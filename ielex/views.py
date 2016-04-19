@@ -393,6 +393,21 @@ def exportLanguageListCsv(request, languages=[]):
 
 
 @csrf_protect
+def view_clades(request):
+    if request.method == 'POST':
+        pass # FIXME IMPLEMENT
+
+    form = CladeTableForm()
+    for clade in Clade.objects.all():
+        clade.idField = clade.id
+        form.elements.append_entry(clade)
+
+    return render_template(request,
+                           "clades.html",
+                           {'clades': form})
+
+
+@csrf_protect
 def view_languageBranches(request):
     if request.method == 'POST':
         form = LanguageBranchesTableForm(request.POST)

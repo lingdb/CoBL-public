@@ -82,6 +82,8 @@ urlpatterns = patterns(
     url(r'^languagelist/%(LANGUAGELIST)s/add-new/$' % R, language_add_new,
         name="language-add-new"),
 
+    # Clades:
+    url(r'^clades/$' % R, view_clades),
     # Language Branches:
     url(r'^languageBranches/$' % R, view_languageBranches),
 
