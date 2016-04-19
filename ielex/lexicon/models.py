@@ -957,7 +957,7 @@ class LanguageList(models.Model):
 
     # TODO how can I make this the default ordering?
     """
-    DEFAULT = "2016-02-17_144"
+    DEFAULT = "2016-04-18_129"
     ALL = "all"
 
     name = models.CharField(
