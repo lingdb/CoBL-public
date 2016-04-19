@@ -127,6 +127,8 @@ class LanguageBranches(models.Model):
     shortName = models.CharField(max_length=5, blank=True)
     # Will decide wether to include this in the export:
     export = models.BooleanField(default=0)
+    # Will decide wether to include the date in the export:
+    exportDate = models.BooleanField(default=0)
     # No spaces allowed in the following:
     taxonsetName = models.CharField(max_length=100, blank=True)
     # Latest plausible date divergence had not yet begun:
@@ -147,10 +149,10 @@ class LanguageBranches(models.Model):
     uniformUpper = models.IntegerField(null=True)
     uniformLower = models.IntegerField(null=True)
     # For linking against SndComp levels:
-    sndcompLevel0 = models.IntegerField(default=0)
-    sndcompLevel1 = models.IntegerField(default=0)
-    sndcompLevel2 = models.IntegerField(default=0)
-    sndcompLevel3 = models.IntegerField(default=0)
+    cladeLevel0 = models.IntegerField(default=0)
+    cladeLevel1 = models.IntegerField(default=0)
+    cladeLevel2 = models.IntegerField(default=0)
+    cladeLevel3 = models.IntegerField(default=0)
 
     def is_unchanged(self, **vdict):
 
@@ -172,6 +174,7 @@ class LanguageBranches(models.Model):
             'shortName': isString,
             'hexColor': isString,
             'export': isString,
+            'exportDate': isString,
             'taxonsetName': isString,
             'atMost': isInt,
             'atLeast': isInt,
@@ -183,10 +186,10 @@ class LanguageBranches(models.Model):
             'normalStDev': isInt,
             'uniformUpper': isInt,
             'uniformLower': isInt,
-            'sndcompLevel0': isInt,
-            'sndcompLevel1': isInt,
-            'sndcompLevel2': isInt,
-            'sndcompLevel3': isInt}
+            'cladeLevel0': isInt,
+            'cladeLevel1': isInt,
+            'cladeLevel2': isInt,
+            'cladeLevel3': isInt}
 
         for k, _ in vdict.iteritems():
             if k in fields:
@@ -214,6 +217,7 @@ class LanguageBranches(models.Model):
             'shortName': setString,
             'hexColor': setString,
             'export': setString,
+            'exportDate': setString,
             'taxonsetName': setString,
             'atMost': setInt,
             'atLeast': setInt,
@@ -225,10 +229,10 @@ class LanguageBranches(models.Model):
             'normalStDev': setInt,
             'uniformUpper': setInt,
             'uniformLower': setInt,
-            'sndcompLevel0': setInt,
-            'sndcompLevel1': setInt,
-            'sndcompLevel2': setInt,
-            'sndcompLevel3': setInt}
+            'cladeLevel0': setInt,
+            'cladeLevel1': setInt,
+            'cladeLevel2': setInt,
+            'cladeLevel3': setInt}
 
         # Setting fields:
         for k, _ in vdict.iteritems():
@@ -368,6 +372,10 @@ class Language(models.Model):
             'level1': isData,
             'level2': isData,
             'level3': isData,
+            'cladeLevel0': isData,
+            'cladeLevel1': isData,
+            'cladeLevel2': isData,
+            'cladeLevel3': isData,
             'mean_timedepth_BP_years': isData,
             'std_deviation_timedepth_BP_years': isData,
             'foss_stat': isY,
@@ -415,6 +423,10 @@ class Language(models.Model):
             'level1': setData,
             'level2': setData,
             'level3': setData,
+            'cladeLevel0': setData,
+            'cladeLevel1': setData,
+            'cladeLevel2': setData,
+            'cladeLevel3': setData,
             'representative': setY,
             'mean_timedepth_BP_years': setData,
             'std_deviation_timedepth_BP_years': setData,

@@ -234,6 +234,10 @@ class LanguageListRowForm(WTForm):
     level1 = StringField('Level 1 Branch', validators=[DataRequired()])
     level2 = StringField('Level 2 Branch', validators=[DataRequired()])
     level3 = StringField('Level 3 Branch', validators=[DataRequired()])
+    cladeLevel0 = StringField('Level 0 Branch', validators=[DataRequired()])
+    cladeLevel1 = StringField('Level 1 Branch', validators=[DataRequired()])
+    cladeLevel2 = StringField('Level 2 Branch', validators=[DataRequired()])
+    cladeLevel3 = StringField('Level 3 Branch', validators=[DataRequired()])
     representative = BooleanField('Representative',
                                   validators=[DataRequired()])
     mgs_count = IntegerField('Meaning Count', validators=[DataRequired()])
@@ -280,6 +284,7 @@ class LanguageBranchesRowForm(WTForm):
     shortName = StringField('Short name', validators=[DataRequired()])
     hexColor = StringField('hexColor', validators=[DataRequired()])
     export = BooleanField('Export?', validators=[DataRequired()])
+    exportDate = BooleanField('Export Date?', validators=[DataRequired()])
     taxonsetName = StringField('Texonset name', validators=[DataRequired()])
     atMost = IntegerField('At most?', validators=[DataRequired()])
     atLeast = IntegerField('At least?', validators=[DataRequired()])
@@ -292,14 +297,14 @@ class LanguageBranchesRowForm(WTForm):
     normalStDev = IntegerField('StDev', validators=[DataRequired()])
     uniformUpper = IntegerField('Upper', validators=[DataRequired()])
     uniformLower = IntegerField('Lower', validators=[DataRequired()])
-    sndcompLevel0 = IntegerField('SndComp Level 0',
-                                 validators=[DataRequired()])
-    sndcompLevel1 = IntegerField('SndComp Level 1',
-                                 validators=[DataRequired()])
-    sndcompLevel2 = IntegerField('SndComp Level 2',
-                                 validators=[DataRequired()])
-    sndcompLevel3 = IntegerField('SndComp Level 3',
-                                 validators=[DataRequired()])
+    cladeLevel0 = IntegerField('SndComp Level 0',
+                               validators=[DataRequired()])
+    cladeLevel1 = IntegerField('SndComp Level 1',
+                               validators=[DataRequired()])
+    cladeLevel2 = IntegerField('SndComp Level 2',
+                               validators=[DataRequired()])
+    cladeLevel3 = IntegerField('SndComp Level 3',
+                               validators=[DataRequired()])
 
 
 class LanguageBranchesTableForm(WTForm):
