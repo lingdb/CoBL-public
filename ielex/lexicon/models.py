@@ -209,7 +209,7 @@ class LanguageBranches(models.Model):
             'taxonsetName': setString,
             'atMost': setInt,
             'atLeast': setInt,
-            'dsettribution': setString,
+            'distribution': setString,
             'logNormalOffset': setInt,
             'logNormalMean': setInt,
             'logNormalStDev': setInt,
