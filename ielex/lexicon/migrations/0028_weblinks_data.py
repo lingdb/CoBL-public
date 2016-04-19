@@ -33,7 +33,7 @@ def forwards_func(apps, schema_editor):
             language = Language.objects.get(id=ldata['id'])
             changed = False
             for f in ['rfcWebPath1', 'rfcWebPath2']:
-                if language.altname.get(f ,'') == '':
+                if language.altname.get(f, '') == '':
                     if ldata.get(f, '') != '':
                         language.altname[f] = ldata[f]
                         changed = True
