@@ -62,6 +62,14 @@ DISTRIBUTION_CHOICES = (  # used by LanguageBranches
     ("O", "Offset log normal"),
     ("_", "None"))
 
+LANGUAGE_PROGRESS = (  # used by Languages
+    (0, 'No data'),
+    (1, 'Highly problematic'),
+    (2, 'Limited revision, still unreliable'),
+    (3, 'Revision underway'),
+    (4, 'Revision complete'),
+    (5, 'Second review complete'))
+
 # http://south.aeracode.org/docs/customfields.html#extending-introspection
 # add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])
 
@@ -274,6 +282,7 @@ class Language(models.Model):
     beastName = models.CharField(max_length=128, blank=True)  # #130
     earliestTimeDepthBound = models.IntegerField(null=True)  # #128
     latestTimeDepthBound = models.IntegerField(null=True)  # #128
+    progress = models.IntegerField(default=0, choices=LANGUAGE_PROGRESS)
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
@@ -370,7 +379,8 @@ class Language(models.Model):
             'reviewer': isData,
             'beastName': isField,
             'earliestTimeDepthBound': isField,
-            'latestTimeDepthBound': isField}
+            'latestTimeDepthBound': isField,
+            'progress': isField}
 
         for k, _ in vdict.iteritems():
             if k in fields:
@@ -414,7 +424,8 @@ class Language(models.Model):
             'reviewer': setData,
             'beastName': setField,
             'earliestTimeDepthBound': setField,
-            'latestTimeDepthBound': setField}
+            'latestTimeDepthBound': setField,
+            'progress': setField}
 
         # Escaping special fields:
         if 'ascii_name' in vdict:

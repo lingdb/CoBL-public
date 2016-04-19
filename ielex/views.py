@@ -348,6 +348,7 @@ def view_language_list(request, language_list=None):
             langlist_row_form.earliestTimeDepthBound = \
                 lang.earliestTimeDepthBound
             langlist_row_form.latestTimeDepthBound = lang.latestTimeDepthBound
+            langlist_row_form.progress = lang.progress
 
             langlist_table_form.langlist.append_entry(langlist_row_form)
         return langlist_table_form

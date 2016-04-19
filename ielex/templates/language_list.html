@@ -67,6 +67,8 @@
             <tr>
               {# entryno_title.html #}
               <th></th>
+              {# progress_title.html #}
+              <th>Progress</th>
               {# name_title.html #}
               <th>Name</th>
               {# beast_title.html #}
@@ -194,6 +196,15 @@
               <th>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".entryNo">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              {# progress_filter.html #}
+              <th>
+                <input type="text" class="filterInput form-control"
+                       data-selector=".progress input">
+                <div class="btn btn-xs btn-default sortInput"
+                     data-selector=".progress input">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </th>
@@ -492,6 +503,14 @@
                 {# entryno_data.html #}
                 <td class="entryNo">
                   {{ forloop.counter }}
+                </td>
+                {# progress_data.html #}
+                <td class="progress">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.progress class="form-control" pattern="^[0-5]{1}$" %}
+                  {% else %}
+                    {{ language.progress.data }}
+                  {% endif %}
                 </td>
                 {# name_data.html #}
                 <td class="languageName">

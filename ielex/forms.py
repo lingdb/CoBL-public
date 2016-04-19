@@ -258,6 +258,8 @@ class LanguageListRowForm(WTForm):
                                           validators=[DataRequired()])
     latestTimeDepthBound = IntegerField('Latest Time-Depth Bound',
                                         validators=[DataRequired()])
+    progress = IntegerField('Progress on this language',
+                            validators=[DataRequired()])
 
 
 class AddLanguageListTableForm(WTForm):
