@@ -59,7 +59,8 @@ DISTRIBUTION_CHOICES = (  # used by LanguageBranches
     ("U", "Uniform"),
     ("N", "Normal"),
     ("L", "Log normal"),
-    ("O", "Offset log normal"))
+    ("O", "Offset log normal"),
+    ("_", "None"))
 
 # http://south.aeracode.org/docs/customfields.html#extending-introspection
 # add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])
@@ -126,7 +127,7 @@ class LanguageBranches(models.Model):
     atLeast = models.IntegerField(null=True)
     # Distribution type used:
     distribution = models.CharField(
-        max_length=1, choices=DISTRIBUTION_CHOICES, default="O")
+        max_length=1, choices=DISTRIBUTION_CHOICES, default="_")
     # For [offset] log normal distribution:
     logNormalOffset = models.IntegerField(null=True)
     logNormalMean = models.IntegerField(null=True)
