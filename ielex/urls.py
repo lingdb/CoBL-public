@@ -84,8 +84,8 @@ urlpatterns = patterns(
 
     # Clades:
     url(r'^clades/$' % R, view_clades),
-    # Language Branches:
-    url(r'^languageBranches/$' % R, view_languageBranches),
+    # SndComp sets:
+    url(r'^sndComp/$' % R, view_sndComp),
 
     # Meanings (aka wordlist)
     url(r'^wordlists/$', view_wordlists, name="view-wordlists"),

@@ -460,7 +460,7 @@ def view_clades(request):
 
 
 @csrf_protect
-def view_languageBranches(request):
+def view_sndComp(request):
     if request.method == 'POST':
         form = LanguageBranchesTableForm(request.POST)
         for entry in form.elements:
@@ -490,7 +490,7 @@ def view_languageBranches(request):
         form.elements.append_entry(branch)
 
     return render_template(request,
-                           "languageBranches.html",
+                           "sndComp.html",
                            {'branches': form})
 
 
