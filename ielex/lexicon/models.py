@@ -117,6 +117,25 @@ class Source(models.Model):
 
 
 @reversion.register
+class SndComp(models.Model):
+    '''
+    Introduced for #153.
+    This model tracks the correspondence of clades to sndComp sets.
+    '''
+    lgSetName = models.TextField(blank=True, unique=True)
+    # Corresponding to SndComp fields:
+    lv0 = models.IntegerField(default=0, null=False)
+    lv1 = models.IntegerField(default=0, null=False)
+    lv2 = models.IntegerField(default=0, null=False)
+    lv3 = models.IntegerField(default=0, null=False)
+    # For linking against clades:
+    cladeLevel0 = models.IntegerField(default=0)
+    cladeLevel1 = models.IntegerField(default=0)
+    cladeLevel2 = models.IntegerField(default=0)
+    cladeLevel3 = models.IntegerField(default=0)
+
+
+@reversion.register
 class LanguageBranches(models.Model):
     family_ix = models.IntegerField(blank=True)
     level1_branch_ix = models.IntegerField(default=0)
