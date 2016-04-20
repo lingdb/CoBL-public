@@ -312,11 +312,15 @@ class CladeTableForm(WTForm):
 
 
 class CladeCreationForm(WTForm):
-    shortName = StringField('Short name', validators=[DataRequired()])
+    level1_branch_name = StringField('Short name', validators=[DataRequired()])
+    cladeLevel0 = IntegerField('Clade level 0', validators=[DataRequired()])
+    cladeLevel1 = IntegerField('Clade level 1', validators=[DataRequired()])
+    cladeLevel2 = IntegerField('Clade level 2', validators=[DataRequired()])
+    cladeLevel3 = IntegerField('Clade level 3', validators=[DataRequired()])
 
 
 class CladeDeletionForm(WTForm):
-    shortName = StringField('Short name', validators=[DataRequired()])
+    level1_branch_name = StringField('Short name', validators=[DataRequired()])
 
 
 class LanguageBranchesRowForm(WTForm):

@@ -280,10 +280,10 @@ class Clade(models.Model):
     This model was added for #153
     and shall be used to track clade constraints.
     '''
-    family_ix = models.IntegerField(blank=True)
-    level1_branch_ix = models.IntegerField(default=0)
-    level2_branch_ix = models.IntegerField(default=0)
-    level3_branch_ix = models.IntegerField(default=0)
+    family_ix = models.IntegerField(default=0, null=True)
+    level1_branch_ix = models.IntegerField(default=0, null=True)
+    level2_branch_ix = models.IntegerField(default=0, null=True)
+    level3_branch_ix = models.IntegerField(default=0, null=True)
     level1_branch_name = models.TextField(blank=True, unique=True)
     hexColor = models.CharField(max_length=6, blank=True)
     shortName = models.CharField(max_length=5, blank=True)
@@ -311,10 +311,10 @@ class Clade(models.Model):
     uniformUpper = models.IntegerField(null=True)
     uniformLower = models.IntegerField(null=True)
     # For linking against SndComp levels:
-    cladeLevel0 = models.IntegerField(default=0)
-    cladeLevel1 = models.IntegerField(default=0)
-    cladeLevel2 = models.IntegerField(default=0)
-    cladeLevel3 = models.IntegerField(default=0)
+    cladeLevel0 = models.IntegerField(default=0, null=False)
+    cladeLevel1 = models.IntegerField(default=0, null=False)
+    cladeLevel2 = models.IntegerField(default=0, null=False)
+    cladeLevel3 = models.IntegerField(default=0, null=False)
 
     def is_unchanged(self, **vdict):
 

@@ -16,14 +16,38 @@
 {% endblock %}
 
 {% block content %}
+  {% include "snippets/addCladeModal.html" %}
+  {% include "snippets/deleteCladeModal.html" %}
   <div class="row">
     <div class="col-md-12">
       {% if user.is_authenticated and user.is_staff %}
         <form action="" method="POST" name="clades">
           {% csrf_token %}
           <div class="form-group pull-right">
+            <div class="inline"
+                 data-toggle="tooltip"
+                 data-placement="bottom"
+                 title="Add new clade">
+              <button type="button"
+                      data-toggle="modal"
+                      data-target="#addCladeModal"
+                      class="btn btn-default">
+                <span class="glyphicon glyphicon-plus"></span>
+              </a>
+            </div>
+            <div class="inline"
+                 data-toggle="tooltip"
+                 data-placement="bottom"
+                 title="Delete clade">
+              <button type="button"
+                      data-toggle="modal"
+                      data-target="#deleteCladeModal"
+                      class="btn btn-default">
+                <span class="glyphicon glyphicon-minus"></span>
+              </a>
+            </div>
             <a href="/clades/" class="btn btn-default">Undo</a>
-            <input type="submit" value="Save" class="btn btn-danger">
+            <input type="submit" value="Save" class="btn btn-danger" name="clades">
           </div>
       {% endif %}
         <table class="table table-condensed viewTableFilter">

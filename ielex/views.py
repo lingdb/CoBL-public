@@ -440,6 +440,9 @@ def view_clades(request):
                     # Make sure to update things referencing clade here!
                     # Deleting the clade:
                     Clade.objects.filter(id=clade.id).delete()
+                    # Write message about branch deletion:
+                    messages.append('Deleted clade "%s".' %
+                                    clade.level1_branch_name)
             except Exception, e:
                 print('Problem deleting clade:', e)
                 messages.append('Sorry, the server had problems '
