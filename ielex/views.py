@@ -394,8 +394,56 @@ def exportLanguageListCsv(request, languages=[]):
 
 @csrf_protect
 def view_clades(request):
+    messages = []
     if request.method == 'POST':
-        pass # FIXME IMPLEMENT
+        # Updating existing clades:
+        if 'clades' in request.POST:
+            cladeTableForm = CladeTableForm(request.POST)
+            try:
+                cladeTableForm.validate()
+                for entry in cladeTableForm.elements:
+                    data = entry.data
+                    try:
+                        with transaction.atomic():
+                            clade = Clade.objects.get(
+                                id=int(data['idField']))
+                            if not clade.is_unchanged(**data):
+                                clade.setDelta(**data)
+                                clade.save()
+                    except Exception, e:
+                        print('Problem while saving clade: ', e)
+                        messages.append('Problem saving clade data: %s' % data)
+            except Exception, e:
+                print('Problem updating clades:', e)
+                messages.append('Sorry, the server had problems '
+                                'updating at least on clade.')
+        # Adding a new clade:
+        elif 'addClade' in request.POST:
+            cladeCreationForm = CladeCreationForm(request.POST)
+            try:
+                cladeCreationForm.validate()
+                newClade = Clade(**cladeCreationForm.data)
+                with transaction.atomic():
+                    newClade.save(force_insert=True)
+            except Exception, e:
+                print('Problem creating clade:', e)
+                messages.append('Sorry, the server had problems '
+                                'creating the clade.')
+        # Deleting an existing clade:
+        elif 'deleteClade' in request.POST:
+            cladeDeletionForm = CladeDeletionForm(request.POST)
+            try:
+                cladeDeletionForm.validate()
+                with transaction.atomic():
+                    # Making sure the clade exists:
+                    clade = Clade.objects.get(**cladeDeletionForm.data)
+                    # Make sure to update things referencing clade here!
+                    # Deleting the clade:
+                    Clade.objects.filter(id=clade.id).delete()
+            except Exception, e:
+                print('Problem deleting clade:', e)
+                messages.append('Sorry, the server had problems '
+                                'deleting the clade.')
 
     form = CladeTableForm()
     for clade in Clade.objects.all():
@@ -404,7 +452,8 @@ def view_clades(request):
 
     return render_template(request,
                            "clades.html",
-                           {'clades': form})
+                           {'clades': form,
+                            'messages': messages})
 
 
 @csrf_protect

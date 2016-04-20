@@ -311,6 +311,14 @@ class CladeTableForm(WTForm):
     elements = FieldList(FormField(CladeRowForm))
 
 
+class CladeCreationForm(WTForm):
+    shortName = StringField('Short name', validators=[DataRequired()])
+
+
+class CladeDeletionForm(WTForm):
+    shortName = StringField('Short name', validators=[DataRequired()])
+
+
 class LanguageBranchesRowForm(WTForm):
     idField = IntegerField('Id')
     family_ix = IntegerField('Family Ix', validators=[DataRequired()])
