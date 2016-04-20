@@ -14,7 +14,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SndComp',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(
+                    verbose_name='ID',
+                    serialize=False,
+                    auto_created=True,
+                    primary_key=True)),
                 ('lgSetName', models.TextField(unique=True, blank=True)),
                 ('lv0', models.IntegerField(default=0)),
                 ('lv1', models.IntegerField(default=0)),
