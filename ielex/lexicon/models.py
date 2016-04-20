@@ -1679,3 +1679,5 @@ class Author(models.Model):
         for f in fields:
             if f in vdict:
                 setattr(self, f, vdict[f])
+    class Meta:
+        ordering = ["surname", "firstNames"]
