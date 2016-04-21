@@ -134,6 +134,61 @@ class SndComp(models.Model):
     cladeLevel2 = models.IntegerField(default=0)
     cladeLevel3 = models.IntegerField(default=0)
 
+    def is_unchanged(self, **vdict):
+
+        def isInt(x):
+            entry = vdict[x]
+            if entry is not None:
+                entry = int(entry)
+            return getattr(self, x) == entry
+
+        def isString(x):
+            return getattr(self, x) == vdict[x]
+
+        fields = {
+            'lgSetName': isString,
+            'lv0': isInt,
+            'lv1': isInt,
+            'lv2': isInt,
+            'lv3': isInt,
+            'cladeLevel0': isInt,
+            'cladeLevel1': isInt,
+            'cladeLevel2': isInt,
+            'cladeLevel3': isInt}
+
+        for k, _ in vdict.iteritems():
+            if k in fields:
+                if not fields[k](k):
+                    return False
+        return True
+
+    def setDelta(self, **vdict):
+
+        def setInt(x):
+            entry = vdict[x]
+            if entry is not None:
+                entry = int(entry)
+            setattr(self, x, entry)
+
+        def setString(x):
+            setattr(self, x, vdict[x])
+
+        fields = {
+            'lgSetName': setString,
+            'lv0': setInt,
+            'lv1': setInt,
+            'lv2': setInt,
+            'lv3': setInt,
+            'cladeLevel0': setInt,
+            'cladeLevel1': setInt,
+            'cladeLevel2': setInt,
+            'cladeLevel3': setInt}
+
+        # Setting fields:
+        for k, _ in vdict.iteritems():
+            if k in fields:
+                fields[k](k)
+
 
 @reversion.register
 class LanguageBranches(models.Model):

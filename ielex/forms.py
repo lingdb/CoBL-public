@@ -323,45 +323,38 @@ class CladeDeletionForm(WTForm):
     level1_branch_name = StringField('Short name', validators=[DataRequired()])
 
 
-class LanguageBranchesRowForm(WTForm):
-    idField = IntegerField('Id')
-    family_ix = IntegerField('Family Ix', validators=[DataRequired()])
-    level1_branch_ix = IntegerField('Level1 Branch Ix',
-                                    validators=[DataRequired()])
-    level2_branch_ix = IntegerField('Level2 Branch Ix',
-                                    validators=[DataRequired()])
-    level3_branch_ix = IntegerField('Level3 Branch Ix',
-                                    validators=[DataRequired()])
-    level1_branch_name = StringField('Level 1 Branch Name',
-                                     validators=[DataRequired()])
-    shortName = StringField('Short name', validators=[DataRequired()])
-    hexColor = StringField('hexColor', validators=[DataRequired()])
-    export = BooleanField('Export?', validators=[DataRequired()])
-    exportDate = BooleanField('Export Date?', validators=[DataRequired()])
-    taxonsetName = StringField('Texonset name', validators=[DataRequired()])
-    atMost = IntegerField('At most?', validators=[DataRequired()])
-    atLeast = IntegerField('At least?', validators=[DataRequired()])
-    distribution = SelectField(
-        'Distribution type', choices=DISTRIBUTION_CHOICES)
-    logNormalOffset = IntegerField('[Offset]', validators=[DataRequired()])
-    logNormalMean = IntegerField('Mean', validators=[DataRequired()])
-    logNormalStDev = IntegerField('StDev', validators=[DataRequired()])
-    normalMean = IntegerField('Mean', validators=[DataRequired()])
-    normalStDev = IntegerField('StDev', validators=[DataRequired()])
-    uniformUpper = IntegerField('Upper', validators=[DataRequired()])
-    uniformLower = IntegerField('Lower', validators=[DataRequired()])
-    cladeLevel0 = IntegerField('SndComp Level 0',
-                               validators=[DataRequired()])
-    cladeLevel1 = IntegerField('SndComp Level 1',
-                               validators=[DataRequired()])
-    cladeLevel2 = IntegerField('SndComp Level 2',
-                               validators=[DataRequired()])
-    cladeLevel3 = IntegerField('SndComp Level 3',
-                               validators=[DataRequired()])
+class SndCompRowForm(WTForm):
+    idField = IntegerField('Id', validators=[DataRequired()])
+    lgSetName = StringField('Language set name', validators=[DataRequired()])
+    lv0 = IntegerField('SndComp branch level 0', validators=[DataRequired()])
+    lv1 = IntegerField('SndComp branch level 1', validators=[DataRequired()])
+    lv2 = IntegerField('SndComp branch level 2', validators=[DataRequired()])
+    lv3 = IntegerField('SndComp branch level 3', validators=[DataRequired()])
+    cladeLevel0 = IntegerField('Clade level 0', validators=[DataRequired()])
+    cladeLevel1 = IntegerField('Clade level 1', validators=[DataRequired()])
+    cladeLevel2 = IntegerField('Clade level 2', validators=[DataRequired()])
+    cladeLevel3 = IntegerField('Clade level 3', validators=[DataRequired()])
 
 
-class LanguageBranchesTableForm(WTForm):
-    elements = FieldList(FormField(LanguageBranchesRowForm))
+class SndCompTableForm(WTForm):
+    elements = FieldList(FormField(SndCompRowForm))
+
+
+class SndCompCreationForm(WTForm):
+    lgSetName = StringField('Language set name', validators=[DataRequired()])
+    lv0 = IntegerField('SndComp branch level 0', validators=[DataRequired()])
+    lv1 = IntegerField('SndComp branch level 1', validators=[DataRequired()])
+    lv2 = IntegerField('SndComp branch level 2', validators=[DataRequired()])
+    lv3 = IntegerField('SndComp branch level 3', validators=[DataRequired()])
+    # Clade levels are not required:
+    cladeLevel1 = IntegerField('Clade level 0')
+    cladeLevel1 = IntegerField('Clade level 1')
+    cladeLevel2 = IntegerField('Clade level 2')
+    cladeLevel3 = IntegerField('Clade level 3')
+
+
+class SndCompDeletionForm(WTForm):
+    lgSetName = StringField('Language set name', validators=[DataRequired()])
 
 
 class LexemeRowForm(WTForm):

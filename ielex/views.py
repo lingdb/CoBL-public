@@ -461,37 +461,72 @@ def view_clades(request):
 
 @csrf_protect
 def view_sndComp(request):
+    messages = []
     if request.method == 'POST':
-        form = LanguageBranchesTableForm(request.POST)
-        for entry in form.elements:
-            data = entry.data
+        if 'sndComps' in request.POST:
+            form = SndCompTableForm(request.POST)
+            for entry in form.elements:
+                data = entry.data
+                try:
+                    with transaction.atomic():
+                        sndComp = SndComp.objects.get(id=data['idField'])
+                        if not sndComp.is_unchanged(**data):
+                            sndComp.setDelta(**data)
+                            try:
+                                sndComp.save()
+                            except Exception, e:
+                                print('Exception while saving POST:', e)
+                                messages.append('The server had problems '
+                                                'saving the change to "%s".'
+                                                % sndComp.lgSetName)
+                except Exception, e:
+                    print('Exception while accessing SndComp object: ',
+                          e, '; POST items are: ', data)
+                    messages.append('Sorry, the server had problems '
+                                    'saving at least one SndComp entry.')
+        # Adding a new SndComp:
+        elif 'addSndComp' in request.POST:
+            sndCompCreationForm = SndCompCreationForm(request.POST)
             try:
+                sndCompCreationForm.validate()
+                newSndComp = SndComp(**sndCompCreationForm.data)
                 with transaction.atomic():
-                    branch = LanguageBranches.objects.get(id=data['idField'])
-                    if not branch.is_unchanged(**data):
-                        branch.setDelta(**data)
-                        try:
-                            branch.save()
-                        except Exception, e:
-                            print('Exception while saving POST:', e)
+                    newSndComp.save(force_insert=True)
             except Exception, e:
-                print('Exception while accessing LanguageBranches object: ',
-                      e, '; POST items are: ', data)
-        # Since the LanguageBranches changed, we update the Languages:
-        for l in Language.objects.all():
-            l.updateLanguageBranch()
+                print('Problem creating SndComp:', e)
+                messages.append('Sorry, the server had problems '
+                                'creating the SndComp language set.')
+        # Deleting an existing SndComp:
+        elif 'deleteSndComp' in request.POST:
+            sndCompDeletionForm = SndCompDeletionForm(request.POST)
+            try:
+                sndCompDeletionForm.validate()
+                with transaction.atomic():
+                    # Making sure the SndComp exists:
+                    sndComp = SndComp.objects.get(**sndCompDeletionForm.data)
+                    # Make sure to update things referencing SndCom here!
+                    # Deleting the SndComp:
+                    SndComp.objects.filter(id=sndComp.id).delete()
+                    # Write message about SndComp deletion:
+                    messages.append('Deleted set "%s"' % sndComp.lgSetName)
+            except Exception, e:
+                print('Problem deleting SndComp:', e)
+                messages.append('Sorry, the server had problems deleting '
+                                'the SndComp language set.')
 
-    form = LanguageBranchesTableForm()
-    branches = LanguageBranches.objects.order_by(
-        "family_ix", "level1_branch_ix").all()
-    for branch in branches:
+    form = SndCompTableForm()
 
-        branch.idField = branch.id
-        form.elements.append_entry(branch)
+    sndComps = SndComp.objects.order_by(
+        "lv0", "lv1", "lv2", "lv3").all()
+
+    for s in sndComps:
+        s.idField = s.id
+        form.elements.append_entry(s)
 
     return render_template(request,
                            "sndComp.html",
-                           {'branches': form})
+                           {'sndComps': form,
+                            'messages': messages})
 
 
 def reorder_language_list(request, language_list):
