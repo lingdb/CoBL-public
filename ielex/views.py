@@ -521,6 +521,11 @@ def view_sndComp(request):
 
     for s in sndComps:
         s.idField = s.id
+
+        c = s.getClade()
+        if c is not None:
+            s.cladeName = c.level1_branch_name
+
         form.elements.append_entry(s)
 
     return render_template(request,

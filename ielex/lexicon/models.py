@@ -189,6 +189,26 @@ class SndComp(models.Model):
             if k in fields:
                 fields[k](k)
 
+    def getClade(self):
+        '''
+        This method tries to find the clade closest to a SndComp.
+        @return clade :: Clade | None
+        '''
+
+        wanted = [('cladeLevel0', self.cladeLevel0),
+                  ('cladeLevel1', self.cladeLevel1),
+                  ('cladeLevel2', self.cladeLevel2),
+                  ('cladeLevel3', self.cladeLevel3)]
+
+        for i in xrange(len(wanted), 0, -1):
+            try:
+                d = dict(wanted[:i])
+                return Clade.objects.get(**d)
+            except Exception, e:
+                pass
+
+        return None
+
 
 @reversion.register
 class LanguageBranches(models.Model):
