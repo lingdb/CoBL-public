@@ -522,20 +522,14 @@ class Meaning(models.Model):
 
     def is_unchanged(self, **vdict):
 
-        def isField(x):
-            return getattr(self, x) == vdict[x]
-
         if 'desc' in vdict:
             vdict['description'] = vdict['desc']
 
-        fields = {
-            'gloss': isField,
-            'description': isField,
-            'notes': isField}
+        fields = ['gloss', 'description', 'notes']
 
-        for k, _ in vdict.iteritems():
-            if k in fields:
-                if not fields[k](k):
+        for f in fields:
+            if f in vdict:
+                if getattr(self, f) != vdict[f]:
                     return False
         return True
 
@@ -548,18 +542,15 @@ class Meaning(models.Model):
         def setField(x):
             setattr(self, x, vdict[x])
 
-        fields = {
-            'gloss': setField,
-            'description': setField,
-            'notes': setField}
+        fields = ['gloss', 'description', 'notes']
 
         if 'desc' in vdict:
             vdict['description'] = vdict['desc']
 
         # Setting fields:
-        for k, _ in vdict.iteritems():
-            if k in fields:
-                fields[k](k)
+        for f in fields:
+            if f in vdict:
+                setattr(self, f, vdict[f])
 
 
 @reversion.register
