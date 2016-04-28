@@ -163,33 +163,6 @@
                   title="(#lexemes - #meanings)">
                 Too<br>many{# Lex.-Mgs #}
               </th>
-              {# cl_title.html #}
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Clade level 0">
-                Cl 0
-              </th>
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Clade level 1">
-                Cl 1
-              </th>
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Clade level 2">
-                Cl 2
-              </th>
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Clade level 3">
-                Cl 3
-              </th>
-              {# sndcomp_title.html #}
-              <th>SndComp<br>code</th>
               {# lv_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -215,6 +188,8 @@
                   title="Level 3 branch">
                 Lv 3
               </th>
+              {# sndcomp_title.html #}
+              <th>SndComp<br>code</th>
             </tr>
             <tr>
               {# entryno_filter.html #}
@@ -460,79 +435,6 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </th>
-              {# cl_filter.html #}
-              <th>
-                {% if user.is_authenticated and user.is_staff %}
-                  <input type="text"
-                         class="filterInput form-control"
-                         data-selector=".cladeLevel0 input"
-                         style="width: 1.5em;">
-                {% else %}
-                  <input type="text"
-                         class="filterText form-control"
-                         data-selector=".cladeLevel0"
-                         style="width: 1.5em;">
-                {% endif %}
-              </th>
-              <th>
-                {% if user.is_authenticated and user.is_staff %}
-                  <input type="text"
-                         class="filterInput form-control"
-                         data-selector=".cladeLevel1 input"
-                         style="width: 1.5em;">
-                {% else %}
-                  <input type="text"
-                         class="filterText form-control"
-                         data-selector=".cladeLevel1"
-                         style="width: 1.5em;">
-                {% endif %}
-              </th>
-              <th>
-                {% if user.is_authenticated and user.is_staff %}
-                  <input type="text"
-                         class="filterInput form-control"
-                         data-selector=".cladeLevel2 input"
-                         style="width: 1.5em;">
-                {% else %}
-                  <input type="text"
-                         class="filterText form-control"
-                         data-selector=".cladeLevel2"
-                         style="width: 1.5em;">
-                {% endif %}
-              </th>
-              <th>
-                {% if user.is_authenticated and user.is_staff %}
-                  <input type="text"
-                         class="filterInput form-control"
-                         data-selector=".cladeLevel3 input"
-                         style="width: 1.5em;">
-                {% else %}
-                  <input type="text"
-                         class="filterText form-control"
-                         data-selector=".cladeLevel3"
-                         style="width: 1.5em;">
-                {% endif %}
-              </th>
-              {# sndcomp_filter.html #}
-              <th>
-                {% if user.is_authenticated and user.is_staff %}
-                  <input type="text"
-                         class="filterInput form-control narrow"
-                         data-selector=".languageSndCompCode input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".languageSndCompCode input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% else %}
-                  <input type="text"
-                         class="filterText form-control narrow"
-                         data-selector=".languageSndCompCode">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".languageSndCompCode">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% endif %}
-              </th>
               {# lv_filter.html #}
               <th>
                 {% if user.is_authenticated and user.is_staff %}
@@ -584,6 +486,26 @@
                          class="filterText form-control"
                          data-selector=".languageLevel3"
                          style="width: 1.5em;">
+                {% endif %}
+              </th>
+              {# sndcomp_filter.html #}
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control narrow"
+                         data-selector=".languageSndCompCode input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".languageSndCompCode input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control narrow"
+                         data-selector=".languageSndCompCode">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".languageSndCompCode">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
                 {% endif %}
               </th>
             </tr>
@@ -788,51 +710,6 @@
                     <span class="badge">{{ language.data.excess_count }}</span>
                   </center>
                 </td>
-                {# cl_data.html #}
-                <td class="cladeLevel0">
-                  <center>
-                    {% if user.is_authenticated and user.is_staff %}
-                      {% form_field language.cladeLevel0 class="form-control" maxlength="1" size="1" style="width: 1.5em;" %}
-                    {% elif language.cladeLevel0.data %}
-                      {{ language.cladeLevel0.data }}
-                    {% endif %}
-                  </center>
-                </td>
-                <td class="cladeLevel1">
-                  <center>
-                    {% if user.is_authenticated and user.is_staff %}
-                      {% form_field language.cladeLevel1 class="form-control" maxlength="1" size="1" style="width: 1.5em;" %}
-                    {% elif language.cladeLevel1.data %}
-                      {{ language.cladeLevel1.data }}
-                    {% endif %}
-                  </center>
-                </td>
-                <td class="cladeLevel2">
-                  <center>
-                    {% if user.is_authenticated and user.is_staff %}
-                      {% form_field language.cladeLevel2 class="form-control" maxlength="1" size="1" style="width: 1.5em;" %}
-                    {% elif language.cladeLevel2.data %}
-                      {{ language.cladeLevel2.data }}
-                    {% endif %}
-                  </center>
-                </td>
-                <td class="cladeLevel3">
-                  <center>
-                    {% if user.is_authenticated and user.is_staff %}
-                      {% form_field language.cladeLevel3 class="form-control" maxlength="1" size="1" style="width: 1.5em;" %}
-                    {% elif language.cladeLevel3.data %}
-                      {{ language.cladeLevel3.data }}
-                    {% endif %}
-                  </center>
-                </td>
-                {# sndcomp_data.html #}
-                <td class="languageSndCompCode">
-                  {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.soundcompcode size="8" class="form-control" %}
-                  {% elif language.soundcompcode.data %}
-                    {{ language.soundcompcode.data }}
-                  {% endif %}
-                </td>
                 {# lv_data.html #}
                 <td class="languageLevel0">
                   <center>
@@ -869,6 +746,14 @@
                       {{ language.level3.data }}
                     {% endif %}
                   </center>
+                </td>
+                {# sndcomp_data.html #}
+                <td class="languageSndCompCode">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.soundcompcode size="8" class="form-control" %}
+                  {% elif language.soundcompcode.data %}
+                    {{ language.soundcompcode.data }}
+                  {% endif %}
                 </td>
               </tr>
             {% endfor %}

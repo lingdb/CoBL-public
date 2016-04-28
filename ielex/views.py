@@ -321,30 +321,24 @@ def view_language_list(request, language_list=None):
             langlist_row_form.excess_count = \
                 (entryCount - nonLexCount) - meaningCount
 
-            langlist_row_form.glottocode = lang.altname.get('glottocode', '')
-            langlist_row_form.variety = lang.altname.get('variety', '')
-            langlist_row_form.foss_stat = lang.altname.get('foss_stat', '')
-            langlist_row_form.low_stat = lang.altname.get('low_stat', '')
-            langlist_row_form.soundcompcode = \
-                lang.altname.get('soundcompcode', '')
-            langlist_row_form.level0 = lang.altname.get('level0', '')
-            langlist_row_form.level1 = lang.altname.get('level1', '')
-            langlist_row_form.level2 = lang.altname.get('level2', '')
-            langlist_row_form.level3 = lang.altname.get('level3', '')
-            langlist_row_form.cladeLevel0 = lang.altname.get('cladeLevel0', '')
-            langlist_row_form.cladeLevel1 = lang.altname.get('cladeLevel1', '')
-            langlist_row_form.cladeLevel2 = lang.altname.get('cladeLevel2', '')
-            langlist_row_form.cladeLevel3 = lang.altname.get('cladeLevel3', '')
-            langlist_row_form.representative = \
-                lang.altname.get('representative', '')
+            langlist_row_form.glottocode = lang.glottocode
+            langlist_row_form.variety = lang.variety
+            langlist_row_form.foss_stat = lang.foss_stat
+            langlist_row_form.low_stat = lang.low_stat
+            langlist_row_form.soundcompcode = lang.soundcompcode
+            langlist_row_form.level0 = lang.level0
+            langlist_row_form.level1 = lang.level1
+            langlist_row_form.level2 = lang.level2
+            langlist_row_form.level3 = lang.level3
+            langlist_row_form.representative = lang.representative
             langlist_row_form.mean_timedepth_BP_years = \
-                lang.altname.get('mean_timedepth_BP_years')
+                lang.mean_timedepth_BP_years
             langlist_row_form.std_deviation_timedepth_BP_years = \
-                lang.altname.get('std_deviation_timedepth_BP_years')
-            langlist_row_form.rfcWebPath1 = lang.altname.get('rfcWebPath1', '')
-            langlist_row_form.rfcWebPath2 = lang.altname.get('rfcWebPath2', '')
-            langlist_row_form.author = lang.altname.get('author', '')
-            langlist_row_form.reviewer = lang.altname.get('reviewer', '')
+                lang.std_deviation_timedepth_BP_years
+            langlist_row_form.rfcWebPath1 = lang.rfcWebPath1
+            langlist_row_form.rfcWebPath2 = lang.rfcWebPath2
+            langlist_row_form.author = lang.author
+            langlist_row_form.reviewer = lang.reviewer
             langlist_row_form.beastName = lang.beastName
             langlist_row_form.earliestTimeDepthBound = \
                 lang.earliestTimeDepthBound

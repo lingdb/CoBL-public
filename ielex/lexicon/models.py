@@ -345,12 +345,28 @@ class Language(models.Model):
         max_length=128, unique=True, validators=[suitable_for_url])
     utf8_name = models.CharField(max_length=128, unique=True)
     description = models.TextField(blank=True, null=True)
-    altname = jsonfield.JSONField(blank=True)
     clade = models.ForeignKey(Clade, null=True)
     beastName = models.CharField(max_length=128, blank=True)  # #130
     earliestTimeDepthBound = models.IntegerField(null=True)  # #128
     latestTimeDepthBound = models.IntegerField(null=True)  # #128
     progress = models.IntegerField(default=0, choices=LANGUAGE_PROGRESS)
+    # Former JSON fields:
+    glottocode = models.CharField(max_length=8, null=True)
+    variety = models.CharField(max_length=64, null=True)
+    soundcompcode = models.CharField(max_length=64, null=True)
+    level0 = models.IntegerField(default=0, null=True)
+    level1 = models.IntegerField(default=0, null=True)
+    level2 = models.IntegerField(default=0, null=True)
+    level3 = models.IntegerField(default=0, null=True)
+    mean_timedepth_BP_years = models.IntegerField(null=True)
+    std_deviation_timedepth_BP_years = models.IntegerField(null=True)
+    foss_stat = models.BooleanField(default=0)
+    low_stat = models.BooleanField(default=0)
+    representative = models.BooleanField(default=0)
+    rfcWebPath1 = models.TextField(blank=True, null=True)
+    rfcWebPath2 = models.TextField(blank=True, null=True)
+    author = models.CharField(max_length=256, null=True)
+    reviewer = models.CharField(max_length=256, null=True)
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
@@ -363,46 +379,33 @@ class Language(models.Model):
 
     def is_unchanged(self, **vdict):
 
-        def isField(x):
-            return getattr(self, x) == vdict[x]
+        fields = [
+            'iso_code',
+            'utf8_name',
+            'glottocode',
+            'variety',
+            'foss_stat',
+            'low_stat',
+            'soundcompcode',
+            'level0',
+            'level1',
+            'level2',
+            'level3',
+            'representative',
+            'mean_timedepth_BP_years',
+            'std_deviation_timedepth_BP_years',
+            'rfcWebPath1',
+            'rfcWebPath2',
+            'author',
+            'reviewer',
+            'beastName',
+            'earliestTimeDepthBound',
+            'latestTimeDepthBound',
+            'progress']
 
-        def isData(x):
-            return self.altname.get(x, '') == vdict[x]
-
-        def isY(x):
-            return self.altname.get(x, False) == vdict.get(x, False)
-
-        fields = {
-            'iso_code': isField,
-            'ascii_name': isField,
-            'glottocode': isData,
-            'variety': isData,
-            'soundcompcode': isData,
-            'level0': isData,
-            'level1': isData,
-            'level2': isData,
-            'level3': isData,
-            'cladeLevel0': isData,
-            'cladeLevel1': isData,
-            'cladeLevel2': isData,
-            'cladeLevel3': isData,
-            'mean_timedepth_BP_years': isData,
-            'std_deviation_timedepth_BP_years': isData,
-            'foss_stat': isY,
-            'low_stat': isY,
-            'representative': isY,
-            'rfcWebPath1': isData,
-            'rfcWebPath2': isData,
-            'author': isData,
-            'reviewer': isData,
-            'beastName': isField,
-            'earliestTimeDepthBound': isField,
-            'latestTimeDepthBound': isField,
-            'progress': isField}
-
-        for k, _ in vdict.iteritems():
-            if k in fields:
-                if not fields[k](k):
+        for f in fields:
+            if f in vdict:
+                if getattr(self, f) != vdict[f]:
                     return False
         return True
 
@@ -412,42 +415,29 @@ class Language(models.Model):
             similar to the one used for is_unchanged.
         """
 
-        def setField(x):
-            setattr(self, x, vdict[x])
-
-        def setData(x):
-            self.altname[x] = vdict[x]
-
-        def setY(x):
-            self.altname[x] = vdict.get(x, False)
-
-        fields = {
-            'iso_code': setField,
-            'utf8_name': setField,
-            'glottocode': setData,
-            'variety': setData,
-            'foss_stat': setY,
-            'low_stat': setY,
-            'soundcompcode': setData,
-            'level0': setData,
-            'level1': setData,
-            'level2': setData,
-            'level3': setData,
-            'cladeLevel0': setData,
-            'cladeLevel1': setData,
-            'cladeLevel2': setData,
-            'cladeLevel3': setData,
-            'representative': setY,
-            'mean_timedepth_BP_years': setData,
-            'std_deviation_timedepth_BP_years': setData,
-            'rfcWebPath1': setData,
-            'rfcWebPath2': setData,
-            'author': setData,
-            'reviewer': setData,
-            'beastName': setField,
-            'earliestTimeDepthBound': setField,
-            'latestTimeDepthBound': setField,
-            'progress': setField}
+        fields = [
+            'iso_code',
+            'utf8_name',
+            'glottocode',
+            'variety',
+            'foss_stat',
+            'low_stat',
+            'soundcompcode',
+            'level0',
+            'level1',
+            'level2',
+            'level3',
+            'representative',
+            'mean_timedepth_BP_years',
+            'std_deviation_timedepth_BP_years',
+            'rfcWebPath1',
+            'rfcWebPath2',
+            'author',
+            'reviewer',
+            'beastName',
+            'earliestTimeDepthBound',
+            'latestTimeDepthBound',
+            'progress']
 
         # Escaping special fields:
         if 'ascii_name' in vdict:
@@ -455,9 +445,9 @@ class Language(models.Model):
             del vdict['ascii_name']
 
         # Setting fields:
-        for k, _ in vdict.iteritems():
-            if k in fields:
-                fields[k](k)
+        for f in fields:
+            if f in vdict:
+                setattr(self, f, vdict[f])
 
     def getCsvRow(self, *fields):
         '''
