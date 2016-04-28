@@ -209,6 +209,9 @@ class SndComp(models.Model):
 
         return None
 
+    class Meta:
+        ordering = ["lv0", "lv1", "lv2", "lv3"]
+
 
 @reversion.register
 class Clade(models.Model):
@@ -336,6 +339,12 @@ class Clade(models.Model):
         for k, _ in vdict.iteritems():
             if k in fields:
                 fields[k](k)
+
+    class Meta:
+        ordering = ['cladeLevel0',
+                    'cladeLevel1',
+                    'cladeLevel2',
+                    'cladeLevel3']
 
 
 @reversion.register
