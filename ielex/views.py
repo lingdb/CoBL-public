@@ -273,9 +273,6 @@ def view_language_list(request, language_list=None):
 
                     lang.setDelta(**data)
 
-                    lang.validateBranchLevels()
-                    lang.updateLanguageBranch()
-
                     try:
                         lang.save()
                     except Exception, e:
@@ -1160,7 +1157,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         ).select_related(
         "language",
         "meaning").prefetch_related(
-        "language__languageBranch",
         "cognatejudgement_set",
         "cognatejudgement_set__cognatejudgementcitation_set",
         "lexemecitation_set",
@@ -1202,12 +1198,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             lex_row_form.notes = lex.notes
             lex_row_form.number_cognate_coded = lex.number_cognate_coded
 
-            # Branch color for #92
-            branch = lex.language.languageBranch
-            if branch is not None:
-                lex_row_form.languageBranchColor = branch.getColor()
-                lex_row_form.languageBranchId = branch.id
-
             lex_row_form.is_excluded_lexeme = lex.is_excluded_lexeme()
             lex_row_form.is_loan_lexeme = lex.is_loan_lexeme()
             lex_row_form.is_excluded_cognate = lex.is_excluded_cognate()
@@ -1245,8 +1235,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     lexemes_editabletable_form = fill_lexemestable_from_DB(lexemes)
 
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
-    languageBranches = LanguageBranches.objects.filter(
-        level1_branch_ix=0).exclude(shortName='').all()
     return render_template(
         request, "view_meaning.html",
         {"meaning": meaning,
@@ -1256,8 +1244,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
          "cognate_form": cognate_form,
          "add_cognate_judgement": lexeme_id,
          "lex_ed_form": lexemes_editabletable_form,
-         "filt_form": filt_form,
-         "languageBranches": languageBranches})
+         "filt_form": filt_form})
 
 
 @csrf_protect
