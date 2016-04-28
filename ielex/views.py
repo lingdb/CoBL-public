@@ -431,9 +431,9 @@ def view_clades(request):
                     # Make sure to update things referencing clade here!
                     # Deleting the clade:
                     Clade.objects.filter(id=clade.id).delete()
-                    # Write message about branch deletion:
+                    # Write message about clade deletion:
                     messages.append('Deleted clade "%s".' %
-                                    clade.level1_branch_name)
+                                    clade.cladeName)
             except Exception, e:
                 print('Problem deleting clade:', e)
                 messages.append('Sorry, the server had problems '
@@ -515,7 +515,7 @@ def view_sndComp(request):
 
         c = s.getClade()
         if c is not None:
-            s.cladeName = c.level1_branch_name
+            s.cladeName = c.cladeName
 
         form.elements.append_entry(s)
 

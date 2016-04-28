@@ -219,11 +219,11 @@ class Clade(models.Model):
     This model was added for #153
     and shall be used to track clade constraints.
     '''
-    family_ix = models.IntegerField(default=0, null=True)
-    level1_branch_ix = models.IntegerField(default=0, null=True)
-    level2_branch_ix = models.IntegerField(default=0, null=True)
-    level3_branch_ix = models.IntegerField(default=0, null=True)
-    level1_branch_name = models.TextField(blank=True, unique=True)
+    cladeLevel0 = models.IntegerField(default=0, null=False)
+    cladeLevel1 = models.IntegerField(default=0, null=False)
+    cladeLevel2 = models.IntegerField(default=0, null=False)
+    cladeLevel3 = models.IntegerField(default=0, null=False)
+    cladeName = models.TextField(blank=True, unique=True)
     hexColor = models.CharField(max_length=6, blank=True)
     shortName = models.CharField(max_length=5, blank=True)
     # Will decide wether to include this in the export:
@@ -249,11 +249,6 @@ class Clade(models.Model):
     # For uniform distribution:
     uniformUpper = models.IntegerField(null=True)
     uniformLower = models.IntegerField(null=True)
-    # For linking against SndComp levels:
-    cladeLevel0 = models.IntegerField(default=0, null=False)
-    cladeLevel1 = models.IntegerField(default=0, null=False)
-    cladeLevel2 = models.IntegerField(default=0, null=False)
-    cladeLevel3 = models.IntegerField(default=0, null=False)
 
     def is_unchanged(self, **vdict):
 
@@ -267,11 +262,7 @@ class Clade(models.Model):
             return getattr(self, x) == vdict[x]
 
         fields = {
-            'family_ix': isInt,
-            'level1_branch_ix': isInt,
-            'level2_branch_ix': isInt,
-            'level3_branch_ix': isInt,
-            'level1_branch_name': isString,
+            'cladeName': isString,
             'shortName': isString,
             'hexColor': isString,
             'export': isString,
@@ -310,11 +301,7 @@ class Clade(models.Model):
             setattr(self, x, vdict[x])
 
         fields = {
-            'family_ix': setInt,
-            'level1_branch_ix': setInt,
-            'level2_branch_ix': setInt,
-            'level3_branch_ix': setInt,
-            'level1_branch_name': setString,
+            'cladeName': setString,
             'shortName': setString,
             'hexColor': setString,
             'export': setString,

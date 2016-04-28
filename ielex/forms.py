@@ -268,15 +268,7 @@ class AddLanguageListTableForm(WTForm):
 
 class CladeRowForm(WTForm):
     idField = IntegerField('Id')
-    family_ix = IntegerField('Family Ix', validators=[DataRequired()])
-    level1_branch_ix = IntegerField('Level1 Branch Ix',
-                                    validators=[DataRequired()])
-    level2_branch_ix = IntegerField('Level2 Branch Ix',
-                                    validators=[DataRequired()])
-    level3_branch_ix = IntegerField('Level3 Branch Ix',
-                                    validators=[DataRequired()])
-    level1_branch_name = StringField('Level 1 Branch Name',
-                                     validators=[DataRequired()])
+    cladeName = StringField('Clade Name', validators=[DataRequired()])
     shortName = StringField('Short name', validators=[DataRequired()])
     hexColor = StringField('hexColor', validators=[DataRequired()])
     export = BooleanField('Export?', validators=[DataRequired()])
@@ -308,7 +300,7 @@ class CladeTableForm(WTForm):
 
 
 class CladeCreationForm(WTForm):
-    level1_branch_name = StringField('Short name', validators=[DataRequired()])
+    cladeName = StringField('Clade name', validators=[DataRequired()])
     cladeLevel0 = IntegerField('Clade level 0', validators=[DataRequired()])
     cladeLevel1 = IntegerField('Clade level 1', validators=[DataRequired()])
     cladeLevel2 = IntegerField('Clade level 2', validators=[DataRequired()])
@@ -316,7 +308,7 @@ class CladeCreationForm(WTForm):
 
 
 class CladeDeletionForm(WTForm):
-    level1_branch_name = StringField('Short name', validators=[DataRequired()])
+    cladeName = StringField('Clade name', validators=[DataRequired()])
 
 
 class SndCompRowForm(WTForm):
