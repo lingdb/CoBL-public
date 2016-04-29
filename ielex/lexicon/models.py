@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 # from django.db import connection ### testing
 from django.db import IntegrityError
 from django.dispatch import receiver
-from django.db.models.signals import pre_delete, post_delete
+from django.db.models.signals import pre_delete, post_delete, post_save
 from django.db.backends.signals import connection_created
 from django.utils.safestring import SafeString
 from django.utils.encoding import python_2_unicode_compatible
@@ -19,6 +19,7 @@ import reversion
 # from reversion.admin import VersionAdmin
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import *
+from itertools import izip
 
 # from https://code.djangoproject.com/ticket/8399
 try:
@@ -341,7 +342,7 @@ class Language(models.Model):
         max_length=128, unique=True, validators=[suitable_for_url])
     utf8_name = models.CharField(max_length=128, unique=True)
     description = models.TextField(blank=True, null=True)
-    clade = models.ForeignKey(Clade, null=True)
+    clades = models.ManyToManyField(Clade, through="LanguageClade", blank=True)
     beastName = models.CharField(max_length=128, blank=True)  # #130
     earliestTimeDepthBound = models.IntegerField(null=True)  # #128
     latestTimeDepthBound = models.IntegerField(null=True)  # #128
@@ -373,11 +374,11 @@ class Language(models.Model):
     class Meta:
         ordering = ["ascii_name"]
 
-    def is_unchanged(self, **vdict):
+    def isChanged(self, **vdict):
 
         fields = [
             'iso_code',
-            'utf8_name',
+            'ascii_name',
             'glottocode',
             'variety',
             'foss_stat',
@@ -402,8 +403,8 @@ class Language(models.Model):
         for f in fields:
             if f in vdict:
                 if getattr(self, f) != vdict[f]:
-                    return False
-        return True
+                    return True
+        return False
 
     def setDelta(self, **vdict):
         """
@@ -413,7 +414,8 @@ class Language(models.Model):
 
         fields = [
             'iso_code',
-            'utf8_name',
+            'ascii_name',
+            'utf8_name',  # Not checked in isChanged
             'glottocode',
             'variety',
             'foss_stat',
@@ -438,7 +440,6 @@ class Language(models.Model):
         # Escaping special fields:
         if 'ascii_name' in vdict:
             vdict['utf8_name'] = vdict['ascii_name'].encode('utf8', 'ignore')
-            del vdict['ascii_name']
 
         # Setting fields:
         for f in fields:
@@ -488,6 +489,71 @@ class Language(models.Model):
             if f in fieldDesc:
                 row.append(fieldDesc[f](f))
         return row
+
+    def getClades(self):
+        '''
+        This method tries to find the clades closest to a Language.
+        @return clades :: [Clade]
+        '''
+        clades = []
+        wanted = [('cladeLevel0', self.level0),
+                  ('cladeLevel1', self.level1),
+                  ('cladeLevel2', self.level2),
+                  ('cladeLevel3', self.level3)]
+
+        for i in xrange(len(wanted), 0, -1):
+            try:
+                d = dict(wanted[:i])
+                no = [c.id for c in clades]
+                cs = Clade.objects.filter(**d).exclude(id__in=no).all()
+                clades.extend(cs)
+            except Exception, e:
+                pass
+
+        return clades
+
+    def updateClades(self):
+        '''
+        This method updates the related LanguageClade models.
+        To do so it uses self.getClades to obtain a list of current clades.
+        It compares if the clades changed by checking
+        if the sets of clade ids are different.
+        If so it replaces the old clades by deleting them
+        and creating instances for the current clades.
+        '''
+        currentClades = self.getClades()
+        currentIds = set([c.id for c in currentClades])
+        oldIds = set([c.id for c in self.clades.all()])
+        if currentIds != oldIds:
+            # Removing old models:
+            self.clades.clear()
+            # Adding new models:
+            toCreate = [
+                LanguageClade(language=self, clade=c, cladesOrder=o)
+                for c, o in izip(currentClades, xrange(len(currentClades)))]
+            LanguageClade.objects.bulk_create(toCreate)
+
+    class Meta:
+        ordering = ["level0", "level1", "level2", "level3"]
+
+
+@receiver(post_save, sender=Language)
+def update_language_clades(sender, instance, **kwargs):
+    '''
+    Making sure clades are updated whenever a language changes:
+    '''
+    instance.updateClades()
+
+
+@reversion.register
+class LanguageClade(models.Model):
+    language = models.ForeignKey(Language)
+    clade = models.ForeignKey(Clade)
+    # Order in which Language.getClades found these entries:
+    cladesOrder = models.IntegerField(default=0, null=False)
+
+    class Meta:
+        ordering = ['cladesOrder']
 
 
 @reversion.register

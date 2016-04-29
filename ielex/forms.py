@@ -230,10 +230,10 @@ class LanguageListRowForm(WTForm):
     low_stat = BooleanField('Low Status', validators=[DataRequired()])
     soundcompcode = StringField('Sound Comparisons Code',
                                 validators=[DataRequired()])
-    level0 = StringField('Level 0 Branch', validators=[DataRequired()])
-    level1 = StringField('Level 1 Branch', validators=[DataRequired()])
-    level2 = StringField('Level 2 Branch', validators=[DataRequired()])
-    level3 = StringField('Level 3 Branch', validators=[DataRequired()])
+    level0 = IntegerField('Level 0 Branch', validators=[DataRequired()])
+    level1 = IntegerField('Level 1 Branch', validators=[DataRequired()])
+    level2 = IntegerField('Level 2 Branch', validators=[DataRequired()])
+    level3 = IntegerField('Level 3 Branch', validators=[DataRequired()])
     representative = BooleanField('Representative',
                                   validators=[DataRequired()])
     mgs_count = IntegerField('Meaning Count', validators=[DataRequired()])

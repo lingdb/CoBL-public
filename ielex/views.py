@@ -269,7 +269,7 @@ def view_language_list(request, language_list=None):
 
                 lang = Language.objects.get(ascii_name=data['ascii_name'])
 
-                if not lang.is_unchanged(**data):
+                if lang.isChanged(**data):
 
                     lang.setDelta(**data)
 
