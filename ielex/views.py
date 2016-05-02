@@ -299,14 +299,9 @@ def view_language_list(request, language_list=None):
         for lang in langs:
 
             langlist_row_form = LanguageListRowForm()
-            langlist_row_form.iso_code = lang.iso_code.encode(
-                "ascii", "ignore")
-            langlist_row_form.ascii_name = lang.ascii_name.encode(
-                "ascii", "ignore")
-            # TODO: ascii encoding is OK here
-            # as there are no problematic characters ?
-            langlist_row_form.utf8_name = lang.utf8_name.encode(
-                "ascii", "ignore")
+            langlist_row_form.iso_code = lang.iso_code
+            langlist_row_form.ascii_name = lang.ascii_name
+            langlist_row_form.utf8_name = lang.utf8_name
 
             # Computing counts:
             nonLexCount = len([l for l in lang.lexeme_set.all()
