@@ -620,6 +620,15 @@ class Language(models.Model):
         except:
             return ''
 
+    @property
+    def hexColor(self):
+        try:
+            if self.firstClade is not None:
+                if self.firstClade.hexColor != '':
+                    return self.firstClade.hexColor
+        except:
+            return None
+
 
 @receiver(post_save, sender=Language)
 def update_language_clades(sender, instance, **kwargs):

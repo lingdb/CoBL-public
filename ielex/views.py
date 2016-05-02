@@ -1134,9 +1134,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             reverse("view-meaning-languages",
                     args=[canonical_gloss, current_language_list.name]))
 
-    else:
-        pass  # TODO
-
     # Gather lexemes:
     lexemes = Lexeme.objects.filter(
         meaning=meaning,
@@ -1150,7 +1147,9 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         "cognatejudgement_set",
         "cognatejudgement_set__cognatejudgementcitation_set",
         "lexemecitation_set",
-        "cognate_class")
+        "cognate_class",
+        "language__languageclade_set",
+        "language__clades",)
 
     cognate_form.fields[
         "cognate_class"].queryset = CognateClass.objects.filter(
@@ -1179,6 +1178,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             lex_row_form.language = lex.language
             lex_row_form.language_asciiname = lex.language.ascii_name
             lex_row_form.language_utf8name = lex.language.utf8_name
+            lex_row_form.language_color = lex.language.hexColor
             lex_row_form.cognate_class_links = lex.get_cognate_class_links
             lex_row_form.meaning_id = lex.meaning.id
             lex_row_form.meaning = lex.meaning
