@@ -27,11 +27,23 @@ def forwards_func(apps, schema_editor):
         'rfcWebPath2': 'rfcWebPath2',
         'author': 'author',
         'reviewer': 'reviewer'}
+    intFields = set(['level0',
+                     'level1',
+                     'level2',
+                     'level3',
+                     'mean_timedepth_BP_years',
+                     'std_deviation_timedepth_BP_years'])
     print('Copying JSON data to dedicated columns.')
     for l in Language.objects.all():
         for k, v in fieldMap.iteritems():
             if k in l.altname:
-                setattr(l, v, l.altname[k])
+                e = l.altname[k]
+                if v in intFields:
+                    try:
+                        e = int(e)
+                    except:
+                        e = 0
+                setattr(l, v, e)
         l.save()
 
 
