@@ -56,7 +56,7 @@ RELIABILITY_CHOICES = (  # used by Citation classes
     ("L", "Loanword"),
     ("X", "Exclude (e.g. not the Swadesh term)"))
 
-DISTRIBUTION_CHOICES = (  # used by LanguageBranches
+DISTRIBUTION_CHOICES = (  # used by Clade
     ("U", "Uniform"),
     ("N", "Normal"),
     ("L", "Log normal"),
