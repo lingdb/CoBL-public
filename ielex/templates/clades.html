@@ -55,9 +55,13 @@
             <tr>
               {# For Clade reference: #}
               <th>Cl 0</th>
+              <th>Cl 0 name</th>
               <th>Cl 1</th>
+              <th>Cl 1 name</th>
               <th>Cl 2</th>
+              <th>Cl 2 name</th>
               <th>Cl 3</th>
+              <th>Cl 3 name</th>
               <th>Clade name</th>
               <th>Colour (hex)</th>
               <th>Filt abbr</th>
@@ -142,6 +146,23 @@
               <th>
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
+                         data-selector=".level0Name input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".level0Name input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".level0Name">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".level0Name">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
                          data-selector=".cladeLevel1 input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".cladeLevel1 input">
@@ -152,6 +173,23 @@
                          data-selector=".cladeLevel1">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".cladeLevel1">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".level1Name input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".level1Name input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".level1Name">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".level1Name">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
@@ -176,6 +214,23 @@
               <th>
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
+                         data-selector=".level2Name input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".level2Name input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".level2Name">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".level2Name">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
                          data-selector=".cladeLevel3 input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".cladeLevel3 input">
@@ -186,6 +241,23 @@
                          data-selector=".cladeLevel3">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".cladeLevel3">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </th>
+              <th>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".level3Name input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".level3Name input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".level3Name">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".level3Name">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
@@ -443,11 +515,25 @@
                     {{ clade.cladeLevel0.data }}
                   {% endif %}
                 </td>
+                <td class="level0Name">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field clade.level0Name class="form-control" pattern="^.{0,64}$" %}
+                  {% elif clade.level0Name.data %}
+                    {{ clade.level0Name.data }}
+                  {% endif %}
+                </td>
                 <td class="cladeLevel1">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field clade.cladeLevel1 class="form-control" pattern="^[0-9]{0,1}$" %}
                   {% elif clade.cladeLevel1.data %}
                     {{ clade.cladeLevel1.data }}
+                  {% endif %}
+                </td>
+                <td class="level1Name">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field clade.level1Name class="form-control" pattern="^.{0,64}$" %}
+                  {% elif clade.level1Name.data %}
+                    {{ clade.level1Name.data }}
                   {% endif %}
                 </td>
                 <td class="cladeLevel2">
@@ -457,11 +543,25 @@
                     {{ clade.cladeLevel2.data }}
                   {% endif %}
                 </td>
+                <td class="level2Name">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field clade.level2Name class="form-control" pattern="^.{0,64}$" %}
+                  {% elif clade.level2Name.data %}
+                    {{ clade.level2Name.data }}
+                  {% endif %}
+                </td>
                 <td class="cladeLevel3">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field clade.cladeLevel3 class="form-control" pattern="^[0-9]{0,1}$" %}
                   {% elif clade.cladeLevel3.data %}
                     {{ clade.cladeLevel3.data }}
+                  {% endif %}
+                </td>
+                <td class="level3Name">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field clade.level3Name class="form-control" pattern="^.{0,64}$" %}
+                  {% elif clade.level3Name.data %}
+                    {{ clade.level3Name.data }}
                   {% endif %}
                 </td>
                 <td class="cladeName">

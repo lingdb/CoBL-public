@@ -227,6 +227,11 @@ class Clade(models.Model):
     cladeName = models.TextField(blank=True, unique=True)
     hexColor = models.CharField(max_length=6, blank=True)
     shortName = models.CharField(max_length=5, blank=True)
+    # Level names:
+    level0Name = models.CharField(max_length=64, blank=True)
+    level1Name = models.CharField(max_length=64, blank=True)
+    level2Name = models.CharField(max_length=64, blank=True)
+    level3Name = models.CharField(max_length=64, blank=True)
     # Will decide wether to include this in the export:
     export = models.BooleanField(default=0)
     # Will decide wether to include the date in the export:
@@ -282,7 +287,11 @@ class Clade(models.Model):
             'cladeLevel0': isInt,
             'cladeLevel1': isInt,
             'cladeLevel2': isInt,
-            'cladeLevel3': isInt}
+            'cladeLevel3': isInt,
+            'level0Name': isString,
+            'level1Name': isString,
+            'level2Name': isString,
+            'level3Name': isString}
 
         for k, _ in vdict.iteritems():
             if k in fields:
@@ -321,7 +330,11 @@ class Clade(models.Model):
             'cladeLevel0': setInt,
             'cladeLevel1': setInt,
             'cladeLevel2': setInt,
-            'cladeLevel3': setInt}
+            'cladeLevel3': setInt,
+            'level0Name': setString,
+            'level1Name': setString,
+            'level2Name': setString,
+            'level3Name': setString}
 
         # Setting fields:
         for k, _ in vdict.iteritems():

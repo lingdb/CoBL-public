@@ -287,14 +287,18 @@ class CladeRowForm(WTForm):
     normalStDev = IntegerField('StDev', validators=[DataRequired()])
     uniformUpper = IntegerField('Upper', validators=[DataRequired()])
     uniformLower = IntegerField('Lower', validators=[DataRequired()])
-    cladeLevel0 = IntegerField('SndComp Level 0',
+    cladeLevel0 = IntegerField('Clade Level 0',
                                validators=[DataRequired()])
-    cladeLevel1 = IntegerField('SndComp Level 1',
+    cladeLevel1 = IntegerField('Clade Level 1',
                                validators=[DataRequired()])
-    cladeLevel2 = IntegerField('SndComp Level 2',
+    cladeLevel2 = IntegerField('Clade Level 2',
                                validators=[DataRequired()])
-    cladeLevel3 = IntegerField('SndComp Level 3',
+    cladeLevel3 = IntegerField('Clade Level 3',
                                validators=[DataRequired()])
+    level0Name = StringField('Level 0 name', validators=[DataRequired()])
+    level1Name = StringField('Level 1 name', validators=[DataRequired()])
+    level2Name = StringField('Level 2 name', validators=[DataRequired()])
+    level3Name = StringField('Level 3 name', validators=[DataRequired()])
 
 
 class CladeTableForm(WTForm):
