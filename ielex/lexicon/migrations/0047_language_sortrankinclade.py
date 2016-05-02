@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lexicon', '0047_update_languageClade'),
+        ('lexicon', '0046_auto_20160428_1703'),
     ]
 
     operations = [

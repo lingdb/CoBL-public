@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lexicon', '0048_language_sortrankinclade'),
+        ('lexicon', '0047_language_sortrankinclade'),
     ]
 
     operations = [

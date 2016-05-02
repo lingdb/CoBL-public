@@ -22,7 +22,7 @@ def reverse_func(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('lexicon', '0046_auto_20160428_1703')]
+    dependencies = [('lexicon', '0048_auto_20160502_1338')]
 
     operations = [
         migrations.RunPython(forwards_func, reverse_func),
