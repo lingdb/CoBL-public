@@ -260,6 +260,8 @@ class LanguageListRowForm(WTForm):
                                         validators=[DataRequired()])
     progress = IntegerField('Progress on this language',
                             validators=[DataRequired()])
+    sortRankInClade = IntegerField(
+        'Sort rank in clade', validators=[DataRequired()])
 
 
 class AddLanguageListTableForm(WTForm):

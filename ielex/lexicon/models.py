@@ -364,6 +364,8 @@ class Language(models.Model):
     rfcWebPath2 = models.TextField(blank=True, null=True)
     author = models.CharField(max_length=256, null=True)
     reviewer = models.CharField(max_length=256, null=True)
+    # Added for #153:
+    sortRankInClade = models.IntegerField(default=0, null=False)
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
@@ -372,7 +374,11 @@ class Language(models.Model):
         return self.utf8_name
 
     class Meta:
-        ordering = ["ascii_name"]
+        ordering = ['level0',
+                    'level1',
+                    'level2',
+                    'level3',
+                    'sortRankInClade']
 
     def isChanged(self, **vdict):
 
@@ -398,7 +404,8 @@ class Language(models.Model):
             'beastName',
             'earliestTimeDepthBound',
             'latestTimeDepthBound',
-            'progress']
+            'progress',
+            'sortRankInClade']
 
         for f in fields:
             if f in vdict:
@@ -435,7 +442,8 @@ class Language(models.Model):
             'beastName',
             'earliestTimeDepthBound',
             'latestTimeDepthBound',
-            'progress']
+            'progress',
+            'sortRankInClade']
 
         # Escaping special fields:
         if 'ascii_name' in vdict:
