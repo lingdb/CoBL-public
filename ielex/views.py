@@ -304,17 +304,11 @@ def view_language_list(request, language_list=None):
             langlist_row_form.utf8_name = lang.utf8_name
 
             # Computing counts:
-            nonLexCount = len([l for l in lang.lexeme_set.all()
-                               if l.data.get('not_swadesh_term', False)])
-            entryCount = len(lang.lexeme_set.all())
-            meaningCount = len(set(
-                lex.meaning.id for lex in lang.lexeme_set.all()))
-            langlist_row_form.entd_count = entryCount
-            langlist_row_form.notSwh_count = nonLexCount
-            langlist_row_form.lex_count = entryCount - nonLexCount
-            langlist_row_form.mgs_count = meaningCount
-            langlist_row_form.excess_count = \
-                (entryCount - nonLexCount) - meaningCount
+            langlist_row_form.entd_count = lang.entryCount
+            langlist_row_form.notSwh_count = lang.nonLexCount
+            langlist_row_form.lex_count = lang.lexCount
+            langlist_row_form.mgs_count = lang.meaningCount
+            langlist_row_form.excess_count = lang.excessCount
 
             langlist_row_form.glottocode = lang.glottocode
             langlist_row_form.variety = lang.variety

@@ -557,6 +557,28 @@ class Language(models.Model):
     class Meta:
         ordering = ["level0", "level1", "level2", "level3"]
 
+    @property
+    def meaningCount(self):
+        return len(set(
+            lex.meaning.id for lex in self.lexeme_set.all()))
+
+    @property
+    def entryCount(self):
+        return len(self.lexeme_set.all())
+
+    @property
+    def nonLexCount(self):
+        return len([l for l in self.lexeme_set.all()
+                    if l.data.get('not_swadesh_term', False)])
+
+    @property
+    def lexCount(self):
+        return self.entryCount - self.nonLexCount
+
+    @property
+    def excessCount(self):
+        return self.lexCount - self.meaningCount
+
 
 @receiver(post_save, sender=Language)
 def update_language_clades(sender, instance, **kwargs):
