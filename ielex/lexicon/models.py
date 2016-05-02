@@ -554,9 +554,6 @@ class Language(models.Model):
                 for c, o in izip(currentClades, xrange(len(currentClades)))]
             LanguageClade.objects.bulk_create(toCreate)
 
-    class Meta:
-        ordering = ["level0", "level1", "level2", "level3"]
-
     @property
     def meaningCount(self):
         return len(set(
@@ -578,6 +575,50 @@ class Language(models.Model):
     @property
     def excessCount(self):
         return self.lexCount - self.meaningCount
+
+    @property
+    def firstClade(self):
+        try:
+            for lc in self.languageclade_set.all():
+                if lc.cladesOrder == 0:
+                    # Iterating clades is faster than querying db.
+                    for c in self.clades.all():
+                        if c.id == lc.clade_id:
+                            return c
+        except:
+            return None
+
+    @property
+    def level0Tooltip(self):
+        try:
+            if self.firstClade is not None:
+                return self.firstClade.level0Name
+        except:
+            return ''
+
+    @property
+    def level1Tooltip(self):
+        try:
+            if self.firstClade is not None:
+                return self.firstClade.level1Name
+        except:
+            return ''
+
+    @property
+    def level2Tooltip(self):
+        try:
+            if self.firstClade is not None:
+                return self.firstClade.level2Name
+        except:
+            return ''
+
+    @property
+    def level3Tooltip(self):
+        try:
+            if self.firstClade is not None:
+                return self.firstClade.level3Name
+        except:
+            return ''
 
 
 @receiver(post_save, sender=Language)

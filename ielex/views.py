@@ -256,7 +256,8 @@ def view_language_list(request, language_list=None):
     languages = current_list.languages.all().order_by(
         "languagelistorder"
         ).prefetch_related(
-        "lexeme_set", "lexeme_set__meaning")
+        "lexeme_set", "lexeme_set__meaning",
+        "languageclade_set", "clades")
 
     if (request.method == 'POST') and ('langlist_form' in request.POST):
 
@@ -334,6 +335,12 @@ def view_language_list(request, language_list=None):
             langlist_row_form.latestTimeDepthBound = lang.latestTimeDepthBound
             langlist_row_form.progress = lang.progress
             langlist_row_form.sortRankInClade = lang.sortRankInClade
+            # tooltips looked up from clade:
+            langlist_row_form.level0Tooltip = lang.level0Tooltip
+            langlist_row_form.level1Tooltip = lang.level1Tooltip
+            langlist_row_form.level2Tooltip = lang.level2Tooltip
+            langlist_row_form.level3Tooltip = lang.level3Tooltip
+            # Append langlist_row_form:
             langlist_table_form.langlist.append_entry(langlist_row_form)
         return langlist_table_form
 
