@@ -347,6 +347,10 @@ class Clade(models.Model):
                     'cladeLevel2',
                     'cladeLevel3']
 
+    @property
+    def languageIds(self):
+        return [cl.language_id for cl in self.languageclade_set]
+
 
 @reversion.register
 class Language(models.Model):
