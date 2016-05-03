@@ -21,7 +21,7 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-5">
       <form action="" method="post">
         {% if user.is_authenticated and user.is_staff %}
           {% csrf_token %}
@@ -60,7 +60,8 @@
               <th></th>
                 <th>
                   <input type="text" class="filterInput form-control"
-                         data-selector=".meaningGloss input">
+                         data-selector=".meaningGloss input"
+                         style="width: 6em;">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".meaningGloss input">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -102,7 +103,7 @@
                 {% if user.is_authenticated and user.is_staff %}
                   {% form_field meaning.meaningId class="hide" %}
                   <td class="meaningGloss">
-                    {% form_field meaning.gloss class="form-control" size="4" %}
+                    {% form_field meaning.gloss class="form-control" size="4" style="width: 6em;" %}
                   </td>
                 {% else %}
                   <td class="meaningGloss">
