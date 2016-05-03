@@ -510,7 +510,7 @@
                 </td>
                 <td class="cladeLevel0">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.cladeLevel0 class="form-control" pattern="^[0-9]{0,1}$" %}
+                    {% form_field clade.cladeLevel0 class="form-control" pattern="^[0-9]{0,2}$" %}
                   {% elif clade.cladeLevel0.data %}
                     {{ clade.cladeLevel0.data }}
                   {% endif %}
@@ -524,7 +524,7 @@
                 </td>
                 <td class="cladeLevel1">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.cladeLevel1 class="form-control" pattern="^[0-9]{0,1}$" %}
+                    {% form_field clade.cladeLevel1 class="form-control" pattern="^[0-9]{0,2}$" %}
                   {% elif clade.cladeLevel1.data %}
                     {{ clade.cladeLevel1.data }}
                   {% endif %}
@@ -538,7 +538,7 @@
                 </td>
                 <td class="cladeLevel2">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.cladeLevel2 class="form-control" pattern="^[0-9]{0,1}$" %}
+                    {% form_field clade.cladeLevel2 class="form-control" pattern="^[0-9]{0,2}$" %}
                   {% elif clade.cladeLevel2.data %}
                     {{ clade.cladeLevel2.data }}
                   {% endif %}
@@ -552,7 +552,7 @@
                 </td>
                 <td class="cladeLevel3">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.cladeLevel3 class="form-control" pattern="^[0-9]{0,1}$" %}
+                    {% form_field clade.cladeLevel3 class="form-control" pattern="^[0-9]{0,2}$" %}
                   {% elif clade.cladeLevel3.data %}
                     {{ clade.cladeLevel3.data }}
                   {% endif %}

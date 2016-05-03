@@ -742,7 +742,7 @@
                   >
                   <center>
                     {% if user.is_authenticated and user.is_staff %}
-                      {% form_field language.level0 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" %}
+                      {% form_field language.level0 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
                     {% elif language.level0.data %}
                       {{ language.level0.data }}
                     {% endif %}
@@ -758,7 +758,7 @@
                   >
                   <center>
                     {% if user.is_authenticated and user.is_staff %}
-                      {% form_field language.level1 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" %}
+                      {% form_field language.level1 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
                     {% elif language.level1.data %}
                       {{ language.level1.data }}
                     {% endif %}
@@ -774,7 +774,7 @@
                   >
                   <center>
                     {% if user.is_authenticated and user.is_staff %}
-                      {% form_field language.level2 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" %}
+                      {% form_field language.level2 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
                     {% elif language.level2.data %}
                       {{ language.level2.data }}
                     {% endif %}
@@ -790,7 +790,7 @@
                   >
                   <center>
                     {% if user.is_authenticated and user.is_staff %}
-                      {% form_field language.level3 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" %}
+                      {% form_field language.level3 class="languageBranch form-control" maxlength="1" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
                     {% elif language.level3.data %}
                       {{ language.level3.data }}
                     {% endif %}
