@@ -2022,9 +2022,12 @@ def viewAbout(request, page):
         'home': baseUrl + 'About-Page:-Home.md'
         }
     if page in pageUrlMap:
-        r = requests.get(pageUrlMap[page])
-        if r.status_code == requests.codes.ok:
-            content = r.content
+        try:
+            r = requests.get(pageUrlMap[page])
+            if r.status_code == requests.codes.ok:
+                content = r.content
+        except:
+            pass
     return render_template(request, "about.html",
                            {'title': pageTitleMap.get(page, 'Error'),
                             'content': content})
