@@ -870,12 +870,11 @@ class Lexeme(models.Model):
     data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
     number_cognate_coded = models.IntegerField(editable=False, default=0)
-    denormalized_cognate_classes = models.TextField(editable=False, blank=True)
 
-    def set_denormalized_cognate_classes(self):
+    @property
+    def denormalized_cognate_classes(self):
         """Create a sequence of 'cc1.id, cc1.alias, cc2.id, cc2.alias'
         as a string and store"""
-        old_value = self.denormalized_cognate_classes
         data = []
         for cc in self.cognate_class.all():
             data.append(cc.id)
@@ -885,9 +884,7 @@ class Lexeme(models.Model):
                 data.append("(%s)" % cc.alias)
             else:
                 data.append(cc.alias)
-        self.denormalized_cognate_classes = ",".join(str(e) for e in data)
-        if self.denormalized_cognate_classes != old_value:
-            self.save()
+        return ",".join(str(e) for e in data)
 
     def set_number_cognate_coded(self):
         old_number = self.number_cognate_coded
@@ -1039,7 +1036,7 @@ class Lexeme(models.Model):
 
     def getCognateClassData(self):
         """
-        This method was added for #90 and shall returns
+        This method was added for #90 and shall return
         gathered cc data for a lexeme.
         @return {id: …, root_form: …, root_language: …}
         """
@@ -1620,41 +1617,6 @@ models.signals.post_save.connect(
     update_cognateclass_list_all, sender=CognateClass)
 models.signals.post_delete.connect(
     update_cognateclass_list_all, sender=CognateClass)
-
-
-@disable_for_loaddata
-def update_denormalized_data(sender, instance, **kwargs):
-    try:
-        if sender in [CognateJudgement, LexemeCitation]:
-            lexeme = instance.lexeme
-        elif sender == CognateJudgementCitation:
-            try:
-                lexeme = instance.cognate_judgement.lexeme
-            except CognateJudgement.DoesNotExist:
-                # e.g. if the cognate judgement
-                # citation is deleted automatically because the cognate
-                # judgement has been deleted
-                return
-        if sender in [CognateJudgement, CognateJudgementCitation]:
-            lexeme.set_number_cognate_coded()
-        lexeme.set_denormalized_cognate_classes()
-    except Lexeme.DoesNotExist:
-        pass  # must have been deleted
-
-models.signals.post_save.connect(
-    update_denormalized_data, sender=CognateJudgement)
-models.signals.post_delete.connect(
-    update_denormalized_data, sender=CognateJudgement)
-
-models.signals.post_save.connect(
-    update_denormalized_data, sender=CognateJudgementCitation)
-models.signals.post_delete.connect(
-    update_denormalized_data, sender=CognateJudgementCitation)
-
-models.signals.post_save.connect(
-    update_denormalized_data, sender=LexemeCitation)
-models.signals.post_delete.connect(
-    update_denormalized_data, sender=LexemeCitation)
 
 
 @disable_for_loaddata
