@@ -475,44 +475,41 @@ class Language(models.Model):
         '''
         @return row :: [str]
         '''
-        def getField(f):
-            x = getattr(self, f, '')
-            if x is None:
-                return '""'
-            return '"'+str(x)+'"'
-
-        def getData(f):
-            x = self.altname[f]
-            if x is None:
-                return '""'
-            return '"'+str(x)+'"'
-
-        def getY(f):
-            return '1' if self.altname[f] else '0'
-
-        fieldDesc = {
-            'iso_code': getField,
-            'utf8_name': getField,
-            'glottocode': getData,
-            'variety': getData,
-            'foss_stat': getY,
-            'low_stat': getY,
-            'soundcompcode': getData,
-            'level0': getData,
-            'level1': getData,
-            'level2': getData,
-            'representative': getY,
-            'mean_timedepth_BP_years': getData,
-            'std_deviation_timedepth_BP_years': getData,
-            'rfcWebPath1': getData,
-            'rfcWebPath2': getData,
-            'author': getData,
-            'reviewer': getData}
+        fieldSet = set(['iso_code',
+                        'ascii_name',
+                        'utf8_name',
+                        'description',
+                        'clades',
+                        'beastName',
+                        'earliestTimeDepthBound',
+                        'latestTimeDepthBound',
+                        'progress',
+                        'glottocode',
+                        'variety',
+                        'soundcompcode',
+                        'level0',
+                        'level1',
+                        'level2',
+                        'level3',
+                        'mean_timedepth_BP_years',
+                        'std_deviation_timedepth_BP_years',
+                        'foss_stat',
+                        'low_stat',
+                        'representative',
+                        'rfcWebPath1',
+                        'rfcWebPath2',
+                        'author',
+                        'reviewer',
+                        'sortRankInClade',
+                        'sndCompLevel0',
+                        'sndCompLevel1',
+                        'sndCompLevel2',
+                        'sndCompLevel3'])
 
         row = []
         for f in fields:
-            if f in fieldDesc:
-                row.append(fieldDesc[f](f))
+            if f in fieldSet:
+                row.append(str(getattr(self, f)))
         return row
 
     def getClades(self):
