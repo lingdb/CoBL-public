@@ -383,6 +383,11 @@ class Language(models.Model):
     reviewer = models.CharField(max_length=256, null=True)
     # Added for #153:
     sortRankInClade = models.IntegerField(default=0, null=False)
+    # Backup of level entries that still correspond to SndComp levels:
+    sndCompLevel0 = models.IntegerField(default=0, null=True)
+    sndCompLevel1 = models.IntegerField(default=0, null=True)
+    sndCompLevel2 = models.IntegerField(default=0, null=True)
+    sndCompLevel3 = models.IntegerField(default=0, null=True)
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
