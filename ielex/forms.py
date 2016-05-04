@@ -219,6 +219,11 @@ class EditLanguageListMembersForm(forms.Form):
                 attrs={"size": 20, "onchange": "this.form.submit()"}))
 
 
+class AbstractTimestampedForm(WTForm):
+    lastTouched = DateTimeField('Last changed', validators=[DataRequired()])
+    lastEditedBy = StringField('Last edited')
+
+
 class LanguageListRowForm(WTForm):
     iso_code = StringField('Language ISO Code', validators=[DataRequired()])
     utf8_name = StringField('Language Utf8 Name', validators=[DataRequired()])
@@ -596,7 +601,7 @@ class SearchLexemeForm(forms.Form):
         help_text=u"no selection → all")
 
 
-class AuthorRowForm(WTForm):
+class AuthorRowForm(AbstractTimestampedForm):
     idField = IntegerField('Id', validators=[DataRequired()])
     initials = StringField('Initials', validators=[DataRequired()])
     surname = StringField('Author Surname', validators=[DataRequired()])

@@ -103,8 +103,8 @@ class AbstractTimestamped(models.Model):
     fields and functionality to other models.
     It aims to solve the problems observed in #111.
     '''
-    lastTouched = models.DateTimeField(auto_now=True, auto_now_add=True)
-    lastEditedBy = models.CharField(max_length=32, blank=True)
+    lastTouched = models.DateTimeField(auto_now=True, blank=True)
+    lastEditedBy = models.CharField(max_length=32, default="unknown")
 
     class Meta:
         abstract = True
@@ -150,8 +150,9 @@ class AbstractTimestamped(models.Model):
         can be used independent of it.
         '''
         # Guarding for correct lastTouched:
-        if 'lastTouched' not in vdict or \
-           vdict['lastTouched'] != self.lastTouched:
+        if 'lastTouched' not in vdict:
+            return self.getDelta(**vdict)
+        if abs(vdict['lastTouched'] - self.lastTouched).seconds > 0:
             return self.getDelta(**vdict)
         # Making sure lastEditedBy is updated correctly:
         if request is not None:
@@ -166,7 +167,10 @@ class AbstractTimestamped(models.Model):
                 setattr(self, f.name, vdict[f.name])
 
     def getDelta(self, **vdict):
-        return {k: v for (k, v) in vdict if v != getattr(self, k)}
+        tFields = self.timestampedFields()
+        return {k: vdict[k] for k in vdict
+                if k in tFields and
+                vdict[k] != getattr(self, k)}
 
 
 @reversion.register
@@ -1702,7 +1706,7 @@ models.signals.post_delete.connect(
 
 
 @reversion.register
-class Author(models.Model):
+class Author(AbstractTimestamped):
     # See https://github.com/lingdb/CoBL/issues/106
     # We leave out the ix field in favour
     # of the id field provided by reversion.
@@ -1717,26 +1721,14 @@ class Author(models.Model):
     # Initials
     initials = models.TextField(blank=True, unique=True)
 
-    def is_unchanged(self, **vdict):
-        fields = ['surname', 'firstNames', 'email', 'website', 'initials']
+    def timestampedFields(self):
+        return set(['surname', 'firstNames', 'email', 'website', 'initials'])
 
-        for f in fields:
-            if f in vdict:
-                if vdict[f] != getattr(self, f):
-                    return False
-
-        return True
-
-    def setDelta(self, **vdict):
-        """
-        Alter a models attributes by giving a vdict
-        similar to the one used for is_unchanged.
-        """
-        fields = ['surname', 'firstNames', 'email', 'website', 'initials']
-
-        for f in fields:
-            if f in vdict:
-                setattr(self, f, vdict[f])
+    def deltaReport(self, **kwargs):
+        return 'Could not update author entry: ' \
+            '"%s" with values %s. ' \
+            'It was last touched by "%s" %s.' % \
+            (self.surname, kwargs, self.lastEditedBy, self.lastTouched)
 
     class Meta:
         ordering = ["surname", "firstNames"]

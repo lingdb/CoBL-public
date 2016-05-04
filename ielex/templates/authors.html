@@ -65,6 +65,8 @@
                 <tr>
                   <td class="hide">
                     {% form_field author.idField required="required" %}
+                    {% form_field author.lastTouched required="required" %}
+                    {% form_field author.lastEditedBy required="required" %}
                   </td>
                   <td class="initials">
                     {% form_field author.initials class="form-control" required="required" style="width: 4em;" %}

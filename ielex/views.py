@@ -2075,9 +2075,13 @@ def viewAuthors(request):
                         with transaction.atomic():
                             author = Author.objects.get(
                                 id=int(data['idField']))
-                            if not author.is_unchanged(**data):
-                                author.setDelta(**data)
-                                author.save()
+                            if author.isChanged(**data):
+                                problem = author.setDelta(request, **data)
+                                if problem is None:
+                                    author.save()
+                                else:
+                                    messages.append(
+                                        author.deltaReport(**problem))
                     except Exception, e:
                         print('Problem while saving author: ', e)
                         messages.append(
