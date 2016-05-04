@@ -253,9 +253,7 @@ def get_canonical_language_list(language_list=None, request=None):
 def view_language_list(request, language_list=None):
     current_list = get_canonical_language_list(language_list, request)
     setDefaultLanguagelist(request, current_list.name)
-    languages = current_list.languages.all().order_by(
-        "languagelistorder"
-        ).prefetch_related(
+    languages = current_list.languages.all().prefetch_related(
         "lexeme_set", "lexeme_set__meaning",
         "languageclade_set", "clades")
 
