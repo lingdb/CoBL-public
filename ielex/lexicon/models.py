@@ -158,7 +158,8 @@ class AbstractTimestamped(models.Model):
         if request is not None:
             if not request.user.is_authenticated:
                 raise Exception('Refusing setDelta with unauthenticated user.')
-            self.lastEditedBy = ' '.join([request.user.first_name, request.user.last_name])
+            self.lastEditedBy = ' '.join([request.user.first_name,
+                                          request.user.last_name])
 
         tFields = self.timestampedFields()
 
