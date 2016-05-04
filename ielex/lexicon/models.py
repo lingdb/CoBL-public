@@ -97,6 +97,78 @@ class CharNullField(models.CharField):
             return value
 
 
+class AbstractTimestamped(models.Model):
+    '''
+    This model is created as a mixin that adds
+    fields and functionality to other models.
+    It aims to solve the problems observed in #111.
+    '''
+    lastTouched = models.DateTimeField(auto_now=True, auto_now_add=True)
+    lastEditedBy = models.CharField(max_length=32, blank=True)
+
+    class Meta:
+        abstract = True
+
+    def timestampedFields(self):
+        '''
+        timestampedFields shall be overwritten by children
+        and return a set of field names that are
+        allowed to be considered by the AbstractTimestamped
+        {isChanged,setDelta} methods.
+        '''
+        return set()
+
+    def isChanged(self, **vdict):
+        '''
+        Returns True iff any of the fields in vdict
+        that are also specified in timestampedFields
+        and are one of the models fields stored in the db
+        has changed. Returns False otherwise.
+        '''
+        tFields = self.timestampedFields()
+
+        for f in self._meta.fields:
+            if f.name in tFields and f.name in vdict:
+                if getattr(self, f.name) != vdict[f.name]:
+                    return True
+        return False
+
+    def setDelta(self, request=None, **vdict):
+        '''
+        setDelta allows to alter a model with a dict of field names.
+        vdict must have a lastTouched field
+        that is the same as the current lastTouched.
+        If no lastTouched field is given or lastTouched is older than
+        the current value setDelta will return a dict
+        listing the current differences to the model.
+        If no problem arises from lastTouched
+        setDelta will check for a current user login to update
+        the lastEditedBy field and will then proceed updating
+        the model.
+        The request parameter is used to update lastEditedBy.
+        It's possible to omit the request so that setDelta
+        can be used independent of it.
+        '''
+        # Guarding for correct lastTouched:
+        if 'lastTouched' not in vdict or \
+           vdict['lastTouched'] != self.lastTouched:
+            return self.getDelta(**vdict)
+        # Making sure lastEditedBy is updated correctly:
+        if request is not None:
+            if not request.user.is_authenticated:
+                raise Exception('Refusing setDelta with unauthenticated user.')
+            self.lastEditedBy = request.user.username
+
+        tFields = self.timestampedFields()
+
+        for f in self._meta.fields:
+            if f.name in tFields and f.name in vdict:
+                setattr(self, f.name, vdict[f.name])
+
+    def getDelta(self, **vdict):
+        return {k: v for (k, v) in vdict if v != getattr(self, k)}
+
+
 @reversion.register
 class Source(models.Model):
 
@@ -1657,8 +1729,8 @@ class Author(models.Model):
 
     def setDelta(self, **vdict):
         """
-            Alter a models attributes by giving a vdict
-            similar to the one used for is_unchanged.
+        Alter a models attributes by giving a vdict
+        similar to the one used for is_unchanged.
         """
         fields = ['surname', 'firstNames', 'email', 'website', 'initials']
 
