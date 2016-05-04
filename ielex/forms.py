@@ -429,8 +429,8 @@ class AddLexemesTableForm(WTForm):
 
 # TODO: return to this if/when moving to Python 3
 @python_2_unicode_compatible
-class CogClassRowForm(WTForm):
-    cogclass_id = IntegerField('Cog Class Id', validators=[DataRequired()])
+class CogClassRowForm(AbstractTimestampedForm):
+    idField = IntegerField('Id', validators=[DataRequired()])
     alias = StringField('Cog Class Alias', validators=[DataRequired()])
     modified = DateTimeField('Date Modified', validators=[DataRequired()])
     cogclass_name = StringField('Cog Class Name', validators=[DataRequired()])
@@ -442,15 +442,16 @@ class CogClassRowForm(WTForm):
     notes = TextField('Notes', validators=[DataRequired()])
     loan_source = TextField('Loan Source', validators=[DataRequired()])
     loan_notes = TextField('Loan Notes', validators=[DataRequired()])
-
-    def __init__(self, *args, **kwargs):
-        super(CogClassRowForm, self).__init__(*args, **kwargs)
-        read_only(self.cogclass_id)
-        read_only(self.alias)
+    loanSourceId = IntegerField(
+        'Id of related cc', validators=[DataRequired()])
+    loanEventTimeDepthBP = IntegerField(
+        'Time depth of loan event', validators=[DataRequired()])
+    sourceFormInLoanLanguage = TextField(
+        'Source form in loan language', validators=[DataRequired()])
 
     def __str__(self):
         cogclass_form_vals = (
-                              str(self.cogclass_id),
+                              str(self.idField),
                               self.alias,
                               self.root_form,  # .encode('ascii', 'replace'),
                               self.root_language,

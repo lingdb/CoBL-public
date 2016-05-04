@@ -1238,34 +1238,36 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 @csrf_protect
 def view_cognateclasses(request, meaning):
     setDefaultMeaning(request, meaning)
+    messages = []
 
     if (request.method == 'POST') and 'cogclass_form' in request.POST:
 
-        cogClassTableForm = AddCogClassTableForm(request.POST)
+        try:
+            cogClassTableForm = AddCogClassTableForm(request.POST)
+            cogClassTableForm.validate()
 
-        for entry in cogClassTableForm.cogclass:
-            data = entry.data
-
-            try:
+            for entry in cogClassTableForm.cogclass:
+                data = entry.data
                 cogclass = CognateClass.objects.get(
-                    id=int(data['cogclass_id']))
+                    id=int(data['idField']))
 
-                if not cogclass.is_unchanged(**data):
-
-                    cogclass.setDelta(**data)
+                if cogclass.isChanged(**data):
 
                     try:
-                        cogclass.save()
+                        problem = cogclass.setDelta(request, **data)
+                        if problem is None:
+                            cogclass.save()
+                        else:
+                            messages.append(cogclass.deltaReport(**problem))
                     except Exception, e:
-                        print(
-                            'Exception while saving CognateClass object: ', e)
+                        print('Exception while saving CognateClass: ', e)
+                        messages.append(
+                            'Problem while saving entry: %s' % data)
 
-                else:
-                    pass
-
-            except Exception, e:
-                print('Exception while accessing CognateClass object: ',
-                      e, '; problem items are: ', data)
+        except Exception, e:
+            print('Problem updating cognateclasses: ', e)
+            messages.append('Sorry, the server had problems '
+                            'updating at least one entry.')
 
         return HttpResponseRedirect(reverse('edit-cogclasses', args=[meaning]))
 
@@ -1275,25 +1277,10 @@ def view_cognateclasses(request, meaning):
 
         for cc in cc_ordered:
 
-            cogclass_row_form = CogClassRowForm()
-            cogclass_row_form.cogclass_id = int(cc.id)
-            cogclass_row_form.alias = cc.alias
-            cogclass_row_form.root_form = cc.root_form
-            cogclass_row_form.root_language = cc.root_language
-            cogclass_row_form.loanword = cc.data.get('loanword', '')
-            cogclass_row_form.gloss_in_root_lang = cc.data.get(
-                'gloss_in_root_lang', '')
-            cogclass_row_form.notes = cc.notes
-            cogclass_row_form.loan_source = cc.data.get('loan_source', '')
-            cogclass_row_form.loan_notes = cc.data.get('loan_notes', '')
-            # To link to a given cognate class
-            # the get_absolute_url method of cc is used
-            # together with object_data in the template.
-            # See https://wtforms.readthedocs.org/en/latest/fields.html
-            #     #wtforms.fields.Field.object_data
-            cogclass_row_form.absolute_url = cc.get_absolute_url()
+            cc.idField = cc.id
+            cc.absolute_url = cc.get_absolute_url()
 
-            cogclass_table_form.cogclass.append_entry(cogclass_row_form)
+            cogclass_table_form.cogclass.append_entry(cc)
         return cogclass_table_form
 
     ccl_ordered = []
@@ -1323,7 +1310,8 @@ def view_cognateclasses(request, meaning):
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
 
     return render_template(request, "view_cognateclass_editable.html",
-                           {"meaning": meaning,
+                           {"messages": messages,
+                            "meaning": meaning,
                             "prev_meaning": prev_meaning,
                             "next_meaning": next_meaning,
                             "cogclass_editable_form":

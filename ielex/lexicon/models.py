@@ -173,6 +173,20 @@ class AbstractTimestamped(models.Model):
                 if k in tFields and
                 vdict[k] != getattr(self, k)}
 
+    def __setattr__(self, a, v):
+        '''
+        To make sure properties work as intended.
+        https://stackoverflow.com/a/15751135/448591
+        '''
+        propobj = getattr(self.__class__, a, None)
+        if isinstance(propobj, property):
+            print "setting attr %s using property's fset" % a
+            if propobj.fset is None:
+                raise AttributeError("can't set attribute")
+            propobj.fset(self, v)
+        else:
+            super(AbstractTimestamped, self).__setattr__(a, v)
+
 
 @reversion.register
 class Source(models.Model):
@@ -797,7 +811,7 @@ class Meaning(models.Model):
 
 @reversion.register
 @python_2_unicode_compatible
-class CognateClass(models.Model):
+class CognateClass(AbstractTimestamped):
     """
     1.  `name` field: This is optional, for manually given names.
     2.  `root_form` field:
@@ -808,13 +822,40 @@ class CognateClass(models.Model):
     """
     alias = models.CharField(max_length=3)
     notes = models.TextField(blank=True)
-    modified = models.DateTimeField(auto_now=True)
+    modified = models.DateTimeField(auto_now=True)  # FIXME this is the same as lastTouched, I should remove it.
     name = CharNullField(
         max_length=128, blank=True, null=True,
         unique=True, validators=[suitable_for_url])
     root_form = models.TextField(blank=True)
     root_language = models.TextField(blank=True)
-    data = jsonfield.JSONField(blank=True)
+    # Former JSON fields:
+    gloss_in_root_lang = models.TextField(blank=True)
+    loanword = models.BooleanField(default=0)
+    loan_source = models.TextField(blank=True)
+    loan_notes = models.TextField(blank=True)
+    # Fields added for #162:
+    loanEventTimeDepthBP = models.IntegerField(default=0, null=False)
+    sourceFormInLoanLanguage = models.TextField(blank=True)
+    # Not given via timestampedFields:
+    loanSourceCognateClass = models.ForeignKey("self", null=True)
+
+    @property
+    def loanSourceId(self):
+        return self.loanSourceCognateClass_id
+
+    @loanSourceId.setter
+    def loanSourceId(self, id):
+        print('DEBUG', self.id, id)
+        if type(id) == int:
+            try:
+                self.loanSourceCognateClass = CognateClass.objects.get(id=id)
+                print('Did the thing!', self.loanSourceCognateClass.id)
+            except:
+                raise Exception('Not existing Cognate Class id: %s' % id)
+        elif id is None:
+            self.loanSourceCognateClass = None
+        else:
+            raise Exception('Unexpected value for id: %s' % id)
 
     def __str__(self):
         return self.root_form
@@ -860,63 +901,17 @@ class CognateClass(models.Model):
     class Meta:
         ordering = ["alias"]
 
-    def is_unchanged(self, **vdict):
+    def timestampedFields(self):
+        return set(['alias', 'notes', 'name', 'root_form', 'root_language',
+                    'gloss_in_root_lang', 'loanword', 'loan_source',
+                    'loan_notes', 'loanSourceId', 'loanEventTimeDepthBP',
+                    'sourceFormInLoanLanguage'])
 
-        def isField(x):
-            return getattr(self, x) == vdict[x]
-
-        def isData(x):
-            return self.data.get(x, '') == vdict[x]
-
-        def isY(x):
-            return self.data.get(x, False) == vdict.get(x, False)
-
-        fields = {
-            'alias': isField,
-            'root_form': isField,
-            'root_language': isField,
-            'notes': isField,
-            'gloss_in_root_lang': isData,
-            'loan_source': isData,
-            'loan_notes': isData,
-            'loanword': isY
-            }
-
-        for k, _ in vdict.iteritems():
-            if k in fields:
-                if not fields[k](k):
-                    return False
-        return True
-
-    def setDelta(self, **vdict):
-        """
-            Alter a models attributes by giving a vdict
-            similar to the one used for is_unchanged.
-        """
-
-        def setField(x):
-            setattr(self, x, vdict[x])
-
-        def setData(x):
-            self.data[x] = vdict[x]
-
-        def setY(x):
-            self.data[x] = vdict.get(x, False)
-
-        fields = {
-            'alias': setField,
-            'notes': setField,
-            'root_form': setField,
-            'root_language': setField,
-            'gloss_in_root_lang': setData,
-            'loanword': setY,
-            'loan_source': setData,
-            'loan_notes': setData}
-
-        # Setting fields:
-        for k, _ in vdict.iteritems():
-            if k in fields:
-                fields[k](k)
+    def deltaReport(self, **kwargs):
+        return 'Could not update cognate class: ' \
+            '"%s" with values %s. ' \
+            'It was last touched by "%s" %s.' % \
+            (self.id, kwargs, self.lastEditedBy, self.lastTouched)
 
 
 class DyenCognateSet(models.Model):
