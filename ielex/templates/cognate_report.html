@@ -2,6 +2,7 @@
 
 {% load staticfiles %}
 {% load lexicon_utils %}
+{% load wtforms %}
 
 {% block title %}
   Cognate {% firstof cognate_class.name cognate_class.id %}
@@ -122,10 +123,27 @@
       {% endfor %}
     {% endif %}
     <div class="col-md-12">
+      {% if user.is_authenticated %}
+        <form action="" method="POST" name="cognateJudgementSplitTable">
+          {% csrf_token %}
+          <div class="form-group pull-right">
+            <a href="." class="btn btn-default">Undo</a>
+            <input type="submit" name="cognateJudgementSplitTable"
+                   value="Save" class="btn btn-danger">
+          </div>
+      {% endif %}
       <table class="table table-striped">
         <thead>
           <tr>
-            <th>#</th>
+            <th>Id</th>
+            {% if user.is_authenticated %}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Check iff an entry should be split into a separate, new cognate class.">
+                Split
+              </th>
+            {% endif %}
             <th>Language</th>
             <th>Lexeme</th>
             <th>Phonological</th>
@@ -135,27 +153,39 @@
           </tr>
         </thead>
         <tbody>
-          {% for cj in cj_ordered %} {# cognate_class.cognatejudgement_set.all %} #}
+          {% for cj in splitTable.judgements %} {# cognate_class.cognatejudgement_set.all %} #}
             <tr>
-              <td>{{ forloop.counter }}</td>
               <td>
-                <a href="{% url 'language-report' cj.lexeme.language.id %}">
-                  {{ cj.lexeme.language.utf8_name }}
+                {{ cj.idField.data }}
+                {% if user.is_authenticated %}
+                  {% form_field cj.idField class="hide" required="required" %}
+                  {% form_field cj.lastTouched class="hide" required="required" %}
+                  {% form_field cj.lastEditedBy class="hide" required="required" %}
+                {% endif %}
+              </td>
+              {% if user.is_authenticated %}
+                <td>
+                  {% form_field cj.splitOff class="form-control" %}
+                </td>
+              {% endif %}
+              <td>
+                <a href="{% url 'language-report' cj.object_data.lexeme.language.id %}">
+                  {{ cj.object_data.lexeme.language.utf8_name }}
                 </a>
               </td>
-              <td>{{ cj.lexeme.source_form }}</td>
-              <td>{{ cj.lexeme.phon_form }}</td>
+              <td>{{ cj.object_data.lexeme.source_form }}</td>
+              <td>{{ cj.object_data.lexeme.phon_form }}</td>
               <td>
-                <a href="{% url 'meaning-report' cj.lexeme.meaning.gloss %}">{{ cj.lexeme.meaning.gloss }}</a>
+                <a href="{% url 'meaning-report' cj.object_data.lexeme.meaning.gloss %}">{{ cj.object_data.lexeme.meaning.gloss }}</a>
               </td>
-              <td>{{ cj.lexeme.notes|wikilink }}</td>
+              <td>{{ cj.object_data.lexeme.notes|wikilink }}</td>
               <td>
-                {% for rating, description in cj.long_reliability_ratings %}
+                {% for rating, description in cj.object_data.long_reliability_ratings %}
                   <span class="badge" title="{{ description }}">{{ rating|starrating }}</span>
                 {% endfor %}
               </td>
               <td>
-                <a href="{% url 'view-lexeme' cj.lexeme.id %}" title="View/edit the lexical entry">
+                <a href="{% url 'view-lexeme' cj.object_data.lexeme.id %}" title="View/edit the lexical entry">
                   <span class="glyphicon glyphicon-search"></span>
                 </a>
               </td>
@@ -163,6 +193,9 @@
           {% endfor %}
         </tbody>
       </table>
+      {% if user.is_authenticated %}
+        </form>
+      {% endif %}
     </div>
   </div>
 {% endblock %}

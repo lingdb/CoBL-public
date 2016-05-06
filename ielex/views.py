@@ -1784,6 +1784,7 @@ def redirect_lexeme_citation(request, lexeme_id):
 
 def cognate_report(request, cognate_id=0, meaning=None, code=None,
                    cognate_name=None, action=""):
+
     form_dict = {
         "edit-name": EditCognateClassNameForm,
         "edit-notes": EditCognateClassNotesForm
@@ -1807,6 +1808,50 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
             messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(reverse('meaning-report',
                                         args=[meaning]))
+
+    # Handling of CognateJudgementSplitTable:
+    if request.method == 'POST' and \
+       'cognateJudgementSplitTable' in request.POST:
+        form = CognateJudgementSplitTable(request.POST)
+        try:
+            form.validate()
+            # Gathering data to operate on:
+            idTMap = {j.data['idField']: j.data['lastTouched']
+                      for j in form.judgements
+                      if j.data['splitOff']}
+            idCjMap = {cj.id: cj for cj in
+                       CognateJudgement.objects.filter(
+                           id__in=idTMap.keys()).all()}
+            # Bumping judgements:
+            bumped = True
+            try:
+                for id, t in idTMap.iteritems():
+                    idCjMap[id].bump(request, t)
+            except Exception, e:
+                print('Problem splitting cognate judgements:', e)
+                messages.error(request, 'The server refused to split '
+                               'the cognate judgements, because someone '
+                               'changed one of them before your request.')
+                bumped = False
+            # Create new CognateClass on successful bump:
+            if bumped:
+                cc = CognateClass()
+                try:
+                    cc.save()
+                    for _, cj in idCjMap.iteritems():
+                        cj.cognate_class = cc
+                        cj.save()
+                    cc.update_alias()
+                    messages.success(request, 'Created new Cognate Class at /cognate/%s/ containing the judgements %s.' % (cc.id, idTMap.keys()))
+                except Exception, e:
+                    print('Problem creating a new cognate class on split:', e)
+                    messages.error(request, 'Sorry the server could not '
+                                   'create a new cognate class.')
+        except Exception, e:
+            print('Problem when splitting cognate classes:', e)
+            messages.error(request, 'Sorry, the server had trouble '
+                           'understanding the request.')
+
     if action in ["edit-notes", "edit-name"]:
         if request.method == 'POST':
             form = form_dict[action](request.POST, instance=cognate_class)
@@ -1817,26 +1862,25 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                 form.save()
                 return HttpResponseRedirect(reverse('cognate-set',
                                             args=[cognate_class.id]))
-            # else: send form with errors back to render_template
         else:
             form = form_dict[action](instance=cognate_class)
     else:
         form = None
 
-    # This is a clunky way of sorting; currently assumes LanguageList
-    # 'all' (maybe make this configurable?)
+    # This is a clunky way of sorting; currently assumes LanguageList 'DEFAULT'
     language_list = LanguageList.objects.get(name=LanguageList.DEFAULT)
-    cj_ordered = []
+    splitTable = CognateJudgementSplitTable()
     # for language_id in language_list.language_id_list:
     ordLangs = language_list.languages.all().order_by("languagelistorder")
     for language in ordLangs:
-        cj = cognate_class.cognatejudgement_set.filter(
-                 lexeme__language=language)
-        cj_ordered.extend(list(cj))
+        for cj in cognate_class.cognatejudgement_set.filter(
+                 lexeme__language=language).all():
+            cj.idField = cj.id
+            splitTable.judgements.append_entry(cj)
 
     return render_template(request, "cognate_report.html",
                            {"cognate_class": cognate_class,
-                            "cj_ordered": cj_ordered,
+                            "splitTable": splitTable,
                             "action": action,
                             "form": form})
 
@@ -2050,7 +2094,7 @@ def viewAuthors(request):
                                     messages.error(
                                         request, author.deltaReport(**problem))
                     except Exception, e:
-                        print('Problem while saving author: ', e)
+                        print('Problem while saving author:', e)
                         messages.error(
                             request, 'Problem saving author data: %s' % data)
             except Exception, e:

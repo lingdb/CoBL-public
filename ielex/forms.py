@@ -465,8 +465,18 @@ class CogClassRowForm(AbstractTimestampedForm):
 
 
 class AddCogClassTableForm(WTForm):
-    # Default of at least 5 blank fields
     cogclass = FieldList(FormField(CogClassRowForm))
+
+
+class CognateJudgementSplitRow(AbstractTimestampedForm):
+    idField = IntegerField('Id', validators=[DataRequired()])
+    splitOff = BooleanField('Checked implies split off',
+                            validators=[DataRequired()],
+                            default=False)
+
+
+class CognateJudgementSplitTable(WTForm):
+    judgements = FieldList(FormField(CognateJudgementSplitRow))
 
 
 class LexemeTableFilterForm(forms.ModelForm):

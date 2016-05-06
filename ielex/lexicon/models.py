@@ -152,40 +152,48 @@ class AbstractTimestamped(models.Model):
         # Guarding for correct lastTouched:
         if 'lastTouched' not in vdict:
             return self.getDelta(**vdict)
-        if abs(vdict['lastTouched'] - self.lastTouched).seconds > 0:
+        if not self.checkTime(vdict['lastTouched']):
             return self.getDelta(**vdict)
-        # Making sure lastEditedBy is updated correctly:
-        if request is not None:
-            if not request.user.is_authenticated:
-                raise Exception('Refusing setDelta with unauthenticated user.')
-            self.lastEditedBy = ' '.join([request.user.first_name,
-                                          request.user.last_name])
-
+        # Updating lastEditedBy:
+        self.bump(request)
+        # Writing delta:
         tFields = self.timestampedFields()
-
         for f in self._meta.fields:
             if f.name in tFields and f.name in vdict:
                 setattr(self, f.name, vdict[f.name])
 
     def getDelta(self, **vdict):
+        '''
+        Produces a dict that lists all the fields of vdict
+        that are valid fields for self in the sense that
+        they are mentioned in timestampedFields and
+        that are different than the current entries.
+        '''
         tFields = self.timestampedFields()
         return {k: vdict[k] for k in vdict
                 if k in tFields and
                 vdict[k] != getattr(self, k)}
 
-    def __setattr__(self, a, v):
+    def checkTime(self, t):
         '''
-        To make sure properties work as intended.
-        https://stackoverflow.com/a/15751135/448591
+        Returns true if the given datetime t is
+        less then a second different from the current
+        lastTouched value.
         '''
-        propobj = getattr(self.__class__, a, None)
-        if isinstance(propobj, property):
-            print "setting attr %s using property's fset" % a
-            if propobj.fset is None:
-                raise AttributeError("can't set attribute")
-            propobj.fset(self, v)
-        else:
-            super(AbstractTimestamped, self).__setattr__(a, v)
+        return abs(t - self.lastTouched).seconds == 0
+
+    def bump(self, request, t=None):
+        '''
+        Updates the lastEditedBy field of an AbstractTimestamped.
+        If a t :: datetime is given, bump uses checkTime on that.
+        '''
+        if t is not None and not self.checkTime(t):
+            raise Exception('Refusing bump because of failed checkTime.')
+        if request is not None:
+            if not request.user.is_authenticated:
+                raise Exception('Refusing bump with unauthenticated user.')
+            self.lastEditedBy = ' '.join([request.user.first_name,
+                                          request.user.last_name])
 
 
 @reversion.register
@@ -1145,11 +1153,10 @@ class Lexeme(models.Model):
 
 
 @reversion.register
-class CognateJudgement(models.Model):
+class CognateJudgement(AbstractTimestamped):
     lexeme = models.ForeignKey(Lexeme)
     cognate_class = models.ForeignKey(CognateClass)
     source = models.ManyToManyField(Source, through="CognateJudgementCitation")
-    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
