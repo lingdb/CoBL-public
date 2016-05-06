@@ -1269,8 +1269,6 @@ def view_cognateclasses(request, meaning):
             messages.append('Sorry, the server had problems '
                             'updating at least one entry.')
 
-        return HttpResponseRedirect(reverse('edit-cogclasses', args=[meaning]))
-
     def fill_cogclass_table_from_DB(cc_ordered):
 
         cogclass_table_form = AddCogClassTableForm()

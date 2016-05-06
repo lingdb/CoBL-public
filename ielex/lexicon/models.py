@@ -836,26 +836,10 @@ class CognateClass(AbstractTimestamped):
     # Fields added for #162:
     loanEventTimeDepthBP = models.IntegerField(default=0, null=False)
     sourceFormInLoanLanguage = models.TextField(blank=True)
-    # Not given via timestampedFields:
+    loanSourceId = models.IntegerField(null=True)
+    # Not given via timestampedFields;
+    # self.save takes care of it automagically:
     loanSourceCognateClass = models.ForeignKey("self", null=True)
-
-    @property
-    def loanSourceId(self):
-        return self.loanSourceCognateClass_id
-
-    @loanSourceId.setter
-    def loanSourceId(self, id):
-        print('DEBUG', self.id, id)
-        if type(id) == int:
-            try:
-                self.loanSourceCognateClass = CognateClass.objects.get(id=id)
-                print('Did the thing!', self.loanSourceCognateClass.id)
-            except:
-                raise Exception('Not existing Cognate Class id: %s' % id)
-        elif id is None:
-            self.loanSourceCognateClass = None
-        else:
-            raise Exception('Unexpected value for id: %s' % id)
 
     def __str__(self):
         return self.root_form
@@ -912,6 +896,20 @@ class CognateClass(AbstractTimestamped):
             '"%s" with values %s. ' \
             'It was last touched by "%s" %s.' % \
             (self.id, kwargs, self.lastEditedBy, self.lastTouched)
+
+    def save(self, *args, **kwargs):
+        '''
+        Overwriting save method to make sure loanSourceId
+        and loanSourceCognateClass are handled correctly.
+        '''
+        if self.loanSourceId != self.loanSourceCognateClass_id:
+            if self.loanSourceId is None:
+                self.loanSourceCognateClass = None
+            else:
+                self.loanSourceCognateClass = CognateClass.objects.get(
+                    id=self.loanSourceId)
+        # Relaying to parent:
+        return super(CognateClass, self).save(*args, **kwargs)
 
 
 class DyenCognateSet(models.Model):
