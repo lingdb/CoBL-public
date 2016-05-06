@@ -822,7 +822,7 @@ class CognateClass(AbstractTimestamped):
     """
     alias = models.CharField(max_length=3)
     notes = models.TextField(blank=True)
-    modified = models.DateTimeField(auto_now=True)  # FIXME this is the same as lastTouched, I should remove it.
+    modified = models.DateTimeField(auto_now=True)
     name = CharNullField(
         max_length=128, blank=True, null=True,
         unique=True, validators=[suitable_for_url])

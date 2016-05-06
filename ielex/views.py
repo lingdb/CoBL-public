@@ -396,7 +396,8 @@ def view_clades(request):
                                 clade.save()
                     except Exception, e:
                         print('Problem while saving clade: ', e)
-                        messages.error(request, 'Problem saving clade data: %s' % data)
+                        messages.error(request,
+                                       'Problem saving clade data: %s' % data)
             except Exception, e:
                 print('Problem updating clades:', e)
                 messages.error(request, 'Sorry, the server had problems '
@@ -458,9 +459,9 @@ def view_sndComp(request):
                                 sndComp.save()
                             except Exception, e:
                                 print('Exception while saving POST:', e)
-                                messages.error(request, 'The server had problems '
-                                               'saving the change to "%s".'
-                                               % sndComp.lgSetName)
+                                messages.error(request, 'The server had '
+                                               'problems saving the change '
+                                               'to "%s".' % sndComp.lgSetName)
                 except Exception, e:
                     print('Exception while accessing SndComp object: ',
                           e, '; POST items are: ', data)
@@ -2070,7 +2071,7 @@ def viewAuthors(request):
             except Exception, e:
                 print('Problem deleting author:', e)
                 messages.error(request, 'Sorry, the server had problems '
-                                'deleting the requested author.')
+                               'deleting the requested author.')
         else:
             print('Cannot handle POST request in viewAuthors():', request)
             messages.error(request, 'Sorry, the server did not '
