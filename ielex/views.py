@@ -379,7 +379,6 @@ def exportLanguageListCsv(request, languages=[]):
 
 @csrf_protect
 def view_clades(request):
-    messages = []
     if request.method == 'POST':
         # Updating existing clades:
         if 'clades' in request.POST:
@@ -397,11 +396,11 @@ def view_clades(request):
                                 clade.save()
                     except Exception, e:
                         print('Problem while saving clade: ', e)
-                        messages.append('Problem saving clade data: %s' % data)
+                        messages.error(request, 'Problem saving clade data: %s' % data)
             except Exception, e:
                 print('Problem updating clades:', e)
-                messages.append('Sorry, the server had problems '
-                                'updating at least on clade.')
+                messages.error(request, 'Sorry, the server had problems '
+                               'updating at least on clade.')
         # Adding a new clade:
         elif 'addClade' in request.POST:
             cladeCreationForm = CladeCreationForm(request.POST)
@@ -412,8 +411,8 @@ def view_clades(request):
                     newClade.save(force_insert=True)
             except Exception, e:
                 print('Problem creating clade:', e)
-                messages.append('Sorry, the server had problems '
-                                'creating the clade.')
+                messages.error(request, 'Sorry, the server had problems '
+                               'creating the clade.')
         # Deleting an existing clade:
         elif 'deleteClade' in request.POST:
             cladeDeletionForm = CladeDeletionForm(request.POST)
@@ -426,12 +425,12 @@ def view_clades(request):
                     # Deleting the clade:
                     Clade.objects.filter(id=clade.id).delete()
                     # Write message about clade deletion:
-                    messages.append('Deleted clade "%s".' %
-                                    clade.cladeName)
+                    messages.success(request, 'Deleted clade "%s".' %
+                                     clade.cladeName)
             except Exception, e:
                 print('Problem deleting clade:', e)
-                messages.append('Sorry, the server had problems '
-                                'deleting the clade.')
+                messages.error(request, 'Sorry, the server had problems '
+                               'deleting the clade.')
 
     form = CladeTableForm()
     for clade in Clade.objects.all():
@@ -440,13 +439,11 @@ def view_clades(request):
 
     return render_template(request,
                            "clades.html",
-                           {'clades': form,
-                            'messages': messages})
+                           {'clades': form})
 
 
 @csrf_protect
 def view_sndComp(request):
-    messages = []
     if request.method == 'POST':
         if 'sndComps' in request.POST:
             form = SndCompTableForm(request.POST)
@@ -461,14 +458,14 @@ def view_sndComp(request):
                                 sndComp.save()
                             except Exception, e:
                                 print('Exception while saving POST:', e)
-                                messages.append('The server had problems '
-                                                'saving the change to "%s".'
-                                                % sndComp.lgSetName)
+                                messages.error(request, 'The server had problems '
+                                               'saving the change to "%s".'
+                                               % sndComp.lgSetName)
                 except Exception, e:
                     print('Exception while accessing SndComp object: ',
                           e, '; POST items are: ', data)
-                    messages.append('Sorry, the server had problems '
-                                    'saving at least one SndComp entry.')
+                    messages.error(request, 'Sorry, the server had problems '
+                                   'saving at least one SndComp entry.')
         # Adding a new SndComp:
         elif 'addSndComp' in request.POST:
             sndCompCreationForm = SndCompCreationForm(request.POST)
@@ -479,8 +476,8 @@ def view_sndComp(request):
                     newSndComp.save(force_insert=True)
             except Exception, e:
                 print('Problem creating SndComp:', e)
-                messages.append('Sorry, the server had problems '
-                                'creating the SndComp language set.')
+                messages.error(request, 'Sorry, the server had problems '
+                               'creating the SndComp language set.')
         # Deleting an existing SndComp:
         elif 'deleteSndComp' in request.POST:
             sndCompDeletionForm = SndCompDeletionForm(request.POST)
@@ -493,11 +490,12 @@ def view_sndComp(request):
                     # Deleting the SndComp:
                     SndComp.objects.filter(id=sndComp.id).delete()
                     # Write message about SndComp deletion:
-                    messages.append('Deleted set "%s"' % sndComp.lgSetName)
+                    messages.success(request,
+                                     'Deleted set "%s"' % sndComp.lgSetName)
             except Exception, e:
                 print('Problem deleting SndComp:', e)
-                messages.append('Sorry, the server had problems deleting '
-                                'the SndComp language set.')
+                messages.error(request, 'Sorry, the server had problems '
+                               'deleting the SndComp language set.')
 
     form = SndCompTableForm()
 
@@ -515,8 +513,7 @@ def view_sndComp(request):
 
     return render_template(request,
                            "sndComp.html",
-                           {'sndComps': form,
-                            'messages': messages})
+                           {'sndComps': form})
 
 
 def reorder_language_list(request, language_list):
@@ -1238,7 +1235,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 @csrf_protect
 def view_cognateclasses(request, meaning):
     setDefaultMeaning(request, meaning)
-    messages = []
 
     if (request.method == 'POST') and 'cogclass_form' in request.POST:
 
@@ -1258,16 +1254,17 @@ def view_cognateclasses(request, meaning):
                         if problem is None:
                             cogclass.save()
                         else:
-                            messages.append(cogclass.deltaReport(**problem))
+                            messages.error(
+                                request, cogclass.deltaReport(**problem))
                     except Exception, e:
                         print('Exception while saving CognateClass: ', e)
-                        messages.append(
-                            'Problem while saving entry: %s' % data)
+                        messages.error(
+                            request, 'Problem while saving entry: %s' % data)
 
         except Exception, e:
             print('Problem updating cognateclasses: ', e)
-            messages.append('Sorry, the server had problems '
-                            'updating at least one entry.')
+            messages.error(request, 'Sorry, the server had problems '
+                           'updating at least one entry.')
 
     def fill_cogclass_table_from_DB(cc_ordered):
 
@@ -1308,8 +1305,7 @@ def view_cognateclasses(request, meaning):
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
 
     return render_template(request, "view_cognateclass_editable.html",
-                           {"messages": messages,
-                            "meaning": meaning,
+                           {"meaning": meaning,
                             "prev_meaning": prev_meaning,
                             "next_meaning": next_meaning,
                             "cogclass_editable_form":
@@ -1459,10 +1455,6 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         comment=cd["comment"])
                     try:
                         citation.save()
-                        # messages.add_message(
-                        #         request,
-                        #         messages.INFO,
-                        #         oneline("Citation successfully added"))
                     except IntegrityError:
                         messages.add_message(
                             request,
@@ -1918,15 +1910,6 @@ def source_list(request):
     return render_template(request, "source_list.html",
                            {"grouped_sources": grouped_sources})
 
-# -- key value pairs ------------------------------------------------------
-
-# def set_key_value(request, key, value):
-#     msg = "set key '%s' to '%s'" % (key, value)
-#     messages.add_message(request, messages.INFO, msg)
-#     return HttpResponseRedirect(reverse("view-frontpage"))
-
-# -- search ---------------------------------------------------------------
-
 
 def lexeme_search(request):
     if request.method == 'POST':
@@ -2030,7 +2013,6 @@ def viewStatistics(request):
 
 @csrf_protect
 def viewAuthors(request):
-    messages = []
     if request.method == 'POST':
         '''
         We need to distinguish several cases here:
@@ -2047,8 +2029,8 @@ def viewAuthors(request):
                     newAuthor.save(force_insert=True)
             except Exception, e:
                 print('Problem creating author:', e)
-                messages.append('Sorry, the server could not '
-                                'create new author as requested.')
+                messages.error(request, 'Sorry, the server could not '
+                               'create new author as requested.')
         elif 'authors' in request.POST:
             authorData = AuthorTableForm(request.POST)
             try:
@@ -2064,16 +2046,16 @@ def viewAuthors(request):
                                 if problem is None:
                                     author.save()
                                 else:
-                                    messages.append(
-                                        author.deltaReport(**problem))
+                                    messages.error(
+                                        request, author.deltaReport(**problem))
                     except Exception, e:
                         print('Problem while saving author: ', e)
-                        messages.append(
-                            'Problem saving author data: %s' % data)
+                        messages.error(
+                            request, 'Problem saving author data: %s' % data)
             except Exception, e:
                 print('Problem updating authors:', e)
-                messages.append('Sorry, the server had problems '
-                                'updating at least one author.')
+                messages.error(request, 'Sorry, the server had problems '
+                               'updating at least one author.')
         elif 'deleteAuthor' in request.POST:
             deleteAuthor = AuthorDeletionForm(request.POST)
             try:
@@ -2087,12 +2069,12 @@ def viewAuthors(request):
                     Author.objects.filter(id=author.id).delete()
             except Exception, e:
                 print('Problem deleting author:', e)
-                messages.append('Sorry, the server had problems '
+                messages.error(request, 'Sorry, the server had problems '
                                 'deleting the requested author.')
         else:
             print('Cannot handle POST request in viewAuthors():', request)
-            messages.append(
-                'Sorry, the server did not understand the request.')
+            messages.error(request, 'Sorry, the server did not '
+                           'understand the request.')
 
     authors = Author.objects.all()
     form = AuthorTableForm()
@@ -2103,8 +2085,7 @@ def viewAuthors(request):
         form.elements.append_entry(author)
 
     return render_template(
-        request, "authors.html",
-        {'authors': form, 'messages': messages})
+        request, "authors.html", {'authors': form})
 
 
 def changeDefaults(request):

@@ -117,18 +117,22 @@
     {% if messages %}
       <div class="container-fluid" id="message">
         {% for message in messages %}
-          {% if message.tags == "info" %}{# clicking on info level messages dismisses them #}
-            <div class="alert alert-warning alert-dismissable fade in" role="alert">
+            <div role="alert"
+              {% if message.tags == "info" %}
+                class="alert alert-info alert-dismissable fade in"
+              {% elif message.tags == "warning" %}
+                class="alert alert-warning alert-dismissable fade in"
+              {% elif message.tags == "debug" or message.tags == "error" %}
+                class="alert alert-danger alert-dismissable fade in"
+              {% elif message.tags == "success" %}
+                class="alert alert-success alert-dismissable fade in"
+              {% endif %}
+              >
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">×</span>
               </button>
               {{ message }}
             </div>
-          {% else %}{# otherwise include the link as part of the message text #}
-            <div class="alert alert-danger" role="alert">
-              {{ message|safe }}
-            </div>
-          {% endif %}
         {% endfor %}
       </div>
     {% endif %}
