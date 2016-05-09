@@ -1206,6 +1206,7 @@ class LanguageList(models.Model):
     """
     DEFAULT = "2016-04-18_129"
     ALL = "all"
+    BLANK = "blank"
 
     name = models.CharField(
         max_length=128, unique=True,
@@ -1280,6 +1281,16 @@ class LanguageList(models.Model):
 
     class Meta:
         ordering = ["name"]
+
+    def save(self, *args, **kwargs):
+        '''
+        Overwriting save method making sure languages are empty for BLANK list.
+        '''
+        if self.name == LanguageList.BLANK:
+            for llo in self.languagelistorder_set.all():
+                llo.delete()
+        # Relaying to parent:
+        return super(LanguageList, self).save(*args, **kwargs)
 
 
 class LanguageListOrder(models.Model):
