@@ -1637,36 +1637,26 @@ models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
 models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
 
-@disable_for_loaddata
-def update_cognateclass_list_all(sender, instance, **kwargs):
-    """
-    Update the CognateClassList 'all' whenever CognateClass table is changed
-    """
+@receiver(post_save, sender=CognateClass)
+def add_to_cognateclass_list_all(sender, instance, **kwargs):
+    '''
+    Make sure each new CognateClass becomes a member of the 'all' list.
+
+    Removal of a CognateClass can leave a 'hole' in the order numbers of
+    a CognateClassList, but such a hole would not cause a problem since the
+    rest of the order wouldn't be touched.
+    Because of that we only care for newly inserted CCs
+    and these can just be added to the end of the 'all' list.
+
+    To add to the end, we do this:
+    1: Fetch an instance of the 'all' CognateClassList
+    2: Use CognateClassList.append() iff necessary
+    '''
     ccl, _ = CognateClassList.objects.get_or_create(
         name=CognateClassList.DEFAULT)
-    ccl.sequentialize()
-
-    missing_cognateclasses = \
-        set(CognateClass.objects.all()) - set(ccl.cognateclasses.all())
-    for cogclass in missing_cognateclasses:
-        ccl.append(cogclass)
-
-    if missing_cognateclasses:
-        # make a new alphabetized list
-        default_alpha = CognateClassList.DEFAULT+"-alpha"
-        try:
-            ml_alpha = CognateClassList.objects.get(name=default_alpha)
-            ml_alpha.delete()
-        except CognateClassList.DoesNotExist:
-            pass
-        ccl_alpha = CognateClassList.objects.create(name=default_alpha)
-        for cgclss in CognateClass.objects.all().order_by("alias"):
-            ccl_alpha.append(cgclss)
-
-models.signals.post_save.connect(
-    update_cognateclass_list_all, sender=CognateClass)
-models.signals.post_delete.connect(
-    update_cognateclass_list_all, sender=CognateClass)
+    if not CognateClassListOrder.objects.filter(
+      cognateclass=instance, cognateclass_list=ccl).exists():
+        ccl.append(instance)
 
 
 @disable_for_loaddata
