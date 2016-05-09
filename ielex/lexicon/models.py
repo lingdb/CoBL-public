@@ -1254,21 +1254,12 @@ class LanguageList(models.Model):
         it should only be done from time to time."""
         count = self.languagelistorder_set.count()
 
-        def jitter(N, N_list):
-            """Return a number close to N such that N is not in N_list"""
-            while True:
-                try:
-                    assert N not in N_list
-                    return N
-                except AssertionError:
-                    N += 0.0001
-
         if count:
             order_floats = self.languagelistorder_set.values_list(
                 "order", flat=True)
             for i, llo in enumerate(self.languagelistorder_set.all()):
                 if i != llo.order:
-                    llo.order = jitter(i, order_floats)
+                    llo.order = i
                     llo.save()
 
     def swap(self, languageA, languageB):
@@ -1362,21 +1353,12 @@ class MeaningList(models.Model):
         it should only be done from time to time."""
         count = self.meaninglistorder_set.count()
 
-        def jitter(N, N_list):
-            """Return a number close to N such that N is not in N_list"""
-            while True:
-                try:
-                    assert N not in N_list
-                    return N
-                except AssertionError:
-                    N += 0.0001
-
         if count:
             order_floats = self.meaninglistorder_set.values_list(
                 "order", flat=True)
             for i, llo in enumerate(self.meaninglistorder_set.all()):
                 if i != llo.order:
-                    llo.order = jitter(i, order_floats)
+                    llo.order = i
                     llo.save()
 
     def swap(self, meaningA, meaningB):
@@ -1478,21 +1460,12 @@ class CognateClassList(models.Model):
         it should only be done from time to time."""
         count = self.cognateclasslistorder_set.count()
 
-        def jitter(N, N_list):
-            """Return a number close to N such that N is not in N_list"""
-            while True:
-                try:
-                    assert N not in N_list
-                    return N
-                except AssertionError:
-                    N += 0.0001
-
         if count:
             order_floats = self.cognateclasslistorder_set.values_list(
                 "order", flat=True)
             for i, llo in enumerate(self.cognateclasslistorder_set.all()):
                 if i != llo.order:
-                    llo.order = jitter(i, order_floats)
+                    llo.order = i
                     llo.save()
 
     def swap(self, cognateclassA, cognateclassB):
