@@ -1203,8 +1203,6 @@ class LanguageList(models.Model):
     To get an order list of language from LanguageList `ll`::
 
         ll.languages.all().order_by("languagelistorder")
-
-    # TODO how can I make this the default ordering?
     """
     DEFAULT = "2016-04-18_129"
     ALL = "all"
@@ -1214,7 +1212,6 @@ class LanguageList(models.Model):
         validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
     languages = models.ManyToManyField(Language, through="LanguageListOrder")
-    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     def append(self, language):
