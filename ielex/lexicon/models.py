@@ -1109,7 +1109,7 @@ class Lexeme(models.Model):
         """
         if self.cognate_class.count() == 1:
             for c in self.cognate_class.all():
-                return c.data.get('loanword', False)
+                return c.loanword
         return None
 
     def getCognateClassData(self):
