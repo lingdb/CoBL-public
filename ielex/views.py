@@ -1842,7 +1842,11 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                         cj.cognate_class = cc
                         cj.save()
                     cc.update_alias()
-                    messages.success(request, 'Created new Cognate Class at /cognate/%s/ containing the judgements %s.' % (cc.id, idTMap.keys()))
+                    messages.success(
+                        request,
+                        'Created new Cognate Class at '
+                        '/cognate/%s/ containing the judgements %s.'
+                        % (cc.id, idTMap.keys()))
                 except Exception, e:
                     print('Problem creating a new cognate class on split:', e)
                     messages.error(request, 'Sorry the server could not '

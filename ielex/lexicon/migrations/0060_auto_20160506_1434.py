@@ -25,7 +25,8 @@ class Migration(migrations.Migration):
             model_name='cognatejudgement',
             name='lastTouched',
             field=models.DateTimeField(
-                default=django.utils.datetime_safe.datetime.now, auto_now=True),
+                default=django.utils.datetime_safe.datetime.now,
+                auto_now=True),
             preserve_default=False,
         ),
     ]
