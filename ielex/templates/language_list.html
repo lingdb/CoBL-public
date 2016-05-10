@@ -173,8 +173,20 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
+                  title="Clade level 0 abbreviation">
+                Cl 0 abbr.
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
                   title="Clade level 1">
                 Cl 1
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Clade level 1 abbreviation">
+                Cl 1 abbr.
               </th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -185,8 +197,20 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
+                  title="Clade level 2 abbreviation">
+                Cl 2 abbr.
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
                   title="Clade level 3">
                 Cl 3
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Clade level 3 abbreviation">
+                Cl 3 abbr.
               </th>
               {# sortRankInClade_title.html #}
               <th data-toggle="tooltip"
@@ -457,6 +481,12 @@
                 {% endif %}
               </th>
               <th>
+                <input type="text"
+                       class="filterText form-control"
+                       data-selector=".languageLevel0Abbr"
+                       style="width: 4em;">
+              </th>
+              <th>
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text"
                          class="filterInput form-control"
@@ -468,6 +498,12 @@
                          data-selector=".languageLevel1"
                          style="width: 1.5em;">
                 {% endif %}
+              </th>
+              <th>
+                <input type="text"
+                       class="filterText form-control"
+                       data-selector=".languageLevel1Abbr"
+                       style="width: 4em;">
               </th>
               <th>
                 {% if user.is_authenticated and user.is_staff %}
@@ -483,6 +519,12 @@
                 {% endif %}
               </th>
               <th>
+                <input type="text"
+                       class="filterText form-control"
+                       data-selector=".languageLevel2Abbr"
+                       style="width: 4em;">
+              </th>
+              <th>
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text"
                          class="filterInput form-control"
@@ -494,6 +536,12 @@
                          data-selector=".languageLevel3"
                          style="width: 1.5em;">
                 {% endif %}
+              </th>
+              <th>
+                <input type="text"
+                       class="filterText form-control"
+                       data-selector=".languageLevel3Abbr"
+                       style="width: 4em;">
               </th>
               {# sortRankInClade_filter.html #}
               <th>
@@ -748,6 +796,13 @@
                     {% endif %}
                   </center>
                 </td>
+                <td class="languageLevel0Abbr">
+                  {% if language.object_data.level0Tooltip %}
+                    <span class="badge" style="background-color: #{{ language.object_data.hexColor }};">
+                      {{ language.object_data.level0Tooltip }}
+                    </span>
+                  {% endif %}
+                </td>
                 <td class="languageLevel1"
                   {% if language.object_data.level1Tooltip %}
                     title="{{ language.object_data.level1Tooltip }}"
@@ -763,6 +818,13 @@
                       {{ language.level1.data }}
                     {% endif %}
                   </center>
+                </td>
+                <td class="languageLevel1Abbr">
+                  {% if language.object_data.level1Tooltip %}
+                    <span class="badge" style="background-color: #{{ language.object_data.hexColor }};">
+                      {{ language.object_data.level1Tooltip }}
+                    </span>
+                  {% endif %}
                 </td>
                 <td class="languageLevel2"
                   {% if language.object_data.level2Tooltip %}
@@ -780,6 +842,13 @@
                     {% endif %}
                   </center>
                 </td>
+                <td class="languageLevel2Abbr">
+                  {% if language.object_data.level2Tooltip %}
+                    <span class="badge" style="background-color: #{{ language.object_data.hexColor }};">
+                      {{ language.object_data.level2Tooltip }}
+                    </span>
+                  {% endif %}
+                </td>
                 <td class="languageLevel3"
                   {% if language.object_data.level3Tooltip %}
                     title="{{ language.object_data.level3Tooltip }}"
@@ -795,6 +864,13 @@
                       {{ language.level3.data }}
                     {% endif %}
                   </center>
+                </td>
+                <td class="languageLevel3Abbr">
+                  {% if language.object_data.level3Tooltip %}
+                    <span class="badge" style="background-color: #{{ language.object_data.hexColor }};">
+                      {{ language.object_data.level3Tooltip }}
+                    </span>
+                  {% endif %}
                 </td>
                 {# sortRankInClade_data.html #}
                 <td class="sortRankInClade">

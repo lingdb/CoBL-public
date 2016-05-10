@@ -732,7 +732,7 @@ class Language(models.Model):
                 if self.firstClade.hexColor != '':
                     return self.firstClade.hexColor
         except:
-            return None
+            return '777777'
 
 
 @receiver(post_save, sender=Language)

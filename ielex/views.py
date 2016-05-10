@@ -338,6 +338,8 @@ def view_language_list(request, language_list=None):
             langlist_row_form.level1Tooltip = lang.level1Tooltip
             langlist_row_form.level2Tooltip = lang.level2Tooltip
             langlist_row_form.level3Tooltip = lang.level3Tooltip
+            # hexColor, via clade but default to #777777:
+            langlist_row_form.hexColor = lang.hexColor
             # Append langlist_row_form:
             langlist_table_form.langlist.append_entry(langlist_row_form)
         return langlist_table_form
