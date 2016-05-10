@@ -745,9 +745,15 @@ class Lexeme(models.Model):
     notes = models.TextField(blank=True)
     source = models.ManyToManyField(
         Source, through="LexemeCitation", blank=True)
-    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
     number_cognate_coded = models.IntegerField(editable=False, default=0)
+    # Former JSON fields:
+    phoneMic = models.TextField(blank=True)
+    transliteration = models.TextField(blank=True)
+    not_swadesh_term = models.BooleanField(default=0)
+    rfcWebLookup1 = models.TextField(blank=True)
+    rfcWebLookup2 = models.TextField(blank=True)
+    dubious = models.BooleanField(default=0)
 
     @property
     def denormalized_cognate_classes(self):
