@@ -9,7 +9,7 @@
       */
       render: function(target){
         if(target instanceof $){
-          var content = target.text();
+          var content = target.text().trim();
           target.html(module.processor.render(content));
         }
       }
