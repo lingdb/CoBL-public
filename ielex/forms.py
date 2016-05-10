@@ -241,12 +241,12 @@ class LanguageListRowForm(WTForm):
     level3 = IntegerField('Level 3 Branch', validators=[DataRequired()])
     representative = BooleanField('Representative',
                                   validators=[DataRequired()])
-    mgs_count = IntegerField('Meaning Count', validators=[DataRequired()])
-    notSwh_count = IntegerField(
+    meaningCount = IntegerField('Meaning Count', validators=[DataRequired()])
+    nonLexCount = IntegerField(
         'Not Swadesh Count', validators=[DataRequired()])
-    lex_count = IntegerField('Lexeme Count', validators=[DataRequired()])
-    entd_count = IntegerField('Entry Count', validators=[DataRequired()])
-    excess_count = IntegerField('Excess Count', validators=[DataRequired()])
+    lexCount = IntegerField('Lexeme Count', validators=[DataRequired()])
+    entryCount = IntegerField('Entry Count', validators=[DataRequired()])
+    excessCount = IntegerField('Excess Count', validators=[DataRequired()])
     mean_timedepth_BP_years = IntegerField('Mean of Time Depth BP (years)',
                                            validators=[DataRequired()])
     std_deviation_timedepth_BP_years = IntegerField(

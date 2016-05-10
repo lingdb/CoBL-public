@@ -291,60 +291,9 @@ def view_language_list(request, language_list=None):
         # Handle csv export iff desired:
         return exportLanguageListCsv(request, languages)
 
-    def fill_langstable_from_DB(langs):
-
-        langlist_table_form = AddLanguageListTableForm()
-
-        for lang in langs:
-
-            langlist_row_form = LanguageListRowForm()
-            langlist_row_form.iso_code = lang.iso_code
-            langlist_row_form.ascii_name = lang.ascii_name
-            langlist_row_form.utf8_name = lang.utf8_name
-
-            # Computing counts:
-            langlist_row_form.entd_count = lang.entryCount
-            langlist_row_form.notSwh_count = lang.nonLexCount
-            langlist_row_form.lex_count = lang.lexCount
-            langlist_row_form.mgs_count = lang.meaningCount
-            langlist_row_form.excess_count = lang.excessCount
-
-            langlist_row_form.glottocode = lang.glottocode
-            langlist_row_form.variety = lang.variety
-            langlist_row_form.foss_stat = lang.foss_stat
-            langlist_row_form.low_stat = lang.low_stat
-            langlist_row_form.soundcompcode = lang.soundcompcode
-            langlist_row_form.level0 = lang.level0
-            langlist_row_form.level1 = lang.level1
-            langlist_row_form.level2 = lang.level2
-            langlist_row_form.level3 = lang.level3
-            langlist_row_form.representative = lang.representative
-            langlist_row_form.mean_timedepth_BP_years = \
-                lang.mean_timedepth_BP_years
-            langlist_row_form.std_deviation_timedepth_BP_years = \
-                lang.std_deviation_timedepth_BP_years
-            langlist_row_form.rfcWebPath1 = lang.rfcWebPath1
-            langlist_row_form.rfcWebPath2 = lang.rfcWebPath2
-            langlist_row_form.author = lang.author
-            langlist_row_form.reviewer = lang.reviewer
-            langlist_row_form.beastName = lang.beastName
-            langlist_row_form.earliestTimeDepthBound = \
-                lang.earliestTimeDepthBound
-            langlist_row_form.latestTimeDepthBound = lang.latestTimeDepthBound
-            langlist_row_form.progress = lang.progress
-            langlist_row_form.sortRankInClade = lang.sortRankInClade
-            # tooltips looked up from clade:
-            langlist_row_form.level0Tooltip = lang.level0Tooltip
-            langlist_row_form.level1Tooltip = lang.level1Tooltip
-            langlist_row_form.level2Tooltip = lang.level2Tooltip
-            langlist_row_form.level3Tooltip = lang.level3Tooltip
-            # hexColor, via clade but default to #777777:
-            langlist_row_form.hexColor = lang.hexColor
-            # Append langlist_row_form:
-            langlist_table_form.langlist.append_entry(langlist_row_form)
-        return langlist_table_form
-
-    languages_editabletable_form = fill_langstable_from_DB(languages)
+    languages_editabletable_form = AddLanguageListTableForm()
+    for lang in languages:
+        languages_editabletable_form.langlist.append_entry(lang)
 
     otherLanguageLists = LanguageList.objects.exclude(name=current_list).all()
 
