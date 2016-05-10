@@ -342,9 +342,13 @@ def view_clades(request):
                         with transaction.atomic():
                             clade = Clade.objects.get(
                                 id=int(data['idField']))
-                            if not clade.is_unchanged(**data):
-                                clade.setDelta(**data)
-                                clade.save()
+                            if clade.isChanged(**data):
+                                problem = clade.setDelta(request, **data)
+                                if problem is None:
+                                    clade.save()
+                                else:
+                                    messages.error(
+                                        request, clade.deltaReport(**problem))
                     except Exception, e:
                         print('Problem while saving clade: ', e)
                         messages.error(request,

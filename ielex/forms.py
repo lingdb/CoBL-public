@@ -273,7 +273,7 @@ class AddLanguageListTableForm(WTForm):
     langlist = FieldList(FormField(LanguageListRowForm))
 
 
-class CladeRowForm(WTForm):
+class CladeRowForm(AbstractTimestampedForm):
     idField = IntegerField('Id')
     cladeName = StringField('Clade Name', validators=[DataRequired()])
     shortName = StringField('Short name', validators=[DataRequired()])

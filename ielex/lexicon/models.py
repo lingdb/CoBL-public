@@ -314,7 +314,7 @@ class SndComp(models.Model):
 
 
 @reversion.register
-class Clade(models.Model):
+class Clade(AbstractTimestamped):
     '''
     This model was added for #153
     and shall be used to track clade constraints.
@@ -355,91 +355,6 @@ class Clade(models.Model):
     uniformUpper = models.IntegerField(null=True)
     uniformLower = models.IntegerField(null=True)
 
-    def is_unchanged(self, **vdict):
-
-        def isInt(x):
-            entry = vdict[x]
-            if entry is not None:
-                entry = int(entry)
-            return getattr(self, x) == entry
-
-        def isString(x):
-            return getattr(self, x) == vdict[x]
-
-        fields = {
-            'cladeName': isString,
-            'shortName': isString,
-            'hexColor': isString,
-            'export': isString,
-            'exportDate': isString,
-            'taxonsetName': isString,
-            'atMost': isInt,
-            'atLeast': isInt,
-            'distribution': isString,
-            'logNormalOffset': isInt,
-            'logNormalMean': isInt,
-            'logNormalStDev': isInt,
-            'normalMean': isInt,
-            'normalStDev': isInt,
-            'uniformUpper': isInt,
-            'uniformLower': isInt,
-            'cladeLevel0': isInt,
-            'cladeLevel1': isInt,
-            'cladeLevel2': isInt,
-            'cladeLevel3': isInt,
-            'level0Name': isString,
-            'level1Name': isString,
-            'level2Name': isString,
-            'level3Name': isString}
-
-        for k, _ in vdict.iteritems():
-            if k in fields:
-                if not fields[k](k):
-                    return False
-        return True
-
-    def setDelta(self, **vdict):
-
-        def setInt(x):
-            entry = vdict[x]
-            if entry is not None:
-                entry = int(entry)
-            setattr(self, x, entry)
-
-        def setString(x):
-            setattr(self, x, vdict[x])
-
-        fields = {
-            'cladeName': setString,
-            'shortName': setString,
-            'hexColor': setString,
-            'export': setString,
-            'exportDate': setString,
-            'taxonsetName': setString,
-            'atMost': setInt,
-            'atLeast': setInt,
-            'distribution': setString,
-            'logNormalOffset': setInt,
-            'logNormalMean': setInt,
-            'logNormalStDev': setInt,
-            'normalMean': setInt,
-            'normalStDev': setInt,
-            'uniformUpper': setInt,
-            'uniformLower': setInt,
-            'cladeLevel0': setInt,
-            'cladeLevel1': setInt,
-            'cladeLevel2': setInt,
-            'cladeLevel3': setInt,
-            'level0Name': setString,
-            'level1Name': setString,
-            'level2Name': setString,
-            'level3Name': setString}
-
-        # Setting fields:
-        for k, _ in vdict.iteritems():
-            if k in fields:
-                fields[k](k)
-
     class Meta:
         ordering = ['cladeLevel0',
                     'cladeLevel1',
@@ -449,6 +364,21 @@ class Clade(models.Model):
     @property
     def languageIds(self):
         return [cl.language_id for cl in self.languageclade_set]
+
+    def timestampedFields(self):
+        return set(['cladeName', 'shortName', 'hexColor', 'export',
+                    'exportDate', 'taxonsetName', 'atMost', 'atLeast',
+                    'distribution', 'logNormalOffset', 'logNormalMean',
+                    'logNormalStDev', 'normalMean', 'normalStDev',
+                    'uniformUpper', 'uniformLower', 'cladeLevel0',
+                    'cladeLevel1', 'cladeLevel2', 'cladeLevel3',
+                    'level0Name', 'level1Name', 'level2Name', 'level3Name'])
+
+    def deltaReport(self, **kwargs):
+        return 'Could not update Clade: ' \
+            '"%s" with values %s. ' \
+            'It was last touched by "%s" %s.' % \
+            (self.id, kwargs, self.lastEditedBy, self.lastTouched)
 
 
 @reversion.register

@@ -507,6 +507,8 @@
               <tr>
                 <td class="hide">
                   {% form_field clade.idField required="required" %}
+                  {% form_field clade.lastTouched required="required" %}
+                  {% form_field clade.lastEditedBy required="required" %}
                 </td>
                 <td class="cladeLevel0">
                   {% if user.is_authenticated and user.is_staff %}
