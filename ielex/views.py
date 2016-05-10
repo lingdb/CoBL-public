@@ -166,8 +166,8 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
         language_list = LanguageList.objects.get(
             name=getDefaultLanguagelist(request))
 
-    ids = list(language_list.languages.values_list(
-            "id", flat=True).order_by("languagelistorder"))
+    ids = list(language_list.languages.values_list("id", flat=True))
+
     try:
         current_idx = ids.index(current_language.id)
     except ValueError:
