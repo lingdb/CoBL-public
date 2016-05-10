@@ -269,20 +269,23 @@ def view_language_list(request, language_list=None):
                 lang = Language.objects.get(ascii_name=data['ascii_name'])
 
                 if lang.isChanged(**data):
-
-                    lang.setDelta(**data)
-
                     try:
-                        lang.save()
+                        problem = lang.setDelta(request, **data)
+                        if problem is None:
+                            lang.save()
+                        else:
+                            messages.error(request,
+                                           lang.deltaReport(**problem))
                     except Exception, e:
                         print('Exception while saving POST: ', e)
-
-                else:
-                    pass
+                        messages.error(request, 'Sorry, the server failed '
+                                       'to save "%s".' % data['ascii_name'])
 
             except Exception, e:
                 print('Exception while accessing Language object: ',
                       e, '; POST items are: ', data)
+                messages.error(request, 'Sorry, the server had problems '
+                               'saving at least one language entry.')
 
         return HttpResponseRedirect(
             reverse("view-language-list", args=[current_list.name]))

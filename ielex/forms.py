@@ -224,7 +224,7 @@ class AbstractTimestampedForm(WTForm):
     lastEditedBy = StringField('Last edited')
 
 
-class LanguageListRowForm(WTForm):
+class LanguageListRowForm(AbstractTimestampedForm):
     iso_code = StringField('Language ISO Code', validators=[DataRequired()])
     utf8_name = StringField('Language Utf8 Name', validators=[DataRequired()])
     ascii_name = StringField('Language ASCII Name',

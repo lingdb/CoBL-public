@@ -337,7 +337,7 @@ class Clade(AbstractTimestamped):
 
 
 @reversion.register
-class Language(models.Model):
+class Language(AbstractTimestamped):
     iso_code = models.CharField(max_length=3, blank=True)
     ascii_name = models.CharField(
         max_length=128, unique=True, validators=[suitable_for_url])
@@ -387,113 +387,32 @@ class Language(models.Model):
                     'sortRankInClade']
 
     def isChanged(self, **vdict):
-
-        fields = [
-            'iso_code',
-            'ascii_name',
-            'glottocode',
-            'variety',
-            'foss_stat',
-            'low_stat',
-            'soundcompcode',
-            'level0',
-            'level1',
-            'level2',
-            'level3',
-            'representative',
-            'mean_timedepth_BP_years',
-            'std_deviation_timedepth_BP_years',
-            'rfcWebPath1',
-            'rfcWebPath2',
-            'author',
-            'reviewer',
-            'beastName',
-            'earliestTimeDepthBound',
-            'latestTimeDepthBound',
-            'progress',
-            'sortRankInClade']
-
-        for f in fields:
-            if f in vdict:
-                if getattr(self, f) != vdict[f]:
-                    return True
-        return False
-
-    def setDelta(self, **vdict):
-        """
-            Alter a models attributes by giving a vdict
-            similar to the one used for is_unchanged.
-        """
-
-        fields = [
-            'iso_code',
-            'ascii_name',
-            'utf8_name',  # Not checked in isChanged
-            'glottocode',
-            'variety',
-            'foss_stat',
-            'low_stat',
-            'soundcompcode',
-            'level0',
-            'level1',
-            'level2',
-            'level3',
-            'representative',
-            'mean_timedepth_BP_years',
-            'std_deviation_timedepth_BP_years',
-            'rfcWebPath1',
-            'rfcWebPath2',
-            'author',
-            'reviewer',
-            'beastName',
-            'earliestTimeDepthBound',
-            'latestTimeDepthBound',
-            'progress',
-            'sortRankInClade']
-
+        '''
+        Overwriting AbstractTimestamped.setDelta()
+        to have special handling for 'ascii_name' field.
+        '''
         # Escaping special fields:
         if 'ascii_name' in vdict:
             vdict['utf8_name'] = vdict['ascii_name'].encode('utf8', 'ignore')
+        # Handling via parent implementation:
+        return super(Language, self).isChanged(**vdict)
 
-        # Setting fields:
-        for f in fields:
-            if f in vdict:
-                setattr(self, f, vdict[f])
+    def setDelta(self, request=None, **vdict):
+        """
+        Overwriting AbstractTimestamped.setDelta()
+        to have special handling for 'ascii_name' field.
+        """
+        # Escaping special fields:
+        if 'ascii_name' in vdict:
+            vdict['utf8_name'] = vdict['ascii_name'].encode('utf8', 'ignore')
+        # Handling via parent implementation:
+        return super(Language, self).setDelta(request, **vdict)
 
     def getCsvRow(self, *fields):
         '''
         @return row :: [str]
         '''
-        fieldSet = set(['iso_code',
-                        'ascii_name',
-                        'utf8_name',
-                        'description',
-                        'clades',
-                        'beastName',
-                        'earliestTimeDepthBound',
-                        'latestTimeDepthBound',
-                        'progress',
-                        'glottocode',
-                        'variety',
-                        'soundcompcode',
-                        'level0',
-                        'level1',
-                        'level2',
-                        'level3',
-                        'mean_timedepth_BP_years',
-                        'std_deviation_timedepth_BP_years',
-                        'foss_stat',
-                        'low_stat',
-                        'representative',
-                        'rfcWebPath1',
-                        'rfcWebPath2',
-                        'author',
-                        'reviewer',
-                        'sortRankInClade',
-                        'sndCompLevel0',
-                        'sndCompLevel1',
-                        'sndCompLevel2',
-                        'sndCompLevel3'])
+        fieldSet = self.timestampedFields()
 
         row = []
         for f in fields:
@@ -618,6 +537,22 @@ class Language(models.Model):
                     return self.firstClade.hexColor
         except:
             return '777777'
+
+    def timestampedFields(self):
+        return set(['iso_code', 'ascii_name', 'utf8_name', 'glottocode',
+                    'variety', 'foss_stat', 'low_stat', 'soundcompcode',
+                    'level0', 'level1', 'level2', 'level3', 'representative',
+                    'mean_timedepth_BP_years',
+                    'std_deviation_timedepth_BP_years',
+                    'rfcWebPath1', 'rfcWebPath2', 'author', 'reviewer',
+                    'beastName', 'earliestTimeDepthBound',
+                    'latestTimeDepthBound', 'progress', 'sortRankInClade'])
+
+    def deltaReport(self, **kwargs):
+        return 'Could not update language: ' \
+            '"%s" with values %s. ' \
+            'It was last touched by "%s" %s.' % \
+            (self.ascii_name, kwargs, self.lastEditedBy, self.lastTouched)
 
 
 @receiver(post_save, sender=Language)

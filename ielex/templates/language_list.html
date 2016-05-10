@@ -598,6 +598,8 @@
                 <td class="languageName">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.ascii_name class="language_name hide" %}
+                    {% form_field language.lastTouched class="hide" %}
+                    {% form_field language.lastEditedBy class="hide" %}
                   {% endif %}
                   <a href="{% url 'language-report' language.ascii_name.data %}"
                      alt="view lexeme list"
