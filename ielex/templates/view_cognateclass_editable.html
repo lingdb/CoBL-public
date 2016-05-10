@@ -39,12 +39,26 @@
               <th>Root</th>
               {# rootlang_title.html #}
               <th>Root<br>Language</th>
+              {# notProtoIndoEuropean_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Not Proto-Indo-European?">
+                Not<br>PIE?
+              </th>
               {# glossinrootlang_title.html #}
               <th>Root<br>Gloss</th>
               {# notes_title.html #}
               <th>Root<br>Notes</th>
               {# loanword_title.html #}
               <th>Loan<br>Event</th>
+              {# parallelLoanEvent_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Parallel Loan Event">
+                  Pll.<br>Loan
+              </th>
               {# loanSourceId_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -130,6 +144,13 @@
                   </div>
                 {% endif %}
               </th>
+              {# notProtoIndoEuropean_filter.html #}
+              <th>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".notProtoIndoEuropean input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </th>
               {# glossinrootlang_filter.html #}
               <th>
                 {% if user.is_authenticated %}
@@ -174,6 +195,13 @@
               <th>
                 <button type="button" class="filterBool btn btn-xs btn-default"
                         data-selector=".cogLoanword input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </th>
+              {# parallelLoanEvent_filter.html #}
+              <th>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".parallelLoanEvent input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </th>
@@ -314,6 +342,14 @@
                     {{ cc.root_language.data }}
                   {% endif %}
                 </td>
+                {# notProtoIndoEuropean_data.html #}
+                <td class="notProtoIndoEuropean">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.notProtoIndoEuropean class="form-control" %}
+                  {% else %}
+                    {% form_field cc.notProtoIndoEuropean class="form-control" disabled="disabled" %}
+                  {% endif %}
+                </td>
                 {# glossinrootlang_data.html #}
                 <td class="cogGlossInRootLang">
                   {% if user.is_authenticated %}
@@ -336,6 +372,14 @@
                     {% form_field cc.loanword class="form-control" %}
                   {% else %}
                     {% form_field cc.loanword class="form-control" disabled="disabled" %}
+                  {% endif %}
+                </td>
+                {# parallelLoanEvent_data.html #}
+                <td class="parallelLoanEvent">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.parallelLoanEvent class="form-control" %}
+                  {% else %}
+                    {% form_field cc.parallelLoanEvent class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
                 {# loanSourceId_data.html #}

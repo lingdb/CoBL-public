@@ -848,6 +848,9 @@ class CognateClass(AbstractTimestamped):
     # Not given via timestampedFields;
     # self.save takes care of it automagically:
     loanSourceCognateClass = models.ForeignKey("self", null=True)
+    # Fields added for #176:
+    parallelLoanEvent = models.BooleanField(default=0)
+    notProtoIndoEuropean = models.BooleanField(default=0)
 
     def __str__(self):
         return self.root_form
@@ -897,7 +900,8 @@ class CognateClass(AbstractTimestamped):
         return set(['alias', 'notes', 'name', 'root_form', 'root_language',
                     'gloss_in_root_lang', 'loanword', 'loan_source',
                     'loan_notes', 'loanSourceId', 'loanEventTimeDepthBP',
-                    'sourceFormInLoanLanguage'])
+                    'sourceFormInLoanLanguage', 'parallelLoanEvent',
+                    'notProtoIndoEuropean'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update cognate class: ' \

@@ -448,6 +448,10 @@ class CogClassRowForm(AbstractTimestampedForm):
         'Time depth of loan event', validators=[DataRequired()])
     sourceFormInLoanLanguage = TextField(
         'Source form in loan language', validators=[DataRequired()])
+    parallelLoanEvent = BooleanField(
+        'Parallel Loan Event', validators=[DataRequired()])
+    notProtoIndoEuropean = BooleanField(
+        'Not Proto-Indo-European?', validators=[DataRequired()])
 
     def __str__(self):
         cogclass_form_vals = (
