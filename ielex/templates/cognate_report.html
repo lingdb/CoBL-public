@@ -94,34 +94,6 @@
         </div>
       </div>
     {% endif %}
-    {% if cognate_class.cognateclasscitation_set.exists %}
-      {% for citation in cognate_class.cognateclasscitation_set.all %}
-        <div class="col-md-12">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <strong>Citation:
-                <a href="{% url 'view-source' citation.source.id %}">
-                  {{ citation.source.citation_text|truncatewords:10 }}
-                </a>
-                Pages:
-              </strong>
-              {{ citation.pages }}
-              <a href="{% url 'cognate-class-citation-detail' citation.id %}" title="View the citation">
-                <span class="glyphicon glyphicon-search"></span>
-              </a>
-              {% if user.is_authenticated %}
-                <a href="{% url 'cognate-citation-edit' citation.id %}" title="Edit the citation">
-                  <span class="glyphicon glyphicon-edit"></span>
-                </a>
-              {% endif %}
-            </div>
-            <div class="panel-body">
-              {{ citation.comment|wikilink }}
-            </div>
-          </div>
-        </div>
-      {% endfor %}
-    {% endif %}
     <div class="col-md-12">
       {% if user.is_authenticated %}
         <form action="" method="POST" name="cognateJudgementSplitTable">
@@ -197,6 +169,34 @@
         </form>
       {% endif %}
     </div>
+    {% if cognate_class.cognateclasscitation_set.exists %}
+      {% for citation in cognate_class.cognateclasscitation_set.all %}
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <strong>Citation:
+                <a href="{% url 'view-source' citation.source.id %}">
+                  {{ citation.source.citation_text|truncatewords:10 }}
+                </a>
+                Pages:
+              </strong>
+              {{ citation.pages }}
+              <a href="{% url 'cognate-class-citation-detail' citation.id %}" title="View the citation">
+                <span class="glyphicon glyphicon-search"></span>
+              </a>
+              {% if user.is_authenticated %}
+                <a href="{% url 'cognate-citation-edit' citation.id %}" title="Edit the citation">
+                  <span class="glyphicon glyphicon-edit"></span>
+                </a>
+              {% endif %}
+            </div>
+            <div class="panel-body">
+              {{ citation.comment|wikilink }}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
   </div>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
