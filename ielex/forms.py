@@ -322,7 +322,7 @@ class CladeDeletionForm(WTForm):
     cladeName = StringField('Clade name', validators=[DataRequired()])
 
 
-class SndCompRowForm(WTForm):
+class SndCompRowForm(AbstractTimestampedForm):
     idField = IntegerField('Id', validators=[DataRequired()])
     lgSetName = StringField('Language set name', validators=[DataRequired()])
     lv0 = IntegerField('SndComp branch level 0', validators=[DataRequired()])

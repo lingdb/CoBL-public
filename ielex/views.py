@@ -408,10 +408,15 @@ def view_sndComp(request):
                 try:
                     with transaction.atomic():
                         sndComp = SndComp.objects.get(id=data['idField'])
-                        if not sndComp.is_unchanged(**data):
-                            sndComp.setDelta(**data)
+                        if sndComp.isChanged(**data):
                             try:
-                                sndComp.save()
+                                problem = sndComp.setDelta(**data)
+                                if problem is None:
+                                    sndComp.save()
+                                else:
+                                    messages.error(
+                                        request,
+                                        sndComp.deltaReport(**problem))
                             except Exception, e:
                                 print('Exception while saving POST:', e)
                                 messages.error(request, 'The server had '

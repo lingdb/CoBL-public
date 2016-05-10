@@ -253,6 +253,8 @@
               <tr>
                 <td class="hide">
                   {% form_field sndComp.idField required="required" %}
+                  {% form_field sndComp.lastTouched required="required" %}
+                  {% form_field sndComp.lastEditedBy required="required" %}
                 </td>
                 <td class="lgSetName">
                   {% if user.is_authenticated and user.is_staff %}
