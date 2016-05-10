@@ -879,15 +879,24 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
             for m in ms:
                 try:
                     meaning = Meaning.objects.get(id=m['meaningId'])
-                    if not meaning.is_unchanged(**m):
-                        meaning.setDelta(**m)
+                    if meaning.isChanged(**m):
                         try:
-                            meaning.save()
+                            problem = meaning.setDelta(request, **m)
+                            if problem is None:
+                                meaning.save()
+                            else:
+                                messages.error(
+                                    request, meaning.deltaReport(**problem))
                         except Exception, e:
                             print('Exception while saving POST: ', e)
+                            messages.error(request, 'Sorry, the server had '
+                                           'problems saving changes for '
+                                           '"%s".' % meaning.gloss)
                 except Exception, e:
                     print('Exception while accessing Meaning object: ',
                           e, '; POST items are: ', m)
+                    messages.error(request, 'The server had problems saving '
+                                   'at least one entry.')
 
     mltf = MeaningListTableForm()
     meanings = wordlist.meanings.order_by("meaninglistorder").all()
@@ -897,7 +906,6 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
         meaning.cog_count = CognateJudgement.objects.filter(
             lexeme__meaning__id=meaning.id).distinct(
             "cognate_class_id").count()
-        meaning.desc = meaning.description
         mltf.meanings.append_entry(meaning)
 
     return render_template(request, "wordlist.html",

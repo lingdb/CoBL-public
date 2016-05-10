@@ -388,7 +388,7 @@ class Language(AbstractTimestamped):
 
     def isChanged(self, **vdict):
         '''
-        Overwriting AbstractTimestamped.setDelta()
+        Overwriting AbstractTimestamped.isChanged()
         to have special handling for 'ascii_name' field.
         '''
         # Escaping special fields:
@@ -575,12 +575,11 @@ class LanguageClade(models.Model):
 
 
 @reversion.register
-class Meaning(models.Model):
+class Meaning(AbstractTimestamped):
     gloss = models.CharField(
         max_length=64, unique=True, validators=[suitable_for_url])
     description = models.CharField(max_length=64, blank=True)
     notes = models.TextField(blank=True)
-    data = jsonfield.JSONField(blank=True)
     percent_coded = models.FloatField(editable=False, default=0)
 
     def get_absolute_url(self):
@@ -604,37 +603,14 @@ class Meaning(models.Model):
     class Meta:
         ordering = ["gloss"]
 
-    def is_unchanged(self, **vdict):
+    def timestampedFields(self):
+        return set(['gloss', 'description', 'notes'])
 
-        if 'desc' in vdict:
-            vdict['description'] = vdict['desc']
-
-        fields = ['gloss', 'description', 'notes']
-
-        for f in fields:
-            if f in vdict:
-                if getattr(self, f) != vdict[f]:
-                    return False
-        return True
-
-    def setDelta(self, **vdict):
-        """
-            Alter a models attributes by giving a vdict
-            similar to the one used for is_unchanged.
-        """
-
-        def setField(x):
-            setattr(self, x, vdict[x])
-
-        fields = ['gloss', 'description', 'notes']
-
-        if 'desc' in vdict:
-            vdict['description'] = vdict['desc']
-
-        # Setting fields:
-        for f in fields:
-            if f in vdict:
-                setattr(self, f, vdict[f])
+    def deltaReport(self, **kwargs):
+        return 'Could not update meaning: ' \
+            '"%s" with values %s. ' \
+            'It was last touched by "%s" %s.' % \
+            (self.gloss, kwargs, self.lastEditedBy, self.lastTouched)
 
 
 @reversion.register

@@ -102,6 +102,8 @@
                 </td>
                 {% if user.is_authenticated and user.is_staff %}
                   {% form_field meaning.meaningId class="hide" %}
+                  {% form_field meaning.lastTouched class="hide" %}
+                  {% form_field meaning.lastEditedBy class="hide" %}
                   <td class="meaningGloss">
                     {% form_field meaning.gloss class="form-control" size="4" style="width: 6em;" %}
                   </td>

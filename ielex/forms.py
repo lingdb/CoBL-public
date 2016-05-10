@@ -497,10 +497,10 @@ class MeaningTableFilterForm(forms.ModelForm):
         fields = ['language']
 
 
-class MeaningListRowForm(WTForm):
+class MeaningListRowForm(AbstractTimestampedForm):
     meaningId = IntegerField('Meaning Id', validators=[DataRequired()])
     gloss = StringField('Gloss', validators=[DataRequired()])
-    desc = StringField('Description', validators=[DataRequired()])
+    description = StringField('Description', validators=[DataRequired()])
     notes = TextAreaField('Notes', validators=[DataRequired()])
     percent_coded = DecimalField('Percentage coded',
                                  validators=[DataRequired()])
