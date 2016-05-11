@@ -645,61 +645,11 @@ def view_language_wordlist(request, language, wordlist):
     lexemes = sorted(
         lexemes, key=lambda l: meaningOrderMap.get(l.meaning.id, 0))
 
-    def fill_lexemestable_from_DB(lexms):
-
-        lex_table_form = AddLexemesTableForm()
-
-        for lex in lexms:
-
-            lex_row_form = LexemeRowForm()
-            lex_row_form.id = int(lex.id)
-            lex_row_form.meaning_id = int(lex.meaning.id)
-            lex_row_form.meaning = lex.meaning
-            lex_row_form.source_form = lex.source_form
-            lex_row_form.phon_form = lex.phon_form
-            lex_row_form.gloss = lex.gloss
-            lex_row_form.notes = lex.notes
-            lex_row_form.number_cognate_coded = lex.number_cognate_coded
-
-            # CC dependant data:
-            cData = lex.getCognateClassData()
-            if cData is not None:
-                lex_row_form.cog_class_ids = cData['id']
-                lex_row_form.root_form = cData['root_form']
-                lex_row_form.rootFormCompare = 'rootForm-'+cData['id']
-                lex_row_form.root_language = cData['root_language']
-                lex_row_form.rootLanguageCompare = 'rootLanguage-'+cData['id']
-            else:
-                lex_row_form.cog_class_ids = False
-                lex_row_form.rootFormCompare = False
-                lex_row_form.rootLanguageCompare = False
-
-            lex_row_form.phoneMic = lex.data.get('phoneMic', '')
-            lex_row_form.transliteration = \
-                lex.data.get('transliteration', '')
-            lex_row_form.not_swadesh_term = \
-                lex.data.get('not_swadesh_term', '')
-
-            lex_row_form.is_excluded_lexeme = lex.is_excluded_lexeme()
-            lex_row_form.is_loan_lexeme = lex.is_loan_lexeme()
-            lex_row_form.is_excluded_cognate = lex.is_excluded_cognate()
-            lex_row_form.is_loan_cognate = lex.is_loan_cognate()
-
-            cle = lex.checkLoanEvent()
-            lex_row_form.show_loan_event = (cle is not None)
-            lex_row_form.loan_event = cle
-
-            lex_row_form.rfcWebPath1 = language.rfcWebPath1
-            lex_row_form.rfcWebPath2 = language.rfcWebPath2
-            lex_row_form.rfcWebLookup1 = lex.data.get('rfcWebLookup1', '')
-            lex_row_form.rfcWebLookup2 = lex.data.get('rfcWebLookup2', '')
-
-            lex_row_form.dubious = lex.data.get('dubious', False)
-
-            lex_table_form.lexemes.append_entry(lex_row_form)
-        return lex_table_form
-
-    lexemes_editabletable_form = fill_lexemestable_from_DB(lexemes)
+    lexemes_editabletable_form = AddLexemesTableForm()
+    for lex in lexemes:
+        lex.rfcWebPath1 = language.rfcWebPath1
+        lex.rfcWebPath2 = language.rfcWebPath2
+        lexemes_editabletable_form.lexemes.append_entry(lex)
 
     otherMeaningLists = MeaningList.objects.exclude(id=wordlist.id).all()
 
@@ -1082,16 +1032,17 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                 lexm = Lexeme.objects.get(id=int(data['id']))
 
                 # Saving CognateClass data:
-                lexm.setCognateClassData(**data)
+                lexm.setCognateClassData(request, **data)
 
-                if not lexm.is_unchanged(**data):
-                    lexm.setDelta(**data)
+                if lexm.isChanged(**data):
                     try:
-                        lexm.save()
+                        problem = lexm.setDelta(request, **data)
+                        if problem is None:
+                            lexm.save()
+                        else:
+                            messages.error(request, lexm.deltaReport(**problem))
                     except Exception, e:
                         print('Exception for saving Lexeme object: ', e)
-                else:
-                    pass
 
             except Exception, e:
                 print('Exception while accessing Lexeme object: ',
@@ -1116,7 +1067,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         "lexemecitation_set",
         "cognate_class",
         "language__languageclade_set",
-        "language__clades",)
+        "language__clades")
 
     cognate_form.fields[
         "cognate_class"].queryset = CognateClass.objects.filter(
@@ -1133,63 +1084,9 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     # Here this is not needed.
     filt_form.errors['language'] = ''
 
-    def fill_lexemestable_from_DB(lexms):
-
-        lex_table_form = AddLexemesTableForm()
-
-        for lex in lexms:
-
-            lex_row_form = LexemeRowForm()
-            lex_row_form.id = int(lex.id)
-            lex_row_form.language_id = lex.language.id
-            lex_row_form.language = lex.language
-            lex_row_form.language_asciiname = lex.language.ascii_name
-            lex_row_form.language_utf8name = lex.language.utf8_name
-            lex_row_form.language_color = lex.language.hexColor
-            lex_row_form.cognate_class_links = lex.get_cognate_class_links
-            lex_row_form.meaning_id = lex.meaning.id
-            lex_row_form.meaning = lex.meaning
-            lex_row_form.source_form = lex.source_form
-            lex_row_form.phon_form = lex.phon_form
-            lex_row_form.gloss = lex.gloss
-            lex_row_form.notes = lex.notes
-            lex_row_form.number_cognate_coded = lex.number_cognate_coded
-
-            lex_row_form.is_excluded_lexeme = lex.is_excluded_lexeme()
-            lex_row_form.is_loan_lexeme = lex.is_loan_lexeme()
-            lex_row_form.is_excluded_cognate = lex.is_excluded_cognate()
-            lex_row_form.is_loan_cognate = lex.is_loan_cognate()
-
-            cle = lex.checkLoanEvent()
-            lex_row_form.show_loan_event = (cle is not None)
-            lex_row_form.loan_event = cle
-
-            lex_row_form.rfcWebLookup1 = lex.data.get('rfcWebLookup1', u'')
-            lex_row_form.rfcWebLookup2 = lex.data.get('rfcWebLookup2', u'')
-
-            # CC dependant data:
-            cData = lex.getCognateClassData()
-            if cData is not None:
-                lex_row_form.cog_class_ids = cData['id']
-                lex_row_form.root_form = cData['root_form']
-                lex_row_form.rootFormCompare = 'rootForm-'+cData['id']
-                lex_row_form.root_language = cData['root_language']
-                lex_row_form.rootLanguageCompare = 'rootLanguage-'+cData['id']
-            else:
-                lex_row_form.cog_class_ids = False
-                lex_row_form.rootFormCompare = False
-                lex_row_form.rootLanguageCompare = False
-
-            lex_row_form.phoneMic = lex.data.get('phoneMic', u'')
-            lex_row_form.transliteration = lex.data.get(
-                'transliteration', u'')
-            lex_row_form.not_swadesh_term = lex.data.get(
-                'not_swadesh_term', u'')
-
-            lex_table_form.lexemes.append_entry(lex_row_form)
-        return lex_table_form
-
-    lexemes_editabletable_form = fill_lexemestable_from_DB(lexemes)
+    lexemes_editabletable_form = AddLexemesTableForm()
+    for lex in lexemes:
+        lexemes_editabletable_form.lexemes.append_entry(lex)
 
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
     return render_template(

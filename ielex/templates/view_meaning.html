@@ -1,4 +1,4 @@
-{%extends "base.html" %}
+{% extends "base.html" %}
 
 {% load staticfiles %}
 {% load lexicon_utils %}
@@ -17,10 +17,6 @@
 {% endblock %}
 
 {% block content %}
-  <div class="row">
-    <div class="col-md-4">
-    </div>
-  </div>
   <div class="row">
     <div class="col-md-12">
       {% if user.is_authenticated %}
@@ -78,6 +74,7 @@
               <th title="Number of cognate classes"
                   data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   style="width: 80px;">nCog</th>
               {# cognateclasses_title.html #}
               <th>Cog.<br>Alias</th>
@@ -462,27 +459,34 @@
                           {{ cognate_form.cognate_class }}
                         </form>
                       {% endifnotequal %}
+                      {% if lexeme.allCognateClasses|length == 1 %}
+                        {% form_field lexeme.allCognateClasses.0.idField class="hide" %}
+                        {% form_field lexeme.allCognateClasses.0.lastTouched class="hide" %}
+                        {% form_field lexeme.allCognateClasses.0.lastEditedBy class="hide" %}
+                      {% endif %}
                     {% endif %}
-                    {{ lexeme.cognate_class_links.data }}
+                    {% for c in  lexeme.allCognateClasses %}
+                    <a href="/cognate/{{ c.id.data }}/">{{c.alias.data}}</a>
+                    {% endfor %}
                   </div>
                 </td>
                 {# rootform_data.html #}
                 <td class="lexemeRootForm">
-                  {% if lexeme.data.rootFormCompare %}
+                  {% if lexeme.allCognateClasses|length == 1 %}
                     {% if user.is_authenticated %}
-                      {% form_field lexeme.root_form id="rootform" class="form-control mirrorTextInput" data-compare=lexeme.data.rootFormCompare %}
+                      {% form_field lexeme.allCognateClasses.0.root_form id="rootform" class="form-control mirrorTextInput" data-compare=lexeme.allCognateClasses.0.object_data.root_form_compare %}
                     {% else %}
-                      {{ lexeme.root_form.data }}
+                      {{ lexeme.allCognateClasses.0.root_form.data }}
                     {% endif %}
                   {% endif %}
                 </td>
                 {# rootlanguage_data.html #}
                 <td class="lexemeRootLanguage">
-                  {% if lexeme.data.rootLanguageCompare %}
+                  {% if lexeme.allCognateClasses|length == 1 %}
                     {% if user.is_authenticated %}
-                      {% form_field lexeme.root_language class="form-control mirrorTextInput" id="rootlanguage" data-compare=lexeme.data.rootLanguageCompare %}
+                      {% form_field lexeme.allCognateClasses.0.root_language class="form-control mirrorTextInput" id="rootlanguage" data-compare=lexeme.allCognateClasses.0.object_data.root_language_compare %}
                     {% else %}
-                      {{ lexeme.root_languages.data }}
+                      {{ lexeme.allCognateClasses.0.root_language.data }}
                     {% endif %}
                   {% endif %}
                 </td>

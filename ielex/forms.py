@@ -356,77 +356,6 @@ class SndCompDeletionForm(WTForm):
     lgSetName = StringField('Language set name', validators=[DataRequired()])
 
 
-class LexemeRowForm(WTForm):
-    id = IntegerField('Lexeme Id', validators=[DataRequired()])
-    language_id = StringField('Language Id', validators=[DataRequired()])
-    language = StringField('Language', validators=[DataRequired()])
-    language_asciiname = StringField('Language Ascii Name',
-                                     validators=[DataRequired()])
-    language_utf8name = StringField('Language Utf8 Name',
-                                    validators=[DataRequired()])
-    cognate_class_links = StringField('Cognate Class',
-                                      validators=[DataRequired()])
-    meaning_id = IntegerField('Meaning Id', validators=[DataRequired()])
-    meaning = IntegerField('Meaning', validators=[DataRequired()])
-    source_form = StringField('Source Form', validators=[DataRequired()])
-    phon_form = StringField('PhoNetic Form', validators=[DataRequired()])
-    phoneMic = StringField('PhoneMic Form', validators=[DataRequired()])
-    transliteration = StringField('Transliteration',
-                                  validators=[DataRequired()])
-    not_swadesh_term = BooleanField('Not Swadesh Term',
-                                    validators=[DataRequired()])
-    gloss = StringField('Gloss', validators=[DataRequired()])
-    number_cognate_coded = IntegerField('Count Coded Cognates',
-                                        validators=[DataRequired()])
-    notes = TextField('Notes', validators=[DataRequired()])
-    cogclass_link = TextField('CogClass Links', validators=[DataRequired()])
-    rfcWebLookup1 = StringField('This Lg lex rfc web path 1',
-                                validators=[DataRequired()])
-    rfcWebLookup2 = StringField('This Lg lex rfc web path 2',
-                                validators=[DataRequired()])
-    dubious = BooleanField('Dubious', validators=[DataRequired()])
-
-    # Components for copying buttons
-    source_form_2_transliteration = BooleanField(
-        'Source Form to Transliteration', validators=[DataRequired()])
-    transliteration_2_source_form = BooleanField(
-        'Transliteration to Source Form', validators=[DataRequired()])
-    phon_form_2_phoneMic = BooleanField('PhoneTic to PhoneMic',
-                                        validators=[DataRequired()])
-    phoneMic_2_phon_form = BooleanField('PhoneMic to PhoneTic',
-                                        validators=[DataRequired()])
-
-    cog_class_ids = StringField('Root Form', validators=[DataRequired()])
-    root_form = StringField('Root Form', validators=[DataRequired()])
-    rootFormCompare = StringField('Root Form Compare')
-    root_language = StringField('Root Language', validators=[DataRequired()])
-    rootLanguageCompare = StringField('Root Language Compare')
-
-    # Exclusion booleans:
-    is_excluded_lexeme = BooleanField(
-        'Is Excluded via LexemeCitation', validators=[DataRequired()])
-    is_loan_lexeme = BooleanField(
-        'Is Loan via LexemeCitation', validators=[DataRequired()])
-    is_excluded_cognate = BooleanField(
-        'Is Excluded via CognateJudgement', validators=[DataRequired()])
-    is_loan_cognate = BooleanField(
-        'Is Loan via CognateJudgement', validators=[DataRequired()])
-
-    # LoanEvent for #29:
-    loan_event = BooleanField('Loan Event', validators=[DataRequired()])
-
-    def __init__(self, *args, **kwargs):
-        super(LexemeRowForm, self).__init__(*args, **kwargs)
-        read_only(self.meaning_id)
-        read_only(self.meaning)
-        read_only(self.language_utf8name)
-
-
-class AddLexemesTableForm(WTForm):
-    # Default of at least 5 blank fields
-    lexemes = FieldList(FormField(LexemeRowForm))
-
-
 # TODO: return to this if/when moving to Python 3
 @python_2_unicode_compatible
 class CogClassRowForm(AbstractTimestampedForm):
@@ -481,6 +410,64 @@ class CognateJudgementSplitRow(AbstractTimestampedForm):
 
 class CognateJudgementSplitTable(WTForm):
     judgements = FieldList(FormField(CognateJudgementSplitRow))
+
+
+class LexemeRowForm(WTForm):
+    id = IntegerField('Lexeme Id', validators=[DataRequired()])
+    language_id = StringField('Language Id', validators=[DataRequired()])
+    language = StringField('Language', validators=[DataRequired()])
+    language_asciiname = StringField('Language Ascii Name',
+                                     validators=[DataRequired()])
+    language_utf8name = StringField('Language Utf8 Name',
+                                    validators=[DataRequired()])
+    cognate_class_links = StringField('Cognate Class',
+                                      validators=[DataRequired()])
+    meaning_id = IntegerField('Meaning Id', validators=[DataRequired()])
+    meaning = IntegerField('Meaning', validators=[DataRequired()])
+    source_form = StringField('Source Form', validators=[DataRequired()])
+    phon_form = StringField('PhoNetic Form', validators=[DataRequired()])
+    phoneMic = StringField('PhoneMic Form', validators=[DataRequired()])
+    transliteration = StringField('Transliteration',
+                                  validators=[DataRequired()])
+    not_swadesh_term = BooleanField('Not Swadesh Term',
+                                    validators=[DataRequired()])
+    gloss = StringField('Gloss', validators=[DataRequired()])
+    number_cognate_coded = IntegerField('Count Coded Cognates',
+                                        validators=[DataRequired()])
+    notes = TextField('Notes', validators=[DataRequired()])
+    cogclass_link = TextField('CogClass Links', validators=[DataRequired()])
+    rfcWebLookup1 = StringField('This Lg lex rfc web path 1',
+                                validators=[DataRequired()])
+    rfcWebLookup2 = StringField('This Lg lex rfc web path 2',
+                                validators=[DataRequired()])
+    dubious = BooleanField('Dubious', validators=[DataRequired()])
+
+    # Providing access to related CognateClasses:
+    allCognateClasses = FieldList(FormField(CogClassRowForm))
+
+    # Exclusion booleans:
+    is_excluded_lexeme = BooleanField(
+        'Is Excluded via LexemeCitation', validators=[DataRequired()])
+    is_loan_lexeme = BooleanField(
+        'Is Loan via LexemeCitation', validators=[DataRequired()])
+    is_excluded_cognate = BooleanField(
+        'Is Excluded via CognateJudgement', validators=[DataRequired()])
+    is_loan_cognate = BooleanField(
+        'Is Loan via CognateJudgement', validators=[DataRequired()])
+
+    # LoanEvent for #29:
+    loan_event = BooleanField('Loan Event', validators=[DataRequired()])
+
+    def __init__(self, *args, **kwargs):
+        super(LexemeRowForm, self).__init__(*args, **kwargs)
+        read_only(self.meaning_id)
+        read_only(self.meaning)
+        read_only(self.language_utf8name)
+
+
+class AddLexemesTableForm(WTForm):
+    # Default of at least 5 blank fields
+    lexemes = FieldList(FormField(LexemeRowForm))
 
 
 class LexemeTableFilterForm(forms.ModelForm):

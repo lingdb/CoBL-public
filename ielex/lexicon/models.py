@@ -5,18 +5,15 @@ from string import uppercase, lowercase
 from django.db import models, connection
 from django.db.models import Max, F
 from django.core.urlresolvers import reverse
-# from django.core.cache import cache
-# from django.db import connection ### testing
 from django.db import IntegrityError
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete, post_delete, post_save
 from django.db.backends.signals import connection_created
 from django.utils.safestring import SafeString
 from django.utils.encoding import python_2_unicode_compatible
-# from django.contrib import admin
+from django.contrib import messages
 import jsonfield
 import reversion
-# from reversion.admin import VersionAdmin
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import *
 from itertools import izip
@@ -719,6 +716,14 @@ class CognateClass(AbstractTimestamped):
         # Relaying to parent:
         return super(CognateClass, self).save(*args, **kwargs)
 
+    @property
+    def root_form_compare(self):
+        return 'root_form'+str(self.id)
+
+    @property
+    def root_language_compare(self):
+        return 'root_language'+str(self.id)
+
 
 class DyenCognateSet(models.Model):
     cognate_class = models.ForeignKey(CognateClass)
@@ -734,7 +739,7 @@ class DyenCognateSet(models.Model):
 
 
 @reversion.register
-class Lexeme(models.Model):
+class Lexeme(AbstractTimestamped):
     language = models.ForeignKey(Language)
     meaning = models.ForeignKey(Meaning, blank=True, null=True)
     cognate_class = models.ManyToManyField(
@@ -755,21 +760,6 @@ class Lexeme(models.Model):
     rfcWebLookup2 = models.TextField(blank=True)
     dubious = models.BooleanField(default=0)
 
-    @property
-    def denormalized_cognate_classes(self):
-        """Create a sequence of 'cc1.id, cc1.alias, cc2.id, cc2.alias'
-        as a string and store"""
-        data = []
-        for cc in self.cognate_class.all():
-            data.append(cc.id)
-            judgement = CognateJudgement.objects.get(
-                lexeme=self, cognate_class=cc)
-            if judgement.is_excluded:
-                data.append("(%s)" % cc.alias)
-            else:
-                data.append(cc.alias)
-        return ",".join(str(e) for e in data)
-
     def set_number_cognate_coded(self):
         old_number = self.number_cognate_coded
         self.number_cognate_coded = self.cognate_class.count()
@@ -787,35 +777,6 @@ class Lexeme(models.Model):
         parts = [format_link(cc_id, alias) for cc_id, alias in
                  two_by_two(self.denormalized_cognate_classes.split(","))]
         return SafeString(", ".join(parts))
-    # get_cognate_class_links.allow_tags = True # this is only for admin
-
-    def is_excluded_lexeme(self):
-        # Tests is_exc for #88
-        return ('X' in self.reliability_ratings)
-
-    def is_loan_lexeme(self):
-        # Tests is_loan for #88
-        return ('L' in self.reliability_ratings)
-
-    def is_excluded_cognate(self):
-        # Tests is_exc for #29
-        for j in self.cognatejudgement_set.all():
-            if j.is_excluded:
-                if not j.is_loanword:
-                    return True
-        return False
-
-    def is_loan_cognate(self):
-        # Tests is_loan for #29
-        for j in self.cognatejudgement_set.all():
-            if j.is_excluded:
-                if j.is_loanword:
-                    return True
-        return False
-
-    @property
-    def reliability_ratings(self):
-        return set([lc.reliability for lc in self.lexemecitation_set.all()])
 
     def get_absolute_url(self, anchor=None):
         """The absolute urls of LexemeCitation, CognateJudgement and
@@ -835,76 +796,6 @@ class Lexeme(models.Model):
 
     class Meta:
         order_with_respect_to = "language"
-
-    def is_unchanged(self, **vdict):
-
-        def isField(x):
-            return getattr(self, x) == vdict[x]
-
-        def isData(x):
-            return self.data.get(x, '') == vdict[x]
-
-        def isY(x):
-            return self.data.get(x, False) == vdict.get(x, False)
-
-        fields = {
-            'source_form': isField,
-            'phon_form': isField,
-            'gloss': isField,
-            'notes': isField,
-            'phoneMic': isData,
-            'transliteration': isData,
-            'not_swadesh_term': isY,
-            'rfcWebLookup1': isData,
-            'rfcWebLookup2': isData,
-            'dubious': isY
-            }
-
-        try:
-            for k, f in fields.iteritems():
-                # Fixing boolean fields:
-                if f == isY:
-                    if k not in vdict:
-                        vdict[k] = False
-                # Testing for changes:
-                if k in vdict:
-                    if not f(k):
-                        return False
-        except Exception, e:
-            print('Problem in Lexeme.is_unchanged():', e)
-        return True
-
-    def setDelta(self, **vdict):
-        """
-            Alter a models attributes by giving a vdict
-            similar to the one used for is_unchanged.
-        """
-
-        def setField(x):
-            setattr(self, x, vdict[x])
-
-        def setData(x):
-            self.data[x] = vdict[x]
-
-        def setY(x):
-            self.data[x] = vdict.get(x, False)
-
-        fields = {
-            'source_form': setField,
-            'phon_form': setField,
-            'gloss': setField,
-            'notes': setField,
-            'phoneMic': setData,
-            'transliteration': setData,
-            'not_swadesh_term': setY,
-            'rfcWebLookup1': setData,
-            'rfcWebLookup2': setData,
-            'dubious': setY}
-
-        # Setting fields:
-        for k, _ in vdict.iteritems():
-            if k in fields:
-                fields[k](k)
 
     def checkLoanEvent(self):
         """
@@ -935,7 +826,7 @@ class Lexeme(models.Model):
             'root_form':     ','.join(rfs),
             'root_language': ','.join(rls)}
 
-    def setCognateClassData(self, **ccData):
+    def setCognateClassData(self, request=None, **ccData):
         """
         This method was added for #90 and shall save
         potentially changed cc data for a lexeme.
@@ -949,13 +840,108 @@ class Lexeme(models.Model):
             if id == '':
                 continue
             cc = CognateClass.objects.get(id=int(id))
-            if cc.root_form != root_form or cc.root_language != root_language:
-                try:
-                    cc.root_form = root_form
-                    cc.root_language = root_language
-                    cc.save()
-                except Exception, e:
-                    print('Exception while saving CognateClass: ', e)
+            delta = {'root_form': root_form,
+                     'root_language': root_language}
+            if cc.isChanged(**delta):
+                problem = cc.setDelta(request, **delta)
+                if problem is None:
+                    try:
+                        cc.save()
+                    except Exception, e:
+                        print('Exception while saving CognateClass: ', e)
+                else:
+                    messages.error(request, cc.deltaReport(**problem))
+
+    def timestampedFields(self):
+        return set(['source_form', 'phon_form', 'gloss', 'notes', 'phoneMic',
+                    'transliteration', 'not_swadesh_term',
+                    'rfcWebLookup1', 'rfcWebLookup2', 'dubious'])
+
+    def deltaReport(self, **kwargs):
+        return 'Could not update Lexeme entry: ' \
+            '"%s" with values %s. ' \
+            'It was last touched by "%s" %s.' % \
+            (self.source_form, kwargs, self.lastEditedBy, self.lastTouched)
+
+    @property
+    def denormalized_cognate_classes(self):
+        """
+        Creates a sequence of 'cc1.id, cc1.alias, cc2.id, cc2.alias'
+        for each CognateClass related to self.
+        To have fast access to CognateJudgements necessary to
+        display exclusion correctly we build a map
+        from CognateClass.id to CognateJudgement named cJMap.
+        """
+        cJMap = {cj.cognate_class_id: cj for cj in self.cognatejudgement_set}
+        data = []
+        for cc in self.cognate_class.all():
+            data.append(cc.id)
+            judgement = cJMap[cc.id]
+            if judgement.is_excluded:
+                data.append("(%s)" % cc.alias)
+            else:
+                data.append(cc.alias)
+        return ",".join(str(e) for e in data)
+
+    @property
+    def is_excluded_lexeme(self):
+        # Tests is_exc for #88
+        return ('X' in self.reliability_ratings)
+
+    @property
+    def is_loan_lexeme(self):
+        # Tests is_loan for #88
+        return ('L' in self.reliability_ratings)
+
+    @property
+    def is_excluded_cognate(self):
+        # Tests is_exc for #29
+        for j in self.cognatejudgement_set.all():
+            if j.is_excluded:
+                if not j.is_loanword:
+                    return True
+        return False
+
+    @property
+    def is_loan_cognate(self):
+        # Tests is_loan for #29
+        for j in self.cognatejudgement_set.all():
+            if j.is_excluded:
+                if j.is_loanword:
+                    return True
+        return False
+
+    @property
+    def reliability_ratings(self):
+        return set([lc.reliability for lc in self.lexemecitation_set.all()])
+
+    @property
+    def show_loan_event(self):
+        return self.checkLoanEvent is not None
+
+    @property
+    def loan_event(self):
+        return self.checkLoanEvent()  # FIXME remove this?
+
+    @property
+    def language_asciiname(self):
+        return self.language.ascii_name
+
+    @property
+    def language_utf8name(self):
+        return self.language.utf8_name
+
+    @property
+    def language_color(self):
+        return self.language.hexColor
+
+    @property
+    def cognate_class_links(self):
+        return self.get_cognate_class_links()  # FIXME remove?
+
+    @property
+    def allCognateClasses(self):  # FIXME MAGICAL MYSTERY?
+        return self.cognate_class.all()
 
 
 @reversion.register
