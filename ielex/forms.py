@@ -412,6 +412,44 @@ class CognateJudgementSplitTable(WTForm):
     judgements = FieldList(FormField(CognateJudgementSplitRow))
 
 
+class CogClassLexemeRelated(AbstractTimestampedForm):
+    idField = IntegerField('Id', validators=[DataRequired()])
+    root_form = StringField('Cog Class Root', validators=[DataRequired()])
+    root_language = StringField('Root Language', validators=[DataRequired()])
+
+
+class LexemeRowViewMeaningsForm(AbstractTimestampedForm):
+    '''
+    Since WTForms always fills fields with their default values
+    we need different forms for cases where different fields are presented.
+    This form aims to be used by the `view_meaning` function.
+    '''
+    id = IntegerField('Lexeme Id', validators=[DataRequired()])
+    language_asciiname = StringField('Language Ascii Name',
+                                     validators=[DataRequired()])
+    language_utf8name = StringField('Language Utf8 Name',
+                                    validators=[DataRequired()])
+    source_form = StringField('Source Form', validators=[DataRequired()])
+    phon_form = StringField('PhoNetic Form', validators=[DataRequired()])
+    phoneMic = StringField('PhoneMic Form', validators=[DataRequired()])
+    transliteration = StringField('Transliteration',
+                                  validators=[DataRequired()])
+    not_swadesh_term = BooleanField('Not Swadesh Term',
+                                    validators=[DataRequired()])
+    gloss = StringField('Gloss', validators=[DataRequired()])
+    number_cognate_coded = IntegerField('Count Coded Cognates',
+                                        validators=[DataRequired()])
+    notes = TextField('Notes', validators=[DataRequired()])
+    cogclass_link = TextField('CogClass Links', validators=[DataRequired()])
+
+    # Providing access to related CognateClasses:
+    allCognateClasses = FieldList(FormField(CogClassLexemeRelated))
+
+
+class LexemeTableViewMeaningsForm(WTForm):
+    lexemes = FieldList(FormField(LexemeRowViewMeaningsForm))
+
+
 class LexemeRowForm(WTForm):
     id = IntegerField('Lexeme Id', validators=[DataRequired()])
     language_id = StringField('Language Id', validators=[DataRequired()])
@@ -436,14 +474,12 @@ class LexemeRowForm(WTForm):
                                         validators=[DataRequired()])
     notes = TextField('Notes', validators=[DataRequired()])
     cogclass_link = TextField('CogClass Links', validators=[DataRequired()])
-    rfcWebLookup1 = StringField('This Lg lex rfc web path 1',
-                                validators=[DataRequired()])
-    rfcWebLookup2 = StringField('This Lg lex rfc web path 2',
-                                validators=[DataRequired()])
+    rfcWebLookup1 = StringField('This Lg lex rfc web path 1')
+    rfcWebLookup2 = StringField('This Lg lex rfc web path 2')
     dubious = BooleanField('Dubious', validators=[DataRequired()])
 
     # Providing access to related CognateClasses:
-    allCognateClasses = FieldList(FormField(CogClassRowForm))
+    allCognateClasses = FieldList(FormField(CogClassLexemeRelated))
 
     # Exclusion booleans:
     is_excluded_lexeme = BooleanField(

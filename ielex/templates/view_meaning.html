@@ -430,11 +430,21 @@
                 </td>
                 {# isexcluded_lexeme_data.html #}
                 <td class="lexemeIsExcludedLexeme">
-                  {% form_field lexeme.is_excluded_lexeme disabled="disabled" class="form-control" %}
+                  <input type="checkbox"
+                    {% if lexeme.object_data.is_excluded_lexeme %}
+                    checked="checked"
+                    {% endif %}
+                    disabled="disabled"
+                    class="form-control">
                 </td>
                 {# isloan_lexeme_data.html #}
                 <td class="lexemeIsLoanLexeme">
-                  {% form_field lexeme.is_loan_lexeme disabled="disabled" class="form-control" %}
+                  <input type="checkbox"
+                    {% if lexeme.object_data.is_loan_lexeme %}
+                    checked="checked"
+                    {% endif %}
+                    disabled="disabled"
+                    class="form-control">
                 </td>
                 {# ncog_data.html #}
                 <td class="lexemeNCog">
@@ -466,7 +476,7 @@
                       {% endif %}
                     {% endif %}
                     {% for c in  lexeme.allCognateClasses %}
-                    <a href="/cognate/{{ c.id.data }}/">{{c.alias.data}}</a>
+                    <a href="/cognate/{{ c.id.data }}/">{{ c.object_data.alias }}</a>
                     {% endfor %}
                   </div>
                 </td>
@@ -493,16 +503,31 @@
                 {# loanevent_data.html #}
                 <td class="lexemeShowLoanEvent">
                   {% if lexeme.object_data.show_loan_event %}
-                    {% form_field lexeme.loan_event disabled="disabled" class="form-control" %}
+                    <input type="checkbox"
+                      {% if lexeme.object_data.loan_event %}
+                      checked="checked"
+                      {% endif %}
+                      disabled="disabled"
+                      class="form-control">
                   {% endif %}
                 </td>
                 {# isloan_cognate_data.html #}
                 <td class="lexemeIsLoanCognate">
-                  {% form_field lexeme.is_loan_cognate disabled="disabled" class="form-control" %}
+                  <input type="checkbox"
+                    {% if lexeme.object_data.is_loan_cognated %}
+                    checked="checked"
+                    {% endif %}
+                    disabled="disabled"
+                    class="form-control">
                 </td>
                 {# isexcluded_cognate_data.html #}
                 <td class="lexemeIsExcludedCognate">
-                  {% form_field lexeme.is_excluded_cognate disabled="disabled" class="form-control" %}
+                  <input type="checkbox"
+                    {% if lexeme.object_data.is_excluded_cognate %}
+                    checked="checked"
+                    {% endif %}
+                    disabled="disabled"
+                    class="form-control">
                 </td>
                 {# phonemic_data.html #}
                 <td class="lexemePhoneMic">

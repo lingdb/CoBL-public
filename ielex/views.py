@@ -1021,32 +1021,38 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         cognate_form = ChooseCognateClassForm()
 
     if request.method == 'POST' and 'meang_form' in request.POST:
+        try:
+            lexemesTableForm = LexemeTableViewMeaningsForm(request.POST)
+            lexemesTableForm.validate()
 
-        lexemesTableForm = AddLexemesTableForm(request.POST)
-
-        for entry in lexemesTableForm.lexemes:
-            data = entry.data
-
-            try:
-
-                lexm = Lexeme.objects.get(id=int(data['id']))
-
-                # Saving CognateClass data:
-                lexm.setCognateClassData(request, **data)
-
-                if lexm.isChanged(**data):
-                    try:
-                        problem = lexm.setDelta(request, **data)
+            for entry in lexemesTableForm.lexemes:
+                data = entry.data
+                # Updating the cognate classes:
+                try:
+                    for cData in data['allCognateClasses']:
+                        cc = CognateClass.objects.get(id=cData['idField'])
+                        if cc.isChanged(**cData):
+                            problem = cc.setDelta(request, **cData)
+                            if problem is None:
+                                cc.save()
+                            else:
+                                messages.error(
+                                    request, cc.deltaReport(**problem))
+                except Exception, e:
+                    print('Exception for updating CognateClass:', e)
+                # Updating the lexeme:
+                try:
+                    lex = Lexeme.objects.get(id=data['id'])
+                    if lex.isChanged(**data):
+                        problem = lex.setDelta(request, **data)
                         if problem is None:
-                            lexm.save()
+                            lex.save()
                         else:
-                            messages.error(request, lexm.deltaReport(**problem))
-                    except Exception, e:
-                        print('Exception for saving Lexeme object: ', e)
-
-            except Exception, e:
-                print('Exception while accessing Lexeme object: ',
-                      e, '; POST items are: ', data)
+                            messages.error(request, lex.deltaReport(**problem))
+                except Exception, e:
+                    print('Exception for updating Lexeme:', e)
+        except Exception, e:
+            print('Problem updating lexemes:', e)
 
         return HttpResponseRedirect(
             reverse("view-meaning-languages",
@@ -1084,7 +1090,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     # Here this is not needed.
     filt_form.errors['language'] = ''
 
-    lexemes_editabletable_form = AddLexemesTableForm()
+    lexemes_editabletable_form = LexemeTableViewMeaningsForm()
     for lex in lexemes:
         lexemes_editabletable_form.lexemes.append_entry(lex)
 
@@ -1126,12 +1132,12 @@ def view_cognateclasses(request, meaning):
                             messages.error(
                                 request, cogclass.deltaReport(**problem))
                     except Exception, e:
-                        print('Exception while saving CognateClass: ', e)
+                        print('Exception while saving CognateClass:', e)
                         messages.error(
                             request, 'Problem while saving entry: %s' % data)
 
         except Exception, e:
-            print('Problem updating cognateclasses: ', e)
+            print('Problem updating cognateclasses:', e)
             messages.error(request, 'Sorry, the server had problems '
                            'updating at least one entry.')
 

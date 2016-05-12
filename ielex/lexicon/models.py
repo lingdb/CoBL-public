@@ -724,6 +724,10 @@ class CognateClass(AbstractTimestamped):
     def root_language_compare(self):
         return 'root_language'+str(self.id)
 
+    @property
+    def idField(self):
+        return self.id
+
 
 class DyenCognateSet(models.Model):
     cognate_class = models.ForeignKey(CognateClass)
@@ -825,32 +829,6 @@ class Lexeme(AbstractTimestamped):
             'id':            ','.join(ids),
             'root_form':     ','.join(rfs),
             'root_language': ','.join(rls)}
-
-    def setCognateClassData(self, request=None, **ccData):
-        """
-        This method was added for #90 and shall save
-        potentially changed cc data for a lexeme.
-        @param ccData :: {id: …, root_form: …, root_language: …}
-        """
-        tuples = izip(
-            ccData['cog_class_ids'].split(','),
-            ccData['root_form'].split(','),
-            ccData['root_language'].split(','))
-        for (id, root_form, root_language) in tuples:
-            if id == '':
-                continue
-            cc = CognateClass.objects.get(id=int(id))
-            delta = {'root_form': root_form,
-                     'root_language': root_language}
-            if cc.isChanged(**delta):
-                problem = cc.setDelta(request, **delta)
-                if problem is None:
-                    try:
-                        cc.save()
-                    except Exception, e:
-                        print('Exception while saving CognateClass: ', e)
-                else:
-                    messages.error(request, cc.deltaReport(**problem))
 
     def timestampedFields(self):
         return set(['source_form', 'phon_form', 'gloss', 'notes', 'phoneMic',
