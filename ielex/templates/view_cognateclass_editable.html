@@ -84,6 +84,27 @@
               </th>
               {# loannotes_title.html #}
               <th>Loan<br>Notes</th>
+              {# lexemeCount_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of lexemes in each cognate class">
+                Lex. Count
+              </th>
+              {# lexemeLoanCount_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of lexemes in each cognate class that are marked as loan words">
+                Lex. Loan Count
+              </th>
+              {# lexemeLoanPercentage_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of loan words over number of total lexemes for each cognate class">
+                Lex. Loan %
+              </th>
             </tr>
             <tr>
               {# id_filter.html #}
@@ -305,6 +326,27 @@
                   </div>
                 {% endif %}
               </th>
+              {# lexemeCount_filter.html #}
+              <th>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".lexemeCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              {# lexemeLoanCount_filter.html #}
+              <th>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".lexemeLoanCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
+              {# lexemeLoanPercentage_filter.html #}
+              <th>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".lexemeLoanPercentage">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -421,6 +463,24 @@
                   {% elif cc.loan_notes.data %}
                     {{ cc.loan_notes.data }}
                   {% endif %}
+                </td>
+                {# lexemeCount_title.html #}
+                <td class="lexemeCount">
+                  <span class="badge">
+                    {{ cc.object_data.lexemeCount }}
+                  </span>
+                </td>
+                {# lexemeLoanCount_title.html #}
+                <td class="lexemeLoanCount">
+                  <span class="badge">
+                    {{ cc.object_data.lexemeLoanCount }}
+                  </span>
+                </td>
+                {# lexemeLoanPercentage_title.html #}
+                <td class="lexemeLoanPercentage">
+                  <span class="badge">
+                    {{ cc.object_data.lexemeLoanPercentage }}
+                  </span>
                 </td>
               </tr>
             {% endfor %}

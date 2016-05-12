@@ -728,6 +728,19 @@ class CognateClass(AbstractTimestamped):
     def idField(self):
         return self.id
 
+    @property
+    def lexemeCount(self):
+        return len(self.cognatejudgement_set.all())
+
+    @property
+    def lexemeLoanCount(self):
+        return len([j for j in self.cognatejudgement_set.all()
+                    if 'L' in j.reliability_ratings])
+
+    @property
+    def lexemeLoanPercentage(self):
+        return self.lexemeLoanCount / self.lexemeCount
+
 
 class DyenCognateSet(models.Model):
     cognate_class = models.ForeignKey(CognateClass)
@@ -899,7 +912,7 @@ class Lexeme(AbstractTimestamped):
 
     @property
     def loan_event(self):
-        return self.checkLoanEvent()  # FIXME remove this?
+        return self.checkLoanEvent()
 
     @property
     def language_asciiname(self):
@@ -915,10 +928,10 @@ class Lexeme(AbstractTimestamped):
 
     @property
     def cognate_class_links(self):
-        return self.get_cognate_class_links()  # FIXME remove?
+        return self.get_cognate_class_links()
 
     @property
-    def allCognateClasses(self):  # FIXME MAGICAL MYSTERY?
+    def allCognateClasses(self):
         return self.cognate_class.all()
 
 
