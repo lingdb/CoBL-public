@@ -579,41 +579,41 @@ def view_language_wordlist(request, language, wordlist):
                     args=[language.ascii_name, wordlist.name]))
 
     if (request.method == 'POST') and ('lex_form' in request.POST):
+        try:
+            lexemesTableForm = LexemeTableLanguageWordlistForm(request.POST)
+            lexemesTableForm.validate()
 
-        lexemesTableForm = AddLexemesTableForm(request.POST)
-
-        for entry in lexemesTableForm.lexemes:
-
-            data = entry.data
-
-            try:
-
-                lexm = Lexeme.objects.get(id=int(data['id']))
-
-                # Saving CognateClass data:
-                with transaction.atomic():
-                    try:
-                        lexm.setCognateClassData(**data)
-                    except Exception, e:
-                        print('Exception while saving CognateClassData, ', e)
-
-                if not lexm.is_unchanged(**data):
-                    with transaction.atomic():
-                        try:
-                            lexm.setDelta(**data)
-                            lexm.save()
-                        except Exception, e:
-                            print('Exception while saving POST: ', e)
-
-            except Exception, e:
-                print('Exception while accessing Lexeme object: ',
-                      e, '; POST items are: ', data)
+            for entry in lexemesTableForm.lexemes:
+                data = entry.data
+                # Updating the cognate classes:
+                try:
+                    for cData in data['allCognateClasses']:
+                        cc = CognateClass.objects.get(id=cData['idField'])
+                        if cc.isChanged(**cData):
+                            problem = cc.setDelta(request, **cData)
+                            if problem is None:
+                                cc.save()
+                            else:
+                                messages.error(
+                                    request, cc.deltaReport(**problem))
+                except Exception, e:
+                    print('Exception for updating CognateClass:', e)
+                # Updating the lexeme:
+                try:
+                    lex = Lexeme.objects.get(id=data['id'])
+                    if lex.isChanged(**data):
+                        problem = lex.setDelta(request, **data)
+                        if problem is None:
+                            lex.save()
+                        else:
+                            messages.error(request, lex.deltaReport(**problem))
+                except Exception, e:
+                    print('Exception for updating Lexeme:', e)
+        except Exception, e:
+            print('Problem updating lexemes:', e)
 
         return HttpResponseRedirect(reverse("view-language-wordlist",
                                     args=[language.ascii_name, wordlist.name]))
-
-    else:
-        pass  # TODO
 
     # collect data
     lexemes = Lexeme.objects.filter(
@@ -645,7 +645,7 @@ def view_language_wordlist(request, language, wordlist):
     lexemes = sorted(
         lexemes, key=lambda l: meaningOrderMap.get(l.meaning.id, 0))
 
-    lexemes_editabletable_form = AddLexemesTableForm()
+    lexemes_editabletable_form = LexemeTableLanguageWordlistForm()
     for lex in lexemes:
         lex.rfcWebPath1 = language.rfcWebPath1
         lex.rfcWebPath2 = language.rfcWebPath2

@@ -359,7 +359,11 @@
               <tr class="content_row"
                   data-lexemeid="{{ lexeme.data.meaning_id }}">
                 {# id_data.html #}
-                <td class="hide">{{ lexeme.id }}</td>
+                <td class="hide">
+                  {{ lexeme.id }}
+                  {{ lexeme.lastTouched }}
+                  {{ lexeme.lastEditedBy }}
+                </td>
                 {# meaning_data.html #}
                 <td>
                   <a href="https://github.com/lingdb/IELex2-CognaC/wiki/{{ lexeme.data.meaning }}"
@@ -432,11 +436,21 @@
                 </td>
                 {# isexcluded_lexeme_data.html #}
                 <td class="lexemeIsExcludedLexeme">
-                  {% form_field lexeme.is_excluded_lexeme disabled="disabled" class="form-control" %}
+                  <input type="checkbox"
+                    {% if lexeme.object_data.is_excluded_lexeme %}
+                      checked="checked"
+                    {% endif %}
+                    class="form-control"
+                    disabled="disabled">
                 </td>
                 {# isloan_lexeme_data.html #}
                 <td class="lexemeIsLoanLexeme">
-                  {% form_field lexeme.is_loan_lexeme disabled="disabled" class="form-control" %}
+                  <input type="checkbox"
+                    {% if lexeme.object_data.is_loan_lexeme %}
+                      checked="checked"
+                    {% endif %}
+                    class="form-control"
+                    disabled="disabled">
                 </td>
                 {# ncog_data.html #}
                 <td class="lexemeNumCogCoded">
@@ -448,37 +462,52 @@
                 </td>
                 {# rootform_data.html #}
                 <td class="lexemeRootForm">
-                  {% if lexeme.data.rootFormCompare %}
+                  {% if lexeme.allCognateClasses|length == 1 %}
                     {% if user.is_authenticated %}
-                      {% form_field lexeme.root_form class="form-control mirrorTextInput" data-compare=lexeme.data.rootFormCompare %}
+                      {% form_field lexeme.allCognateClasses.0.root_form class="form-control mirrorTextInput" data-compare=lexeme.allCognateClasses.0.object_data.root_form_compare %}
                     {% else %}
-                      {{ lexeme.root_form.data }}
+                      {{ lexeme.allCognateClasses.0.root_form.data }}
                     {% endif %}
                   {% endif %}
                 </td>
                 {# rootlanguage_data.html #}
                 <td class="lexemeRootLanguage">
-                  {% if lexeme.data.rootLanguageCompare %}
+                  {% if lexeme.allCognateClasses|length == 1 %}
                     {% if user.is_authenticated %}
-                      {% form_field lexeme.root_language class="form-control mirrorTextInput" data-compare=lexeme.data.rootLanguageCompare %}
+                      {% form_field lexeme.allCognateClasses.0.root_language class="form-control mirrorTextInput" data-compare=lexeme.allCognateClasses.0.object_data.root_language_compare %}
                     {% else %}
-                      {{ lexeme.root_language.data }}
+                      {{ lexeme.allCognateClasses.0.root_language.data }}
                     {% endif %}
                   {% endif %}
                 </td>
                 {# loanevent_data.html #}
                 <td class="lexemeLoanEvent">
                   {% if lexeme.object_data.show_loan_event %}
-                    {% form_field lexeme.loan_event disabled="disabled" class="form-control" %}
+                    <input type="checkbox"
+                      {% if lexeme.object_data.loan_event %}
+                        checked="checked"
+                      {% endif %}
+                      class="form-control"
+                      disabled="disabled">
                   {% endif %}
                 </td>
                 {# isloan_cognate_data.html #}
                 <td class="lexemeIsLoanCognate">
-                  {% form_field lexeme.is_loan_cognate disabled="disabled" class="form-control" %}
+                  <input type="checkbox"
+                    {% if lexeme.object_data.is_loan_cognate %}
+                      checked="checked"
+                    {% endif %}
+                    class="form-control"
+                    disabled="disabled">
                 </td>
                 {# isexcluded_cognate_data.html #}
                 <td class="lexemeIsExcludedCognate">
-                  {% form_field lexeme.is_excluded_cognate disabled="disabled" class="form-control" %}
+                  <input type="checkbox"
+                    {% if lexeme.object_data.is_excluded_cognate %}
+                      checked="checked"
+                    {% endif %}
+                    class="form-control"
+                    disabled="disabled">
                 </td>
                 {# phonemic_data.html #}
                 <td class="lexemePhoneMic">
@@ -577,6 +606,11 @@
                   {% endif %}
                 </td>
               </tr>
+              {% if lexeme.allCognateClasses|length == 1 %}
+                {% form_field lexeme.allCognateClasses.0.idField class="hide" %}
+                {% form_field lexeme.allCognateClasses.0.lastTouched class="hide" %}
+                {% form_field lexeme.allCognateClasses.0.lastEditedBy class="hide" %}
+              {% endif %}
             {% endfor %}
           </tbody>
         </table>

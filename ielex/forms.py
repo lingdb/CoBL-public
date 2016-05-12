@@ -450,7 +450,7 @@ class LexemeTableViewMeaningsForm(WTForm):
     lexemes = FieldList(FormField(LexemeRowViewMeaningsForm))
 
 
-class LexemeRowForm(WTForm):
+class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
     id = IntegerField('Lexeme Id', validators=[DataRequired()])
     language_id = StringField('Language Id', validators=[DataRequired()])
     language = StringField('Language', validators=[DataRequired()])
@@ -481,29 +481,9 @@ class LexemeRowForm(WTForm):
     # Providing access to related CognateClasses:
     allCognateClasses = FieldList(FormField(CogClassLexemeRelated))
 
-    # Exclusion booleans:
-    is_excluded_lexeme = BooleanField(
-        'Is Excluded via LexemeCitation', validators=[DataRequired()])
-    is_loan_lexeme = BooleanField(
-        'Is Loan via LexemeCitation', validators=[DataRequired()])
-    is_excluded_cognate = BooleanField(
-        'Is Excluded via CognateJudgement', validators=[DataRequired()])
-    is_loan_cognate = BooleanField(
-        'Is Loan via CognateJudgement', validators=[DataRequired()])
 
-    # LoanEvent for #29:
-    loan_event = BooleanField('Loan Event', validators=[DataRequired()])
-
-    def __init__(self, *args, **kwargs):
-        super(LexemeRowForm, self).__init__(*args, **kwargs)
-        read_only(self.meaning_id)
-        read_only(self.meaning)
-        read_only(self.language_utf8name)
-
-
-class AddLexemesTableForm(WTForm):
-    # Default of at least 5 blank fields
-    lexemes = FieldList(FormField(LexemeRowForm))
+class LexemeTableLanguageWordlistForm(WTForm):
+    lexemes = FieldList(FormField(LexemeRowLanguageWordlistForm))
 
 
 class LexemeTableFilterForm(forms.ModelForm):
