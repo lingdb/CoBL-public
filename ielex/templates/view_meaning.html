@@ -345,6 +345,8 @@
                 <td class="hide">
                   {% if user.is_authenticated %}
                     {{ lexeme.id }}
+                    {{ lexeme.lastTouched }}
+                    {{ lexeme.lastEditedBy }}
                   {% endif %}
                 </td>
                 {# branchcolor_data.html #}
