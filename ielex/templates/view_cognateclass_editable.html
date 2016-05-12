@@ -322,7 +322,7 @@
                 {# alias_data.html #}
                 <td class="cogClassAlias" style="padding-left: 1em;">
                   {% form_field cc.alias class="hide" %}
-                  <a href="{{cc.object_data.absolute_url}}">
+                  <a href="{{cc.object_data.get_absolute_url}}">
                     {{ cc.alias.data }}
                   </a>
                 </td>

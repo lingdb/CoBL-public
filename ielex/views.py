@@ -1141,18 +1141,6 @@ def view_cognateclasses(request, meaning):
             messages.error(request, 'Sorry, the server had problems '
                            'updating at least one entry.')
 
-    def fill_cogclass_table_from_DB(cc_ordered):
-
-        cogclass_table_form = AddCogClassTableForm()
-
-        for cc in cc_ordered:
-
-            cc.idField = cc.id
-            cc.absolute_url = cc.get_absolute_url()
-
-            cogclass_table_form.cogclass.append_entry(cc)
-        return cogclass_table_form
-
     ccl_ordered = []
 
     cogclass_bymeaning = CognateClass.objects.filter(
@@ -1174,7 +1162,9 @@ def view_cognateclasses(request, meaning):
             cc = CognateClass.objects.filter(pk=cogclass.pk).distinct()
             ccl_ordered.extend(list(cc))
 
-    cogclass_editabletable_form = fill_cogclass_table_from_DB(ccl_ordered)
+    cogclass_editabletable_form = AddCogClassTableForm()
+    for cc in ccl_ordered:
+        cogclass_editabletable_form.cogclass.append_entry(cc)
 
     meaning = Meaning.objects.get(gloss=meaning)
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
