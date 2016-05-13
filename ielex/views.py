@@ -849,13 +849,9 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
                                    'at least one entry.')
 
     mltf = MeaningListTableForm()
-    meanings = wordlist.meanings.order_by("meaninglistorder").all()
+    meanings = wordlist.meanings.order_by(
+        "meaninglistorder").prefetch_related('lexeme_set').all()
     for meaning in meanings:
-        meaning.meaningId = meaning.id
-        meaning.lex_count = Lexeme.objects.filter(meaning=meaning).count()
-        meaning.cog_count = CognateJudgement.objects.filter(
-            lexeme__meaning__id=meaning.id).distinct(
-            "cognate_class_id").count()
         mltf.meanings.append_entry(meaning)
 
     return render_template(request, "wordlist.html",

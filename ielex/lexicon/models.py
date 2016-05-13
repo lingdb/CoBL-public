@@ -609,6 +609,20 @@ class Meaning(AbstractTimestamped):
             'It was last touched by "%s" %s.' % \
             (self.gloss, kwargs, self.lastEditedBy, self.lastTouched)
 
+    @property
+    def meaningId(self):
+        return self.id
+
+    @property
+    def lex_count(self):
+        return len(self.lexeme_set.all())
+
+    @property
+    def cog_count(self):
+        return CognateJudgement.objects.filter(
+            lexeme__meaning__id=self.id).distinct(
+            "cognate_class_id").count()
+
 
 @reversion.register
 @python_2_unicode_compatible

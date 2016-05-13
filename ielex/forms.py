@@ -505,11 +505,6 @@ class MeaningListRowForm(AbstractTimestampedForm):
     gloss = StringField('Gloss', validators=[DataRequired()])
     description = StringField('Description', validators=[DataRequired()])
     notes = TextAreaField('Notes', validators=[DataRequired()])
-    percent_coded = DecimalField('Percentage coded',
-                                 validators=[DataRequired()])
-    lex_count = IntegerField('Lexeme Count', validators=[DataRequired()])
-    cog_count = IntegerField('Cognate Class Count',
-                             validators=[DataRequired()])
 
 
 class MeaningListTableForm(WTForm):
