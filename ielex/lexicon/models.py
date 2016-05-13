@@ -716,6 +716,45 @@ class CognateClass(AbstractTimestamped):
         # Relaying to parent:
         return super(CognateClass, self).save(*args, **kwargs)
 
+    _computeCounts = {}  # Memo for computeCounts
+
+    def computeCounts(self, languageList=None):
+        '''
+        computeCounts calculates the lexeme* properties.
+        It uses self._computeCounts for memoization.
+        '''
+        if len(self._computeCounts) == 0:
+            # Use languageList to build lSet to filter lexemes:
+            lSet = None
+            if languageList is not None:
+                lSet = set(llo.language_id for llo in
+                           languageList.languagelistorder_set.all())
+                print('DEBUG', lSet)
+            # Gather counts:
+            lexemeCount = 0
+            lexemeLoanCount = 0
+            for l in self.lexeme_set.all():
+                # If we have lSet we use it to skip unwanted:
+                if lSet is not None:
+                    if l.language_id not in lSet:
+                        continue
+                # Major beef:
+                lexemeCount += 1
+                for j in self.cognatejudgement_set.all():
+                    if j.lexeme_id == l.id:
+                        if 'L' in j.reliability_ratings:
+                            lexemeLoanCount += 1
+                        break
+            # Computing percentage
+            lexemeLoanPercentage = lexemeLoanCount / lexemeCount \
+                if lexemeCount > 0 else float('nan')
+            # Filling memo with data:
+            self._computeCounts = {
+                'lexemeCount': lexemeCount,
+                'lexemeLoanCount': lexemeLoanCount,
+                'lexemeLoanPercentage': lexemeLoanPercentage}
+        return self._computeCounts
+
     @property
     def root_form_compare(self):
         return 'root_form'+str(self.id)
@@ -730,16 +769,15 @@ class CognateClass(AbstractTimestamped):
 
     @property
     def lexemeCount(self):
-        return len(self.cognatejudgement_set.all())
+        return self.computeCounts()['lexemeCount']
 
     @property
     def lexemeLoanCount(self):
-        return len([j for j in self.cognatejudgement_set.all()
-                    if 'L' in j.reliability_ratings])
+        return self.computeCounts()['lexemeLoanCount']
 
     @property
     def lexemeLoanPercentage(self):
-        return self.lexemeLoanCount / self.lexemeCount
+        return '%.2f' % self.computeCounts()['lexemeLoanPercentage']
 
 
 class DyenCognateSet(models.Model):

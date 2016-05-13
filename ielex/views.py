@@ -1162,8 +1162,11 @@ def view_cognateclasses(request, meaning):
             cc = CognateClass.objects.filter(pk=cogclass.pk).distinct()
             ccl_ordered.extend(list(cc))
 
+    languageList = LanguageList.objects.get(
+        name=getDefaultLanguagelist(request))
     cogclass_editabletable_form = AddCogClassTableForm()
     for cc in ccl_ordered:
+        cc.computeCounts(languageList)
         cogclass_editabletable_form.cogclass.append_entry(cc)
 
     meaning = Meaning.objects.get(gloss=meaning)
