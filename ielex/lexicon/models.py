@@ -623,6 +623,14 @@ class Meaning(AbstractTimestamped):
             lexeme__meaning__id=self.id).distinct(
             "cognate_class_id").count()
 
+    @property
+    def cogRootFormCount(self):
+        pass  # FIXME IMPLEMENT
+
+    @property
+    def cogRootLanguageCount(self):
+        pass  # FIXME IMPLEMENT
+
 
 @reversion.register
 @python_2_unicode_compatible
@@ -915,7 +923,8 @@ class Lexeme(AbstractTimestamped):
         display exclusion correctly we build a map
         from CognateClass.id to CognateJudgement named cJMap.
         """
-        cJMap = {cj.cognate_class_id: cj for cj in self.cognatejudgement_set}
+        cJMap = {cj.cognate_class_id: cj for cj
+                 in self.cognatejudgement_set.all()}
         data = []
         for cc in self.cognate_class.all():
             data.append(cc.id)
