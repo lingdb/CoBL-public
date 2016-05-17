@@ -845,10 +845,13 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
                     messages.error(request, 'The server had problems saving '
                                    'at least one entry.')
 
+    languageList = LanguageList.objects.get(
+        name=getDefaultLanguagelist(request))
     mltf = MeaningListTableForm()
     meanings = wordlist.meanings.order_by(
         "meaninglistorder").prefetch_related('lexeme_set').all()
     for meaning in meanings:
+        meaning.computeCounts(languageList=languageList)
         mltf.meanings.append_entry(meaning)
 
     return render_template(request, "wordlist.html",
@@ -1159,7 +1162,7 @@ def view_cognateclasses(request, meaning):
         name=getDefaultLanguagelist(request))
     cogclass_editabletable_form = AddCogClassTableForm()
     for cc in ccl_ordered:
-        cc.computeCounts(languageList)
+        cc.computeCounts(languageList=languageList)
         cogclass_editabletable_form.cogclass.append_entry(cc)
 
     meaning = Meaning.objects.get(gloss=meaning)
@@ -1708,7 +1711,8 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                             '[%s](/cognate/%s/) containing the judgements %s.'
                             % (cc.id, cc.id, idTMap.keys()))
                     except Exception, e:
-                        print('Problem creating a new cognate class on split:', e)
+                        print('Problem creating a new '
+                              'cognate class on split:', e)
                         messages.error(request, 'Sorry the server could not '
                                        'create a new cognate class.')
             except Exception, e:

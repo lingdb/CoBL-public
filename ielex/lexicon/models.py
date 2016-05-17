@@ -609,6 +609,49 @@ class Meaning(AbstractTimestamped):
             'It was last touched by "%s" %s.' % \
             (self.gloss, kwargs, self.lastEditedBy, self.lastTouched)
 
+    _computeCounts = {}  # Memo for computeCounts
+
+    def computeCounts(self, languageList=None):
+        '''
+        computeCounts calculates some of the properties of this model.
+        It uses self._computeCounts for memoization.
+        '''
+        if len(self._computeCounts) == 0:
+            # Making sure we have a languageList:
+            if languageList is None:
+                languageList = LanguageList.objects.get(name='all')
+            # Cognate classes to iterate:
+            lIds = languageList.languagelistorder_set.values_list(
+                "language_id", flat=True)
+            ccs = CognateClass.objects.filter(
+                lexeme__meaning_id=self.id,
+                lexeme__language_id__in=lIds).order_by(
+                'id').distinct('id').all()
+            # Setup to count stuff:
+            cog_count = len(ccs)
+            cogRootFormCount = 0
+            cogRootLanguageCount = 0
+            # Iterating ccs to calculate counts:
+            for cc in ccs:
+                if cc.root_form != '':
+                    cogRootFormCount += 1
+                if cc.root_language != '':
+                    cogRootLanguageCount += 1
+                print('DEBUG', cc.id, cc.root_form, cc.root_language)
+            # Computing percentages:
+            cogRootFormPercentage = cogRootFormCount / cog_count \
+                if cog_count > 0 else float('nan')
+            cogRootLanguagePercentage = cogRootLanguageCount / cog_count \
+                if cog_count > 0 else float('nan')
+            # Filling memo with data:
+            self._computeCounts = {
+                'cog_count': cog_count,
+                'cogRootFormCount': cogRootFormCount,
+                'cogRootFormPercentage': cogRootFormPercentage,
+                'cogRootLanguageCount': cogRootLanguageCount,
+                'cogRootLanguagePercentage': cogRootLanguagePercentage}
+        return self._computeCounts
+
     @property
     def meaningId(self):
         return self.id
@@ -619,17 +662,23 @@ class Meaning(AbstractTimestamped):
 
     @property
     def cog_count(self):
-        return CognateJudgement.objects.filter(
-            lexeme__meaning__id=self.id).distinct(
-            "cognate_class_id").count()
+        return self.computeCounts()['cog_count']
 
     @property
     def cogRootFormCount(self):
-        pass  # FIXME IMPLEMENT
+        return self.computeCounts()['cogRootFormCount']
+
+    @property
+    def cogRootFormPercentage(self):
+        return '%.2f' % self.computeCounts()['cogRootFormPercentage']
 
     @property
     def cogRootLanguageCount(self):
-        pass  # FIXME IMPLEMENT
+        return self.computeCounts()['cogRootLanguageCount']
+
+    @property
+    def cogRootLanguagePercentage(self):
+        return '%.2f' % self.computeCounts()['cogRootLanguagePercentage']
 
 
 @reversion.register
@@ -751,7 +800,6 @@ class CognateClass(AbstractTimestamped):
             if languageList is not None:
                 lSet = set(llo.language_id for llo in
                            languageList.languagelistorder_set.all())
-                print('DEBUG', lSet)
             # Gather counts:
             lexemeCount = 0
             lexemeLoanCount = 0
