@@ -102,9 +102,6 @@ def revert_version(request, revision_id):
 def view_object_history(request, version_id):
     version = Version.objects.get(pk=version_id)
     obj = version.content_type.get_object_for_this_type(id=version.object_id)
-    # versions = Version.objects.get_for_object(
-    #         latest.content_type.get_object_for_this_type(
-    #         id=latest.object_id)).filter(id__lt=version_id).reverse()
     fields = [field.name for field in obj._meta.fields]
     versions = [[v.field_dict[f] for f in fields]+[v.id] for v in
                 Version.objects.get_for_object(obj).order_by(
