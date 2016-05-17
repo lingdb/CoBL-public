@@ -19,9 +19,21 @@
 {% endblock %}
 
 {% block content %}
+  {% include "snippets/deleteCognateClassModal.html" %}
   <div class="row">
     <div class="pull-right">
       {% if user.is_authenticated %}
+        <div class="inline"
+             data-toggle="tooltip"
+             data-placement="bottom"
+             title="Delete Cognate Class">
+          <button type="button"
+                  data-toggle="modal"
+                  data-target="#deleteCognateClassModal"
+                  class="btn btn-default">
+            <span class="glyphicon glyphicon-minus"></span>
+          </button>
+        </div>
         <a class="btn btn-default"
            href="{% url 'cognate-class-citation-create' cognate_class.id %}">
           add citation

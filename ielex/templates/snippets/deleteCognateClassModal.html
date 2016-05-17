@@ -1,0 +1,30 @@
+<div class="modal fade"
+     id="deleteCognateClassModal"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="Delete Cognate Class">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Delete Cognate Class</h4>
+      </div>
+      <div class="modal-body">
+        Are you sure that you want to delete this cognate class?
+        <form class="form-horizontal"
+              action="" method="POST"
+              name="deleteCognateClass">
+          {% csrf_token %}
+          <button type="submit" name="deleteCognateClass"
+                  class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

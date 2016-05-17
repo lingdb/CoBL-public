@@ -1673,51 +1673,63 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                                         args=[meaning]))
 
     # Handling of CognateJudgementSplitTable:
-    if request.method == 'POST' and \
-       'cognateJudgementSplitTable' in request.POST:
-        form = CognateJudgementSplitTable(request.POST)
-        try:
-            form.validate()
-            # Gathering data to operate on:
-            idTMap = {j.data['idField']: j.data['lastTouched']
-                      for j in form.judgements
-                      if j.data['splitOff']}
-            idCjMap = {cj.id: cj for cj in
-                       CognateJudgement.objects.filter(
-                           id__in=idTMap.keys()).all()}
-            # Bumping judgements:
-            bumped = True
+    if request.method == 'POST':
+        if 'cognateJudgementSplitTable' in request.POST:
+            form = CognateJudgementSplitTable(request.POST)
             try:
-                for id, t in idTMap.iteritems():
-                    idCjMap[id].bump(request, t)
-            except Exception, e:
-                print('Problem splitting cognate judgements:', e)
-                messages.error(request, 'The server refused to split '
-                               'the cognate judgements, because someone '
-                               'changed one of them before your request.')
-                bumped = False
-            # Create new CognateClass on successful bump:
-            if bumped:
-                cc = CognateClass()
+                form.validate()
+                # Gathering data to operate on:
+                idTMap = {j.data['idField']: j.data['lastTouched']
+                          for j in form.judgements
+                          if j.data['splitOff']}
+                idCjMap = {cj.id: cj for cj in
+                           CognateJudgement.objects.filter(
+                               id__in=idTMap.keys()).all()}
+                # Bumping judgements:
+                bumped = True
                 try:
-                    cc.save()
-                    for _, cj in idCjMap.iteritems():
-                        cj.cognate_class = cc
-                        cj.save()
-                    cc.update_alias()
-                    messages.success(
-                        request,
-                        'Created new Cognate Class at '
-                        '[%s](/cognate/%s/) containing the judgements %s.'
-                        % (cc.id, cc.id, idTMap.keys()))
+                    for id, t in idTMap.iteritems():
+                        idCjMap[id].bump(request, t)
                 except Exception, e:
-                    print('Problem creating a new cognate class on split:', e)
-                    messages.error(request, 'Sorry the server could not '
-                                   'create a new cognate class.')
-        except Exception, e:
-            print('Problem when splitting cognate classes:', e)
-            messages.error(request, 'Sorry, the server had trouble '
-                           'understanding the request.')
+                    print('Problem splitting cognate judgements:', e)
+                    messages.error(request, 'The server refused to split '
+                                   'the cognate judgements, because someone '
+                                   'changed one of them before your request.')
+                    bumped = False
+                # Create new CognateClass on successful bump:
+                if bumped:
+                    cc = CognateClass()
+                    try:
+                        cc.save()
+                        for _, cj in idCjMap.iteritems():
+                            cj.cognate_class = cc
+                            cj.save()
+                        cc.update_alias()
+                        messages.success(
+                            request,
+                            'Created new Cognate Class at '
+                            '[%s](/cognate/%s/) containing the judgements %s.'
+                            % (cc.id, cc.id, idTMap.keys()))
+                    except Exception, e:
+                        print('Problem creating a new cognate class on split:', e)
+                        messages.error(request, 'Sorry the server could not '
+                                       'create a new cognate class.')
+            except Exception, e:
+                print('Problem when splitting cognate classes:', e)
+                messages.error(request, 'Sorry, the server had trouble '
+                               'understanding the request.')
+        elif 'deleteCognateClass' in request.POST:
+            try:
+                cognate_class.delete()
+                print('Deleted cognate class %s.' % cognate_class.id)
+                messages.success(request, 'Deleted cognate class %s.'
+                                 % cognate_class.id)
+                return HttpResponseRedirect('/cognateclasslist/')
+            except Exception, e:
+                print('Failed to delete cognate class %s.' % cognate_class.id)
+                messages.error(request, 'Sorry, the server could not delete '
+                               'the requested cognate class %s.'
+                               % cognate_class.id)
 
     if action in ["edit-notes", "edit-name"]:
         if request.method == 'POST':
