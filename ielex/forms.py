@@ -480,6 +480,11 @@ class LexemeTableLanguageWordlistForm(WTForm):
     lexemes = FieldList(FormField(LexemeRowLanguageWordlistForm))
 
 
+class CloneLanguageForm(WTForm):
+    languageName = StringField('', validators=[DataRequired()])
+    emptyLexemes = BooleanField('')
+
+
 class LexemeTableFilterForm(forms.ModelForm):
 
     class Meta:

@@ -575,42 +575,98 @@ def view_language_wordlist(request, language, wordlist):
             reverse("view-language-wordlist",
                     args=[language.ascii_name, wordlist.name]))
 
-    if (request.method == 'POST') and ('lex_form' in request.POST):
-        try:
-            lexemesTableForm = LexemeTableLanguageWordlistForm(request.POST)
-            lexemesTableForm.validate()
+    if request.method == 'POST':
+        # Updating lexeme table data:
+        if 'lex_form' in request.POST:
+            try:
+                lexemesTableForm = LexemeTableLanguageWordlistForm(
+                    request.POST)
+                lexemesTableForm.validate()
 
-            for entry in lexemesTableForm.lexemes:
-                data = entry.data
-                # Updating the cognate classes:
-                try:
-                    for cData in data['allCognateClasses']:
-                        cc = CognateClass.objects.get(id=cData['idField'])
-                        if cc.isChanged(**cData):
-                            problem = cc.setDelta(request, **cData)
+                for entry in lexemesTableForm.lexemes:
+                    data = entry.data
+                    # Updating the cognate classes:
+                    try:
+                        for cData in data['allCognateClasses']:
+                            cc = CognateClass.objects.get(id=cData['idField'])
+                            if cc.isChanged(**cData):
+                                problem = cc.setDelta(request, **cData)
+                                if problem is None:
+                                    cc.save()
+                                else:
+                                    messages.error(
+                                        request, cc.deltaReport(**problem))
+                    except Exception, e:
+                        print('Exception for updating CognateClass:', e)
+                    # Updating the lexeme:
+                    try:
+                        lex = Lexeme.objects.get(id=data['id'])
+                        if lex.isChanged(**data):
+                            problem = lex.setDelta(request, **data)
                             if problem is None:
-                                cc.save()
+                                lex.save()
                             else:
                                 messages.error(
-                                    request, cc.deltaReport(**problem))
-                except Exception, e:
-                    print('Exception for updating CognateClass:', e)
-                # Updating the lexeme:
-                try:
-                    lex = Lexeme.objects.get(id=data['id'])
-                    if lex.isChanged(**data):
-                        problem = lex.setDelta(request, **data)
-                        if problem is None:
-                            lex.save()
-                        else:
-                            messages.error(request, lex.deltaReport(**problem))
-                except Exception, e:
-                    print('Exception for updating Lexeme:', e)
-        except Exception, e:
-            print('Problem updating lexemes:', e)
-
-        return HttpResponseRedirect(reverse("view-language-wordlist",
-                                    args=[language.ascii_name, wordlist.name]))
+                                    request, lex.deltaReport(**problem))
+                    except Exception, e:
+                        print('Exception for updating Lexeme:', e)
+            except Exception, e:
+                print('Problem updating lexemes:', e)
+            return HttpResponseRedirect(
+                reverse("view-language-wordlist",
+                        args=[language.ascii_name, wordlist.name]))
+        # Cloning language and lexemes:
+        elif 'cloneLanguage' in request.POST:
+            form = CloneLanguageForm(request.POST)
+            try:
+                form.validate()
+                with transaction.atomic():
+                    # Creating language clone:
+                    clone = Language(ascii_name=form.data['languageName'],
+                                     utf8_name=form.data['languageName'])
+                    clone.bump(request)
+                    clone.save()
+                    # Adding language to current language list:
+                    languageList = LanguageList.objects.get(
+                        name=getDefaultLanguagelist(request))
+                    languageList.append(clone)
+                    # Lexemes to copy:
+                    sourceLexemes = Lexeme.objects.filter(
+                        language=language,
+                        meaning__in=wordlist.meanings.all()).all(
+                        ).prefetch_related('meaning')
+                    # Copy lexemes to clone language:
+                    newLexemes = []
+                    order = 1  # Increasing values for _order fields of Lexemes
+                    for sLexeme in sourceLexemes:
+                        # Basic data:
+                        data = {'language': clone,
+                                'meaning': sLexeme.meaning,
+                                '_order': order}
+                        order += 1
+                        # Copying lexeme data if specified:
+                        if not form.data['emptyLexemes']:
+                            for f in sLexeme.timestampedFields():
+                                data[f] = getattr(sLexeme, f)
+                        # Setting lastEditedBy:
+                        data['lastEditedBy'] = ' '.join(
+                            [request.user.first_name,
+                             request.user.last_name])
+                        # Appending for creation:
+                        newLexemes.append(Lexeme(**data))
+                    Lexeme.objects.bulk_create(newLexemes)
+                    # Redirect to newly created language:
+                    messages.success(request, 'Language cloned.')
+                    return HttpResponseRedirect(
+                        reverse("view-language-wordlist",
+                                args=[clone.ascii_name, wordlist.name]))
+            except Exception, e:
+                print('Problem cloning Language:', e)
+                messages.error(request, 'Sorry, a problem occured '
+                               'when cloning the language.')
+                return HttpResponseRedirect(
+                    reverse("view-language-wordlist",
+                            args=[language.ascii_name, wordlist.name]))
 
     # collect data
     lexemes = Lexeme.objects.filter(
