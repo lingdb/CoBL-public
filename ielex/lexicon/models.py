@@ -472,7 +472,7 @@ class Language(AbstractTimestamped):
     @property
     def nonLexCount(self):
         return len([l for l in self.lexeme_set.all()
-                    if l.data.get('not_swadesh_term', False)])
+                    if l.not_swadesh_term])
 
     @property
     def lexCount(self):
