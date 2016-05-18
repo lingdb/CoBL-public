@@ -2014,6 +2014,14 @@ def viewAuthors(request):
 
 
 def changeDefaults(request):
+    # Functions to get defaults:
+    getDefaults = {
+        'language': getDefaultLanguage,
+        'meaning': getDefaultMeaning,
+        'wordlist': getDefaultWordlist,
+        'languagelist': getDefaultLanguagelist}
+    # Current defaults:
+    defaults = {k: v(request) for (k, v) in getDefaults.iteritems()}
     # Defaults that can be changed:
     actions = {
         'language': setDefaultLanguage,
@@ -2024,8 +2032,18 @@ def changeDefaults(request):
     for k, v in actions.iteritems():
         if k in request.GET:
             v(request, request.GET[k])
+    # Find changed defaults to substitute in url:
+    substitutes = {}
+    for k, v in getDefaults.iteritems():
+        default = v(request)
+        if defaults[k] != default:
+            substitutes[defaults[k]] = default
     # Url to redirect clients to:
     url = request.GET['url'] if 'url' in request.GET else '/'
+    # Substitute defaults in url:
+    for k, v in substitutes.iteritems():
+        url = url.replace(k, v)
+    # Redirect to target url:
     return redirect(url)
 
 
