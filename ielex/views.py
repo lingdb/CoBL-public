@@ -291,8 +291,10 @@ def view_language_list(request, language_list=None):
         # Handle csv export iff desired:
         return exportLanguageListCsv(request, languages)
 
+    meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
     languages_editabletable_form = AddLanguageListTableForm()
     for lang in languages:
+        lang.computeCounts(meaningList)
         languages_editabletable_form.langlist.append_entry(lang)
 
     otherLanguageLists = LanguageList.objects.exclude(name=current_list).all()

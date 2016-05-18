@@ -460,27 +460,64 @@ class Language(AbstractTimestamped):
                 for c, o in izip(currentClades, xrange(len(currentClades)))]
             LanguageClade.objects.bulk_create(toCreate)
 
+    _computeCounts = {}  # Memo for computeCounts
+
+    def computeCounts(self, meaningList=None):
+        '''
+        computeCounts calculates some of the properties of this model.
+        It uses self._computeCounts for memoization.
+        '''
+        if len(self._computeCounts) == 0:
+            # Making sure we've got a meaningList:
+            if meaningList is None:
+                meaningList = MeaningList.objects.get(name=MeaningList.ALL)
+            # Setting up sets to aid computations:
+            meaningIdSet = getattr(meaningList,
+                                   '_language__computeCounts',
+                                   None)
+            if meaningIdSet is None:
+                meaningIdSet = set([m.id for m in meaningList.meanings.all()])
+                setattr(meaningList, '_language__computeCounts', meaningIdSet)
+            lexemeMeaningIdSet = set([l.meaning_id for l
+                                      in self.lexeme_set.all()])
+            # Computing base counts:
+            meaningCount = len(meaningIdSet & lexemeMeaningIdSet)
+            entryCount = len([l for l in self.lexeme_set.all()
+                              if l.meaning_id in meaningIdSet])
+            nonLexCount = len([l for l in self.lexeme_set.all()
+                              if l.meaning_id in meaningIdSet and
+                              l.not_swadesh_term])
+            # Computing dependant counts:
+            lexCount = entryCount - nonLexCount
+            excessCount = lexCount - meaningCount
+            # Setting counts:
+            self._computeCounts = {
+                'meaningCount': meaningCount,
+                'entryCount': entryCount,
+                'nonLexCount': nonLexCount,
+                'lexCount': lexCount,
+                'excessCount': excessCount}
+        return self._computeCounts
+
     @property
     def meaningCount(self):
-        return len(set(
-            lex.meaning.id for lex in self.lexeme_set.all()))
+        return self.computeCounts()['meaningCount']
 
     @property
     def entryCount(self):
-        return len(self.lexeme_set.all())
+        return self.computeCounts()['entryCount']
 
     @property
     def nonLexCount(self):
-        return len([l for l in self.lexeme_set.all()
-                    if l.not_swadesh_term])
+        return self.computeCounts()['nonLexCount']
 
     @property
     def lexCount(self):
-        return self.entryCount - self.nonLexCount
+        return self.computeCounts()['lexCount']
 
     @property
     def excessCount(self):
-        return self.lexCount - self.meaningCount
+        return self.computeCounts()['excessCount']
 
     @property
     def firstClade(self):
