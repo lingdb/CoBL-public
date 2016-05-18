@@ -1,0 +1,48 @@
+<div class="modal fade"
+     id="cloneLanguageModal"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="Clone a language">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Specify clone:</h4>
+      </div>
+      <div class="modal-body">
+        <form action="" method="POST"
+              name="cloneLanguage">
+          {% csrf_token %}
+          <div class="form-group">
+						<label for="languageName">Name of new language:</label>
+						<input type="text" class="form-control"
+									 id="languageName"
+									 name="languageName"
+									 placeholder="name…"
+									 required="required"
+									 pattern="^[a-zA-Z0-9][a-zA-Z0-9_\-]*$">
+					</div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox"
+                     id="emptyLexemes"
+                     name="emptyLexemes"
+                     value="y">
+              Empty lexemes?
+            </label>
+          </div>
+          <button type="submit" name="cloneLanguage"
+                  class="btn btn-danger">
+            Clone
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

@@ -472,7 +472,7 @@ class Language(AbstractTimestamped):
     @property
     def nonLexCount(self):
         return len([l for l in self.lexeme_set.all()
-                    if l.data.get('not_swadesh_term', False)])
+                    if l.not_swadesh_term])
 
     @property
     def lexCount(self):
@@ -637,7 +637,6 @@ class Meaning(AbstractTimestamped):
                     cogRootFormCount += 1
                 if cc.root_language != '':
                     cogRootLanguageCount += 1
-                print('DEBUG', cc.id, cc.root_form, cc.root_language)
             # Computing percentages:
             cogRootFormPercentage = cogRootFormCount / cog_count \
                 if cog_count > 0 else float('nan')
