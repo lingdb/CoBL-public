@@ -10,8 +10,9 @@ import json
 
 def forwards_func(apps, schema_editor):
     print('Updating clades for all languages..')
-    for l in models.Language.objects.all():
-        l.updateClades()
+    Language = apps.get_model('lexicon', 'Language')
+    for l in Language.objects.all():
+        models.Language.updateClades(l)
 
 
 def reverse_func(apps, schema_editor):

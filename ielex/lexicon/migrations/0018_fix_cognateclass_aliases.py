@@ -7,9 +7,10 @@ import ielex.lexicon.models as models
 
 
 def forwards_func(apps, schema_editor):
-    for c in models.CognateClass.objects.filter(alias=''):
+    CognateClass = apps.get_model('lexicon', 'CognateClass')
+    for c in CognateClass.objects.filter(alias=''):
         print('Fixing alias for CognateClass: ', c.id)
-        c.update_alias()
+        models.CognateClass.update_alias(c)
 
 
 def reverse_func(apps, schema_editor):

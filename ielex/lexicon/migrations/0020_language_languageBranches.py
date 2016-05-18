@@ -7,9 +7,10 @@ import ielex.lexicon.models as models
 
 
 def forwards_func(apps, schema_editor):
-    for l in models.Language.objects.all():
+    Language = apps.get_model('lexicon', 'Language')
+    for l in Language.objects.all():
         print('Updating language: ', l)
-        l.updateLanguageBranch()
+        models.Language.updateClades(l)
 
 
 def reverse_func(apps, schema_editor):

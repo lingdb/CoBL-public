@@ -16,32 +16,38 @@ def forwards_func(apps, schema_editor):
         print('0028_weblinks_data.json loaded.')
         print('Checking %s lexemes..' % len(data['lexemes']))
         for ldata in data['lexemes']:
-            lexeme = Lexeme.objects.get(id=ldata['id'])
-            changed = False
-            for f in ['rfcWebLookup1', 'rfcWebLookup1']:
-                if lexeme.data.get(f, '') == '':
-                    if ldata.get(f, '') != '':
-                        lexeme.data[f] = ldata[f]
-                        changed = True
-            if changed:
-                lexeme.save()
-                print('Changed lexeme: ', lexeme.id)
-            else:
-                print('Ignored lexeme: ', lexeme.id)
+            try:
+                lexeme = Lexeme.objects.get(id=ldata['id'])
+                changed = False
+                for f in ['rfcWebLookup1', 'rfcWebLookup1']:
+                    if lexeme.data.get(f, '') == '':
+                        if ldata.get(f, '') != '':
+                            lexeme.data[f] = ldata[f]
+                            changed = True
+                if changed:
+                    lexeme.save()
+                    print('Changed lexeme: ', lexeme.id)
+                else:
+                    print('Ignored lexeme: ', lexeme.id)
+            except:
+                pass  # Lexeme not found
         print('Checking %s languages..' % len(data['languages']))
         for ldata in data['languages']:
-            language = Language.objects.get(id=ldata['id'])
-            changed = False
-            for f in ['rfcWebPath1', 'rfcWebPath2']:
-                if language.altname.get(f, '') == '':
-                    if ldata.get(f, '') != '':
-                        language.altname[f] = ldata[f]
-                        changed = True
-            if changed:
-                language.save()
-                print('Changed language:', language.id)
-            else:
-                print('Ignored language:', language.id)
+            try:
+                language = Language.objects.get(id=ldata['id'])
+                changed = False
+                for f in ['rfcWebPath1', 'rfcWebPath2']:
+                    if language.altname.get(f, '') == '':
+                        if ldata.get(f, '') != '':
+                            language.altname[f] = ldata[f]
+                            changed = True
+                if changed:
+                    language.save()
+                    print('Changed language:', language.id)
+                else:
+                    print('Ignored language:', language.id)
+            except:
+                pass  # Language not found
 
 
 def reverse_func(apps, schema_editor):

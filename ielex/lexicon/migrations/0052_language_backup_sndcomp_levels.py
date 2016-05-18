@@ -180,7 +180,8 @@ data = {'Proto-Indo-European': [0, 0, 0, 0],
 
 def forwards_func(apps, schema_editor):
     print('Copying language levels level* -> sndCompLevel*')
-    for l in models.Language.objects.all():
+    Language = apps.get_model('lexicon', 'Language')
+    for l in Language.objects.all():
         if l.utf8_name in data:
             levels = data[l.utf8_name]
             l.sndCompLevel0 = levels[0]

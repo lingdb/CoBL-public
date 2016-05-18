@@ -431,12 +431,15 @@ def forwards_func(apps, schema_editor):
         meaningList = MeaningList.objects.get(name=ml['name'])
         n = 1
         for m in ml['meanings']:
-            meaning = Meaning.objects.get(id=m['id'])
-            MeaningListOrder.objects.create(
-                    meaning=meaning,
-                    meaning_list=meaningList,
-                    order=n)
-            n += 1
+            try:
+                meaning = Meaning.objects.get(id=m['id'])
+                MeaningListOrder.objects.create(
+                        meaning=meaning,
+                        meaning_list=meaningList,
+                        order=n)
+                n += 1
+            except:
+                pass  # Meaning not found
 
 
 def reverse_func(apps, schema_editor):
