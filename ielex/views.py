@@ -1805,8 +1805,8 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
     else:
         form = None
 
-    # This is a clunky way of sorting; currently assumes LanguageList 'DEFAULT'
-    language_list = LanguageList.objects.get(name=LanguageList.DEFAULT)
+    language_list = LanguageList.objects.get(
+        name=getDefaultLanguagelist(request))
     splitTable = CognateJudgementSplitTable()
     # for language_id in language_list.language_id_list:
     ordLangs = language_list.languages.all().order_by("languagelistorder")
