@@ -212,7 +212,7 @@ meanings = [{'id': 208, 'name': 'ant'},
 
 
 def forwards_func(apps, schema_editor):
-    MeaningList = models.MeaningList
+    MeaningList = apps.get_model('lexicon', 'MeaningList')
 
     # Removing -alpha list:
     remove = 'Jena200-alpha'
@@ -231,7 +231,7 @@ def forwards_func(apps, schema_editor):
         for m in ml.meanings.all():
             if m.id not in wanted:
                 print("Removing Meaning from List: ", m.gloss)
-                ml.remove(m)
+                mmodels.MeaningList.remove(ml, m)
     except Exception, e:
         print("Exception while cleaning up ", MeaningList.DEFAULT, e)
 
