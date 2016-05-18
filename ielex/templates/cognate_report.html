@@ -201,6 +201,26 @@
                   <span class="glyphicon glyphicon-edit"></span>
                 </a>
               {% endif %}
+              {% if user.is_authenticated %}
+                <form action="" method="POST" name="deleteCitation" class="inline">
+                  {% csrf_token %}
+                  <input type="text"
+                         class="hide"
+                         name="citationId"
+                         value="{{ citation.id }}">
+                  <div class="inline"
+                       data-toggle="tooltip"
+                       data-placement="bottom"
+                       title="Delete this citation">
+                    <button type="submit"
+                            name="deleteCitation"
+                            class="btn btn-xs btn-danger">
+                      <span class="glyphicon glyphicon-plus"></span>
+                      <!-- FIXME ADD CONFIRM DIALOG! -->
+                    </button>
+                  </div>
+                </form>
+              {% endif %}
             </div>
             <div class="panel-body">
               {{ citation.comment|wikilink }}

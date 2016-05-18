@@ -1780,15 +1780,23 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
         elif 'deleteCognateClass' in request.POST:
             try:
                 cognate_class.delete()
-                print('Deleted cognate class %s.' % cognate_class.id)
-                messages.success(request, 'Deleted cognate class %s.'
-                                 % cognate_class.id)
+                messages.success(request, 'Deleted cognate class.')
                 return HttpResponseRedirect('/cognateclasslist/')
             except Exception, e:
                 print('Failed to delete cognate class %s.' % cognate_class.id)
                 messages.error(request, 'Sorry, the server could not delete '
                                'the requested cognate class %s.'
                                % cognate_class.id)
+        elif 'deleteCitation' in request.POST:
+            try:
+                citation = CognateClassCitation.objects.get(
+                    id=int(request.POST['citationId']))
+                citation.delete()
+                messages.success(request, 'Deleted citation.')
+            except Exception, e:
+                print('Failed to delete citation.', e)
+                messages.error(request, 'Sorry, the server could not delete '
+                               'the citation.')
 
     if action in ["edit-notes", "edit-name"]:
         if request.method == 'POST':
