@@ -29,6 +29,9 @@
         <form action="" method="POST" name="langlist_ed_form">
           {% csrf_token %}
           <div class="form-group pull-right">
+            <span class="badge important">
+              {{ lang_ed_form.langlist|length }}
+            </span>
             <a href="{% url 'view-language-list' current_list.name %}" class="btn btn-default"> undo</a>
             <input type="submit" value="Save" name="langlist_form" class="btn btn-danger">
           </div>
