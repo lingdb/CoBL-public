@@ -252,7 +252,6 @@ class LanguageListRowForm(AbstractTimestampedForm):
                               validators=[DataRequired()])
     author = StringField('Author', validators=[DataRequired()])
     reviewer = StringField('Reviewer', validators=[DataRequired()])
-    beastName = StringField('Beast name', validators=[DataRequired()])
     earliestTimeDepthBound = IntegerField('Earliest Time-Depth Bound',
                                           validators=[DataRequired()])
     latestTimeDepthBound = IntegerField('Latest Time-Depth Bound',
