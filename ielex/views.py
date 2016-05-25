@@ -263,7 +263,7 @@ def view_language_list(request, language_list=None):
             data = entry.data
             try:
 
-                lang = Language.objects.get(ascii_name=data['ascii_name'])
+                lang = Language.objects.get(id=data['idField'])
 
                 if lang.isChanged(**data):
                     try:
@@ -294,6 +294,7 @@ def view_language_list(request, language_list=None):
     meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
     languages_editabletable_form = AddLanguageListTableForm()
     for lang in languages:
+        lang.idField = lang.id
         lang.computeCounts(meaningList)
         languages_editabletable_form.langlist.append_entry(lang)
 

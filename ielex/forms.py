@@ -225,6 +225,7 @@ class AbstractTimestampedForm(WTForm):
 
 
 class LanguageListRowForm(AbstractTimestampedForm):
+    idField = IntegerField('Language id', validators=[DataRequired()])
     iso_code = StringField('Language ISO Code', validators=[DataRequired()])
     utf8_name = StringField('Language Utf8 Name', validators=[DataRequired()])
     ascii_name = StringField('Language ASCII Name',
