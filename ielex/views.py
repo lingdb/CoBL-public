@@ -304,7 +304,8 @@ def view_language_list(request, language_list=None):
                            {"languages": languages,
                             'lang_ed_form': languages_editabletable_form,
                             "current_list": current_list,
-                            "otherLanguageLists": otherLanguageLists})
+                            "otherLanguageLists": otherLanguageLists,
+                            "wordlist": getDefaultWordlist(request)})
 
 
 @csrf_protect

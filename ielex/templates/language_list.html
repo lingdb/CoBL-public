@@ -603,7 +603,7 @@
                 </td>
                 {# name_link.html #}
                 <td>
-                  <a href="{% url 'language-report' language.ascii_name.data %}"
+                  <a href="{% url 'view-language-wordlist' language.ascii_name.data wordlist %}"
                      alt="view lexeme list"
                      title="View wordlist list for {{ language.utf8_name.data }}">
                     <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
