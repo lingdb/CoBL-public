@@ -341,7 +341,6 @@ class Language(AbstractTimestamped):
     utf8_name = models.CharField(max_length=128, unique=True)
     description = models.TextField(blank=True, null=True)
     clades = models.ManyToManyField(Clade, through="LanguageClade", blank=True)
-    beastName = models.CharField(max_length=128, blank=True)  # #130
     earliestTimeDepthBound = models.IntegerField(null=True)  # #128
     latestTimeDepthBound = models.IntegerField(null=True)  # #128
     progress = models.IntegerField(default=0, choices=LANGUAGE_PROGRESS)
@@ -382,28 +381,6 @@ class Language(AbstractTimestamped):
                     'level2',
                     'level3',
                     'sortRankInClade']
-
-    def isChanged(self, **vdict):
-        '''
-        Overwriting AbstractTimestamped.isChanged()
-        to have special handling for 'ascii_name' field.
-        '''
-        # Escaping special fields:
-        if 'ascii_name' in vdict:
-            vdict['utf8_name'] = vdict['ascii_name'].encode('utf8', 'ignore')
-        # Handling via parent implementation:
-        return super(Language, self).isChanged(**vdict)
-
-    def setDelta(self, request=None, **vdict):
-        """
-        Overwriting AbstractTimestamped.setDelta()
-        to have special handling for 'ascii_name' field.
-        """
-        # Escaping special fields:
-        if 'ascii_name' in vdict:
-            vdict['utf8_name'] = vdict['ascii_name'].encode('utf8', 'ignore')
-        # Handling via parent implementation:
-        return super(Language, self).setDelta(request, **vdict)
 
     def getCsvRow(self, *fields):
         '''
@@ -579,8 +556,8 @@ class Language(AbstractTimestamped):
                     'mean_timedepth_BP_years',
                     'std_deviation_timedepth_BP_years',
                     'rfcWebPath1', 'rfcWebPath2', 'author', 'reviewer',
-                    'beastName', 'earliestTimeDepthBound',
-                    'latestTimeDepthBound', 'progress', 'sortRankInClade'])
+                    'earliestTimeDepthBound', 'latestTimeDepthBound',
+                    'progress', 'sortRankInClade'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update language: ' \

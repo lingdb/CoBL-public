@@ -139,7 +139,7 @@
     */
     module.sortIntText = sortTableBy(function(selector){
       return function(row){
-        return parseInt(row.find(selector).text().trim(), 10);
+        return parseFloat(row.find(selector).text().trim());
       };
     });
     /**

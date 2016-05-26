@@ -371,9 +371,8 @@ def construct_matrix(languages,
         # excluding lexemes that are marked as not_swadesh_term
         # in their data fields:
         for l in Lexeme.objects.all():
-            if 'not_swadesh_term' in l.data:
-                if l.data['not_swadesh_term']:
-                    exclude_lexemes.add(l.id)
+            if l.not_swadesh_term:
+                exclude_lexemes.add(l.id)
 
         # languages lacking any lexeme for a meaning
         languages_missing_meaning = dict()

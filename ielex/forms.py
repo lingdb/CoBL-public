@@ -225,6 +225,7 @@ class AbstractTimestampedForm(WTForm):
 
 
 class LanguageListRowForm(AbstractTimestampedForm):
+    idField = IntegerField('Language id', validators=[DataRequired()])
     iso_code = StringField('Language ISO Code', validators=[DataRequired()])
     utf8_name = StringField('Language Utf8 Name', validators=[DataRequired()])
     ascii_name = StringField('Language ASCII Name',
@@ -235,10 +236,10 @@ class LanguageListRowForm(AbstractTimestampedForm):
     low_stat = BooleanField('Low Status', validators=[DataRequired()])
     soundcompcode = StringField('Sound Comparisons Code',
                                 validators=[DataRequired()])
-    level0 = IntegerField('Level 0 Branch', validators=[DataRequired()])
-    level1 = IntegerField('Level 1 Branch', validators=[DataRequired()])
-    level2 = IntegerField('Level 2 Branch', validators=[DataRequired()])
-    level3 = IntegerField('Level 3 Branch', validators=[DataRequired()])
+    level0 = IntegerField('Clade level 0', validators=[DataRequired()])
+    level1 = IntegerField('Clade level 1', validators=[DataRequired()])
+    level2 = IntegerField('Clade level 2', validators=[DataRequired()])
+    level3 = IntegerField('Clade level 3', validators=[DataRequired()])
     representative = BooleanField('Representative',
                                   validators=[DataRequired()])
     mean_timedepth_BP_years = IntegerField('Mean of Time Depth BP (years)',
@@ -252,7 +253,6 @@ class LanguageListRowForm(AbstractTimestampedForm):
                               validators=[DataRequired()])
     author = StringField('Author', validators=[DataRequired()])
     reviewer = StringField('Reviewer', validators=[DataRequired()])
-    beastName = StringField('Beast name', validators=[DataRequired()])
     earliestTimeDepthBound = IntegerField('Earliest Time-Depth Bound',
                                           validators=[DataRequired()])
     latestTimeDepthBound = IntegerField('Latest Time-Depth Bound',

@@ -263,7 +263,7 @@ def view_language_list(request, language_list=None):
             data = entry.data
             try:
 
-                lang = Language.objects.get(ascii_name=data['ascii_name'])
+                lang = Language.objects.get(id=data['idField'])
 
                 if lang.isChanged(**data):
                     try:
@@ -294,6 +294,7 @@ def view_language_list(request, language_list=None):
     meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
     languages_editabletable_form = AddLanguageListTableForm()
     for lang in languages:
+        lang.idField = lang.id
         lang.computeCounts(meaningList)
         languages_editabletable_form.langlist.append_entry(lang)
 
@@ -839,14 +840,25 @@ def edit_language(request, language):
                                     args=[language.ascii_name]))
 
     if request.method == 'POST':
-        form = EditLanguageForm(request.POST, instance=language)
-        if "cancel" in form.data:  # has to be tested before data is cleaned
-            return HttpResponseRedirect(reverse("view-all-languages"))
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("view-all-languages"))
-    else:
-        form = EditLanguageForm(instance=language)
+        form = LanguageListRowForm(request.POST)
+        try:
+            form.validate()
+            data = form.data
+            language = Language.objects.get(id=data['idField'])
+            if language.isChanged(**data):
+                problem = language.setDelta(request, **data)
+                if problem is None:
+                    language.save()
+                    return HttpResponseRedirect(reverse("view-all-languages"))
+                else:
+                    messages.error(request, language.deltaReport(**problem))
+        except Exception, e:
+            print('Problem updating single language:', e)
+            messages.error(request, 'Sorry, the server could not update '
+                           'the language.')
+    language.idField = language.id
+    form = LanguageListRowForm(obj=language)
+
     return render_template(request, "language_edit.html",
                            {"language": language,
                             "form": form})

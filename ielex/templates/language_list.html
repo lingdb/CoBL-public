@@ -73,7 +73,9 @@
               {# progress_title.html #}
               <th>Progress</th>
               {# name_title.html #}
-              <th>Name</th>
+              <th>Display name</th>
+              {# name_link.html #}
+              <th></th>
               {# beast_title.html #}
               <th>Beast name</th>
               {# variety_title.html #}
@@ -251,6 +253,8 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </th>
+              {# name_link.html #}
+              <th></th>
               {# beast_filter.html #}
               <th>
                 {% if user.is_authenticated and user.is_staff %}
@@ -600,22 +604,26 @@
                 {# name_data.html #}
                 <td class="languageName">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.ascii_name class="language_name hide" %}
+                    {% form_field language.idField class="hide" %}
                     {% form_field language.lastTouched class="hide" %}
                     {% form_field language.lastEditedBy class="hide" %}
                   {% endif %}
+                  {% form_field language.utf8_name class="language_name form-control" required="required" %}
+                </td>
+                {# name_link.html #}
+                <td>
                   <a href="{% url 'language-report' language.ascii_name.data %}"
                      alt="view lexeme list"
                      title="View wordlist list for {{ language.utf8_name.data }}">
-                    {{ language.utf8_name.data }}
+                    <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
                   </a>
                 </td>
                 {# beast_data.html #}
                 <td class="beastName">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.beastName class="form-control" %}
+                    {% form_field language.ascii_name class="form-control" required="required" pattern="[a-zA-Z0-9_\-]+" %}
                   {% else %}
-                    {{ language.beastName.data }}
+                    {{ language.ascii_name.data }}
                   {% endif %}
                 </td>
                 {# variety_data.html #}
