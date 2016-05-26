@@ -840,14 +840,25 @@ def edit_language(request, language):
                                     args=[language.ascii_name]))
 
     if request.method == 'POST':
-        form = EditLanguageForm(request.POST, instance=language)
-        if "cancel" in form.data:  # has to be tested before data is cleaned
-            return HttpResponseRedirect(reverse("view-all-languages"))
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("view-all-languages"))
-    else:
-        form = EditLanguageForm(instance=language)
+        form = LanguageListRowForm(request.POST)
+        try:
+            form.validate()
+            data = form.data
+            language = Language.objects.get(id=data['idField'])
+            if language.isChanged(**data):
+                problem = language.setDelta(request, **data)
+                if problem is None:
+                    language.save()
+                    return HttpResponseRedirect(reverse("view-all-languages"))
+                else:
+                    messages.error(request, language.deltaReport(**problem))
+        except Exception, e:
+            print('Problem updating single language:', e)
+            messages.error(request, 'Sorry, the server could not update '
+                           'the language.')
+    language.idField = language.id
+    form = LanguageListRowForm(obj=language)
+
     return render_template(request, "language_edit.html",
                            {"language": language,
                             "form": form})

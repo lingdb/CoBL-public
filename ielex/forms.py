@@ -236,10 +236,10 @@ class LanguageListRowForm(AbstractTimestampedForm):
     low_stat = BooleanField('Low Status', validators=[DataRequired()])
     soundcompcode = StringField('Sound Comparisons Code',
                                 validators=[DataRequired()])
-    level0 = IntegerField('Level 0 Branch', validators=[DataRequired()])
-    level1 = IntegerField('Level 1 Branch', validators=[DataRequired()])
-    level2 = IntegerField('Level 2 Branch', validators=[DataRequired()])
-    level3 = IntegerField('Level 3 Branch', validators=[DataRequired()])
+    level0 = IntegerField('Clade level 0', validators=[DataRequired()])
+    level1 = IntegerField('Clade level 1', validators=[DataRequired()])
+    level2 = IntegerField('Clade level 2', validators=[DataRequired()])
+    level3 = IntegerField('Clade level 3', validators=[DataRequired()])
     representative = BooleanField('Representative',
                                   validators=[DataRequired()])
     mean_timedepth_BP_years = IntegerField('Mean of Time Depth BP (years)',
