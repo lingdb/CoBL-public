@@ -80,11 +80,6 @@
               </a>
             </li>
             {% if user.is_authenticated %}
-              <li>
-                <a href="{% url 'view-profile' %}" title="View user profile" data-toggle="tooltip" data-placement="bottom">
-                  <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ user.username }}
-                </a>
-              </li>
               {% if user.is_staff %}
                 <li>
                   <a href="/admin/" title="Go to the admin site" data-toggle="tooltip" data-placement="bottom">
@@ -97,6 +92,11 @@
                   </a>
                 </li>
               {% endif %}
+              <li>
+                <a href="{% url 'view-profile' %}" title="View user profile" data-toggle="tooltip" data-placement="bottom">
+                  <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ user.username }}
+                </a>
+              </li>
               <li>
                 <a href="{% url 'logout' %}" data-toggle="tooltip" data-placement="bottom" title="Logout">
                   <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>

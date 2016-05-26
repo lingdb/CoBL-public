@@ -72,12 +72,12 @@
               <th></th>
               {# progress_title.html #}
               <th>Progress</th>
-              {# name_title.html #}
-              <th>Display name</th>
               {# name_link.html #}
               <th></th>
+              {# name_title.html #}
+              <th>Display name</th>
               {# beast_title.html #}
-              <th>Beast name</th>
+              <th>Url name</th>
               {# variety_title.html #}
               <th>Variety</th>
               <th></th>{# title for edit #}
@@ -244,6 +244,8 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </th>
+              {# name_link.html #}
+              <th></th>
               {# name_filter.html #}
               <th>
                 <input type="text" class="filterText form-control"
@@ -253,8 +255,6 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </th>
-              {# name_link.html #}
-              <th></th>
               {# beast_filter.html #}
               <th>
                 {% if user.is_authenticated and user.is_staff %}
@@ -601,6 +601,14 @@
                     {{ language.progress.data }}
                   {% endif %}
                 </td>
+                {# name_link.html #}
+                <td>
+                  <a href="{% url 'language-report' language.ascii_name.data %}"
+                     alt="view lexeme list"
+                     title="View wordlist list for {{ language.utf8_name.data }}">
+                    <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+                  </a>
+                </td>
                 {# name_data.html #}
                 <td class="languageName">
                   {% if user.is_authenticated and user.is_staff %}
@@ -609,14 +617,6 @@
                     {% form_field language.lastEditedBy class="hide" %}
                   {% endif %}
                   {% form_field language.utf8_name class="language_name form-control" required="required" %}
-                </td>
-                {# name_link.html #}
-                <td>
-                  <a href="{% url 'language-report' language.ascii_name.data %}"
-                     alt="view lexeme list"
-                     title="View wordlist list for {{ language.utf8_name.data }}">
-                    <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
-                  </a>
                 </td>
                 {# beast_data.html #}
                 <td class="beastName">
