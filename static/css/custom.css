@@ -102,3 +102,8 @@ table.floatThead-table {
   margin-left: 5px;
   margin-right: 5px;
 }
+
+/* Fixing linebreaks in filter bars; #191 */
+.filterBar th {
+  white-space: nowrap;
+}
