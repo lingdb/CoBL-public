@@ -431,8 +431,6 @@ class LexemeRowViewMeaningsForm(AbstractTimestampedForm):
     not_swadesh_term = BooleanField('Not Swadesh Term',
                                     validators=[DataRequired()])
     gloss = StringField('Gloss', validators=[DataRequired()])
-    number_cognate_coded = IntegerField('Count Coded Cognates',
-                                        validators=[DataRequired()])
     notes = TextField('Notes', validators=[DataRequired()])
     cogclass_link = TextField('CogClass Links', validators=[DataRequired()])
 
@@ -464,8 +462,6 @@ class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
     not_swadesh_term = BooleanField('Not Swadesh Term',
                                     validators=[DataRequired()])
     gloss = StringField('Gloss', validators=[DataRequired()])
-    number_cognate_coded = IntegerField('Count Coded Cognates',
-                                        validators=[DataRequired()])
     notes = TextField('Notes', validators=[DataRequired()])
     cogclass_link = TextField('CogClass Links', validators=[DataRequired()])
     rfcWebLookup1 = StringField('This Lg lex rfc web path 1')

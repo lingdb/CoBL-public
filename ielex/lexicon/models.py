@@ -889,7 +889,6 @@ class Lexeme(AbstractTimestamped):
     source = models.ManyToManyField(
         Source, through="LexemeCitation", blank=True)
     modified = models.DateTimeField(auto_now=True)
-    number_cognate_coded = models.IntegerField(editable=False, default=0)
     # Former JSON fields:
     phoneMic = models.TextField(blank=True)
     transliteration = models.TextField(blank=True)
@@ -897,12 +896,6 @@ class Lexeme(AbstractTimestamped):
     rfcWebLookup1 = models.TextField(blank=True)
     rfcWebLookup2 = models.TextField(blank=True)
     dubious = models.BooleanField(default=0)
-
-    def set_number_cognate_coded(self):
-        old_number = self.number_cognate_coded
-        self.number_cognate_coded = self.cognate_class.count()
-        if self.number_cognate_coded != old_number:
-            self.save()
 
     def get_cognate_class_links(self):
         def format_link(cc_id, alias):
@@ -1055,6 +1048,11 @@ class Lexeme(AbstractTimestamped):
     @property
     def allCognateClasses(self):
         return self.cognate_class.all()
+
+    @property
+    def number_cognate_coded(self):
+        # Added for #178
+        return self.cognate_class.count()
 
 
 @reversion.register
