@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.test.client import Client
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 import logging
 import lxml.html
 from ielex.lexicon.models import *
@@ -282,17 +282,16 @@ class ObligatoryCogJudgeCitationTests(TestCase):
         self.new_cogclass = CognateClass.objects.create(alias="Y")
         self.new_source = Source.objects.create(citation_text="NEW SOURCE")
 
-    @transaction.commit_manually
     def test_cogjudge_with_citation_succeeds(self):
         def make_new_cognate_judgement(lexeme):
-            cogjudge = CognateJudgement.objects.create(
-                    lexeme=lexeme,
-                    cognate_class=self.new_cogclass)
-            CognateJudgementCitation.objects.create(
-                    cognate_judgement=cogjudge,
-                    source=self.new_source,
-                    reliability="A")
-            transaction.commit()
+            with transaction.atomic():
+                cogjudge = CognateJudgement.objects.create(
+                        lexeme=lexeme,
+                        cognate_class=self.new_cogclass)
+                CognateJudgementCitation.objects.create(
+                        cognate_judgement=cogjudge,
+                        source=self.new_source,
+                        reliability="A")
             return True
         self.assertTrue(make_new_cognate_judgement(self.db[Lexeme]))
 

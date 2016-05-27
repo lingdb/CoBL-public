@@ -224,16 +224,16 @@ def forwards_func(apps, schema_editor):
         print("Couldn't remove '", remove, "' - maybe it doesn't exist?")
 
     # Cleaning default list:
-    print("Now cleaning up ", MeaningList.DEFAULT)
+    print("Now cleaning up ", models.MeaningList.DEFAULT)
     wanted = set([m['id'] for m in meanings])
     try:
-        ml = MeaningList.objects.get(name=MeaningList.DEFAULT)
+        ml = MeaningList.objects.get(name=models.MeaningList.DEFAULT)
         for m in ml.meanings.all():
             if m.id not in wanted:
                 print("Removing Meaning from List: ", m.gloss)
                 mmodels.MeaningList.remove(ml, m)
     except Exception, e:
-        print("Exception while cleaning up ", MeaningList.DEFAULT, e)
+        print("Exception while cleaning up ", models.MeaningList.DEFAULT, e)
 
 
 def reverse_func(apps, schema_editor):
