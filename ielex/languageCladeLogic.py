@@ -63,7 +63,6 @@ def updateLanguageCladeRelations(languages=None, clades=None):
                 newRels.append(LanguageClade(language=l,
                                              clade=levelCladeMap[sig],
                                              cladesOrder=order))
-                pass
             order += 1
         # Did the clades for this language change?
         if flattenLC(l.languageclade_set.all()) != flattenLC(newRels):

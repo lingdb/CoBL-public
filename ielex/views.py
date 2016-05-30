@@ -29,6 +29,7 @@ from ielex.lexicon.defaultModels import *
 from ielex.extensional_semantics.views import *
 from ielex.shortcuts import render_template
 from ielex.utilities import next_alias, confirm_required, anchored, oneline
+from ielex.languageCladeLogic import updateLanguageCladeRelations
 
 from collections import defaultdict
 from django.views.decorators.csrf import csrf_protect
@@ -255,21 +256,22 @@ def view_language_list(request, language_list=None):
         "languageclade_set", "clades")
 
     if (request.method == 'POST') and ('langlist_form' in request.POST):
-
         languageListTableForm = AddLanguageListTableForm(request.POST)
-
+        # Languages that may need clade updates:
+        updateClades = []
+        # Iterating form to update languages:
         for entry in languageListTableForm.langlist:
-
             data = entry.data
             try:
-
                 lang = Language.objects.get(id=data['idField'])
-
                 if lang.isChanged(**data):
                     try:
                         problem = lang.setDelta(request, **data)
                         if problem is None:
                             lang.save()
+                            # Making sure we update clades
+                            # for changed languages:
+                            updateClades.append(lang)
                         else:
                             messages.error(request,
                                            lang.deltaReport(**problem))
@@ -277,13 +279,15 @@ def view_language_list(request, language_list=None):
                         print('Exception while saving POST: ', e)
                         messages.error(request, 'Sorry, the server failed '
                                        'to save "%s".' % data['ascii_name'])
-
             except Exception, e:
                 print('Exception while accessing Language object: ',
                       e, '; POST items are: ', data)
                 messages.error(request, 'Sorry, the server had problems '
                                'saving at least one language entry.')
-
+        # Updating clade relations for changes languages:
+        if len(updateClades) > 0:
+            updateLanguageCladeRelations(languages=updateClades)
+        # Redirecting so that UA makes a GET.
         return HttpResponseRedirect(
             reverse("view-language-list", args=[current_list.name]))
 
@@ -338,21 +342,25 @@ def view_clades(request):
         # Updating existing clades:
         if 'clades' in request.POST:
             cladeTableForm = CladeTableForm(request.POST)
+            # List of changed clades:
+            changedClades = []
+            # Updating individual clades:
             try:
                 cladeTableForm.validate()
+                idCladeMap = {c.id: c for c in Clade.objects.all()}
                 for entry in cladeTableForm.elements:
                     data = entry.data
                     try:
-                        with transaction.atomic():
-                            clade = Clade.objects.get(
-                                id=int(data['idField']))
-                            if clade.isChanged(**data):
-                                problem = clade.setDelta(request, **data)
-                                if problem is None:
+                        clade = idCladeMap[data['idField']]
+                        if clade.isChanged(**data):
+                            problem = clade.setDelta(request, **data)
+                            if problem is None:
+                                with transaction.atomic():
                                     clade.save()
-                                else:
-                                    messages.error(
-                                        request, clade.deltaReport(**problem))
+                                    changedClades.append(clade)
+                            else:
+                                messages.error(
+                                    request, clade.deltaReport(**problem))
                     except Exception, e:
                         print('Problem while saving clade: ', e)
                         messages.error(request,
@@ -361,6 +369,9 @@ def view_clades(request):
                 print('Problem updating clades:', e)
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least on clade.')
+            # Updating language clade relations for changed clades:
+            if len(changedClades) > 0:
+                updateLanguageCladeRelations(clades=changedClades)
         # Adding a new clade:
         elif 'addClade' in request.POST:
             cladeCreationForm = CladeCreationForm(request.POST)
@@ -391,6 +402,7 @@ def view_clades(request):
                 print('Problem deleting clade:', e)
                 messages.error(request, 'Sorry, the server had problems '
                                'deleting the clade.')
+        return HttpResponseRedirect('/clades/')
 
     form = CladeTableForm()
     for clade in Clade.objects.all():

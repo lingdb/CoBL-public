@@ -307,6 +307,9 @@ class Clade(AbstractTimestamped):
     uniformUpper = models.IntegerField(null=True)
     uniformLower = models.IntegerField(null=True)
 
+    def __unicode__(self):
+        return self.cladeName
+
     class Meta:
         ordering = ['cladeLevel0',
                     'cladeLevel1',
@@ -393,49 +396,6 @@ class Language(AbstractTimestamped):
             if f in fieldSet:
                 row.append(str(getattr(self, f)))
         return row
-
-    def getClades(self):
-        '''
-        This method tries to find the clades closest to a Language.
-        @return clades :: [Clade]
-        '''
-        clades = []
-        wanted = [('cladeLevel0', self.level0),
-                  ('cladeLevel1', self.level1),
-                  ('cladeLevel2', self.level2),
-                  ('cladeLevel3', self.level3)]
-
-        for i in xrange(len(wanted), 0, -1):
-            try:
-                d = dict(wanted[:i])
-                no = [c.id for c in clades]
-                cs = Clade.objects.filter(**d).exclude(id__in=no).all()
-                clades.extend(cs)
-            except Exception, e:
-                pass
-
-        return clades
-
-    def updateClades(self):
-        '''
-        This method updates the related LanguageClade models.
-        To do so it uses self.getClades to obtain a list of current clades.
-        It compares if the clades changed by checking
-        if the sets of clade ids are different.
-        If so it replaces the old clades by deleting them
-        and creating instances for the current clades.
-        '''
-        currentClades = self.getClades()
-        currentIds = set([c.id for c in currentClades])
-        oldIds = set([c.id for c in self.clades.all()])
-        if currentIds != oldIds:
-            # Removing old models:
-            self.clades.clear()
-            # Adding new models:
-            toCreate = [
-                LanguageClade(language=self, clade=c, cladesOrder=o)
-                for c, o in izip(currentClades, xrange(len(currentClades)))]
-            LanguageClade.objects.bulk_create(toCreate)
 
     _computeCounts = {}  # Memo for computeCounts
 
@@ -564,14 +524,6 @@ class Language(AbstractTimestamped):
             '"%s" with values %s. ' \
             'It was last touched by "%s" %s.' % \
             (self.ascii_name, kwargs, self.lastEditedBy, self.lastTouched)
-
-
-@receiver(post_save, sender=Language)
-def update_language_clades(sender, instance, **kwargs):
-    '''
-    Making sure clades are updated whenever a language changes:
-    '''
-    instance.updateClades()
 
 
 @reversion.register
