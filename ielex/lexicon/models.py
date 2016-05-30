@@ -436,6 +436,17 @@ class Language(AbstractTimestamped):
                 'excessCount': excessCount}
         return self._computeCounts
 
+    def cladeByOrder(self, order):
+        try:
+            for lc in self.languageclade_set.all():
+                if lc.cladesOrder == order:
+                    # Iterating clades is faster than querying db.
+                    for c in self.clades.all():
+                        if c.id == lc.clade_id:
+                            return c
+        except:
+            return None
+
     @property
     def meaningCount(self):
         return self.computeCounts()['meaningCount']
@@ -457,55 +468,48 @@ class Language(AbstractTimestamped):
         return self.computeCounts()['excessCount']
 
     @property
-    def firstClade(self):
-        try:
-            for lc in self.languageclade_set.all():
-                if lc.cladesOrder == 0:
-                    # Iterating clades is faster than querying db.
-                    for c in self.clades.all():
-                        if c.id == lc.clade_id:
-                            return c
-        except:
-            return None
-
-    @property
     def level0Tooltip(self):
         try:
-            if self.firstClade is not None:
-                return self.firstClade.level0Name
+            c = self.cladeByOrder(3)
+            if c is not None:
+                return c.cladeName
         except:
             return ''
 
     @property
     def level1Tooltip(self):
         try:
-            if self.firstClade is not None:
-                return self.firstClade.level1Name
+            c = self.cladeByOrder(2)
+            if c is not None:
+                return c.cladeName
         except:
             return ''
 
     @property
     def level2Tooltip(self):
         try:
-            if self.firstClade is not None:
-                return self.firstClade.level2Name
+            c = self.cladeByOrder(1)
+            if c is not None:
+                return c.cladeName
         except:
             return ''
 
     @property
     def level3Tooltip(self):
         try:
-            if self.firstClade is not None:
-                return self.firstClade.level3Name
+            c = self.cladeByOrder(0)
+            if c is not None:
+                return c.cladeName
         except:
             return ''
 
     @property
     def hexColor(self):
         try:
-            if self.firstClade is not None:
-                if self.firstClade.hexColor != '':
-                    return self.firstClade.hexColor
+            c = self.cladeByOrder(0)
+            if c is not None:
+                if c.hexColor != '':
+                    return c.hexColor
         except:
             return '777777'
 
