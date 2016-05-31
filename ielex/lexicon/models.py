@@ -447,6 +447,12 @@ class Language(AbstractTimestamped):
         except:
             return None
 
+    def cladePropertyByOrder(self, order, p, fallback):
+        c = self.cladeByOrder(order)
+        if c is None:
+            return fallback
+        return getattr(c, p, fallback)
+
     @property
     def meaningCount(self):
         return self.computeCounts()['meaningCount']
@@ -469,39 +475,35 @@ class Language(AbstractTimestamped):
 
     @property
     def level0Tooltip(self):
-        try:
-            c = self.cladeByOrder(3)
-            if c is not None:
-                return c.cladeName
-        except:
-            return ''
+        return self.cladePropertyByOrder(3, 'cladeName', '')
 
     @property
     def level1Tooltip(self):
-        try:
-            c = self.cladeByOrder(2)
-            if c is not None:
-                return c.cladeName
-        except:
-            return ''
+        return self.cladePropertyByOrder(2, 'cladeName', '')
 
     @property
     def level2Tooltip(self):
-        try:
-            c = self.cladeByOrder(1)
-            if c is not None:
-                return c.cladeName
-        except:
-            return ''
+        return self.cladePropertyByOrder(1, 'cladeName', '')
 
     @property
     def level3Tooltip(self):
-        try:
-            c = self.cladeByOrder(0)
-            if c is not None:
-                return c.cladeName
-        except:
-            return ''
+        return self.cladePropertyByOrder(0, 'cladeName', '')
+
+    @property
+    def level0Color(self):
+        return self.cladePropertyByOrder(3, 'hexColor', '777777')
+
+    @property
+    def level1Color(self):
+        return self.cladePropertyByOrder(2, 'hexColor', '777777')
+
+    @property
+    def level2Color(self):
+        return self.cladePropertyByOrder(1, 'hexColor', '777777')
+
+    @property
+    def level3Color(self):
+        return self.cladePropertyByOrder(0, 'hexColor', '777777')
 
     @property
     def hexColor(self):
