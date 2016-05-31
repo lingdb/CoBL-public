@@ -505,13 +505,11 @@ class Language(AbstractTimestamped):
 
     @property
     def hexColor(self):
-        try:
-            c = self.cladeByOrder(3)
+        for c in reversed(self.clades.all()):
             if c is not None:
                 if c.hexColor != '':
                     return c.hexColor
-        except:
-            return '777777'
+        return '777777'
 
     def timestampedFields(self):
         return set(['iso_code', 'ascii_name', 'utf8_name', 'glottocode',
