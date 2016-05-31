@@ -41,6 +41,14 @@ def updateLanguageCladeRelations(languages=None, clades=None):
         # Helper to flatten [LanguageClade] -> String
         return ''.join([str(lc.clade_id) + str(lc.cladesOrder)
                         for lc in lcs])
+
+    def nubClades(lcs):
+        # Only let an lc pass if its clade hasn't been seen.
+        # https://stackoverflow.com/a/480227/448591
+        seen = set()
+        return [lc for lc in lcs if not
+                (lc.clade_id in seen or seen.add(lc.clade_id))]
+
     # zeroLevels will be merged with specific levels.
     zeroLevels = {'cladeLevel0': 0,
                   'cladeLevel1': 0,
@@ -64,6 +72,8 @@ def updateLanguageCladeRelations(languages=None, clades=None):
                                              clade=levelCladeMap[sig],
                                              cladesOrder=order))
             order += 1
+        # Remove duplicate clades where one of higher order is available:
+        newRels = nubClades(reversed(newRels))
         # Did the clades for this language change?
         if flattenLC(l.languageclade_set.all()) != flattenLC(newRels):
             toDeleteIds += [lc.id for lc in l.languageclade_set.all()]
