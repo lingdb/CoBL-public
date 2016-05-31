@@ -248,12 +248,21 @@
               <th></th>
               {# name_filter.html #}
               <th>
-                <input type="text" class="filterText form-control"
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterText form-control"
+                         data-selector=".languageName input">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".languageName input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control"
+                         data-selector=".languageName">
+                  <div class="btn btn-xs btn-default sortText"
                        data-selector=".languageName">
-                <div class="btn btn-xs btn-default sortText"
-                     data-selector=".languageName">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
               </th>
               {# beast_filter.html #}
               <th>
