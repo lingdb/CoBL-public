@@ -506,7 +506,7 @@ class Language(AbstractTimestamped):
     @property
     def hexColor(self):
         try:
-            c = self.cladeByOrder(0)
+            c = self.cladeByOrder(3)
             if c is not None:
                 if c.hexColor != '':
                     return c.hexColor
