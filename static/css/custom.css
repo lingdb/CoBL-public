@@ -104,6 +104,6 @@ table.floatThead-table {
 }
 
 /* Fixing linebreaks in filter bars; #191 */
-.filterBar th {
+.filterBar th, .nowrap {
   white-space: nowrap;
 }

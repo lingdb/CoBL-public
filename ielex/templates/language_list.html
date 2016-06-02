@@ -23,6 +23,7 @@
 {% endblock %}
 
 {% block content %}
+  {% include "snippets/cloneLanguageModal.html" %}
   <div class="row">
     <div class="col-md-12">
       {% if user.is_authenticated and user.is_staff %}
@@ -644,14 +645,27 @@
                   {% endif %}
                 </td>
                 {# edit_data.html #}
-                <td>
+                <td class="nowrap">
                   {% if user.is_authenticated and user.is_staff %}
                     <a href="{% url 'language-edit' language.ascii_name.data %}"
                        title="Edit {{ language.utf8_name.data }} metadata"
                        data-toggle="tooltip"
-                       data-placement="top">
+                       data-placement="top"
+                       class="inline">
                       <span class="glyphicon glyphicon-edit"></span>
                     </a>
+                    <div class="inline"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       title="clone this language">
+                      <button class="btn btn-default btn-xs"
+                         data-toggle="cloneLanguageModal"
+                         data-sourcelanguagename="{{ language.ascii_name.data }}"
+                         data-target="#cloneLanguageModal"
+                         type="button">
+                        <span class="glyphicon glyphicon-duplicate"></span>
+                      </button>
+                    </div>
                   {% endif %}
                 </td>
                 {# iso_data.html #}

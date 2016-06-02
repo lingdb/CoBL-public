@@ -290,7 +290,61 @@ def view_language_list(request, language_list=None):
         # Redirecting so that UA makes a GET.
         return HttpResponseRedirect(
             reverse("view-language-list", args=[current_list.name]))
-
+    elif (request.method == 'POST') and ('cloneLanguage' in request.POST):
+        # Cloning language and lexemes:
+        # FIXME FETCH LANGUAGE AND ADJUST FORM!
+        form = CloneLanguageForm(request.POST)
+        try:
+            form.validate()
+            with transaction.atomic():
+                # Creating language clone:
+                clone = Language(ascii_name=form.data['languageName'],
+                                 utf8_name=form.data['languageName'])
+                clone.bump(request)
+                clone.save()
+                # Adding language to current language list, if not viewing all:
+                if current_list.name != LanguageList.ALL:
+                    current_list.append(clone)
+                # Wordlist to use:
+                meaningIds = MeaningListOrder.objects.filter(
+                    meaning_list__name=getDefaultWordlist(request)
+                    ).values_list(
+                    "meaning_id", flat=True)
+                # Lexemes to copy:
+                sourceLexemes = Lexeme.objects.filter(
+                    language__ascii_name=form.data['sourceLanguageName'],
+                    meaning__in=meaningIds).all(
+                    ).prefetch_related('meaning')
+                # Copy lexemes to clone language:
+                newLexemes = []
+                order = 1  # Increasing values for _order fields of Lexemes
+                for sLexeme in sourceLexemes:
+                    # Basic data:
+                    data = {'language': clone,
+                            'meaning': sLexeme.meaning,
+                            '_order': order}
+                    order += 1
+                    # Copying lexeme data if specified:
+                    if not form.data['emptyLexemes']:
+                        for f in sLexeme.timestampedFields():
+                            data[f] = getattr(sLexeme, f)
+                    # Setting lastEditedBy:
+                    data['lastEditedBy'] = ' '.join(
+                        [request.user.first_name,
+                         request.user.last_name])
+                    # Appending for creation:
+                    newLexemes.append(Lexeme(**data))
+                Lexeme.objects.bulk_create(newLexemes)
+                # Redirect to newly created language:
+                messages.success(request, 'Language cloned.')
+                return HttpResponseRedirect(
+                    reverse("view-language-list", args=[current_list.name]))
+        except Exception, e:
+            print('Problem cloning Language:', e)
+            messages.error(request, 'Sorry, a problem occured '
+                           'when cloning the language.')
+            return HttpResponseRedirect(
+                reverse("view-language-list", args=[current_list.name]))
     elif (request.method == 'GET') and ('exportCsv' in request.GET):
         # Handle csv export iff desired:
         return exportLanguageListCsv(request, languages)
@@ -631,58 +685,6 @@ def view_language_wordlist(request, language, wordlist):
             return HttpResponseRedirect(
                 reverse("view-language-wordlist",
                         args=[language.ascii_name, wordlist.name]))
-        # Cloning language and lexemes:
-        elif 'cloneLanguage' in request.POST:
-            form = CloneLanguageForm(request.POST)
-            try:
-                form.validate()
-                with transaction.atomic():
-                    # Creating language clone:
-                    clone = Language(ascii_name=form.data['languageName'],
-                                     utf8_name=form.data['languageName'])
-                    clone.bump(request)
-                    clone.save()
-                    # Adding language to current language list:
-                    languageList = LanguageList.objects.get(
-                        name=getDefaultLanguagelist(request))
-                    languageList.append(clone)
-                    # Lexemes to copy:
-                    sourceLexemes = Lexeme.objects.filter(
-                        language=language,
-                        meaning__in=wordlist.meanings.all()).all(
-                        ).prefetch_related('meaning')
-                    # Copy lexemes to clone language:
-                    newLexemes = []
-                    order = 1  # Increasing values for _order fields of Lexemes
-                    for sLexeme in sourceLexemes:
-                        # Basic data:
-                        data = {'language': clone,
-                                'meaning': sLexeme.meaning,
-                                '_order': order}
-                        order += 1
-                        # Copying lexeme data if specified:
-                        if not form.data['emptyLexemes']:
-                            for f in sLexeme.timestampedFields():
-                                data[f] = getattr(sLexeme, f)
-                        # Setting lastEditedBy:
-                        data['lastEditedBy'] = ' '.join(
-                            [request.user.first_name,
-                             request.user.last_name])
-                        # Appending for creation:
-                        newLexemes.append(Lexeme(**data))
-                    Lexeme.objects.bulk_create(newLexemes)
-                    # Redirect to newly created language:
-                    messages.success(request, 'Language cloned.')
-                    return HttpResponseRedirect(
-                        reverse("view-language-wordlist",
-                                args=[clone.ascii_name, wordlist.name]))
-            except Exception, e:
-                print('Problem cloning Language:', e)
-                messages.error(request, 'Sorry, a problem occured '
-                               'when cloning the language.')
-                return HttpResponseRedirect(
-                    reverse("view-language-wordlist",
-                            args=[language.ascii_name, wordlist.name]))
 
     # collect data
     lexemes = Lexeme.objects.filter(

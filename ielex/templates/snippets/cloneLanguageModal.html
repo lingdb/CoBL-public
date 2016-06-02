@@ -18,8 +18,12 @@
         <form action="" method="POST"
               name="cloneLanguage">
           {% csrf_token %}
+          <input type="text"
+                 class="hide sourceLanguageName"
+                 required="required"
+                 name="sourceLanguageName">
           <div class="form-group">
-						<label for="languageName">Name of new language:</label>
+						<label for="languageName">URL name of new language:</label>
 						<input type="text" class="form-control"
 									 id="languageName"
 									 name="languageName"

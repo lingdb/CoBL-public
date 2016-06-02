@@ -477,6 +477,7 @@ class LexemeTableLanguageWordlistForm(WTForm):
 
 
 class CloneLanguageForm(WTForm):
+    sourceLanguageName = StringField('', validators=[DataRequired()])
     languageName = StringField('', validators=[DataRequired()])
     emptyLexemes = BooleanField('')
 
