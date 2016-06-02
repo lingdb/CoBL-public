@@ -355,7 +355,6 @@ class SndCompDeletionForm(WTForm):
 class CogClassRowForm(AbstractTimestampedForm):
     idField = IntegerField('Id', validators=[DataRequired()])
     alias = StringField('Cog Class Alias', validators=[DataRequired()])
-    modified = DateTimeField('Date Modified', validators=[DataRequired()])
     cogclass_name = StringField('Cog Class Name', validators=[DataRequired()])
     root_form = StringField('Cog Class Root', validators=[DataRequired()])
     root_language = StringField('Root Language', validators=[DataRequired()])

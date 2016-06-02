@@ -662,7 +662,6 @@ class CognateClass(AbstractTimestamped):
     """
     alias = models.CharField(max_length=3)
     notes = models.TextField(blank=True)
-    modified = models.DateTimeField(auto_now=True)
     name = CharNullField(
         max_length=128, blank=True, null=True,
         unique=True, validators=[suitable_for_url])
@@ -843,7 +842,6 @@ class Lexeme(AbstractTimestamped):
     notes = models.TextField(blank=True)
     source = models.ManyToManyField(
         Source, through="LexemeCitation", blank=True)
-    modified = models.DateTimeField(auto_now=True)
     # Former JSON fields:
     phoneMic = models.TextField(blank=True)
     transliteration = models.TextField(blank=True)
@@ -1015,7 +1013,6 @@ class CognateJudgement(AbstractTimestamped):
     lexeme = models.ForeignKey(Lexeme)
     cognate_class = models.ForeignKey(CognateClass)
     source = models.ManyToManyField(Source, through="CognateJudgementCitation")
-    modified = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
         anchor = "cognatejudgement_%s" % self.id

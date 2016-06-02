@@ -15,6 +15,6 @@ class LexemeTable(tables.Table):
 
     class Meta:
         model = Lexeme
-        exclude = ['modified', '_order']
+        exclude = ['_order']
         # add class="paleblue" to <table> tag
         # attrs = {"class": "paleblue"}
