@@ -200,7 +200,6 @@ class Source(models.Model):
     type_code = models.CharField(
         max_length=1, choices=TYPE_CHOICES, default="P")
     description = models.TextField(blank=True)
-    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
