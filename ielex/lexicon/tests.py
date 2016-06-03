@@ -378,8 +378,8 @@ class LanguageFormTests(TestCase):
             "ascii_name": "\tAAA\n",
             "utf8_name": " BBB\t"})
         self.assertTrue(form.is_valid())
-        self.assertEqual(form.cleaned_data["ascii_name"], "AAA")
-        self.assertEqual(form.cleaned_data["utf8_name"], "BBB")
+        self.assertEqual(form.clean_ascii_name(), "AAA")
+        self.assertEqual(form.clean_utf8_name(), "BBB")
 
     def test_invalid_for_url(self):
         for name in ["A/A", u"əŋ", "A A"]:

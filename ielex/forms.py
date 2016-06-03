@@ -152,7 +152,7 @@ class EditLanguageForm(forms.ModelForm):
 
     class Meta:
         model = Language
-        fields = "__all__"
+        fields = ['ascii_name', 'utf8_name']
 
 
 class EditMeaningForm(forms.ModelForm):
