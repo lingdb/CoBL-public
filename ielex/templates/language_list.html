@@ -250,10 +250,10 @@
               {# name_filter.html #}
               <th>
                 {% if user.is_authenticated and user.is_staff %}
-                  <input type="text" class="filterText form-control"
-                         data-selector=".languageName input">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".languageName input">
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".languageName input.language_name">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".languageName input.language_name">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% else %}
