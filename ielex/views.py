@@ -188,7 +188,12 @@ def get_prev_and_next_meanings(request, current_meaning):
         current_idx = ids.index(current_meaning.id)
     except ValueError:
         current_idx = 0
-    prev_meaning = meanings[current_idx-1]
+    if len(meanings) == 0:
+        return (current_meaning, current_meaning)
+    try:
+        prev_meaning = meanings[current_idx-1]
+    except IndexError:
+        prev_meaning = meanings[len(meanings) - 1]
     try:
         next_meaning = meanings[current_idx+1]
     except IndexError:
@@ -604,7 +609,10 @@ def move_language(language, language_list, direction):
 def view_language_wordlist(request, language, wordlist):
     setDefaultLanguage(request, language)
     setDefaultWordlist(request, wordlist)
-    wordlist = MeaningList.objects.get(name=wordlist)
+    try:
+        wordlist = MeaningList.objects.get(name=wordlist)
+    except MeaningList.DoesNotExist:
+        raise Http404("MeaningList '%s' does not exist" % wordlist)
 
     def is_lexform(multidict):
 
@@ -902,7 +910,10 @@ def view_wordlists(request):
 
 @csrf_protect
 def view_wordlist(request, wordlist=MeaningList.DEFAULT):
-    wordlist = MeaningList.objects.get(name=wordlist)
+    try:
+        wordlist = MeaningList.objects.get(name=wordlist)
+    except MeaningList.DoesNotExist:
+        raise Http404("MeaningList '%s' does not exist" % wordlist)
     setDefaultWordlist(request, wordlist.name)
     if request.method == 'POST':
         if 'wordlist' in request.POST:
@@ -1243,14 +1254,21 @@ def view_cognateclasses(request, meaning):
             cc = CognateClass.objects.filter(pk=cogclass.pk).distinct()
             ccl_ordered.extend(list(cc))
 
-    languageList = LanguageList.objects.get(
-        name=getDefaultLanguagelist(request))
+    try:
+        languageList = LanguageList.objects.get(
+            name=getDefaultLanguagelist(request))
+    except LanguageList.DoesNotExist:
+        languageList = LanguageList.objects.get(
+            name=LanguageList.ALL)
     cogclass_editabletable_form = AddCogClassTableForm()
     for cc in ccl_ordered:
         cc.computeCounts(languageList=languageList)
         cogclass_editabletable_form.cogclass.append_entry(cc)
 
-    meaning = Meaning.objects.get(gloss=meaning)
+    try:
+        meaning = Meaning.objects.get(gloss=meaning)
+    except Meaning.DoesNotExist:
+        raise Http404("Meaning '%s' does not exist" % meaning)
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
 
     return render_template(request, "view_cognateclass_editable.html",

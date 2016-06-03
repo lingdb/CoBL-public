@@ -86,8 +86,7 @@ class CognateClassCodeDenormalizationTests(TestCase):
         "Test that post_delete hook updates denormalized data"
         cj = self.db[CognateJudgement]
         cj.delete()
-        self.assertEqual(self.db[Lexeme].denormalized_cognate_classes,
-                         "")
+        self.assertEqual(self.db[Lexeme].denormalized_cognate_classes, "")
 
     def test_add_cognate_judgement(self):
         "Test that post_save hook updates denormalized data"
