@@ -396,8 +396,8 @@ def view_clades(request):
         # Updating existing clades:
         if 'clades' in request.POST:
             cladeTableForm = CladeTableForm(request.POST)
-            # List of changed clades:
-            changedClades = []
+            # Flag to see if a clade changed:
+            cladeChanged = False
             # Updating individual clades:
             try:
                 cladeTableForm.validate()
@@ -411,7 +411,7 @@ def view_clades(request):
                             if problem is None:
                                 with transaction.atomic():
                                     clade.save()
-                                    changedClades.append(clade)
+                                    cladeChanged = True
                             else:
                                 messages.error(
                                     request, clade.deltaReport(**problem))
@@ -424,8 +424,8 @@ def view_clades(request):
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least on clade.')
             # Updating language clade relations for changed clades:
-            if len(changedClades) > 0:
-                updateLanguageCladeRelations(clades=changedClades)
+            if cladeChanged:
+                updateLanguageCladeRelations()
         # Adding a new clade:
         elif 'addClade' in request.POST:
             cladeCreationForm = CladeCreationForm(request.POST)
