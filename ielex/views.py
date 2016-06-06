@@ -941,8 +941,12 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
                     messages.error(request, 'The server had problems saving '
                                    'at least one entry.')
 
-    languageList = LanguageList.objects.get(
-        name=getDefaultLanguagelist(request))
+    try:
+        languageList = LanguageList.objects.get(
+            name=getDefaultLanguagelist(request))
+    except LanguageList.DoesNotExist:
+        raise Http404("LanguageList '%s' does not exist"
+                      % getDefaultLanguagelist(request))
     mltf = MeaningListTableForm()
     meanings = wordlist.meanings.order_by(
         "meaninglistorder").prefetch_related('lexeme_set').all()

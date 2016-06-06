@@ -201,7 +201,8 @@ def language_domain_view(request, language, domain=SemanticDomain.DEFAULT):
                     args=[language.ascii_name, domain]))
     try:
         relations = SemanticRelation.objects.filter(
-                id__in=SemanticDomain.objects.get(name=domain).relation_id_list)
+                id__in=SemanticDomain.objects.get(
+                    name=domain).relation_id_list)
     except SemanticDomain.DoesNotExist:
         raise Http404("SemanticDomain '%s' does not exist" % domain)
     extensions = SemanticExtension.objects.filter(
