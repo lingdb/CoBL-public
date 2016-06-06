@@ -183,22 +183,22 @@ class LanguageListTests(TestCase):
         self.assertEqual(self.languagelist.languages.count(), len(lg_names)-1)
         self.assertNotIn(lang_A, self.languagelist.languages.all())
 
-    def test_default_list_exists(self):
+    def test_all_list_exists(self):
         self.assertEqual(LanguageList.objects.filter(name="all").count(), 1)
 
-    def test_default_list_updates(self):
+    def test_all_list_updates(self):
         self.assertEqual(LanguageList.objects.filter(
-                name=LanguageList.DEFAULT).count(), 1)
+                name=LanguageList.ALL).count(), 1)
         lg_names = ["Ccc", "Bbb", "Aaa"]
         self.setup_language_list(lg_names)
         self.assertEqual(LanguageList.objects.get(
-                name=LanguageList.DEFAULT).languages.count(), 4)
+                name=LanguageList.ALL).languages.count(), 4)
         self.db[Language].delete()
         self.assertEqual(LanguageList.objects.get(
-                name=LanguageList.DEFAULT).languages.count(), 3)
+                name=LanguageList.ALL).languages.count(), 3)
 
     def test_default_alpha(self):
-        default_alpha = LanguageList.DEFAULT+"-alpha"
+        default_alpha = LanguageList.ALL+"-alpha"
         lg_names = ["Ccc", "Bbb", "Aaa"]
         self.setup_language_list(lg_names)
         self.db[Language].delete()
