@@ -364,7 +364,9 @@
               <tr>
               {# clade_data.html #}
               {% for clade in clades %}
-                <td style="background-color: #{{ clade.hexColor }};"></td>
+                <td{% if clade.connectsToNextCognateClass %}
+                    style="background-color: #{{ clade.hexColor }};"
+                  {% endif %}></td>
               {% endfor %}
                 {# id_data.html #}
                 <td class="cogClassId">

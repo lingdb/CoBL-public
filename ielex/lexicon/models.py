@@ -334,6 +334,32 @@ class Clade(AbstractTimestamped):
             'It was last touched by "%s" %s.' % \
             (self.id, kwargs, self.lastEditedBy, self.lastTouched)
 
+    # Memo for computeCognateClassConnections:
+    _cognateClassConnections = []  # [Boolean]
+
+    def computeCognateClassConnections(self, cognateclasses):
+        # Reset memo:
+        self._cognateClassConnections = []
+        # lIds that warrant a connection:
+        clIds = set(self.languageclade_set.values_list(
+            'language_id', flat=True))
+        # Fill memo with entries for given cognateclasses:
+        for cc in cognateclasses:
+            lIds = set(cc.lexeme_set.filter(
+                not_swadesh_term=False).values_list('language_id', flat=True))
+            self._cognateClassConnections.append(bool(clIds & lIds))
+        # Empty list iff all False:
+        if not any(self._cognateClassConnections):
+            self._cognateClassConnections = []
+        # Return wether a connection was found:
+        return len(self._cognateClassConnections) > 0
+
+    def connectsToNextCognateClass(self):
+        # :: self._cognateClassConnections[0] | False
+        if len(self._cognateClassConnections):
+            return self._cognateClassConnections.pop(0)
+        return False
+
 
 @reversion.register
 class Language(AbstractTimestamped):

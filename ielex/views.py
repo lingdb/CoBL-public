@@ -1268,6 +1268,9 @@ def view_cognateclasses(request, meaning):
         id__in=LanguageClade.objects.filter(
             language__languagelistorder__language_list=languageList
             ).values_list('clade_id', flat=True)).exclude(hexColor='').all()
+    # Compute clade <-> cc connections:
+    clades = [c for c in clades
+              if c.computeCognateClassConnections(ccl_ordered)]
     # Filling cogclass_editabletable_form:
     cogclass_editabletable_form = AddCogClassTableForm()
     for cc in ccl_ordered:
