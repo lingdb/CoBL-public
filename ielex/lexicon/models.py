@@ -348,11 +348,6 @@ class Clade(AbstractTimestamped):
             lIds = set(cc.lexeme_set.filter(
                 not_swadesh_term=False).values_list('language_id', flat=True))
             self._cognateClassConnections.append(bool(clIds & lIds))
-        # Empty list iff all False:
-        if not any(self._cognateClassConnections):
-            self._cognateClassConnections = []
-        # Return wether a connection was found:
-        return len(self._cognateClassConnections) > 0
 
     def connectsToNextCognateClass(self):
         # :: self._cognateClassConnections[0] | False
