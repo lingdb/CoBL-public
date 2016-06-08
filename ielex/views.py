@@ -1206,20 +1206,18 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 @csrf_protect
 def view_cognateclasses(request, meaning):
     setDefaultMeaning(request, meaning)
-
+    # Handle POST of AddCogClassTableForm:
     if (request.method == 'POST') and 'cogclass_form' in request.POST:
-
         try:
             cogClassTableForm = AddCogClassTableForm(request.POST)
             cogClassTableForm.validate()
-
+            # Iterate entries that may be changed:
             for entry in cogClassTableForm.cogclass:
                 data = entry.data
                 cogclass = CognateClass.objects.get(
                     id=int(data['idField']))
-
+                # Check if entry changed and try to update:
                 if cogclass.isChanged(**data):
-
                     try:
                         problem = cogclass.setDelta(request, **data)
                         if problem is None:
@@ -1231,11 +1229,12 @@ def view_cognateclasses(request, meaning):
                         print('Exception while saving CognateClass:', e)
                         messages.error(
                             request, 'Problem while saving entry: %s' % data)
-
         except Exception, e:
             print('Problem updating cognateclasses:', e)
             messages.error(request, 'Sorry, the server had problems '
                            'updating at least one entry.')
+        return HttpResponseRedirect(reverse("edit-cogclasses",
+                                    args=[meaning]))
 
     ccl_ordered = []
 
