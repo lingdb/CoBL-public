@@ -1512,13 +1512,20 @@ def add_to_cognateclass_list_all(sender, instance, **kwargs):
 
 
 @disable_for_loaddata
-def update_denormalized_from_lexeme(sender, instance, **kwargs):
-    instance.meaning.set_percent_coded()
+def update_meaning_percent_coded(sender, instance, **kwargs):
+    if type(instance) == Lexeme:
+        instance.meaning.set_percent_coded()
+    elif type(instance) == CognateJudgement:
+        instance.lexeme.meaning.set_percent_coded()
 
 models.signals.post_save.connect(
-    update_denormalized_from_lexeme, sender=Lexeme)
+    update_meaning_percent_coded, sender=Lexeme)
 models.signals.post_delete.connect(
-    update_denormalized_from_lexeme, sender=Lexeme)
+    update_meaning_percent_coded, sender=Lexeme)
+models.signals.post_save.connect(
+    update_meaning_percent_coded, sender=CognateJudgement)
+models.signals.post_delete.connect(
+    update_meaning_percent_coded, sender=CognateJudgement)
 
 
 @reversion.register

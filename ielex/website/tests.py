@@ -76,7 +76,13 @@ class ViewBaseMethods:
             if path not in self.seen_links:
                 self.seen_links.add(path)
                 if not path.endswith("/"):
-                    if not path.split("/")[-1].startswith("#"):  # anchor
+                    pset = set(path)
+                    if '#' in pset:  # anchor
+                        path = path.split('#')[0]
+                        pset = set(path)
+                    if '?' in pset:  # params
+                        path = path.split('?')[0]
+                    if not path.endswith("/"):
                         lacking_slash.append((path, parent))
                 response = self.client.get(path, follow=True)
                 dom = lxml.html.fromstring(response.content)

@@ -116,7 +116,7 @@ class AddLexemeForm(forms.ModelForm):
 
     class Meta:
         model = Lexeme
-        exclude = ["cognate_class", "source"]
+        fields = ["language", "meaning", "gloss", "source_form", "phon_form"]
 
 
 class EditLexemeForm(forms.ModelForm):
@@ -152,7 +152,7 @@ class EditLanguageForm(forms.ModelForm):
 
     class Meta:
         model = Language
-        fields = "__all__"
+        fields = ['ascii_name', 'utf8_name']
 
 
 class EditMeaningForm(forms.ModelForm):

@@ -2,12 +2,12 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import RequestContext
 from django.template.loader import get_template
 from ielex.extensional_semantics.forms import *
 from ielex.extensional_semantics.models import *
-from ielex.lexicon.models import Lexeme
+from ielex.lexicon.models import Lexeme, Language
 from ielex.forms import ChooseLanguageForm
 from ielex.shortcuts import render_template
 from ielex.utilities import confirm_required
@@ -84,7 +84,10 @@ def lexeme_extensions_view(request, lexeme_id):
 def lexeme_domain_view(request, lexeme_id, domain, action="view"):
     """View and edit a lexeme's semantic extensions in a particular domain"""
     lexeme = Lexeme.objects.get(id=int(lexeme_id))
-    sd = SemanticDomain.objects.get(name=domain)
+    try:
+        sd = SemanticDomain.objects.get(name=domain)
+    except SemanticDomain.DoesNotExist:
+        raise Http404("SemanticDomain '%s' does not exist" % domain)
     tagged_relations = lexeme.semanticextension_set.filter(
         relation__id__in=sd.relation_id_list).values_list(
             "relation__id", flat=True)
@@ -196,8 +199,12 @@ def language_domain_view(request, language, domain=SemanticDomain.DEFAULT):
         return HttpResponseRedirect(
             reverse("language-domain-view",
                     args=[language.ascii_name, domain]))
-    relations = SemanticRelation.objects.filter(
-            id__in=SemanticDomain.objects.get(name=domain).relation_id_list)
+    try:
+        relations = SemanticRelation.objects.filter(
+                id__in=SemanticDomain.objects.get(
+                    name=domain).relation_id_list)
+    except SemanticDomain.DoesNotExist:
+        raise Http404("SemanticDomain '%s' does not exist" % domain)
     extensions = SemanticExtension.objects.filter(
             relation__in=relations,
             lexeme__language=language).order_by(
@@ -271,7 +278,10 @@ def goto_language_domain_form(request, domain):
 
 
 def view_semantic_domain(request, domain):
-    sd = SemanticDomain.objects.get(name=domain)
+    try:
+        sd = SemanticDomain.objects.get(name=domain)
+    except SemanticDomain.DoesNotExist:
+        raise Http404("SemanticDomain '%s' does not exist" % domain)
     sr = SemanticRelation.objects.filter(id__in=sd.relation_id_list)
     redirect, form = goto_language_domain_form(request, domain)
     if redirect:
