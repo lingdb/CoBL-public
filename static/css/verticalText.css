@@ -6,19 +6,19 @@
 .vertical-text {
   display: inline-block;
   overflow: hidden;
-  width margin: -1.5em 0 100%;: 1.5em;
+  width: 1.5em;
 }
 
 .vertical-text__inner {
   display: inline-block;
   white-space: nowrap;
   line-height: 1.5;
-  transform: translate(0,100%) rotate(-90deg);
-  transform-origin: 0 0;
+  transform:         translate(0,100%) rotate(-90deg);
   -ms-transform:     translate(0,100%) rotate(-90deg);
   -moz-transform:    translate(0,100%) rotate(-90deg);
   -webkit-transform: translate(0,100%) rotate(-90deg);
   -o-transform:      translate(0,100%) rotate(-90deg);
+  transform-origin:         0 0;
   -ms-transform-origin:     0 0;
   -moz-transform-origin:    0 0;
   -webkit-transform-origin: 0 0;
@@ -32,4 +32,5 @@
 .vertical-text__inner:after {
   content: "";
   display: block;
+  margin: -1.5em 0 100%;
 }

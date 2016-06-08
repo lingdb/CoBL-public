@@ -1257,28 +1257,35 @@ def view_cognateclasses(request, meaning):
         if cogclass.pk in cogclass_bymeaning_ids:
             cc = CognateClass.objects.filter(pk=cogclass.pk).distinct()
             ccl_ordered.extend(list(cc))
-
+    # Acquiring languageList:
     try:
         languageList = LanguageList.objects.get(
             name=getDefaultLanguagelist(request))
     except LanguageList.DoesNotExist:
         languageList = LanguageList.objects.get(
             name=LanguageList.ALL)
+    # Clades to use for #112:
+    clades = Clade.objects.filter(
+        id__in=LanguageClade.objects.filter(
+            language__languagelistorder__language_list=languageList
+            ).values_list('clade_id', flat=True)).exclude(hexColor='').all()
+    # Filling cogclass_editabletable_form:
     cogclass_editabletable_form = AddCogClassTableForm()
     for cc in ccl_ordered:
         cc.computeCounts(languageList=languageList)
         cogclass_editabletable_form.cogclass.append_entry(cc)
-
+    # {prev_,next_,}meaning:
     try:
         meaning = Meaning.objects.get(gloss=meaning)
     except Meaning.DoesNotExist:
         raise Http404("Meaning '%s' does not exist" % meaning)
     prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
-
+    # Render and done:
     return render_template(request, "view_cognateclass_editable.html",
                            {"meaning": meaning,
                             "prev_meaning": prev_meaning,
                             "next_meaning": next_meaning,
+                            "clades": clades,
                             "cogclass_editable_form":
                                 cogclass_editabletable_form})
 

@@ -31,6 +31,16 @@
         <table class="table table-striped table-condensed viewTableFilter">
           <thead>
             <tr>
+              {# clade_names.html #}
+              {% for clade in clades %}
+                <th rowspan="2">
+                  <div class="vertical-text">
+                    <div class="vertical-text__inner">
+                      {{ clade.cladeName }}
+                    </div>
+                  </div>
+                </th>
+              {% endfor %}
               {# id_title.html #}
               <th>ID</th>
               {# alias_title.html #}
@@ -352,6 +362,10 @@
           <tbody>
             {% for cc in cogclass_editable_form.cogclass %}
               <tr>
+              {# clade_data.html #}
+              {% for clade in clades %}
+                <td style="background-color: #{{ clade.hexColor }};"></td>
+              {% endfor %}
                 {# id_data.html #}
                 <td class="cogClassId">
                   {{ cc.idField.data }}
