@@ -22,6 +22,11 @@ def suitable_for_url(value):
         raise ValidationError("""This field can only include characters
                 which are legal in a url: letters, digits and - . _ ~""")
 
+
+def suitable_for_url_wtforms(form, field):
+    """WTForm proxy for suitable_for_url"""
+    return suitable_for_url(field.data)
+
 # this cannot be serialized by django 1.8
 # https://docs.djangoproject.com/en/1.8/topics/migrations/#serializing-values
 # def reserved_names(*names):

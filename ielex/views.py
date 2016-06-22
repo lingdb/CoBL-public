@@ -262,6 +262,14 @@ def view_language_list(request, language_list=None):
 
     if (request.method == 'POST') and ('langlist_form' in request.POST):
         languageListTableForm = AddLanguageListTableForm(request.POST)
+        try:
+            languageListTableForm.validate()
+        except Exception, e:
+            print('Exception in POST  validation: ', e)
+            messages.error(request, 'Sorry, the form data sent '
+                           'did not pass server side validation.')
+            return HttpResponseRedirect(
+                reverse("view-language-list", args=[current_list.name]))
         # Languages that may need clade updates:
         updateClades = []
         # Iterating form to update languages:
@@ -297,7 +305,6 @@ def view_language_list(request, language_list=None):
             reverse("view-language-list", args=[current_list.name]))
     elif (request.method == 'POST') and ('cloneLanguage' in request.POST):
         # Cloning language and lexemes:
-        # FIXME FETCH LANGUAGE AND ADJUST FORM!
         form = CloneLanguageForm(request.POST)
         try:
             form.validate()

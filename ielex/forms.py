@@ -3,7 +3,7 @@ import re
 from django import forms
 from django.forms import ValidationError
 from ielex.lexicon.models import *
-from ielex.lexicon.validators import suitable_for_url
+from ielex.lexicon.validators import suitable_for_url, suitable_for_url_wtforms
 # from ielex.extensional_semantics.models import *
 
 from wtforms import StringField, IntegerField, \
@@ -228,8 +228,8 @@ class LanguageListRowForm(AbstractTimestampedForm):
     idField = IntegerField('Language id', validators=[DataRequired()])
     iso_code = StringField('ISO code', validators=[DataRequired()])
     utf8_name = StringField('Display name', validators=[DataRequired()])
-    ascii_name = StringField('URL name',
-                             validators=[DataRequired()])
+    ascii_name = StringField(
+        'URL name', validators=[DataRequired(), suitable_for_url_wtforms])
     glottocode = StringField('Glottocode', validators=[DataRequired()])
     variety = StringField('Language Variety', validators=[DataRequired()])
     foss_stat = BooleanField('Fossile Status', validators=[DataRequired()])
@@ -476,8 +476,10 @@ class LexemeTableLanguageWordlistForm(WTForm):
 
 
 class CloneLanguageForm(WTForm):
-    sourceLanguageName = StringField('', validators=[DataRequired()])
-    languageName = StringField('', validators=[DataRequired()])
+    sourceLanguageName = StringField(
+        '', validators=[DataRequired(), suitable_for_url_wtforms])
+    languageName = StringField(
+        '', validators=[DataRequired(), suitable_for_url_wtforms])
     emptyLexemes = BooleanField('')
 
 
