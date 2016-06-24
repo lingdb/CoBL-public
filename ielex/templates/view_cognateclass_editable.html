@@ -365,17 +365,17 @@
               {# clade_data.html #}
               {% for clade in clades %}
                 <td{% if clade.connectsToNextCognateClass %}
-                    style="background-color: #{{ clade.hexColor }};"
+                    style="background-color: #{{ clade.hexColor }}; border: 2px solid #F9F9F9;"
                   {% endif %}></td>
               {% endfor %}
                 {# lexemeCount_data.html #}
-                <td class="lexemeCount">
+                <td class="lexemeCount text-center">
                   <span class="badge">
                     {{ cc.object_data.lexemeCount }}
                   </span>
                 </td>
                 {# id_data.html #}
-                <td class="cogClassId">
+                <td class="cogClassId text-right">
                   {{ cc.idField.data }}
                   {% if user.is_authenticated %}
                     {% form_field cc.idField class="hide" required="required" %}
