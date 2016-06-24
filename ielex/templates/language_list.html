@@ -72,7 +72,13 @@
               {# entryno_title.html #}
               <th></th>
               {# progress_title.html #}
-              <th>Progress</th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Progress
+                  </div>
+                </div>
+              </th>
               {# name_link.html #}
               <th></th>
               {# name_title.html #}
@@ -606,7 +612,7 @@
                 {# progress_data.html #}
                 <td class="progress">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.progress class="form-control" pattern="^[0-5]{1}$" %}
+                    {% form_field language.progress class="form-control" pattern="^[0-5]{1}$" style="max-width: 2em;" %}
                   {% else %}
                     {{ language.progress.data }}
                   {% endif %}

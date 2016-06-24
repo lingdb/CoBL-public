@@ -18,7 +18,7 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-md-10">
+    <div class="col-md-12">
       {% if user.is_authenticated %}
       <form action="" method="POST" name="cogclass_ed_form" id="cogclass_ed_form">
         {% csrf_token %}
@@ -41,6 +41,13 @@
                   </div>
                 </th>
               {% endfor %}
+              {# lexemeCount_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of lexemes in each cognate class">
+                Lex. Count
+              </th>
               {# id_title.html #}
               <th>ID</th>
               {# alias_title.html #}
@@ -94,13 +101,6 @@
               </th>
               {# loannotes_title.html #}
               <th>Loan<br>Notes</th>
-              {# lexemeCount_title.html #}
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Number of lexemes in each cognate class">
-                Lex. Count
-              </th>
               {# lexemeLoanCount_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -117,6 +117,13 @@
               </th>
             </tr>
             <tr class="filterBar">
+              {# lexemeCount_filter.html #}
+              <th>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".lexemeCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </th>
               {# id_filter.html #}
               <th>
                 <div class="btn btn-xs btn-default sortIntText"
@@ -336,13 +343,6 @@
                   </div>
                 {% endif %}
               </th>
-              {# lexemeCount_filter.html #}
-              <th>
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".lexemeCount">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </th>
               {# lexemeLoanCount_filter.html #}
               <th>
                 <div class="btn btn-xs btn-default sortIntText"
@@ -368,6 +368,12 @@
                     style="background-color: #{{ clade.hexColor }};"
                   {% endif %}></td>
               {% endfor %}
+                {# lexemeCount_data.html #}
+                <td class="lexemeCount">
+                  <span class="badge">
+                    {{ cc.object_data.lexemeCount }}
+                  </span>
+                </td>
                 {# id_data.html #}
                 <td class="cogClassId">
                   {{ cc.idField.data }}
@@ -387,7 +393,7 @@
                 {# rootform_data.html #}
                 <td class="cogRootForm">
                   {% if user.is_authenticated %}
-                    {% form_field cc.root_form class="form-control" %}
+                    {% form_field cc.root_form class="form-control" sytle="min-width: 7em;" %}
                   {% elif cc.root_form.data %}
                     {{ cc.root_form.data }}
                   {% endif %}
@@ -480,19 +486,13 @@
                     {{ cc.loan_notes.data }}
                   {% endif %}
                 </td>
-                {# lexemeCount_title.html #}
-                <td class="lexemeCount">
-                  <span class="badge">
-                    {{ cc.object_data.lexemeCount }}
-                  </span>
-                </td>
-                {# lexemeLoanCount_title.html #}
+                {# lexemeLoanCount_data.html #}
                 <td class="lexemeLoanCount">
                   <span class="badge">
                     {{ cc.object_data.lexemeLoanCount }}
                   </span>
                 </td>
-                {# lexemeLoanPercentage_title.html #}
+                {# lexemeLoanPercentage_data.html #}
                 <td class="lexemeLoanPercentage">
                   <span class="badge">
                     {{ cc.object_data.lexemeLoanPercentage }}
