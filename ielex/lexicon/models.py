@@ -192,6 +192,12 @@ class AbstractTimestamped(models.Model):
             self.lastEditedBy = ' '.join([request.user.first_name,
                                           request.user.last_name])
 
+    def toDict(self):
+        '''
+        Returns a dict carrying the timestampedFields.
+        '''
+        return {k: getattr(self, k) for k in self.timestampedFields()}
+
 
 @reversion.register
 class Source(models.Model):
