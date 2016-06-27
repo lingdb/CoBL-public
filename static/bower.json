@@ -1,5 +1,5 @@
 {
-  "name": "ielex2/static",
+  "name": "ielex2_static",
   "authors": [
     "Jakob Runge <mam09crm@studserv.uni-leipzig.de>"
   ],
@@ -25,6 +25,7 @@
     "rjs": "^2.1.22",
     "lodash": "^4.5.1",
     "markdown-it": "^6.0.0",
-    "jquery.floatThead": "floatThead#^1.4.0"
+    "jquery.floatThead": "floatThead#^1.4.0",
+    "bootbox.js": "bootbox#^4.4.0"
   }
 }

@@ -7,7 +7,8 @@
       'floatThead': 'bower_components/jquery.floatThead/dist/jquery.floatThead.min',
       'bootstrap': 'bower_components/bootstrap/dist/js/bootstrap.min',
       'lodash': 'bower_components/lodash/dist/lodash.min',
-      'markdown-it': 'bower_components/markdown-it/dist/markdown-it.min'
+      'markdown-it': 'bower_components/markdown-it/dist/markdown-it.min',
+      'bootbox': 'bower_components/bootbox.js/bootbox'
     },
     shim: {
       'bootstrap': {deps: ['jquery']},
