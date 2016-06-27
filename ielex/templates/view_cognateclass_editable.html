@@ -23,6 +23,13 @@
       <form action="" method="POST" name="cogclass_ed_form" id="cogclass_ed_form">
         {% csrf_token %}
         <div class="form-group pull-right">
+          <a class="btn btn-default space-right"
+             id="mergeCognateClasses"
+             data-toggle="tooltip"
+             data-placement="bottom"
+             title="Merge selected cognate classes">
+            <span class="glyphicon glyphicon-resize-small"></span>
+          </a>
           <a href="{% url 'edit-cogclasses' meaning %}" class="btn btn-default">undo</a>
           <input type="submit" value="Save" name="cogclass_form" class="btn btn-danger">
         </div>
@@ -52,6 +59,14 @@
               <th>ID</th>
               {# alias_title.html #}
               <th style="width: 80px;">Cog.<br>Alias</th>
+              {# merge_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Merge
+                  </div>
+                </div>
+              </th>
               {# rootform_title.html #}
               <th>Root</th>
               {# rootlang_title.html #}
@@ -141,6 +156,14 @@
                      data-selector=".cogClassAlias">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
+              </th>
+              {# merge_filter.html #}
+              <th>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".mergeCognateClasses">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
               </th>
               {# rootform_filter.html #}
               <th>
@@ -390,6 +413,12 @@
                     {{ cc.alias.data }}
                   </a>
                 </td>
+                {# merge_data.html #}
+                <td>
+                  <input type="checkbox"
+                         class="mergeCognateClasses"
+                         value="{{ cc.idField.data }}">
+                </td>
                 {# rootform_data.html #}
                 <td class="cogRootForm">
                   {% if user.is_authenticated %}
@@ -503,6 +532,15 @@
           </tbody>
         </table>
       {% if user.is_authenticated %}
+        </form>
+        <form action="" method="POST"
+              name="mergeCognateClasses"
+              id="mergeCognateClassesForm"
+              class="hide">
+          {% csrf_token %}
+          <input type="submit"
+                 name="mergeCognateClasses"
+                 class="btn btn-default">
         </form>
       {% endif %}
     </div>

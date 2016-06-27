@@ -26,7 +26,8 @@
              'js/viewTableFilter',
              'js/viewMarkDown',
              'js/distributionSelection',
-             'js/cloneLanguage'],
+             'js/cloneLanguage',
+             'js/mergeCognateClasses'],
             function(require, $, _){
     //Initializing viewTableFilter:
     require('js/viewTableFilter').init('table.viewTableFilter');

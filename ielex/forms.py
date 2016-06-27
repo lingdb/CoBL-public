@@ -394,6 +394,10 @@ class AddCogClassTableForm(WTForm):
     cogclass = FieldList(FormField(CogClassRowForm))
 
 
+class MergeCognateClassesForm(WTForm):
+    mergeIds = StringField('merge ids', validators=[DataRequired()])
+
+
 class CognateJudgementSplitRow(AbstractTimestampedForm):
     idField = IntegerField('Id', validators=[DataRequired()])
     splitOff = BooleanField('Checked implies split off',

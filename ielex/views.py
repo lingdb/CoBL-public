@@ -1214,32 +1214,92 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 def view_cognateclasses(request, meaning):
     setDefaultMeaning(request, meaning)
     # Handle POST of AddCogClassTableForm:
-    if (request.method == 'POST') and 'cogclass_form' in request.POST:
-        try:
-            cogClassTableForm = AddCogClassTableForm(request.POST)
-            cogClassTableForm.validate()
-            # Iterate entries that may be changed:
-            for entry in cogClassTableForm.cogclass:
-                data = entry.data
-                cogclass = CognateClass.objects.get(
-                    id=int(data['idField']))
-                # Check if entry changed and try to update:
-                if cogclass.isChanged(**data):
-                    try:
-                        problem = cogclass.setDelta(request, **data)
-                        if problem is None:
-                            cogclass.save()
-                        else:
+    if request.method == 'POST':
+        if 'cogclass_form' in request.POST:
+            try:
+                cogClassTableForm = AddCogClassTableForm(request.POST)
+                cogClassTableForm.validate()
+                # Iterate entries that may be changed:
+                for entry in cogClassTableForm.cogclass:
+                    data = entry.data
+                    cogclass = CognateClass.objects.get(
+                        id=int(data['idField']))
+                    # Check if entry changed and try to update:
+                    if cogclass.isChanged(**data):
+                        try:
+                            problem = cogclass.setDelta(request, **data)
+                            if problem is None:
+                                cogclass.save()
+                            else:
+                                messages.error(
+                                    request, cogclass.deltaReport(**problem))
+                        except Exception, e:
+                            print('Exception while saving CognateClass:', e)
                             messages.error(
-                                request, cogclass.deltaReport(**problem))
-                    except Exception, e:
-                        print('Exception while saving CognateClass:', e)
-                        messages.error(
-                            request, 'Problem while saving entry: %s' % data)
-        except Exception, e:
-            print('Problem updating cognateclasses:', e)
-            messages.error(request, 'Sorry, the server had problems '
-                           'updating at least one entry.')
+                                request,
+                                'Problem while saving entry: %s' % data)
+            except Exception, e:
+                print('Problem updating cognateclasses:', e)
+                messages.error(request, 'Sorry, the server had problems '
+                               'updating at least one entry.')
+        elif 'mergeCognateClasses' in request.POST:
+            try:
+                # Parsing and validating data:
+                mergeCCForm = MergeCognateClassesForm(request.POST)
+                mergeCCForm.validate()
+                # Extract ids from form:
+                ids = set([int(i) for i in
+                           mergeCCForm.data['mergeIds'].split(',')])
+                # Fetching classes to merge:
+                ccs = CognateClass.objects.filter(
+                    id__in=ids).prefetch_related(
+                    "cognatejudgement_set").all()
+                # Checking ccs length:
+                if len(ccs) <= 1:
+                    print('Not enough cognateclasses to merge.')
+                    messages.error(request, 'Sorry, the server needs '
+                                   '2 or more cognateclasses to merge.')
+                else:
+                    # Merging ccs:
+                    with transaction.atomic():
+                        # Creating new CC with merged field contents:
+                        newC = CognateClass()
+                        setDict = {'notes': set(),
+                                   'root_form': set(),
+                                   'root_language': set(),
+                                   'gloss_in_root_lang': set(),
+                                   'loan_source': set(),
+                                   'loan_notes': set()}
+                        for cc in ccs:
+                            for k, v in cc.toDict().iteritems():
+                                if k in setDict:
+                                    setDict[k].add(v)
+                        delta = {k: '{'+', '.join(v)+'}'
+                                 for k, v in setDict.iteritems()}
+                        for k, v in delta.iteritems():
+                            setattr(newC, k, v)
+                        newC.bump(request)
+                        newC.save()
+                        # Retargeting CJs:
+                        cjIds = set()
+                        for cc in ccs:
+                            cjIds.update([cj.id for cj
+                                          in cc.cognatejudgement_set.all()])
+                        CognateJudgement.objects.filter(
+                            id__in=cjIds).update(
+                            cognate_class_id=newC.id)
+                        # Deleting old ccs:
+                        ccs.delete()
+                        # Fixing alias:
+                        newC.update_alias()
+            except Exception, e:
+                print('Problem merging cognateclasses:', e)
+                messages.error(request, 'Sorry, the server had problems '
+                               'merging cognate classes.')
+        else:
+            print('Unexpected POST request in view_cognateclasses.')
+            messages.error(request, 'Sorry, the server did '
+                           'not understand your request.')
         return HttpResponseRedirect(reverse("edit-cogclasses",
                                     args=[meaning]))
 
