@@ -7,7 +7,6 @@
   return define(['jquery'], function($){
     var table = $('table.viewTableFilter');
     if(table.length !== 1) return;
-    console.log('distributionSelection');
     //Ready to go!
     table.find('.distributionSelection').each(function(){
       var $el = $(this),
