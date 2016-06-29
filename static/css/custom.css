@@ -107,3 +107,11 @@ table.floatThead-table {
 .filterBar th, .nowrap {
   white-space: nowrap;
 }
+
+/* prev/next links for #138 */
+.prevNextLink {
+  margin-top: 11.5px;
+}
+.prevNextLink.pull-right {
+  margin-right: 15px;
+}

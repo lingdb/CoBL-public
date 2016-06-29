@@ -1,12 +1,13 @@
 <center>
-« <a href="{% url 'view-lexeme' prev_lexeme.id %}">
-  <strong> {{ prev_lexeme }}</strong>
-</a>
-  ({{ prev_lexeme.meaning.gloss }})
-<small>―</small>
-<a href="{%  url 'view-lexeme' next_lexeme.id %}">
-  <strong>{{ next_lexeme }}</strong>
-</a>
-  ({{ next_lexeme.meaning.gloss }}) »
+  <a href="{% url 'view-lexeme' prev_lexeme.id %}"
+     class="pull-left prevNextLink">
+    <strong>«&nbsp;{{ prev_lexeme }}</strong>
+    &nbsp;({{ prev_lexeme.meaning.gloss }})
+  </a>
+  <a href="{%  url 'view-lexeme' next_lexeme.id %}"
+     class="pull-right prevNextLink">
+    <strong>{{ next_lexeme }}</strong>
+    &nbsp;({{ next_lexeme.meaning.gloss }})&nbsp;<strong>»</strong>
+  </a>
 </center>
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
