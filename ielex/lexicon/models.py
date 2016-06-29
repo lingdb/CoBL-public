@@ -1275,7 +1275,7 @@ class MeaningListOrder(models.Model):
                                self.meaning.gloss)
 
     class Meta:
-        ordering = ["order"]
+        ordering = ["meaning__gloss"]
         unique_together = (("meaning_list", "meaning"),
                            ("meaning_list", "order"))
 
