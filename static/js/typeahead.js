@@ -1,8 +1,11 @@
 (function(){
   "use strict";
-  return define(['lodash', 'jquery'], function(_, $){
+  return define(['lodash', 'jquery', 'awesomplete'], function(_, $, Awesomplete){
     $('.typeaheadText').each(function(){
-      var input = $(this);
+      var input = $(this).click(function(){
+        //https://stackoverflow.com/a/4067488/44859
+        this.setSelectionRange(0, this.value.length);
+      });
       /*
         Parsing the typeahead map requires unescaping unicode,
         which is inspired by [1].
@@ -13,22 +16,19 @@
         function(match, grp){
           return String.fromCharCode(parseInt(grp, 16));
       }));
-      console.log('DEBUG', data);
-      //Initialize typeahead magic:
-///   input.typeahead({
-///     hint: true,
-///     highlight: true,
-///     minLength: 1
-///   },{
-///     name: 'data-typeahead',
-///     source: function(q, λ){
-///       // See https://twitter.github.io/typeahead.js/examples/#the-basics
-///       var r = new RegExp(q, 'i');
-///       λ(_.filter(_.keys(data), function(k){
-///         return r.test(k);
-///       }));
-///     }
-///   });
+      //Initializing Awesomplete:
+      var awesomplete = new Awesomplete(input.get(0), {
+        list: _.keys(data),
+        minChars: 1,
+        autoFirst: true
+      });
+      //Handling selection event:
+      input.on('awesomplete-selectcomplete', function(){
+        var v = input.val();
+        if(v in data){
+          window.location = data[v];
+        }
+      });
     });
   });
 })();

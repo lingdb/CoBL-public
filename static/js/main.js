@@ -8,14 +8,16 @@
       'bootstrap': 'bower_components/bootstrap/dist/js/bootstrap.min',
       'lodash': 'bower_components/lodash/dist/lodash.min',
       'markdown-it': 'bower_components/markdown-it/dist/markdown-it.min',
-      'bootbox': 'bower_components/bootbox.js/bootbox'
+      'bootbox': 'bower_components/bootbox.js/bootbox',
+      'awesomplete': 'bower_components/awesomplete/awesomplete.min'
     },
     shim: {
       'bootstrap': {deps: ['jquery']},
       'floatThead': {deps: ['jquery']},
       'lodash': {exports: '_'},
       'jquery': {exports: '$'},
-      'markdown-it': {deps: ['jquery']}
+      'markdown-it': {deps: ['jquery']},
+      'awesomplete': {exports: 'Awesomplete'}
     }
   });
   requirejs(['require','jquery','lodash',

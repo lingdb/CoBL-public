@@ -26,6 +26,7 @@
     "lodash": "^4.5.1",
     "markdown-it": "^6.0.0",
     "jquery.floatThead": "floatThead#^1.4.0",
-    "bootbox.js": "bootbox#^4.4.0"
+    "bootbox.js": "bootbox#^4.4.0",
+    "awesomplete": "https://github.com/LeaVerou/awesomplete.git#gh-pages"
   }
 }
