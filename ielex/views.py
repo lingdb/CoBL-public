@@ -2,6 +2,7 @@
 import bisect
 import csv
 import datetime
+import json
 import re
 import requests
 import textwrap
@@ -158,11 +159,11 @@ def get_canonical_language(language, request=None):
 
 
 def get_prev_and_next_languages(request, current_language, language_list=None):
-    if language_list:
-        language_list = LanguageList.objects.get(name=language_list)
-    else:
+    if language_list is None:
         language_list = LanguageList.objects.get(
             name=getDefaultLanguagelist(request))
+    elif type(language_list) == str or type(language_list) == unicode:
+        language_list = LanguageList.objects.get(name=language_list)
 
     ids = list(language_list.languages.values_list("id", flat=True))
 
@@ -178,9 +179,12 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
     return (prev_language, next_language)
 
 
-def get_prev_and_next_meanings(request, current_meaning):
-    meaning_list = getDefaultWordlist(request)
-    meaning_list = MeaningList.objects.get(name=meaning_list)
+def get_prev_and_next_meanings(request, current_meaning, meaning_list=None):
+    if meaning_list is None:
+        meaning_list = MeaningList.objects.get(
+            name=getDefaultWordlist(request))
+    elif type(meaning_list) == str or type(meaning_list) == unicode:
+        meaning_list = MeaningList.objects.get(name=meaning_list)
     meanings = list(meaning_list.meanings.all().order_by("meaninglistorder"))
 
     ids = [m.id for m in meanings]
@@ -621,36 +625,6 @@ def view_language_wordlist(request, language, wordlist):
     except MeaningList.DoesNotExist:
         raise Http404("MeaningList '%s' does not exist" % wordlist)
 
-    def is_lexform(multidict):
-
-        standard_keyset = set(['source_form', 'phon_form', 'gloss',
-                               'notes', 'phoneMic', 'phoneMic',
-                               'transliteration', 'not_swadesh_term'])
-
-        test_keyset = set()
-        for key in multidict.keys():
-            if not(key in ['lex_form', 'csrfmiddlewaretoken']):
-                key_bit = key.split('-')[-1]
-                test_keyset.add(key_bit)
-
-        return len(standard_keyset-test_keyset) == 0
-
-    def is_changewordlistform(multidict):
-
-        standard_keyset = set(['meaning_list', 'changewordlist'])
-
-        test_keyset = set()
-        for key in multidict.keys():
-            if not(key in ['csrfmiddlewaretoken']):
-                key_bit = key.split('-')[-1]
-                test_keyset.add(key_bit)
-
-        return len(standard_keyset-test_keyset) == 0
-
-    def list2ntuple(n, iterable, fillvals=None):
-        init_tuples = [iter(iterable)] * n
-        return izip_longest(fillvalue=fillvals, *init_tuples)
-
     # clean language name
     try:
         language = Language.objects.get(ascii_name=language)
@@ -739,8 +713,15 @@ def view_language_wordlist(request, language, wordlist):
 
     otherMeaningLists = MeaningList.objects.exclude(id=wordlist.id).all()
 
+    languageList = LanguageList.objects.prefetch_related('languages').get(
+        name=getDefaultLanguagelist(request))
+    typeahead = json.dumps({l.utf8_name: reverse(
+        "view-language-wordlist", args=[l.ascii_name, wordlist.name])
+        for l in languageList.languages.all()})
+
     prev_language, next_language = \
-        get_prev_and_next_languages(request, language)
+        get_prev_and_next_languages(request, language,
+                                    language_list=languageList)
     return render_template(request, "language_wordlist.html",
                            {"language": language,
                             "lexemes": lexemes,
@@ -749,7 +730,8 @@ def view_language_wordlist(request, language, wordlist):
                             "wordlist": wordlist,
                             "otherMeaningLists": otherMeaningLists,
                             'lex_ed_form': lexemes_editabletable_form,
-                            'filt_form': filt_form})
+                            'filt_form': filt_form,
+                            'typeahead': typeahead})
 
 
 @login_required
@@ -1095,10 +1077,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     else:
         meaning = Meaning.objects.get(gloss=meaning)
 
-    def list2ntuple(n, iterable, fillvals=None):
-        init_tuples = [iter(iterable)] * n
-        return izip_longest(fillvalue=fillvals, *init_tuples)
-
     # Cognate class judgement button
     if request.method == 'POST' and not ('meang_form' in request.POST):
         cognate_form = ChooseCognateClassForm(request.POST)
@@ -1197,7 +1175,14 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     for lex in lexemes:
         lexemes_editabletable_form.lexemes.append_entry(lex)
 
-    prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
+    meaningList = MeaningList.objects.prefetch_related("meanings").get(
+        name=getDefaultWordlist(request))
+    typeahead = json.dumps({m.gloss: reverse(
+        "view-meaning-languages", args=[m.gloss, current_language_list.name])
+        for m in meaningList.meanings.all()})
+
+    prev_meaning, next_meaning = get_prev_and_next_meanings(
+        request, meaning, meaning_list=meaningList)
     return render_template(
         request, "view_meaning.html",
         {"meaning": meaning,
@@ -1207,7 +1192,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
          "cognate_form": cognate_form,
          "add_cognate_judgement": lexeme_id,
          "lex_ed_form": lexemes_editabletable_form,
-         "filt_form": filt_form})
+         "filt_form": filt_form,
+         "typeahead": typeahead})
 
 
 @csrf_protect
@@ -1344,12 +1330,19 @@ def view_cognateclasses(request, meaning):
     for cc in ccl_ordered:
         cc.computeCounts(languageList=languageList)
         cogclass_editabletable_form.cogclass.append_entry(cc)
+
+    meaningList = MeaningList.objects.prefetch_related("meanings").get(
+        name=getDefaultWordlist(request))
+    typeahead = json.dumps({m.gloss: reverse("edit-cogclasses", args=[meaning])
+                            for m in meaningList.meanings.all()})
+
     # {prev_,next_,}meaning:
     try:
         meaning = Meaning.objects.get(gloss=meaning)
     except Meaning.DoesNotExist:
         raise Http404("Meaning '%s' does not exist" % meaning)
-    prev_meaning, next_meaning = get_prev_and_next_meanings(request, meaning)
+    prev_meaning, next_meaning = get_prev_and_next_meanings(
+        request, meaning, meaning_list=meaningList)
     # Render and done:
     return render_template(request, "view_cognateclass_editable.html",
                            {"meaning": meaning,
@@ -1357,7 +1350,8 @@ def view_cognateclasses(request, meaning):
                             "next_meaning": next_meaning,
                             "clades": clades,
                             "cogclass_editable_form":
-                                cogclass_editabletable_form})
+                                cogclass_editabletable_form,
+                            "typeahead": typeahead})
 
 
 ##################################################################

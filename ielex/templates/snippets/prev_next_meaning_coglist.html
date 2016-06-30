@@ -3,7 +3,11 @@
      class="pull-left prevNextLink">
     <strong>«&nbsp;{{ prev_meaning.gloss }}</strong>
   </a>
-  <h1 class="inline">{{ meaning.gloss }}</h1>
+  <h1 class="inline">
+    <input class="typeaheadText"
+           value="{{ meaning.gloss }}"
+           data-typeahead="{{ typeahead | escapejs }}">
+  </h1>
   <a href="{% url 'edit-cogclasses' next_meaning.gloss %}"
      class="pull-right prevNextLink">
     <strong>{{ next_meaning.gloss }}&nbsp;»</strong>

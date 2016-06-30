@@ -115,3 +115,14 @@ table.floatThead-table {
 .prevNextLink.pull-right {
   margin-right: 15px;
 }
+
+/*
+  Input that appears to be simple text.
+  For #138
+*/
+.typeaheadText {
+  border: 0;
+  outline: none;
+  background: inherit;
+  text-align: center;
+}
