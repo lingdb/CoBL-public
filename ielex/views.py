@@ -1335,7 +1335,7 @@ def view_cognateclasses(request, meaning):
 
     meaningList = MeaningList.objects.prefetch_related("meanings").get(
         name=getDefaultWordlist(request))
-    typeahead = json.dumps({m.gloss: reverse("edit-cogclasses", args=[meaning])
+    typeahead = json.dumps({m.gloss: reverse("edit-cogclasses", args=[m.gloss])
                             for m in meaningList.meanings.all()})
 
     # {prev_,next_,}meaning:
