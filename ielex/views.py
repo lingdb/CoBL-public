@@ -707,14 +707,6 @@ def view_language_wordlist(request, language, wordlist):
             lexemes = lexemes.filter(
                 cognate_class=request.GET.get('cognate_class'))
 
-    # Sorting lexemes by MeaningListOrder:
-    meaningOrderMap = dict(
-        MeaningListOrder.objects.filter(
-            meaning__in=wordlist.meanings.all(),
-            meaning_list=wordlist).values_list("meaning_id", "order"))
-    lexemes = sorted(
-        lexemes, key=lambda l: meaningOrderMap.get(l.meaning.id, 0))
-
     lexemes_editabletable_form = LexemeTableLanguageWordlistForm()
     for lex in lexemes:
         lex.rfcWebPath1 = language.rfcWebPath1
