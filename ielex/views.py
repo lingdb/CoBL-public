@@ -1762,22 +1762,12 @@ def lexeme_duplicate(request, lexeme_id):
 def lexeme_add(request,
                meaning=None,
                language=None,
-               lexeme_id=0,  # non-zero -> duplicate
                return_to=None):
-    # TODO break out the duplicate stuff to a different
-    # (non-interactive) function, that splits and copies the lexemes, along
-    # with cognate coding and everything (include a #current tag too)
     initial_data = {}
     if language:
         initial_data["language"] = get_canonical_language(language, request)
     if meaning:
         initial_data["meaning"] = get_canonical_meaning(meaning)
-    # if lexeme_id:
-    #     original_lexeme = Lexeme.objects.get(id=int(lexeme_id))
-    #     original_source_form, new_source_form = [e.strip() for e in
-    #             original_lexeme.source_form.split(",", 1)]
-    #     initial_data["language"] = original_lexeme.language
-    #     initial_data["meaning"] = original_lexeme.meaning
 
     if request.method == "POST":
         form = AddLexemeForm(request.POST)

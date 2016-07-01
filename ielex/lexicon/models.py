@@ -1131,12 +1131,9 @@ class LanguageList(models.Model):
         """Sequentialize the order fields of a LanguageListOrder set
         with a separation of approximately 1.0.  This is a bit slow, so
         it should only be done from time to time."""
-        count = self.languagelistorder_set.count()
-
-        if count:
-            order_floats = self.languagelistorder_set.values_list(
-                "order", flat=True)
-            for i, llo in enumerate(self.languagelistorder_set.all()):
+        if self.languagelistorder_set.count():
+            llos = self.languagelistorder_set.order_by('order').all()
+            for i, llo in enumerate(llos):
                 if i != llo.order:
                     llo.order = i
                     llo.save()
@@ -1230,15 +1227,12 @@ class MeaningList(models.Model):
         """Sequentialize the order fields of a MeaningListOrder set
         with a separation of approximately 1.0.  This is a bit slow, so
         it should only be done from time to time."""
-        count = self.meaninglistorder_set.count()
-
-        if count:
-            order_floats = self.meaninglistorder_set.values_list(
-                "order", flat=True)
-            for i, llo in enumerate(self.meaninglistorder_set.all()):
-                if i != llo.order:
-                    llo.order = i
-                    llo.save()
+        if self.meaninglistorder_set.count():
+            mlos = self.meaninglistorder_set.order_by('order').all()
+            for i, mlo in enumerate(mlos):
+                if i != mlo.order:
+                    mlo.order = i
+                    mlo.save()
 
     def swap(self, meaningA, meaningB):
         """Swap the order of two meanings"""
@@ -1337,15 +1331,12 @@ class CognateClassList(models.Model):
         """Sequentialize the order fields of a CognateClassListOrder set
         with a separation of approximately 1.0.  This is a bit slow, so
         it should only be done from time to time."""
-        count = self.cognateclasslistorder_set.count()
-
-        if count:
-            order_floats = self.cognateclasslistorder_set.values_list(
-                "order", flat=True)
-            for i, llo in enumerate(self.cognateclasslistorder_set.all()):
-                if i != llo.order:
-                    llo.order = i
-                    llo.save()
+        if self.cognateclasslistorder_set.count():
+            cclos = self.cognateclasslistorder_set.order_by('order').all()
+            for i, cclo in enumerate(cclos):
+                if i != cclo.order:
+                    cclo.order = i
+                    cclo.save()
 
     def swap(self, cognateclassA, cognateclassB):
         """Swap the order of two meanings"""
@@ -1540,10 +1531,13 @@ def add_to_cognateclass_list_all(sender, instance, **kwargs):
 
 @disable_for_loaddata
 def update_meaning_percent_coded(sender, instance, **kwargs):
+    meaning = None
     if type(instance) == Lexeme:
-        instance.meaning.set_percent_coded()
+        meaning = instance.meaning  # Could be None
     elif type(instance) == CognateJudgement:
-        instance.lexeme.meaning.set_percent_coded()
+        meaning = instance.lexeme.meaning  # Could be None
+    if meaning is not None:
+        meaning.set_percent_coded()
 
 models.signals.post_save.connect(
     update_meaning_percent_coded, sender=Lexeme)
