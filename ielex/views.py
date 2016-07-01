@@ -647,30 +647,40 @@ def view_language_wordlist(request, language, wordlist):
                     # Updating the cognate classes:
                     try:
                         for cData in data['allCognateClasses']:
-                            cc = CognateClass.objects.get(id=cData['idField'])
-                            if cc.isChanged(**cData):
-                                problem = cc.setDelta(request, **cData)
-                                if problem is None:
-                                    cc.save()
-                                else:
-                                    messages.error(
-                                        request, cc.deltaReport(**problem))
+                            with transaction.atomic():
+                                cc = CognateClass.objects.get(
+                                    id=cData['idField'])
+                                if cc.isChanged(**cData):
+                                    problem = cc.setDelta(request, **cData)
+                                    if problem is None:
+                                        cc.save()
+                                    else:
+                                        messages.error(
+                                            request, cc.deltaReport(**problem))
                     except Exception, e:
                         print('Exception for updating CognateClass:', e)
+                        messages.error(request, 'Sorry, the server could not '
+                                       'update data for cognate class %s.'
+                                       % cData['idField'])
                     # Updating the lexeme:
                     try:
-                        lex = Lexeme.objects.get(id=data['id'])
-                        if lex.isChanged(**data):
-                            problem = lex.setDelta(request, **data)
-                            if problem is None:
-                                lex.save()
-                            else:
-                                messages.error(
-                                    request, lex.deltaReport(**problem))
+                        with transaction.atomic():
+                            lex = Lexeme.objects.get(id=data['id'])
+                            if lex.isChanged(**data):
+                                problem = lex.setDelta(request, **data)
+                                if problem is None:
+                                    lex.save()
+                                else:
+                                    messages.error(
+                                        request, lex.deltaReport(**problem))
                     except Exception, e:
                         print('Exception for updating Lexeme:', e)
+                        messages.error(request, 'Sorry, the server could '
+                                       'not update lexeme %s.' % lex.gloss)
             except Exception, e:
                 print('Problem updating lexemes:', e)
+                messages.error(request, 'Sorry, the server had problems '
+                               'updating at least one lexeme.')
             return HttpResponseRedirect(
                 reverse("view-language-wordlist",
                         args=[language.ascii_name, wordlist.name]))
