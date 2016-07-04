@@ -301,11 +301,14 @@
         var idCountMap = {};
         var getRowId = function(row){return row.data(dataAttr);};
         table.find('tbody > tr').each(function(){
-          var rId = getRowId($(this));
-          if(rId in idCountMap){
-            idCountMap[rId] += 1;
-          }else{
-            idCountMap[rId] = 1;
+          var row = $(this);
+          if(row.is(':visible')){
+            var rId = getRowId(row);
+            if(rId in idCountMap){
+              idCountMap[rId] += 1;
+            }else{
+              idCountMap[rId] = 1;
+            }
           }
         });
         /*
