@@ -175,6 +175,14 @@
                   title="(#lexemes - #meanings)">
                 Too<br>many{# Lex.-Mgs #}
               </th>
+              {# check_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Check
+                  </div>
+                </div>
+              </th>
               {# lv_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -489,6 +497,8 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </th>
+              {# check_filter.html #}
+              <th></th>
               {# lv_filter.html #}
               <th>
                 {% if user.is_authenticated and user.is_staff %}
@@ -820,6 +830,16 @@
                   <center>
                     <span class="badge">{{ language.object_data.excessCount }}</span>
                   </center>
+                </td>
+                {# check_data.html #}
+                <td>
+                  <a class="btn btn-default bootboxHtmlSnippet"
+                     data-toggle="tooltip"
+                     data-placement="bottom"
+                     data-htmlsource="/language/{{ language.ascii_name.data }}/check"
+                     title="Check this language.">
+                    <span class="glyphicon glyphicon-list"></span>
+                  </a>
                 </td>
                 {# lv_data.html #}
                 <td class="languageLevel0"
