@@ -30,6 +30,15 @@
         {% csrf_token %}
         <div class="form-group pull-right">
           <span class="badge important">{{ lexemes|length }}</span>
+          Dup. mgs:
+          <button type="button"
+                  class="filterDistinct btn btn-default"
+                  data-attr="meaningid"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="Filter duplicate meanings">
+            <span class="glyphicon glyphicon-question-sign"></span>
+          </button>
           <a class="btn btn-default bootboxHtmlSnippet"
              data-toggle="tooltip"
              data-placement="top"
@@ -370,7 +379,7 @@
           <tbody>
             {% for lexeme in lex_ed_form.lexemes %}
               <tr class="content_row"
-                  data-lexemeid="{{ lexeme.data.meaning_id }}">
+                  data-meaningid="{{ lexeme.data.meaning_id }}">
                 {# id_data.html #}
                 <td class="hide">
                   {{ lexeme.id }}

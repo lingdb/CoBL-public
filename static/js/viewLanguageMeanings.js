@@ -10,6 +10,6 @@
     //Colorize it!
     colors.colorize(colors.findToColor(
       table.find('tbody > tr'),
-      function(el){return $(el).data('lexemeid');}));
+      function(el){return $(el).data('meaningid');}));
   });
 })();

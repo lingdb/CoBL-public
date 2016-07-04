@@ -11,8 +11,9 @@
       that select the elements to sort/filter by relative to each tr in the tbody.
     */
     var module = {
-      inputClasses: ['filterText', 'filterInput', 'filterBool'],
-      btnClasses: ['sortInput','sortText','sortIntText']
+      inputClasses: ['filterText', 'filterInput',
+                     'filterBool', 'filterDistinct'],
+      btnClasses: ['sortInput', 'sortText', 'sortIntText']
     };
     /**
       Function to initialize viewTableFilter:
@@ -31,13 +32,13 @@
         //Attaching inputClasses:
         _.each(module.inputClasses, function(inputClass){
           if(inputClass in module){
-            table.find('input.'+inputClass).each(function(){
+            $('input.'+inputClass).each(function(){
               var input = $(this);
               input.keyup(function(){
                 module[inputClass](input, table);
               });
             });
-            table.find('button.'+inputClass).each(function(){
+            $('button.'+inputClass).each(function(){
               var button = $(this);
               button.click(function(){
                 module[inputClass](button, table);
@@ -214,13 +215,14 @@
       };
     });
     /**
-      @param input :: $ ∧ button.filterBool
-      @param table :: $ ∧ table
+      Helper function for module.{filterBool,filterDistinct}
+      @param btn :: $
       @param initial :: Bool
-      If initial is set filterBool shall not change the buttons content.
+      @return wanted :: Bool
+      This function checks the given button to infer `wanted` from it.
+      If initial is not set, the button will be changed to the next state.
     */
-    module.filterBool = function(btn, table, initial){
-      //Find wanted kind of filter:
+    var filterBoolButtton = function(btn, initial){
       var span = btn.find('.glyphicon');
       var wanted;
       if(initial !== true){
@@ -256,6 +258,17 @@
              .html('<span class="glyphicon glyphicon-remove-sign"></span>');
         }
       }
+      return wanted;
+    };
+    /**
+      @param input :: $ ∧ button.filterBool
+      @param table :: $ ∧ table
+      @param initial :: Bool
+      If initial is set filterBool shall not change the buttons content.
+    */
+    module.filterBool = function(btn, table, initial){
+      //Find wanted kind of filter:
+      var wanted = filterBoolButtton(btn, initial);
       //Un-/Registering filter function:
       var selector = btn.data('selector');
       var id = 'filterBool'+selector;
@@ -265,6 +278,44 @@
         filterPredicates[id] = function(row){
           var checked = row.find(selector).prop('checked');
           return checked !== wanted;
+        };
+      }
+      //Filtering
+      filter(table);
+    };
+    /**
+      @param input :: $ ∧ button.filterBool
+      @param table :: $ ∧ table
+      @param initial :: Bool
+      If initial is set filterDistinct shall not change the buttons content.
+    */
+    module.filterDistinct = function(btn, table, initial){
+      //Find wanted kind of filter:
+      var wanted = filterBoolButtton(btn, initial);
+      //Un-/Registering filter function:
+      var dataAttr = btn.data('attr');
+      var id = 'filterDistinct'+dataAttr;
+      if(wanted === null){
+        delete filterPredicates[id];
+      }else{
+        var idCountMap = {};
+        var getRowId = function(row){return row.data(dataAttr);};
+        table.find('tbody > tr').each(function(){
+          var rId = getRowId($(this));
+          if(rId in idCountMap){
+            idCountMap[rId] += 1;
+          }else{
+            idCountMap[rId] = 1;
+          }
+        });
+        /*
+          We implement wanted as:
+          true -> Only display lexemes where the same meaning was found twice.
+          false -> Only display lexemes where the meaning was found just once.
+        */
+        filterPredicates[id] = function(row){
+          var rId = getRowId(row);
+          return ((idCountMap[rId] > 1) !== wanted);
         };
       }
       //Filtering
