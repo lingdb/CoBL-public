@@ -60,10 +60,17 @@ urlpatterns = patterns(
             context_object_name="language_lists"),
         name="view-language-lists"),
 
+    # Language check (#159):
+    url(r'^language/check$' % R, view_language_check),
+    url(r'^language/%(LANGUAGE)s/check$' % R, view_language_check,
+        {"wordlist": MeaningList.DEFAULT}),
+    url(r'^language/%(LANGUAGE)s/wordlist/%(WORDLIST)s/check$' % R,
+        view_language_check),
+
     # Language
     url(r'^language/$' % R, viewDefaultLanguage),
     url(r'^language/%(LANGUAGE)s/$' % R, view_language_wordlist,
-        {"wordlist": "Jena200"}, name="language-report"),
+        {"wordlist": MeaningList.DEFAULT}, name="language-report"),
     url(r'^language/%(LANGUAGE)s/wordlist/%(WORDLIST)s/$' % R,
         view_language_wordlist, name="view-language-wordlist"),
     url(r'^language/%(LANGUAGE)s/edit/$' % R, edit_language,
@@ -95,7 +102,7 @@ urlpatterns = patterns(
     url(r'^wordlist/%(WORDLIST)s/reorder/$' % R, reorder_wordlist,
         name="reorder-wordlist"),
     url(r'^meanings/$', view_wordlist,
-        {"wordlist": "Jena200"}, name="view-meanings"),
+        {"wordlist": MeaningList.DEFAULT}, name="view-meanings"),
     url(r'^meanings/add-new/$', meaning_add_new, name="meaning-add-new"),
     url(r'^meaning/%(MEANING)s/edit/$' % R, edit_meaning,
         name="edit-meaning"),

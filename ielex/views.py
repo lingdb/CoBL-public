@@ -737,6 +737,41 @@ def view_language_wordlist(request, language, wordlist):
 
 
 @login_required
+def view_language_check(request, language=None, wordlist=None):
+    '''
+    Provides an html snipped that contains some sanity checks
+    for a given language against a given wordlist.
+    If language or wordlist are omitted they are inferred vie defaultModels.
+    This function is a result of #159.
+    @param language :: str | unicode | None
+    @param wordlist :: str | unicode | None
+    '''
+    # Infer defaultModels where neccessary:
+    if language is None:
+        language = getDefaultLanguage(request)
+    if wordlist is None:
+        wordlist = getDefaultWordlist(request)
+    # Fetch data to work with:
+    language = Language.objects.get(ascii_name=language)
+    wordlist = MeaningList.objects.get(name=wordlist)
+    meanings = wordlist.meanings.all()
+    # Calculate meaningCounts:
+    meaningCountDict = {m.id: 0 for m in meanings}
+    mIds = Lexeme.objects.filter(
+        language=language, meaning__in=meanings).values_list(
+        "meaning_id", flat=True)
+    for mId in mIds:
+        meaningCountDict[mId] += 1
+    meaningCounts = [{'count': meaningCountDict[m.id],
+                      'meaning': m.gloss}
+                     for m in meanings
+                     if meaningCountDict[m.id] != 1]
+    # Render report:
+    return render_template(request, "language_check.html",
+                           {"meaningCounts": meaningCounts})
+
+
+@login_required
 def add_language_list(request):
     """Start a new language list by cloning an old one"""
     if request.method == "POST":

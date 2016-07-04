@@ -15,7 +15,9 @@
   {% include "snippets/go_to.html" %}
   {% if semantic_domains %}
     <li>
-      <a href="{% url 'language-domains-list' language.ascii_name %}">view semantic domains</a>
+      <a href="{% url 'language-domains-list' language.ascii_name %}">
+        view semantic domains
+      </a>
     </li>
   {% endif %}
 {% endblock %}
@@ -28,14 +30,25 @@
         {% csrf_token %}
         <div class="form-group pull-right">
           <span class="badge important">{{ lexemes|length }}</span>
+          <a class="btn btn-default bootboxHtmlSnippet"
+             data-toggle="tooltip"
+             data-placement="top"
+             data-htmlsource="check"
+             title="Give a report on this language.">
+             Check
+          </a>
           <a href="{% url 'language-add-lexeme' language.ascii_name %}"
              class="btn btn-default space-right"
              data-toggle="tooltip" data-placement="top"
              title="add a new lexeme">
             <span class="glyphicon glyphicon-plus-sign"></span>
           </a>
-          <a href="{% url 'view-language-wordlist' language.ascii_name wordlist.name %}" class="btn btn-default">Undo</a>
-          <input type="submit" value="Save" name="lex_form" class="btn btn-danger">
+          <a href="{% url 'view-language-wordlist' language.ascii_name wordlist.name %}"
+             class="btn btn-default">
+             Undo
+          </a>
+          <input type="submit" value="Save"
+                 name="lex_form" class="btn btn-danger">
         </div>
       {% endif %}
         {% include "snippets/prev_next_language.html" %}

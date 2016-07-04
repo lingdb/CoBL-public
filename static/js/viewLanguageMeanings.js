@@ -7,7 +7,6 @@
   return define(['jquery','lodash','js/colors'], function($, _, colors){
     var table = $('table#viewLanguageMeanings');
     if(table.length !== 1) return;
-    console.log('viewLanguageMeanings');
     //Colorize it!
     colors.colorize(colors.findToColor(
       table.find('tbody > tr'),
