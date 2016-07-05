@@ -758,7 +758,9 @@ def view_language_check(request, language=None, wordlist=None):
     # Calculate meaningCounts:
     meaningCountDict = {m.id: 0 for m in meanings}
     mIds = Lexeme.objects.filter(
-        language=language, meaning__in=meanings).values_list(
+        language=language,
+        meaning__in=meanings,
+        not_swadesh_term=0).values_list(
         "meaning_id", flat=True)
     for mId in mIds:
         meaningCountDict[mId] += 1
@@ -766,6 +768,7 @@ def view_language_check(request, language=None, wordlist=None):
                       'meaning': m.gloss}
                      for m in meanings
                      if meaningCountDict[m.id] != 1]
+    meaningCounts.sort(key=lambda x: x['count'])
     # Render report:
     return render_template(request, "language_check.html",
                            {"meaningCounts": meaningCounts})
