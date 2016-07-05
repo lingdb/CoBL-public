@@ -17,6 +17,7 @@ import reversion
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import *
 from itertools import izip
+from os.path import isfile
 
 # from https://code.djangoproject.com/ticket/8399
 try:
@@ -1585,3 +1586,20 @@ class Author(AbstractTimestamped):
 
     class Meta:
         ordering = ["surname", "firstNames"]
+
+    @property
+    def getAvatar(self):
+        '''
+        Tries to infer the avatar of an Author by seaching for pictures that
+        are named after the surname of an Author.
+        @return path :: str | None
+        '''
+        # Guard to make sure we've got a surname:
+        if self.surname is None or self.surname == '':
+            return None
+        basePath = 'static/contributors/'
+        extensions = ['.jpg','.jpeg','.png','.gif']
+        for extension in extensions:
+            path = basePath + self.surname + extension
+            if isfile(path):
+                return path

@@ -126,3 +126,18 @@ table.floatThead-table {
   background: inherit;
   text-align: center;
 }
+
+/*
+  Thumbnails for #152
+*/
+.authorThumbnail {
+  width: 36px;
+  height: 36px;
+}
+
+.authorThumbnail:hover {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  z-index: 1;
+}
