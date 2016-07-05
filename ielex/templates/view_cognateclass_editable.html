@@ -130,6 +130,13 @@
                   title="Number of loan words over number of total lexemes for each cognate class">
                 Lex. Loan %
               </th>
+              {# onlyNotSwh_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Checked iff all lexemes in the cognate class are marked as 'Not Swadesh'.">
+                Not<br>Swh.
+              </th>
             </tr>
             <tr class="filterBar">
               {# lexemeCount_filter.html #}
@@ -380,6 +387,13 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </th>
+              {# onlyNotSwh_filter.html #}
+              <th>
+                <button type="button" class="filterBool btn btn-xs btn-danger"
+                        data-selector=".onlyNotSwh input">
+                  <span class="glyphicon glyphicon-remove-sign"></span>
+                </button>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -526,6 +540,15 @@
                   <span class="badge">
                     {{ cc.object_data.lexemeLoanPercentage }}
                   </span>
+                </td>
+                {# onlyNotSwh_data.html #}
+                <td class="onlyNotSwh">
+                  <input type="checkbox"
+                         class="form-control"
+                         disabled="disabled"
+                         {% if cc.object_data.hasOnlyNotSwadesh %}
+                         checked="checked"
+                         {% endif %}>
                 </td>
               </tr>
             {% endfor %}

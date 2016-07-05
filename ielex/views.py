@@ -1370,12 +1370,12 @@ def view_cognateclasses(request, meaning):
     for cc in ccl_ordered:
         cc.computeCounts(languageList=languageList)
         cogclass_editabletable_form.cogclass.append_entry(cc)
-
+    # Fetch meaningList for typeahead and prev/next calculation:
     meaningList = MeaningList.objects.prefetch_related("meanings").get(
         name=getDefaultWordlist(request))
+    # Compute typeahead:
     typeahead = json.dumps({m.gloss: reverse("edit-cogclasses", args=[m.gloss])
                             for m in meaningList.meanings.all()})
-
     # {prev_,next_,}meaning:
     try:
         meaning = Meaning.objects.get(gloss=meaning)

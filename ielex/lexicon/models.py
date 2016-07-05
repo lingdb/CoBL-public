@@ -797,7 +797,11 @@ class CognateClass(AbstractTimestamped):
             # Gather counts:
             lexemeCount = 0
             lexemeLoanCount = 0
+            onlyNotSwh = True  # True iff all lexemes are not_swadesh_term.
             for l in self.lexeme_set.all():
+                # Update onlyNotSwh iff necessary:
+                if not l.not_swadesh_term:
+                    onlyNotSwh = False
                 # If we have lSet we use it to skip unwanted:
                 if lSet is not None:
                     if l.language_id not in lSet:
@@ -816,7 +820,8 @@ class CognateClass(AbstractTimestamped):
             self._computeCounts = {
                 'lexemeCount': lexemeCount,
                 'lexemeLoanCount': lexemeLoanCount,
-                'lexemeLoanPercentage': lexemeLoanPercentage}
+                'lexemeLoanPercentage': lexemeLoanPercentage,
+                'onlyNotSwh': onlyNotSwh}
         return self._computeCounts
 
     @property
@@ -842,6 +847,10 @@ class CognateClass(AbstractTimestamped):
     @property
     def lexemeLoanPercentage(self):
         return '%.2f' % self.computeCounts()['lexemeLoanPercentage']
+
+    @property
+    def hasOnlyNotSwadesh(self):
+        return self.computeCounts()['onlyNotSwh']
 
 
 class DyenCognateSet(models.Model):
