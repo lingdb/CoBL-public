@@ -14,6 +14,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.contrib import messages
 import jsonfield
 import reversion
+import math
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import *
 from itertools import izip
@@ -817,6 +818,10 @@ class CognateClass(AbstractTimestamped):
             # Computing percentage
             lexemeLoanPercentage = lexemeLoanCount / lexemeCount \
                 if lexemeCount > 0 else float('nan')
+            if math.isnan(lexemeLoanPercentage):
+                lexemeLoanPercentage = 0
+            else:
+                lexemeLoanPercentage = int(lexemeLoanPercentage * 100)
             # Filling memo with data:
             self._computeCounts = {
                 'lexemeCount': lexemeCount,
@@ -847,7 +852,7 @@ class CognateClass(AbstractTimestamped):
 
     @property
     def lexemeLoanPercentage(self):
-        return '%.2f' % self.computeCounts()['lexemeLoanPercentage']
+        return self.computeCounts()['lexemeLoanPercentage']
 
     @property
     def hasOnlyNotSwadesh(self):

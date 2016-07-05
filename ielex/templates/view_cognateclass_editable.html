@@ -53,12 +53,22 @@
                   data-placement="bottom"
                   data-container="body"
                   title="Number of lexemes in each cognate class">
-                Lex. Count
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Lex. Count
+                  </div>
+                </div>
               </th>
               {# id_title.html #}
               <th>ID</th>
               {# alias_title.html #}
-              <th style="width: 80px;">Cog.<br>Alias</th>
+              <th style="width: 80px;">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. Alias
+                  </div>
+                </div>
+              </th>
               {# merge_title.html #}
               <th>
                 <div class="vertical-text">
@@ -76,27 +86,45 @@
                   data-placement="bottom"
                   data-container="body"
                   title="Not Proto-Indo-European?">
-                Not<br>PIE?
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Not PIE?
+                  </div>
+                </div>
               </th>
               {# glossinrootlang_title.html #}
               <th>Root<br>Gloss</th>
               {# notes_title.html #}
               <th>Root<br>Notes</th>
               {# loanword_title.html #}
-              <th>Loan<br>Event</th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Loan Event
+                  </div>
+                </div>
+              </th>
               {# parallelLoanEvent_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
                   title="Parallel Loan Event">
-                  Pll.<br>Loan
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Pll. Loan
+                  </div>
+                </div>
               </th>
               {# loanSourceId_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
                   title="Loan Source Cognate Set Id">
-                  Source Set Id
+                  <div class="vertical-text">
+                    <div class="vertical-text__inner">
+                      Source ID
+                    </div>
+                  </div>
               </th>
               {# loansource_title.html #}
               <th>Loan<br>Source Lg.</th>
@@ -121,21 +149,33 @@
                   data-placement="bottom"
                   data-container="body"
                   title="Number of lexemes in each cognate class that are marked as loan words">
-                Lex. Loan Count
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Lex. Loans
+                  </div>
+                </div>
               </th>
               {# lexemeLoanPercentage_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
                   title="Number of loan words over number of total lexemes for each cognate class">
-                Lex. Loan %
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Lex. Loan %
+                  </div>
+                </div>
               </th>
               {# onlyNotSwh_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
                   title="Checked iff all lexemes in the cognate class are marked as 'Not Swadesh'.">
-                Not<br>Swh.
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Not Swh.
+                  </div>
+                </div>
               </th>
             </tr>
             <tr class="filterBar">
@@ -156,7 +196,7 @@
               {# alias_filter.html #}
               <th>
                 <input type="text"s
-                       class="filterText form-control narrow"
+                       class="filterText form-control hide"
                        data-selector=".cogClassAlias"
                        style="width: 2em;">
                 <div class="btn btn-xs btn-default sortText"
@@ -278,7 +318,8 @@
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
-                         data-selector=".loanSourceId input">
+                         data-selector=".loanSourceId input"
+                         style="width: 2em;">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".loanSourceId input">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -286,7 +327,8 @@
                 {% else %}
                   <input type="text"
                          class="filterText form-control"
-                         data-selector=".loanSourceId">
+                         data-selector=".loanSourceId"
+                         style="width: 2em;">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".loanSourceId">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -318,7 +360,8 @@
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
-                         data-selector=".loanEventTimeDepthBP input">
+                         data-selector=".loanEventTimeDepthBP input"
+                         style="width: 3em;">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".loanEventTimeDepthBP input">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -326,7 +369,8 @@
                 {% else %}
                   <input type="text"
                          class="filterText form-control"
-                         data-selector=".loanEventTimeDepthBP">
+                         data-selector=".loanEventTimeDepthBP"
+                         style="width: 3em;">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".loanEventTimeDepthBP">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -436,7 +480,7 @@
                 {# rootform_data.html #}
                 <td class="cogRootForm">
                   {% if user.is_authenticated %}
-                    {% form_field cc.root_form class="form-control" sytle="min-width: 7em;" %}
+                    {% form_field cc.root_form class="form-control" style="width: 12em;" %}
                   {% elif cc.root_form.data %}
                     {{ cc.root_form.data }}
                   {% endif %}
@@ -444,7 +488,7 @@
                 {# rootlang_data.html #}
                 <td class="cogRootLang">
                   {% if user.is_authenticated %}
-                    {% form_field cc.root_language class="form-control" %}
+                    {% form_field cc.root_language class="form-control" style="width: 12em;" %}
                   {% elif cc.root_language.data %}
                     {{ cc.root_language.data }}
                   {% endif %}
@@ -492,7 +536,7 @@
                 {# loanSourceId_data.html #}
                 <td class="loanSourceId">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loanSourceId class="form-control" pattern="^[0-9]*$" %}
+                    {% form_field cc.loanSourceId class="form-control" pattern="^[0-9]*$" style="width: 4em;" %}
                   {% elif cc.loanSourceId.data %}
                     {{ cc.loanSourceId.data }}
                   {% endif %}
@@ -508,7 +552,7 @@
                 {# loanEventTimeDepthBP_data.html #}
                 <td class="loanEventTimeDepthBP">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loanEventTimeDepthBP class="form-control" pattern="^[0-9]+$" %}
+                    {% form_field cc.loanEventTimeDepthBP class="form-control numberField" pattern="^[0-9]+$" style="width: 5em;" %}
                   {% elif cc.loanEventTimeDepthBP.data %}
                     {{ cc.loanEventTimeDepthBP.data }}
                   {% endif %}
@@ -531,15 +575,19 @@
                 </td>
                 {# lexemeLoanCount_data.html #}
                 <td class="lexemeLoanCount">
-                  <span class="badge">
-                    {{ cc.object_data.lexemeLoanCount }}
-                  </span>
+                  {% if cc.object_data.lexemeLoanCount %}
+                    <span class="badge">
+                      {{ cc.object_data.lexemeLoanCount }}
+                    </span>
+                  {% endif %}
                 </td>
                 {# lexemeLoanPercentage_data.html #}
                 <td class="lexemeLoanPercentage">
-                  <span class="badge">
-                    {{ cc.object_data.lexemeLoanPercentage }}
-                  </span>
+                  {% if cc.object_data.lexemeLoanPercentage %}
+                    <span class="badge">
+                      {{ cc.object_data.lexemeLoanPercentage }}
+                    </span>
+                  {% endif %}
                 </td>
                 {# onlyNotSwh_data.html #}
                 <td class="onlyNotSwh">

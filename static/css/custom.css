@@ -141,3 +141,8 @@ table.floatThead-table {
   position: absolute;
   z-index: 1;
 }
+
+/* For fields that contain only numbers */
+.numberField {
+  text-align: right;
+}
