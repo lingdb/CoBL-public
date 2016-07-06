@@ -649,7 +649,7 @@
                   >
                   <center>
                     {% if user.is_authenticated and user.is_staff %}
-                      {% form_field language.level0 class="languageBranch form-control" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level0 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
                     {% elif language.level0.data %}
                       {{ language.level0.data }}
                     {% endif %}
@@ -672,7 +672,7 @@
                     {% endif %}
                     >
                     <center>
-                      {% form_field language.level1 class="languageBranch form-control" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level1 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
                     </center>
                   </td>
                   <td class="languageLevel1Abbr">
@@ -691,7 +691,7 @@
                     {% endif %}
                     >
                     <center>
-                      {% form_field language.level2 class="languageBranch form-control" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level2 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
                     </center>
                   </td>
                   <td class="languageLevel2Abbr">
@@ -710,7 +710,7 @@
                     {% endif %}
                     >
                     <center>
-                      {% form_field language.level3 class="languageBranch form-control" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level3 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
                     </center>
                   </td>
                   <td class="languageLevel3Abbr hide">
@@ -895,7 +895,7 @@
                 {# progress_data.html #}
                 <td class="progress">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.progress class="form-control" pattern="^[0-5]{1}$" style="max-width: 1.5em;" %}
+                    {% form_field language.progress class="form-control numberField" pattern="^[0-5]{1}$" style="max-width: 1.5em;" %}
                   {% else %}
                     {{ language.progress.data }}
                   {% endif %}

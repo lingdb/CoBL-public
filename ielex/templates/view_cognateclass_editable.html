@@ -536,7 +536,7 @@
                 {# loanSourceId_data.html #}
                 <td class="loanSourceId">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loanSourceId class="form-control" pattern="^[0-9]*$" style="width: 4em;" %}
+                    {% form_field cc.loanSourceId class="form-control numberField" pattern="^[0-9]*$" style="width: 4em;" %}
                   {% elif cc.loanSourceId.data %}
                     {{ cc.loanSourceId.data }}
                   {% endif %}

@@ -512,7 +512,7 @@
                 </td>
                 <td class="cladeLevel0">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.cladeLevel0 class="form-control" pattern="^[0-9]{0,2}$" %}
+                    {% form_field clade.cladeLevel0 class="form-control numberField" pattern="^[0-9]{0,2}$" %}
                   {% elif clade.cladeLevel0.data %}
                     {{ clade.cladeLevel0.data }}
                   {% endif %}
@@ -526,7 +526,7 @@
                 </td>
                 <td class="cladeLevel1">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.cladeLevel1 class="form-control" pattern="^[0-9]{0,2}$" %}
+                    {% form_field clade.cladeLevel1 class="form-control numberField" pattern="^[0-9]{0,2}$" %}
                   {% elif clade.cladeLevel1.data %}
                     {{ clade.cladeLevel1.data }}
                   {% endif %}
@@ -540,7 +540,7 @@
                 </td>
                 <td class="cladeLevel2">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.cladeLevel2 class="form-control" pattern="^[0-9]{0,2}$" %}
+                    {% form_field clade.cladeLevel2 class="form-control numberField" pattern="^[0-9]{0,2}$" %}
                   {% elif clade.cladeLevel2.data %}
                     {{ clade.cladeLevel2.data }}
                   {% endif %}
@@ -554,7 +554,7 @@
                 </td>
                 <td class="cladeLevel3">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.cladeLevel3 class="form-control" pattern="^[0-9]{0,2}$" %}
+                    {% form_field clade.cladeLevel3 class="form-control numberField" pattern="^[0-9]{0,2}$" %}
                   {% elif clade.cladeLevel3.data %}
                     {{ clade.cladeLevel3.data }}
                   {% endif %}
@@ -613,14 +613,14 @@
                 </td>
                 <td class="atMost">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.atMost class="form-control" pattern="^[0-9]{0,4}$" %}
+                    {% form_field clade.atMost class="form-control numberField" pattern="^[0-9]{0,4}$" %}
                   {% elif clade.atMost.data %}
                     {{ clade.atMost.data }}
                   {% endif %}
                 </td>
                 <td class="atLeast">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.atLeast class="form-control" pattern="^[0-9]{0,4}$" %}
+                    {% form_field clade.atLeast class="form-control numberField" pattern="^[0-9]{0,4}$" %}
                   {% elif clade.atLeast.data %}
                     {{ clade.atLeast.data }}
                   {% endif %}
@@ -634,49 +634,49 @@
                 </td>
                 <td class="logNormalOffset reflectDistribution" data-allowed="O">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.logNormalOffset class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                    {% form_field clade.logNormalOffset class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif clade.logNormalOffset.data %}
                     {{ clade.logNormalOffset.data }}
                   {% endif %}
                 </td>
                 <td class="logNormalMean reflectDistribution" data-allowed="OL">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.logNormalMean class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                    {% form_field clade.logNormalMean class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif clade.logNormalMean.data %}
                     {{ clade.logNormalMean.data }}
                   {% endif %}
                 </td>
                 <td class="logNormalStDev reflectDistribution" data-allowed="OL">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.logNormalStDev class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                    {% form_field clade.logNormalStDev class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif clade.logNormalStDev.data %}
                     {{ clade.logNormalStDev.data }}
                   {% endif %}
                 </td>
                 <td class="normalMean reflectDistribution" data-allowed="N">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.normalMean class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                    {% form_field clade.normalMean class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif clade.normalMean.data %}
                     {{ clade.normalMean.data }}
                   {% endif %}
                 </td>
                 <td class="normalStDev reflectDistribution" data-allowed="N">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.normalStDev class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                    {% form_field clade.normalStDev class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif clade.normalStDev.data %}
                     {{ clade.normalStDev.data }}
                   {% endif %}
                 </td>
                 <td class="uniformUpper reflectDistribution" data-allowed="U">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.uniformUpper class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                    {% form_field clade.uniformUpper class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif clade.uniformUpper.data %}
                     {{ clade.uniformUpper.data }}
                   {% endif %}
                 </td>
                 <td class="uniformLower reflectDistribution" data-allowed="U">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.uniformLower class="form-control" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                    {% form_field clade.uniformLower class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif clade.uniformLower.data %}
                     {{ clade.uniformLower.data }}
                   {% endif %}
