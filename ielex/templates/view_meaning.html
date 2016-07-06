@@ -143,21 +143,21 @@
           </tr>
           <tr class="filterBar">
             {# lexemeid_filter.html #}
-            <th class="hide"></th>
+            <td class="hide"></td>
             {# branchcolor_filter.html #}
-            <th class="languageBranchColor" colspan="2"></th>
+            <td class="languageBranchColor" colspan="2"></td>
             {# languagename_filter.html #}
-            <th>
+            <td>
               <input type="text" class="filterText form-control"
                      data-selector=".languageName">
               <div class="btn btn-xs btn-default sortText"
                    data-selector=".languageName">
                 <span class="glyphicon glyphicon-sort"></span>
               </div>
-            </th>
-            <th></th>
+            </td>
+            <td></td>
             {# sourceform_filter.html #}
-            <th>
+            <td>
               {% if user.is_authenticated %}
                 <input type="text" class="filterInput form-control"
                        data-selector=".lexemeSourceForm input">
@@ -173,11 +173,11 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               {% endif %}
-            </th>
+            </td>
             {# lexemeeditcopy_filter.html #}
-            <th colspan="3"></th>
+            <td colspan="3"></td>
             {# transliteration_filter.html #}
-            <th>
+            <td>
               {% if user.is_authenticated %}
                 <input type="text"
                        class="filterInput form-control"
@@ -195,50 +195,50 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               {% endif %}
-            </th>
+            </td>
             {# swadesh_filter.html #}
-            <th>
+            <td>
               <button type="button"
                       class="filterBool btn btn-xs btn-danger"
                       data-selector=".lexemeSwadeshTerm input">
                 <span class="glyphicon glyphicon-remove-sign"></span>
               </button>
-            </th>
+            </td>
             {# isexcluded_lexeme_filter.html #}
-            <th>
+            <td>
               <button type="button"
                       class="filterBool btn btn-xs btn-default"
                       data-selector=".lexemeIsExcludedLexeme input">
                 <span class="glyphicon glyphicon-question-sign"></span>
               </button>
-            </th>
+            </td>
             {# isloan_lexeme_filter.html #}
-            <th>
+            <td>
               <button type="button"
                       class="filterBool btn btn-xs btn-default"
                       data-selector=".lexemeIsLoanLexeme input">
                 <span class="glyphicon glyphicon-question-sign"></span>
               </button>
-            </th>
+            </td>
             {# ncog_filter.html #}
-            <th>
+            <td>
               <input type="text" class="filterText form-control narrow"
                      data-selector=".lexemeNCog" style="width: 1.5em;">
               <div class="btn btn-xs btn-default sortIntText"
                    data-selector=".lexemeNCog">
                 <span class="glyphicon glyphicon-sort"></span>
               </div>
-            </th>
+            </td>
             {# cognateclasses_filter.html #}
-            <th>
+            <td>
               <input type="text"
                      class="filterText form-control"
                      data-selector=".cognateClasses"
                      size="1"
                      style="padding-left: 2px; padding-right: 2px;">
-            </th>
+            </td>
             {# rootform_filter.html #}
-            <th>
+            <td>
               {% if user.is_authenticated %}
                 <input type="text"
                        class="filterInput form-control narrow"
@@ -256,9 +256,9 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               {% endif %}
-            </th>
+            </td>
             {# rootlanguage_filter.html #}
-            <th>
+            <td>
               {% if user.is_authenticated %}
                 <input type="text"
                        class="filterInput form-control narrow"
@@ -276,32 +276,32 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               {% endif %}
-            </th>
+            </td>
             {# loanevent_filter.html #}
-            <th>
+            <td>
               <button type="button" class="filterBool btn btn-xs btn-default"
                       data-selector=".lexemeShowLoanEvent input">
                 <span class="glyphicon glyphicon-question-sign"></span>
               </button>
-            </th>
+            </td>
             {# isloan_cognate_filter.html #}
-            <th>
+            <td>
               <button type="button"
                       class="filterBool btn btn-xs btn-default"
                       data-selector=".lexemeIsLoanCognate input">
                 <span class="glyphicon glyphicon-question-sign"></span>
               </button>
-            </th>
+            </td>
             {# isexcluded_cognate_filter.html #}
-            <th>
+            <td>
               <button type="button"
                       class="filterBool btn btn-xs btn-default"
                       data-selector=".lexemeIsExcludedCognate input">
                 <span class="glyphicon glyphicon-question-sign"></span>
               </button>
-            </th>
+            </td>
             {# phonemic_filter.html #}
-            <th>
+            <td>
               {% if user.is_authenticated %}
                 <input type="text"
                        class="filterInput form-control narrow"
@@ -319,11 +319,11 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               {% endif %}
-            </th>
+            </td>
             {# phonecopy_filter.html #}
-            <th colspan="2"></th>
+            <td colspan="2"></td>
             {# phonetic_filter.html #}
-            <th>
+            <td>
               {% if user.is_authenticated %}
                 <input type="text"
                        class="filterInput form-control narrow"
@@ -341,9 +341,9 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               {% endif %}
-            </th>
+            </td>
             {# gloss_filter.html #}
-            <th>
+            <td>
               {% if user.is_authenticated %}
                 <input type="text" class="filterInput form-control narrow"
                        data-selector=".lexemeGloss input">
@@ -359,9 +359,9 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               {% endif %}
-            </th>
+            </td>
             {# notes_filter.html #}
-            <th>
+            <td>
               {% if user.is_authenticated %}
                 <input type="text" class="filterInput form-control narrow"
                        data-selector=".lexemeNotes input">
@@ -377,7 +377,7 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               {% endif %}
-            </th>
+            </td>
           </tr>
         </thead>
         <tbody>

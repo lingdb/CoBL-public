@@ -180,21 +180,21 @@
             </tr>
             <tr class="filterBar">
               {# lexemeCount_filter.html #}
-              <th>
+              <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".lexemeCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
-              </th>
+              </td>
               {# id_filter.html #}
-              <th>
+              <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".cogClassId">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
-              </th>
+              </td>
               {# alias_filter.html #}
-              <th>
+              <td>
                 <input type="text"s
                        class="filterText form-control hide"
                        data-selector=".cogClassAlias"
@@ -203,17 +203,17 @@
                      data-selector=".cogClassAlias">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
-              </th>
+              </td>
               {# merge_filter.html #}
-              <th>
+              <td>
                 <button type="button"
                         class="filterBool btn btn-xs btn-default"
                         data-selector=".mergeCognateClasses">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
-              </th>
+              </td>
               {# rootform_filter.html #}
-              <th>
+              <td>
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
@@ -231,9 +231,9 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
-              </th>
+              </td>
               {# rootlang_filter.html #}
-              <th>
+              <td>
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
@@ -251,16 +251,16 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
-              </th>
+              </td>
               {# notProtoIndoEuropean_filter.html #}
-              <th>
+              <td>
                 <button type="button" class="filterBool btn btn-xs btn-default"
                         data-selector=".notProtoIndoEuropean input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
-              </th>
+              </td>
               {# glossinrootlang_filter.html #}
-              <th>
+              <td>
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
@@ -278,9 +278,9 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
-              </th>
+              </td>
               {# notes_filter.html #}
-              <th>
+              <td>
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
@@ -298,23 +298,23 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
-              </th>
+              </td>
               {# loanword_filter.html #}
-              <th>
+              <td>
                 <button type="button" class="filterBool btn btn-xs btn-default"
                         data-selector=".cogLoanword input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
-              </th>
+              </td>
               {# parallelLoanEvent_filter.html #}
-              <th>
+              <td>
                 <button type="button" class="filterBool btn btn-xs btn-default"
                         data-selector=".parallelLoanEvent input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
-              </th>
+              </td>
               {# loanSourceId_filter.html #}
-              <th>
+              <td>
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
@@ -334,9 +334,9 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
-              </th>
+              </td>
               {# loansource_filter.html #}
-              <th>
+              <td>
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
@@ -354,9 +354,9 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
-              </th>
+              </td>
               {# loanEventTimeDepthBP_filter.html #}
-              <th>
+              <td>
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
@@ -376,9 +376,9 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
-              </th>
+              </td>
               {# sourceFormInLoanLanguage_filter.html #}
-              <th>
+              <td>
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
@@ -396,9 +396,9 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
-              </th>
+              </td>
               {# loannotes_filter.html #}
-              <th>
+              <td>
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
@@ -416,28 +416,28 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
-              </th>
+              </td>
               {# lexemeLoanCount_filter.html #}
-              <th>
+              <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".lexemeLoanCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
-              </th>
+              </td>
               {# lexemeLoanPercentage_filter.html #}
-              <th>
+              <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".lexemeLoanPercentage">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
-              </th>
+              </td>
               {# onlyNotSwh_filter.html #}
-              <th>
+              <td>
                 <button type="button" class="filterBool btn btn-xs btn-danger"
                         data-selector=".onlyNotSwh input">
                   <span class="glyphicon glyphicon-remove-sign"></span>
                 </button>
-              </th>
+              </td>
             </tr>
           </thead>
           <tbody>

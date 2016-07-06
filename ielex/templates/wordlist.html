@@ -88,8 +88,8 @@
               </th>
             </tr>
             <tr class="filterBar">
-              <th></th>
-              <th>
+              <td></td>
+              <td>
                 {% if user.is_authenticated %}
                   <input type="text" class="filterInput form-control"
                          data-selector=".meaningGloss input"
@@ -107,54 +107,54 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
-              </th>
+              </td>
               {% if user.is_authenticated %}
-                <th colspan="3"></th>
+                <td colspan="3"></td>
               {% else %}
-                <th colspan="2"></th>
+                <td colspan="2"></td>
               {% endif %}
-              <th>
+              <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningPercentCoded">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
-              </th>
-              <th>
+              </td>
+              <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningLexCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
-              </th>
-              <th>
+              </td>
+              <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
-              </th>
-              <th>
+              </td>
+              <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogRootFormCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
-              </th>
-              <th>
+              </td>
+              <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogRootFormPercentage">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
-              </th>
-              <th>
+              </td>
+              <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogRootLanguageCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
-              </th>
-              <th>
+              </td>
+              <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogRootLanguagePercentage">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
-              </th>
+              </td>
             </tr>
           </thead>
           <tbody>
