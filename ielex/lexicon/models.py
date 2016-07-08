@@ -1603,7 +1603,7 @@ class Author(AbstractTimestamped):
         if self.surname is None or self.surname == '':
             return None
         basePath = 'static/contributors/'
-        extensions = ['.jpg','.jpeg','.png','.gif']
+        extensions = ['.jpg', '.jpeg', '.png', '.gif']
         for extension in extensions:
             path = basePath + self.surname + extension
             if isfile(path):
