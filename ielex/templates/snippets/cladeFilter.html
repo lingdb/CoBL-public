@@ -1,14 +1,19 @@
 {% if clades %}
-<ul id="cladeFilter">
-  {% for clade in clades %}
-    {% if clade.shortName %}
-      <li class="inline" data-cladefilter-cladepath="{{ clade.cladePath }}">
-        <span class="badge" style="background-color: #{{ clade.hexColor }};">
-          {{ clade.shortName }}
-        </span>
-      </li>
-    {% endif %}
-  {% endfor %}
-</ul>
+  <ul id="cladeFilter">
+    <li class="inline" data-cladefilter-representative="True">
+      <span class="badge" style="background-color: #000000;">
+        Rfc
+      </span>
+    </li>
+    {% for clade in clades %}
+      {% if clade.shortName %}
+        <li class="inline" data-cladefilter-cladepath="{{ clade.cladePath }}">
+          <span class="badge" style="background-color: #{{ clade.hexColor }};">
+            {{ clade.shortName }}
+          </span>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
 {% endif %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

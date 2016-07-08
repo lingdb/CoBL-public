@@ -1,7 +1,9 @@
 (function(){
   "use strict";
-  return define(['jquery','lodash','js/languageBranchesFilter','floatThead'],
-    function($, _, mkBranchFilter){
+  return define(['jquery','lodash',
+                 'js/cladeFilter',
+                 'floatThead'],
+    function($, _, mkCladeFilter){
     /*
       This view can be used to filter and sort tables.
       The table is expected to contain input elements
@@ -63,10 +65,13 @@
             console.log('btnClass not implemented:', btnClass);
           }
         });
-        //languageBranchesFilter:
-        filterPredicates.languageBranchFilter = mkBranchFilter(
-          '#languageBranchFilter',
-          function(){filter(table);});
+        //cladeFilter:
+        var λ = _.bind(filter, null, table);
+        var cladeFilter = mkCladeFilter(λ);
+        if(cladeFilter){
+          filterPredicates.cladeFilter = cladeFilter;
+          λ();
+        }
       });
     };
     /**
