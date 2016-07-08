@@ -363,6 +363,13 @@ class Clade(AbstractTimestamped):
             return self._cognateClassConnections.pop(0)
         return False
 
+    @property
+    def cladePath(self):
+        return ','.join([str(l) for l in [self.cladeLevel0,
+                                          self.cladeLevel1,
+                                          self.cladeLevel2,
+                                          self.cladeLevel3] if l != 0])
+
 
 @reversion.register
 class Language(AbstractTimestamped):

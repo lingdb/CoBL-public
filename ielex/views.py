@@ -379,7 +379,8 @@ def view_language_list(request, language_list=None):
                             'lang_ed_form': languages_editabletable_form,
                             "current_list": current_list,
                             "otherLanguageLists": otherLanguageLists,
-                            "wordlist": getDefaultWordlist(request)})
+                            "wordlist": getDefaultWordlist(request),
+                            "clades": Clade.objects.all()})
 
 
 @csrf_protect
@@ -1210,17 +1211,18 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     # "This field is required.", but only here:
     # Here this is not needed.
     filt_form.errors['language'] = ''
-
+    # Fill lexemes_editabletable_form:
     lexemes_editabletable_form = LexemeTableViewMeaningsForm()
     for lex in lexemes:
         lexemes_editabletable_form.lexemes.append_entry(lex)
-
+    # Fetch meaningList:
     meaningList = MeaningList.objects.prefetch_related("meanings").get(
         name=getDefaultWordlist(request))
+    # Compute typeahead:
     typeahead = json.dumps({m.gloss: reverse(
         "view-meaning-languages", args=[m.gloss, current_language_list.name])
         for m in meaningList.meanings.all()})
-
+    # Calculate prev/next meanings:
     prev_meaning, next_meaning = get_prev_and_next_meanings(
         request, meaning, meaning_list=meaningList)
     return render_template(
@@ -1233,7 +1235,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
          "add_cognate_judgement": lexeme_id,
          "lex_ed_form": lexemes_editabletable_form,
          "filt_form": filt_form,
-         "typeahead": typeahead})
+         "typeahead": typeahead,
+         "clades": Clade.objects.all()})
 
 
 @csrf_protect

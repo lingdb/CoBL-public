@@ -34,19 +34,7 @@
           </div>
       {% endif %}
       {% include "snippets/prev_next_meaning.html" %}
-      {% if languageBranches %}
-      <ul id="languageBranchFilter" data-selector=".languageBranchColor">
-        {% for branch in languageBranches %}
-          {% if branch.shortName %}
-            <li class="inline" data-treeids="{{ branch.getTreeIds|join:"," }}">
-              <span class="badge" style="background-color: #{{ branch.hexColor }};">
-                {{ branch.shortName }}
-              </span>
-            </li>
-          {% endif %}
-        {% endfor %}
-      </ul>
-      {% endif %}
+      {% include "snippets/cladeFilter.html" %}
       <table class="table table-condensed viewTableFilter"
              id="viewMeaningLanguages">
         <thead>
