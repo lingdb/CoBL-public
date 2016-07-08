@@ -1279,7 +1279,8 @@ def view_cognateclasses(request, meaning):
                 # Fetching classes to merge:
                 ccs = CognateClass.objects.filter(
                     id__in=ids).prefetch_related(
-                    "cognatejudgement_set").all()
+                    "cognatejudgement_set",
+                    "cognateclasscitation_set").all()
                 # Checking ccs length:
                 if len(ccs) <= 1:
                     print('Not enough cognateclasses to merge.')
@@ -1313,6 +1314,14 @@ def view_cognateclasses(request, meaning):
                                           in cc.cognatejudgement_set.all()])
                         CognateJudgement.objects.filter(
                             id__in=cjIds).update(
+                            cognate_class_id=newC.id)
+                        # Retargeting CCCs:
+                        cccIds = set()
+                        for cc in ccs:
+                            cccIds.update([ccc.id for ccc in
+                                           cc.cognateclasscitation_set.all()])
+                        CognateClassCitation.objects.filter(
+                            id__in=cccIds).update(
                             cognate_class_id=newC.id)
                         # Deleting old ccs:
                         ccs.delete()
