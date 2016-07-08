@@ -19,14 +19,14 @@
         return null; //Not activating filter.
       }
       //Loading session settings:
-      var settings = ('cladeFilter' in window.sessionStorage)
-                   ? JSON.parse(window.sessionStorage['cladeFilter'])
+      var settings = ('cladeFilter' in window.sessionStorage) ?
+                     JSON.parse(window.sessionStorage.cladeFilter)
                    : {representative: false, // :: Bool
                       cladepaths: {} // :: cladepath -> 0
                      };
       //Function to save settings to the session:
       var saveSettings = function(){
-        window.sessionStorage['cladeFilter'] = JSON.stringify(settings)
+        window.sessionStorage.cladeFilter = JSON.stringify(settings);
       };
       /**
         @param li :: $ ∧ li
@@ -35,8 +35,8 @@
         initial implies that li won't be altered.
       */
       var handleLi = function(li, initial){
-        var representative = li.data('cladefilter-representative')
-          , cladepath = li.data('cladefilter-cladepath');
+        var representative = li.data('cladefilter-representative');
+        var cladepath = li.data('cladefilter-cladepath');
         //Alter settings:
         if(initial === false){
           if(!_.isUndefined(representative)){
@@ -71,8 +71,8 @@
       });
       //Filter function that must decide if a row should be hidden:
       return function(row){
-        var representative = row.data('cladefilter-representative')
-          , cladepath = row.data('cladefilter-cladepath');
+        var representative = row.data('cladefilter-representative');
+        var cladepath = row.data('cladefilter-cladepath');
         // Filter representative:
         if(!_.isUndefined(representative)){
           if(settings.representative && representative === 'True'){
