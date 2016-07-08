@@ -382,7 +382,8 @@
         </thead>
         <tbody>
           {% for lexeme in lex_ed_form.lexemes %}
-            <tr>
+            <tr data-cladefilter-representative="{{ lexeme.object_data.language.representative }}"
+                data-cladefilter-cladepath="{{ lexeme.object_data.language.cladePath }}">
               {# lexemeid_data.html #}
               <td class="hide">
                 {% if user.is_authenticated %}

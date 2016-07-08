@@ -541,6 +541,13 @@ class Language(AbstractTimestamped):
                     return c.hexColor
         return '777777'
 
+    @property
+    def cladePath(self):
+        return ','.join([str(self.level0),
+                         str(self.level1),
+                         str(self.level2),
+                         str(self.level3)])
+
     def timestampedFields(self):
         return set(['iso_code', 'ascii_name', 'utf8_name', 'glottocode',
                     'variety', 'foss_stat', 'low_stat', 'soundcompcode',

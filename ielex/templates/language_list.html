@@ -633,7 +633,8 @@
           </thead>
           <tbody>
             {% for language in lang_ed_form.langlist %}
-              <tr>
+              <tr data-cladefilter-representative="{{ language.object_data.representative }}"
+                  data-cladefilter-cladepath="{{ language.object_data.cladePath }}">
                 {# entryno_data.html #}
                 <td class="entryNo numberField">
                   {{ forloop.counter }}
