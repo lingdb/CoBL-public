@@ -1185,7 +1185,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         language__in=current_language_list.languages.all(),
         language__languagelistorder__language_list=current_language_list
         ).order_by(
-        "language__languagelistorder"
+        "language"
         ).select_related(
         "language",
         "meaning").prefetch_related(
