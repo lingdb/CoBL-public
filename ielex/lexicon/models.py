@@ -406,6 +406,8 @@ class Language(AbstractTimestamped):
     sndCompLevel1 = models.IntegerField(default=0, null=True)
     sndCompLevel2 = models.IntegerField(default=0, null=True)
     sndCompLevel3 = models.IntegerField(default=0, null=True)
+    # Added for #209:
+    entryTimeframe = models.TextField(blank=True, null=True)
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
@@ -563,7 +565,7 @@ class Language(AbstractTimestamped):
                     'std_deviation_timedepth_BP_years',
                     'rfcWebPath1', 'rfcWebPath2', 'author', 'reviewer',
                     'earliestTimeDepthBound', 'latestTimeDepthBound',
-                    'progress', 'sortRankInClade'])
+                    'progress', 'sortRankInClade', 'entryTimeframe'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update language: ' \

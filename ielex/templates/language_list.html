@@ -234,6 +234,10 @@
               {% endif %}
               {# author_title.html #}
               <th>Author</th>
+              {# entryTimeframe_title.html #}
+              {% if user.is_authenticated and user.is_staff %}
+                <th>Timeframe</th>
+              {% endif %}
               {# reviewer_title.html #}
               <th>
                 <div class="vertical-text">
@@ -571,6 +575,14 @@
                          data-selector=".languageAuthor">
                 {% endif %}
               </td>
+              {# entryTimeframe_filter.html #}
+              {% if user.is_authenticated and user.is_staff %}
+              <td>
+                <input type="text"
+                       class="filterInput form-control"
+                       data-selector=".entryTimeframe input">
+              </td>
+              {% endif %}
               {# reviewer_filter.html #}
               <td>
                 {% if user.is_authenticated and user.is_staff %}
@@ -881,11 +893,17 @@
                 {# author_data.html #}
                 <td class="languageAuthor">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.author class="form-control" style="width: 12em;"%}
+                    {% form_field language.author class="form-control" style="width: 12em;" %}
                   {% else %}
                     {{ language.author.data }}
                   {% endif %}
                 </td>
+                {# entryTimeframe_data.html #}
+                {% if user.is_authenticated and user.is_staff %}
+                <td class="entryTimeframe">
+                  {% form_field language.entryTimeframe class="form-control" style="width: 10em;" %}
+                </td>
+                {% endif %}
                 {# reviewer_data.html #}
                 <td class="languageReviewer">
                   {% if user.is_authenticated and user.is_staff %}
