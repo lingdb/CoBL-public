@@ -69,17 +69,25 @@
           triggerFilter();
         });
       });
-      //Filter function that must decide if a row should be hidden:
+      /**
+        @param row :: $ ∧ tr
+        @return hide :: Bool
+        Filter function that must decide if a row should be hidden:
+        See [1] for a complete description of how this filter should work.
+        [1]: https://github.com/lingdb/CoBL/issues/38#issuecomment-231463827
+      */
       return function(row){
-        var representative = row.data('cladefilter-representative');
-        var cladepath = row.data('cladefilter-cladepath');
-        // Filter representative:
-        if(!_.isUndefined(representative)){
-          if(settings.representative && representative === 'True'){
-            return true;
+        //Consider enforcing display if representative:
+        if(!settings.representative){
+          var representative = row.data('cladefilter-representative');
+          if(!_.isUndefined(representative)){
+            if(representative === 'True'){
+              return false;
+            }
           }
         }
         // Filter cladepath:
+        var cladepath = row.data('cladefilter-cladepath');
         if(!_.isUndefined(cladepath)){
           return _.some(_.keys(settings.cladepaths), function(prefix){
             return _.startsWith(cladepath, prefix);
