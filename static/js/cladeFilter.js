@@ -37,6 +37,7 @@
       var handleLi = function(li, initial){
         var representative = li.data('cladefilter-representative');
         var cladepath = li.data('cladefilter-cladepath');
+        var toggleall = li.data('cladefilter-toggleall');
         //Alter settings:
         if(initial === false){
           if(!_.isUndefined(representative)){
@@ -47,6 +48,16 @@
             }else{
               settings.cladepaths[cladepath] = 0;
             }
+          }else if(!_.isUndefined(toggleall)){
+            //Toggles the selection of clades.
+            if(_.keys(settings.cladepaths).length){
+              _.each(_.keys(settings.cladepaths), function(cp){
+                cladeFilter.find('li[data-cladefilter-cladepath="'+cp+'"]').trigger('click');
+              });
+            }else{
+              cladeFilter.find('li[data-cladefilter-cladepath]').trigger('click');
+            }
+            return; // Nothing else to do for ALL button
           }
           saveSettings();
         }
