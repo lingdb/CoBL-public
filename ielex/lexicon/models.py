@@ -15,10 +15,10 @@ from django.contrib import messages
 import jsonfield
 import reversion
 import math
+import path
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import *
 from itertools import izip
-from os.path import isfile
 
 # from https://code.djangoproject.com/ticket/8399
 try:
@@ -1621,6 +1621,7 @@ class Author(AbstractTimestamped):
         basePath = 'static/contributors/'
         extensions = ['.jpg', '.jpeg', '.png', '.gif']
         for extension in extensions:
-            path = basePath + self.surname + extension
-            if isfile(path):
-                return path
+            p = os.path.join(basePath,
+                             self.surname.encode('utf-8') + extension)
+            if os.path.isfile(p):
+                return p
