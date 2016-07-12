@@ -232,7 +232,7 @@ class LanguageListRowForm(AbstractTimestampedForm):
         'URL name', validators=[DataRequired(), suitable_for_url_wtforms])
     glottocode = StringField('Glottocode', validators=[DataRequired()])
     variety = StringField('Language Variety', validators=[DataRequired()])
-    foss_stat = BooleanField('Fossile Status', validators=[DataRequired()])
+    foss_stat = BooleanField('Fossilised Status', validators=[DataRequired()])
     low_stat = BooleanField('Low Status', validators=[DataRequired()])
     soundcompcode = StringField('Sound Comparisons Code',
                                 validators=[DataRequired()])
