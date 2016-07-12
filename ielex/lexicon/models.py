@@ -15,7 +15,7 @@ from django.contrib import messages
 import jsonfield
 import reversion
 import math
-import path
+import os.path
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import *
 from itertools import izip
