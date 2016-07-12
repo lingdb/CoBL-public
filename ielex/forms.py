@@ -263,6 +263,7 @@ class LanguageListRowForm(AbstractTimestampedForm):
         'Sort rank in clade', validators=[DataRequired()])
     entryTimeframe = StringField('Entry timeframe',
                                  validators=[DataRequired()])
+    historical = BooleanField('Historical', validators=[DataRequired()])
 
 
 class AddLanguageListTableForm(WTForm):

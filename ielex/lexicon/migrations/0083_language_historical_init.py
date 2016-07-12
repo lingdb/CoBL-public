@@ -14,18 +14,19 @@ def forwards_func(apps, schema_editor):
     '''
     Language = apps.get_model('lexicon', 'Language')
     for language in Language.objects.all():
-        language.originalAsciiName = language.ascii_name
-        language.save()
+        if language.mean_timedepth_BP_years is not None:
+            if language.mean_timedepth_BP_years > 0:
+                language.historical = True
+                language.save()
 
 
 def reverse_func(apps, schema_editor):
-    print('Nothing to do for reverse_func '
-          'of 0082_language_fill_originalasciiname')
+    print('Nothing to do for reverse_func of 0083_language_historical_init')
 
 
 class Migration(migrations.Migration):
 
-    dependencies = [('lexicon', '0082_language_originalasciiname')]
+    dependencies = [('lexicon', '0083_language_historical')]
 
     operations = [
         migrations.RunPython(forwards_func, reverse_func),
