@@ -408,6 +408,9 @@ class Language(AbstractTimestamped):
     sndCompLevel3 = models.IntegerField(default=0, null=True)
     # Added for #209:
     entryTimeframe = models.TextField(blank=True, null=True)
+    # Added for #218:
+    originalAsciiName = models.CharField(
+        max_length=128, validators=[suitable_for_url])
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
