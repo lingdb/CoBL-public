@@ -1330,27 +1330,15 @@ def view_cognateclasses(request, meaning):
         languageList = LanguageList.objects.get(
             name=LanguageList.ALL)
 
-    ccl_ordered = []
-
-    cogclass_bymeaning = CognateClass.objects.filter(
+    ccl_ordered = CognateClass.objects.filter(
         cognatejudgement__lexeme__meaning__gloss=meaning,
-        cognatejudgement__lexeme__language_id__in=languageList.languagelistorder_set.values_list('language_id', flat=True))
-    cogclass_bymeaning_ids = set([i.pk for i in cogclass_bymeaning])
-
-    # This is a clunky way of sorting; currently assumes LanguageList
-    # 'all' (maybe make this configurable?)
-    cognateclass_list = CognateClassList.objects.get(
-        name=CognateClassList.DEFAULT)
-    cognateClasses = cognateclass_list.cognateclasses.all().order_by("alias")
+        cognatejudgement__lexeme__language_id__in=languageList.languagelistorder_set.values_list(
+                'language_id', flat=True)).order_by('alias').distinct()
 
     def cmpLen(x, y):  # Fixing sort order for #98
         return len(x.alias) - len(y.alias)
-    cognateClasses = sorted(cognateClasses, cmp=cmpLen)
+    ccl_ordered = sorted(ccl_ordered, cmp=cmpLen)
 
-    for cogclass in cognateClasses:
-        if cogclass.pk in cogclass_bymeaning_ids:
-            cc = CognateClass.objects.filter(pk=cogclass.pk).distinct()
-            ccl_ordered.extend(list(cc))
     # Clades to use for #112:
     clades = Clade.objects.filter(
         id__in=LanguageClade.objects.filter(

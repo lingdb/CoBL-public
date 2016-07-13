@@ -1308,107 +1308,6 @@ class MeaningListOrder(models.Model):
                            ("meaning_list", "order"))
 
 
-class CognateClassList(models.Model):
-    """A named, ordered list of cognate classes for use in display and output. A
-    default list, named 'all' is (re)created on save/delete of the CognateClass
-    table (cf. ielex.models.update_cognateclass_list_all)
-
-    To get an order list of language from cognateclasslist `ccl`::
-
-        ccl.cognateclasses.all().order_by("cognateclasslistorder")
-    """
-
-    DEFAULT = "all"
-
-    name = models.CharField(
-        max_length=128,
-        validators=[suitable_for_url, standard_reserved_names])
-    description = models.TextField(blank=True, null=True)
-    cognateclasses = models.ManyToManyField(
-        CognateClass, through="CognateClassListOrder")
-    modified = models.DateTimeField(auto_now=True)
-
-    def append(self, cognateclass):
-        """
-        Add another cognateclass to the end of a CognateClassList ordering
-        """
-        N = self.cognateclasslistorder_set.aggregate(Max("order")).values()[0]
-        try:
-            N += 1
-        except TypeError:
-            assert N is None
-            N = 0
-        CognateClassListOrder.objects.create(
-                cognateclass=cognateclass,
-                cognateclass_list=self,
-                order=N)
-
-    def insert(self, N, cognateclass):
-        """
-        Insert another cognateclass into a CognateClassList
-        ordering before the object position N
-        """
-        llo = CognateClassListOrder.objects.get(
-                cognateclass=cognateclass,
-                cognateclass_list=self)
-        target = self.cognateclassorder_set.all()[N]
-        llo.order = target.order - 0.0001
-        llo.save()
-
-    def remove(self, cognateclass):
-        llo = CognateClassListOrder.objects.get(
-                cognateclass=cognateclass,
-                cognateclass_list=self)
-        llo.delete()
-
-    def sequentialize(self):
-        """Sequentialize the order fields of a CognateClassListOrder set
-        with a separation of approximately 1.0.  This is a bit slow, so
-        it should only be done from time to time."""
-        if self.cognateclasslistorder_set.count():
-            cclos = self.cognateclasslistorder_set.order_by('order').all()
-            for i, cclo in enumerate(cclos):
-                if i != cclo.order:
-                    cclo.order = i
-                    cclo.save()
-
-    def swap(self, cognateclassA, cognateclassB):
-        """Swap the order of two meanings"""
-        orderA = CognateClassListOrder.objects.get(
-                cognateclass=cognateclassA,
-                cognateclass_list=self)
-        orderB = CognateClassListOrder.objects.get(
-                cognateclass=cognateclassB,
-                cognateclass_list=self)
-        orderB.delete()
-        orderA.order, orderB.order = orderB.order, orderA.order
-        orderA.save()
-        orderB.save()
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        ordering = ["name"]
-
-
-class CognateClassListOrder(models.Model):
-
-    cognateclass = models.ForeignKey(CognateClass)
-    cognateclass_list = models.ForeignKey(CognateClassList)
-    order = models.FloatField()
-
-    def __unicode__(self):
-        return u"%s:%s(%s)" % (self.cognateclass_list.name,
-                               self.order,
-                               self.cognateclass.alias)
-
-    class Meta:
-        ordering = ["order"]
-        unique_together = (("cognateclass_list", "cognateclass"),
-                           ("cognateclass_list", "order"))
-
-
 class AbstractBaseCitation(models.Model):
     """Abstract base class for citation models
     The source field has to be in the subclasses in order for the
@@ -1539,28 +1438,6 @@ def update_meaning_list_all(sender, instance, **kwargs):
 
 models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
 models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
-
-
-@receiver(post_save, sender=CognateClass)
-def add_to_cognateclass_list_all(sender, instance, **kwargs):
-    '''
-    Make sure each new CognateClass becomes a member of the 'all' list.
-
-    Removal of a CognateClass can leave a 'hole' in the order numbers of
-    a CognateClassList, but such a hole would not cause a problem since the
-    rest of the order wouldn't be touched.
-    Because of that we only care for newly inserted CCs
-    and these can just be added to the end of the 'all' list.
-
-    To add to the end, we do this:
-    1: Fetch an instance of the 'all' CognateClassList
-    2: Use CognateClassList.append() iff necessary
-    '''
-    ccl, _ = CognateClassList.objects.get_or_create(
-        name=CognateClassList.DEFAULT)
-    if not CognateClassListOrder.objects.filter(
-      cognateclass=instance, cognateclass_list=ccl).exists():
-        ccl.append(instance)
 
 
 @disable_for_loaddata
