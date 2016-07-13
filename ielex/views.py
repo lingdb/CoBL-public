@@ -1322,11 +1322,19 @@ def view_cognateclasses(request, meaning):
                            'not understand your request.')
         return HttpResponseRedirect(reverse("edit-cogclasses",
                                     args=[meaning]))
+    # Acquiring languageList:
+    try:
+        languageList = LanguageList.objects.get(
+            name=getDefaultLanguagelist(request))
+    except LanguageList.DoesNotExist:
+        languageList = LanguageList.objects.get(
+            name=LanguageList.ALL)
 
     ccl_ordered = []
 
     cogclass_bymeaning = CognateClass.objects.filter(
-        cognatejudgement__lexeme__meaning__gloss=meaning)
+        cognatejudgement__lexeme__meaning__gloss=meaning,
+        cognatejudgement__lexeme__language_id__in=languageList.languagelistorder_set.values_list('language_id', flat=True))
     cogclass_bymeaning_ids = set([i.pk for i in cogclass_bymeaning])
 
     # This is a clunky way of sorting; currently assumes LanguageList
@@ -1343,13 +1351,6 @@ def view_cognateclasses(request, meaning):
         if cogclass.pk in cogclass_bymeaning_ids:
             cc = CognateClass.objects.filter(pk=cogclass.pk).distinct()
             ccl_ordered.extend(list(cc))
-    # Acquiring languageList:
-    try:
-        languageList = LanguageList.objects.get(
-            name=getDefaultLanguagelist(request))
-    except LanguageList.DoesNotExist:
-        languageList = LanguageList.objects.get(
-            name=LanguageList.ALL)
     # Clades to use for #112:
     clades = Clade.objects.filter(
         id__in=LanguageClade.objects.filter(
