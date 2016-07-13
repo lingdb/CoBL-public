@@ -88,6 +88,8 @@
                 </div>
               </div>
             </th>
+            {# cognateclassids_title.html #}
+            <th>Cog.<br>Ids</th>
             {# cognateclasses_title.html #}
             <th>Cog.<br>Alias</th>
             {# rootform_title.html #}
@@ -214,6 +216,13 @@
                      data-selector=".lexemeNCog" style="width: 1.5em;">
               <div class="btn btn-xs btn-default sortIntText"
                    data-selector=".lexemeNCog">
+                <span class="glyphicon glyphicon-sort"></span>
+              </div>
+            </td>
+            {# cognateclassids_filter.html #}
+            <td>
+              <div class="btn btn-xs btn-default sortIntText"
+                   data-selector=".cognateClassId">
                 <span class="glyphicon glyphicon-sort"></span>
               </div>
             </td>
@@ -486,6 +495,16 @@
                     {{ lexeme.object_data.number_cognate_coded }}
                   </span>
                 </center>
+              </td>
+              {# cognateclassids_data.html #}
+              <td class="cognateClassId">
+                {% for c in  lexeme.allCognateClasses %}
+                  <a href="/cognate/{{ c.object_data.id }}/">
+                    {{ c.object_data.id }}
+                  </a>
+                {% endfor %}
+                <a href="#">
+                </a>
               </td>
               {# cognateclasses_data.html #}
               <td>
