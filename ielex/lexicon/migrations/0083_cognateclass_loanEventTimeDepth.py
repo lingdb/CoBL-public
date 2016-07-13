@@ -16,9 +16,13 @@ def forwards_func(apps, schema_editor):
     See https://github.com/lingdb/CoBL/issues/202
     '''
     CognateClass = apps.get_model('lexicon', 'CognateClass')
-    for c in CognateClass.objects.filter(id__in=data.keys()).all():
-        c.loanEventTimeDepthBP = data[c.id]
-        c.save()
+    for c in CognateClass.objects.all():
+        if c.id in data:
+            c.loanEventTimeDepthBP = data[c.id]
+            c.save()
+        else:
+            c.loanEventTimeDepthBP = ''
+            c.save()
 
 
 def reverse_func(apps, schema_editor):
