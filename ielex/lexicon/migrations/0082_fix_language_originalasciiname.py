@@ -196,6 +196,7 @@ data = {187: "Blank",
         38: "Irish",
         37: "ZLegacy_Irish_A"}
 
+
 def forwards_func(apps, schema_editor):
     '''
     This migration overwrites the originalAsciiName fields
@@ -211,7 +212,8 @@ def forwards_func(apps, schema_editor):
 
 
 def reverse_func(apps, schema_editor):
-    print('Nothing to do for reverse_func of 0082_fix_language_originalasciiname')
+    print('Nothing to do for reverse_func of '
+          '0082_fix_language_originalasciiname')
 
 
 class Migration(migrations.Migration):
