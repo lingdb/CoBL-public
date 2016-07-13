@@ -645,24 +645,6 @@ def view_language_wordlist(request, language, wordlist):
 
                 for entry in lexemesTableForm.lexemes:
                     data = entry.data
-                    # Updating the cognate classes:
-                    try:
-                        for cData in data['allCognateClasses']:
-                            with transaction.atomic():
-                                cc = CognateClass.objects.get(
-                                    id=cData['idField'])
-                                if cc.isChanged(**cData):
-                                    problem = cc.setDelta(request, **cData)
-                                    if problem is None:
-                                        cc.save()
-                                    else:
-                                        messages.error(
-                                            request, cc.deltaReport(**problem))
-                    except Exception, e:
-                        print('Exception for updating CognateClass:', e)
-                        messages.error(request, 'Sorry, the server could not '
-                                       'update data for cognate class %s.'
-                                       % cData['idField'])
                     # Updating the lexeme:
                     try:
                         with transaction.atomic():
