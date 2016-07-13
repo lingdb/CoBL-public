@@ -552,7 +552,7 @@
                 {# loanEventTimeDepthBP_data.html #}
                 <td class="loanEventTimeDepthBP">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loanEventTimeDepthBP class="form-control numberField" pattern="^[0-9]+$" style="width: 5em;" %}
+                    {% form_field cc.loanEventTimeDepthBP class="form-control" style="width: 5em;" %}
                   {% elif cc.loanEventTimeDepthBP.data %}
                     {{ cc.loanEventTimeDepthBP.data }}
                   {% endif %}

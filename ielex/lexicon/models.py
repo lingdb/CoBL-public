@@ -721,7 +721,7 @@ class CognateClass(AbstractTimestamped):
     loan_source = models.TextField(blank=True)
     loan_notes = models.TextField(blank=True)
     # Fields added for #162:
-    loanEventTimeDepthBP = models.IntegerField(default=0, null=False)
+    loanEventTimeDepthBP = models.TextField(blank=True)
     sourceFormInLoanLanguage = models.TextField(blank=True)
     loanSourceId = models.IntegerField(null=True)
     # Not given via timestampedFields;

@@ -368,7 +368,7 @@ class CogClassRowForm(AbstractTimestampedForm):
     loan_notes = TextField('Loan Notes', validators=[DataRequired()])
     loanSourceId = IntegerField(
         'Id of related cc', validators=[DataRequired()])
-    loanEventTimeDepthBP = IntegerField(
+    loanEventTimeDepthBP = StringField(
         'Time depth of loan event', validators=[DataRequired()])
     sourceFormInLoanLanguage = TextField(
         'Source form in loan language', validators=[DataRequired()])
