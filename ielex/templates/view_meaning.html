@@ -90,6 +90,8 @@
             </th>
             {# cognateclassids_title.html #}
             <th>Cog.<br>Ids</th>
+            {# cognateclassview_title.html #}
+            <th></th>
             {# cognateclasses_title.html #}
             <th>Cog.<br>Alias</th>
             {# rootform_title.html #}
@@ -226,6 +228,8 @@
                 <span class="glyphicon glyphicon-sort"></span>
               </div>
             </td>
+            {# cognateclassview_filter.html #}
+            <td></td>
             {# cognateclasses_filter.html #}
             <td>
               <input type="text"
@@ -503,7 +507,11 @@
                     {{ c.object_data.id }}
                   </a>
                 {% endfor %}
-                <a href="#">
+              </td>
+              {# cognateclassview_data.html #}
+              <td>
+                <a href="/meaning/{{ meaning.gloss }}/cognateclasslist/">
+                  <img src="{% static '1c.png' %}">
                 </a>
               </td>
               {# cognateclasses_data.html #}
