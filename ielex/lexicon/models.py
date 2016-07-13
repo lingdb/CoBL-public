@@ -1120,7 +1120,7 @@ class LanguageList(models.Model):
 
         ll.languages.all().order_by("languagelistorder")
     """
-    DEFAULT = "2016-06-29_147"
+    DEFAULT = "Current"
     ALL = "all"
 
     name = models.CharField(
@@ -1215,7 +1215,7 @@ class LanguageListOrder(models.Model):
 @reversion.register
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
-    DEFAULT = "all"
+    DEFAULT = "Jena200"
     ALL = "all"
 
     name = models.CharField(
