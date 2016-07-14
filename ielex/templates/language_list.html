@@ -256,11 +256,7 @@
               </th>
               {# progress_title.html #}
               <th>
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Progress
-                  </div>
-                </div>
+                Progress
               </th>
               {# entd_title.html #}
               <th data-toggle="tooltip"
@@ -612,12 +608,12 @@
                 {% endif %}
               </td>
               {# progress_filter.html #}
-              <td>
+              <td class="nowrap">
                 <input type="text" class="filterInput form-control"
-                       data-selector=".progress input"
+                       data-selector=".progressData input"
                        style="width: 1em;">
                 <div class="btn btn-xs btn-default sortInput"
-                     data-selector=".progress input">
+                     data-selector=".progressData input">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
@@ -937,7 +933,7 @@
                   {% endif %}
                 </td>
                 {# progress_data.html #}
-                <td class="progress">
+                <td class="progressData">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.progress class="form-control numberField" pattern="^[0-5]{1}$" style="max-width: 1.5em;" %}
                   {% else %}
