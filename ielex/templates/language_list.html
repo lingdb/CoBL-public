@@ -762,7 +762,7 @@
                 {# historical_data.html #}
                 <td class="languageHistorical">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.historical class="form-control" %}
+                    {% form_field language.historical class="form-control" data-dependencyfor-tr="historical" %}
                   {% else %}
                     {% form_field language.historical class="form-control" disabled=disabled %}
                   {% endif %}
@@ -851,7 +851,7 @@
                 {# meantd_data.html #}
                 <td class="languageMeanTimeDepth">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.mean_timedepth_BP_years maxlength="4" class="form-control numberField" style="width: 3.2em;" pattern="[0-9]{0,4}" %}
+                    {% form_field language.mean_timedepth_BP_years maxlength="4" class="form-control numberField" style="width: 3.2em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
                   {% elif language.mean_timedepth_BP_years.data %}
                     {{ language.mean_timedepth_BP_years.data }}
                   {% endif %}
@@ -859,7 +859,7 @@
                 {# stddev_data.html #}
                 <td class="languageStdDeviationTimeDepth">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.std_deviation_timedepth_BP_years maxlength="4" class="form-control numberField" style="width: 2.5em;" pattern="[0-9]{0,4}" %}
+                    {% form_field language.std_deviation_timedepth_BP_years maxlength="4" class="form-control numberField" style="width: 2.5em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
                   {% elif language.std_deviation_timedepth_BP_years.data %}
                     {{ language.std_deviation_timedepth_BP_years.data }}
                   {% endif %}
@@ -867,7 +867,7 @@
                 {# earliest_data.html #}
                 <td class="languageEarliestTimeDepthBound">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.earliestTimeDepthBound maxlength="4" class="form-control"  style="width: 3.4em;" pattern="[0-9]{0,4}" %}
+                    {% form_field language.earliestTimeDepthBound maxlength="4" class="form-control"  style="width: 3.4em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
                   {% else %}
                     {% if language.earliestTimeDepthBound.data %}
                       {{ language.earliestTimeDepthBound.data }}
@@ -877,7 +877,7 @@
                 {# latest_data.html #}
                 <td class="languageLatestTimeDepthBound">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.latestTimeDepthBound maxlength="4" class="form-control" style="width: 3.4em;" pattern="[0-9]{0,4}" %}
+                    {% form_field language.latestTimeDepthBound maxlength="4" class="form-control" style="width: 3.4em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
                   {% elif language.latestTimeDepthBound.data %}
                     {{ language.latestTimeDepthBound.data }}
                   {% endif %}
