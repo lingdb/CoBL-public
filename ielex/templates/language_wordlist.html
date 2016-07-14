@@ -111,6 +111,12 @@
                   </div>
                 </div>
               </th>
+              {# cognateclassids_title.html #}
+              <th>Cog.<br>Ids</th>
+              {# cognateclassview_title.html #}
+              <th></th>
+              {# cognateclasses_title.html #}
+              <th>Cog.<br>Alias</th>
               {# rootform_title.html #}
               <th>Root Form</th>
               {# rootlanguage_title.html #}
@@ -254,45 +260,43 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
+              {# cognateclassids_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".cognateClassId">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# cognateclassview_filter.html #}
+              <td>
+              </td>
+              {# cognateclasses_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterText form-control"
+                       data-selector=".cognateClasses"
+                       size="1"
+                       style="padding-left: 2px; padding-right: 2px;">
+              </td>
               {# rootform_filter.html #}
               <td>
-                {% if user.is_authenticated %}
-                  <input type="text"
-                         class="filterInput form-control narrow"
-                         data-selector=".lexemeRootForm input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".lexemeRootForm input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% else %}
-                  <input type="text"
-                         class="filterText form-control narrow"
-                         data-selector=".lexemeRootForm">
-                  <div class="btn btn-xs btn-default sortText"
+                <input type="text"
+                       class="filterText form-control narrow"
                        data-selector=".lexemeRootForm">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% endif %}
+                <div class="btn btn-xs btn-default sortText"
+                     data-selector=".lexemeRootForm">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
               </td>
               {# rootlanguage_filter.html #}
               <td>
-                {% if user.is_authenticated %}
-                  <input type="text"
-                         class="filterInput form-control narrow"
-                         data-selector=".lexemeRootLanguage input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".lexemeRootLanguage input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% else %}
-                  <input type="text"
-                         class="filterText form-control narrow"
-                         data-selector=".lexemeRootLanguage">
-                  <div class="btn btn-xs btn-default sortText"
+                <input type="text"
+                       class="filterText form-control narrow"
                        data-selector=".lexemeRootLanguage">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% endif %}
+                <div class="btn btn-xs btn-default sortText"
+                     data-selector=".lexemeRootLanguage">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
               </td>
               {# loanevent_filter.html #}
               <td>
@@ -528,24 +532,38 @@
                     </span>
                   </center>
                 </td>
+                {# cognateclassids_data.html #}
+                <td class="cognateClassId">
+                  {% for c in  lexeme.allCognateClasses %}
+                    <a href="/cognate/{{ c.object_data.id }}/">
+                      {{ c.object_data.id }}
+                    </a>
+                  {% endfor %}
+                </td>
+                {# cognateclassview_data.html #}
+                <td>
+                  <a href="/meaning/{{ lexeme.object_data.meaning.gloss }}/cognateclasslist/">
+                    <img src="{% static '1c.png' %}">
+                  </a>
+                </td>
+                {# cognateclasses_data.html #}
+                <td>
+                  <div class="cognateClasses">
+                    {% for c in  lexeme.allCognateClasses %}
+                    <a href="/cognate/{{ c.object_data.id }}/">{{ c.object_data.alias }}</a>
+                    {% endfor %}
+                  </div>
+                </td>
                 {# rootform_data.html #}
                 <td class="lexemeRootForm">
                   {% if lexeme.allCognateClasses|length == 1 %}
-                    {% if user.is_authenticated %}
-                      {% form_field lexeme.allCognateClasses.0.root_form class="form-control mirrorTextInput" data-compare=lexeme.allCognateClasses.0.object_data.root_form_compare %}
-                    {% else %}
-                      {{ lexeme.allCognateClasses.0.root_form.data }}
-                    {% endif %}
+                    {{ lexeme.allCognateClasses.0.root_form.data }}
                   {% endif %}
                 </td>
                 {# rootlanguage_data.html #}
                 <td class="lexemeRootLanguage">
                   {% if lexeme.allCognateClasses|length == 1 %}
-                    {% if user.is_authenticated %}
-                      {% form_field lexeme.allCognateClasses.0.root_language class="form-control mirrorTextInput" data-compare=lexeme.allCognateClasses.0.object_data.root_language_compare %}
-                    {% else %}
-                      {{ lexeme.allCognateClasses.0.root_language.data }}
-                    {% endif %}
+                    {{ lexeme.allCognateClasses.0.root_language.data }}
                   {% endif %}
                 </td>
                 {# loanevent_data.html #}

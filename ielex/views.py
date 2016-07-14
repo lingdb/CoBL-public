@@ -645,24 +645,6 @@ def view_language_wordlist(request, language, wordlist):
 
                 for entry in lexemesTableForm.lexemes:
                     data = entry.data
-                    # Updating the cognate classes:
-                    try:
-                        for cData in data['allCognateClasses']:
-                            with transaction.atomic():
-                                cc = CognateClass.objects.get(
-                                    id=cData['idField'])
-                                if cc.isChanged(**cData):
-                                    problem = cc.setDelta(request, **cData)
-                                    if problem is None:
-                                        cc.save()
-                                    else:
-                                        messages.error(
-                                            request, cc.deltaReport(**problem))
-                    except Exception, e:
-                        print('Exception for updating CognateClass:', e)
-                        messages.error(request, 'Sorry, the server could not '
-                                       'update data for cognate class %s.'
-                                       % cData['idField'])
                     # Updating the lexeme:
                     try:
                         with transaction.atomic():
@@ -1340,27 +1322,6 @@ def view_cognateclasses(request, meaning):
                            'not understand your request.')
         return HttpResponseRedirect(reverse("edit-cogclasses",
                                     args=[meaning]))
-
-    ccl_ordered = []
-
-    cogclass_bymeaning = CognateClass.objects.filter(
-        cognatejudgement__lexeme__meaning__gloss=meaning)
-    cogclass_bymeaning_ids = set([i.pk for i in cogclass_bymeaning])
-
-    # This is a clunky way of sorting; currently assumes LanguageList
-    # 'all' (maybe make this configurable?)
-    cognateclass_list = CognateClassList.objects.get(
-        name=CognateClassList.DEFAULT)
-    cognateClasses = cognateclass_list.cognateclasses.all().order_by("alias")
-
-    def cmpLen(x, y):  # Fixing sort order for #98
-        return len(x.alias) - len(y.alias)
-    cognateClasses = sorted(cognateClasses, cmp=cmpLen)
-
-    for cogclass in cognateClasses:
-        if cogclass.pk in cogclass_bymeaning_ids:
-            cc = CognateClass.objects.filter(pk=cogclass.pk).distinct()
-            ccl_ordered.extend(list(cc))
     # Acquiring languageList:
     try:
         languageList = LanguageList.objects.get(
@@ -1368,6 +1329,16 @@ def view_cognateclasses(request, meaning):
     except LanguageList.DoesNotExist:
         languageList = LanguageList.objects.get(
             name=LanguageList.ALL)
+
+    ccl_ordered = CognateClass.objects.filter(
+        cognatejudgement__lexeme__meaning__gloss=meaning,
+        cognatejudgement__lexeme__language_id__in=languageList.languagelistorder_set.values_list(
+                'language_id', flat=True)).order_by('alias').distinct()
+
+    def cmpLen(x, y):  # Fixing sort order for #98
+        return len(x.alias) - len(y.alias)
+    ccl_ordered = sorted(ccl_ordered, cmp=cmpLen)
+
     # Clades to use for #112:
     clades = Clade.objects.filter(
         id__in=LanguageClade.objects.filter(

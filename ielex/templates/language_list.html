@@ -151,7 +151,7 @@
               {# name_title.html #}
               <th>Display name</th>
               {# beast_title.html #}
-              <th>Url name</th>
+              <th class="hide">Url name</th>
               {# variety_title.html #}
               <th class="hide">Variety</th>
               <th></th>{# title for edit #}
@@ -438,7 +438,7 @@
                 {% endif %}
               </td>
               {# beast_filter.html #}
-              <td>
+              <td class="hide">
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
                          data-selector=".beastName input">
@@ -785,7 +785,7 @@
                   {% form_field language.utf8_name class="language_name form-control" required="required" style="width: 13em;" %}
                 </td>
                 {# beast_data.html #}
-                <td class="beastName">
+                <td class="beastName hide">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.ascii_name class="form-control" required="required" pattern="[a-zA-Z0-9_\-]+" style="width: 13em;" %}
                   {% else %}

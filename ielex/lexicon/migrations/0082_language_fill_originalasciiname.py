@@ -19,8 +19,8 @@ def forwards_func(apps, schema_editor):
 
 
 def reverse_func(apps, schema_editor):
-    print('Nothing to do for reverse_func '
-          'of 0082_language_fill_originalasciiname')
+    print('Nothing to do for reverse_func of '
+          '0082_language_fill_originalasciiname')
 
 
 class Migration(migrations.Migration):
