@@ -11,7 +11,7 @@
       var updateDeps = function(enable){
         dependants.each(function(){
           if(enable){
-            $(this).removeAttr('disabled')
+            $(this).removeAttr('disabled');
           }else{
             $(this).attr('disabled','disabled');
           }
