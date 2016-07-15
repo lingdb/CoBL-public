@@ -131,13 +131,21 @@
                     title="Sort rank in clade">
                   <div class="vertical-text">
                     <div class="vertical-text__inner">
-                    Sort Ix
+                      Sort Ix
                     </div>
                   </div>
                 </th>
                 {# sndcomp_title.html #}
                 <th class="hide">SndComp<br>code</th>
               {% endif %}
+              {# historical_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Historical
+                  </div>
+                </div>
+              </th>
               {# name_link.html #}
               <th></th>
               {# name_title.html #}
@@ -401,6 +409,14 @@
                   </div>
                 </td>
               {% endif %}
+              {# historical_filter.html #}
+              <td>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".languageHistorical input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
               {# name_link.html #}
               <td></td>
               {# name_filter.html #}
@@ -743,6 +759,14 @@
                     {% form_field language.soundcompcode size="8" class="form-control" %}
                   </td>
                 {% endif %}
+                {# historical_data.html #}
+                <td class="languageHistorical">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.historical class="form-control" data-dependencyfor-tr="historical" %}
+                  {% else %}
+                    {% form_field language.historical class="form-control" disabled=disabled %}
+                  {% endif %}
+                </td>
                 {# name_link.html #}
                 <td>
                   <a href="{% url 'view-language-wordlist' language.ascii_name.data wordlist %}"
@@ -827,7 +851,7 @@
                 {# meantd_data.html #}
                 <td class="languageMeanTimeDepth">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.mean_timedepth_BP_years maxlength="4" class="form-control numberField" style="width: 3.2em;" pattern="[0-9]{0,4}" %}
+                    {% form_field language.mean_timedepth_BP_years maxlength="4" class="form-control numberField" style="width: 3.2em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
                   {% elif language.mean_timedepth_BP_years.data %}
                     {{ language.mean_timedepth_BP_years.data }}
                   {% endif %}
@@ -835,7 +859,7 @@
                 {# stddev_data.html #}
                 <td class="languageStdDeviationTimeDepth">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.std_deviation_timedepth_BP_years maxlength="4" class="form-control numberField" style="width: 2.5em;" pattern="[0-9]{0,4}" %}
+                    {% form_field language.std_deviation_timedepth_BP_years maxlength="4" class="form-control numberField" style="width: 2.5em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
                   {% elif language.std_deviation_timedepth_BP_years.data %}
                     {{ language.std_deviation_timedepth_BP_years.data }}
                   {% endif %}
@@ -843,7 +867,7 @@
                 {# earliest_data.html #}
                 <td class="languageEarliestTimeDepthBound">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.earliestTimeDepthBound maxlength="4" class="form-control"  style="width: 3.4em;" pattern="[0-9]{0,4}" %}
+                    {% form_field language.earliestTimeDepthBound maxlength="4" class="form-control"  style="width: 3.4em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
                   {% else %}
                     {% if language.earliestTimeDepthBound.data %}
                       {{ language.earliestTimeDepthBound.data }}
@@ -853,7 +877,7 @@
                 {# latest_data.html #}
                 <td class="languageLatestTimeDepthBound">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.latestTimeDepthBound maxlength="4" class="form-control" style="width: 3.4em;" pattern="[0-9]{0,4}" %}
+                    {% form_field language.latestTimeDepthBound maxlength="4" class="form-control" style="width: 3.4em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
                   {% elif language.latestTimeDepthBound.data %}
                     {{ language.latestTimeDepthBound.data }}
                   {% endif %}

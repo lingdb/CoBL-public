@@ -31,7 +31,8 @@
              'js/cloneLanguage',
              'js/mergeCognateClasses',
              'js/typeahead',
-             'js/bootboxHtmlSnippet'],
+             'js/bootboxHtmlSnippet',
+             'js/inputDepends'],
             function(require, $, _){
     //Initializing viewTableFilter:
     require('js/viewTableFilter').init('table.viewTableFilter');

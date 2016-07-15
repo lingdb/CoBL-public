@@ -411,6 +411,7 @@ class Language(AbstractTimestamped):
     # Added for #218:
     originalAsciiName = models.CharField(
         max_length=128, validators=[suitable_for_url])
+    historical = models.BooleanField(default=0)
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
@@ -568,7 +569,8 @@ class Language(AbstractTimestamped):
                     'std_deviation_timedepth_BP_years',
                     'rfcWebPath1', 'rfcWebPath2', 'author', 'reviewer',
                     'earliestTimeDepthBound', 'latestTimeDepthBound',
-                    'progress', 'sortRankInClade', 'entryTimeframe'])
+                    'progress', 'sortRankInClade', 'entryTimeframe',
+                    'historical'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update language: ' \

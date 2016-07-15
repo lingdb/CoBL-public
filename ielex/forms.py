@@ -11,7 +11,7 @@ from wtforms import StringField, IntegerField, \
     TextField, BooleanField, \
     DateTimeField, DecimalField, \
     TextAreaField, SelectField
-from wtforms.validators import DataRequired, Email
+from wtforms.validators import DataRequired, Email, InputRequired
 from wtforms_components import read_only
 from wtforms.form import Form as WTForm
 from wtforms.ext.django.orm import model_form
@@ -220,7 +220,7 @@ class EditLanguageListMembersForm(forms.Form):
 
 
 class AbstractTimestampedForm(WTForm):
-    lastTouched = DateTimeField('Last changed', validators=[DataRequired()])
+    lastTouched = DateTimeField('Last changed', validators=[InputRequired()])
     lastEditedBy = StringField('Last edited')
 
 
@@ -263,6 +263,27 @@ class LanguageListRowForm(AbstractTimestampedForm):
         'Sort rank in clade', validators=[DataRequired()])
     entryTimeframe = StringField('Entry timeframe',
                                  validators=[DataRequired()])
+    historical = BooleanField('Historical', validators=[InputRequired()])
+
+    def validate_historical(form, field):
+        # Assumes that field.data :: True | False
+        if field.data:
+            mean_timedepth_BP_years = form.data['mean_timedepth_BP_years']
+            if mean_timedepth_BP_years is None:
+                raise ValidationError('mean_timedepth_BP_years is None '
+                                      'but historical is True.')
+            if mean_timedepth_BP_years <= 0:
+                raise ValidationError('mean_timedepth_BP_years must be > 0, '
+                                      'but is %i.' % mean_timedepth_BP_years)
+        else:
+            for k in ['mean_timedepth_BP_years',
+                      'std_deviation_timedepth_BP_years',
+                      'earliestTimeDepthBound',
+                      'latestTimeDepthBound']:
+                value = form.data[k]
+                if value is not None and value != 0:
+                    raise ValidationError('Field %s should be None or 0, '
+                                          'but is: "%s"' % (k, value))
 
 
 class AddLanguageListTableForm(WTForm):
