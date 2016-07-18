@@ -1102,10 +1102,7 @@ class CognateJudgement(AbstractTimestamped):
 
     @property
     def is_excluded(self):
-        inRel = bool(set(["X", "L"]).intersection(self.reliability_ratings))
-        inLex = bool(set(["X", "L"]).intersection(
-            self.lexeme.reliability_ratings))
-        return inRel or inLex
+        return bool(set(["X", "L"]).intersection(self.reliability_ratings))
 
     def __unicode__(self):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
