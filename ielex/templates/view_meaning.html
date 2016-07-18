@@ -692,7 +692,9 @@
               {# selection_data.html #}
               {% if user.is_authenticated %}
                 <td class="selection">
-                  <input type="checkbox" class="lexemeSelection form-control">
+                  <input type="checkbox"
+                         class="lexemeSelection form-control"
+                         value="{{ lexeme.data.id }}">
                 </td>
               {% endif %}
             </tr>

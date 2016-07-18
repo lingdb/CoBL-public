@@ -468,6 +468,10 @@ class LexemeTableViewMeaningsForm(WTForm):
     lexemes = FieldList(FormField(LexemeRowViewMeaningsForm))
 
 
+class LexemeTableCreateCognateClassForm(WTForm):
+    lexemeIds = StringField('Lexeme ids', validators=[InputRequired()])
+
+
 class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
     id = IntegerField('Lexeme Id', validators=[DataRequired()])
     language_id = StringField('Language Id', validators=[DataRequired()])
