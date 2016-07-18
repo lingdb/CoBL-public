@@ -1,6 +1,6 @@
 (function(){
   "use strict";
-  return define(['jquery', 'lodash', 'bootbox'], function($, _, bootbox){
+  return define(['jquery', 'bootbox'], function($, bootbox){
     var button = $('#mergeCognateClasses');
     if(button.length === 1){
       button.click(function(){
