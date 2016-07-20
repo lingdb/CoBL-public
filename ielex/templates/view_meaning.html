@@ -33,15 +33,17 @@
                  style="background-color: #CD7432;">
                 <span class="glyphicon glyphicon-plus-sign"></span>
               </a>
-              <a class="btn btn-default"
-                 id="addToCognateClass"
-                 data-toggle="tooltip"
-                 data-placement="bottom"
-                 data-container="body"
-                 title="Add selection to an existing cognate class."
-                 style="background-color: #CD7432;">
+              <button type="button"
+                      data-toggle="modal"
+                      data-target="#addToCognateClassModal"
+                      rel="tooltip"
+                      data-placement="bottom"
+                      data-container="body"
+                      title="Add selection to an existing cognate class."
+                      class="btn btn-default"
+                      style="background-color: #CD7432;">
                 <span class="glyphicon glyphicon-pencil"></span>
-              </a>
+              </button>
             </div>
             <a href="{% url 'meaning-add-lexeme' meaning.gloss %}"
                class="btn btn-default space-right"
@@ -712,15 +714,7 @@
                  name="createCognateClass"
                  class="btn btn-default">
         </form>
-        <form action="" method="POST"
-              name="addToCognateClass"
-              id="addToCognateClassForm"
-              class="hide">
-          {% csrf_token %}
-          <input type="submit"
-                 name="addToCognateClass"
-                 class="btn btn-default">
-        </form>
+        {% include "snippets/addToCognateClassModal.html" %}
       {% endif %}
     </div>
   </div>

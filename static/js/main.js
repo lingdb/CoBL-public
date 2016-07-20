@@ -45,5 +45,10 @@
         target.removeClass('markdown');
       });
     })(require('js/viewMarkDown'));
+    /**
+      Aiding some tooltips with rel:
+      https://stackoverflow.com/a/18017051/448591
+    */
+    $('[rel="tooltip"]').tooltip();
   });
 })();

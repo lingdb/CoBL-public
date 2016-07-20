@@ -1232,6 +1232,11 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     # Calculate prev/next meanings:
     prev_meaning, next_meaning = get_prev_and_next_meanings(
         request, meaning, meaning_list=meaningList)
+    # Build addToCognateClassForm:
+    addToCognateClassForm = LexemeTableAddToCognateClassForm()
+    addToCognateClassForm.cognateClass.choices = CognateClass.objects.filter(
+        lexeme__in=lexemes).distinct().values_list('id', 'alias')
+
     return render_template(
         request, "view_meaning.html",
         {"meaning": meaning,
@@ -1243,7 +1248,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
          "lex_ed_form": lexemes_editabletable_form,
          "filt_form": filt_form,
          "typeahead": typeahead,
-         "clades": Clade.objects.all()})
+         "clades": Clade.objects.all(),
+         "addToCognateClassForm": addToCognateClassForm})
 
 
 @csrf_protect
