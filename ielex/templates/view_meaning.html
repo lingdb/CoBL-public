@@ -23,14 +23,38 @@
         <form action="" method="POST" name="lex_ed_form">
           {% csrf_token %}
           <div class="form-group pull-right">
+            <div class="btn-group space-right">
+              <a class="btn btn-default"
+                 id="createCognateClass"
+                 data-toggle="tooltip"
+                 data-placement="bottom"
+                 data-container="body"
+                 title="Create new cognate class from selection."
+                 style="background-color: #CD7432;">
+                <span class="glyphicon glyphicon-plus-sign"></span>
+              </a>
+              <button type="button"
+                      data-toggle="modal"
+                      data-target="#addToCognateClassModal"
+                      rel="tooltip"
+                      data-placement="bottom"
+                      data-container="body"
+                      title="Add selection to an existing cognate class."
+                      class="btn btn-default"
+                      style="background-color: #CD7432;">
+                <span class="glyphicon glyphicon-pencil"></span>
+              </button>
+            </div>
             <a href="{% url 'meaning-add-lexeme' meaning.gloss %}"
                class="btn btn-default space-right"
                data-toggle="tooltip" data-placement="bottom"
                title="add a new lexeme">
               <span class="glyphicon glyphicon-plus-sign"></span>
             </a>
-            <a href="{% url 'view-meaning-languages' meaning.gloss defaultLanguagelist %}" class="btn btn-default">Undo</a>
-            <input type="submit" value="Save" name="meang_form" class="btn btn-danger">
+            <a href="{% url 'view-meaning-languages' meaning.gloss defaultLanguagelist %}"
+               class="btn btn-default">Undo</a>
+            <input type="submit" value="Save"
+                   name="meang_form" class="btn btn-danger">
           </div>
       {% endif %}
       {% include "snippets/prev_next_meaning.html" %}
@@ -132,6 +156,19 @@
             <th alt="Language specific">Gloss</th>
             {# notes_title.html #}
             <th>Notes</th>
+            {# selection_title.html #}
+            {% if user.is_authenticated %}
+              <th title="Select entries to assign them to a cognate set."
+                  data-container="body"
+                  data-toggle="tooltip"
+                  data-placement="bottom">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Select
+                  </div>
+                </div>
+              </th>
+            {% endif %}
           </tr>
           <tr class="filterBar">
             {# lexemeid_filter.html #}
@@ -379,6 +416,16 @@
                 </div>
               {% endif %}
             </td>
+            {# selection_filter.html #}
+            {% if user.is_authenticated %}
+              <td>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".selection input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+            {% endif %}
           </tr>
         </thead>
         <tbody>
@@ -411,12 +458,14 @@
               </td>
               <td>
                 {% if lexeme.object_data.rfcWebPath1 and lexeme.data.rfcWebLookup1 %}
-                  <a href="{{ lexeme.object_data.rfcWebPath1 }}{{ lexeme.data.rfcWebLookup1 }}" target="_blank">
+                  <a href="{{ lexeme.object_data.rfcWebPath1 }}{{ lexeme.data.rfcWebLookup1 }}"
+                     target="_blank">
                     <span class="glyphicon glyphicon-link"></span>
                   </a>
                 {% endif %}
                 {% if lexeme.object_data.rfcWebPath2 and lexeme.data.rfcWebLookup2 %}
-                  <a href="{{ lexeme.object_data.rfcWebPath2 }}{{ lexeme.data.rfcWebLookup2 }}" target="_blank">
+                  <a href="{{ lexeme.object_data.rfcWebPath2 }}{{ lexeme.data.rfcWebLookup2 }}"
+                     target="_blank">
                     <span class="glyphicon glyphicon-info-sign"></span>
                   </a>
                 {% endif %}
@@ -642,12 +691,30 @@
                   {{ lexeme.notes.data }}
                 {% endif %}
               </td>
+              {# selection_data.html #}
+              {% if user.is_authenticated %}
+                <td class="selection">
+                  <input type="checkbox"
+                         class="lexemeSelection form-control"
+                         value="{{ lexeme.data.id }}">
+                </td>
+              {% endif %}
             </tr>
           {% endfor %}
         </tbody>
       </table>
       {% if user.is_authenticated %}
         </form>
+        <form action="" method="POST"
+              name="createCognateClass"
+              id="createCognateClassForm"
+              class="hide">
+          {% csrf_token %}
+          <input type="submit"
+                 name="createCognateClass"
+                 class="btn btn-default">
+        </form>
+        {% include "snippets/addToCognateClassModal.html" %}
       {% endif %}
     </div>
   </div>

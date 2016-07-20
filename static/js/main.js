@@ -17,10 +17,12 @@
       'lodash': {exports: '_'},
       'jquery': {exports: '$'},
       'markdown-it': {deps: ['jquery']},
-      'awesomplete': {exports: 'Awesomplete'}
+      'awesomplete': {exports: 'Awesomplete'},
+      'bootbox': {deps: ['bootstrap']}
     }
   });
   requirejs(['require','jquery','lodash',
+             'bootstrap',
              'js/base',
              'js/mirrorTextInputs',
              'js/viewMeaningLanguages',
@@ -32,7 +34,9 @@
              'js/mergeCognateClasses',
              'js/typeahead',
              'js/bootboxHtmlSnippet',
-             'js/inputDepends'],
+             'js/inputDepends',
+             'js/createCognateClass',
+             'js/addToCognateClass'],
             function(require, $, _){
     //Initializing viewTableFilter:
     require('js/viewTableFilter').init('table.viewTableFilter');
@@ -44,5 +48,12 @@
         target.removeClass('markdown');
       });
     })(require('js/viewMarkDown'));
+    /**
+      Aiding some tooltips with rel:
+      https://stackoverflow.com/a/18017051/448591
+    */
+  //(function(){
+  //  $('[rel="tooltip"]').tooltip();
+  //})(require('bootstrap'));
   });
 })();

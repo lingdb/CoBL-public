@@ -1,16 +1,12 @@
 (function(){
   "use strict";
-  return define(['jquery', 'lodash', 'bootbox'], function($, _, bootbox){
+  return define(['jquery', 'bootbox',
+                 'js/gatherCheckboxValues'],
+                function($, bootbox, gatherCheckboxValues){
     var button = $('#mergeCognateClasses');
     if(button.length === 1){
       button.click(function(){
-        var mergeIds = [];
-        $('input.mergeCognateClasses').each(function(){
-          var input = $(this);
-          if(input.is(':checked')){
-            mergeIds.push(input.val());
-          }
-        });
+        var mergeIds = gatherCheckboxValues('input.mergeCognateClasses');
         if(mergeIds.length <= 1){
           bootbox.alert('Please select at least 2 entries to merge first.');
         }else{

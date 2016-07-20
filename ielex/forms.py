@@ -468,6 +468,17 @@ class LexemeTableViewMeaningsForm(WTForm):
     lexemes = FieldList(FormField(LexemeRowViewMeaningsForm))
 
 
+class LexemeTableCreateCognateClassForm(WTForm):
+    lexemeIds = StringField('Lexeme ids', validators=[InputRequired()])
+
+
+class LexemeTableAddToCognateClassForm(WTForm):
+    lexemeIds = StringField('Lexeme ids', validators=[InputRequired()])
+    cognateClass = SelectField('Cognate Class',
+                               coerce=int,
+                               validators=[InputRequired()])
+
+
 class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
     id = IntegerField('Lexeme Id', validators=[DataRequired()])
     language_id = StringField('Language Id', validators=[DataRequired()])
@@ -576,7 +587,8 @@ class AddCitationForm(forms.Form):
     reliability = forms.ChoiceField(
         choices=RELIABILITY_CHOICES, widget=forms.RadioSelect)
     comment = forms.CharField(
-        widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}), required=False)
+        widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}),
+        required=False)
 
 
 class ChooseCognateClassForm(forms.Form):

@@ -787,7 +787,7 @@ def add_language_list(request):
 def edit_language_list(request, language_list=None):
     language_list = get_canonical_language_list(
         language_list, request)  # a language list object
-    language_list_all = get_canonical_language_list()  # a language list object
+    language_list_all = LanguageList.objects.get(name=LanguageList.ALL)
     included_languages = language_list.languages.all().order_by(
         "languagelistorder")
     excluded_languages = language_list_all.languages.exclude(
@@ -1100,67 +1100,144 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     else:
         meaning = Meaning.objects.get(gloss=meaning)
 
-    # Cognate class judgement button
-    if request.method == 'POST' and not ('meang_form' in request.POST):
-        cognate_form = ChooseCognateClassForm(request.POST)
-        if cognate_form.is_valid():
-            cd = cognate_form.cleaned_data
-            cognate_class = cd["cognate_class"]
-            # if not cogjudge_id: # new cognate judgement
-            lexeme = Lexeme.objects.get(id=lexeme_id)
-            if cognate_class not in lexeme.cognate_class.all():
-                cj = CognateJudgement.objects.create(
-                        lexeme=lexeme,
-                        cognate_class=cognate_class)
-            else:
-                cj = CognateJudgement.objects.get(
-                        lexeme=lexeme,
-                        cognate_class=cognate_class)
+    # Handling POST requests:
+    if request.method == 'POST':
+        # Handling LexemeTableViewMeaningsForm:
+        if 'meang_form' in request.POST:
+            try:
+                lexemesTableForm = LexemeTableViewMeaningsForm(request.POST)
+                lexemesTableForm.validate()
 
-            # change this to a reverse() pattern
-            return HttpResponseRedirect(anchored(
-                    reverse("lexeme-add-cognate-citation",
-                            args=[lexeme_id, cj.id])))
-    else:
-        cognate_form = ChooseCognateClassForm()
-
-    if request.method == 'POST' and 'meang_form' in request.POST:
-        try:
-            lexemesTableForm = LexemeTableViewMeaningsForm(request.POST)
-            lexemesTableForm.validate()
-
-            for entry in lexemesTableForm.lexemes:
-                data = entry.data
-                # Updating the cognate classes:
-                try:
-                    for cData in data['allCognateClasses']:
-                        cc = CognateClass.objects.get(id=cData['idField'])
-                        if cc.isChanged(**cData):
-                            problem = cc.setDelta(request, **cData)
+                for entry in lexemesTableForm.lexemes:
+                    data = entry.data
+                    # Updating the cognate classes:
+                    try:
+                        for cData in data['allCognateClasses']:
+                            cc = CognateClass.objects.get(id=cData['idField'])
+                            if cc.isChanged(**cData):
+                                problem = cc.setDelta(request, **cData)
+                                if problem is None:
+                                    cc.save()
+                                else:
+                                    messages.error(
+                                        request, cc.deltaReport(**problem))
+                    except Exception, e:
+                        print('Exception for updating CognateClass:', e)
+                    # Updating the lexeme:
+                    try:
+                        lex = Lexeme.objects.get(id=data['id'])
+                        if lex.isChanged(**data):
+                            problem = lex.setDelta(request, **data)
                             if problem is None:
-                                cc.save()
+                                lex.save()
                             else:
-                                messages.error(
-                                    request, cc.deltaReport(**problem))
-                except Exception, e:
-                    print('Exception for updating CognateClass:', e)
-                # Updating the lexeme:
-                try:
-                    lex = Lexeme.objects.get(id=data['id'])
-                    if lex.isChanged(**data):
-                        problem = lex.setDelta(request, **data)
-                        if problem is None:
-                            lex.save()
-                        else:
-                            messages.error(request, lex.deltaReport(**problem))
-                except Exception, e:
-                    print('Exception for updating Lexeme:', e)
-        except Exception, e:
-            print('Problem updating lexemes:', e)
+                                messages.error(request,
+                                               lex.deltaReport(**problem))
+                    except Exception, e:
+                        print('Exception for updating Lexeme:', e)
+            except Exception, e:
+                print('Problem updating lexemes:', e)
 
-        return HttpResponseRedirect(
-            reverse("view-meaning-languages",
-                    args=[canonical_gloss, current_language_list.name]))
+            return HttpResponseRedirect(
+                reverse("view-meaning-languages",
+                        args=[canonical_gloss, current_language_list.name]))
+        elif 'createCognateClass' in request.POST:
+            try:
+                form = LexemeTableCreateCognateClassForm(request.POST)
+                form.validate()
+                lexemeIds = set([int(i) for i in
+                                 form.data['lexemeIds'].split(',')])
+                newC = CognateClass()
+                newC.bump(request)
+                newC.save()
+                CognateJudgement.objects.bulk_create([
+                    CognateJudgement(lexeme_id=lId, cognate_class_id=newC.id)
+                    for lId in lexemeIds])
+                newC.update_alias()
+                messages.success(request, 'Create Cognate Class %s with id %i.'
+                                 % (newC.alias, newC.id))
+            except Exception, e:
+                print('Exception when creating a cognate class:', e)
+                messages.error(request, 'Sorry, the server had problems '
+                               'creating the new cognate class.')
+
+            return HttpResponseRedirect(
+                reverse("view-meaning-languages",
+                        args=[canonical_gloss, current_language_list.name]))
+        elif 'addToCognateClass' in request.POST:
+            try:
+                # Lexemes that may be of interest:
+                wanted = {
+                    "meaning": meaning,
+                    "language__in": current_language_list.languages.all(),
+                    "language__languagelistorder__language_list":
+                        current_language_list
+                }
+                lexemes = Lexeme.objects.filter(**wanted)  # FIXME streamline!
+                # The expected form:
+                form = LexemeTableAddToCognateClassForm(request.POST)
+                # Adding choices to the form for validation:
+                form.cognateClass.choices = CognateClass.objects.filter(
+                    lexeme__in=lexemes).distinct().values_list('id', 'alias')
+                form.validate()
+                # lexemeIds that shall be added:
+                lexemeIds = set([int(i) for i in
+                                 form.data['lexemeIds'].split(',')])
+                # cognateClass to add to:
+                cognateClass = CognateClass.objects.get(
+                    id=int(form.data['cognateClass']))
+                # warning about already added lexemes:
+                alreadyAdded = set(CognateJudgement.objects.filter(
+                    lexeme_id__in=lexemeIds,
+                    cognate_class=cognateClass).values_list('lexeme_id',
+                                                            flat=True))
+                if len(alreadyAdded):
+                    messages.warning(request, 'Some lexemes have already been '
+                                     'added to the cognate class %s: %s'
+                                     % (cognateClass.alias, ', '.join(
+                                        [str(l) for l in alreadyAdded])))
+                # add outstanding lexemes:
+                outstanding = lexemeIds - alreadyAdded
+                CognateJudgement.objects.bulk_create([
+                    CognateJudgement(lexeme_id=lId,
+                                     cognate_class=cognateClass)
+                    for lId in outstanding])
+                if len(outstanding):
+                    messages.success(request, 'Added lexemes %s '
+                                     'to cognate set %s.'
+                                     % (', '.join(
+                                        [str(l) for l in outstanding]),
+                                        cognateClass.alias))
+            except Exception, e:
+                print('Exception when adding lexemes to a cognate class:', e)
+                messages.error(request, 'Sorry, the server had problems '
+                               'adding the selected lexemes '
+                               'to the selected cognate class.')
+
+            return HttpResponseRedirect(
+                reverse("view-meaning-languages",
+                        args=[canonical_gloss, current_language_list.name]))
+        # Handling ChooseCognateClassForm:
+        else:  # not ('meang_form' in request.POST)
+            cognate_form = ChooseCognateClassForm(request.POST)
+            if cognate_form.is_valid():
+                cd = cognate_form.cleaned_data
+                cognate_class = cd["cognate_class"]
+                # if not cogjudge_id: # new cognate judgement
+                lexeme = Lexeme.objects.get(id=lexeme_id)
+                if cognate_class not in lexeme.cognate_class.all():
+                    cj = CognateJudgement.objects.create(
+                            lexeme=lexeme,
+                            cognate_class=cognate_class)
+                else:
+                    cj = CognateJudgement.objects.get(
+                            lexeme=lexeme,
+                            cognate_class=cognate_class)
+
+                # change this to a reverse() pattern
+                return HttpResponseRedirect(anchored(
+                        reverse("lexeme-add-cognate-citation",
+                                args=[lexeme_id, cj.id])))
 
     # Gather lexemes:
     lexemes = Lexeme.objects.filter(
@@ -1179,6 +1256,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         "language__languageclade_set",
         "language__clades")
 
+    cognate_form = ChooseCognateClassForm()
     cognate_form.fields[
         "cognate_class"].queryset = CognateClass.objects.filter(
             lexeme__in=lexemes).distinct()
@@ -1207,6 +1285,11 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     # Calculate prev/next meanings:
     prev_meaning, next_meaning = get_prev_and_next_meanings(
         request, meaning, meaning_list=meaningList)
+    # Build addToCognateClassForm:
+    addToCognateClassForm = LexemeTableAddToCognateClassForm()
+    addToCognateClassForm.cognateClass.choices = CognateClass.objects.filter(
+        lexeme__in=lexemes).distinct().values_list('id', 'alias')
+
     return render_template(
         request, "view_meaning.html",
         {"meaning": meaning,
@@ -1218,7 +1301,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
          "lex_ed_form": lexemes_editabletable_form,
          "filt_form": filt_form,
          "typeahead": typeahead,
-         "clades": Clade.objects.all()})
+         "clades": Clade.objects.all(),
+         "addToCognateClassForm": addToCognateClassForm})
 
 
 @csrf_protect
@@ -1330,10 +1414,12 @@ def view_cognateclasses(request, meaning):
         languageList = LanguageList.objects.get(
             name=LanguageList.ALL)
 
+    languageIds = languageList.languagelistorder_set.values_list(
+        'language_id', flat=True)
     ccl_ordered = CognateClass.objects.filter(
         cognatejudgement__lexeme__meaning__gloss=meaning,
-        cognatejudgement__lexeme__language_id__in=languageList.languagelistorder_set.values_list(
-                'language_id', flat=True)).order_by('alias').distinct()
+        cognatejudgement__lexeme__language_id__in=languageIds
+            ).order_by('alias').distinct()
 
     def cmpLen(x, y):  # Fixing sort order for #98
         return len(x.alias) - len(y.alias)
