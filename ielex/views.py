@@ -787,7 +787,7 @@ def add_language_list(request):
 def edit_language_list(request, language_list=None):
     language_list = get_canonical_language_list(
         language_list, request)  # a language list object
-    language_list_all = get_canonical_language_list()  # a language list object
+    language_list_all = LanguageList.objects.get(name=LanguageList.ALL)
     included_languages = language_list.languages.all().order_by(
         "languagelistorder")
     excluded_languages = language_list_all.languages.exclude(
