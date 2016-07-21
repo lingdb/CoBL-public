@@ -1602,7 +1602,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         lexeme=lexeme,
                         source=cd["source"],
                         pages=cd["pages"],
-                        reliability=cd["reliability"],
+                        reliability="A",  # `High`
                         comment=cd["comment"])
                     try:
                         citation.save()

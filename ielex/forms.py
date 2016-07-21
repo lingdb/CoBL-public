@@ -552,8 +552,6 @@ class ChooseSourceForm(forms.Form):
 
 class EditCitationForm(forms.Form):
     pages = forms.CharField(required=False)
-    reliability = forms.ChoiceField(
-        choices=RELIABILITY_CHOICES, widget=forms.RadioSelect)
     comment = forms.CharField(
         widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}), required=False)
 
@@ -584,8 +582,6 @@ class AddCitationForm(forms.Form):
     source = ChooseOneSourceField(
         queryset=Source.objects.all(), help_text="")
     pages = forms.CharField(required=False)
-    reliability = forms.ChoiceField(
-        choices=RELIABILITY_CHOICES, widget=forms.RadioSelect)
     comment = forms.CharField(
         widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}),
         required=False)
