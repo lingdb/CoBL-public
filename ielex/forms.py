@@ -11,7 +11,7 @@ from wtforms import StringField, IntegerField, \
     TextField, BooleanField, \
     DateTimeField, DecimalField, \
     TextAreaField, SelectField
-from wtforms.validators import DataRequired, Email, InputRequired
+from wtforms.validators import Email, InputRequired
 from wtforms_components import read_only
 from wtforms.form import Form as WTForm
 from wtforms.ext.django.orm import model_form
@@ -225,44 +225,44 @@ class AbstractTimestampedForm(WTForm):
 
 
 class LanguageListRowForm(AbstractTimestampedForm):
-    idField = IntegerField('Language id', validators=[DataRequired()])
-    iso_code = StringField('ISO code', validators=[DataRequired()])
-    utf8_name = StringField('Display name', validators=[DataRequired()])
+    idField = IntegerField('Language id', validators=[InputRequired()])
+    iso_code = StringField('ISO code', validators=[InputRequired()])
+    utf8_name = StringField('Display name', validators=[InputRequired()])
     ascii_name = StringField(
-        'URL name', validators=[DataRequired(), suitable_for_url_wtforms])
-    glottocode = StringField('Glottocode', validators=[DataRequired()])
-    variety = StringField('Language Variety', validators=[DataRequired()])
-    foss_stat = BooleanField('Fossilised Status', validators=[DataRequired()])
-    low_stat = BooleanField('Low Status', validators=[DataRequired()])
+        'URL name', validators=[InputRequired(), suitable_for_url_wtforms])
+    glottocode = StringField('Glottocode', validators=[InputRequired()])
+    variety = StringField('Language Variety', validators=[InputRequired()])
+    foss_stat = BooleanField('Fossilised Status', validators=[InputRequired()])
+    low_stat = BooleanField('Low Status', validators=[InputRequired()])
     soundcompcode = StringField('Sound Comparisons Code',
-                                validators=[DataRequired()])
-    level0 = IntegerField('Clade level 0', validators=[DataRequired()])
-    level1 = IntegerField('Clade level 1', validators=[DataRequired()])
-    level2 = IntegerField('Clade level 2', validators=[DataRequired()])
-    level3 = IntegerField('Clade level 3', validators=[DataRequired()])
+                                validators=[InputRequired()])
+    level0 = IntegerField('Clade level 0', validators=[InputRequired()])
+    level1 = IntegerField('Clade level 1', validators=[InputRequired()])
+    level2 = IntegerField('Clade level 2', validators=[InputRequired()])
+    level3 = IntegerField('Clade level 3', validators=[InputRequired()])
     representative = BooleanField('Representative',
-                                  validators=[DataRequired()])
+                                  validators=[InputRequired()])
     mean_timedepth_BP_years = IntegerField('Mean of Time Depth BP (years)',
-                                           validators=[DataRequired()])
+                                           validators=[InputRequired()])
     std_deviation_timedepth_BP_years = IntegerField(
         'Standard Deviation of Time Depth BP (years)',
-        validators=[DataRequired()])
+        validators=[InputRequired()])
     rfcWebPath1 = StringField('This Lg lex rfc web path 1',
-                              validators=[DataRequired()])
+                              validators=[InputRequired()])
     rfcWebPath2 = StringField('This Lg lex rfc web path 2',
-                              validators=[DataRequired()])
-    author = StringField('Author', validators=[DataRequired()])
-    reviewer = StringField('Reviewer', validators=[DataRequired()])
+                              validators=[InputRequired()])
+    author = StringField('Author', validators=[InputRequired()])
+    reviewer = StringField('Reviewer', validators=[InputRequired()])
     earliestTimeDepthBound = IntegerField('Earliest Time-Depth Bound',
-                                          validators=[DataRequired()])
+                                          validators=[InputRequired()])
     latestTimeDepthBound = IntegerField('Latest Time-Depth Bound',
-                                        validators=[DataRequired()])
+                                        validators=[InputRequired()])
     progress = IntegerField('Progress on this language',
-                            validators=[DataRequired()])
+                            validators=[InputRequired()])
     sortRankInClade = IntegerField(
-        'Sort rank in clade', validators=[DataRequired()])
+        'Sort rank in clade', validators=[InputRequired()])
     entryTimeframe = StringField('Entry timeframe',
-                                 validators=[DataRequired()])
+                                 validators=[InputRequired()])
     historical = BooleanField('Historical', validators=[InputRequired()])
 
     def validate_historical(form, field):
@@ -291,36 +291,37 @@ class AddLanguageListTableForm(WTForm):
 
 
 class CladeRowForm(AbstractTimestampedForm):
-    idField = IntegerField('Id')
-    cladeName = StringField('Clade Name', validators=[DataRequired()])
-    shortName = StringField('Short name', validators=[DataRequired()])
-    hexColor = StringField('hexColor', validators=[DataRequired()])
-    export = BooleanField('Export?', validators=[DataRequired()])
-    exportDate = BooleanField('Export Date?', validators=[DataRequired()])
-    taxonsetName = StringField('Texonset name', validators=[DataRequired()])
-    atMost = IntegerField('At most?', validators=[DataRequired()])
-    atLeast = IntegerField('At least?', validators=[DataRequired()])
-    distribution = SelectField(
-        'Distribution type', choices=DISTRIBUTION_CHOICES)
-    logNormalOffset = IntegerField('[Offset]', validators=[DataRequired()])
-    logNormalMean = IntegerField('Mean', validators=[DataRequired()])
-    logNormalStDev = IntegerField('StDev', validators=[DataRequired()])
-    normalMean = IntegerField('Mean', validators=[DataRequired()])
-    normalStDev = IntegerField('StDev', validators=[DataRequired()])
-    uniformUpper = IntegerField('Upper', validators=[DataRequired()])
-    uniformLower = IntegerField('Lower', validators=[DataRequired()])
+    idField = IntegerField('Id', validators=[InputRequired()])
+    cladeName = StringField('Clade Name', validators=[InputRequired()])
+    shortName = StringField('Short name', validators=[InputRequired()])
+    hexColor = StringField('hexColor', validators=[InputRequired()])
+    export = BooleanField('Export?', validators=[InputRequired()])
+    exportDate = BooleanField('Export Date?', validators=[InputRequired()])
+    taxonsetName = StringField('Texonset name', validators=[InputRequired()])
+    atMost = IntegerField('At most?', validators=[InputRequired()])
+    atLeast = IntegerField('At least?', validators=[InputRequired()])
+    distribution = SelectField('Distribution type',
+                               choices=DISTRIBUTION_CHOICES,
+                               validators=[InputRequired()])
+    logNormalOffset = IntegerField('[Offset]', validators=[InputRequired()])
+    logNormalMean = IntegerField('Mean', validators=[InputRequired()])
+    logNormalStDev = IntegerField('StDev', validators=[InputRequired()])
+    normalMean = IntegerField('Mean', validators=[InputRequired()])
+    normalStDev = IntegerField('StDev', validators=[InputRequired()])
+    uniformUpper = IntegerField('Upper', validators=[InputRequired()])
+    uniformLower = IntegerField('Lower', validators=[InputRequired()])
     cladeLevel0 = IntegerField('Clade Level 0',
-                               validators=[DataRequired()])
+                               validators=[InputRequired()])
     cladeLevel1 = IntegerField('Clade Level 1',
-                               validators=[DataRequired()])
+                               validators=[InputRequired()])
     cladeLevel2 = IntegerField('Clade Level 2',
-                               validators=[DataRequired()])
+                               validators=[InputRequired()])
     cladeLevel3 = IntegerField('Clade Level 3',
-                               validators=[DataRequired()])
-    level0Name = StringField('Level 0 name', validators=[DataRequired()])
-    level1Name = StringField('Level 1 name', validators=[DataRequired()])
-    level2Name = StringField('Level 2 name', validators=[DataRequired()])
-    level3Name = StringField('Level 3 name', validators=[DataRequired()])
+                               validators=[InputRequired()])
+    level0Name = StringField('Level 0 name', validators=[InputRequired()])
+    level1Name = StringField('Level 1 name', validators=[InputRequired()])
+    level2Name = StringField('Level 2 name', validators=[InputRequired()])
+    level3Name = StringField('Level 3 name', validators=[InputRequired()])
 
 
 class CladeTableForm(WTForm):
@@ -328,28 +329,28 @@ class CladeTableForm(WTForm):
 
 
 class CladeCreationForm(WTForm):
-    cladeName = StringField('Clade name', validators=[DataRequired()])
-    cladeLevel0 = IntegerField('Clade level 0', validators=[DataRequired()])
-    cladeLevel1 = IntegerField('Clade level 1', validators=[DataRequired()])
-    cladeLevel2 = IntegerField('Clade level 2', validators=[DataRequired()])
-    cladeLevel3 = IntegerField('Clade level 3', validators=[DataRequired()])
+    cladeName = StringField('Clade name', validators=[InputRequired()])
+    cladeLevel0 = IntegerField('Clade level 0', validators=[InputRequired()])
+    cladeLevel1 = IntegerField('Clade level 1', validators=[InputRequired()])
+    cladeLevel2 = IntegerField('Clade level 2', validators=[InputRequired()])
+    cladeLevel3 = IntegerField('Clade level 3', validators=[InputRequired()])
 
 
 class CladeDeletionForm(WTForm):
-    cladeName = StringField('Clade name', validators=[DataRequired()])
+    cladeName = StringField('Clade name', validators=[InputRequired()])
 
 
 class SndCompRowForm(AbstractTimestampedForm):
-    idField = IntegerField('Id', validators=[DataRequired()])
-    lgSetName = StringField('Language set name', validators=[DataRequired()])
-    lv0 = IntegerField('SndComp branch level 0', validators=[DataRequired()])
-    lv1 = IntegerField('SndComp branch level 1', validators=[DataRequired()])
-    lv2 = IntegerField('SndComp branch level 2', validators=[DataRequired()])
-    lv3 = IntegerField('SndComp branch level 3', validators=[DataRequired()])
-    cladeLevel0 = IntegerField('Clade level 0', validators=[DataRequired()])
-    cladeLevel1 = IntegerField('Clade level 1', validators=[DataRequired()])
-    cladeLevel2 = IntegerField('Clade level 2', validators=[DataRequired()])
-    cladeLevel3 = IntegerField('Clade level 3', validators=[DataRequired()])
+    idField = IntegerField('Id', validators=[InputRequired()])
+    lgSetName = StringField('Language set name', validators=[InputRequired()])
+    lv0 = IntegerField('SndComp branch level 0', validators=[InputRequired()])
+    lv1 = IntegerField('SndComp branch level 1', validators=[InputRequired()])
+    lv2 = IntegerField('SndComp branch level 2', validators=[InputRequired()])
+    lv3 = IntegerField('SndComp branch level 3', validators=[InputRequired()])
+    cladeLevel0 = IntegerField('Clade level 0', validators=[InputRequired()])
+    cladeLevel1 = IntegerField('Clade level 1', validators=[InputRequired()])
+    cladeLevel2 = IntegerField('Clade level 2', validators=[InputRequired()])
+    cladeLevel3 = IntegerField('Clade level 3', validators=[InputRequired()])
 
 
 class SndCompTableForm(WTForm):
@@ -357,11 +358,11 @@ class SndCompTableForm(WTForm):
 
 
 class SndCompCreationForm(WTForm):
-    lgSetName = StringField('Language set name', validators=[DataRequired()])
-    lv0 = IntegerField('SndComp branch level 0', validators=[DataRequired()])
-    lv1 = IntegerField('SndComp branch level 1', validators=[DataRequired()])
-    lv2 = IntegerField('SndComp branch level 2', validators=[DataRequired()])
-    lv3 = IntegerField('SndComp branch level 3', validators=[DataRequired()])
+    lgSetName = StringField('Language set name', validators=[InputRequired()])
+    lv0 = IntegerField('SndComp branch level 0', validators=[InputRequired()])
+    lv1 = IntegerField('SndComp branch level 1', validators=[InputRequired()])
+    lv2 = IntegerField('SndComp branch level 2', validators=[InputRequired()])
+    lv3 = IntegerField('SndComp branch level 3', validators=[InputRequired()])
     # Clade levels are not required:
     cladeLevel1 = IntegerField('Clade level 0')
     cladeLevel1 = IntegerField('Clade level 1')
@@ -370,33 +371,33 @@ class SndCompCreationForm(WTForm):
 
 
 class SndCompDeletionForm(WTForm):
-    lgSetName = StringField('Language set name', validators=[DataRequired()])
+    lgSetName = StringField('Language set name', validators=[InputRequired()])
 
 
 # TODO: return to this if/when moving to Python 3
 @python_2_unicode_compatible
 class CogClassRowForm(AbstractTimestampedForm):
-    idField = IntegerField('Id', validators=[DataRequired()])
-    alias = StringField('Cog Class Alias', validators=[DataRequired()])
-    cogclass_name = StringField('Cog Class Name', validators=[DataRequired()])
-    root_form = StringField('Cog Class Root', validators=[DataRequired()])
-    root_language = StringField('Root Language', validators=[DataRequired()])
+    idField = IntegerField('Id', validators=[InputRequired()])
+    alias = StringField('Cog Class Alias', validators=[InputRequired()])
+    cogclass_name = StringField('Cog Class Name', validators=[InputRequired()])
+    root_form = StringField('Cog Class Root', validators=[InputRequired()])
+    root_language = StringField('Root Language', validators=[InputRequired()])
     gloss_in_root_lang = StringField('Gloss in Root Language',
-                                     validators=[DataRequired()])
-    loanword = BooleanField('Loanword', validators=[DataRequired()])
-    notes = TextField('Notes', validators=[DataRequired()])
-    loan_source = TextField('Loan Source', validators=[DataRequired()])
-    loan_notes = TextField('Loan Notes', validators=[DataRequired()])
+                                     validators=[InputRequired()])
+    loanword = BooleanField('Loanword', validators=[InputRequired()])
+    notes = TextField('Notes', validators=[InputRequired()])
+    loan_source = TextField('Loan Source', validators=[InputRequired()])
+    loan_notes = TextField('Loan Notes', validators=[InputRequired()])
     loanSourceId = IntegerField(
-        'Id of related cc', validators=[DataRequired()])
+        'Id of related cc', validators=[InputRequired()])
     loanEventTimeDepthBP = StringField(
-        'Time depth of loan event', validators=[DataRequired()])
+        'Time depth of loan event', validators=[InputRequired()])
     sourceFormInLoanLanguage = TextField(
-        'Source form in loan language', validators=[DataRequired()])
+        'Source form in loan language', validators=[InputRequired()])
     parallelLoanEvent = BooleanField(
-        'Parallel Loan Event', validators=[DataRequired()])
+        'Parallel Loan Event', validators=[InputRequired()])
     notProtoIndoEuropean = BooleanField(
-        'Not Proto-Indo-European?', validators=[DataRequired()])
+        'Not Proto-Indo-European?', validators=[InputRequired()])
 
     def __str__(self):
         cogclass_form_vals = (
@@ -418,13 +419,13 @@ class AddCogClassTableForm(WTForm):
 
 
 class MergeCognateClassesForm(WTForm):
-    mergeIds = StringField('merge ids', validators=[DataRequired()])
+    mergeIds = StringField('merge ids', validators=[InputRequired()])
 
 
 class CognateJudgementSplitRow(AbstractTimestampedForm):
-    idField = IntegerField('Id', validators=[DataRequired()])
+    idField = IntegerField('Id', validators=[InputRequired()])
     splitOff = BooleanField('Checked implies split off',
-                            validators=[DataRequired()],
+                            validators=[InputRequired()],
                             default=False)
 
 
@@ -433,9 +434,9 @@ class CognateJudgementSplitTable(WTForm):
 
 
 class CogClassLexemeRelated(AbstractTimestampedForm):
-    idField = IntegerField('Id', validators=[DataRequired()])
-    root_form = StringField('Cog Class Root', validators=[DataRequired()])
-    root_language = StringField('Root Language', validators=[DataRequired()])
+    idField = IntegerField('Id', validators=[InputRequired()])
+    root_form = StringField('Cog Class Root', validators=[InputRequired()])
+    root_language = StringField('Root Language', validators=[InputRequired()])
 
 
 class LexemeRowViewMeaningsForm(AbstractTimestampedForm):
@@ -444,21 +445,21 @@ class LexemeRowViewMeaningsForm(AbstractTimestampedForm):
     we need different forms for cases where different fields are presented.
     This form aims to be used by the `view_meaning` function.
     '''
-    id = IntegerField('Lexeme Id', validators=[DataRequired()])
+    id = IntegerField('Lexeme Id', validators=[InputRequired()])
     language_asciiname = StringField('Language Ascii Name',
-                                     validators=[DataRequired()])
+                                     validators=[InputRequired()])
     language_utf8name = StringField('Language Utf8 Name',
-                                    validators=[DataRequired()])
-    source_form = StringField('Source Form', validators=[DataRequired()])
-    phon_form = StringField('PhoNetic Form', validators=[DataRequired()])
-    phoneMic = StringField('PhoneMic Form', validators=[DataRequired()])
+                                    validators=[InputRequired()])
+    source_form = StringField('Source Form', validators=[InputRequired()])
+    phon_form = StringField('PhoNetic Form', validators=[InputRequired()])
+    phoneMic = StringField('PhoneMic Form', validators=[InputRequired()])
     transliteration = StringField('Transliteration',
-                                  validators=[DataRequired()])
+                                  validators=[InputRequired()])
     not_swadesh_term = BooleanField('Not Swadesh Term',
-                                    validators=[DataRequired()])
-    gloss = StringField('Gloss', validators=[DataRequired()])
-    notes = TextField('Notes', validators=[DataRequired()])
-    cogclass_link = TextField('CogClass Links', validators=[DataRequired()])
+                                    validators=[InputRequired()])
+    gloss = StringField('Gloss', validators=[InputRequired()])
+    notes = TextField('Notes', validators=[InputRequired()])
+    cogclass_link = TextField('CogClass Links', validators=[InputRequired()])
 
     # Providing access to related CognateClasses:
     allCognateClasses = FieldList(FormField(CogClassLexemeRelated))
@@ -480,30 +481,32 @@ class LexemeTableAddToCognateClassForm(WTForm):
 
 
 class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
-    id = IntegerField('Lexeme Id', validators=[DataRequired()])
-    language_id = StringField('Language Id', validators=[DataRequired()])
-    language = StringField('Language', validators=[DataRequired()])
+    id = IntegerField('Lexeme Id', validators=[InputRequired()])
+    language_id = StringField('Language Id', validators=[InputRequired()])
+    language = StringField('Language', validators=[InputRequired()])
     language_asciiname = StringField('Language Ascii Name',
-                                     validators=[DataRequired()])
+                                     validators=[InputRequired()])
     language_utf8name = StringField('Language Utf8 Name',
-                                    validators=[DataRequired()])
+                                    validators=[InputRequired()])
     cognate_class_links = StringField('Cognate Class',
-                                      validators=[DataRequired()])
-    meaning_id = IntegerField('Meaning Id', validators=[DataRequired()])
-    meaning = IntegerField('Meaning', validators=[DataRequired()])
-    source_form = StringField('Source Form', validators=[DataRequired()])
-    phon_form = StringField('PhoNetic Form', validators=[DataRequired()])
-    phoneMic = StringField('PhoneMic Form', validators=[DataRequired()])
+                                      validators=[InputRequired()])
+    meaning_id = IntegerField('Meaning Id', validators=[InputRequired()])
+    meaning = IntegerField('Meaning', validators=[InputRequired()])
+    source_form = StringField('Source Form', validators=[InputRequired()])
+    phon_form = StringField('PhoNetic Form', validators=[InputRequired()])
+    phoneMic = StringField('PhoneMic Form', validators=[InputRequired()])
     transliteration = StringField('Transliteration',
-                                  validators=[DataRequired()])
+                                  validators=[InputRequired()])
     not_swadesh_term = BooleanField('Not Swadesh Term',
-                                    validators=[DataRequired()])
-    gloss = StringField('Gloss', validators=[DataRequired()])
-    notes = TextField('Notes', validators=[DataRequired()])
-    cogclass_link = TextField('CogClass Links', validators=[DataRequired()])
-    rfcWebLookup1 = StringField('This Lg lex rfc web path 1')
-    rfcWebLookup2 = StringField('This Lg lex rfc web path 2')
-    dubious = BooleanField('Dubious', validators=[DataRequired()])
+                                    validators=[InputRequired()])
+    gloss = StringField('Gloss', validators=[InputRequired()])
+    notes = TextField('Notes', validators=[InputRequired()])
+    cogclass_link = TextField('CogClass Links', validators=[InputRequired()])
+    rfcWebLookup1 = StringField('This Lg lex rfc web path 1',
+                                validators=[InputRequired()])
+    rfcWebLookup2 = StringField('This Lg lex rfc web path 2',
+                                validators=[InputRequired()])
+    dubious = BooleanField('Dubious', validators=[InputRequired()])
 
     # Providing access to related CognateClasses:
     allCognateClasses = FieldList(FormField(CogClassLexemeRelated))
@@ -515,10 +518,14 @@ class LexemeTableLanguageWordlistForm(WTForm):
 
 class CloneLanguageForm(WTForm):
     sourceLanguageName = StringField(
-        '', validators=[DataRequired(), suitable_for_url_wtforms])
+        'Name of source language',
+        validators=[InputRequired(),
+                    suitable_for_url_wtforms])
     languageName = StringField(
-        '', validators=[DataRequired(), suitable_for_url_wtforms])
-    emptyLexemes = BooleanField('')
+        'Name of new language',
+        validators=[InputRequired(),
+                    suitable_for_url_wtforms])
+    emptyLexemes = BooleanField('Should lexemes be emptied?')
 
 
 class LexemeTableFilterForm(forms.ModelForm):
@@ -536,10 +543,10 @@ class MeaningTableFilterForm(forms.ModelForm):
 
 
 class MeaningListRowForm(AbstractTimestampedForm):
-    meaningId = IntegerField('Meaning Id', validators=[DataRequired()])
-    gloss = StringField('Gloss', validators=[DataRequired()])
-    description = StringField('Description', validators=[DataRequired()])
-    notes = TextAreaField('Notes', validators=[DataRequired()])
+    meaningId = IntegerField('Meaning Id', validators=[InputRequired()])
+    gloss = StringField('Gloss', validators=[InputRequired()])
+    description = StringField('Description', validators=[InputRequired()])
+    notes = TextAreaField('Notes', validators=[InputRequired()])
 
 
 class MeaningListTableForm(WTForm):
@@ -647,12 +654,12 @@ class SearchLexemeForm(forms.Form):
 
 
 class AuthorRowForm(AbstractTimestampedForm):
-    idField = IntegerField('Id', validators=[DataRequired()])
-    initials = StringField('Initials', validators=[DataRequired()])
-    surname = StringField('Author Surname', validators=[DataRequired()])
-    firstNames = StringField('Author First names', validators=[DataRequired()])
-    email = StringField('Email address', validators=[Email()])
-    website = StringField('Personal website URL')
+    idField = IntegerField('Id', validators=[InputRequired()])
+    initials = StringField('Initials', validators=[InputRequired()])
+    surname = StringField('Author Surname', validators=[InputRequired()])
+    firstNames = StringField('Author First names', validators=[InputRequired()])
+    email = StringField('Email address', validators=[InputRequired(), Email()])
+    website = StringField('Personal website URL', validators=[InputRequired()])
 
 
 class AuthorTableForm(WTForm):
@@ -660,12 +667,12 @@ class AuthorTableForm(WTForm):
 
 
 class AuthorCreationForm(WTForm):
-    initials = StringField('Initials', validators=[DataRequired()])
-    surname = StringField('Author Surname', validators=[DataRequired()])
-    firstNames = StringField('Author First names', validators=[DataRequired()])
-    email = StringField('Email address', validators=[Email()])
-    website = StringField('Personal website URL')
+    initials = StringField('Initials', validators=[InputRequired()])
+    surname = StringField('Author Surname', validators=[InputRequired()])
+    firstNames = StringField('Author First names', validators=[InputRequired()])
+    email = StringField('Email address', validators=[InputRequired(), Email()])
+    website = StringField('Personal website URL', validators=[InputRequired()])
 
 
 class AuthorDeletionForm(WTForm):
-    initials = StringField('Initials', validators=[DataRequired()])
+    initials = StringField('Initials', validators=[InputRequired()])

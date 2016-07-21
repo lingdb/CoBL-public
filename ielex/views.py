@@ -930,6 +930,7 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
     if request.method == 'POST':
         if 'wordlist' in request.POST:
             mltf = MeaningListTableForm(request.POST)
+            mltf.validate()
             ms = [m.data for m in mltf.meanings]
             for m in ms:
                 try:
