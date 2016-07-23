@@ -657,7 +657,8 @@ class AuthorRowForm(AbstractTimestampedForm):
     idField = IntegerField('Id', validators=[InputRequired()])
     initials = StringField('Initials', validators=[InputRequired()])
     surname = StringField('Author Surname', validators=[InputRequired()])
-    firstNames = StringField('Author First names', validators=[InputRequired()])
+    firstNames = StringField('Author First names',
+                             validators=[InputRequired()])
     email = StringField('Email address', validators=[InputRequired(), Email()])
     website = StringField('Personal website URL', validators=[InputRequired()])
 
@@ -669,7 +670,8 @@ class AuthorTableForm(WTForm):
 class AuthorCreationForm(WTForm):
     initials = StringField('Initials', validators=[InputRequired()])
     surname = StringField('Author Surname', validators=[InputRequired()])
-    firstNames = StringField('Author First names', validators=[InputRequired()])
+    firstNames = StringField('Author First names',
+                             validators=[InputRequired()])
     email = StringField('Email address', validators=[InputRequired(), Email()])
     website = StringField('Personal website URL', validators=[InputRequired()])
 
