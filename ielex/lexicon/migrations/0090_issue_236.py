@@ -14,6 +14,7 @@ def forwards_func(apps, schema_editor):
     # Models to work with:
     LanguageList = apps.get_model('lexicon', 'LanguageList')
     MeaningList = apps.get_model('lexicon', 'MeaningList')
+    Meaning = apps.get_model('lexicon', 'Meaning')
     Lexeme = apps.get_model('lexicon', 'Lexeme')
     CognateClass = apps.get_model('lexicon', 'CognateClass')
     CognateJudgement = apps.get_model('lexicon', 'CognateJudgement')
@@ -53,20 +54,33 @@ def forwards_func(apps, schema_editor):
                 cladeNamesSet.add(', '.join([c.cladeName for c in clades]))
             # Yield interesting clades:
             if len(cladeNamesSet) > lowerBranchBound:
-                bNames = ', '.join('"%s"' % n for n in cladeNamesSet)
-                yield("%s: %s" % (cognateClass.id, bNames))
-        yield('')  # EOG
+                cognateClass.bNames = ', '.join('"%s"' % n for
+                                                n in cladeNamesSet)
+                yield(cognateClass)
+        yield(None)  # EOG
+
+    def report(cognateClasses):
+        # Print given cognateClasses:
+        for cognateClass in cognateClasses:
+            if cognateClass is None:
+                continue
+            lexemeIds = CognateJudgement.objects.filter(
+                cognate_class_id=cognateClass.id).values_list(
+                'lexeme_id', flat=True)
+            meaningIds = Lexeme.objects.filter(
+                id__in=lexemeIds).values_list('meaning_id', flat=True)
+            meaningNames = Meaning.objects.filter(
+                id__in=meaningIds).values_list('gloss', flat=True)
+            meaningNames = ', '.join(['"%s"' % m for m in meaningNames])
+            print("Cognate set id: %s meanings: %s branches: %s" %
+                  (cognateClass.id,
+                   meaningNames,
+                   cognateClass.bNames))
 
     print('Task 1')
-    wanted = list(compute(2))
-    print('Number of classes: %s' % len(wanted))
-    for w in wanted:
-        print(w)
+    report(compute(2))
     print('Task 2')
-    wanted = list(compute(1))
-    print('Number of classes: %s' % len(wanted))
-    for w in wanted:
-        print(w)
+    report(compute(1))
     print(1/0)  # Break migration.
 
 
