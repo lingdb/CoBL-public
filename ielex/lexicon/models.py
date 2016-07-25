@@ -1312,9 +1312,7 @@ class AbstractBaseCitation(models.Model):
     The source field has to be in the subclasses in order for the
     unique_together constraints to work properly"""
     pages = models.CharField(max_length=128, blank=True)
-    reliability = models.CharField(max_length=1,
-                                   choices=RELIABILITY_CHOICES,
-                                   default='A')
+    reliability = models.CharField(max_length=1, choices=RELIABILITY_CHOICES)
     comment = models.TextField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
