@@ -30,7 +30,8 @@ from ielex.lexicon.defaultModels import *
 # from ielex.citations.models import *
 from ielex.extensional_semantics.views import *
 from ielex.shortcuts import render_template
-from ielex.utilities import next_alias, confirm_required, anchored, oneline
+from ielex.utilities import next_alias, confirm_required, \
+                            anchored, oneline, logExceptions
 from ielex.languageCladeLogic import updateLanguageCladeRelations
 
 from collections import defaultdict
@@ -48,6 +49,7 @@ from itertools import izip_longest
 # -- Database input, output and maintenance functions ------------------------
 
 
+@logExceptions
 def view_changes(request, username=None, revision_id=None, object_id=None):
     """Recent changes"""
     boring_models = [LanguageListOrder, LanguageList, MeaningList]
@@ -89,6 +91,7 @@ def view_changes(request, username=None, revision_id=None, object_id=None):
 
 
 @login_required
+@logExceptions
 def revert_version(request, revision_id):
     """Roll back the object saved in a Version to the previous Version"""
     # TODO
@@ -102,6 +105,7 @@ def revert_version(request, revision_id):
     return HttpResponseRedirect(referer)
 
 
+@logExceptions
 def view_object_history(request, version_id):
     version = Version.objects.get(pk=version_id)
     obj = version.content_type.get_object_for_this_type(id=version.object_id)
@@ -117,6 +121,7 @@ def view_object_history(request, version_id):
 
 # -- General purpose queries and functions -----------------------------------
 
+@logExceptions
 def get_canonical_meaning(meaning):
     """Identify meaning from id number or partial name"""
     try:
@@ -129,6 +134,7 @@ def get_canonical_meaning(meaning):
     return meaning
 
 
+@logExceptions
 def get_canonical_language(language, request=None):
     """Identify language from id number or partial name"""
     if not language:
@@ -159,6 +165,7 @@ def get_canonical_language(language, request=None):
     return language
 
 
+@logExceptions
 def get_prev_and_next_languages(request, current_language, language_list=None):
     if language_list is None:
         language_list = LanguageList.objects.get(
@@ -180,6 +187,7 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
     return (prev_language, next_language)
 
 
+@logExceptions
 def get_prev_and_next_meanings(request, current_meaning, meaning_list=None):
     if meaning_list is None:
         meaning_list = MeaningList.objects.get(
@@ -206,6 +214,7 @@ def get_prev_and_next_meanings(request, current_meaning, meaning_list=None):
     return (prev_meaning, next_meaning)
 
 
+@logExceptions
 def get_prev_and_next_lexemes(request, current_lexeme):
     """Get the previous and next lexeme from the same language, ordered
     by meaning and then alphabetically by form"""
@@ -226,6 +235,7 @@ def get_prev_and_next_lexemes(request, current_lexeme):
     return (prev_lexeme, next_lexeme)
 
 
+@logExceptions
 def update_object_from_form(model_object, form):
     """Update an object with data from a form."""
     # XXX This is only neccessary when not using a model form: otherwise
@@ -238,6 +248,7 @@ def update_object_from_form(model_object, form):
 # -- /language(s)/ ----------------------------------------------------------
 
 
+@logExceptions
 def get_canonical_language_list(language_list=None, request=None):
     """Returns a LanguageList object"""
     try:
@@ -258,6 +269,7 @@ def get_canonical_language_list(language_list=None, request=None):
 
 
 @csrf_protect
+@logExceptions
 def view_language_list(request, language_list=None):
     current_list = get_canonical_language_list(language_list, request)
     setDefaultLanguagelist(request, current_list.name)
@@ -388,6 +400,7 @@ def view_language_list(request, language_list=None):
 
 
 @csrf_protect
+@logExceptions
 def exportLanguageListCsv(request, languages=[]):
     """
       @param languages :: [Language]
@@ -412,6 +425,7 @@ def exportLanguageListCsv(request, languages=[]):
 
 
 @csrf_protect
+@logExceptions
 def view_clades(request):
     if request.method == 'POST':
         # Updating existing clades:
@@ -437,7 +451,8 @@ def view_clades(request):
                                 messages.error(
                                     request, clade.deltaReport(**problem))
                     except Exception, e:
-                        logging.exception('Problem saving clade in view_clades.')
+                        logging.exception('Problem saving clade '
+                                          'in view_clades.')
                         messages.error(request,
                                        'Problem saving clade data: %s' % data)
             except Exception, e:
@@ -490,6 +505,7 @@ def view_clades(request):
 
 
 @csrf_protect
+@logExceptions
 def view_sndComp(request):
     if request.method == 'POST':
         if 'sndComps' in request.POST:
@@ -570,6 +586,7 @@ def view_sndComp(request):
                            {'sndComps': form})
 
 
+@logExceptions
 def reorder_language_list(request, language_list):
     language_id = getDefaultLanguageId(request)
     language_list = LanguageList.objects.get(name=language_list)
@@ -608,6 +625,7 @@ def reorder_language_list(request, language_list):
         {"language_list": language_list, "form": form})
 
 
+@logExceptions
 def move_language(language, language_list, direction):
     assert direction in (-1, 1)
     languages = list(language_list.languages.order_by("languagelistorder"))
@@ -624,6 +642,7 @@ def move_language(language, language_list, direction):
 
 
 @csrf_protect
+@logExceptions
 def view_language_wordlist(request, language, wordlist):
     setDefaultLanguage(request, language)
     setDefaultWordlist(request, wordlist)
@@ -727,6 +746,7 @@ def view_language_wordlist(request, language, wordlist):
 
 
 @login_required
+@logExceptions
 def view_language_check(request, language=None, wordlist=None):
     '''
     Provides an html snipped that contains some sanity checks
@@ -765,6 +785,7 @@ def view_language_check(request, language=None, wordlist=None):
 
 
 @login_required
+@logExceptions
 def add_language_list(request):
     """Start a new language list by cloning an old one"""
     if request.method == "POST":
@@ -791,6 +812,7 @@ def add_language_list(request):
 
 
 @login_required
+@logExceptions
 def edit_language_list(request, language_list=None):
     language_list = get_canonical_language_list(
         language_list, request)  # a language list object
@@ -842,6 +864,7 @@ def edit_language_list(request, language_list=None):
 
 
 @login_required
+@logExceptions
 def delete_language_list(request, language_list):
     language_list = LanguageList.objects.get(name=language_list)
     language_list.delete()
@@ -849,6 +872,7 @@ def delete_language_list(request, language_list):
 
 
 @login_required
+@logExceptions
 def language_add_new(request, language_list):
     language_list = LanguageList.objects.get(name=language_list)
     if request.method == 'POST':
@@ -873,6 +897,7 @@ def language_add_new(request, language_list):
 
 
 @login_required
+@logExceptions
 def edit_language(request, language):
     try:
         language = Language.objects.get(ascii_name=language)
@@ -908,6 +933,7 @@ def edit_language(request, language):
 
 
 @login_required
+@logExceptions
 def delete_language(request, language):
     try:
         language = Language.objects.get(ascii_name=language)
@@ -922,6 +948,7 @@ def delete_language(request, language):
 # -- /meaning(s)/ and /wordlist/ ------------------------------------------
 
 
+@logExceptions
 def view_wordlists(request):
     wordlists = MeaningList.objects.all()
     return render_template(request, "wordlists_list.html",
@@ -929,6 +956,7 @@ def view_wordlists(request):
 
 
 @csrf_protect
+@logExceptions
 def view_wordlist(request, wordlist=MeaningList.DEFAULT):
     try:
         wordlist = MeaningList.objects.get(name=wordlist)
@@ -983,6 +1011,7 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
 
 
 @login_required
+@logExceptions
 def edit_wordlist(request, wordlist):
     wordlist = MeaningList.objects.get(name=wordlist)
 
@@ -1004,6 +1033,7 @@ def edit_wordlist(request, wordlist):
 
 
 @login_required
+@logExceptions
 def reorder_wordlist(request, wordlist):
     meaning_id = getDefaultMeaningId(request)
     wordlist = MeaningList.objects.get(name=wordlist)
@@ -1039,6 +1069,7 @@ def reorder_wordlist(request, wordlist):
                            {"wordlist": wordlist, "form": form})
 
 
+@logExceptions
 def move_meaning(meaning, wordlist, direction):
     assert direction in (-1, 1)
     meanings = list(wordlist.meanings.all().order_by("meaninglistorder"))
@@ -1055,6 +1086,7 @@ def move_meaning(meaning, wordlist, direction):
 
 
 @login_required
+@logExceptions
 def meaning_add_new(request):
     if request.method == 'POST':
         form = EditMeaningForm(request.POST)
@@ -1071,6 +1103,7 @@ def meaning_add_new(request):
 
 
 @login_required
+@logExceptions
 def edit_meaning(request, meaning):
     try:
         meaning = Meaning.objects.get(gloss=meaning)
@@ -1093,6 +1126,7 @@ def edit_meaning(request, meaning):
 
 
 @csrf_protect
+@logExceptions
 def view_meaning(request, meaning, language_list, lexeme_id=None):
     setDefaultMeaning(request, meaning)
     if language_list is None:
@@ -1321,6 +1355,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
 
 @csrf_protect
+@logExceptions
 def view_cognateclasses(request, meaning):
     setDefaultMeaning(request, meaning)
     # Handle POST of AddCogClassTableForm:
@@ -1486,6 +1521,7 @@ def view_cognateclasses(request, meaning):
 
 
 @login_required
+@logExceptions
 def delete_meaning(request, meaning):
 
     # normalize meaning
@@ -1503,6 +1539,7 @@ def delete_meaning(request, meaning):
 # -- /lexeme/ -------------------------------------------------------------
 
 
+@logExceptions
 def view_lexeme(request, lexeme_id):
     """For un-logged-in users, view only"""
     try:
@@ -1519,6 +1556,7 @@ def view_lexeme(request, lexeme_id):
 
 
 @login_required
+@logExceptions
 def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     try:
         lexeme = Lexeme.objects.get(id=lexeme_id)
@@ -1821,6 +1859,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
 
 
 @login_required
+@logExceptions
 def lexeme_duplicate(request, lexeme_id):
     """Useful for processing imported data; currently only available
     through direct url input, e.g. /lexeme/0000/duplicate/"""
@@ -1877,6 +1916,7 @@ def lexeme_duplicate(request, lexeme_id):
 
 
 @login_required
+@logExceptions
 def lexeme_add(request,
                meaning=None,
                language=None,
@@ -1925,6 +1965,7 @@ def lexeme_add(request,
                            {"form": form})
 
 
+@logExceptions
 def redirect_lexeme_citation(request, lexeme_id):
     """From a lexeme, redirect to the first citation"""
     lexeme = Lexeme.objects.get(id=lexeme_id)
@@ -1941,6 +1982,7 @@ def redirect_lexeme_citation(request, lexeme_id):
 # -- /cognate/ ------------------------------------------------------------
 
 
+@logExceptions
 def cognate_report(request, cognate_id=0, meaning=None, code=None,
                    cognate_name=None, action=""):
 
@@ -2076,6 +2118,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
 # -- /source/ -------------------------------------------------------------
 
 
+@logExceptions
 def source_view(request, source_id):
     source = Source.objects.get(id=source_id)
     return render_template(request, 'source_edit.html', {
@@ -2085,6 +2128,7 @@ def source_view(request, source_id):
 
 
 @login_required
+@logExceptions
 def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
     source_id = int(source_id)
     cogjudge_id = int(cogjudge_id)
@@ -2136,6 +2180,7 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
             "action": action})
 
 
+@logExceptions
 def source_list(request):
     grouped_sources = []
     for type_code, type_name in TYPE_CHOICES:
@@ -2145,6 +2190,7 @@ def source_list(request):
                            {"grouped_sources": grouped_sources})
 
 
+@logExceptions
 def lexeme_search(request):
     if request.method == 'POST':
         form = SearchLexemeForm(request.POST)
@@ -2181,23 +2227,27 @@ def lexeme_search(request):
                            {"form": form})
 
 
+@logExceptions
 def viewDefaultLanguage(request):
     language = getDefaultLanguage(request)
     wordlist = getDefaultWordlist(request)
     return view_language_wordlist(request, language, wordlist)
 
 
+@logExceptions
 def viewDefaultMeaning(request):
     meaning = getDefaultMeaning(request)
     languagelist = getDefaultLanguagelist(request)
     return view_meaning(request, meaning, languagelist)
 
 
+@logExceptions
 def viewDefaultCognateClassList(request):
     meaning = getDefaultMeaning(request)
     return view_cognateclasses(request, meaning)
 
 
+@logExceptions
 def viewAbout(request, page):
     """
     @param page :: str
@@ -2234,6 +2284,7 @@ def viewAbout(request, page):
                             'content': content})
 
 
+@logExceptions
 def viewStatistics(request):
     return render_template(
         request, "statistics.html",
@@ -2246,6 +2297,7 @@ def viewStatistics(request):
 
 
 @csrf_protect
+@logExceptions
 def viewAuthors(request):
     if request.method == 'POST':
         '''
@@ -2323,6 +2375,7 @@ def viewAuthors(request):
         request, "authors.html", {'authors': form})
 
 
+@logExceptions
 def changeDefaults(request):
     # Functions to get defaults:
     getDefaults = {
@@ -2357,5 +2410,6 @@ def changeDefaults(request):
     return redirect(url)
 
 
+@logExceptions
 def view_frontpage(request):
     return viewAbout(request, 'home')
