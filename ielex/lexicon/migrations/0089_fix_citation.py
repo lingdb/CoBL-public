@@ -15,13 +15,16 @@ def forwards_func(apps, schema_editor):
     # Models to work with:
     LexemeCitation = apps.get_model('lexicon', 'LexemeCitation')
     # Add missing citation.
-    LexemeCitation.objects.get_or_create(
-        lexeme_id=23793,
-        source_id=58,
-        pages='',
-        reliability='A',
-        comment='',
-        modified=datetime(2016, 7, 21, 12, 55, 35, 300486))
+    try:
+        LexemeCitation.objects.get_or_create(
+            lexeme_id=23793,
+            source_id=58,
+            pages='',
+            reliability='A',
+            comment='',
+            modified=datetime(2016, 7, 21, 12, 55, 35, 300486))
+    except Exception, e:
+        pass
 
 
 def reverse_func(apps, schema_editor):
