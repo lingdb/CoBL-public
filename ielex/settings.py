@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import logging
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -93,10 +94,10 @@ LOGOUT_URL = '/logout/'
 LOGIN_REDIRECT_URL = '/user/'
 
 # --- setup logger ------------------------------------------------
-# logging.basicConfig(level=logging.INFO,
-#      format='%(asctime)s %(levelname)s %(message)s',
-#      filename=os.path.join(os.path.dirname(ROOTDIR), 'django.log'),
-#      filemode='a+')
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(asctime)s] %(levelname)s %(message)s',
+    handlers=[logging.StreamHandler()])
 
 # Default values (override in local_settings.py)
 LIMIT_TO = 500

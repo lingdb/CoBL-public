@@ -2,6 +2,7 @@
 import bisect
 import csv
 import datetime
+import logging
 import json
 import re
 import requests
@@ -269,7 +270,8 @@ def view_language_list(request, language_list=None):
         try:
             languageListTableForm.validate()
         except Exception, e:
-            print('Exception in POST  validation: ', e)
+            logging.exception(
+                'Exception in POST validation for view_language_list')
             messages.error(request, 'Sorry, the form data sent '
                            'did not pass server side validation.')
             return HttpResponseRedirect(
@@ -293,12 +295,14 @@ def view_language_list(request, language_list=None):
                             messages.error(request,
                                            lang.deltaReport(**problem))
                     except Exception, e:
-                        print('Exception while saving POST: ', e)
+                        logging.exception('Exception while saving POST '
+                                          'in view_language_list.')
                         messages.error(request, 'Sorry, the server failed '
                                        'to save "%s".' % data['ascii_name'])
             except Exception, e:
-                print('Exception while accessing Language object: ',
-                      e, '; POST items are: ', data)
+                logging.exception('Exception accessing Language object '
+                                  'in view_language_list.',
+                                  extra=data)
                 messages.error(request, 'Sorry, the server had problems '
                                'saving at least one language entry.')
         # Updating clade relations for changes languages:
@@ -356,7 +360,7 @@ def view_language_list(request, language_list=None):
                 return HttpResponseRedirect(
                     reverse("view-language-list", args=[current_list.name]))
         except Exception, e:
-            print('Problem cloning Language:', e)
+            logging.exception('Problem cloning Language in view_language_list')
             messages.error(request, 'Sorry, a problem occured '
                            'when cloning the language.')
             return HttpResponseRedirect(
@@ -433,11 +437,11 @@ def view_clades(request):
                                 messages.error(
                                     request, clade.deltaReport(**problem))
                     except Exception, e:
-                        print('Problem while saving clade: ', e)
+                        logging.exception('Problem saving clade in view_clades.')
                         messages.error(request,
                                        'Problem saving clade data: %s' % data)
             except Exception, e:
-                print('Problem updating clades:', e)
+                logging.exception('Problem updating clades in view_clades.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least on clade.')
             # Updating language clade relations for changed clades:
@@ -452,7 +456,7 @@ def view_clades(request):
                 with transaction.atomic():
                     newClade.save(force_insert=True)
             except Exception, e:
-                print('Problem creating clade:', e)
+                logging.exception('Problem creating clade in view_clades.')
                 messages.error(request, 'Sorry, the server had problems '
                                'creating the clade.')
         # Deleting an existing clade:
@@ -470,7 +474,7 @@ def view_clades(request):
                     messages.success(request, 'Deleted clade "%s".' %
                                      clade.cladeName)
             except Exception, e:
-                print('Problem deleting clade:', e)
+                logging.exception('Problem deleting clade in view_clades.')
                 messages.error(request, 'Sorry, the server had problems '
                                'deleting the clade.')
         return HttpResponseRedirect('/clades/')
@@ -505,13 +509,15 @@ def view_sndComp(request):
                                         request,
                                         sndComp.deltaReport(**problem))
                             except Exception, e:
-                                print('Exception while saving POST:', e)
+                                logging.exception('Exception while saving '
+                                                  'POST in view_sndComp.')
                                 messages.error(request, 'The server had '
                                                'problems saving the change '
                                                'to "%s".' % sndComp.lgSetName)
                 except Exception, e:
-                    print('Exception while accessing SndComp object: ',
-                          e, '; POST items are: ', data)
+                    logging.exception('Exception while accessing '
+                                      'entry in view_sndComp.',
+                                      extra=data)
                     messages.error(request, 'Sorry, the server had problems '
                                    'saving at least one SndComp entry.')
         # Adding a new SndComp:
@@ -523,7 +529,7 @@ def view_sndComp(request):
                 with transaction.atomic():
                     newSndComp.save(force_insert=True)
             except Exception, e:
-                print('Problem creating SndComp:', e)
+                logging.exception('Problem creating entry in view_sndComp.')
                 messages.error(request, 'Sorry, the server had problems '
                                'creating the SndComp language set.')
         # Deleting an existing SndComp:
@@ -541,7 +547,7 @@ def view_sndComp(request):
                     messages.success(request,
                                      'Deleted set "%s"' % sndComp.lgSetName)
             except Exception, e:
-                print('Problem deleting SndComp:', e)
+                logging.exception('Problem deleting entry in view_sndComp.')
                 messages.error(request, 'Sorry, the server had problems '
                                'deleting the SndComp language set.')
 
@@ -657,11 +663,13 @@ def view_language_wordlist(request, language, wordlist):
                                     messages.error(
                                         request, lex.deltaReport(**problem))
                     except Exception, e:
-                        print('Exception for updating Lexeme:', e)
+                        logging.exception('Problem updating Lexeme '
+                                          'in view_language_wordlist.')
                         messages.error(request, 'Sorry, the server could '
                                        'not update lexeme %s.' % lex.gloss)
             except Exception, e:
-                print('Problem updating lexemes:', e)
+                logging.exception('Problem updating lexemes '
+                                  'in view_language_wordlist.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least one lexeme.')
             return HttpResponseRedirect(
@@ -686,7 +694,6 @@ def view_language_wordlist(request, language, wordlist):
         if request.GET.get('meaning'):
             lexemes = lexemes.filter(meaning=int(request.GET.get('meaning')))
         if request.GET.get('cognate_class'):
-            print 'cognate_class:', request.GET  # .get('cognate_class')
             lexemes = lexemes.filter(
                 cognate_class=request.GET.get('cognate_class'))
 
@@ -888,7 +895,8 @@ def edit_language(request, language):
                 else:
                     messages.error(request, language.deltaReport(**problem))
         except Exception, e:
-            print('Problem updating single language:', e)
+            logging.exception('Problem updating single language '
+                              'in edit_language.')
             messages.error(request, 'Sorry, the server could not update '
                            'the language.')
     language.idField = language.id
@@ -944,13 +952,15 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
                                 messages.error(
                                     request, meaning.deltaReport(**problem))
                         except Exception, e:
-                            print('Exception while saving POST: ', e)
+                            logging.exception('Exception while saving POST '
+                                              'in view_wordlist.')
                             messages.error(request, 'Sorry, the server had '
                                            'problems saving changes for '
                                            '"%s".' % meaning.gloss)
                 except Exception, e:
-                    print('Exception while accessing Meaning object: ',
-                          e, '; POST items are: ', m)
+                    logging.exception('Problem accessing Meaning object '
+                                      'in view_wordlist.',
+                                      extra=m)
                     messages.error(request, 'The server had problems saving '
                                    'at least one entry.')
 
@@ -1123,7 +1133,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                                     messages.error(
                                         request, cc.deltaReport(**problem))
                     except Exception, e:
-                        print('Exception for updating CognateClass:', e)
+                        logging.exception('Problem updating CognateClass '
+                                          'in view_meaning')
                     # Updating the lexeme:
                     try:
                         lex = Lexeme.objects.get(id=data['id'])
@@ -1135,9 +1146,10 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                                 messages.error(request,
                                                lex.deltaReport(**problem))
                     except Exception, e:
-                        print('Exception for updating Lexeme:', e)
+                        logging.exception('Problem updating Lexeme '
+                                          'in view_meaning.')
             except Exception, e:
-                print('Problem updating lexemes:', e)
+                logging.exception('Problem updating lexemes in view_meaning.')
 
             return HttpResponseRedirect(
                 reverse("view-meaning-languages",
@@ -1158,7 +1170,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                 messages.success(request, 'Create Cognate Class %s with id %i.'
                                  % (newC.alias, newC.id))
             except Exception, e:
-                print('Exception when creating a cognate class:', e)
+                logging.exception('Problem creating a CognateClass '
+                                  'in view_meaning.')
                 messages.error(request, 'Sorry, the server had problems '
                                'creating the new cognate class.')
 
@@ -1210,7 +1223,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                                         [str(l) for l in outstanding]),
                                         cognateClass.alias))
             except Exception, e:
-                print('Exception when adding lexemes to a cognate class:', e)
+                logging.exception('Problem adding lexemes to '
+                                  'CognateClass in view_meaning.')
                 messages.error(request, 'Sorry, the server had problems '
                                'adding the selected lexemes '
                                'to the selected cognate class.')
@@ -1330,12 +1344,14 @@ def view_cognateclasses(request, meaning):
                                 messages.error(
                                     request, cogclass.deltaReport(**problem))
                         except Exception, e:
-                            print('Exception while saving CognateClass:', e)
+                            logging.exception('Problem saving CognateClass '
+                                              'in view_cognateclasses.')
                             messages.error(
                                 request,
                                 'Problem while saving entry: %s' % data)
             except Exception, e:
-                print('Problem updating cognateclasses:', e)
+                logging.exception('Problem updating CognateClasses '
+                                  'in view_cognateclasses.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least one entry.')
         elif 'mergeCognateClasses' in request.POST:
@@ -1353,7 +1369,8 @@ def view_cognateclasses(request, meaning):
                     "cognateclasscitation_set").all()
                 # Checking ccs length:
                 if len(ccs) <= 1:
-                    print('Not enough cognateclasses to merge.')
+                    logging.warning('Not enough cognateclasses to merge.',
+                                    extra=ccs)
                     messages.error(request, 'Sorry, the server needs '
                                    '2 or more cognateclasses to merge.')
                 else:
@@ -1398,11 +1415,12 @@ def view_cognateclasses(request, meaning):
                         # Fixing alias:
                         newC.update_alias()
             except Exception, e:
-                print('Problem merging cognateclasses:', e)
+                logging.exception('Problem merging CognateClasses '
+                                  'in view_cognateclasses.')
                 messages.error(request, 'Sorry, the server had problems '
                                'merging cognate classes.')
         else:
-            print('Unexpected POST request in view_cognateclasses.')
+            logging.error('Unexpected POST request in view_cognateclasses.')
             messages.error(request, 'Sorry, the server did '
                            'not understand your request.')
         return HttpResponseRedirect(reverse("edit-cogclasses",
@@ -1969,7 +1987,8 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                     for id, t in idTMap.iteritems():
                         idCjMap[id].bump(request, t)
                 except Exception, e:
-                    print('Problem splitting cognate judgements:', e)
+                    logging.exception('Problem splitting cognate judgements '
+                                      'in cognate_report.')
                     messages.error(request, 'The server refused to split '
                                    'the cognate judgements, because someone '
                                    'changed one of them before your request.')
@@ -1989,12 +2008,14 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                             '[%s](/cognate/%s/) containing the judgements %s.'
                             % (cc.id, cc.id, idTMap.keys()))
                     except Exception, e:
-                        print('Problem creating a new '
-                              'cognate class on split:', e)
+                        logging.exception('Problem creating a new '
+                                          'CognateClass on split '
+                                          'in cognate_report.')
                         messages.error(request, 'Sorry the server could not '
                                        'create a new cognate class.')
             except Exception, e:
-                print('Problem when splitting cognate classes:', e)
+                logging.exception('Problem when splitting CognateClasses '
+                                  'in cognate_report.')
                 messages.error(request, 'Sorry, the server had trouble '
                                'understanding the request.')
         elif 'deleteCognateClass' in request.POST:
@@ -2003,7 +2024,8 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                 messages.success(request, 'Deleted cognate class.')
                 return HttpResponseRedirect('/cognateclasslist/')
             except Exception, e:
-                print('Failed to delete cognate class %s.' % cognate_class.id)
+                logging.exception('Failed to delete CognateClass %s '
+                                  'in cognate_report.' % cognate_class.id)
                 messages.error(request, 'Sorry, the server could not delete '
                                'the requested cognate class %s.'
                                % cognate_class.id)
@@ -2014,7 +2036,8 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                 citation.delete()
                 messages.success(request, 'Deleted citation.')
             except Exception, e:
-                print('Failed to delete citation.', e)
+                logging.exception('Failed to delete citation '
+                                  'in cognate_report.')
                 messages.error(request, 'Sorry, the server could not delete '
                                'the citation.')
 
@@ -2239,7 +2262,7 @@ def viewAuthors(request):
                 with transaction.atomic():
                     newAuthor.save(force_insert=True)
             except Exception, e:
-                print('Problem creating author:', e)
+                logging.exception('Problem creating author in viewAuthors.')
                 messages.error(request, 'Sorry, the server could not '
                                'create new author as requested.')
         elif 'authors' in request.POST:
@@ -2260,11 +2283,12 @@ def viewAuthors(request):
                                     messages.error(
                                         request, author.deltaReport(**problem))
                     except Exception, e:
-                        print('Problem while saving author:', e)
+                        logging.exception('Problem while saving '
+                                          'author in viewAuthors.')
                         messages.error(
                             request, 'Problem saving author data: %s' % data)
             except Exception, e:
-                print('Problem updating authors:', e)
+                logging.exception('Problem updating authors in viewAuthors.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least one author.')
         elif 'deleteAuthor' in request.POST:
@@ -2279,11 +2303,11 @@ def viewAuthors(request):
                     # Deleting the author:
                     Author.objects.filter(id=author.id).delete()
             except Exception, e:
-                print('Problem deleting author:', e)
+                logging.exception('Problem deleting author in viewAuthors.')
                 messages.error(request, 'Sorry, the server had problems '
                                'deleting the requested author.')
         else:
-            print('Cannot handle POST request in viewAuthors():', request)
+            logging.error('Unexpected POST request in viewAuthors.')
             messages.error(request, 'Sorry, the server did not '
                            'understand the request.')
 
