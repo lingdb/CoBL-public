@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
+from collections import defaultdict
 from itertools import izip
 from string import uppercase, lowercase
 from django.db import models, connection
@@ -1091,7 +1092,7 @@ class CognateJudgement(AbstractTimestamped):
         """
         An alphabetically sorted list of (rating_code, description) tuples
         """
-        descriptions = dict(RELIABILITY_CHOICES)
+        descriptions = defaultdict(str, RELIABILITY_CHOICES)
         return [(rating, descriptions[rating]) for rating in
                 sorted(self.reliability_ratings)]
 
