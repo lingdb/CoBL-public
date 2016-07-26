@@ -18,10 +18,13 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12" style="margin-top: 71px;">
       {% if user.is_authenticated %}
         <form action="" method="POST" name="lex_ed_form">
           {% csrf_token %}
+      {% endif %}
+      <div class="fixedContainer">
+        {% if user.is_authenticated %}
           <div class="form-group pull-right">
             <div class="btn-group space-right">
               <a class="btn btn-default"
@@ -56,11 +59,13 @@
             <input type="submit" value="Save"
                    name="meang_form" class="btn btn-danger">
           </div>
-      {% endif %}
-      {% include "snippets/prev_next_meaning.html" %}
-      {% include "snippets/cladeFilter.html" %}
+        {% endif %}
+        {% include "snippets/prev_next_meaning.html" %}
+        {% include "snippets/cladeFilter.html" %}
+      </div>
       <table class="table table-condensed viewTableFilter"
-             id="viewMeaningLanguages">
+             id="viewMeaningLanguages"
+             data-floatheadtop="71">
         <thead>
           <tr>
             {# lexemeid_title.html #}

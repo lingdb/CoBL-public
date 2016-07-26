@@ -19,10 +19,13 @@
   {% include "snippets/addAuthorModal.html" %}
   {% include "snippets/deleteAuthorModal.html" %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12" style="margin-top: 51px;">
       {% if user.is_authenticated and user.is_staff %}
         <form action="" method="POST" name="authors">
           {% csrf_token %}
+      {% endif %}
+      <div class="fixedContainer">
+        {% if user.is_authenticated and user.is_staff %}
           <div class="form-group pull-right">
             <div class="inline"
                  data-toggle="tooltip"
@@ -51,7 +54,9 @@
                    value="Save" class="btn btn-danger">
           </div>
         {% endif %}
-          <table class="table table-condensed viewTableFilter">
+      </div>
+          <table class="table table-condensed viewTableFilter"
+                 data-floatheadtop="51">
             <thead>
               <tr>
                 <th>Avatar</th>

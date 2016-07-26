@@ -19,10 +19,13 @@
   {% include "snippets/addSndCompModal.html" %}
   {% include "snippets/deleteSndCompModal.html" %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12" style="margin-top: 55px;">
       {% if user.is_authenticated and user.is_staff %}
         <form action="" method="POST" name="sndComps">
           {% csrf_token %}
+      {% endif %}
+      <div class="fixedContainer">
+        {% if user.is_authenticated and user.is_staff %}
           <div class="form-group pull-right">
             <div class="inline"
                  data-toggle="tooltip"
@@ -47,10 +50,15 @@
               </a>
             </div>
             <a href="/sndComp/" class="btn btn-default">Undo</a>
-            <input type="submit" value="Save" class="btn btn-danger" name="sndComps">
+            <input type="submit"
+                   value="Save"
+                   class="btn btn-danger"
+                   name="sndComps">
           </div>
-      {% endif %}
-        <table class="table table-condensed viewTableFilter">
+        {% endif %}
+      </div>
+        <table class="table table-condensed viewTableFilter"
+               data-floatheadtop="50">
           <thead>
             <tr>
               <th>SndComp Lg Set Name</th>

@@ -18,24 +18,29 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12" style="margin-top: 51px;">
       {% if user.is_authenticated %}
-      <form action="" method="POST" name="cogclass_ed_form" id="cogclass_ed_form">
-        {% csrf_token %}
-        <div class="form-group pull-right">
-          <a class="btn btn-default space-right"
-             id="mergeCognateClasses"
-             data-toggle="tooltip"
-             data-placement="bottom"
-             title="Merge selected cognate classes">
-            <span class="glyphicon glyphicon-resize-small"></span>
-          </a>
-          <a href="{% url 'edit-cogclasses' meaning %}" class="btn btn-default">undo</a>
-          <input type="submit" value="Save" name="cogclass_form" class="btn btn-danger">
-        </div>
+        <form action="" method="POST" name="cogclass_ed_form" id="cogclass_ed_form">
+          {% csrf_token %}
       {% endif %}
+      <div class="fixedContainer">
+        {% if user.is_authenticated %}
+          <div class="form-group pull-right">
+            <a class="btn btn-default space-right"
+               id="mergeCognateClasses"
+               data-toggle="tooltip"
+               data-placement="bottom"
+               title="Merge selected cognate classes">
+              <span class="glyphicon glyphicon-resize-small"></span>
+            </a>
+            <a href="{% url 'edit-cogclasses' meaning %}" class="btn btn-default">undo</a>
+            <input type="submit" value="Save" name="cogclass_form" class="btn btn-danger">
+          </div>
+        {% endif %}
         {% include "snippets/prev_next_meaning_coglist.html" %}
-        <table class="table table-striped table-condensed viewTableFilter">
+      </div>
+        <table class="table table-striped table-condensed viewTableFilter"
+               data-floatheadtop="51">
           <thead>
             <tr>
               {# clade_names.html #}

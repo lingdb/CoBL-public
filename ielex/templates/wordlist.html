@@ -25,20 +25,24 @@
       <form action="" method="post">
         {% if user.is_authenticated and user.is_staff %}
           {% csrf_token %}
-          <div class="form-group pull-right">
-            <a href="." class="btn btn-default">undo</a>
-            <input type="submit" value="Save" name="wordlist" class="btn btn-danger">
-          </div>
-          <h1 class="inline">
-            Meaning list ‘{{ wordlist }}’
-            <a href="/meanings/add-new/"
-               class="btn btn-default btn-xs"
-               data-toggle="tooltip" data-placement="bottom"
-               title="add meaning">
-              <span class="glyphicon glyphicon-plus-sign"></span>
-            </a>
-          </h1>
         {% endif %}
+        <div class="fixedContainer">
+          {% if user.is_authenticated and user.is_staff %}
+            <div class="form-group pull-right">
+              <a href="." class="btn btn-default">undo</a>
+              <input type="submit" value="Save" name="wordlist" class="btn btn-danger">
+            </div>
+            <h1 class="inline">
+              Meaning list ‘{{ wordlist }}’
+              <a href="/meanings/add-new/"
+                 class="btn btn-default btn-xs"
+                 data-toggle="tooltip" data-placement="bottom"
+                 title="add meaning">
+                <span class="glyphicon glyphicon-plus-sign"></span>
+              </a>
+            </h1>
+          {% endif %}
+        </div>
         <table class="table table-striped viewTableFilter">
           <thead>
             <tr>

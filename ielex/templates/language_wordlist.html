@@ -24,45 +24,50 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12" style="margin-top: 51px;">
       {% if user.is_authenticated %}
       <form action="" method="POST" name="lex_ed_form" id="lex_ed_form_copyacross">
         {% csrf_token %}
-        <div class="form-group pull-right">
-          <span class="badge important">{{ lexemes|length }}</span>
-          Dup. mgs:
-          <button type="button"
-                  class="filterDistinct btn btn-default"
-                  data-attr="meaningid"
-                  data-toggle="tooltip"
-                  data-placement="bottom"
-                  title="Filter duplicate meanings">
-            <span class="glyphicon glyphicon-question-sign"></span>
-          </button>
-          <a class="btn btn-default bootboxHtmlSnippet"
-             data-toggle="tooltip"
-             data-placement="top"
-             data-htmlsource="check"
-             title="Give a report on this language.">
-             Check
-          </a>
-          <a href="{% url 'language-add-lexeme' language.ascii_name %}"
-             class="btn btn-default space-right"
-             data-toggle="tooltip" data-placement="top"
-             title="add a new lexeme">
-            <span class="glyphicon glyphicon-plus-sign"></span>
-          </a>
-          <a href="{% url 'view-language-wordlist' language.ascii_name wordlist.name %}"
-             class="btn btn-default">
-             Undo
-          </a>
-          <input type="submit" value="Save"
-                 name="lex_form" class="btn btn-danger">
-        </div>
       {% endif %}
+      <div class="fixedContainer">
+        {% if user.is_authenticated %}
+          <div class="form-group pull-right">
+            <span class="badge important">{{ lexemes|length }}</span>
+            Dup. mgs:
+            <button type="button"
+                    class="filterDistinct btn btn-default"
+                    data-attr="meaningid"
+                    data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="Filter duplicate meanings">
+              <span class="glyphicon glyphicon-question-sign"></span>
+            </button>
+            <a class="btn btn-default bootboxHtmlSnippet"
+               data-toggle="tooltip"
+               data-placement="top"
+               data-htmlsource="check"
+               title="Give a report on this language.">
+               Check
+            </a>
+            <a href="{% url 'language-add-lexeme' language.ascii_name %}"
+               class="btn btn-default space-right"
+               data-toggle="tooltip" data-placement="top"
+               title="add a new lexeme">
+              <span class="glyphicon glyphicon-plus-sign"></span>
+            </a>
+            <a href="{% url 'view-language-wordlist' language.ascii_name wordlist.name %}"
+               class="btn btn-default">
+               Undo
+            </a>
+            <input type="submit" value="Save"
+                   name="lex_form" class="btn btn-danger">
+          </div>
+        {% endif %}
         {% include "snippets/prev_next_language.html" %}
+      </div>
         <table class="table table-condensed viewTableFilter"
-               id="viewLanguageMeanings">
+               id="viewLanguageMeanings"
+               data-floatheadtop="51">
           <thead>
             <tr>
               {# id_title.html #}
