@@ -24,7 +24,12 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-md-12" style="margin-top: 51px;">
+    <div class="col-md-12"
+         {% if user.is_authenticated %}
+            style="margin-top: 51px;"
+         {% else %}
+            style="margin-top: 43px;"
+         {% endif %}>
       {% if user.is_authenticated %}
       <form action="" method="POST" name="lex_ed_form" id="lex_ed_form_copyacross">
         {% csrf_token %}
@@ -67,7 +72,11 @@
       </div>
         <table class="table table-condensed viewTableFilter"
                id="viewLanguageMeanings"
-               data-floatheadtop="51">
+               {% if user.is_authenticated %}
+                  data-floatheadtop="51"
+               {% else %}
+                  data-floatheadtop="43"
+               {% endif %}>
           <thead>
             <tr>
               {# id_title.html #}

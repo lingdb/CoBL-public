@@ -18,7 +18,12 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-md-12" style="margin-top: 51px;">
+    <div class="col-md-12"
+         {% if user.is_authenticated %}
+            style="margin-top: 51px;"
+         {% else %}
+            style="margin-top: 43px;"
+         {% endif %}>
       {% if user.is_authenticated %}
         <form action="" method="POST" name="cogclass_ed_form" id="cogclass_ed_form">
           {% csrf_token %}
@@ -40,7 +45,11 @@
         {% include "snippets/prev_next_meaning_coglist.html" %}
       </div>
         <table class="table table-striped table-condensed viewTableFilter"
-               data-floatheadtop="51">
+               {% if user.is_authenticated %}
+                  data-floatheadtop="51"
+               {% else %}
+                  data-floatheadtop="43"
+               {% endif %}>
           <thead>
             <tr>
               {# clade_names.html #}
