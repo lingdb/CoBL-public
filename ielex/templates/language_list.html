@@ -38,13 +38,6 @@
       <div class="fixedContainer">
         {% if user.is_authenticated and user.is_staff %}
           <div class="form-group pull-right">
-            <span class="badge important">
-              {{ lang_ed_form.langlist|length }}
-            </span>
-            <a href="{% url 'view-language-list' current_list.name %}" class="btn btn-default"> undo</a>
-            <input type="submit" value="Save" name="langlist_form" class="btn btn-danger">
-          </div>
-          <h1 class="inline">Language list: {{ current_language_list_name }}</h1>
             <a href="{% url 'language-add-new' current_language_list_name %}"
                class="btn btn-default"
                data-toggle="tooltip" data-placement="bottom"
@@ -67,12 +60,21 @@
               lg list ‘{{ current_language_list_name }}’
             </a>
             <a href="{% url 'reorder-language-list' current_language_list_name %}"
-               class="btn btn-default"
+               class="btn btn-default space-right"
                data-toggle="tooltip" data-placement="bottom"
                title="Edit sort order">
               <span class="glyphicon glyphicon-edit"></span>
               sort order ‘{{ current_language_list_name }}’
             </a>
+            <span class="badge important">
+              {{ lang_ed_form.langlist|length }}
+            </span>
+            <a href="{% url 'view-language-list' current_list.name %}" class="btn btn-default"> undo</a>
+            <input type="submit" value="Save" name="langlist_form" class="btn btn-danger">
+          </div>
+          <h1 class="inline">
+            Language list: {{ current_language_list_name }}
+          </h1>
           {% endif %}
           {% include "snippets/cladeFilter.html" %}
         </div>{# .fixedContainer #}

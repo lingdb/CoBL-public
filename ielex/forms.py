@@ -433,12 +433,6 @@ class CognateJudgementSplitTable(WTForm):
     judgements = FieldList(FormField(CognateJudgementSplitRow))
 
 
-class CogClassLexemeRelated(AbstractTimestampedForm):
-    idField = IntegerField('Id', validators=[InputRequired()])
-    root_form = StringField('Cog Class Root', validators=[InputRequired()])
-    root_language = StringField('Root Language', validators=[InputRequired()])
-
-
 class LexemeRowViewMeaningsForm(AbstractTimestampedForm):
     '''
     Since WTForms always fills fields with their default values
@@ -460,9 +454,6 @@ class LexemeRowViewMeaningsForm(AbstractTimestampedForm):
     gloss = StringField('Gloss', validators=[InputRequired()])
     notes = TextField('Notes', validators=[InputRequired()])
     cogclass_link = TextField('CogClass Links', validators=[InputRequired()])
-
-    # Providing access to related CognateClasses:
-    allCognateClasses = FieldList(FormField(CogClassLexemeRelated))
 
 
 class LexemeTableViewMeaningsForm(WTForm):
@@ -507,9 +498,6 @@ class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
     rfcWebLookup2 = StringField('This Lg lex rfc web path 2',
                                 validators=[InputRequired()])
     dubious = BooleanField('Dubious', validators=[InputRequired()])
-
-    # Providing access to related CognateClasses:
-    allCognateClasses = FieldList(FormField(CogClassLexemeRelated))
 
 
 class LexemeTableLanguageWordlistForm(WTForm):

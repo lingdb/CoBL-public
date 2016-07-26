@@ -1155,20 +1155,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
                 for entry in lexemesTableForm.lexemes:
                     data = entry.data
-                    # Updating the cognate classes:
-                    try:
-                        for cData in data['allCognateClasses']:
-                            cc = CognateClass.objects.get(id=cData['idField'])
-                            if cc.isChanged(**cData):
-                                problem = cc.setDelta(request, **cData)
-                                if problem is None:
-                                    cc.save()
-                                else:
-                                    messages.error(
-                                        request, cc.deltaReport(**problem))
-                    except Exception, e:
-                        logging.exception('Problem updating CognateClass '
-                                          'in view_meaning')
                     # Updating the lexeme:
                     try:
                         lex = Lexeme.objects.get(id=data['id'])

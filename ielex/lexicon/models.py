@@ -844,12 +844,22 @@ class CognateClass(AbstractTimestamped):
                 lexemeLoanPercentage = 0
             else:
                 lexemeLoanPercentage = int(lexemeLoanPercentage * 100)
+            # Computing cladeCount:
+            languageIds = self.lexeme_set.filter(
+                language_id__in=lSet,
+                not_swadesh_term=False).values_list(
+                'language_id', flat=True)
+            cladeCount = Clade.objects.filter(
+                languageclade__language__id__in=languageIds).exclude(
+                hexColor='').exclude(
+                shortName='').distinct().count()
             # Filling memo with data:
             self._computeCounts = {
                 'lexemeCount': lexemeCount,
                 'lexemeLoanCount': lexemeLoanCount,
                 'lexemeLoanPercentage': lexemeLoanPercentage,
-                'onlyNotSwh': onlyNotSwh}
+                'onlyNotSwh': onlyNotSwh,
+                'cladeCount': cladeCount}
         return self._computeCounts
 
     @property
@@ -879,6 +889,10 @@ class CognateClass(AbstractTimestamped):
     @property
     def hasOnlyNotSwadesh(self):
         return self.computeCounts()['onlyNotSwh']
+
+    @property
+    def cladeCount(self):
+        return self.computeCounts()['cladeCount']
 
 
 class DyenCognateSet(models.Model):

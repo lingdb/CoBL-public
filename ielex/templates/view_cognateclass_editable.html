@@ -62,6 +62,17 @@
                   </div>
                 </th>
               {% endfor %}
+              {# cladeCount_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of clades each cognate class belongs to">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Clade. Count
+                  </div>
+                </div>
+              </th>
               {# lexemeCount_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -74,9 +85,15 @@
                 </div>
               </th>
               {# id_title.html #}
-              <th>ID</th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. ID
+                  </div>
+                </div>
+              </th>
               {# alias_title.html #}
-              <th style="width: 80px;">
+              <th style="width: 40px;">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Cog. Alias
@@ -193,6 +210,17 @@
               </th>
             </tr>
             <tr class="filterBar">
+              {# cladeCount_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterText form-control"
+                       data-selector=".cladeCount"
+                       style="width: 2em;">
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".cladeCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               {# lexemeCount_filter.html #}
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
@@ -208,8 +236,8 @@
                 </div>
               </td>
               {# alias_filter.html #}
-              <td>
-                <input type="text"s
+              <td style="width: 40px;">
+                <input type="text"
                        class="filterText form-control hide"
                        data-selector=".cogClassAlias"
                        style="width: 2em;">
@@ -460,9 +488,16 @@
               {# clade_data.html #}
               {% for clade in clades %}
                 <td{% if clade.connectsToNextCognateClass %}
-                    style="background-color: #{{ clade.hexColor }}; border: 2px solid #F9F9F9;"
-                  {% endif %}></td>
+                      style="background-color: #{{ clade.hexColor }};
+                             border: 2px solid #F9F9F9;"
+                   {% endif %}></td>
               {% endfor %}
+                {# cladeCount_data.html #}
+                <td class="cladeCount text-center">
+                  <span class="badge">
+                    {{ cc.object_data.cladeCount }}
+                  </span>
+                </td>
                 {# lexemeCount_data.html #}
                 <td class="lexemeCount text-center">
                   <span class="badge">
@@ -470,7 +505,8 @@
                   </span>
                 </td>
                 {# id_data.html #}
-                <td class="cogClassId text-right">
+                <td class="cogClassId text-right"
+                    style="color: #8B4510; text-align: center;">
                   {{ cc.idField.data }}
                   {% if user.is_authenticated %}
                     {% form_field cc.idField class="hide" required="required" %}
@@ -479,9 +515,11 @@
                   {% endif %}
                 </td>
                 {# alias_data.html #}
-                <td class="cogClassAlias" style="padding-left: 1em;">
+                <td class="cogClassAlias"
+                    style="text-align: center; width: 40px;">
                   {% form_field cc.alias class="hide" %}
-                  <a href="{{cc.object_data.get_absolute_url}}">
+                  <a href="{{cc.object_data.get_absolute_url}}"
+                     style="color: #8B4510;">
                     {{ cc.alias.data }}
                   </a>
                 </td>
