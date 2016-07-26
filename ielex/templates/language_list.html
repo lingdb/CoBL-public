@@ -25,10 +25,13 @@
 {% block content %}
   {% include "snippets/cloneLanguageModal.html" %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12" style="margin-top: 75px;">
       {% if user.is_authenticated and user.is_staff %}
         <form action="" method="POST" name="langlist_ed_form">
           {% csrf_token %}
+      {% endif %}
+      <div class="fixedContainer">
+        {% if user.is_authenticated and user.is_staff %}
           <div class="form-group pull-right">
             <span class="badge important">
               {{ lang_ed_form.langlist|length }}
@@ -65,9 +68,11 @@
               <span class="glyphicon glyphicon-edit"></span>
               sort order ‘{{ current_language_list_name }}’
             </a>
-      {% endif %}
-        {% include "snippets/cladeFilter.html" %}
-        <table class="table table-striped viewTableFilter">
+          {% endif %}
+          {% include "snippets/cladeFilter.html" %}
+        </div>{# .fixedContainer #}
+        <table class="table table-striped viewTableFilter"
+               data-floatheadtop="65">
           <thead>
             <tr>
               {# entryno_title.html #}

@@ -79,6 +79,18 @@ table.floatThead-table {
 .floatThead-container {
   padding-top: 55px;
 }
+/* Relates to #123 */
+.fixedContainer {
+  position: fixed;
+  left: 0px;
+  right: 0px;
+  top: 55px;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 2px;
+  background-color: white;
+  z-index: 1002;
+}
 
 .inline {
   display: inline;

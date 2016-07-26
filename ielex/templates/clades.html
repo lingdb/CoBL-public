@@ -19,10 +19,14 @@
   {% include "snippets/addCladeModal.html" %}
   {% include "snippets/deleteCladeModal.html" %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12" style="margin-top: 50px;">
       {% if user.is_authenticated and user.is_staff %}
         <form action="" method="POST" name="clades">
           {% csrf_token %}
+      {% endif %}
+      <div class="fixedContainer">
+        <h3 class="inline">Clades:</h3>
+        {% if user.is_authenticated and user.is_staff %}
           <div class="form-group pull-right">
             <div class="inline"
                  data-toggle="tooltip"
@@ -49,8 +53,10 @@
             <a href="/clades/" class="btn btn-default">Undo</a>
             <input type="submit" value="Save" class="btn btn-danger" name="clades">
           </div>
-      {% endif %}
-        <table class="table table-condensed viewTableFilter">
+        {% endif %}
+      </div>
+        <table class="table table-condensed viewTableFilter"
+               data-floatheadtop="50">
           <thead>
             <tr>
               {# For Clade reference: #}
