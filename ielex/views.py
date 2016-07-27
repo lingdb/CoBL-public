@@ -1453,18 +1453,25 @@ def view_cognateclasses(request, meaning):
     except LanguageList.DoesNotExist:
         languageList = LanguageList.objects.get(
             name=LanguageList.ALL)
-
+    # languageIds implicated:
     languageIds = languageList.languagelistorder_set.values_list(
         'language_id', flat=True)
+    # Cognate classes to use:
     ccl_ordered = CognateClass.objects.filter(
         cognatejudgement__lexeme__meaning__gloss=meaning,
         cognatejudgement__lexeme__language_id__in=languageIds
             ).order_by('alias').distinct()
+    # Computing counts for ccs:
+    for cc in ccl_ordered:
+        cc.computeCounts(languageList=languageList)
 
-    def cmpLen(x, y):  # Fixing sort order for #98
+    def cmpLen(x, y):
+        # Sort order for #242:
+        if x.cladeCount != y.cladeCount:
+            return y.cladeCount - x.cladeCount
+        # Sort order for #98:
         return len(x.alias) - len(y.alias)
     ccl_ordered = sorted(ccl_ordered, cmp=cmpLen)
-
     # Clades to use for #112:
     clades = Clade.objects.filter(
         id__in=LanguageClade.objects.filter(
@@ -1475,10 +1482,7 @@ def view_cognateclasses(request, meaning):
     for c in clades:
         c.computeCognateClassConnections(ccl_ordered, languageList)
     # Filling cogclass_editabletable_form:
-    cogclass_editabletable_form = AddCogClassTableForm()
-    for cc in ccl_ordered:
-        cc.computeCounts(languageList=languageList)
-        cogclass_editabletable_form.cogclass.append_entry(cc)
+    cogclass_editabletable_form = AddCogClassTableForm(cogclass=ccl_ordered)
     # Fetch meaningList for typeahead and prev/next calculation:
     meaningList = MeaningList.objects.prefetch_related("meanings").get(
         name=getDefaultWordlist(request))
