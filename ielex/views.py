@@ -1473,7 +1473,7 @@ def view_cognateclasses(request, meaning):
             hexColor='').exclude(shortName='').all()
     # Compute clade <-> cc connections:
     for c in clades:
-        c.computeCognateClassConnections(ccl_ordered)
+        c.computeCognateClassConnections(ccl_ordered, languageList)
     # Filling cogclass_editabletable_form:
     cogclass_editabletable_form = AddCogClassTableForm()
     for cc in ccl_ordered:

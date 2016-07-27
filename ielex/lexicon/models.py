@@ -346,16 +346,18 @@ class Clade(AbstractTimestamped):
     # Memo for computeCognateClassConnections:
     _cognateClassConnections = []  # [Boolean]
 
-    def computeCognateClassConnections(self, cognateclasses):
+    def computeCognateClassConnections(self, cognateclasses, languageList):
         # Reset memo:
         self._cognateClassConnections = []
         # lIds that warrant a connection:
-        clIds = set(self.languageclade_set.values_list(
-            'language_id', flat=True))
+        clIds = set(self.languageclade_set.filter(
+            language__languagelistorder__language_list=languageList
+            ).values_list('language_id', flat=True))
         # Fill memo with entries for given cognateclasses:
         for cc in cognateclasses:
             lIds = set(cc.lexeme_set.filter(
-                not_swadesh_term=False).values_list('language_id', flat=True))
+                not_swadesh_term=False).values_list(
+                'language_id', flat=True))
             self._cognateClassConnections.append(bool(clIds & lIds))
 
     def connectsToNextCognateClass(self):
