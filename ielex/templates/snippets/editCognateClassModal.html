@@ -1,6 +1,6 @@
 {% load wtforms %}
 <div class="modal fade"
-     id="addToCognateClassModal"
+     id="editCognateClassModal"
      tabindex="-1"
      role="dialog"
      aria-labelledby="Add to cognate class">
@@ -13,38 +13,28 @@
                 aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        <h4 class="modal-title">Add to an existing cognate class</h4>
+        <h4 class="modal-title">Edit cognate classes for selected lexemes.</h4>
       </div>
       <div class="modal-body">
         <form action="" method="POST"
               name="addToCognateClass"
               id="addToCognateClassForm"
-              class="form-horizontal">
+              class="form-horizontal"
+              data-cognateclasses='{{ cognateClasses }}'>
           {% csrf_token %}
           <div class="form-group">
-            <label for="selectCognateClass"
-                   class="col-sm-6">
-              Select cognate class to add to:
-            </label>
-            <div class="col-sm-6">
-              {% form_field addToCognateClassForm.cognateClass %}
-            </div>
-          </div>
-          <div class="form-group">
             <div class="col-sm-offset-6 col-sm-6">
+              <input type="text" name="lexemeIds" class="hide" value="">
               <input class="btn btn-danger"
-                     id="addToCognateClassButton"
+                     id="editCognateClassButton"
                      type="button"
-                     value="Add">
+                     value="Save">
               <input class="hide"
                      type="submit"
-                     name="addToCognateClass">
+                     name="editCognateClass">
             </div>
           </div>
         </form>
-        <div class="well well-sm">
-          Remember to select the lexemes you want to add beforehand!
-        </div>
       </div>
     </div>
   </div>

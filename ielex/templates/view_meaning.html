@@ -26,28 +26,6 @@
       <div class="fixedContainer">
         {% if user.is_authenticated %}
           <div class="form-group pull-right">
-            <div class="btn-group space-right">
-              <a class="btn btn-default"
-                 id="createCognateClass"
-                 data-toggle="tooltip"
-                 data-placement="bottom"
-                 data-container="body"
-                 title="Create new cognate class from selection."
-                 style="background-color: #CD7432;">
-                <span class="glyphicon glyphicon-plus-sign"></span>
-              </a>
-              <button type="button"
-                      data-toggle="modal"
-                      data-target="#addToCognateClassModal"
-                      rel="tooltip"
-                      data-placement="bottom"
-                      data-container="body"
-                      title="Add selection to an existing cognate class."
-                      class="btn btn-default"
-                      style="background-color: #CD7432;">
-                <span class="glyphicon glyphicon-pencil"></span>
-              </button>
-            </div>
             <a href="{% url 'meaning-add-lexeme' meaning.gloss %}"
                class="btn btn-default space-right"
                data-toggle="tooltip" data-placement="bottom"
@@ -126,6 +104,19 @@
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Select
+                  </div>
+                </div>
+              </th>
+            {% endif %}
+            {# edit_title.html #}
+            {% if user.is_authenticated %}
+              <th title="Use the buttons to edit cognate class assignments (for selected rows)."
+                  data-container="body"
+                  data-toggle="tooltip"
+                  data-placement="bottom">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Edit
                   </div>
                 </div>
               </th>
@@ -276,6 +267,10 @@
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </td>
+            {% endif %}
+            {# edit_filter.html #}
+            {% if user.is_authenticated %}
+              <td></td>
             {% endif %}
             {# cognateclassids_filter.html #}
             <td>
@@ -565,7 +560,24 @@
                 <td class="selection">
                   <input type="checkbox"
                          class="lexemeSelection form-control"
-                         value="{{ lexeme.data.id }}">
+                         value='{{ lexeme.object_data.selectionJSON }}'>
+                </td>
+              {% endif %}
+              {# edit_data.html #}
+              {% if user.is_authenticated %}
+                <td class="selection"
+                    data-toggle="tooltip"
+                    data-placement="bottom"
+                    data-container="body"
+                    title="Edit cognate class assignments.">
+                  <button type="button"
+                          class="btn btn-xs editCognateClassButton"
+                          data-toggle="modal"
+                          data-target="#editCognateClassModal"
+                          style="background-color: #CD7432;"
+                          value='{{ lexeme.object_data.selectionJSON }}'>
+                    <span class="glyphicon glyphicon-pencil"></span>
+                  </button>
                 </td>
               {% endif %}
               {# cognateclassids_data.html #}
@@ -719,7 +731,7 @@
                  name="createCognateClass"
                  class="btn btn-default">
         </form>
-        {% include "snippets/addToCognateClassModal.html" %}
+        {% include "snippets/editCognateClassModal.html" %}
       {% endif %}
     </div>
   </div>

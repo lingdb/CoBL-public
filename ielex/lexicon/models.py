@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
+import json
+import reversion
+import math
+import os.path
 from collections import defaultdict
 from itertools import izip
 from string import uppercase, lowercase
@@ -13,13 +17,9 @@ from django.db.backends.signals import connection_created
 from django.utils.safestring import SafeString
 from django.utils.encoding import python_2_unicode_compatible
 from django.contrib import messages
-import json
-import reversion
-import math
-import os.path
+# ielex specific imports:
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import *
-from itertools import izip
 
 # from https://code.djangoproject.com/ticket/8399
 try:
@@ -1086,6 +1086,14 @@ class Lexeme(AbstractTimestamped):
     def number_cognate_coded(self):
         # Added for #178
         return self.cognate_class.count()
+
+    @property
+    def selectionJSON(self):
+        # Added for #219 to describe lexeme and cognate classes.
+        return json.dumps({'lexemeId': self.id,
+                           'cognateClassIds': list(
+                               self.cognate_class.values_list(
+                                   'id', flat=True))})
 
 
 @reversion.register

@@ -1174,84 +1174,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             return HttpResponseRedirect(
                 reverse("view-meaning-languages",
                         args=[canonical_gloss, current_language_list.name]))
-        elif 'createCognateClass' in request.POST:
-            try:
-                form = LexemeTableCreateCognateClassForm(request.POST)
-                form.validate()
-                lexemeIds = set([int(i) for i in
-                                 form.data['lexemeIds'].split(',')])
-                newC = CognateClass()
-                newC.bump(request)
-                newC.save()
-                CognateJudgement.objects.bulk_create([
-                    CognateJudgement(lexeme_id=lId, cognate_class_id=newC.id)
-                    for lId in lexemeIds])
-                newC.update_alias()
-                messages.success(request, 'Create Cognate Class %s with id %i.'
-                                 % (newC.alias, newC.id))
-            except Exception, e:
-                logging.exception('Problem creating a CognateClass '
-                                  'in view_meaning.')
-                messages.error(request, 'Sorry, the server had problems '
-                               'creating the new cognate class.')
-
-            return HttpResponseRedirect(
-                reverse("view-meaning-languages",
-                        args=[canonical_gloss, current_language_list.name]))
-        elif 'addToCognateClass' in request.POST:
-            try:
-                # Lexemes that may be of interest:
-                wanted = {
-                    "meaning": meaning,
-                    "language__in": current_language_list.languages.all(),
-                    "language__languagelistorder__language_list":
-                        current_language_list
-                }
-                lexemes = Lexeme.objects.filter(**wanted)  # FIXME streamline!
-                # The expected form:
-                form = LexemeTableAddToCognateClassForm(request.POST)
-                # Adding choices to the form for validation:
-                form.cognateClass.choices = CognateClass.objects.filter(
-                    lexeme__in=lexemes).distinct().values_list('id', 'alias')
-                form.validate()
-                # lexemeIds that shall be added:
-                lexemeIds = set([int(i) for i in
-                                 form.data['lexemeIds'].split(',')])
-                # cognateClass to add to:
-                cognateClass = CognateClass.objects.get(
-                    id=int(form.data['cognateClass']))
-                # warning about already added lexemes:
-                alreadyAdded = set(CognateJudgement.objects.filter(
-                    lexeme_id__in=lexemeIds,
-                    cognate_class=cognateClass).values_list('lexeme_id',
-                                                            flat=True))
-                if len(alreadyAdded):
-                    messages.warning(request, 'Some lexemes have already been '
-                                     'added to the cognate class %s: %s'
-                                     % (cognateClass.alias, ', '.join(
-                                        [str(l) for l in alreadyAdded])))
-                # add outstanding lexemes:
-                outstanding = lexemeIds - alreadyAdded
-                CognateJudgement.objects.bulk_create([
-                    CognateJudgement(lexeme_id=lId,
-                                     cognate_class=cognateClass)
-                    for lId in outstanding])
-                if len(outstanding):
-                    messages.success(request, 'Added lexemes %s '
-                                     'to cognate set %s.'
-                                     % (', '.join(
-                                        [str(l) for l in outstanding]),
-                                        cognateClass.alias))
-            except Exception, e:
-                logging.exception('Problem adding lexemes to '
-                                  'CognateClass in view_meaning.')
-                messages.error(request, 'Sorry, the server had problems '
-                               'adding the selected lexemes '
-                               'to the selected cognate class.')
-
-            return HttpResponseRedirect(
-                reverse("view-meaning-languages",
-                        args=[canonical_gloss, current_language_list.name]))
         # Handling ChooseCognateClassForm:
         else:  # not ('meang_form' in request.POST)
             cognate_form = ChooseCognateClassForm(request.POST)
@@ -1290,11 +1212,10 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         "cognate_class",
         "language__languageclade_set",
         "language__clades")
-
+    # Gather cognate classes and provide form:
+    cognateClasses = CognateClass.objects.filter(lexeme__in=lexemes).distinct()
     cognate_form = ChooseCognateClassForm()
-    cognate_form.fields[
-        "cognate_class"].queryset = CognateClass.objects.filter(
-            lexeme__in=lexemes).distinct()
+    cognate_form.fields["cognate_class"].queryset = cognateClasses
 
     # TODO: move this out of views
     # filter by 'language' or 'meaning'
@@ -1320,10 +1241,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     # Calculate prev/next meanings:
     prev_meaning, next_meaning = get_prev_and_next_meanings(
         request, meaning, meaning_list=meaningList)
-    # Build addToCognateClassForm:
-    addToCognateClassForm = LexemeTableAddToCognateClassForm()
-    addToCognateClassForm.cognateClass.choices = CognateClass.objects.filter(
-        lexeme__in=lexemes).distinct().values_list('id', 'alias')
 
     return render_template(
         request, "view_meaning.html",
@@ -1332,12 +1249,16 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
          "next_meaning": next_meaning,
          "lexemes": lexemes,
          "cognate_form": cognate_form,
+         "cognateClasses": json.dumps([{'id': c.id,
+                                        'alias': c.alias,
+                                        'root_form': c.root_form,
+                                        'root_language': c.root_language}
+                                       for c in cognateClasses]),
          "add_cognate_judgement": lexeme_id,
          "lex_ed_form": lexemes_editabletable_form,
          "filt_form": filt_form,
          "typeahead": typeahead,
-         "clades": Clade.objects.all(),
-         "addToCognateClassForm": addToCognateClassForm})
+         "clades": Clade.objects.all()})
 
 
 @csrf_protect
