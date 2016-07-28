@@ -13,7 +13,7 @@ from django.db.backends.signals import connection_created
 from django.utils.safestring import SafeString
 from django.utils.encoding import python_2_unicode_compatible
 from django.contrib import messages
-import jsonfield
+import json
 import reversion
 import math
 import os.path
@@ -1239,7 +1239,6 @@ class MeaningList(models.Model):
         validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
     meanings = models.ManyToManyField(Meaning, through="MeaningListOrder")
-    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     def append(self, meaning):
