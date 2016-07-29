@@ -460,6 +460,24 @@ class LexemeTableViewMeaningsForm(WTForm):
     lexemes = FieldList(FormField(LexemeRowViewMeaningsForm))
 
 
+class LexemeTableEditCognateClassesForm(WTForm):
+    lexemeIds = StringField('Lexeme ids', validators=[InputRequired()])
+    cognateClassAssignments = StringField('Cognate class assignments ids',
+                                          validators=[InputRequired()])
+
+    def validate_lexemeIds(form, field):
+        # Parse ids:
+        ids = [int(x) for x in field.data.split(',')]
+        # Check ids belonging to lexemes with common meaning:
+        # FIXME IMPLEMENT
+        # Write validated data to form.data:
+        form.data['cognateClassAssignments'] = ids
+
+    def validate_cognateClassAssignments(form, field):
+        # FIXME IMPLEMENT
+        pass
+
+
 class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
     id = IntegerField('Lexeme Id', validators=[InputRequired()])
     language_id = StringField('Language Id', validators=[InputRequired()])
