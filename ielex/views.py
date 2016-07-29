@@ -1390,6 +1390,8 @@ def view_cognateclasses(request, meaning):
         # Sort order for #242:
         if x.cladeCount != y.cladeCount:
             return y.cladeCount - x.cladeCount
+        if x.lexemeCount != y.lexemeCount:
+            return y.lexemeCount - x.lexemeCount
         # Sort order for #98:
         return len(x.alias) - len(y.alias)
     ccl_ordered = sorted(ccl_ordered, cmp=cmpLen)
