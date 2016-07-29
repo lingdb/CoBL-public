@@ -105,6 +105,8 @@
             cognateClassAssignments[el.data('for')] =
               el.find('.selectCognateClass').val();
           });
+          form.find('input[name="cognateClassAssignments"]').val(
+            JSON.stringify(cognateClassAssignments));
           //Submit the form:
           form.find('input[type="submit"]').trigger('click');
         });
