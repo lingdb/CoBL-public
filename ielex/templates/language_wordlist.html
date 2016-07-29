@@ -561,7 +561,7 @@
                 {# cognateclassids_data.html #}
                 <td class="cognateClassId" style="text-align: center; width: 45px;">
                   {% for c in lexeme.object_data.allCognateClasses %}
-                    <a href="/cognate/{{ c.object_data.id }}/"
+                    <a href="/cognate/{{ c.id }}/"
                        target="_blank"
                        style="color: #8B4510;">
                       {{ c.id }}
@@ -578,7 +578,7 @@
                 <td style="text-align: center;">
                   <div class="cognateClasses">
                     {% for c in lexeme.object_data.allCognateClasses %}
-                    <a href="/cognate/{{ c.object_data.id }}/"
+                    <a href="/cognate/{{ c.id }}/"
                        style="color: #8B4510;">
                       {{ c.alias }}
                     </a>
