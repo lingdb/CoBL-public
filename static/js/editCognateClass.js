@@ -84,15 +84,29 @@
           var name = mkCognateClassName(current, '<br>');
           form.prepend(mkCognateClassSelection(current.id, name));
         });
-        //Handling add button:
+        //Handling the add button:
         form.find('#addEntryCognateClassButton').click(function(){
           var msg = 'Are you sure that you want to ' +
                     'add an additional cognate class?';
           bootbox.confirm(msg, function(result){
             if(result === true){
               form.prepend(mkCognateClassSelection('new', 'new'));
+              //Making sure only one is added:
+              form.find('#addEntryCognateClassButton').remove();
             }
           });
+        });
+        //Handling the save button:
+        form.find('#editCognateClassButton').click(function(){
+          //Gather cognate class assignments:
+          var cognateClassAssignments = {};
+          form.find('.cognateClassSelection').each(function(){
+            var el = $(this);
+            cognateClassAssignments[el.data('for')] =
+              el.find('.selectCognateClass').val();
+          });
+          //Submit the form:
+          form.find('input[type="submit"]').trigger('click');
         });
         //Display modal:
         $('#editCognateClassModal').modal('show');

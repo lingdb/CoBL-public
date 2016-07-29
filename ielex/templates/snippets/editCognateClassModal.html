@@ -24,7 +24,14 @@
           {% csrf_token %}
           <div class="form-group">
             <div class="col-sm-offset-6 col-sm-6">
-              <input type="text" name="lexemeIds" class="hide" value="">
+              <input type="text"
+                     name="cognateClassAssignments"
+                     class="hide"
+                     value="">
+              <input type="text"
+                     name="lexemeIds"
+                     class="hide"
+                     value="">
               <input class="btn btn-info"
                      id="addEntryCognateClassButton"
                      type="button"
