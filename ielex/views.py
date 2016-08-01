@@ -1192,38 +1192,59 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                         if k == 'new':
                             # Add to new class:
                             if v == 'new':
-                                pass  # FIXME IMPLEMENT
+                                # Class to add to:
+                                newC = CognateClass()
+                                newC.bump(request)
+                                newC.save()
+                                # Adding to new class:
+                                CognateJudgement.objects.bulk_create([
+                                    CognateJudgement(lexeme_id=lId,
+                                                     cognate_class_id=newC.id)
+                                    for lId in data['lexemeIds']])
+                                # Fixing alias for new class:
+                                newC.update_alias()
                             # Add to existing class:
                             else:
-                                pass  # FIXME IMPLEMENT
+                                CognateJudgement.objects.bulk_create([
+                                    CognateJudgement(lexeme_id=lId,
+                                                     cognate_class_id=v)
+                                    for lId in data['lexemeIds']])
                         else:
                             judgements = CognateJudgement.objects.filter(
                                 lexeme_id__in=data['lexemeIds'],
                                 cognate_class_id=k)
                             # Move to new class:
                             if v == 'new':
-                                pass  # FIXME IMPLEMENT
+                                # Class to add to:
+                                newC = CognateClass()
+                                newC.bump(request)
+                                newC.save()
+                                # Adding to new class:
+                                judgements.update(cognate_class_id=newC.id)
+                                # Fixing alias for new class:
+                                newC.update_alias()
                             # Deletion from current class:
                             elif v == 'delete':
                                 judgements.delete()
-                                remaining = CognateJudgement.objects.filter(
-                                    cognate_class_id=k).count()
-                                if remaining == 0:
-                                    logging.info('Removed last lexemes '
-                                                 'from cognate class %s.' % k)
-                                    messages.warning(
-                                        request,
-                                        'Cognate class %s has no lexemes '
-                                        'left in it.' % k)
                             # Move to existing class:
                             else:
                                 judgements.update(cognate_class_id=v)
+                            # Check for remaining entries:
+                            remaining = CognateJudgement.objects.filter(
+                                cognate_class_id=k).count()
+                            if remaining == 0:
+                                logging.info('Removed last lexemes '
+                                             'from cognate class %s.' % k)
+                                messages.warning(
+                                    request,
+                                    'Cognate class %s has no lexemes '
+                                    'left in it.' % k)
             except Exception:
                 logging.exception('Problem handling editCognateClass.')
 
-    #       return HttpResponseRedirect(
-    #           reverse("view-meaning-languages",
-    #                   args=[canonical_gloss, current_language_list.name]))
+            return HttpResponseRedirect(
+                reverse("view-meaning-languages",
+                        args=[canonical_gloss, current_language_list.name]))
         # Handling ChooseCognateClassForm:
         else:  # not ('meang_form' in request.POST)
             cognate_form = ChooseCognateClassForm(request.POST)
