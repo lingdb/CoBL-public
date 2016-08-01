@@ -101,7 +101,7 @@ def revert_version(request, revision_id):
     revision_obj = Revision.objects.get(pk=revision_id)
     revision_obj.revert()  # revert all associated objects too
     msg = "Rolled back revision %s" % (revision_obj.id)
-    messages.add_message(request, messages.INFO, msg)
+    messages.info(request, msg)
     return HttpResponseRedirect(referer)
 
 
@@ -150,17 +150,17 @@ def get_canonical_language(language, request=None):
                     ascii_name__istartswith=language)
             except Language.MultipleObjectsReturned:
                 if request:
-                    messages.add_message(
-                        request, messages.INFO,
-                        ("There are multiple languages matching"
-                         " '%s' in the database") % language)
+                    messages.info(
+                        request,
+                        "There are multiple languages matching"
+                        " '%s' in the database" % language)
                 raise Http404
             except Language.DoesNotExist:
                 if request:
-                    messages.add_message(
-                        request, messages.INFO,
-                        ("There is no language named or starting"
-                         " with '%s' in the database") % language)
+                    messages.info(
+                        request,
+                        "There is no language named or starting"
+                        " with '%s' in the database" % language)
                 raise Http404
     return language
 
@@ -260,10 +260,10 @@ def get_canonical_language_list(language_list=None, request=None):
             language_list = LanguageList.objects.get(name=language_list)
     except LanguageList.DoesNotExist:
         if request:
-            messages.add_message(
-                request, messages.INFO,
-                ("There is no language list matching"
-                 " '%s' in the database") % language_list)
+            messages.info(
+                request,
+                "There is no language list matching"
+                " '%s' in the database" % language_list)
         raise Http404
     return language_list
 
@@ -1179,13 +1179,51 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             try:
                 form = LexemeTableEditCognateClassesForm(request.POST)
                 form.validate()
-                print('We got some magic:', form.getValidated())
-            except Exception, e:
+                data = form.getValidated()
+                with transaction.atomic():
+                    for k, v in data['cognateClassAssignments'].iteritems():
+                        # Ignoring don't care cases:
+                        if k == 'new':
+                            if v == 'delete':
+                                continue
+                        elif k == v:  # new, new is permitted
+                            continue
+                        # Creating new CC or moving from an old one?
+                        if k == 'new':
+                            # Add to new class:
+                            if v == 'new':
+                                pass  # FIXME IMPLEMENT
+                            # Add to existing class:
+                            else:
+                                pass  # FIXME IMPLEMENT
+                        else:
+                            judgements = CognateJudgement.objects.filter(
+                                lexeme_id__in=data['lexemeIds'],
+                                cognate_class_id=k)
+                            # Move to new class:
+                            if v == 'new':
+                                pass  # FIXME IMPLEMENT
+                            # Deletion from current class:
+                            elif v == 'delete':
+                                judgements.delete()
+                                remaining = CognateJudgement.objects.filter(
+                                    cognate_class_id=k).count()
+                                if remaining == 0:
+                                    logging.info('Removed last lexemes '
+                                                 'from cognate class %s.' % k)
+                                    messages.warning(
+                                        request,
+                                        'Cognate class %s has no lexemes '
+                                        'left in it.' % k)
+                            # Move to existing class:
+                            else:
+                                judgements.update(cognate_class_id=v)
+            except Exception:
                 logging.exception('Problem handling editCognateClass.')
 
-    ####    return HttpResponseRedirect(
-    ####        reverse("view-meaning-languages",
-    ####                args=[canonical_gloss, current_language_list.name]))
+    #       return HttpResponseRedirect(
+    #           reverse("view-meaning-languages",
+    #                   args=[canonical_gloss, current_language_list.name]))
         # Handling ChooseCognateClassForm:
         else:  # not ('meang_form' in request.POST)
             cognate_form = ChooseCognateClassForm(request.POST)
@@ -1470,8 +1508,8 @@ def view_lexeme(request, lexeme_id):
     try:
         lexeme = Lexeme.objects.get(id=lexeme_id)
     except Lexeme.DoesNotExist:
-        messages.add_message(request, messages.INFO,
-                             "There is no lexeme with id=%s" % lexeme_id)
+        messages.info(request,
+                      "There is no lexeme with id=%s" % lexeme_id)
         raise Http404
     prev_lexeme, next_lexeme = get_prev_and_next_lexemes(request, lexeme)
     return render_template(request, "lexeme_report.html",
@@ -1486,17 +1524,16 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     try:
         lexeme = Lexeme.objects.get(id=lexeme_id)
     except Lexeme.DoesNotExist:
-        messages.add_message(request, messages.INFO,
-                             "There is no lexeme with id=%s" % lexeme_id)
+        messages.info(request,
+                      "There is no lexeme with id=%s" % lexeme_id)
         raise Http404
     citation_id = int(citation_id)
     cogjudge_id = int(cogjudge_id)
     form = None
 
     def DELETE_CITATION_WARNING_MSG():
-        messages.add_message(
+        messages.warning(
             request,
-            messages.WARNING,
             oneline("""Deletion of the final citation is not allowed. If
             you need to, add a new one before deleting the current
             one."""))
@@ -1507,9 +1544,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             instead, if that's what you mean)"""))
         context = RequestContext(request)
         context["alias"] = citation.cognate_judgement.cognate_class.alias
-        messages.add_message(
+        messages.warning(
             request,
-            messages.WARNING,
             msg.render(context))
 
     def warn_if_lacking_cognate_judgement_citation():
@@ -1527,8 +1563,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 context["lexeme_id"] = lexeme.id
                 context["cogjudge_id"] = cognate_judgement.id
                 context["alias"] = cognate_judgement.cognate_class.alias
-                messages.add_message(request, messages.WARNING,
-                                     msg.render(context))
+                messages.warning(request, msg.render(context))
 
     if action:  # actions are: edit, edit-citation, add-citation
         def get_redirect_url(form, citation=None):
@@ -1589,9 +1624,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     try:
                         citation.save()
                     except IntegrityError:
-                        messages.add_message(
+                        messages.warning(
                             request,
-                            messages.WARNING,
                             oneline("""Lexeme citations must be unique.
                                 This source is already cited for this
                                 lexeme."""))
@@ -1900,7 +1934,7 @@ def redirect_lexeme_citation(request, lexeme_id):
                                     args=[first_citation.id]))
     except IndexError:
         msg = "Operation failed: this lexeme has no citations"
-        messages.add_message(request, messages.WARNING, msg)
+        messages.warning(request, msg)
         return HttpResponseRedirect(lexeme.get_absolute_url())
 
 
@@ -1930,8 +1964,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
         except AssertionError:
             msg = u"""error: meaning=‘%s’, cognate code=‘%s’ identifies %s
             cognate sets""" % (meaning, code, len(cognate_classes))
-            msg = oneline(msg)
-            messages.add_message(request, messages.INFO, msg)
+            messages.info(request, oneline(msg))
             return HttpResponseRedirect(reverse('meaning-report',
                                         args=[meaning]))
 

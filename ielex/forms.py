@@ -489,14 +489,19 @@ class LexemeTableEditCognateClassesForm(WTForm):
         if type(data) != dict:
             raise ValidationError('Data for cognateClassAssignments '
                                   'is not a JSON object.')
+        # Dict to put into _validated:
+        retData = dict()  # :: int | 'new' -> int | 'new' | 'delete'
         # Validating data:
         cIdSet = set()
         # Gathering IDs allowing other keywords:
         for k, v in data.iteritems():
             if k != 'new':
                 cIdSet.add(int(k))
+                k = int(k)
             if v != 'new' and v != 'delete':
                 cIdSet.add(int(v))
+                v = int(v)
+            retData[k] = v
         # Make sure cIdSet consists of valid cognate class IDs:
         cCount = CognateClass.objects.filter(id__in=cIdSet).count()
         if cCount != len(cIdSet):
@@ -504,7 +509,7 @@ class LexemeTableEditCognateClassesForm(WTForm):
                                   'cognate class IDs could not be '
                                   'found in the database.')
         # Write validated data to form.data:
-        form._validated['cognateClassAssignments'] = data
+        form._validated['cognateClassAssignments'] = retData
 
 
 class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
