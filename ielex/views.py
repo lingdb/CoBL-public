@@ -1174,6 +1174,18 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             return HttpResponseRedirect(
                 reverse("view-meaning-languages",
                         args=[canonical_gloss, current_language_list.name]))
+        # Handling editCognateClass (#219):
+        elif 'editCognateClass' in request.POST:
+            try:
+                form = LexemeTableEditCognateClassesForm(request.POST)
+                form.validate()
+                print('We got some magic:', form.getValidated())
+            except Exception, e:
+                logging.exception('Problem handling editCognateClass.')
+
+    ####    return HttpResponseRedirect(
+    ####        reverse("view-meaning-languages",
+    ####                args=[canonical_gloss, current_language_list.name]))
         # Handling ChooseCognateClassForm:
         else:  # not ('meang_form' in request.POST)
             cognate_form = ChooseCognateClassForm(request.POST)

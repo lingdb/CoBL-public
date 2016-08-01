@@ -103,7 +103,7 @@
           form.find('.cognateClassSelection').each(function(){
             var el = $(this);
             cognateClassAssignments[el.data('for')] =
-              el.find('.selectCognateClass').val();
+              el.find('select[name="selectCognateClass"]').val();
           });
           form.find('input[name="cognateClassAssignments"]').val(
             JSON.stringify(cognateClassAssignments));

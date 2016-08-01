@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import re
 from django import forms
 from django.forms import ValidationError
@@ -465,17 +466,45 @@ class LexemeTableEditCognateClassesForm(WTForm):
     cognateClassAssignments = StringField('Cognate class assignments ids',
                                           validators=[InputRequired()])
 
+    _validated = dict()
+
+    def getValidated(self):
+        return self._validated
+
     def validate_lexemeIds(form, field):
         # Parse ids:
         ids = [int(x) for x in field.data.split(',')]
         # Check ids belonging to lexemes with common meaning:
-        # FIXME IMPLEMENT
+        mIds = set(Lexeme.objects.filter(id__in=ids).values_list(
+            'meaning__id', flat=True))
+        if len(mIds) != 1:
+            raise ValidationError('Given lexemes belong to %s meanings '
+                                  'rather than a single one.' % mCount)
         # Write validated data to form.data:
-        form.data['cognateClassAssignments'] = ids
+        form._validated['lexemeIds'] = ids
 
     def validate_cognateClassAssignments(form, field):
-        # FIXME IMPLEMENT
-        pass
+        # Make sure field.data is a json dict:
+        data = json.loads(field.data)
+        if type(data) != dict:
+            raise ValidationError('Data for cognateClassAssignments '
+                                  'is not a JSON object.')
+        # Validating data:
+        cIdSet = set()
+        # Gathering IDs allowing other keywords:
+        for k, v in data.iteritems():
+            if k != 'new':
+                cIdSet.add(int(k))
+            if v != 'new' and v != 'delete':
+                cIdSet.add(int(v))
+        # Make sure cIdSet consists of valid cognate class IDs:
+        cCount = CognateClass.objects.filter(id__in=cIdSet).count()
+        if cCount != len(cIdSet):
+            raise ValidationError('At least one of the given '
+                                  'cognate class IDs could not be '
+                                  'found in the database.')
+        # Write validated data to form.data:
+        form._validated['cognateClassAssignments'] = data
 
 
 class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
