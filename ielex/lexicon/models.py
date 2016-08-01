@@ -901,6 +901,7 @@ class CognateClass(AbstractTimestamped):
         cc = self.loanSourceCognateClass
         return ' '.join([cc.alias, cc.root_form, cc.root_language])
 
+
 class DyenCognateSet(models.Model):
     cognate_class = models.ForeignKey(CognateClass)
     name = models.CharField(max_length=8)
