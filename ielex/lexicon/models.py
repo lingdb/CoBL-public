@@ -896,6 +896,10 @@ class CognateClass(AbstractTimestamped):
     def cladeCount(self):
         return self.computeCounts()['cladeCount']
 
+    @property
+    def loanSourceCognateClassTitle(self):
+        cc = self.loanSourceCognateClass
+        return ' '.join([cc.alias, cc.root_form, cc.root_language])
 
 class DyenCognateSet(models.Model):
     cognate_class = models.ForeignKey(CognateClass)

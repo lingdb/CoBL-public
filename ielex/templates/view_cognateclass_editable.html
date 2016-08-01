@@ -150,7 +150,8 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Loan Source Cognate Set Id">
+                  title="Loan Source Cognate Set Id"
+                  style="width: 5em;">
                   <div class="vertical-text">
                     <div class="vertical-text__inner">
                       Source ID
@@ -356,7 +357,7 @@
                 </button>
               </td>
               {# loanSourceId_filter.html #}
-              <td>
+              <td style="width: 5em;">
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
@@ -586,11 +587,19 @@
                   {% endif %}
                 </td>
                 {# loanSourceId_data.html #}
-                <td class="loanSourceId">
+                <td class="loanSourceId nowrap" style="width: 5em;">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loanSourceId class="form-control numberField" pattern="^[0-9]*$" style="width: 4em;" %}
-                  {% elif cc.loanSourceId.data %}
-                    {{ cc.loanSourceId.data }}
+                    {% form_field cc.loanSourceId class="form-control numberField inline" pattern="^[0-9]*$" style="width: 3em;" %}
+                  {% endif %}
+                  {% if cc.loanSourceId.data %}
+                    <a href="/cognate/{{ cc.loanSourceId.data }}/"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       title="{{ cc.object_data.loanSourceCognateClassTitle }}"
+                       class="inline"
+                       style="color: #8B4510;">
+                       {{ cc.object_data.loanSourceCognateClass.alias }}
+                    </a>
                   {% endif %}
                 </td>
                 {# loansource_data.html #}
