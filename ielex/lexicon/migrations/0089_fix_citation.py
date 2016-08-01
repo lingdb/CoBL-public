@@ -23,7 +23,7 @@ def forwards_func(apps, schema_editor):
             reliability='A',
             comment='',
             modified=datetime(2016, 7, 21, 12, 55, 35, 300486))
-    except Exception, e:
+    except Exception:
         pass
 
 

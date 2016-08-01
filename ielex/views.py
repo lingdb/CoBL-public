@@ -281,7 +281,7 @@ def view_language_list(request, language_list=None):
         languageListTableForm = AddLanguageListTableForm(request.POST)
         try:
             languageListTableForm.validate()
-        except Exception, e:
+        except Exception:
             logging.exception(
                 'Exception in POST validation for view_language_list')
             messages.error(request, 'Sorry, the form data sent '
@@ -306,12 +306,12 @@ def view_language_list(request, language_list=None):
                         else:
                             messages.error(request,
                                            lang.deltaReport(**problem))
-                    except Exception, e:
+                    except Exception:
                         logging.exception('Exception while saving POST '
                                           'in view_language_list.')
                         messages.error(request, 'Sorry, the server failed '
                                        'to save "%s".' % data['ascii_name'])
-            except Exception, e:
+            except Exception:
                 logging.exception('Exception accessing Language object '
                                   'in view_language_list.',
                                   extra=data)
@@ -371,7 +371,7 @@ def view_language_list(request, language_list=None):
                 messages.success(request, 'Language cloned.')
                 return HttpResponseRedirect(
                     reverse("view-language-list", args=[current_list.name]))
-        except Exception, e:
+        except Exception:
             logging.exception('Problem cloning Language in view_language_list')
             messages.error(request, 'Sorry, a problem occured '
                            'when cloning the language.')
@@ -450,12 +450,12 @@ def view_clades(request):
                             else:
                                 messages.error(
                                     request, clade.deltaReport(**problem))
-                    except Exception, e:
+                    except Exception:
                         logging.exception('Problem saving clade '
                                           'in view_clades.')
                         messages.error(request,
                                        'Problem saving clade data: %s' % data)
-            except Exception, e:
+            except Exception:
                 logging.exception('Problem updating clades in view_clades.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least on clade.')
@@ -470,7 +470,7 @@ def view_clades(request):
                 newClade = Clade(**cladeCreationForm.data)
                 with transaction.atomic():
                     newClade.save(force_insert=True)
-            except Exception, e:
+            except Exception:
                 logging.exception('Problem creating clade in view_clades.')
                 messages.error(request, 'Sorry, the server had problems '
                                'creating the clade.')
@@ -488,7 +488,7 @@ def view_clades(request):
                     # Write message about clade deletion:
                     messages.success(request, 'Deleted clade "%s".' %
                                      clade.cladeName)
-            except Exception, e:
+            except Exception:
                 logging.exception('Problem deleting clade in view_clades.')
                 messages.error(request, 'Sorry, the server had problems '
                                'deleting the clade.')
@@ -524,13 +524,13 @@ def view_sndComp(request):
                                     messages.error(
                                         request,
                                         sndComp.deltaReport(**problem))
-                            except Exception, e:
+                            except Exception:
                                 logging.exception('Exception while saving '
                                                   'POST in view_sndComp.')
                                 messages.error(request, 'The server had '
                                                'problems saving the change '
                                                'to "%s".' % sndComp.lgSetName)
-                except Exception, e:
+                except Exception:
                     logging.exception('Exception while accessing '
                                       'entry in view_sndComp.',
                                       extra=data)
@@ -544,7 +544,7 @@ def view_sndComp(request):
                 newSndComp = SndComp(**sndCompCreationForm.data)
                 with transaction.atomic():
                     newSndComp.save(force_insert=True)
-            except Exception, e:
+            except Exception:
                 logging.exception('Problem creating entry in view_sndComp.')
                 messages.error(request, 'Sorry, the server had problems '
                                'creating the SndComp language set.')
@@ -562,7 +562,7 @@ def view_sndComp(request):
                     # Write message about SndComp deletion:
                     messages.success(request,
                                      'Deleted set "%s"' % sndComp.lgSetName)
-            except Exception, e:
+            except Exception:
                 logging.exception('Problem deleting entry in view_sndComp.')
                 messages.error(request, 'Sorry, the server had problems '
                                'deleting the SndComp language set.')
@@ -681,12 +681,12 @@ def view_language_wordlist(request, language, wordlist):
                                 else:
                                     messages.error(
                                         request, lex.deltaReport(**problem))
-                    except Exception, e:
+                    except Exception:
                         logging.exception('Problem updating Lexeme '
                                           'in view_language_wordlist.')
                         messages.error(request, 'Sorry, the server could '
                                        'not update lexeme %s.' % lex.gloss)
-            except Exception, e:
+            except Exception:
                 logging.exception('Problem updating lexemes '
                                   'in view_language_wordlist.')
                 messages.error(request, 'Sorry, the server had problems '
@@ -919,7 +919,7 @@ def edit_language(request, language):
                     return HttpResponseRedirect(reverse("view-all-languages"))
                 else:
                     messages.error(request, language.deltaReport(**problem))
-        except Exception, e:
+        except Exception:
             logging.exception('Problem updating single language '
                               'in edit_language.')
             messages.error(request, 'Sorry, the server could not update '
@@ -979,13 +979,13 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
                             else:
                                 messages.error(
                                     request, meaning.deltaReport(**problem))
-                        except Exception, e:
+                        except Exception:
                             logging.exception('Exception while saving POST '
                                               'in view_wordlist.')
                             messages.error(request, 'Sorry, the server had '
                                            'problems saving changes for '
                                            '"%s".' % meaning.gloss)
-                except Exception, e:
+                except Exception:
                     logging.exception('Problem accessing Meaning object '
                                       'in view_wordlist.',
                                       extra=m)
@@ -1165,10 +1165,10 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                             else:
                                 messages.error(request,
                                                lex.deltaReport(**problem))
-                    except Exception, e:
+                    except Exception:
                         logging.exception('Problem updating Lexeme '
                                           'in view_meaning.')
-            except Exception, e:
+            except Exception:
                 logging.exception('Problem updating lexemes in view_meaning.')
 
             return HttpResponseRedirect(
@@ -1297,13 +1297,13 @@ def view_cognateclasses(request, meaning):
                             else:
                                 messages.error(
                                     request, cogclass.deltaReport(**problem))
-                        except Exception, e:
+                        except Exception:
                             logging.exception('Problem saving CognateClass '
                                               'in view_cognateclasses.')
                             messages.error(
                                 request,
                                 'Problem while saving entry: %s' % data)
-            except Exception, e:
+            except Exception:
                 logging.exception('Problem updating CognateClasses '
                                   'in view_cognateclasses.')
                 messages.error(request, 'Sorry, the server had problems '
@@ -1368,7 +1368,7 @@ def view_cognateclasses(request, meaning):
                         ccs.delete()
                         # Fixing alias:
                         newC.update_alias()
-            except Exception, e:
+            except Exception:
                 logging.exception('Problem merging CognateClasses '
                                   'in view_cognateclasses.')
                 messages.error(request, 'Sorry, the server had problems '
@@ -1953,7 +1953,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                 try:
                     for id, t in idTMap.iteritems():
                         idCjMap[id].bump(request, t)
-                except Exception, e:
+                except Exception:
                     logging.exception('Problem splitting cognate judgements '
                                       'in cognate_report.')
                     messages.error(request, 'The server refused to split '
@@ -1974,13 +1974,13 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                             'Created new Cognate Class at '
                             '[%s](/cognate/%s/) containing the judgements %s.'
                             % (cc.id, cc.id, idTMap.keys()))
-                    except Exception, e:
+                    except Exception:
                         logging.exception('Problem creating a new '
                                           'CognateClass on split '
                                           'in cognate_report.')
                         messages.error(request, 'Sorry the server could not '
                                        'create a new cognate class.')
-            except Exception, e:
+            except Exception:
                 logging.exception('Problem when splitting CognateClasses '
                                   'in cognate_report.')
                 messages.error(request, 'Sorry, the server had trouble '
@@ -1990,7 +1990,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                 cognate_class.delete()
                 messages.success(request, 'Deleted cognate class.')
                 return HttpResponseRedirect('/cognateclasslist/')
-            except Exception, e:
+            except Exception:
                 logging.exception('Failed to delete CognateClass %s '
                                   'in cognate_report.' % cognate_class.id)
                 messages.error(request, 'Sorry, the server could not delete '
@@ -2002,7 +2002,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                     id=int(request.POST['citationId']))
                 citation.delete()
                 messages.success(request, 'Deleted citation.')
-            except Exception, e:
+            except Exception:
                 logging.exception('Failed to delete citation '
                                   'in cognate_report.')
                 messages.error(request, 'Sorry, the server could not delete '
@@ -2238,7 +2238,7 @@ def viewAuthors(request):
                 newAuthor = Author(**authorCreationForm.data)
                 with transaction.atomic():
                     newAuthor.save(force_insert=True)
-            except Exception, e:
+            except Exception:
                 logging.exception('Problem creating author in viewAuthors.')
                 messages.error(request, 'Sorry, the server could not '
                                'create new author as requested.')
@@ -2259,12 +2259,12 @@ def viewAuthors(request):
                                 else:
                                     messages.error(
                                         request, author.deltaReport(**problem))
-                    except Exception, e:
+                    except Exception:
                         logging.exception('Problem while saving '
                                           'author in viewAuthors.')
                         messages.error(
                             request, 'Problem saving author data: %s' % data)
-            except Exception, e:
+            except Exception:
                 logging.exception('Problem updating authors in viewAuthors.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least one author.')
@@ -2279,7 +2279,7 @@ def viewAuthors(request):
                     # Make sure to update things referencing the author here!
                     # Deleting the author:
                     Author.objects.filter(id=author.id).delete()
-            except Exception, e:
+            except Exception:
                 logging.exception('Problem deleting author in viewAuthors.')
                 messages.error(request, 'Sorry, the server had problems '
                                'deleting the requested author.')

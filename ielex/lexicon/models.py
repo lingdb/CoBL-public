@@ -254,7 +254,7 @@ class SndComp(AbstractTimestamped):
             try:
                 d = dict(wanted[:i])
                 return Clade.objects.get(**d)
-            except Exception, e:
+            except Exception:
                 pass
 
         return None
