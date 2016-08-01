@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 from django.db import migrations
-
-import ielex.lexicon.models as models
-
 import datetime
 
 
@@ -44,7 +40,6 @@ def forwards_func(apps, schema_editor):
     '''
     CognateClass = apps.get_model('lexicon', 'CognateClass')
     CognateClassCitation = apps.get_model('lexicon', 'CognateClassCitation')
-    Source = apps.get_model('lexicon', 'Source')
     # Id that needs to get CognateClassCitations attached:
     target = 5822
     try:

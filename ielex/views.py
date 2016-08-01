@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-import bisect
-import csv
 import datetime
 import logging
 import json
 import re
 import requests
-import textwrap
 import time
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -20,26 +17,83 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template import Template
-from django.template.loader import get_template
 from reversion.models import Revision, Version
 # from reversion import revision
 from ielex.settings import LIMIT_TO, META_TAGS
-from ielex.forms import *
-from ielex.lexicon.models import *
-from ielex.lexicon.defaultModels import *
-# from ielex.citations.models import *
-from ielex.extensional_semantics.views import *
+from ielex.forms import AddCitationForm, \
+                        AddCogClassTableForm, \
+                        AddLanguageListForm, \
+                        AddLanguageListTableForm, \
+                        AddLexemeForm, \
+                        AuthorCreationForm, \
+                        AuthorDeletionForm, \
+                        AuthorTableForm, \
+                        ChooseCognateClassForm, \
+                        CladeCreationForm, \
+                        CladeDeletionForm, \
+                        CladeTableForm, \
+                        CloneLanguageForm, \
+                        CognateJudgementSplitTable, \
+                        EditCitationForm, \
+                        EditCognateClassNameForm, \
+                        EditCognateClassNotesForm, \
+                        EditLanguageForm, \
+                        EditLanguageListForm, \
+                        EditLanguageListMembersForm, \
+                        EditLexemeForm, \
+                        EditMeaningForm, \
+                        EditMeaningListForm, \
+                        EditSourceForm, \
+                        LanguageListRowForm, \
+                        LexemeTableEditCognateClassesForm, \
+                        LexemeTableFilterForm, \
+                        LexemeTableLanguageWordlistForm, \
+                        LexemeTableViewMeaningsForm, \
+                        MeaningListTableForm, \
+                        MeaningTableFilterForm, \
+                        MergeCognateClassesForm, \
+                        SearchLexemeForm, \
+                        SndCompCreationForm, \
+                        SndCompDeletionForm, \
+                        SndCompTableForm, \
+                        make_reorder_languagelist_form, \
+                        make_reorder_meaninglist_form
+from ielex.lexicon.models import Author, \
+                                 Clade, \
+                                 CognateClass, \
+                                 CognateClassCitation, \
+                                 CognateJudgement, \
+                                 CognateJudgementCitation, \
+                                 Language, \
+                                 LanguageClade, \
+                                 LanguageList, \
+                                 LanguageListOrder, \
+                                 Lexeme, \
+                                 LexemeCitation, \
+                                 Meaning, \
+                                 MeaningList, \
+                                 MeaningListOrder, \
+                                 SndComp, \
+                                 Source, \
+                                 TYPE_CHOICES
+from ielex.lexicon.defaultModels import getDefaultLanguage, \
+                                        getDefaultLanguageId, \
+                                        getDefaultLanguagelist, \
+                                        getDefaultMeaning, \
+                                        getDefaultMeaningId, \
+                                        getDefaultWordlist, \
+                                        setDefaultLanguage, \
+                                        setDefaultLanguageId, \
+                                        setDefaultLanguagelist, \
+                                        setDefaultMeaning, \
+                                        setDefaultMeaningId, \
+                                        setDefaultWordlist
 from ielex.shortcuts import render_template
-from ielex.utilities import next_alias, confirm_required, \
+from ielex.utilities import next_alias, \
                             anchored, oneline, logExceptions
 from ielex.languageCladeLogic import updateLanguageCladeRelations
 
-from collections import defaultdict
 from django.views.decorators.csrf import csrf_protect
-from django_tables2 import RequestConfig
-from ielex.tables import *
-from werkzeug.datastructures import MultiDict
-from itertools import izip_longest
 
 # Refactoring:
 # - rename the functions which render to response with the format
@@ -81,7 +135,7 @@ def view_changes(request, username=None, revision_id=None, object_id=None):
                             Revision.objects.filter(user=user_id).count())
                            for user_id in Revision.objects.values_list("user",
                            flat=True).distinct() if user_id is not None],
-                          lambda x, y: -cmp(x[1], y[1]))
+                          lambda x, y: y[1] - x[1])
     # reverse sort by second element in tuple
     # TODO user_id should never be None
 
@@ -218,7 +272,6 @@ def get_prev_and_next_meanings(request, current_meaning, meaning_list=None):
 def get_prev_and_next_lexemes(request, current_lexeme):
     """Get the previous and next lexeme from the same language, ordered
     by meaning and then alphabetically by form"""
-    current_meaning = current_lexeme.meaning
     lexemes = list(Lexeme.objects.filter(
         language=current_lexeme.language).order_by(
             "meaning", "phon_form", "source_form", "id"))
@@ -1676,7 +1729,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     citation.delete()
                 except IntegrityError:
                     DELETE_CITATION_WARNING_MSG()
-                return HttpResponseRedirect(redirect_url)
+                return HttpResponseRedirect(lexeme.get_absolute_url())
             elif action == "delink-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 try:

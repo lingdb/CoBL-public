@@ -5,27 +5,16 @@ import reversion
 import math
 import os.path
 from collections import defaultdict
-from itertools import izip
 from string import uppercase, lowercase
-from django.db import models, connection
-from django.db.models import Max, F
+from django.db import models
+from django.db.models import Max
 from django.core.urlresolvers import reverse
-from django.db import IntegrityError
-from django.dispatch import receiver
-from django.db.models.signals import pre_delete, post_delete, post_save
-from django.db.backends.signals import connection_created
 from django.utils.safestring import SafeString
 from django.utils.encoding import python_2_unicode_compatible
-from django.contrib import messages
 # ielex specific imports:
 from ielex.utilities import two_by_two
-from ielex.lexicon.validators import *
+from ielex.lexicon.validators import suitable_for_url, standard_reserved_names
 
-# from https://code.djangoproject.com/ticket/8399
-try:
-    from functools import wraps
-except ImportError:
-    from django.utils.functional import wraps
 import inspect
 
 

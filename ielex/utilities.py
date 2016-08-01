@@ -21,7 +21,7 @@ def logExceptions(func):
     def f(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except Exception, e:
+        except Exception as e:
             logging.exception('Exception found by logExceptions.')
             raise e
     return f
@@ -138,18 +138,18 @@ if __name__ == "__main__":
     for i in xrange(1, 703):
         s = int2alpha(i)
         if i < 11 or i > 692:
-            print i, s
+            print(i, s)
         elif snip_flag:
-            print "[...]"
+            print("[...]")
             snip_flag = False
         else:
             pass
         assert alpha2int(s) == i
 
     l = ["A", "B", "C"]
-    print l
-    print "next_alias(l) -->", next_alias(l)
+    print(l)
+    print("next_alias(l) -->", next_alias(l))
     l = ["none", "A", "B", "C"]
-    print l
-    print 'next_alias(l, ignore=["none","new"]) -->', \
-          next_alias(l, ignore=["none", "new"])
+    print(l)
+    print('next_alias(l, ignore=["none","new"]) -->',
+          next_alias(l, ignore=["none", "new"]))
