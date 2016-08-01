@@ -157,3 +157,8 @@ table.floatThead-table {
 .numberField {
   text-align: right;
 }
+
+/* To make sure messages are displayed*/
+#message.container-fluid {
+  margin-top: 60px;
+}
