@@ -108,6 +108,12 @@
                 </div>
               </th>
             {% endif %}
+            {# cognateclassids_title.html #}
+            <th>Cog.<br>ID</th>
+            {# cognateclasses_title.html #}
+            <th>
+              Cog.<br>Alias
+            </th>
             {# edit_title.html #}
             {% if user.is_authenticated %}
               <th title="Use the buttons to edit cognate class assignments (for selected rows)."
@@ -121,14 +127,8 @@
                 </div>
               </th>
             {% endif %}
-            {# cognateclassids_title.html #}
-            <th>Cog.<br>IDs</th>
             {# cognateclassview_title.html #}
             <th></th>
-            {# cognateclasses_title.html #}
-            <th>
-              Cog.<br>Alias
-            </th>
             {# rootform_title.html #}
             <th>Root Form</th>
             {# rootlanguage_title.html #}
@@ -268,10 +268,6 @@
                 </button>
               </td>
             {% endif %}
-            {# edit_filter.html #}
-            {% if user.is_authenticated %}
-              <td></td>
-            {% endif %}
             {# cognateclassids_filter.html #}
             <td>
               <div class="btn btn-xs btn-default sortIntText"
@@ -279,8 +275,6 @@
                 <span class="glyphicon glyphicon-sort"></span>
               </div>
             </td>
-            {# cognateclassview_filter.html #}
-            <td></td>
             {# cognateclasses_filter.html #}
             <td>
               <input type="text"
@@ -289,6 +283,12 @@
                      size="1"
                      style="padding-left: 2px; padding-right: 2px;">
             </td>
+            {# edit_filter.html #}
+            {% if user.is_authenticated %}
+              <td></td>
+            {% endif %}
+            {# cognateclassview_filter.html #}
+            <td></td>
             {# rootform_filter.html #}
             <td>
               {% if user.is_authenticated %}
@@ -563,21 +563,6 @@
                          value='{{ lexeme.object_data.selectionJSON }}'>
                 </td>
               {% endif %}
-              {# edit_data.html #}
-              {% if user.is_authenticated %}
-                <td class="selection"
-                    data-toggle="tooltip"
-                    data-placement="bottom"
-                    data-container="body"
-                    title="Edit cognate class assignments.">
-                  <button type="button"
-                          class="btn btn-xs editCognateClassButton"
-                          style="background-color: #CD7432;"
-                          value='{{ lexeme.object_data.selectionJSON }}'>
-                    <span class="glyphicon glyphicon-pencil"></span>
-                  </button>
-                </td>
-              {% endif %}
               {# cognateclassids_data.html #}
               <td class="cognateClassId" style="text-align: center;">
                 {% for c in lexeme.object_data.allCognateClasses %}
@@ -587,12 +572,6 @@
                     {{ c.id }}
                   </a>
                 {% endfor %}
-              </td>
-              {# cognateclassview_data.html #}
-              <td style="padding-left: 4px; padding-right: 4px;">
-                <a href="/meaning/{{ meaning.gloss }}/cognateclasslist/">
-                  <img src="{% static '1c.png' %}">
-                </a>
               </td>
               {# cognateclasses_data.html #}
               <td>
@@ -618,6 +597,27 @@
                   </a>
                   {% endfor %}
                 </div>
+              </td>
+              {# edit_data.html #}
+              {% if user.is_authenticated %}
+                <td class="selection"
+                    data-toggle="tooltip"
+                    data-placement="bottom"
+                    data-container="body"
+                    title="Edit cognate class assignments.">
+                  <button type="button"
+                          class="btn btn-xs editCognateClassButton"
+                          style="background-color: #CD7432;"
+                          value='{{ lexeme.object_data.selectionJSON }}'>
+                    <span class="glyphicon glyphicon-pencil"></span>
+                  </button>
+                </td>
+              {% endif %}
+              {# cognateclassview_data.html #}
+              <td style="padding-left: 4px; padding-right: 4px;">
+                <a href="/meaning/{{ meaning.gloss }}/cognateclasslist/">
+                  <img src="{% static '1c.png' %}">
+                </a>
               </td>
               {# rootform_data.html #}
               <td class="lexemeRootForm" style="color: #8B4510;">
