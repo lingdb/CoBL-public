@@ -60,7 +60,7 @@ def reverse_func(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('lexicon', '0085_language_historical_init')]
+    dependencies = [('lexicon', '0090_remove_meaninglist_data')]
 
     operations = [
         migrations.RunPython(forwards_func, reverse_func),
