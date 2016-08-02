@@ -568,7 +568,10 @@
                 {% for c in lexeme.object_data.allCognateClasses %}
                   <a href="/cognate/{{ c.id }}/"
                      target="_blank"
-                     style="color: #8B4510;">
+                     style="color: #8B4510;"
+                     data-toggle="tooltip"
+                     data-placement="bottom"
+                     title="New tab to view details of this cognate set and all member lexemes.">
                     {{ c.id }}
                   </a>
                 {% endfor %}
