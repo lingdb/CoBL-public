@@ -17,6 +17,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template import Template
+from itertools import izip
 from reversion.models import Revision, Version
 # from reversion import revision
 from ielex.settings import LIMIT_TO, META_TAGS
@@ -401,26 +402,73 @@ def view_language_list(request, language_list=None):
                     language__ascii_name=form.data['sourceLanguageName'],
                     meaning__in=meaningIds).all(
                     ).prefetch_related('meaning')
+                # Editor for AbstractTimestamped:
+                lastEditedBy = ' '.join([request.user.first_name,
+                                         request.user.last_name])
                 # Copy lexemes to clone language:
+                currentLexemeIds = set(Lexeme.objects.values_list(
+                    'id', flat=True))
                 newLexemes = []
                 order = 1  # Increasing values for _order fields of Lexemes
                 for sLexeme in sourceLexemes:
                     # Basic data:
                     data = {'language': clone,
                             'meaning': sLexeme.meaning,
-                            '_order': order}
+                            '_order': order,
+                            'lastEditedBy': lastEditedBy}
                     order += 1
                     # Copying lexeme data if specified:
                     if not form.data['emptyLexemes']:
                         for f in sLexeme.timestampedFields():
-                            data[f] = getattr(sLexeme, f)
-                    # Setting lastEditedBy:
-                    data['lastEditedBy'] = ' '.join(
-                        [request.user.first_name,
-                         request.user.last_name])
-                    # Appending for creation:
-                    newLexemes.append(Lexeme(**data))
+                            if f != 'lastEditedBy':
+                                data[f] = getattr(sLexeme, f)
+                    # New lexeme to create:
+                    newLexeme = Lexeme(**data)
+                    newLexemes.append(newLexeme)
                 Lexeme.objects.bulk_create(newLexemes)
+                # Copying CognateJudgements for newLexemes:
+                if not form.data['emptyLexemes']:
+                    newLexemeIds = Lexeme.objects.exclude(
+                        id__in=currentLexemeIds).order_by(
+                        'id').values_list('id', flat=True)
+                    currentCognateJudgementIds = set(
+                        CognateJudgement.objects.values_list('id', flat=True))
+                    newCognateJudgements = []
+                    sourceCJs = []
+                    for newId, lexeme in izip(newLexemeIds, sourceLexemes):
+                        cjs = CognateJudgement.objects.filter(
+                            lexeme_id=lexeme.id).prefetch_related(
+                            'cognatejudgementcitation_set').all()
+                        sourceCJs += cjs
+                        for cj in cjs:
+                            newCognateJudgement = CognateJudgement(
+                                lexeme_id=newId,
+                                cognate_class_id=cj.cognate_class_id,
+                                lastEditedBy=lastEditedBy
+                            )
+                            newCognateJudgements.append(newCognateJudgement)
+                    CognateJudgement.objects.bulk_create(newCognateJudgements)
+                    # Copying CognateJudgementCitations
+                    # for newCognateJudgements:
+                    newCognateJudgementIds = CognateJudgement.objects.exclude(
+                        id__in=currentCognateJudgementIds).order_by(
+                        'id').values_list(
+                        'id', flat=True)
+                    newCognateJudgementCitations = []
+                    for newId, cj in izip(newCognateJudgementIds, cjs):
+                        cjcs = cj.cognatejudgementcitation_set.all()
+                        for cjc in cjcs:
+                            newCognateJudgementCitations.append(
+                                CognateJudgementCitation(
+                                    cognate_judgement_id=newId,
+                                    source_id=cjc.source_id,
+                                    pages=cjc.pages,
+                                    reliability=cjc.reliability,
+                                    comment=cjc.comment,
+                                    modified=cjc.modified
+                                ))
+                    CognateJudgementCitation.objects.bulk_create(
+                        newCognateJudgementCitations)
                 # Redirect to newly created language:
                 messages.success(request, 'Language cloned.')
                 return HttpResponseRedirect(
