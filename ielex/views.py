@@ -431,6 +431,20 @@ def view_language_list(request, language_list=None):
                     newLexemeIds = Lexeme.objects.exclude(
                         id__in=currentLexemeIds).order_by(
                         'id').values_list('id', flat=True)
+                    # Cloning LexemeCitations:
+                    newLexemeCitations = []
+                    for newId, lexeme in izip(newLexemeIds, sourceLexemes):
+                        for lc in lexeme.lexemecitation_set.all():
+                            newLexemeCitations.append(LexemeCitation(
+                                lexeme_id=newId,
+                                source_id=lc.source_id,
+                                pages=lc.pages,
+                                reliability=lc.reliability,
+                                comment=lc.comment,
+                                modified=lc.modified
+                            ))
+                    LexemeCitation.objects.bulk_create(newLexemeCitations)
+                    # Cloning CognateJudgements:
                     currentCognateJudgementIds = set(
                         CognateJudgement.objects.values_list('id', flat=True))
                     newCognateJudgements = []
@@ -455,9 +469,8 @@ def view_language_list(request, language_list=None):
                         'id').values_list(
                         'id', flat=True)
                     newCognateJudgementCitations = []
-                    for newId, cj in izip(newCognateJudgementIds, cjs):
-                        cjcs = cj.cognatejudgementcitation_set.all()
-                        for cjc in cjcs:
+                    for newId, cj in izip(newCognateJudgementIds, sourceCJs):
+                        for cjc in cj.cognatejudgementcitation_set.all():
                             newCognateJudgementCitations.append(
                                 CognateJudgementCitation(
                                     cognate_judgement_id=newId,
