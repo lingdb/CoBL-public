@@ -24,14 +24,14 @@ def forwards_func(apps, schema_editor):
     # Calculating:
     print("\n1: loanword, no loan event in cognate class:")
     for l in lexemes:
-        if l.is_loan_lexeme:
-            for cc in l.cognate_class:
+        if l.is_loan_cognate:
+            for cc in l.cognate_class.all():
                 if not cc.loanword:
                     print('Lexeme %s, cognate class %s.' % (l.id, cc.id))
     print("\n2: loanword, no cognate class:")
     for l in lexemes:
-        if l.is_loan_lexeme:
-            if len(l.cognate_class) == 0:
+        if l.is_loan_cognate:
+            if l.cognate_class.count() == 0:
                 print(l.id)
     print(1/0)
 
