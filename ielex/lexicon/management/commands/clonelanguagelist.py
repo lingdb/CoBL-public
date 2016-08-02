@@ -1,6 +1,6 @@
-from optparse import make_option, SUPPRESS_HELP
-from django.core.management.base import NoArgsCommand, CommandError
-from ielex.lexicon.models import LanguageList, LanguageListOrder
+from optparse import make_option
+from django.core.management.base import CommandError
+from ielex.lexicon.models import LanguageList
 from ielex.utilities import LexDBManagementCommand
 
 
@@ -47,4 +47,4 @@ class Command(LexDBManagementCommand):
 
         msg = "Created LanguageList `%s' with %s languages" % \
             (dest_list.name, dest_list.languages.count())
-        print msg
+        print(msg)

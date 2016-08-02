@@ -1,16 +1,24 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404
 from django.template import RequestContext
-from django.template.loader import get_template
-from ielex.extensional_semantics.forms import *
-from ielex.extensional_semantics.models import *
+from ielex.extensional_semantics.forms import \
+    AddSemanticExtensionForm, \
+    ChooseSemanticRelationsForm, \
+    EditRelationForm, \
+    EditSemanticDomainForm, \
+    MultipleSemanticExtensionCitationForm, \
+    SemanticExtensionCitationForm
+from ielex.extensional_semantics.models import SemanticDomain, \
+                                               SemanticExtension, \
+                                               SemanticExtensionCitation, \
+                                               SemanticRelation
 from ielex.lexicon.models import Lexeme, Language
 from ielex.forms import ChooseLanguageForm
 from ielex.shortcuts import render_template
 from ielex.utilities import confirm_required
+from ielex.views import get_canonical_language
 
 
 # -- /relation(s)/ --------------------------------------------------------
@@ -43,7 +51,8 @@ def add_relation(request):
     if request.method == 'POST':
         form = EditRelationForm(request.POST)
         if "cancel" in form.data:  # has to be tested before data is cleaned
-            return HttpResponseRedirect(relation.get_absolute_url())
+            return HttpResponseRedirect(request.POST['url']
+                                        if 'url' in request.POST else '/')
         if form.is_valid():
             form.save()
             relation = SemanticRelation.objects.get(

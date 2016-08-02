@@ -1,19 +1,30 @@
 # -*- coding: utf-8 -*-
 import json
-import re
 from django import forms
 from django.forms import ValidationError
-from ielex.lexicon.models import *
+from django.utils.encoding import python_2_unicode_compatible
+from ielex.lexicon.models import CognateClass, \
+                                 CognateClassCitation, \
+                                 DISTRIBUTION_CHOICES, \
+                                 Language, \
+                                 LanguageList, \
+                                 Meaning, \
+                                 MeaningList, \
+                                 Source, \
+                                 TYPE_CHOICES
 from ielex.lexicon.validators import suitable_for_url, suitable_for_url_wtforms
 # from ielex.extensional_semantics.models import *
 
-from wtforms import StringField, IntegerField, \
-    FieldList, FormField, \
-    TextField, BooleanField, \
-    DateTimeField, DecimalField, \
-    TextAreaField, SelectField
+from wtforms import StringField, \
+                    IntegerField, \
+                    FieldList, \
+                    FormField, \
+                    TextField, \
+                    BooleanField, \
+                    DateTimeField, \
+                    TextAreaField, \
+                    SelectField
 from wtforms.validators import Email, InputRequired
-from wtforms_components import read_only
 from wtforms.form import Form as WTForm
 from wtforms.ext.django.orm import model_form
 from lexicon.models import Lexeme
@@ -27,12 +38,6 @@ def clean_value_for_url(instance, field_label):
     data = instance.cleaned_data[field_label]
     data = data.strip()
     suitable_for_url(data)
-    # illegal_chars = re.findall(r"[^a-zA-Z0-9$\-_\.+!*'(),]", data)
-    # try:
-    #     assert not illegal_chars
-    # except AssertionError:
-    #     raise ValidationError("Invalid character/s for an ascii label:"\
-    #             " '%s'" % "', '".join(illegal_chars))
     return data
 
 
@@ -479,7 +484,7 @@ class LexemeTableEditCognateClassesForm(WTForm):
             'meaning__id', flat=True))
         if len(mIds) != 1:
             raise ValidationError('Given lexemes belong to %s meanings '
-                                  'rather than a single one.' % mCount)
+                                  'rather than a single one.' % len(mIds))
         # Write validated data to form.data:
         form._validated['lexemeIds'] = ids
 
@@ -606,7 +611,7 @@ class EditCognateClassCitationForm(forms.ModelForm):
         exclude.remove("cognate_class")
         try:
             self.instance.validate_unique(exclude=exclude)
-        except ValidationError, e:
+        except ValidationError as e:
             self._update_errors(e.message_dict)
 
     class Meta:

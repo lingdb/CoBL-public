@@ -1,11 +1,21 @@
 # -*- coding: utf-8 -*-
 # tests specific to lexicon module
+from django.db import IntegrityError
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.validators import ValidationError
-from ielex.lexicon.models import *
+from ielex.lexicon.models import CognateClass, \
+                                 CognateClassCitation, \
+                                 CognateJudgement, \
+                                 CognateJudgementCitation, \
+                                 Language, \
+                                 LanguageList, \
+                                 Lexeme, \
+                                 LexemeCitation, \
+                                 Meaning, \
+                                 Source
 from ielex.lexicon.templatetags.lexicon_utils import wikilink
-# from ielex.lexicon.forms import ChooseNexusOutputForm
+from ielex.lexicon.validators import standard_reserved_names, suitable_for_url
 
 
 def make_basic_objects():
@@ -268,7 +278,7 @@ class CognateCitationValidityTests(TestCase):
         cognate_judgement = CognateJudgement.objects.create(
                 lexeme=self.lexeme,
                 cognate_class=self.cognate_class)
-        citation = CognateJudgementCitation.objects.create(
+        CognateJudgementCitation.objects.create(
                 source=self.source,
                 cognate_judgement=cognate_judgement,
                 reliability="B")

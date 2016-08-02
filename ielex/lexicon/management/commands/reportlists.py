@@ -1,5 +1,4 @@
 from __future__ import print_function
-from optparse import make_option
 from ielex.lexicon.models import LanguageList, MeaningList
 from ielex.utilities import LexDBManagementCommand
 

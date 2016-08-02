@@ -1,6 +1,5 @@
 from optparse import make_option
 from os.path import expanduser, expandvars
-from django.core.management.base import NoArgsCommand, CommandError
 from ielex.lexicon.views import write_delimited
 from ielex.lexicon.models import LanguageList, MeaningList
 from ielex.utilities import LexDBManagementCommand

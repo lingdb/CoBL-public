@@ -1,11 +1,60 @@
-from django.conf.urls import *
+from django.conf.urls import url, patterns, include
 from django.contrib.auth.decorators import login_required
-from django.views.generic import DetailView, UpdateView,\
-        CreateView, ListView, TemplateView, RedirectView
-from ielex.views import *
+from django.views.generic import DetailView, \
+        ListView, RedirectView
+from ielex.views import add_language_list, \
+                        changeDefaults, \
+                        cognate_report, \
+                        delete_language, \
+                        delete_language_list, \
+                        delete_meaning, \
+                        edit_language, \
+                        edit_language_list, \
+                        edit_meaning, \
+                        edit_wordlist, \
+                        language_add_new, \
+                        lexeme_add, \
+                        lexeme_duplicate, \
+                        lexeme_edit, \
+                        lexeme_search, \
+                        meaning_add_new, \
+                        redirect_lexeme_citation, \
+                        reorder_language_list, \
+                        reorder_wordlist, \
+                        revert_version, \
+                        source_edit, \
+                        source_list, \
+                        source_view, \
+                        viewAbout, \
+                        viewAuthors, \
+                        view_changes, \
+                        view_clades, \
+                        view_cognateclasses, \
+                        viewDefaultCognateClassList, \
+                        viewDefaultLanguage, \
+                        viewDefaultMeaning, \
+                        view_frontpage, \
+                        view_language_check, \
+                        view_language_list, \
+                        view_language_wordlist, \
+                        view_lexeme, \
+                        view_meaning, \
+                        view_object_history, \
+                        view_sndComp, \
+                        view_wordlist, \
+                        view_wordlists
 from ielex import settings
-from ielex.lexicon.views import *
-from ielex.lexicon.models import *
+from ielex.lexicon.views import CognateClassCitationCreateView, \
+                                cognate_class_citation_delete, \
+                                CognateClassCitationUpdateView, \
+                                DumpRawDataView, \
+                                NexusExportView
+from ielex.lexicon.models import CognateClassCitation, \
+                                 CognateJudgement, \
+                                 CognateJudgementCitation, \
+                                 LanguageList, \
+                                 LexemeCitation, \
+                                 MeaningList
 from django.contrib.staticfiles.urls \
     import staticfiles_urlpatterns
 

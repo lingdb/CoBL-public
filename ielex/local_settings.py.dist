@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
 
 # Development settings
 # IMPORTANT: do not change DEBUG to True until after the first syncdb

@@ -3,7 +3,15 @@ from django.test.client import Client
 from django.db import IntegrityError, transaction
 import logging
 import lxml.html
-from ielex.lexicon.models import *
+from ielex.lexicon.models import CognateClass, \
+                                 CognateJudgement, \
+                                 CognateJudgementCitation, \
+                                 Language, \
+                                 LanguageList, \
+                                 Lexeme, \
+                                 Meaning, \
+                                 MeaningList, \
+                                 Source
 from ielex.lexicon.tests import make_basic_objects
 
 # TODO make sure settings has DEBUG set to False
@@ -61,7 +69,6 @@ class ViewBaseMethods:
         "Test that an authenticated user can follow every link"
         self.client.login(username='testuser', password='secret')
         logger.info("\n === WALK SITE (for authenticated user) ===")
-        root = "/"
         self.seen_links = set()
         self.walk_page("/")
         logger.info(" === end WALK SITE ===\n")
