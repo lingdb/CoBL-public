@@ -618,7 +618,10 @@
               {% endif %}
               {# cognateclassview_data.html #}
               <td style="padding-left: 4px; padding-right: 4px;">
-                <a href="/meaning/{{ meaning.gloss }}/cognateclasslist/">
+                <a href="/meaning/{{ meaning.gloss }}/cognateclasslist/"
+                   data-toggle="tooltip"
+                   data-placement="bottom"
+                   title="Switch page to view all cognate sets for this meaning.">
                   <img src="{% static '1c.png' %}">
                 </a>
               </td>
