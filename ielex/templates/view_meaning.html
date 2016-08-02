@@ -595,7 +595,10 @@
                   {% endif %}
                   {% for c in lexeme.object_data.allCognateClasses %}
                   <a href="/cognate/{{ c.id }}/"
-                     style="color: #8B4510;">
+                     style="color: #8B4510;"
+                     data-toggle="tooltip"
+                     data-placement="bottom"
+                     title="Switch page to view details of this cognate set and all member lexemes.">
                     {{ c.alias }}
                   </a>
                   {% endfor %}
