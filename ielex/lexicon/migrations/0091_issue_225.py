@@ -22,34 +22,16 @@ def forwards_func(apps, schema_editor):
         meaning__in=ml.meanings.values_list('id', flat=True),
         language__in=ll.languages.values_list('id', flat=True)).all()
     # Calculating:
-    print("\n1: + lex. excl - Not swh")
-    for l in lexemes:
-        if not l.not_swadesh_term:
-            if l.is_excluded_lexeme:
-                print(l.id)
-    print("2: + lex .loan - Not swh")
-    for l in lexemes:
-        if not l.not_swadesh_term:
-            if l.is_loan_lexeme:
-                print(l.id)
-    print("3: + lex. loan")
+    print("\n1: loanword, no loan event in cognate class:")
     for l in lexemes:
         if l.is_loan_lexeme:
-            print(l.id)
-    print("4: 2 >= cognate sets - Not swh")
+            for cc in l.cognate_class:
+                if not cc.loanword:
+                    print('Lexeme %s, cognate class %s.' % (l.id, cc.id))
+    print("\n2: loanword, no cognate class:")
     for l in lexemes:
-        if not l.not_swadesh_term:
-            if l.cognatejudgement_set.count() >= 2:
-                print(l.id)
-    print("5: + cog. excl. - Not swh")
-    for l in lexemes:
-        if not l.not_swadesh_term:
-            if l.is_excluded_cognate:
-                print(l.id)
-    print("6: + cog. loan - Not swh")
-    for l in lexemes:
-        if not l.not_swadesh_term:
-            if l.is_loan_cognate:
+        if l.is_loan_lexeme:
+            if len(l.cognate_class) == 0:
                 print(l.id)
     print(1/0)
 
