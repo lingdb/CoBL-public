@@ -130,9 +130,13 @@
             {# cognateclassview_title.html #}
             <th></th>
             {# rootform_title.html #}
-            <th>Root Form</th>
+            <th style="width: 100px;">
+              Root Form
+            </th>
             {# rootlanguage_title.html #}
-            <th>Root Language</th>
+            <th style="width: 160px;">
+              Root Language
+            </th>
             {# loanevent_title.html #}
             <th>
               <div class="vertical-text">
@@ -290,7 +294,7 @@
             {# cognateclassview_filter.html #}
             <td></td>
             {# rootform_filter.html #}
-            <td>
+            <td style="width: 100px;">
               {% if user.is_authenticated %}
                 <input type="text"
                        class="filterInput form-control narrow"
@@ -310,7 +314,7 @@
               {% endif %}
             </td>
             {# rootlanguage_filter.html #}
-            <td>
+            <td style="width: 160px;">
               {% if user.is_authenticated %}
                 <input type="text"
                        class="filterInput form-control narrow"
@@ -629,13 +633,13 @@
                 </a>
               </td>
               {# rootform_data.html #}
-              <td class="lexemeRootForm" style="color: #8B4510;">
+              <td class="lexemeRootForm" style="color: #8B4510; width: 100px;">
                 {% if lexeme.object_data.allCognateClasses|length == 1 %}
                   {{ lexeme.object_data.allCognateClasses.0.root_form }}
                 {% endif %}
               </td>
               {# rootlanguage_data.html #}
-              <td class="lexemeRootLanguage" style="color: #8B4510;">
+              <td class="lexemeRootLanguage" style="color: #8B4510; width: 160px;">
                 {% if lexeme.object_data.allCognateClasses|length == 1 %}
                   {{ lexeme.object_data.allCognateClasses.0.root_language }}
                 {% endif %}
