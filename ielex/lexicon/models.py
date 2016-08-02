@@ -838,7 +838,8 @@ class CognateClass(AbstractTimestamped):
             # Computing cladeCount:
             languageIds = self.lexeme_set.filter(
                 language_id__in=lSet,
-                not_swadesh_term=False).values_list(
+                not_swadesh_term=False).exclude(
+                language__level0=0).values_list(
                 'language_id', flat=True)
             cladeCount = Clade.objects.filter(
                 languageclade__language__id__in=languageIds).exclude(

@@ -227,7 +227,8 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
     elif type(language_list) == str or type(language_list) == unicode:
         language_list = LanguageList.objects.get(name=language_list)
 
-    ids = list(language_list.languages.values_list("id", flat=True))
+    ids = list(language_list.languages.exclude(
+        level0=0).values_list("id", flat=True))
 
     try:
         current_idx = ids.index(current_language.id)
@@ -1323,7 +1324,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     # Gather lexemes:
     lexemes = Lexeme.objects.filter(
         meaning=meaning,
-        language__in=current_language_list.languages.all(),
+        language__in=current_language_list.languages.exclude(level0=0).all(),
         language__languagelistorder__language_list=current_language_list
         ).order_by(
         "language"
@@ -1499,7 +1500,8 @@ def view_cognateclasses(request, meaning):
         languageList = LanguageList.objects.get(
             name=LanguageList.ALL)
     # languageIds implicated:
-    languageIds = languageList.languagelistorder_set.values_list(
+    languageIds = languageList.languagelistorder_set.exclude(
+        language__level0=0).values_list(
         'language_id', flat=True)
     # Cognate classes to use:
     ccl_ordered = CognateClass.objects.filter(
