@@ -559,6 +559,9 @@ class CloneLanguageForm(WTForm):
         'Name of new language',
         validators=[InputRequired(),
                     suitable_for_url_wtforms])
+    languageId = IntegerField(
+        'Id of the language to clone',
+        validators=[InputRequired()])
     emptyLexemes = BooleanField('Should lexemes be emptied?')
 
 

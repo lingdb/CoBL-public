@@ -384,9 +384,15 @@ def view_language_list(request, language_list=None):
         try:
             form.validate()
             with transaction.atomic():
+                sourceLanguage = Language.objects.get(
+                    id=form.data['languageId'])
                 # Creating language clone:
-                clone = Language(ascii_name=form.data['languageName'],
-                                 utf8_name=form.data['languageName'])
+                cloneData = {'ascii_name': form.data['languageName'],
+                             'utf8_name': form.data['languageName']}
+                for f in sourceLanguage.timestampedFields():
+                    if f not in cloneData:
+                        cloneData[f] = getattr(sourceLanguage, f)
+                clone = Language(**cloneData)
                 clone.bump(request)
                 clone.save()
                 # Adding language to current language list, if not viewing all:
