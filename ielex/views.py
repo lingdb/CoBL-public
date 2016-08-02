@@ -2,6 +2,7 @@
 import bisect
 import csv
 import datetime
+import logging
 import json
 import re
 import requests
@@ -29,7 +30,8 @@ from ielex.lexicon.defaultModels import *
 # from ielex.citations.models import *
 from ielex.extensional_semantics.views import *
 from ielex.shortcuts import render_template
-from ielex.utilities import next_alias, confirm_required, anchored, oneline
+from ielex.utilities import next_alias, confirm_required, \
+                            anchored, oneline, logExceptions
 from ielex.languageCladeLogic import updateLanguageCladeRelations
 
 from collections import defaultdict
@@ -47,6 +49,7 @@ from itertools import izip_longest
 # -- Database input, output and maintenance functions ------------------------
 
 
+@logExceptions
 def view_changes(request, username=None, revision_id=None, object_id=None):
     """Recent changes"""
     boring_models = [LanguageListOrder, LanguageList, MeaningList]
@@ -88,6 +91,7 @@ def view_changes(request, username=None, revision_id=None, object_id=None):
 
 
 @login_required
+@logExceptions
 def revert_version(request, revision_id):
     """Roll back the object saved in a Version to the previous Version"""
     # TODO
@@ -97,10 +101,11 @@ def revert_version(request, revision_id):
     revision_obj = Revision.objects.get(pk=revision_id)
     revision_obj.revert()  # revert all associated objects too
     msg = "Rolled back revision %s" % (revision_obj.id)
-    messages.add_message(request, messages.INFO, msg)
+    messages.info(request, msg)
     return HttpResponseRedirect(referer)
 
 
+@logExceptions
 def view_object_history(request, version_id):
     version = Version.objects.get(pk=version_id)
     obj = version.content_type.get_object_for_this_type(id=version.object_id)
@@ -116,6 +121,7 @@ def view_object_history(request, version_id):
 
 # -- General purpose queries and functions -----------------------------------
 
+@logExceptions
 def get_canonical_meaning(meaning):
     """Identify meaning from id number or partial name"""
     try:
@@ -128,6 +134,7 @@ def get_canonical_meaning(meaning):
     return meaning
 
 
+@logExceptions
 def get_canonical_language(language, request=None):
     """Identify language from id number or partial name"""
     if not language:
@@ -143,21 +150,22 @@ def get_canonical_language(language, request=None):
                     ascii_name__istartswith=language)
             except Language.MultipleObjectsReturned:
                 if request:
-                    messages.add_message(
-                        request, messages.INFO,
-                        ("There are multiple languages matching"
-                         " '%s' in the database") % language)
+                    messages.info(
+                        request,
+                        "There are multiple languages matching"
+                        " '%s' in the database" % language)
                 raise Http404
             except Language.DoesNotExist:
                 if request:
-                    messages.add_message(
-                        request, messages.INFO,
-                        ("There is no language named or starting"
-                         " with '%s' in the database") % language)
+                    messages.info(
+                        request,
+                        "There is no language named or starting"
+                        " with '%s' in the database" % language)
                 raise Http404
     return language
 
 
+@logExceptions
 def get_prev_and_next_languages(request, current_language, language_list=None):
     if language_list is None:
         language_list = LanguageList.objects.get(
@@ -179,6 +187,7 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
     return (prev_language, next_language)
 
 
+@logExceptions
 def get_prev_and_next_meanings(request, current_meaning, meaning_list=None):
     if meaning_list is None:
         meaning_list = MeaningList.objects.get(
@@ -205,6 +214,7 @@ def get_prev_and_next_meanings(request, current_meaning, meaning_list=None):
     return (prev_meaning, next_meaning)
 
 
+@logExceptions
 def get_prev_and_next_lexemes(request, current_lexeme):
     """Get the previous and next lexeme from the same language, ordered
     by meaning and then alphabetically by form"""
@@ -225,6 +235,7 @@ def get_prev_and_next_lexemes(request, current_lexeme):
     return (prev_lexeme, next_lexeme)
 
 
+@logExceptions
 def update_object_from_form(model_object, form):
     """Update an object with data from a form."""
     # XXX This is only neccessary when not using a model form: otherwise
@@ -237,6 +248,7 @@ def update_object_from_form(model_object, form):
 # -- /language(s)/ ----------------------------------------------------------
 
 
+@logExceptions
 def get_canonical_language_list(language_list=None, request=None):
     """Returns a LanguageList object"""
     try:
@@ -248,15 +260,16 @@ def get_canonical_language_list(language_list=None, request=None):
             language_list = LanguageList.objects.get(name=language_list)
     except LanguageList.DoesNotExist:
         if request:
-            messages.add_message(
-                request, messages.INFO,
-                ("There is no language list matching"
-                 " '%s' in the database") % language_list)
+            messages.info(
+                request,
+                "There is no language list matching"
+                " '%s' in the database" % language_list)
         raise Http404
     return language_list
 
 
 @csrf_protect
+@logExceptions
 def view_language_list(request, language_list=None):
     current_list = get_canonical_language_list(language_list, request)
     setDefaultLanguagelist(request, current_list.name)
@@ -268,8 +281,9 @@ def view_language_list(request, language_list=None):
         languageListTableForm = AddLanguageListTableForm(request.POST)
         try:
             languageListTableForm.validate()
-        except Exception, e:
-            print('Exception in POST  validation: ', e)
+        except Exception:
+            logging.exception(
+                'Exception in POST validation for view_language_list')
             messages.error(request, 'Sorry, the form data sent '
                            'did not pass server side validation.')
             return HttpResponseRedirect(
@@ -292,13 +306,15 @@ def view_language_list(request, language_list=None):
                         else:
                             messages.error(request,
                                            lang.deltaReport(**problem))
-                    except Exception, e:
-                        print('Exception while saving POST: ', e)
+                    except Exception:
+                        logging.exception('Exception while saving POST '
+                                          'in view_language_list.')
                         messages.error(request, 'Sorry, the server failed '
                                        'to save "%s".' % data['ascii_name'])
-            except Exception, e:
-                print('Exception while accessing Language object: ',
-                      e, '; POST items are: ', data)
+            except Exception:
+                logging.exception('Exception accessing Language object '
+                                  'in view_language_list.',
+                                  extra=data)
                 messages.error(request, 'Sorry, the server had problems '
                                'saving at least one language entry.')
         # Updating clade relations for changes languages:
@@ -355,8 +371,8 @@ def view_language_list(request, language_list=None):
                 messages.success(request, 'Language cloned.')
                 return HttpResponseRedirect(
                     reverse("view-language-list", args=[current_list.name]))
-        except Exception, e:
-            print('Problem cloning Language:', e)
+        except Exception:
+            logging.exception('Problem cloning Language in view_language_list')
             messages.error(request, 'Sorry, a problem occured '
                            'when cloning the language.')
             return HttpResponseRedirect(
@@ -384,6 +400,7 @@ def view_language_list(request, language_list=None):
 
 
 @csrf_protect
+@logExceptions
 def exportLanguageListCsv(request, languages=[]):
     """
       @param languages :: [Language]
@@ -408,6 +425,7 @@ def exportLanguageListCsv(request, languages=[]):
 
 
 @csrf_protect
+@logExceptions
 def view_clades(request):
     if request.method == 'POST':
         # Updating existing clades:
@@ -432,12 +450,13 @@ def view_clades(request):
                             else:
                                 messages.error(
                                     request, clade.deltaReport(**problem))
-                    except Exception, e:
-                        print('Problem while saving clade: ', e)
+                    except Exception:
+                        logging.exception('Problem saving clade '
+                                          'in view_clades.')
                         messages.error(request,
                                        'Problem saving clade data: %s' % data)
-            except Exception, e:
-                print('Problem updating clades:', e)
+            except Exception:
+                logging.exception('Problem updating clades in view_clades.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least on clade.')
             # Updating language clade relations for changed clades:
@@ -451,8 +470,8 @@ def view_clades(request):
                 newClade = Clade(**cladeCreationForm.data)
                 with transaction.atomic():
                     newClade.save(force_insert=True)
-            except Exception, e:
-                print('Problem creating clade:', e)
+            except Exception:
+                logging.exception('Problem creating clade in view_clades.')
                 messages.error(request, 'Sorry, the server had problems '
                                'creating the clade.')
         # Deleting an existing clade:
@@ -469,8 +488,8 @@ def view_clades(request):
                     # Write message about clade deletion:
                     messages.success(request, 'Deleted clade "%s".' %
                                      clade.cladeName)
-            except Exception, e:
-                print('Problem deleting clade:', e)
+            except Exception:
+                logging.exception('Problem deleting clade in view_clades.')
                 messages.error(request, 'Sorry, the server had problems '
                                'deleting the clade.')
         return HttpResponseRedirect('/clades/')
@@ -486,6 +505,7 @@ def view_clades(request):
 
 
 @csrf_protect
+@logExceptions
 def view_sndComp(request):
     if request.method == 'POST':
         if 'sndComps' in request.POST:
@@ -504,14 +524,16 @@ def view_sndComp(request):
                                     messages.error(
                                         request,
                                         sndComp.deltaReport(**problem))
-                            except Exception, e:
-                                print('Exception while saving POST:', e)
+                            except Exception:
+                                logging.exception('Exception while saving '
+                                                  'POST in view_sndComp.')
                                 messages.error(request, 'The server had '
                                                'problems saving the change '
                                                'to "%s".' % sndComp.lgSetName)
-                except Exception, e:
-                    print('Exception while accessing SndComp object: ',
-                          e, '; POST items are: ', data)
+                except Exception:
+                    logging.exception('Exception while accessing '
+                                      'entry in view_sndComp.',
+                                      extra=data)
                     messages.error(request, 'Sorry, the server had problems '
                                    'saving at least one SndComp entry.')
         # Adding a new SndComp:
@@ -522,8 +544,8 @@ def view_sndComp(request):
                 newSndComp = SndComp(**sndCompCreationForm.data)
                 with transaction.atomic():
                     newSndComp.save(force_insert=True)
-            except Exception, e:
-                print('Problem creating SndComp:', e)
+            except Exception:
+                logging.exception('Problem creating entry in view_sndComp.')
                 messages.error(request, 'Sorry, the server had problems '
                                'creating the SndComp language set.')
         # Deleting an existing SndComp:
@@ -540,8 +562,8 @@ def view_sndComp(request):
                     # Write message about SndComp deletion:
                     messages.success(request,
                                      'Deleted set "%s"' % sndComp.lgSetName)
-            except Exception, e:
-                print('Problem deleting SndComp:', e)
+            except Exception:
+                logging.exception('Problem deleting entry in view_sndComp.')
                 messages.error(request, 'Sorry, the server had problems '
                                'deleting the SndComp language set.')
 
@@ -564,6 +586,7 @@ def view_sndComp(request):
                            {'sndComps': form})
 
 
+@logExceptions
 def reorder_language_list(request, language_list):
     language_id = getDefaultLanguageId(request)
     language_list = LanguageList.objects.get(name=language_list)
@@ -602,6 +625,7 @@ def reorder_language_list(request, language_list):
         {"language_list": language_list, "form": form})
 
 
+@logExceptions
 def move_language(language, language_list, direction):
     assert direction in (-1, 1)
     languages = list(language_list.languages.order_by("languagelistorder"))
@@ -618,6 +642,7 @@ def move_language(language, language_list, direction):
 
 
 @csrf_protect
+@logExceptions
 def view_language_wordlist(request, language, wordlist):
     setDefaultLanguage(request, language)
     setDefaultWordlist(request, wordlist)
@@ -656,12 +681,14 @@ def view_language_wordlist(request, language, wordlist):
                                 else:
                                     messages.error(
                                         request, lex.deltaReport(**problem))
-                    except Exception, e:
-                        print('Exception for updating Lexeme:', e)
+                    except Exception:
+                        logging.exception('Problem updating Lexeme '
+                                          'in view_language_wordlist.')
                         messages.error(request, 'Sorry, the server could '
                                        'not update lexeme %s.' % lex.gloss)
-            except Exception, e:
-                print('Problem updating lexemes:', e)
+            except Exception:
+                logging.exception('Problem updating lexemes '
+                                  'in view_language_wordlist.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least one lexeme.')
             return HttpResponseRedirect(
@@ -686,7 +713,6 @@ def view_language_wordlist(request, language, wordlist):
         if request.GET.get('meaning'):
             lexemes = lexemes.filter(meaning=int(request.GET.get('meaning')))
         if request.GET.get('cognate_class'):
-            print 'cognate_class:', request.GET  # .get('cognate_class')
             lexemes = lexemes.filter(
                 cognate_class=request.GET.get('cognate_class'))
 
@@ -720,6 +746,7 @@ def view_language_wordlist(request, language, wordlist):
 
 
 @login_required
+@logExceptions
 def view_language_check(request, language=None, wordlist=None):
     '''
     Provides an html snipped that contains some sanity checks
@@ -758,6 +785,7 @@ def view_language_check(request, language=None, wordlist=None):
 
 
 @login_required
+@logExceptions
 def add_language_list(request):
     """Start a new language list by cloning an old one"""
     if request.method == "POST":
@@ -784,10 +812,11 @@ def add_language_list(request):
 
 
 @login_required
+@logExceptions
 def edit_language_list(request, language_list=None):
     language_list = get_canonical_language_list(
         language_list, request)  # a language list object
-    language_list_all = get_canonical_language_list()  # a language list object
+    language_list_all = LanguageList.objects.get(name=LanguageList.ALL)
     included_languages = language_list.languages.all().order_by(
         "languagelistorder")
     excluded_languages = language_list_all.languages.exclude(
@@ -835,6 +864,7 @@ def edit_language_list(request, language_list=None):
 
 
 @login_required
+@logExceptions
 def delete_language_list(request, language_list):
     language_list = LanguageList.objects.get(name=language_list)
     language_list.delete()
@@ -842,6 +872,7 @@ def delete_language_list(request, language_list):
 
 
 @login_required
+@logExceptions
 def language_add_new(request, language_list):
     language_list = LanguageList.objects.get(name=language_list)
     if request.method == 'POST':
@@ -866,6 +897,7 @@ def language_add_new(request, language_list):
 
 
 @login_required
+@logExceptions
 def edit_language(request, language):
     try:
         language = Language.objects.get(ascii_name=language)
@@ -887,8 +919,9 @@ def edit_language(request, language):
                     return HttpResponseRedirect(reverse("view-all-languages"))
                 else:
                     messages.error(request, language.deltaReport(**problem))
-        except Exception, e:
-            print('Problem updating single language:', e)
+        except Exception:
+            logging.exception('Problem updating single language '
+                              'in edit_language.')
             messages.error(request, 'Sorry, the server could not update '
                            'the language.')
     language.idField = language.id
@@ -900,6 +933,7 @@ def edit_language(request, language):
 
 
 @login_required
+@logExceptions
 def delete_language(request, language):
     try:
         language = Language.objects.get(ascii_name=language)
@@ -914,6 +948,7 @@ def delete_language(request, language):
 # -- /meaning(s)/ and /wordlist/ ------------------------------------------
 
 
+@logExceptions
 def view_wordlists(request):
     wordlists = MeaningList.objects.all()
     return render_template(request, "wordlists_list.html",
@@ -921,6 +956,7 @@ def view_wordlists(request):
 
 
 @csrf_protect
+@logExceptions
 def view_wordlist(request, wordlist=MeaningList.DEFAULT):
     try:
         wordlist = MeaningList.objects.get(name=wordlist)
@@ -930,6 +966,7 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
     if request.method == 'POST':
         if 'wordlist' in request.POST:
             mltf = MeaningListTableForm(request.POST)
+            mltf.validate()
             ms = [m.data for m in mltf.meanings]
             for m in ms:
                 try:
@@ -942,14 +979,16 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
                             else:
                                 messages.error(
                                     request, meaning.deltaReport(**problem))
-                        except Exception, e:
-                            print('Exception while saving POST: ', e)
+                        except Exception:
+                            logging.exception('Exception while saving POST '
+                                              'in view_wordlist.')
                             messages.error(request, 'Sorry, the server had '
                                            'problems saving changes for '
                                            '"%s".' % meaning.gloss)
-                except Exception, e:
-                    print('Exception while accessing Meaning object: ',
-                          e, '; POST items are: ', m)
+                except Exception:
+                    logging.exception('Problem accessing Meaning object '
+                                      'in view_wordlist.',
+                                      extra=m)
                     messages.error(request, 'The server had problems saving '
                                    'at least one entry.')
 
@@ -972,6 +1011,7 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
 
 
 @login_required
+@logExceptions
 def edit_wordlist(request, wordlist):
     wordlist = MeaningList.objects.get(name=wordlist)
 
@@ -993,6 +1033,7 @@ def edit_wordlist(request, wordlist):
 
 
 @login_required
+@logExceptions
 def reorder_wordlist(request, wordlist):
     meaning_id = getDefaultMeaningId(request)
     wordlist = MeaningList.objects.get(name=wordlist)
@@ -1028,6 +1069,7 @@ def reorder_wordlist(request, wordlist):
                            {"wordlist": wordlist, "form": form})
 
 
+@logExceptions
 def move_meaning(meaning, wordlist, direction):
     assert direction in (-1, 1)
     meanings = list(wordlist.meanings.all().order_by("meaninglistorder"))
@@ -1044,6 +1086,7 @@ def move_meaning(meaning, wordlist, direction):
 
 
 @login_required
+@logExceptions
 def meaning_add_new(request):
     if request.method == 'POST':
         form = EditMeaningForm(request.POST)
@@ -1060,6 +1103,7 @@ def meaning_add_new(request):
 
 
 @login_required
+@logExceptions
 def edit_meaning(request, meaning):
     try:
         meaning = Meaning.objects.get(gloss=meaning)
@@ -1082,6 +1126,7 @@ def edit_meaning(request, meaning):
 
 
 @csrf_protect
+@logExceptions
 def view_meaning(request, meaning, language_list, lexeme_id=None):
     setDefaultMeaning(request, meaning)
     if language_list is None:
@@ -1100,67 +1145,127 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     else:
         meaning = Meaning.objects.get(gloss=meaning)
 
-    # Cognate class judgement button
-    if request.method == 'POST' and not ('meang_form' in request.POST):
-        cognate_form = ChooseCognateClassForm(request.POST)
-        if cognate_form.is_valid():
-            cd = cognate_form.cleaned_data
-            cognate_class = cd["cognate_class"]
-            # if not cogjudge_id: # new cognate judgement
-            lexeme = Lexeme.objects.get(id=lexeme_id)
-            if cognate_class not in lexeme.cognate_class.all():
-                cj = CognateJudgement.objects.create(
-                        lexeme=lexeme,
-                        cognate_class=cognate_class)
-            else:
-                cj = CognateJudgement.objects.get(
-                        lexeme=lexeme,
-                        cognate_class=cognate_class)
+    # Handling POST requests:
+    if request.method == 'POST':
+        # Handling LexemeTableViewMeaningsForm:
+        if 'meang_form' in request.POST:
+            try:
+                lexemesTableForm = LexemeTableViewMeaningsForm(request.POST)
+                lexemesTableForm.validate()
 
-            # change this to a reverse() pattern
-            return HttpResponseRedirect(anchored(
-                    reverse("lexeme-add-cognate-citation",
-                            args=[lexeme_id, cj.id])))
-    else:
-        cognate_form = ChooseCognateClassForm()
-
-    if request.method == 'POST' and 'meang_form' in request.POST:
-        try:
-            lexemesTableForm = LexemeTableViewMeaningsForm(request.POST)
-            lexemesTableForm.validate()
-
-            for entry in lexemesTableForm.lexemes:
-                data = entry.data
-                # Updating the cognate classes:
-                try:
-                    for cData in data['allCognateClasses']:
-                        cc = CognateClass.objects.get(id=cData['idField'])
-                        if cc.isChanged(**cData):
-                            problem = cc.setDelta(request, **cData)
+                for entry in lexemesTableForm.lexemes:
+                    data = entry.data
+                    # Updating the lexeme:
+                    try:
+                        lex = Lexeme.objects.get(id=data['id'])
+                        if lex.isChanged(**data):
+                            problem = lex.setDelta(request, **data)
                             if problem is None:
-                                cc.save()
+                                lex.save()
                             else:
-                                messages.error(
-                                    request, cc.deltaReport(**problem))
-                except Exception, e:
-                    print('Exception for updating CognateClass:', e)
-                # Updating the lexeme:
-                try:
-                    lex = Lexeme.objects.get(id=data['id'])
-                    if lex.isChanged(**data):
-                        problem = lex.setDelta(request, **data)
-                        if problem is None:
-                            lex.save()
-                        else:
-                            messages.error(request, lex.deltaReport(**problem))
-                except Exception, e:
-                    print('Exception for updating Lexeme:', e)
-        except Exception, e:
-            print('Problem updating lexemes:', e)
+                                messages.error(request,
+                                               lex.deltaReport(**problem))
+                    except Exception:
+                        logging.exception('Problem updating Lexeme '
+                                          'in view_meaning.')
+            except Exception:
+                logging.exception('Problem updating lexemes in view_meaning.')
 
-        return HttpResponseRedirect(
-            reverse("view-meaning-languages",
-                    args=[canonical_gloss, current_language_list.name]))
+            return HttpResponseRedirect(
+                reverse("view-meaning-languages",
+                        args=[canonical_gloss, current_language_list.name]))
+        # Handling editCognateClass (#219):
+        elif 'editCognateClass' in request.POST:
+            try:
+                form = LexemeTableEditCognateClassesForm(request.POST)
+                form.validate()
+                data = form.getValidated()
+                with transaction.atomic():
+                    for k, v in data['cognateClassAssignments'].iteritems():
+                        # Ignoring don't care cases:
+                        if k == 'new':
+                            if v == 'delete':
+                                continue
+                        elif k == v:  # new, new is permitted
+                            continue
+                        # Creating new CC or moving from an old one?
+                        if k == 'new':
+                            # Add to new class:
+                            if v == 'new':
+                                # Class to add to:
+                                newC = CognateClass()
+                                newC.bump(request)
+                                newC.save()
+                                # Adding to new class:
+                                CognateJudgement.objects.bulk_create([
+                                    CognateJudgement(lexeme_id=lId,
+                                                     cognate_class_id=newC.id)
+                                    for lId in data['lexemeIds']])
+                                # Fixing alias for new class:
+                                newC.update_alias()
+                            # Add to existing class:
+                            else:
+                                CognateJudgement.objects.bulk_create([
+                                    CognateJudgement(lexeme_id=lId,
+                                                     cognate_class_id=v)
+                                    for lId in data['lexemeIds']])
+                        else:
+                            judgements = CognateJudgement.objects.filter(
+                                lexeme_id__in=data['lexemeIds'],
+                                cognate_class_id=k)
+                            # Move to new class:
+                            if v == 'new':
+                                # Class to add to:
+                                newC = CognateClass()
+                                newC.bump(request)
+                                newC.save()
+                                # Adding to new class:
+                                judgements.update(cognate_class_id=newC.id)
+                                # Fixing alias for new class:
+                                newC.update_alias()
+                            # Deletion from current class:
+                            elif v == 'delete':
+                                judgements.delete()
+                            # Move to existing class:
+                            else:
+                                judgements.update(cognate_class_id=v)
+                            # Check for remaining entries:
+                            remaining = CognateJudgement.objects.filter(
+                                cognate_class_id=k).count()
+                            if remaining == 0:
+                                logging.info('Removed last lexemes '
+                                             'from cognate class %s.' % k)
+                                messages.warning(
+                                    request,
+                                    'Cognate class %s has no lexemes '
+                                    'left in it.' % k)
+            except Exception:
+                logging.exception('Problem handling editCognateClass.')
+
+            return HttpResponseRedirect(
+                reverse("view-meaning-languages",
+                        args=[canonical_gloss, current_language_list.name]))
+        # Handling ChooseCognateClassForm:
+        else:  # not ('meang_form' in request.POST)
+            cognate_form = ChooseCognateClassForm(request.POST)
+            if cognate_form.is_valid():
+                cd = cognate_form.cleaned_data
+                cognate_class = cd["cognate_class"]
+                # if not cogjudge_id: # new cognate judgement
+                lexeme = Lexeme.objects.get(id=lexeme_id)
+                if cognate_class not in lexeme.cognate_class.all():
+                    cj = CognateJudgement.objects.create(
+                            lexeme=lexeme,
+                            cognate_class=cognate_class)
+                else:
+                    cj = CognateJudgement.objects.get(
+                            lexeme=lexeme,
+                            cognate_class=cognate_class)
+
+                # change this to a reverse() pattern
+                return HttpResponseRedirect(anchored(
+                        reverse("lexeme-add-cognate-citation",
+                                args=[lexeme_id, cj.id])))
 
     # Gather lexemes:
     lexemes = Lexeme.objects.filter(
@@ -1178,10 +1283,10 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         "cognate_class",
         "language__languageclade_set",
         "language__clades")
-
-    cognate_form.fields[
-        "cognate_class"].queryset = CognateClass.objects.filter(
-            lexeme__in=lexemes).distinct()
+    # Gather cognate classes and provide form:
+    cognateClasses = CognateClass.objects.filter(lexeme__in=lexemes).distinct()
+    cognate_form = ChooseCognateClassForm()
+    cognate_form.fields["cognate_class"].queryset = cognateClasses
 
     # TODO: move this out of views
     # filter by 'language' or 'meaning'
@@ -1207,6 +1312,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     # Calculate prev/next meanings:
     prev_meaning, next_meaning = get_prev_and_next_meanings(
         request, meaning, meaning_list=meaningList)
+
     return render_template(
         request, "view_meaning.html",
         {"meaning": meaning,
@@ -1214,6 +1320,11 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
          "next_meaning": next_meaning,
          "lexemes": lexemes,
          "cognate_form": cognate_form,
+         "cognateClasses": json.dumps([{'id': c.id,
+                                        'alias': c.alias,
+                                        'root_form': c.root_form,
+                                        'root_language': c.root_language}
+                                       for c in cognateClasses]),
          "add_cognate_judgement": lexeme_id,
          "lex_ed_form": lexemes_editabletable_form,
          "filt_form": filt_form,
@@ -1222,6 +1333,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
 
 @csrf_protect
+@logExceptions
 def view_cognateclasses(request, meaning):
     setDefaultMeaning(request, meaning)
     # Handle POST of AddCogClassTableForm:
@@ -1244,13 +1356,15 @@ def view_cognateclasses(request, meaning):
                             else:
                                 messages.error(
                                     request, cogclass.deltaReport(**problem))
-                        except Exception, e:
-                            print('Exception while saving CognateClass:', e)
+                        except Exception:
+                            logging.exception('Problem saving CognateClass '
+                                              'in view_cognateclasses.')
                             messages.error(
                                 request,
                                 'Problem while saving entry: %s' % data)
-            except Exception, e:
-                print('Problem updating cognateclasses:', e)
+            except Exception:
+                logging.exception('Problem updating CognateClasses '
+                                  'in view_cognateclasses.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least one entry.')
         elif 'mergeCognateClasses' in request.POST:
@@ -1268,7 +1382,8 @@ def view_cognateclasses(request, meaning):
                     "cognateclasscitation_set").all()
                 # Checking ccs length:
                 if len(ccs) <= 1:
-                    print('Not enough cognateclasses to merge.')
+                    logging.warning('Not enough cognateclasses to merge.',
+                                    extra=ccs)
                     messages.error(request, 'Sorry, the server needs '
                                    '2 or more cognateclasses to merge.')
                 else:
@@ -1312,12 +1427,13 @@ def view_cognateclasses(request, meaning):
                         ccs.delete()
                         # Fixing alias:
                         newC.update_alias()
-            except Exception, e:
-                print('Problem merging cognateclasses:', e)
+            except Exception:
+                logging.exception('Problem merging CognateClasses '
+                                  'in view_cognateclasses.')
                 messages.error(request, 'Sorry, the server had problems '
                                'merging cognate classes.')
         else:
-            print('Unexpected POST request in view_cognateclasses.')
+            logging.error('Unexpected POST request in view_cognateclasses.')
             messages.error(request, 'Sorry, the server did '
                            'not understand your request.')
         return HttpResponseRedirect(reverse("edit-cogclasses",
@@ -1329,16 +1445,27 @@ def view_cognateclasses(request, meaning):
     except LanguageList.DoesNotExist:
         languageList = LanguageList.objects.get(
             name=LanguageList.ALL)
-
+    # languageIds implicated:
+    languageIds = languageList.languagelistorder_set.values_list(
+        'language_id', flat=True)
+    # Cognate classes to use:
     ccl_ordered = CognateClass.objects.filter(
         cognatejudgement__lexeme__meaning__gloss=meaning,
-        cognatejudgement__lexeme__language_id__in=languageList.languagelistorder_set.values_list(
-                'language_id', flat=True)).order_by('alias').distinct()
+        cognatejudgement__lexeme__language_id__in=languageIds
+            ).order_by('alias').distinct()
+    # Computing counts for ccs:
+    for cc in ccl_ordered:
+        cc.computeCounts(languageList=languageList)
 
-    def cmpLen(x, y):  # Fixing sort order for #98
+    def cmpLen(x, y):
+        # Sort order for #242:
+        if x.cladeCount != y.cladeCount:
+            return y.cladeCount - x.cladeCount
+        if x.lexemeCount != y.lexemeCount:
+            return y.lexemeCount - x.lexemeCount
+        # Sort order for #98:
         return len(x.alias) - len(y.alias)
     ccl_ordered = sorted(ccl_ordered, cmp=cmpLen)
-
     # Clades to use for #112:
     clades = Clade.objects.filter(
         id__in=LanguageClade.objects.filter(
@@ -1347,12 +1474,9 @@ def view_cognateclasses(request, meaning):
             hexColor='').exclude(shortName='').all()
     # Compute clade <-> cc connections:
     for c in clades:
-        c.computeCognateClassConnections(ccl_ordered)
+        c.computeCognateClassConnections(ccl_ordered, languageList)
     # Filling cogclass_editabletable_form:
-    cogclass_editabletable_form = AddCogClassTableForm()
-    for cc in ccl_ordered:
-        cc.computeCounts(languageList=languageList)
-        cogclass_editabletable_form.cogclass.append_entry(cc)
+    cogclass_editabletable_form = AddCogClassTableForm(cogclass=ccl_ordered)
     # Fetch meaningList for typeahead and prev/next calculation:
     meaningList = MeaningList.objects.prefetch_related("meanings").get(
         name=getDefaultWordlist(request))
@@ -1381,6 +1505,7 @@ def view_cognateclasses(request, meaning):
 
 
 @login_required
+@logExceptions
 def delete_meaning(request, meaning):
 
     # normalize meaning
@@ -1398,13 +1523,14 @@ def delete_meaning(request, meaning):
 # -- /lexeme/ -------------------------------------------------------------
 
 
+@logExceptions
 def view_lexeme(request, lexeme_id):
     """For un-logged-in users, view only"""
     try:
         lexeme = Lexeme.objects.get(id=lexeme_id)
     except Lexeme.DoesNotExist:
-        messages.add_message(request, messages.INFO,
-                             "There is no lexeme with id=%s" % lexeme_id)
+        messages.info(request,
+                      "There is no lexeme with id=%s" % lexeme_id)
         raise Http404
     prev_lexeme, next_lexeme = get_prev_and_next_lexemes(request, lexeme)
     return render_template(request, "lexeme_report.html",
@@ -1414,21 +1540,21 @@ def view_lexeme(request, lexeme_id):
 
 
 @login_required
+@logExceptions
 def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
     try:
         lexeme = Lexeme.objects.get(id=lexeme_id)
     except Lexeme.DoesNotExist:
-        messages.add_message(request, messages.INFO,
-                             "There is no lexeme with id=%s" % lexeme_id)
+        messages.info(request,
+                      "There is no lexeme with id=%s" % lexeme_id)
         raise Http404
     citation_id = int(citation_id)
     cogjudge_id = int(cogjudge_id)
     form = None
 
     def DELETE_CITATION_WARNING_MSG():
-        messages.add_message(
+        messages.warning(
             request,
-            messages.WARNING,
             oneline("""Deletion of the final citation is not allowed. If
             you need to, add a new one before deleting the current
             one."""))
@@ -1439,9 +1565,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             instead, if that's what you mean)"""))
         context = RequestContext(request)
         context["alias"] = citation.cognate_judgement.cognate_class.alias
-        messages.add_message(
+        messages.warning(
             request,
-            messages.WARNING,
             msg.render(context))
 
     def warn_if_lacking_cognate_judgement_citation():
@@ -1459,8 +1584,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 context["lexeme_id"] = lexeme.id
                 context["cogjudge_id"] = cognate_judgement.id
                 context["alias"] = cognate_judgement.cognate_class.alias
-                messages.add_message(request, messages.WARNING,
-                                     msg.render(context))
+                messages.warning(request, msg.render(context))
 
     if action:  # actions are: edit, edit-citation, add-citation
         def get_redirect_url(form, citation=None):
@@ -1516,14 +1640,13 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         lexeme=lexeme,
                         source=cd["source"],
                         pages=cd["pages"],
-                        reliability=cd["reliability"],
+                        reliability="A",  # `High`
                         comment=cd["comment"])
                     try:
                         citation.save()
                     except IntegrityError:
-                        messages.add_message(
+                        messages.warning(
                             request,
-                            messages.WARNING,
                             oneline("""Lexeme citations must be unique.
                                 This source is already cited for this
                                 lexeme."""))
@@ -1716,6 +1839,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
 
 
 @login_required
+@logExceptions
 def lexeme_duplicate(request, lexeme_id):
     """Useful for processing imported data; currently only available
     through direct url input, e.g. /lexeme/0000/duplicate/"""
@@ -1772,6 +1896,7 @@ def lexeme_duplicate(request, lexeme_id):
 
 
 @login_required
+@logExceptions
 def lexeme_add(request,
                meaning=None,
                language=None,
@@ -1820,6 +1945,7 @@ def lexeme_add(request,
                            {"form": form})
 
 
+@logExceptions
 def redirect_lexeme_citation(request, lexeme_id):
     """From a lexeme, redirect to the first citation"""
     lexeme = Lexeme.objects.get(id=lexeme_id)
@@ -1829,13 +1955,14 @@ def redirect_lexeme_citation(request, lexeme_id):
                                     args=[first_citation.id]))
     except IndexError:
         msg = "Operation failed: this lexeme has no citations"
-        messages.add_message(request, messages.WARNING, msg)
+        messages.warning(request, msg)
         return HttpResponseRedirect(lexeme.get_absolute_url())
 
 
 # -- /cognate/ ------------------------------------------------------------
 
 
+@logExceptions
 def cognate_report(request, cognate_id=0, meaning=None, code=None,
                    cognate_name=None, action=""):
 
@@ -1858,8 +1985,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
         except AssertionError:
             msg = u"""error: meaning=‘%s’, cognate code=‘%s’ identifies %s
             cognate sets""" % (meaning, code, len(cognate_classes))
-            msg = oneline(msg)
-            messages.add_message(request, messages.INFO, msg)
+            messages.info(request, oneline(msg))
             return HttpResponseRedirect(reverse('meaning-report',
                                         args=[meaning]))
 
@@ -1881,8 +2007,9 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                 try:
                     for id, t in idTMap.iteritems():
                         idCjMap[id].bump(request, t)
-                except Exception, e:
-                    print('Problem splitting cognate judgements:', e)
+                except Exception:
+                    logging.exception('Problem splitting cognate judgements '
+                                      'in cognate_report.')
                     messages.error(request, 'The server refused to split '
                                    'the cognate judgements, because someone '
                                    'changed one of them before your request.')
@@ -1901,13 +2028,15 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                             'Created new Cognate Class at '
                             '[%s](/cognate/%s/) containing the judgements %s.'
                             % (cc.id, cc.id, idTMap.keys()))
-                    except Exception, e:
-                        print('Problem creating a new '
-                              'cognate class on split:', e)
+                    except Exception:
+                        logging.exception('Problem creating a new '
+                                          'CognateClass on split '
+                                          'in cognate_report.')
                         messages.error(request, 'Sorry the server could not '
                                        'create a new cognate class.')
-            except Exception, e:
-                print('Problem when splitting cognate classes:', e)
+            except Exception:
+                logging.exception('Problem when splitting CognateClasses '
+                                  'in cognate_report.')
                 messages.error(request, 'Sorry, the server had trouble '
                                'understanding the request.')
         elif 'deleteCognateClass' in request.POST:
@@ -1915,8 +2044,9 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                 cognate_class.delete()
                 messages.success(request, 'Deleted cognate class.')
                 return HttpResponseRedirect('/cognateclasslist/')
-            except Exception, e:
-                print('Failed to delete cognate class %s.' % cognate_class.id)
+            except Exception:
+                logging.exception('Failed to delete CognateClass %s '
+                                  'in cognate_report.' % cognate_class.id)
                 messages.error(request, 'Sorry, the server could not delete '
                                'the requested cognate class %s.'
                                % cognate_class.id)
@@ -1926,8 +2056,9 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                     id=int(request.POST['citationId']))
                 citation.delete()
                 messages.success(request, 'Deleted citation.')
-            except Exception, e:
-                print('Failed to delete citation.', e)
+            except Exception:
+                logging.exception('Failed to delete citation '
+                                  'in cognate_report.')
                 messages.error(request, 'Sorry, the server could not delete '
                                'the citation.')
 
@@ -1966,6 +2097,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
 # -- /source/ -------------------------------------------------------------
 
 
+@logExceptions
 def source_view(request, source_id):
     source = Source.objects.get(id=source_id)
     return render_template(request, 'source_edit.html', {
@@ -1975,6 +2107,7 @@ def source_view(request, source_id):
 
 
 @login_required
+@logExceptions
 def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
     source_id = int(source_id)
     cogjudge_id = int(cogjudge_id)
@@ -2026,6 +2159,7 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
             "action": action})
 
 
+@logExceptions
 def source_list(request):
     grouped_sources = []
     for type_code, type_name in TYPE_CHOICES:
@@ -2035,6 +2169,7 @@ def source_list(request):
                            {"grouped_sources": grouped_sources})
 
 
+@logExceptions
 def lexeme_search(request):
     if request.method == 'POST':
         form = SearchLexemeForm(request.POST)
@@ -2071,23 +2206,27 @@ def lexeme_search(request):
                            {"form": form})
 
 
+@logExceptions
 def viewDefaultLanguage(request):
     language = getDefaultLanguage(request)
     wordlist = getDefaultWordlist(request)
     return view_language_wordlist(request, language, wordlist)
 
 
+@logExceptions
 def viewDefaultMeaning(request):
     meaning = getDefaultMeaning(request)
     languagelist = getDefaultLanguagelist(request)
     return view_meaning(request, meaning, languagelist)
 
 
+@logExceptions
 def viewDefaultCognateClassList(request):
     meaning = getDefaultMeaning(request)
     return view_cognateclasses(request, meaning)
 
 
+@logExceptions
 def viewAbout(request, page):
     """
     @param page :: str
@@ -2124,6 +2263,7 @@ def viewAbout(request, page):
                             'content': content})
 
 
+@logExceptions
 def viewStatistics(request):
     return render_template(
         request, "statistics.html",
@@ -2136,6 +2276,7 @@ def viewStatistics(request):
 
 
 @csrf_protect
+@logExceptions
 def viewAuthors(request):
     if request.method == 'POST':
         '''
@@ -2151,8 +2292,8 @@ def viewAuthors(request):
                 newAuthor = Author(**authorCreationForm.data)
                 with transaction.atomic():
                     newAuthor.save(force_insert=True)
-            except Exception, e:
-                print('Problem creating author:', e)
+            except Exception:
+                logging.exception('Problem creating author in viewAuthors.')
                 messages.error(request, 'Sorry, the server could not '
                                'create new author as requested.')
         elif 'authors' in request.POST:
@@ -2172,12 +2313,13 @@ def viewAuthors(request):
                                 else:
                                     messages.error(
                                         request, author.deltaReport(**problem))
-                    except Exception, e:
-                        print('Problem while saving author:', e)
+                    except Exception:
+                        logging.exception('Problem while saving '
+                                          'author in viewAuthors.')
                         messages.error(
                             request, 'Problem saving author data: %s' % data)
-            except Exception, e:
-                print('Problem updating authors:', e)
+            except Exception:
+                logging.exception('Problem updating authors in viewAuthors.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least one author.')
         elif 'deleteAuthor' in request.POST:
@@ -2191,12 +2333,12 @@ def viewAuthors(request):
                     # Make sure to update things referencing the author here!
                     # Deleting the author:
                     Author.objects.filter(id=author.id).delete()
-            except Exception, e:
-                print('Problem deleting author:', e)
+            except Exception:
+                logging.exception('Problem deleting author in viewAuthors.')
                 messages.error(request, 'Sorry, the server had problems '
                                'deleting the requested author.')
         else:
-            print('Cannot handle POST request in viewAuthors():', request)
+            logging.error('Unexpected POST request in viewAuthors.')
             messages.error(request, 'Sorry, the server did not '
                            'understand the request.')
 
@@ -2212,6 +2354,7 @@ def viewAuthors(request):
         request, "authors.html", {'authors': form})
 
 
+@logExceptions
 def changeDefaults(request):
     # Functions to get defaults:
     getDefaults = {
@@ -2246,5 +2389,6 @@ def changeDefaults(request):
     return redirect(url)
 
 
+@logExceptions
 def view_frontpage(request):
     return viewAbout(request, 'home')

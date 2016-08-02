@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
+import json
+import reversion
+import math
+import os.path
+from collections import defaultdict
 from itertools import izip
 from string import uppercase, lowercase
 from django.db import models, connection
@@ -12,13 +17,9 @@ from django.db.backends.signals import connection_created
 from django.utils.safestring import SafeString
 from django.utils.encoding import python_2_unicode_compatible
 from django.contrib import messages
-import jsonfield
-import reversion
-import math
-import os.path
+# ielex specific imports:
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import *
-from itertools import izip
 
 # from https://code.djangoproject.com/ticket/8399
 try:
@@ -253,7 +254,7 @@ class SndComp(AbstractTimestamped):
             try:
                 d = dict(wanted[:i])
                 return Clade.objects.get(**d)
-            except Exception, e:
+            except Exception:
                 pass
 
         return None
@@ -345,16 +346,18 @@ class Clade(AbstractTimestamped):
     # Memo for computeCognateClassConnections:
     _cognateClassConnections = []  # [Boolean]
 
-    def computeCognateClassConnections(self, cognateclasses):
+    def computeCognateClassConnections(self, cognateclasses, languageList):
         # Reset memo:
         self._cognateClassConnections = []
         # lIds that warrant a connection:
-        clIds = set(self.languageclade_set.values_list(
-            'language_id', flat=True))
+        clIds = set(self.languageclade_set.filter(
+            language__languagelistorder__language_list=languageList
+            ).values_list('language_id', flat=True))
         # Fill memo with entries for given cognateclasses:
         for cc in cognateclasses:
             lIds = set(cc.lexeme_set.filter(
-                not_swadesh_term=False).values_list('language_id', flat=True))
+                not_swadesh_term=False).values_list(
+                'language_id', flat=True))
             self._cognateClassConnections.append(bool(clIds & lIds))
 
     def connectsToNextCognateClass(self):
@@ -843,12 +846,22 @@ class CognateClass(AbstractTimestamped):
                 lexemeLoanPercentage = 0
             else:
                 lexemeLoanPercentage = int(lexemeLoanPercentage * 100)
+            # Computing cladeCount:
+            languageIds = self.lexeme_set.filter(
+                language_id__in=lSet,
+                not_swadesh_term=False).values_list(
+                'language_id', flat=True)
+            cladeCount = Clade.objects.filter(
+                languageclade__language__id__in=languageIds).exclude(
+                hexColor='').exclude(
+                shortName='').distinct().count()
             # Filling memo with data:
             self._computeCounts = {
                 'lexemeCount': lexemeCount,
                 'lexemeLoanCount': lexemeLoanCount,
                 'lexemeLoanPercentage': lexemeLoanPercentage,
-                'onlyNotSwh': onlyNotSwh}
+                'onlyNotSwh': onlyNotSwh,
+                'cladeCount': cladeCount}
         return self._computeCounts
 
     @property
@@ -878,6 +891,15 @@ class CognateClass(AbstractTimestamped):
     @property
     def hasOnlyNotSwadesh(self):
         return self.computeCounts()['onlyNotSwh']
+
+    @property
+    def cladeCount(self):
+        return self.computeCounts()['cladeCount']
+
+    @property
+    def loanSourceCognateClassTitle(self):
+        cc = self.loanSourceCognateClass
+        return ' '.join([cc.alias, cc.root_form, cc.root_language])
 
 
 class DyenCognateSet(models.Model):
@@ -1070,6 +1092,14 @@ class Lexeme(AbstractTimestamped):
         # Added for #178
         return self.cognate_class.count()
 
+    @property
+    def selectionJSON(self):
+        # Added for #219 to describe lexeme and cognate classes.
+        return json.dumps({'lexemeId': self.id,
+                           'cognateClassIds': list(
+                               self.cognate_class.values_list(
+                                   'id', flat=True))})
+
 
 @reversion.register
 class CognateJudgement(AbstractTimestamped):
@@ -1091,7 +1121,7 @@ class CognateJudgement(AbstractTimestamped):
         """
         An alphabetically sorted list of (rating_code, description) tuples
         """
-        descriptions = dict(RELIABILITY_CHOICES)
+        descriptions = defaultdict(str, RELIABILITY_CHOICES)
         return [(rating, descriptions[rating]) for rating in
                 sorted(self.reliability_ratings)]
 
@@ -1222,7 +1252,6 @@ class MeaningList(models.Model):
         validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
     meanings = models.ManyToManyField(Meaning, through="MeaningListOrder")
-    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     def append(self, meaning):

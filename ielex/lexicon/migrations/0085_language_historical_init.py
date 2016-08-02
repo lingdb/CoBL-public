@@ -21,7 +21,7 @@ def forwards_func(apps, schema_editor):
 
 
 def reverse_func(apps, schema_editor):
-    print('Nothing to do for reverse_func of 0083_language_historical_init')
+    print('Nothing to do for reverse_func of 0085_language_historical_init')
 
 
 class Migration(migrations.Migration):

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from string import uppercase, lowercase
 from itertools import izip
 # from ielex.lexicon.models import Language
@@ -11,6 +12,19 @@ from django.template import RequestContext
 from django.core.management.base import NoArgsCommand
 
 codes = list(uppercase) + [i+j for i in uppercase for j in lowercase]
+
+
+def logExceptions(func):
+    '''
+    A decorator for func to make sure we log exceptions.
+    '''
+    def f(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception, e:
+            logging.exception('Exception found by logExceptions.')
+            raise e
+    return f
 
 
 def int2alpha(n):

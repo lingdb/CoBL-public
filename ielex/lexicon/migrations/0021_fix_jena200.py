@@ -232,7 +232,7 @@ def forwards_func(apps, schema_editor):
             if m.id not in wanted:
                 print("Removing Meaning from List: ", m.gloss)
                 mmodels.MeaningList.remove(ml, m)
-    except Exception, e:
+    except Exception as e:
         print("Exception while cleaning up ", models.MeaningList.DEFAULT, e)
 
 

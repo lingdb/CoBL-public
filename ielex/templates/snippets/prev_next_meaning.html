@@ -1,15 +1,18 @@
 <center>
   <a href="{% url 'meaning-report' prev_meaning.gloss %}"
-     class="pull-left prevNextLink">
+     class="pull-left prevNextLink"
+     style="color: #006400;">
     <strong>«&nbsp;{{ prev_meaning.gloss }}</strong>
   </a>
-  <h1 class="inline">
+  <h1 class="inline"
+      style="color: #006400;">
     <input class="typeaheadText"
            value="{{ meaning.gloss }}"
            data-typeahead="{{ typeahead | escapejs }}">
   </h1>
   <a href="{% url 'meaning-report' next_meaning.gloss %}"
-     class="pull-right prevNextLink">
+     class="pull-right prevNextLink"
+     style="color: #006400;">
     <strong>{{ next_meaning.gloss }}&nbsp;»</strong>
   </a>
 </center>

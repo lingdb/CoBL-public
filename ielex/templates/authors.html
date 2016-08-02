@@ -19,10 +19,13 @@
   {% include "snippets/addAuthorModal.html" %}
   {% include "snippets/deleteAuthorModal.html" %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12" style="margin-top: 51px;">
       {% if user.is_authenticated and user.is_staff %}
         <form action="" method="POST" name="authors">
           {% csrf_token %}
+      {% endif %}
+      <div class="fixedContainer">
+        {% if user.is_authenticated and user.is_staff %}
           <div class="form-group pull-right">
             <div class="inline"
                  data-toggle="tooltip"
@@ -50,7 +53,10 @@
             <input type="submit" name="authors"
                    value="Save" class="btn btn-danger">
           </div>
-          <table class="table table-condensed viewTableFilter">
+        {% endif %}
+      </div>
+          <table class="table table-condensed viewTableFilter"
+                 data-floatheadtop="51">
             <thead>
               <tr>
                 <th>Avatar</th>
@@ -76,19 +82,37 @@
                     {% endif %}
                   </td>
                   <td class="initials">
-                    {% form_field author.initials class="form-control" required="required" style="width: 4em;" %}
+                    {% if user.is_authenticated and user.is_staff %}
+                      {% form_field author.initials class="form-control" required="required" style="width: 4em;" %}
+                    {% else %}
+                      {{ author.initials.data }}
+                    {% endif %}
                   </td>
                   <td class="surname">
-                    {% form_field author.surname class="form-control" required="required" %}
+                    {% if user.is_authenticated and user.is_staff %}
+                      {% form_field author.surname class="form-control" required="required" %}
+                    {% else %}
+                      {{ author.surname.data }}
+                    {% endif %}
                   </td>
                   <td class="firstNames">
-                    {% form_field author.firstNames class="form-control" required="required" %}
+                    {% if user.is_authenticated and user.is_staff %}
+                      {% form_field author.firstNames class="form-control" required="required" %}
+                    {% else %}
+                      {{ author.firstNames.data }}
+                    {% endif %}
                   </td>
                   <td class="email">
-                    {% form_field author.email class="form-control" %}
+                    {% if user.is_authenticated and user.is_staff %}
+                      {% form_field author.email class="form-control" %}
+                    {% else %}
+                      {{ author.object_data.displayEmail }}
+                    {% endif %}
                   </td>
                   <td class="website">
-                    {% form_field author.website class="form-control inline" style="width: 90%;" %}
+                    {% if user.is_authenticated and user.is_staff %}
+                      {% form_field author.website class="form-control inline" style="width: 90%;" %}
+                    {% endif %}
                     {% if author.website.data %}
                       <a href="{{ author.website.data }}" target="_blank">
                         <span class="glyphicon glyphicon-link"></span>
@@ -99,44 +123,8 @@
               {% endfor %}
             </tbody>
           </table>
+      {% if user.is_authenticated and user.is_staff %}
         </form>
-      {% else %}
-        <table class="table table-condensed viewTableFilter">
-          <thead>
-            <tr>
-                <th>Initials</th>
-                <th>Surname</th>
-                <th>First names</th>
-                <th>Email</th>
-                <th>Website</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for author in authors.elements %}
-              <tr>
-                <td class="initials">
-                  {{ author.initials.data }}
-                </td>
-                <td class="surname">
-                  {{ author.surname.data }}
-                </td>
-                <td class="firstNames">
-                  {{ author.firstNames.data }}
-                </td>
-                <td class="email">
-                  {{ author.object_data.displayEmail }}
-                </td>
-                <td class="website">
-                  {% if author.website.data %}
-                    <a href="{{ author.website.data }}" target="_blank">
-                      <span class="glyphicon glyphicon-link"></span>
-                    </a>
-                  {% endif %}
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
       {% endif %}
   </div>
 {% endblock %}
