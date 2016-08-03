@@ -29,7 +29,6 @@ from ielex.forms import AddCitationForm, \
                         AuthorCreationForm, \
                         AuthorDeletionForm, \
                         AuthorTableForm, \
-                        ChooseCognateClassForm, \
                         CladeCreationForm, \
                         CladeDeletionForm, \
                         CladeTableForm, \
@@ -1366,27 +1365,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             return HttpResponseRedirect(
                 reverse("view-meaning-languages",
                         args=[canonical_gloss, current_language_list.name]))
-        # Handling ChooseCognateClassForm:
-        else:  # not ('meang_form' in request.POST)
-            cognate_form = ChooseCognateClassForm(request.POST)
-            if cognate_form.is_valid():
-                cd = cognate_form.cleaned_data
-                cognate_class = cd["cognate_class"]
-                # if not cogjudge_id: # new cognate judgement
-                lexeme = Lexeme.objects.get(id=lexeme_id)
-                if cognate_class not in lexeme.cognate_class.all():
-                    cj = CognateJudgement.objects.create(
-                            lexeme=lexeme,
-                            cognate_class=cognate_class)
-                else:
-                    cj = CognateJudgement.objects.get(
-                            lexeme=lexeme,
-                            cognate_class=cognate_class)
-
-                # change this to a reverse() pattern
-                return HttpResponseRedirect(anchored(
-                        reverse("lexeme-add-cognate-citation",
-                                args=[lexeme_id, cj.id])))
 
     # Gather lexemes:
     lexemes = Lexeme.objects.filter(
@@ -1406,8 +1384,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         "language__clades")
     # Gather cognate classes and provide form:
     cognateClasses = CognateClass.objects.filter(lexeme__in=lexemes).distinct()
-    cognate_form = ChooseCognateClassForm()
-    cognate_form.fields["cognate_class"].queryset = cognateClasses
 
     # TODO: move this out of views
     # filter by 'language' or 'meaning'
@@ -1440,7 +1416,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
          "prev_meaning": prev_meaning,
          "next_meaning": next_meaning,
          "lexemes": lexemes,
-         "cognate_form": cognate_form,
          "cognateClasses": json.dumps([{'id': c.id,
                                         'alias': c.alias,
                                         'root_form': c.root_form,
@@ -1833,16 +1808,6 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         "previous_cognate_citation_id"] = citation.id
                     return HttpResponseRedirect(
                         get_redirect_url(form, citation))
-            elif action == "add-cognate":
-                languagelist = get_canonical_language_list(
-                        getDefaultLanguagelist(request), request)
-                redirect_url = '%s#lexeme_%s' % (
-                    reverse("view-meaning-languages-add-cognate",
-                            args=[lexeme.meaning.gloss,
-                                  languagelist,
-                                  lexeme.id]),
-                    lexeme.id)
-                return HttpResponseRedirect(redirect_url)
             else:
                 assert not action
 

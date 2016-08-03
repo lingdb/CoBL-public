@@ -583,28 +583,14 @@
               {# cognateclasses_data.html #}
               <td>
                 <div class="cognateClasses" style="text-align: center;">
-                  {% if user.is_authenticated %}
-                    {% ifnotequal add_cognate_judgement|asint lexeme.id.data|asint %}
-                      <a href="{% url 'lexeme-add-cognate' lexeme.id.data %}#lexeme_{{ lexeme.id.data }}"
-                         title="Add another cognate class"
-                         style="color: #8B4510;">
-                        <span class="glyphicon glyphicon-plus-sign"></span>
-                      </a>
-                    {% else %}
-                      <form action="" method="post">
-                        {% csrf_token %}
-                        {{ cognate_form.cognate_class }}
-                      </form>
-                    {% endifnotequal %}
-                  {% endif %}
                   {% for c in lexeme.object_data.allCognateClasses %}
-                  <a href="/cognate/{{ c.id }}/"
-                     style="color: #8B4510;"
-                     data-toggle="tooltip"
-                     data-placement="bottom"
-                     title="Switch page to view details of this cognate set and all member lexemes.">
-                    {{ c.alias }}
-                  </a>
+                    <a href="/cognate/{{ c.id }}/"
+                       style="color: #8B4510;"
+                       data-toggle="tooltip"
+                       data-placement="bottom"
+                       title="Switch page to view details of this cognate set and all member lexemes.">
+                      {{ c.alias }}
+                    </a>
                   {% endfor %}
                 </div>
               </td>
