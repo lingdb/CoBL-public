@@ -460,13 +460,19 @@ class Language(AbstractTimestamped):
             # Computing dependant counts:
             lexCount = entryCount - nonLexCount
             excessCount = lexCount - meaningCount
+            # Computing unassigned count (#255):
+            unassignedCount = self.lexeme_set.filter(
+                not_swadesh_term=False,
+                meaning__in=meaningIdSet,
+                cognate_class=None).count()
             # Setting counts:
             self._computeCounts = {
                 'meaningCount': meaningCount,
                 'entryCount': entryCount,
                 'nonLexCount': nonLexCount,
                 'lexCount': lexCount,
-                'excessCount': excessCount}
+                'excessCount': excessCount,
+                'unassignedCount': unassignedCount}
         return self._computeCounts
 
     def cladeByOrder(self, order):
@@ -505,6 +511,10 @@ class Language(AbstractTimestamped):
     @property
     def excessCount(self):
         return self.computeCounts()['excessCount']
+
+    @property
+    def unassignedCount(self):
+        return self.computeCounts()['unassignedCount']
 
     @property
     def level0Tooltip(self):

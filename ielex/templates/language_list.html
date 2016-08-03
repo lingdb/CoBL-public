@@ -331,6 +331,14 @@
                   </div>
                 </div>
               </th>
+              {# unassigned_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Unassigned
+                  </div>
+                </div>
+              </th>
               {# check_title.html #}
               <th>
                 <div class="vertical-text">
@@ -663,6 +671,13 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
+              {# unassigned_title.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageUnassignedCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               {# check_filter.html #}
               <td></td>
             </tr>
@@ -985,6 +1000,12 @@
                 <td class="languageExcessCount">
                   <center>
                     <span class="badge">{{ language.object_data.excessCount }}</span>
+                  </center>
+                </td>
+                {# unassigned_data.html #}
+                <td class="languageUnassignedCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.unassignedCount }}</span>
                   </center>
                 </td>
                 {# check_data.html #}
