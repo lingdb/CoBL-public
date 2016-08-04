@@ -50,7 +50,8 @@ def forwards_func(apps, schema_editor):
                 clades = Clade.objects.filter(
                     id__in=LanguageClade.objects.filter(
                         language_id=lexeme.language_id).values_list(
-                        'clade_id', flat=True)).all()
+                        'clade_id', flat=True),
+                    cladeLevel1=0).all()
                 cladeNamesSet.add(', '.join([c.cladeName for c in clades]))
             # Yield interesting clades:
             if len(cladeNamesSet) > lowerBranchBound:
