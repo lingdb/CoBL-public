@@ -14,7 +14,7 @@ def getDefaultLanguage(request):
     """
     @return defaultLanguage :: str | unicode
     """
-    return request.session.get('defaultLanguage', 'ProtoIndoEuropean')
+    return request.session.get('defaultLanguage', 'AncientGreek')
 
 
 def setDefaultLanguage(request, language):
