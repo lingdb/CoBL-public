@@ -54,7 +54,8 @@ def forwards_func(apps, schema_editor):
                     cladeLevel1=0).exclude(
                     cladeLevel0=0  # Ignore PIE
                     ).all()
-                cladeNamesSet.add(', '.join([c.cladeName for c in clades]))
+                if len(clades) > 0:
+                    cladeNamesSet.add(', '.join([c.cladeName for c in clades]))
             # Yield interesting clades:
             if len(cladeNamesSet) > lowerBranchBound:
                 cognateClass.bNames = ', '.join('"%s"' % n for
