@@ -105,14 +105,6 @@
                   </div>
                 </div>
               </th>
-              {# isloan_lexeme_title.html #}
-              <th>
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Lex. loan
-                  </div>
-                </div>
-              </th>
               {# ncog_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -259,13 +251,6 @@
               <td>
                 <button type="button" class="filterBool btn btn-xs btn-default"
                         data-selector=".lexemeIsExcludedLexeme input">
-                  <span class="glyphicon glyphicon-question-sign"></span>
-                </button>
-              </td>
-              {# isloan_lexeme_filter.html #}
-              <td>
-                <button type="button" class="filterBool btn btn-xs btn-default"
-                        data-selector=".lexemeIsLoanLexeme input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </td>
@@ -535,15 +520,6 @@
                 <td class="lexemeIsExcludedLexeme">
                   <input type="checkbox"
                     {% if lexeme.object_data.is_excluded_lexeme %}
-                      checked="checked"
-                    {% endif %}
-                    class="form-control"
-                    disabled="disabled">
-                </td>
-                {# isloan_lexeme_data.html #}
-                <td class="lexemeIsLoanLexeme">
-                  <input type="checkbox"
-                    {% if lexeme.object_data.is_loan_lexeme %}
                       checked="checked"
                     {% endif %}
                     class="form-control"

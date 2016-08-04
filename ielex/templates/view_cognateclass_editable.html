@@ -176,28 +176,6 @@
               </th>
               {# loannotes_title.html #}
               <th>Loan<br>Notes</th>
-              {# lexemeLoanCount_title.html #}
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Number of lexemes in each cognate class that are marked as loan words">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Lex. Loans
-                  </div>
-                </div>
-              </th>
-              {# lexemeLoanPercentage_title.html #}
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Number of loan words over number of total lexemes for each cognate class">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Lex. Loan %
-                  </div>
-                </div>
-              </th>
               {# onlyNotSwh_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -460,20 +438,6 @@
                   </div>
                 {% endif %}
               </td>
-              {# lexemeLoanCount_filter.html #}
-              <td>
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".lexemeLoanCount">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </td>
-              {# lexemeLoanPercentage_filter.html #}
-              <td>
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".lexemeLoanPercentage">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </td>
               {# onlyNotSwh_filter.html #}
               <td>
                 <button type="button" class="filterBool btn btn-xs btn-danger"
@@ -632,22 +596,6 @@
                     {% form_field cc.loan_notes class="form-control" %}
                   {% elif cc.loan_notes.data %}
                     {{ cc.loan_notes.data }}
-                  {% endif %}
-                </td>
-                {# lexemeLoanCount_data.html #}
-                <td class="lexemeLoanCount">
-                  {% if cc.object_data.lexemeLoanCount %}
-                    <span class="badge">
-                      {{ cc.object_data.lexemeLoanCount }}
-                    </span>
-                  {% endif %}
-                </td>
-                {# lexemeLoanPercentage_data.html #}
-                <td class="lexemeLoanPercentage">
-                  {% if cc.object_data.lexemeLoanPercentage %}
-                    <span class="badge">
-                      {{ cc.object_data.lexemeLoanPercentage }}
-                    </span>
                   {% endif %}
                 </td>
                 {# onlyNotSwh_data.html #}

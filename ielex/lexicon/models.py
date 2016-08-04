@@ -821,7 +821,6 @@ class CognateClass(AbstractTimestamped):
                            languageList.languagelistorder_set.all())
             # Gather counts:
             lexemeCount = 0
-            lexemeLoanCount = 0
             onlyNotSwh = True  # True iff all lexemes are not_swadesh_term.
             for l in self.lexeme_set.all():
                 # Update onlyNotSwh iff necessary:
@@ -833,18 +832,6 @@ class CognateClass(AbstractTimestamped):
                         continue
                 # Major beef:
                 lexemeCount += 1
-                for j in self.cognatejudgement_set.all():
-                    if j.lexeme_id == l.id:
-                        if 'L' in j.reliability_ratings:
-                            lexemeLoanCount += 1
-                        break
-            # Computing percentage
-            lexemeLoanPercentage = lexemeLoanCount / lexemeCount \
-                if lexemeCount > 0 else float('nan')
-            if math.isnan(lexemeLoanPercentage):
-                lexemeLoanPercentage = 0
-            else:
-                lexemeLoanPercentage = int(lexemeLoanPercentage * 100)
             # Computing cladeCount:
             languageIds = self.lexeme_set.filter(
                 language_id__in=lSet,
@@ -858,8 +845,6 @@ class CognateClass(AbstractTimestamped):
             # Filling memo with data:
             self._computeCounts = {
                 'lexemeCount': lexemeCount,
-                'lexemeLoanCount': lexemeLoanCount,
-                'lexemeLoanPercentage': lexemeLoanPercentage,
                 'onlyNotSwh': onlyNotSwh,
                 'cladeCount': cladeCount}
         return self._computeCounts
@@ -879,14 +864,6 @@ class CognateClass(AbstractTimestamped):
     @property
     def lexemeCount(self):
         return self.computeCounts()['lexemeCount']
-
-    @property
-    def lexemeLoanCount(self):
-        return self.computeCounts()['lexemeLoanCount']
-
-    @property
-    def lexemeLoanPercentage(self):
-        return self.computeCounts()['lexemeLoanPercentage']
 
     @property
     def hasOnlyNotSwadesh(self):
@@ -1031,11 +1008,6 @@ class Lexeme(AbstractTimestamped):
     def is_excluded_lexeme(self):
         # Tests is_exc for #88
         return ('X' in self.reliability_ratings)
-
-    @property
-    def is_loan_lexeme(self):
-        # Tests is_loan for #88
-        return ('L' in self.reliability_ratings)
 
     @property
     def is_excluded_cognate(self):
