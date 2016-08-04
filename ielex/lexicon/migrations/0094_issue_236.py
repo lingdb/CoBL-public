@@ -104,15 +104,14 @@ def forwards_func(apps, schema_editor):
         with open(fname, 'w') as f:
             markdown = []
             for c in cognateClasses:
-                markdown.append(
-                    '# Cognate class [%s](http://cobl.info/cognate/%s/):' %
-                    (c, c))
+                s = '- [ ] cog. class [%s](http://cobl.info/cognate/%s/)' % \
+                    (c, c)
                 meanings = Meaning.objects.filter(
                     lexeme__cognate_class=c).distinct().all()
-                markdown.append('\n '.join([
-                    '* Meaning [%s](http://cobl.info/meaning/%s/)' %
-                    (m.gloss, m.gloss) for m in meanings]))
-                markdown.append('')
+                s += '\n '.join([
+                    ' = meaning [%s](http://cobl.info/meaning/%s/)' %
+                    (m.gloss, m.gloss) for m in meanings])
+                markdown.append(s)
             f.write("\n".join(markdown))
     print(1/0)  # Break migration.
 
