@@ -49,7 +49,8 @@ def forwards_func(apps, schema_editor):
                 # Need to investigate clades:
                 clades = Clade.objects.filter(
                     id__in=LanguageClade.objects.filter(
-                        language_id=lexeme.language_id).values_list(
+                        language_id=lexeme.language_id,
+                        language_id__in=languageIds).values_list(
                         'clade_id', flat=True),
                     cladeLevel1=0).exclude(
                     cladeLevel0=0  # Ignore PIE
