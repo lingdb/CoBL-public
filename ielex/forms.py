@@ -631,6 +631,14 @@ class AddCitationForm(forms.Form):
         required=False)
 
 
+class ChooseCognateClassForm(forms.Form):
+    cognate_class = ChooseCognateClassField(
+        queryset=CognateClass.objects.all(),
+        widget=forms.Select(attrs={"onchange": "this.form.submit()"}),
+        empty_label="---",  # make this into the "new" button?
+        label="")
+
+
 class EditCognateClassNameForm(forms.ModelForm):
     name = forms.CharField(required=False)
 
