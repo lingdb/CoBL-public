@@ -564,11 +564,7 @@
                 {% endfor %}
               </td>
               {# cognateclasses_data.html #}
-              <td class="selection"
-                  data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Click to re-assign this lexeme to a different cognate class.">
+              <td class="selection">
                 <div class="cognateClasses nowrap" style="text-align: center;">
                   {% if user.is_authenticated %}
                     {% ifequal add_cognate_judgement|asint lexeme.id.data|asint %}
@@ -583,6 +579,10 @@
                       <button type="button"
                               class="btn btn-xs editCognateClassButton inline"
                               style="background-color: #CD7432;"
+                              data-toggle="tooltip"
+                              data-placement="bottom"
+                              data-container="body"
+                              title="Click to re-assign this lexeme to a different cognate class."
                               value='{{ lexeme.object_data.selectionJSON }}'>
                         {{ c.alias }}
                       </button>
@@ -592,6 +592,10 @@
                             class="btn btn-xs editCognateClassButton inline"
                             style="background-color: #CD7432;"
                             value='{{ lexeme.object_data.selectionJSON }}'
+                            data-toggle="tooltip"
+                            data-placement="bottom"
+                            data-container="body"
+                            title="Click to assign this lexeme to a cognate class."
                             data-add="new">
                       <span class="glyphicon glyphicon-plus-sign"></span>
                     </button>
