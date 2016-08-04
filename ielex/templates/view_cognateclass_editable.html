@@ -69,7 +69,7 @@
                   title="Number of clades each cognate class belongs to">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
-                    Clade. Count
+                    Clade Count
                   </div>
                 </div>
               </th>
@@ -85,7 +85,7 @@
                 </div>
               </th>
               {# id_title.html #}
-              <th>
+              <th style="border-left: 2px solid #dddddd;">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Cog. ID
@@ -127,8 +127,43 @@
               <th>Root<br>Gloss</th>
               {# notes_title.html #}
               <th>Root<br>Notes</th>
+              {# FIXME finish these! #}
+              {# idiophonic_title.html #}
+              <th style="border-left: 2px solid #dddddd;"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Possibly onomatopoeic or nursery term, so not truly cognate?">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Idiophonic
+                  </div>
+                </div>
+              </th>
+              {# parallelDerivation_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Possibly a parallel later derivations using the same original roots.">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Pll. deriv.
+                  </div>
+                </div>
+              </th>
+              {# dubiousSet_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Some member lexemes may not actually be cognates but just lookalikes.">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Dubious set
+                  </div>
+                </div>
+              </th>
               {# loanword_title.html #}
-              <th>
+              <th style="border-left: 2px solid #dddddd;">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Loan Event
@@ -152,11 +187,7 @@
                   data-container="body"
                   title="Loan Source Cognate Set Id"
                   style="width: 5em;">
-                  <div class="vertical-text">
-                    <div class="vertical-text__inner">
-                      Source ID
-                    </div>
-                  </div>
+                  Loan source cog. ID
               </th>
               {# loansource_title.html #}
               <th>Loan<br>Source Lg.</th>
@@ -208,7 +239,7 @@
                 </div>
               </td>
               {# id_filter.html #}
-              <td>
+              <td style="border-left: 2px solid #dddddd;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".cogClassId">
                   <span class="glyphicon glyphicon-sort"></span>
@@ -321,7 +352,7 @@
                 {% endif %}
               </td>
               {# loanword_filter.html #}
-              <td>
+              <td style="border-left: 2px solid #dddddd;">
                 <button type="button" class="filterBool btn btn-xs btn-default"
                         data-selector=".cogLoanword input">
                   <span class="glyphicon glyphicon-question-sign"></span>
@@ -471,7 +502,9 @@
                 </td>
                 {# id_data.html #}
                 <td class="cogClassId text-right"
-                    style="color: #8B4510; text-align: center;">
+                    style="color: #8B4510;
+                           text-align: center;
+                           border-left: 2px solid #dddddd;">
                   {{ cc.idField.data }}
                   {% if user.is_authenticated %}
                     {% form_field cc.idField class="hide" required="required" %}
@@ -535,7 +568,8 @@
                   {% endif %}
                 </td>
                 {# loanword_data.html #}
-                <td class="cogLoanword">
+                <td style="border-left: 2px solid #dddddd;"
+                    class="cogLoanword">
                   {% if user.is_authenticated %}
                     {% form_field cc.loanword class="form-control" %}
                   {% else %}

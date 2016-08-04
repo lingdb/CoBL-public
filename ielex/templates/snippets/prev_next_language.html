@@ -6,6 +6,7 @@
   <h1 class="inline" {% if language.description %}data-toggle="tooltip" data-placement="bottom" title="{{ language.description }}"{% endif %}>
     <input class="typeaheadText"
            value="{{ language.utf8_name }}"
+           type="text"
            data-typeahead="{{ typeahead | escapejs }}">
   </h1>
   <a href="{% url 'view-language-wordlist' next_language.ascii_name wordlist %}"

@@ -551,27 +551,27 @@
                   {% endif %}
                   {% if lexeme.object_data.allCognateClasses %}
                     {% for c in lexeme.object_data.allCognateClasses %}
-                      <button type="button"
-                              class="btn btn-xs editCognateClassButton inline"
-                              style="background-color: #CD7432;"
-                              data-toggle="tooltip"
-                              data-placement="bottom"
-                              data-container="body"
-                              title="Click to re-assign this lexeme to a different cognate class."
-                              value='{{ lexeme.object_data.selectionJSON }}'>
+                      <a type="button"
+                         class="editCognateClassButton inline"
+                         style="color: #CD7432;"
+                         data-toggle="tooltip"
+                         data-placement="bottom"
+                         data-container="body"
+                         title="Click to re-assign this lexeme to a different cognate class."
+                         data-json='{{ lexeme.object_data.selectionJSON }}'>
                         {{ c.alias }}
-                      </button>
+                      </a>
                     {% endfor %}
                   {% else %}
-                    <button type="button"
-                            class="btn btn-xs editCognateClassButton inline"
-                            style="background-color: #CD7432;"
-                            value='{{ lexeme.object_data.selectionJSON }}'
-                            data-toggle="tooltip"
-                            data-placement="bottom"
-                            data-container="body"
-                            title="Click to assign this lexeme to a cognate class."
-                            data-add="new">
+                    <a type="button"
+                       class="editCognateClassButton inline"
+                       style="color: #CD7432;"
+                       data-json='{{ lexeme.object_data.selectionJSON }}'
+                       data-toggle="tooltip"
+                       data-placement="bottom"
+                       data-container="body"
+                       title="Click to assign this lexeme to a cognate class."
+                       data-add="new">
                       <span class="glyphicon glyphicon-plus-sign"></span>
                     </button>
                   {% endif %}

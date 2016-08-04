@@ -9,8 +9,8 @@
       var addNew = btn.data('add') === 'new';
       //Gathering selected lexemes and their infos:
       var selected = gatherCheckboxValues('input.lexemeSelection');
-      selected.push(btn.val());
       selected = _.map(selected, JSON.parse);
+      selected.push(btn.data('json'));
       //Deconstructing selected data:
       var lexemeIds = _.chain(selected).map(function(x){
         return x.lexemeId;
@@ -90,13 +90,14 @@
         //Adding a new assignment:
         var addNewAssignment = function(){
           form.prepend(mkCognateClassSelection('new', 'new'));
-          form.find('#addEntryCognateClassButton').remove();
+          form.find('#addEntryCognateClassButton').addClass('hide');
         };
         //Handling the addNew case:
         if(addNew){
           addNewAssignment();
         }else{
           //Handling the add button:
+          form.find('#addEntryCognateClassButton').removeClass('hide');
           form.find('#addEntryCognateClassButton').click(addNewAssignment);
         }
         //Handling the save button:

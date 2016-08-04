@@ -132,10 +132,8 @@ table.floatThead-table {
   For #138
 */
 .typeaheadText {
-  border: 0;
-  outline: none;
-  background: inherit;
   text-align: center;
+  max-width: 500px;
 }
 
 /*
