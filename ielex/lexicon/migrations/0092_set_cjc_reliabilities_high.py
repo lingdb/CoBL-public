@@ -5,8 +5,9 @@ from django.db import migrations
 
 def forwards_func(apps, schema_editor):
     '''
-    I accidentially deleted a citation in production.
-    This migration adds it again.
+    All CognateJudgementCitation entries that
+    are on the `Current` and `Jena200` lists
+    need to have a reliability of `High`.
     '''
     # Models to work with:
     CognateJudgementCitation = apps.get_model(

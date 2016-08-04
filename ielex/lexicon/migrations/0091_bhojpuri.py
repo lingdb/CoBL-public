@@ -5,8 +5,8 @@ from django.db import migrations
 
 def forwards_func(apps, schema_editor):
     '''
-    I accidentially deleted a citation in production.
-    This migration adds it again.
+    BhojpuriNew is missing some lexemes present in Bhojpuri,
+    so we move them there and leave Bhojpuri empty.
     '''
     # Models to work with:
     Language = apps.get_model('lexicon', 'Language')
