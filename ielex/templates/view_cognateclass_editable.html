@@ -18,24 +18,38 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12"
+         {% if user.is_authenticated %}
+            style="margin-top: 51px;"
+         {% else %}
+            style="margin-top: 43px;"
+         {% endif %}>
       {% if user.is_authenticated %}
-      <form action="" method="POST" name="cogclass_ed_form" id="cogclass_ed_form">
-        {% csrf_token %}
-        <div class="form-group pull-right">
-          <a class="btn btn-default space-right"
-             id="mergeCognateClasses"
-             data-toggle="tooltip"
-             data-placement="bottom"
-             title="Merge selected cognate classes">
-            <span class="glyphicon glyphicon-resize-small"></span>
-          </a>
-          <a href="{% url 'edit-cogclasses' meaning %}" class="btn btn-default">undo</a>
-          <input type="submit" value="Save" name="cogclass_form" class="btn btn-danger">
-        </div>
+        <form action="" method="POST" name="cogclass_ed_form" id="cogclass_ed_form">
+          {% csrf_token %}
       {% endif %}
+      <div class="fixedContainer">
+        {% if user.is_authenticated %}
+          <div class="form-group pull-right">
+            <a class="btn btn-default space-right"
+               id="mergeCognateClasses"
+               data-toggle="tooltip"
+               data-placement="bottom"
+               title="Merge selected cognate classes">
+              <span class="glyphicon glyphicon-resize-small"></span>
+            </a>
+            <a href="{% url 'edit-cogclasses' meaning %}" class="btn btn-default">undo</a>
+            <input type="submit" value="Save" name="cogclass_form" class="btn btn-danger">
+          </div>
+        {% endif %}
         {% include "snippets/prev_next_meaning_coglist.html" %}
-        <table class="table table-striped table-condensed viewTableFilter">
+      </div>
+        <table class="table table-striped table-condensed viewTableFilter"
+               {% if user.is_authenticated %}
+                  data-floatheadtop="51"
+               {% else %}
+                  data-floatheadtop="43"
+               {% endif %}>
           <thead>
             <tr>
               {# clade_names.html #}
@@ -48,6 +62,17 @@
                   </div>
                 </th>
               {% endfor %}
+              {# cladeCount_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of clades each cognate class belongs to">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Clade. Count
+                  </div>
+                </div>
+              </th>
               {# lexemeCount_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -60,9 +85,15 @@
                 </div>
               </th>
               {# id_title.html #}
-              <th>ID</th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. ID
+                  </div>
+                </div>
+              </th>
               {# alias_title.html #}
-              <th style="width: 80px;">
+              <th style="width: 40px;">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Cog. Alias
@@ -119,7 +150,8 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Loan Source Cognate Set Id">
+                  title="Loan Source Cognate Set Id"
+                  style="width: 5em;">
                   <div class="vertical-text">
                     <div class="vertical-text__inner">
                       Source ID
@@ -179,6 +211,17 @@
               </th>
             </tr>
             <tr class="filterBar">
+              {# cladeCount_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterText form-control"
+                       data-selector=".cladeCount"
+                       style="width: 2em;">
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".cladeCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               {# lexemeCount_filter.html #}
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
@@ -194,8 +237,8 @@
                 </div>
               </td>
               {# alias_filter.html #}
-              <td>
-                <input type="text"s
+              <td style="width: 40px;">
+                <input type="text"
                        class="filterText form-control hide"
                        data-selector=".cogClassAlias"
                        style="width: 2em;">
@@ -314,7 +357,7 @@
                 </button>
               </td>
               {# loanSourceId_filter.html #}
-              <td>
+              <td style="width: 5em;">
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
@@ -446,9 +489,16 @@
               {# clade_data.html #}
               {% for clade in clades %}
                 <td{% if clade.connectsToNextCognateClass %}
-                    style="background-color: #{{ clade.hexColor }}; border: 2px solid #F9F9F9;"
-                  {% endif %}></td>
+                      style="background-color: #{{ clade.hexColor }};
+                             border: 2px solid #F9F9F9;"
+                   {% endif %}></td>
               {% endfor %}
+                {# cladeCount_data.html #}
+                <td class="cladeCount text-center">
+                  <span class="badge">
+                    {{ cc.object_data.cladeCount }}
+                  </span>
+                </td>
                 {# lexemeCount_data.html #}
                 <td class="lexemeCount text-center">
                   <span class="badge">
@@ -456,7 +506,8 @@
                   </span>
                 </td>
                 {# id_data.html #}
-                <td class="cogClassId text-right">
+                <td class="cogClassId text-right"
+                    style="color: #8B4510; text-align: center;">
                   {{ cc.idField.data }}
                   {% if user.is_authenticated %}
                     {% form_field cc.idField class="hide" required="required" %}
@@ -465,16 +516,18 @@
                   {% endif %}
                 </td>
                 {# alias_data.html #}
-                <td class="cogClassAlias" style="padding-left: 1em;">
+                <td class="cogClassAlias"
+                    style="text-align: center; width: 40px;">
                   {% form_field cc.alias class="hide" %}
-                  <a href="{{cc.object_data.get_absolute_url}}">
+                  <a href="{{cc.object_data.get_absolute_url}}"
+                     style="color: #8B4510;">
                     {{ cc.alias.data }}
                   </a>
                 </td>
                 {# merge_data.html #}
                 <td>
                   <input type="checkbox"
-                         class="mergeCognateClasses"
+                         class="mergeCognateClasses form-control"
                          value="{{ cc.idField.data }}">
                 </td>
                 {# rootform_data.html #}
@@ -534,11 +587,19 @@
                   {% endif %}
                 </td>
                 {# loanSourceId_data.html #}
-                <td class="loanSourceId">
+                <td class="loanSourceId nowrap" style="width: 5em;">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loanSourceId class="form-control numberField" pattern="^[0-9]*$" style="width: 4em;" %}
-                  {% elif cc.loanSourceId.data %}
-                    {{ cc.loanSourceId.data }}
+                    {% form_field cc.loanSourceId class="form-control numberField inline" pattern="^[0-9]*$" style="width: 3em;" %}
+                  {% endif %}
+                  {% if cc.loanSourceId.data %}
+                    <a href="/cognate/{{ cc.loanSourceId.data }}/"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       title="{{ cc.object_data.loanSourceCognateClassTitle }}"
+                       class="inline"
+                       style="color: #8B4510;">
+                       {{ cc.object_data.loanSourceCognateClass.alias }}
+                    </a>
                   {% endif %}
                 </td>
                 {# loansource_data.html #}

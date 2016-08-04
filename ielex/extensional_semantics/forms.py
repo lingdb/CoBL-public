@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from ielex.forms import clean_value_for_url
-from ielex.extensional_semantics.models import *
+from ielex.extensional_semantics.models import SemanticDomain, \
+                                               SemanticExtensionCitation, \
+                                               SemanticRelation
 from ielex.lexicon.models import RELIABILITY_CHOICES
 
 

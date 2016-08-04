@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 from django.db import transaction
-from ielex.lexicon.models import *
+from ielex.lexicon.models import Clade, Language, LanguageClade
 
 
 def updateLanguageCladeRelations(languages=None, clades=None):

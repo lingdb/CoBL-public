@@ -1,18 +1,30 @@
 # -*- coding: utf-8 -*-
-import re
+import json
 from django import forms
 from django.forms import ValidationError
-from ielex.lexicon.models import *
+from django.utils.encoding import python_2_unicode_compatible
+from ielex.lexicon.models import CognateClass, \
+                                 CognateClassCitation, \
+                                 DISTRIBUTION_CHOICES, \
+                                 Language, \
+                                 LanguageList, \
+                                 Meaning, \
+                                 MeaningList, \
+                                 Source, \
+                                 TYPE_CHOICES
 from ielex.lexicon.validators import suitable_for_url, suitable_for_url_wtforms
 # from ielex.extensional_semantics.models import *
 
-from wtforms import StringField, IntegerField, \
-    FieldList, FormField, \
-    TextField, BooleanField, \
-    DateTimeField, DecimalField, \
-    TextAreaField, SelectField
+from wtforms import StringField, \
+                    IntegerField, \
+                    FieldList, \
+                    FormField, \
+                    TextField, \
+                    BooleanField, \
+                    DateTimeField, \
+                    TextAreaField, \
+                    SelectField
 from wtforms.validators import Email, InputRequired
-from wtforms_components import read_only
 from wtforms.form import Form as WTForm
 from wtforms.ext.django.orm import model_form
 from lexicon.models import Lexeme
@@ -26,12 +38,6 @@ def clean_value_for_url(instance, field_label):
     data = instance.cleaned_data[field_label]
     data = data.strip()
     suitable_for_url(data)
-    # illegal_chars = re.findall(r"[^a-zA-Z0-9$\-_\.+!*'(),]", data)
-    # try:
-    #     assert not illegal_chars
-    # except AssertionError:
-    #     raise ValidationError("Invalid character/s for an ascii label:"\
-    #             " '%s'" % "', '".join(illegal_chars))
     return data
 
 
@@ -433,12 +439,6 @@ class CognateJudgementSplitTable(WTForm):
     judgements = FieldList(FormField(CognateJudgementSplitRow))
 
 
-class CogClassLexemeRelated(AbstractTimestampedForm):
-    idField = IntegerField('Id', validators=[InputRequired()])
-    root_form = StringField('Cog Class Root', validators=[InputRequired()])
-    root_language = StringField('Root Language', validators=[InputRequired()])
-
-
 class LexemeRowViewMeaningsForm(AbstractTimestampedForm):
     '''
     Since WTForms always fills fields with their default values
@@ -461,23 +461,60 @@ class LexemeRowViewMeaningsForm(AbstractTimestampedForm):
     notes = TextField('Notes', validators=[InputRequired()])
     cogclass_link = TextField('CogClass Links', validators=[InputRequired()])
 
-    # Providing access to related CognateClasses:
-    allCognateClasses = FieldList(FormField(CogClassLexemeRelated))
-
 
 class LexemeTableViewMeaningsForm(WTForm):
     lexemes = FieldList(FormField(LexemeRowViewMeaningsForm))
 
 
-class LexemeTableCreateCognateClassForm(WTForm):
+class LexemeTableEditCognateClassesForm(WTForm):
     lexemeIds = StringField('Lexeme ids', validators=[InputRequired()])
+    cognateClassAssignments = StringField('Cognate class assignments ids',
+                                          validators=[InputRequired()])
 
+    _validated = dict()
 
-class LexemeTableAddToCognateClassForm(WTForm):
-    lexemeIds = StringField('Lexeme ids', validators=[InputRequired()])
-    cognateClass = SelectField('Cognate Class',
-                               coerce=int,
-                               validators=[InputRequired()])
+    def getValidated(self):
+        return self._validated
+
+    def validate_lexemeIds(form, field):
+        # Parse ids:
+        ids = [int(x) for x in field.data.split(',')]
+        # Check ids belonging to lexemes with common meaning:
+        mIds = set(Lexeme.objects.filter(id__in=ids).values_list(
+            'meaning__id', flat=True))
+        if len(mIds) != 1:
+            raise ValidationError('Given lexemes belong to %s meanings '
+                                  'rather than a single one.' % len(mIds))
+        # Write validated data to form.data:
+        form._validated['lexemeIds'] = ids
+
+    def validate_cognateClassAssignments(form, field):
+        # Make sure field.data is a json dict:
+        data = json.loads(field.data)
+        if type(data) != dict:
+            raise ValidationError('Data for cognateClassAssignments '
+                                  'is not a JSON object.')
+        # Dict to put into _validated:
+        retData = dict()  # :: int | 'new' -> int | 'new' | 'delete'
+        # Validating data:
+        cIdSet = set()
+        # Gathering IDs allowing other keywords:
+        for k, v in data.iteritems():
+            if k != 'new':
+                cIdSet.add(int(k))
+                k = int(k)
+            if v != 'new' and v != 'delete':
+                cIdSet.add(int(v))
+                v = int(v)
+            retData[k] = v
+        # Make sure cIdSet consists of valid cognate class IDs:
+        cCount = CognateClass.objects.filter(id__in=cIdSet).count()
+        if cCount != len(cIdSet):
+            raise ValidationError('At least one of the given '
+                                  'cognate class IDs could not be '
+                                  'found in the database.')
+        # Write validated data to form.data:
+        form._validated['cognateClassAssignments'] = retData
 
 
 class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
@@ -508,9 +545,6 @@ class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
                                 validators=[InputRequired()])
     dubious = BooleanField('Dubious', validators=[InputRequired()])
 
-    # Providing access to related CognateClasses:
-    allCognateClasses = FieldList(FormField(CogClassLexemeRelated))
-
 
 class LexemeTableLanguageWordlistForm(WTForm):
     lexemes = FieldList(FormField(LexemeRowLanguageWordlistForm))
@@ -525,6 +559,9 @@ class CloneLanguageForm(WTForm):
         'Name of new language',
         validators=[InputRequired(),
                     suitable_for_url_wtforms])
+    languageId = IntegerField(
+        'Id of the language to clone',
+        validators=[InputRequired()])
     emptyLexemes = BooleanField('Should lexemes be emptied?')
 
 
@@ -577,7 +614,7 @@ class EditCognateClassCitationForm(forms.ModelForm):
         exclude.remove("cognate_class")
         try:
             self.instance.validate_unique(exclude=exclude)
-        except ValidationError, e:
+        except ValidationError as e:
             self._update_errors(e.message_dict)
 
     class Meta:

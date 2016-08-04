@@ -6,15 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lexicon', '0003_dyen_name_data_migration'),
+        ('lexicon', '0089_fix_citation'),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='dyenname',
-            name='language',
-        ),
-        migrations.DeleteModel(
-            name='DyenName',
+            model_name='meaninglist',
+            name='data',
         ),
     ]

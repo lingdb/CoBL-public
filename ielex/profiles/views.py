@@ -6,8 +6,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.template import RequestContext
-from ielex.profiles.forms import *
+from ielex.profiles.forms import UserAlterDetailsForm
 from ielex.shortcuts import render_template
 
 

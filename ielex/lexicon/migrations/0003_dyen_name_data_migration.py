@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.db import migrations, models
+from django.db import migrations
 
 
 def dyenname_to_languagedata(apps, schema_editor):

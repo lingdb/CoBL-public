@@ -3,12 +3,11 @@ from optparse import make_option
 from datetime import datetime, timedelta
 import sys
 from textwrap import dedent
-from django.core.management.base import NoArgsCommand, CommandError
 from django.core.mail import mail_admins
 from django.contrib.auth.models import User
 from reversion.models import Revision
 from ielex.utilities import LexDBManagementCommand
-from ielex.lexicon.models import *
+from ielex.lexicon.models import LanguageListOrder
 
 
 class Command(LexDBManagementCommand):

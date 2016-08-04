@@ -2,7 +2,9 @@ from django.test import TestCase
 from django.test.client import Client
 from ielex.website.tests import make_basic_objects
 from ielex.website.tests import ViewBaseMethods
-from ielex.extensional_semantics.models import *
+from ielex.extensional_semantics.models import SemanticExtension, \
+                                               SemanticExtensionCitation, \
+                                               SemanticRelation
 from ielex.lexicon.models import Lexeme, Source
 from ielex.settings import semantic_domains as SEMANTIC_DOMAINS
 
@@ -18,7 +20,7 @@ class ExtensionalSemanticsViewTests(TestCase, ViewBaseMethods):
         extension = SemanticExtension.objects.create(
                 lexeme=objects[Lexeme],
                 relation=relation)
-        extensioncit = SemanticExtensionCitation.objects.create(
+        SemanticExtensionCitation.objects.create(
                 extension=extension,
                 source=objects[Source])
         self.seen_links = set()

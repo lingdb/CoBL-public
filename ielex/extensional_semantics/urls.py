@@ -1,5 +1,19 @@
-from django.conf.urls import *
-from ielex.extensional_semantics.views import *
+from django.conf.urls import url, patterns
+from ielex.extensional_semantics.views import add_lexeme_extension_citation, \
+                                              add_relation, \
+                                              add_semantic_domain, \
+                                              delete_semantic_domain, \
+                                              domains_list, \
+                                              edit_relation, \
+                                              edit_semantic_domain, \
+                                              extension_citation_view, \
+                                              language_domains_list, \
+                                              language_domain_view, \
+                                              lexeme_domains_list, \
+                                              lexeme_domain_view, \
+                                              lexeme_extensions_view, \
+                                              view_relation, \
+                                              view_semantic_domain
 from ielex.urls import R
 
 # TODO move these views to:

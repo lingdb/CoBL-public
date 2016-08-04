@@ -3,24 +3,23 @@ from textwrap import dedent
 import time
 import sys
 from django.contrib.auth.decorators import login_required
-# from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse
-# from django.core.urlresolvers import reverse_lazy # avail Django 1.4
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import CreateView, UpdateView, TemplateView
-# from django.views.generic import RedirectView
-from django.contrib import messages
 from ielex import settings
-from ielex.lexicon.models import *
-from ielex.lexicon.defaultModels import *
-from ielex.lexicon.functions import local_iso_code_generator
-from ielex.shortcuts import render_template
+from ielex.lexicon.models import CognateClass, \
+                                 CognateClassCitation, \
+                                 CognateJudgement, \
+                                 CognateJudgementCitation, \
+                                 LanguageList, \
+                                 Lexeme, \
+                                 LexemeCitation, \
+                                 MeaningList
 from ielex.forms import EditCognateClassCitationForm
 from ielex.lexicon.forms import ChooseNexusOutputForm, DumpSnapshotForm
 from ielex.lexicon.functions import nexus_comment
-from ielex.lexicon.defaultModels import (
-    getDefaultWordlistId, getDefaultLanguagelistId
-)
+from ielex.lexicon.defaultModels import getDefaultWordlistId, \
+                                        getDefaultLanguagelistId
 
 try:
     if settings.default_language_list != "all":

@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 from django.db import migrations
-from django.db.models import Max
-
-import ielex.lexicon.models as models
 
 
 def forwards_func(apps, schema_editor):
@@ -18,17 +14,20 @@ def forwards_func(apps, schema_editor):
     Lexeme = apps.get_model('lexicon', 'Lexeme')
     LanguageList = apps.get_model('lexicon', 'LanguageList')
     LexemeCitation = apps.get_model('lexicon', 'LexemeCitation')
-    # Gathering data to work with:
-    lList = LanguageList.objects.get(name='Current')
-    languageIds = lList.languages.values_list('id', flat=True)
-    lexemeIds = Lexeme.objects.filter(
-        language_id__in=languageIds).values_list('id', flat=True)
-    citations = LexemeCitation.objects.filter(lexeme_id__in=lexemeIds)
-    # Fixing citations:
-    for citation in citations:
-        if citation.reliability != 'A':
-            citation.reliability = 'A'
-            citation.save()
+    try:
+        # Gathering data to work with:
+        lList = LanguageList.objects.get(name='Current')
+        languageIds = lList.languages.values_list('id', flat=True)
+        lexemeIds = Lexeme.objects.filter(
+            language_id__in=languageIds).values_list('id', flat=True)
+        citations = LexemeCitation.objects.filter(lexeme_id__in=lexemeIds)
+        # Fixing citations:
+        for citation in citations:
+            if citation.reliability != 'A':
+                citation.reliability = 'A'
+                citation.save()
+    except LanguageList.DoesNotExist:
+        pass
 
 
 def reverse_func(apps, schema_editor):

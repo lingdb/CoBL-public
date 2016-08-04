@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
-from ielex.lexicon.models import *
+from ielex.lexicon.models import Language, LanguageList, \
+                                 Meaning, MeaningList
 """
 This module provides functions to track the default settings for a session.
 Defaults are either set initially or overwritten by the clients session.
@@ -13,7 +14,7 @@ def getDefaultLanguage(request):
     """
     @return defaultLanguage :: str | unicode
     """
-    return request.session.get('defaultLanguage', 'ProtoIndoEuropean')
+    return request.session.get('defaultLanguage', 'AncientGreek')
 
 
 def setDefaultLanguage(request, language):

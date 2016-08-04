@@ -3,8 +3,7 @@
 # https://docs.djangoproject.com/en/1.9/ref/migration-operations/#runpython
 # http://clld.org/2015/11/13/glottocode-to-isocode.html
 from __future__ import unicode_literals
-
-from django.db import migrations, models
+from django.db import migrations
 
 import ielex.lexicon.models as models
 
@@ -231,8 +230,8 @@ def forwards_func(apps, schema_editor):
         for m in ml.meanings.all():
             if m.id not in wanted:
                 print("Removing Meaning from List: ", m.gloss)
-                mmodels.MeaningList.remove(ml, m)
-    except Exception, e:
+                models.MeaningList.remove(ml, m)
+    except Exception as e:
         print("Exception while cleaning up ", models.MeaningList.DEFAULT, e)
 
 
