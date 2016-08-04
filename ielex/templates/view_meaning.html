@@ -114,19 +114,6 @@
             <th>
               Cog.<br>Alias
             </th>
-            {# edit_title.html #}
-            {% if user.is_authenticated %}
-              <th title="Use the buttons to edit cognate class assignments (for selected rows)."
-                  data-container="body"
-                  data-toggle="tooltip"
-                  data-placement="bottom">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Assign
-                  </div>
-                </div>
-              </th>
-            {% endif %}
             {# cognateclassview_title.html #}
             <th></th>
             {# rootform_title.html #}
@@ -287,10 +274,6 @@
                      size="1"
                      style="padding-left: 2px; padding-right: 2px;">
             </td>
-            {# edit_filter.html #}
-            {% if user.is_authenticated %}
-              <td></td>
-            {% endif %}
             {# cognateclassview_filter.html #}
             <td></td>
             {# rootform_filter.html #}
@@ -615,21 +598,6 @@
                   {% endif %}
                 </div>
               </td>
-              {# edit_data.html #}
-              {% if user.is_authenticated %}
-                <td class="selection"
-                    data-toggle="tooltip"
-                    data-placement="bottom"
-                    data-container="body"
-                    title="Edit cognate class assignments.">
-                  <button type="button"
-                          class="btn btn-xs editCognateClassButton"
-                          style="background-color: #CD7432;"
-                          value='{{ lexeme.object_data.selectionJSON }}'>
-                    <span class="glyphicon glyphicon-pencil"></span>
-                  </button>
-                </td>
-              {% endif %}
               {# cognateclassview_data.html #}
               <td style="padding-left: 4px; padding-right: 4px;">
                 <a href="/meaning/{{ meaning.gloss }}/cognateclasslist/"
