@@ -23,7 +23,7 @@ def forwards_func(apps, schema_editor):
     # Data to work with:
     current = LanguageList.objects.get(name='Current')
     jena200 = MeaningList.objects.get(name='Jena200')
-    languageIds = current.languages.values_list('id', flat=True)
+    languageIds = set(current.languages.values_list('id', flat=True))
     meaningIds = jena200.meanings.values_list('id', flat=True)
     lexemeIds = Lexeme.objects.filter(
         language_id__in=languageIds,
@@ -86,6 +86,23 @@ def forwards_func(apps, schema_editor):
     report(compute(2))
     print('Task 2')
     report(compute(1))
+    print('Task 3')
+    for clade in Clade.objects.exclude(cladeLevel0=0):
+        wantedLanguageIds = languageIds & set(LanguageClade.objects.filter(
+            clade_id=clade).values_list('language_id', flat=True))
+        lexemeIds = Lexeme.objects.filter(
+            language_id__in=wantedLanguageIds,
+            meaning_id__in=meaningIds).values_list('id', flat=True)
+        cognateClassIds = CognateJudgement.objects.filter(
+            lexeme_id__in=lexemeIds).values_list(
+            'cognate_class_id', flat=True)
+        cognateClasses = CognateClass.objects.filter(
+            id__in=cognateClassIds,
+            root_form='').order_by('id').values_list('id', flat=True)
+        fname = '/tmp/%s.txt' % clade.taxonsetName
+        print("Writing file '%s'." % fname)
+        with open(fname, 'w') as f:
+            f.write("\n".join([str(c) for c in cognateClasses]))
     print(1/0)  # Break migration.
 
 
