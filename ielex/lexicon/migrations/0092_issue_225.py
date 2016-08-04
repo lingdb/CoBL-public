@@ -22,6 +22,35 @@ def forwards_func(apps, schema_editor):
         meaning__in=ml.meanings.values_list('id', flat=True),
         language__in=ll.languages.values_list('id', flat=True)).all()
     # Calculating:
+    print("\n1: + lex. excl - Not swh")
+    for l in lexemes:
+        if not l.not_swadesh_term:
+            if l.is_excluded_lexeme:
+                print(l.id)
+    print("2: + lex .loan - Not swh")
+    for l in lexemes:
+        if not l.not_swadesh_term:
+            if l.is_loan_lexeme:
+                print(l.id)
+    print("3: + lex. loan")
+    for l in lexemes:
+        if l.is_loan_lexeme:
+            print(l.id)
+    print("4: 2 >= cognate sets - Not swh")
+    for l in lexemes:
+        if not l.not_swadesh_term:
+            if l.cognatejudgement_set.count() >= 2:
+                print(l.id)
+    print("5: + cog. excl. - Not swh")
+    for l in lexemes:
+        if not l.not_swadesh_term:
+            if l.is_excluded_cognate:
+                print(l.id)
+    print("6: + cog. loan - Not swh")
+    for l in lexemes:
+        if not l.not_swadesh_term:
+            if l.is_loan_cognate:
+                print(l.id)
     print("\n1: loanword, no loan event in cognate class:")
     for l in lexemes:
         if l.is_loan_cognate:
@@ -42,7 +71,7 @@ def reverse_func(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('lexicon', '0090_remove_meaninglist_data')]
+    dependencies = [('lexicon', '0091_bhojpuri')]
 
     operations = [
         migrations.RunPython(forwards_func, reverse_func),
