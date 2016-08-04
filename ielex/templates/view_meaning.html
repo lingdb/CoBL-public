@@ -581,8 +581,12 @@
                 {% endfor %}
               </td>
               {# cognateclasses_data.html #}
-              <td>
-                <div class="cognateClasses" style="text-align: center;">
+              <td class="selection"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Click to re-assign this lexeme to a different cognate class.">
+                <div class="cognateClasses nowrap" style="text-align: center;">
                   {% if user.is_authenticated %}
                     {% ifequal add_cognate_judgement|asint lexeme.id.data|asint %}
                       <form action="" method="post">
@@ -591,15 +595,24 @@
                       </form>
                     {% endifequal %}
                   {% endif %}
-                  {% for c in lexeme.object_data.allCognateClasses %}
-                    <a href="/cognate/{{ c.id }}/"
-                       style="color: #8B4510;"
-                       data-toggle="tooltip"
-                       data-placement="bottom"
-                       title="Switch page to view details of this cognate set and all member lexemes.">
-                      {{ c.alias }}
-                    </a>
-                  {% endfor %}
+                  {% if lexeme.object_data.allCognateClasses %}
+                    {% for c in lexeme.object_data.allCognateClasses %}
+                      <button type="button"
+                              class="btn btn-xs editCognateClassButton inline"
+                              style="background-color: #CD7432;"
+                              value='{{ lexeme.object_data.selectionJSON }}'>
+                        {{ c.alias }}
+                      </button>
+                    {% endfor %}
+                  {% else %}
+                    <button type="button"
+                            class="btn btn-xs editCognateClassButton inline"
+                            style="background-color: #CD7432;"
+                            value='{{ lexeme.object_data.selectionJSON }}'
+                            data-add="new">
+                      <span class="glyphicon glyphicon-plus-sign"></span>
+                    </button>
+                  {% endif %}
                 </div>
               </td>
               {# edit_data.html #}
