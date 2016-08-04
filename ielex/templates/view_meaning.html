@@ -114,19 +114,6 @@
             <th>
               Cog.<br>Alias
             </th>
-            {# edit_title.html #}
-            {% if user.is_authenticated %}
-              <th title="Use the buttons to edit cognate class assignments (for selected rows)."
-                  data-container="body"
-                  data-toggle="tooltip"
-                  data-placement="bottom">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Assign
-                  </div>
-                </div>
-              </th>
-            {% endif %}
             {# cognateclassview_title.html #}
             <th></th>
             {# rootform_title.html #}
@@ -287,10 +274,6 @@
                      size="1"
                      style="padding-left: 2px; padding-right: 2px;">
             </td>
-            {# edit_filter.html #}
-            {% if user.is_authenticated %}
-              <td></td>
-            {% endif %}
             {# cognateclassview_filter.html #}
             <td></td>
             {# rootform_filter.html #}
@@ -581,48 +564,44 @@
                 {% endfor %}
               </td>
               {# cognateclasses_data.html #}
-              <td>
-                <div class="cognateClasses" style="text-align: center;">
+              <td class="selection">
+                <div class="cognateClasses nowrap" style="text-align: center;">
                   {% if user.is_authenticated %}
-                    {% ifnotequal add_cognate_judgement|asint lexeme.id.data|asint %}
-                      <a href="{% url 'lexeme-add-cognate' lexeme.id.data %}#lexeme_{{ lexeme.id.data }}"
-                         title="Add another cognate class"
-                         style="color: #8B4510;">
-                        <span class="glyphicon glyphicon-plus-sign"></span>
-                      </a>
-                    {% else %}
+                    {% ifequal add_cognate_judgement|asint lexeme.id.data|asint %}
                       <form action="" method="post">
                         {% csrf_token %}
                         {{ cognate_form.cognate_class }}
                       </form>
-                    {% endifnotequal %}
+                    {% endifequal %}
                   {% endif %}
-                  {% for c in lexeme.object_data.allCognateClasses %}
-                  <a href="/cognate/{{ c.id }}/"
-                     style="color: #8B4510;"
-                     data-toggle="tooltip"
-                     data-placement="bottom"
-                     title="Switch page to view details of this cognate set and all member lexemes.">
-                    {{ c.alias }}
-                  </a>
-                  {% endfor %}
+                  {% if lexeme.object_data.allCognateClasses %}
+                    {% for c in lexeme.object_data.allCognateClasses %}
+                      <button type="button"
+                              class="btn btn-xs editCognateClassButton inline"
+                              style="background-color: #CD7432;"
+                              data-toggle="tooltip"
+                              data-placement="bottom"
+                              data-container="body"
+                              title="Click to re-assign this lexeme to a different cognate class."
+                              value='{{ lexeme.object_data.selectionJSON }}'>
+                        {{ c.alias }}
+                      </button>
+                    {% endfor %}
+                  {% else %}
+                    <button type="button"
+                            class="btn btn-xs editCognateClassButton inline"
+                            style="background-color: #CD7432;"
+                            value='{{ lexeme.object_data.selectionJSON }}'
+                            data-toggle="tooltip"
+                            data-placement="bottom"
+                            data-container="body"
+                            title="Click to assign this lexeme to a cognate class."
+                            data-add="new">
+                      <span class="glyphicon glyphicon-plus-sign"></span>
+                    </button>
+                  {% endif %}
                 </div>
               </td>
-              {# edit_data.html #}
-              {% if user.is_authenticated %}
-                <td class="selection"
-                    data-toggle="tooltip"
-                    data-placement="bottom"
-                    data-container="body"
-                    title="Edit cognate class assignments.">
-                  <button type="button"
-                          class="btn btn-xs editCognateClassButton"
-                          style="background-color: #CD7432;"
-                          value='{{ lexeme.object_data.selectionJSON }}'>
-                    <span class="glyphicon glyphicon-pencil"></span>
-                  </button>
-                </td>
-              {% endif %}
               {# cognateclassview_data.html #}
               <td style="padding-left: 4px; padding-right: 4px;">
                 <a href="/meaning/{{ meaning.gloss }}/cognateclasslist/"

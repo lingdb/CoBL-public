@@ -139,8 +139,11 @@
         <tbody>
           {% for cj in splitTable.judgements %} {# cognate_class.cognatejudgement_set.all %} #}
             <tr>
-              <td>
-                {{ cj.idField.data }}
+              <td data-toggle="tooltip"
+                  data-placement="top"
+                  data-container="body"
+                  title="Lexeme Id">
+                {{ cj.object_data.lexeme.id }}
                 {% if user.is_authenticated %}
                   {% form_field cj.idField class="hide" required="required" %}
                   {% form_field cj.lastTouched class="hide" required="required" %}
