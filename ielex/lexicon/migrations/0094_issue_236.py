@@ -90,7 +90,7 @@ def reverse_func(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('lexicon', '0089_fix_citation')]
+    dependencies = [('lexicon', '0093_fix_oldPersian')]
 
     operations = [
         migrations.RunPython(forwards_func, reverse_func),
