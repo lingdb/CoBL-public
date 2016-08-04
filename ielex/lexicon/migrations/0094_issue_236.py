@@ -87,9 +87,22 @@ def forwards_func(apps, schema_editor):
     print('Task 2')
     report(compute(1))
     print('Task 3')
-    for clade in Clade.objects.exclude(cladeLevel0=0):
-        wantedLanguageIds = languageIds & set(LanguageClade.objects.filter(
-            clade_id=clade).values_list('language_id', flat=True))
+    for clade in Clade.objects.exclude(cladeLevel0=0).all():
+        subSelection = [('cladeLevel0', clade.cladeLevel0),
+                        ('cladeLevel1', clade.cladeLevel1),
+                        ('cladeLevel2', clade.cladeLevel2),
+                        ('cladeLevel3', clade.cladeLevel3)]
+        subSelection = {k: v for k, v in subSelection if v != 0}
+        unwantedLanguageIds = set(LanguageClade.objects.filter(
+            clade_id__in=Clade.objects.filter(
+                **subSelection).exclude(
+                id=clade.id).values_list(
+                'id', flat=True)).values_list(
+            'language_id', flat=True))
+        inCladeLanguageIds = set(LanguageClade.objects.filter(
+            clade=clade).values_list('language_id', flat=True))
+        wantedLanguageIds = languageIds & (inCladeLanguageIds -
+                                           unwantedLanguageIds)
         lexemes = Lexeme.objects.filter(
             language_id__in=wantedLanguageIds,
             meaning_id__in=meaningIds).all()
@@ -108,7 +121,7 @@ def forwards_func(apps, schema_editor):
                     (c, c)
                 meanings = Meaning.objects.filter(
                     lexeme__cognate_class=c).distinct().all()
-                s += '\n '.join([
+                s += ''.join([
                     ' = meaning [%s](http://cobl.info/meaning/%s/)' %
                     (m.gloss, m.gloss) for m in meanings])
                 markdown.append(s)
