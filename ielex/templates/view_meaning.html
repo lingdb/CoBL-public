@@ -583,6 +583,14 @@
               {# cognateclasses_data.html #}
               <td>
                 <div class="cognateClasses" style="text-align: center;">
+                  {% if user.is_authenticated %}
+                    {% ifequal add_cognate_judgement|asint lexeme.id.data|asint %}
+                      <form action="" method="post">
+                        {% csrf_token %}
+                        {{ cognate_form.cognate_class }}
+                      </form>
+                    {% endifequal %}
+                  {% endif %}
                   {% for c in lexeme.object_data.allCognateClasses %}
                     <a href="/cognate/{{ c.id }}/"
                        style="color: #8B4510;"
