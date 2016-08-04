@@ -90,19 +90,30 @@ def forwards_func(apps, schema_editor):
     for clade in Clade.objects.exclude(cladeLevel0=0):
         wantedLanguageIds = languageIds & set(LanguageClade.objects.filter(
             clade_id=clade).values_list('language_id', flat=True))
-        lexemeIds = Lexeme.objects.filter(
+        lexemes = Lexeme.objects.filter(
             language_id__in=wantedLanguageIds,
-            meaning_id__in=meaningIds).values_list('id', flat=True)
+            meaning_id__in=meaningIds).all()
         cognateClassIds = CognateJudgement.objects.filter(
-            lexeme_id__in=lexemeIds).values_list(
+            lexeme__in=lexemes).values_list(
             'cognate_class_id', flat=True)
         cognateClasses = CognateClass.objects.filter(
             id__in=cognateClassIds,
             root_form='').order_by('id').values_list('id', flat=True)
-        fname = '/tmp/%s.txt' % clade.taxonsetName
+        fname = '/tmp/%s.md' % clade.taxonsetName
         print("Writing file '%s'." % fname)
         with open(fname, 'w') as f:
-            f.write("\n".join([str(c) for c in cognateClasses]))
+            markdown = []
+            for c in cognateClasses:
+                markdown.append(
+                    '# Cognate class [%s](http://cobl.info/cognate/%s/):' %
+                    (c, c))
+                meanings = Meaning.objects.filter(
+                    lexeme__cognate_class=c).distinct().all()
+                markdown.append('\n '.join([
+                    '* Meaning [%s](http://cobl.info/meaning/%s/)' %
+                    (m.gloss, m.gloss) for m in meanings]))
+                markdown.append('')
+            f.write("\n".join(markdown))
     print(1/0)  # Break migration.
 
 
