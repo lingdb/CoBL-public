@@ -599,6 +599,9 @@ class Meaning(AbstractTimestamped):
     description = models.CharField(max_length=64, blank=True)
     notes = models.TextField(blank=True)
     percent_coded = models.FloatField(editable=False, default=0)
+    # Added when mobbing 2016-08-04:
+    doubleCheck = models.BooleanField(default=0)
+    exclude = models.BooleanField(default=0)
 
     def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
@@ -622,7 +625,7 @@ class Meaning(AbstractTimestamped):
         ordering = ["gloss"]
 
     def timestampedFields(self):
-        return set(['gloss', 'description', 'notes'])
+        return set(['gloss', 'description', 'notes', 'doubleCheck', 'exclude'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update meaning: ' \

@@ -584,6 +584,8 @@ class MeaningListRowForm(AbstractTimestampedForm):
     gloss = StringField('Gloss', validators=[InputRequired()])
     description = StringField('Description', validators=[InputRequired()])
     notes = TextAreaField('Notes', validators=[InputRequired()])
+    doubleCheck = BooleanField('Double check', validators=[InputRequired()])
+    exclude = BooleanField('Exclude?', validators=[InputRequired()])
 
 
 class MeaningListTableForm(WTForm):

@@ -43,10 +43,10 @@
             </h1>
           {% endif %}
         </div>
-        <table class="table table-striped viewTableFilter">
+        <table class="table table-striped viewTableFilter"
+               data-floatheadtop="45">
           <thead>
             <tr>
-              {# FIXME take care of two th below #}
               <th>
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
@@ -107,6 +107,18 @@
               </th>
             </tr>
             <tr class="filterBar">
+              <td>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".doubleCheck input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              <td>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".exclude input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
               <td></td>
               <td>
                 {% if user.is_authenticated %}
@@ -179,6 +191,20 @@
           <tbody>
             {% for meaning in mltf.meanings %}
               <tr>
+                <td class="doubleCheck">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field meaning.doubleCheck class="form-control" %}
+                  {% else %}
+                    {% form_field meaning.doubleCheck class="form-control" disabled="disabled" %}
+                  {% endif %}
+                </td>
+                <td class="exclude">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field meaning.exclude class="form-control" %}
+                  {% else %}
+                    {% form_field meaning.exclude class="form-control" disabled="disabled" %}
+                  {% endif %}
+                </td>
                 <td>
                   {% if meaning.data.gloss %}
                     <a href="https://github.com/lingdb/IELex2-CognaC/wiki/{{ meaning.data.gloss }}"
