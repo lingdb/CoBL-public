@@ -98,10 +98,10 @@
         }else{
           //Handling the add button:
           form.find('#addEntryCognateClassButton').removeClass('hide');
-          form.find('#addEntryCognateClassButton').click(addNewAssignment);
+          form.find('#addEntryCognateClassButton').off('click').click(addNewAssignment);
         }
         //Handling the save button:
-        form.find('#editCognateClassButton').click(function(){
+        form.find('#editCognateClassButton').off('click').click(function(){
           //Gather cognate class assignments:
           var cognateClassAssignments = {};
           form.find('.cognateClassSelection').each(function(){
