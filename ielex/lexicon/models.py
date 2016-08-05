@@ -741,6 +741,9 @@ class CognateClass(AbstractTimestamped):
     idiophonic = models.BooleanField(default=0)
     parallelDerivation = models.BooleanField(default=0)
     dubiousSet = models.BooleanField(default=0)
+    # Added for #263:
+    revisedYet = models.BooleanField(default=0)
+    revisedBy = models.CharField(max_length=10, default='')
 
     def __str__(self):
         return self.root_form
@@ -792,7 +795,8 @@ class CognateClass(AbstractTimestamped):
                     'loan_notes', 'loanSourceId', 'loanEventTimeDepthBP',
                     'sourceFormInLoanLanguage', 'parallelLoanEvent',
                     'notProtoIndoEuropean', 'idiophonic',
-                    'parallelDerivation', 'dubiousSet'])
+                    'parallelDerivation', 'dubiousSet',
+                    'revisedYet', 'revisedBy'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update cognate class: ' \

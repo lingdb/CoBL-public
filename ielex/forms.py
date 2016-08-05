@@ -409,6 +409,9 @@ class CogClassRowForm(AbstractTimestampedForm):
     parallelDerivation = BooleanField('Parallel Derivation',
                                       validators=[InputRequired()])
     dubiousSet = BooleanField('Dubious set', validators=[InputRequired()])
+    # Added for #263:
+    revisedYet = BooleanField('Revised Yet?', validators=[InputRequired()])
+    revisedBy = TextField('Revised by', validators=[InputRequired()])
 
     def __str__(self):
         cogclass_form_vals = (

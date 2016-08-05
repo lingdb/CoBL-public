@@ -206,6 +206,22 @@
               </th>
               {# loannotes_title.html #}
               <th>Loan<br>Notes</th>
+              {# revisedYet_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Revised Yet?
+                  </div>
+                </div>
+              </th>
+              {# revisedBy_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Revised By
+                  </div>
+                </div>
+              </th>
               {# onlyNotSwh_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -489,6 +505,34 @@
                   </div>
                 {% endif %}
               </td>
+              {# revisedYet_filter.html #}
+              <td>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".revisedYet input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# revisedBy_filter.html #}
+              <td>
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".revisedBy input"
+                         style="width: 2em;">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".revisedBy input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".revisedBy">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".revisedBy">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
               {# onlyNotSwh_filter.html #}
               <td>
                 <button type="button" class="filterBool btn btn-xs btn-danger"
@@ -677,6 +721,22 @@
                     {{ cc.loan_notes.data }}
                   {% endif %}
                 </td>
+                {# revisedYet_data.html #}
+                <th class="revisedYet">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.revisedYet class="form-control" %}
+                  {% elif cc.loan_notes.data %}
+                    {% form_field cc.revisedYet class="form-control" disabled="disabled" %}
+                  {% endif %}
+                </th>
+                {# revisedBy_data.html #}
+                <th class="revisedBy">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.revisedBy class="form-control" style="width: 2em;" pattern="^.{0,10}$" %}
+                  {% elif cc.loan_notes.data %}
+                    {% form_field cc.revisedBy.data class="form-control" %}
+                  {% endif %}
+                </th>
                 {# onlyNotSwh_data.html #}
                 <td class="onlyNotSwh">
                   <input type="checkbox"
