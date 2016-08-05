@@ -82,9 +82,8 @@
               {# id_title.html #}
               <th class="hide"></th>
               {# FIXME warning label for Dbl check ones #}
-              <th>
-                HERE BE WARNINGS
-              </th>
+              {# warnings_title.html #}
+              <th></th>
               {# meaning_title.html #}
               <th colspan="2">Meaning</th>
               {# sourceform_title.html #}
@@ -193,6 +192,8 @@
             <tr class="filterBar">
               {# id_filter.html #}
               <td class="hide"></td>
+              {# warnings_filter.html #}
+              <td></td>
               {# meaning_filter.html #}
               <td colspan="2">
                 <input type="text" class="filterText form-control narrow"
@@ -442,6 +443,18 @@
                   {{ lexeme.id }}
                   {{ lexeme.lastTouched }}
                   {{ lexeme.lastEditedBy }}
+                </td>
+                {# warnings_data.html #}
+                <td>
+                  {% if lexeme.object_data.meaning.doubleCheck %}
+                  <div style="color: #ff0000;"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       data-container="body"
+                       title="Special care and attention needed with this meaning. Please click on the i icon to read the full specification of the precise comparison meaning intended, and the exact term required here.">
+                    <span class="glyphicon glyphicon-warning-sign"></span>
+                  </div>
+                  {% endif %}
                 </td>
                 {# meaning_data.html #}
                 <td>
