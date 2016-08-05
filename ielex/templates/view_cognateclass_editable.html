@@ -127,7 +127,6 @@
               <th>Root<br>Gloss</th>
               {# notes_title.html #}
               <th>Root<br>Notes</th>
-              {# FIXME finish these! #}
               {# idiophonic_title.html #}
               <th style="border-left: 2px solid #dddddd;"
                   data-toggle="tooltip"
@@ -330,6 +329,27 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
+              </td>
+              {# idiophonic_filter.html #}
+              <td>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".idiophonic input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# parallelDerivation_filter.html #}
+              <td>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".parallelDerivation input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# dubiousSet_filter.html #}
+              <td>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".dubiousSet input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
               </td>
               {# notes_filter.html #}
               <td>
@@ -557,6 +577,30 @@
                     {% form_field cc.gloss_in_root_lang class="form-control" %}
                   {% elif cc.gloss_in_root_lang.data %}
                     {{ cc.gloss_in_root_lang.data }}
+                  {% endif %}
+                </td>
+                {# idiophonic_filter.html #}
+                <td class="idiophonic">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.idiophonic class="form-control" %}
+                  {% elif cc.gloss_in_root_lang.data %}
+                    {% form_field cc.idiophonic class="form-control" disabled="disabled" %}
+                  {% endif %}
+                </td>
+                {# parallelDerivation_filter.html #}
+                <td class="parallelDerivation">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.parallelDerivation class="form-control" %}
+                  {% elif cc.gloss_in_root_lang.data %}
+                    {% form_field cc.parallelDerivation class="form-control" disabled="disabled "%}
+                  {% endif %}
+                </td>
+                {# dubiousSet_filter.html #}
+                <td class="dubiousSet">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.dubiousSet class="form-control" %}
+                  {% elif cc.gloss_in_root_lang.data %}
+                    {% form_field cc.dubiousSet class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
                 {# notes_data.html #}

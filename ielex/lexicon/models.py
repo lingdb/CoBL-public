@@ -737,6 +737,10 @@ class CognateClass(AbstractTimestamped):
     # Fields added for #176:
     parallelLoanEvent = models.BooleanField(default=0)
     notProtoIndoEuropean = models.BooleanField(default=0)
+    # Added when mobbing 2016-08-04:
+    idiophonic = models.BooleanField(default=0)
+    parallelDerivation = models.BooleanField(default=0)
+    dubiousSet = models.BooleanField(default=0)
 
     def __str__(self):
         return self.root_form
@@ -787,7 +791,8 @@ class CognateClass(AbstractTimestamped):
                     'gloss_in_root_lang', 'loanword', 'loan_source',
                     'loan_notes', 'loanSourceId', 'loanEventTimeDepthBP',
                     'sourceFormInLoanLanguage', 'parallelLoanEvent',
-                    'notProtoIndoEuropean'])
+                    'notProtoIndoEuropean', 'idiophonic',
+                    'parallelDerivation', 'dubiousSet'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update cognate class: ' \
