@@ -127,13 +127,11 @@ urlpatterns = patterns(
     url(r'^language/%(LANGUAGE)s/delete/$' % R, delete_language,
         name="language-delete"),
     url(r'^language/%(LANGUAGE)s/add-lexeme/' % R,
-        lexeme_add, {"return_to": "/language/%(language)s/"},
-        name="language-add-lexeme"),
+        lexeme_add, name="language-add-lexeme"),
     # this should be
     # url(r'^language/%(LANGUAGE)s/meaning/%(MEANING)s/add/' % R,
     url(r'^language/%(LANGUAGE)s/meaning/%(MEANING)s/add-lexeme/' % R,
-        lexeme_add, {"return_to": "/language/%(language)s/"},
-        name="language-meaning-add-lexeme"),
+        lexeme_add, name="language-meaning-add-lexeme"),
     # add new language to a language list # XXX do we need this?
     url(r'^languagelist/%(LANGUAGELIST)s/add-new/$' % R, language_add_new,
         name="language-add-new"),
@@ -160,7 +158,6 @@ urlpatterns = patterns(
     # TODO
     # - refactor out remaining report_meaning calls
     url(r'^meaning/%(MEANING)s/add-lexeme/$' % R, lexeme_add,
-        {"return_to": "/meaning/%(meaning)s/"},
         name="meaning-add-lexeme"),
     url(r'^meaning/%(MEANING)s/languagelist/%(LANGUAGELIST)s/$' % R,
         view_meaning,
@@ -173,12 +170,11 @@ urlpatterns = patterns(
     url(r'^meaning/%(MEANING)s/delete/$' % R, delete_meaning,
         name="delete-meaning"),  # XXX needs confirm dialog
     url(r'^meaning/%(MEANING)s/language/%(LANGUAGE)s/add-lexeme/' % R,
-        lexeme_add, {"return_to": "/meaning/%(meaning)s/"},
-        name="meaning-language-add-lexeme"),
+        lexeme_add, name="meaning-language-add-lexeme"),
     url(r'^meaning/$' % R, viewDefaultMeaning),
 
     # Lexemes
-    url(r'^lexeme/add/', lexeme_add, {"return_to": "/meanings/"}),
+    url(r'^lexeme/add/', lexeme_add),
     url(r'^lexeme/search/$', lexeme_search, name="lexeme-search"),
 
     url(r'^lexeme/%(LEXEME_ID)s/duplicate/$' % R, lexeme_duplicate),

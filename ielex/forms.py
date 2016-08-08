@@ -105,24 +105,19 @@ class ChooseOneSourceField(forms.ModelChoiceField):
         return truncate(obj.citation_text, 124)
 
 
-class AddLexemeForm(forms.ModelForm):
+class AddLexemeForm(WTForm):
+    languageId = IntegerField('Language:', validators=[InputRequired()])
+    meaningId = IntegerField('Meaning:', validators=[InputRequired()])
 
-    language = ChooseLanguageField(queryset=Language.objects.all())
-    meaning = ChooseMeaningField(
-        queryset=Meaning.objects.all(),
-        help_text="e.g. Swadesh meaning", required=False)
-    gloss = forms.CharField(required=False, help_text="""The actual gloss of
-            this lexeme, may be different to 'meaning'""")
+    def validate_languageId(form, field):
+        exists = Language.objects.filter(id=field.data).exists()
+        if not exists:
+            raise ValueError('LanguageId %s does not exist.' % field.data)
 
-    def clean_source_form(self):
-        return strip_whitespace(self, "source_form")
-
-    def clean_phon_form(self):
-        return strip_whitespace(self, "phon_form")
-
-    class Meta:
-        model = Lexeme
-        fields = ["language", "meaning", "gloss", "source_form", "phon_form"]
+    def validate_meaningId(form, field):
+        exists = Meaning.objects.filter(id=field.data).exists()
+        if not exists:
+            raise ValueError('MeaningId %s does not exist.' % field.data)
 
 
 class EditLexemeForm(forms.ModelForm):

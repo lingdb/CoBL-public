@@ -7,12 +7,42 @@
 {% endblock %}
 
 {% block content %}
-  <form action="" method="POST">{% csrf_token %}
-    <table>
-      {{ form.as_table }}
-    </table>
-    <input type="submit" name="submit" value="Submit">
-    <input type="submit" name="cancel" value="Cancel">
+  <form action="" method="POST" class="form-horizontal">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="typeaheadLanguageId" class="col-sm-2 control-label">
+        {{ form.languageId.label }}
+      </label>
+      <div class="col-sm-3">
+        <input id="typeaheadLanguageId"
+               type="text"
+               class="typeaheadInput form-control"
+               data-inputfor="languageId"
+               data-typeahead="{{ languageTypeahead | escapejs }}"
+               value="">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="typeaheadMeaningId" class="col-sm-2 control-label">
+        {{ form.meaningId.label }}
+      </label>
+      <div class="col-sm-3">
+        <input id="typeaheadMeaningId"
+               type="text"
+               class="typeaheadInput form-control"
+               data-inputfor="meaningId"
+               data-typeahead="{{ meaningTypeahead | escapejs }}"
+               value="">
+      </div>
+    </div>
+    <input class="hide" type="text" name="languageId" value="">
+    <input class="hide" type="text" name="meaningId" value="">
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-3">
+        <a href="." class="btn btn-default">Cancel</a>
+        <input class="btn btn-danger" type="submit" name="submit" value="Create">
+      </div>
+    </div>
   </form>
 {% endblock %}
 

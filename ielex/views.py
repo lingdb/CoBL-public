@@ -2018,53 +2018,42 @@ def lexeme_duplicate(request, lexeme_id):
 
 
 @login_required
+@csrf_protect
 @logExceptions
-def lexeme_add(request,
-               meaning=None,
-               language=None,
-               return_to=None):
-    initial_data = {}
-    if language:
-        initial_data["language"] = get_canonical_language(language, request)
-    if meaning:
-        initial_data["meaning"] = get_canonical_meaning(meaning)
+def lexeme_add(request, meaning=None, language=None):
 
     if request.method == "POST":
         form = AddLexemeForm(request.POST)
-        if "cancel" in form.data:  # has to be tested before data is cleaned
-            if "language" in initial_data:
-                initial_data["language"] = initial_data["language"].ascii_name
-            if "meaning" in initial_data:
-                initial_data["meaning"] = initial_data["meaning"].gloss
-            return HttpResponseRedirect(return_to % initial_data)
-        if form.is_valid():
-            lexeme = Lexeme.objects.create(**form.cleaned_data)
-            previous_citation_id = request.session.get("previous_citation_id")
-            try:
-                previous_citation = \
-                        LexemeCitation.objects.get(id=previous_citation_id)
-                LexemeCitation.objects.create(
-                        lexeme=lexeme,
-                        source=previous_citation.source,
-                        pages=previous_citation.pages,
-                        reliability=previous_citation.reliability)
-                return HttpResponseRedirect(reverse("view-lexeme",
-                                            args=[lexeme.id]))
-            except LexemeCitation.DoesNotExist:
-                return HttpResponseRedirect(reverse("lexeme-add-citation",
-                                            args=[lexeme.id]))
-    else:
-        form = AddLexemeForm()
         try:
-            form.fields["language"].initial = initial_data["language"].id
-        except KeyError:
-            pass
-        try:
-            form.fields["meaning"].initial = initial_data["meaning"].id
-        except KeyError:
-            pass
+            form.validate()
+            l = Lexeme(language_id=form.data['languageId'],
+                       meaning_id=form.data['meaning_id'])
+            l.bump(request)
+            l.save()
+            messages.success(request, 'Created lexeme %s.' % l.id)
+            return HttpResponseRedirect(reverse(
+                "view-meaning-languages",
+                args=[l.meaning.gloss, getDefaultLanguagelist(request)]))
+        except Exception:
+            logging.exception('Problem adding Lexeme in lexeme_add.')
+            messages.error(request, 'Sorry, the server could not '
+                           'add the requested lexeme.')
+
+    data = {}
+    if language:
+        language = get_canonical_language(language, request)
+        data['languageId'] = language.id
+    if meaning:
+        meaning = get_canonical_meaning(meaning)
+        data["meaningId"] = meaning.id
+    # Adding typeahead info:
+    languageTypeahead = json.dumps({'foo': 'bar'})  # FIXME
+    meaningTypeahead = json.dumps({'bar': 'baz'})  # FIXME
+
     return render_template(request, "lexeme_add.html",
-                           {"form": form})
+                           {"form": AddLexemeForm(data=data),
+                            "languageTypeahead": languageTypeahead,
+                            "meaningTypeahead": meaningTypeahead})
 
 
 @logExceptions
