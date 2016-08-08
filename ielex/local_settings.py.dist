@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
 
 # Development settings
 # IMPORTANT: do not change DEBUG to True until after the first syncdb
@@ -56,9 +55,9 @@ SHORT_DATE_FORMAT = "d-m-Y"
 SHORT_DATETIME_FORMAT = "Y-m-d H:i:s"
 
 # Project customization
-project_long_name = u"Test Lexical Cognacy Database"
-project_short_name = u"TestLex"  # should be different from all other projects
-project_description = u"""Description for the front page"""
+project_long_name = u"CoBL"
+project_short_name = u"CoBL"  # should be different from all other projects
+project_description = u"""Welcome to the CoBL website."""
 project_citation = u"""Reference for data exported from project"""
 acknowledgements = u""  # may include html markup
 

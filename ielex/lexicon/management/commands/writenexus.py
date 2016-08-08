@@ -1,6 +1,5 @@
 from optparse import make_option
 from os.path import expanduser, expandvars
-from django.core.management.base import NoArgsCommand, CommandError
 from ielex.lexicon.views import write_nexus
 from ielex.lexicon.models import LanguageList, MeaningList
 from ielex.utilities import LexDBManagementCommand
@@ -11,7 +10,6 @@ class Command(LexDBManagementCommand):
     requires_model_validation = False
     unique_choices = ["all", "limited", "none"]
     dialects = ["MB", "BP", "NN"]
-    # option_list = NoArgsCommand.option_list + (
     option_list = (
             make_option(
                 "--language-list", dest="language_list",

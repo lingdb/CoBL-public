@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 from django.db import migrations
 from django.db.models import Max
-
-import ielex.lexicon.models as models
 
 
 def forwards_func(apps, schema_editor):
@@ -17,14 +14,17 @@ def forwards_func(apps, schema_editor):
     LanguageList = apps.get_model('lexicon', 'LanguageList')
     LanguageListOrder = apps.get_model('lexicon', 'LanguageListOrder')
     # Data to work with:
-    language = Language.objects.get(ascii_name='LateVedic')
-    languageList = LanguageList.objects.get(name='Current')
-    N = LanguageListOrder.objects.filter(
-        language_list=languageList).aggregate(Max("order")).values()[0]
-    # Appending to 'Current' list:
-    LanguageListOrder.objects.create(language=language,
-                                     language_list=languageList,
-                                     order=(N + 1))
+    try:
+        language = Language.objects.get(ascii_name='LateVedic')
+        languageList = LanguageList.objects.get(name='Current')
+        N = LanguageListOrder.objects.filter(
+            language_list=languageList).aggregate(Max("order")).values()[0]
+        # Appending to 'Current' list:
+        LanguageListOrder.objects.create(language=language,
+                                         language_list=languageList,
+                                         order=(N + 1))
+    except Language.DoesNotExist:
+        pass
 
 
 def reverse_func(apps, schema_editor):

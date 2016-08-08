@@ -25,18 +25,19 @@
 {% block content %}
   {% include "snippets/cloneLanguageModal.html" %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12"
+         {% if user.is_authenticated and user.is_staff %}
+            style="margin-top: 75px;"
+         {% else %}
+            style="margin-top: 32px;"
+         {% endif %}>
       {% if user.is_authenticated and user.is_staff %}
         <form action="" method="POST" name="langlist_ed_form">
           {% csrf_token %}
+      {% endif %}
+      <div class="fixedContainer">
+        {% if user.is_authenticated and user.is_staff %}
           <div class="form-group pull-right">
-            <span class="badge important">
-              {{ lang_ed_form.langlist|length }}
-            </span>
-            <a href="{% url 'view-language-list' current_list.name %}" class="btn btn-default"> undo</a>
-            <input type="submit" value="Save" name="langlist_form" class="btn btn-danger">
-          </div>
-          <h1 class="inline">Language list: {{ current_language_list_name }}</h1>
             <a href="{% url 'language-add-new' current_language_list_name %}"
                class="btn btn-default"
                data-toggle="tooltip" data-placement="bottom"
@@ -59,17 +60,34 @@
               lg list ‘{{ current_language_list_name }}’
             </a>
             <a href="{% url 'reorder-language-list' current_language_list_name %}"
-               class="btn btn-default"
+               class="btn btn-default space-right"
                data-toggle="tooltip" data-placement="bottom"
                title="Edit sort order">
               <span class="glyphicon glyphicon-edit"></span>
               sort order ‘{{ current_language_list_name }}’
             </a>
-      {% endif %}
-        {% include "snippets/cladeFilter.html" %}
-        <table class="table table-striped viewTableFilter">
+            <span class="badge important">
+              {{ lang_ed_form.langlist|length }}
+            </span>
+            <a href="{% url 'view-language-list' current_list.name %}" class="btn btn-default"> undo</a>
+            <input type="submit" value="Save" name="langlist_form" class="btn btn-danger">
+          </div>
+          <h1 class="inline">
+            Language list: {{ current_language_list_name }}
+          </h1>
+          {% endif %}
+          {% include "snippets/cladeFilter.html" %}
+        </div>{# .fixedContainer #}
+        <table class="table table-striped viewTableFilter"
+               {% if user.is_authenticated and user.is_staff %}
+                  data-floatheadtop="65"
+               {% else %}
+                  data-floatheadtop="32"
+               {% endif %}>
           <thead>
             <tr>
+              {# branchcolor_title.html #}
+              <th colspan="2"></th>
               {# entryno_title.html #}
               <th></th>
               {# lv_title.html #}
@@ -258,6 +276,17 @@
               <th>
                 Progress
               </th>
+              {# mgs_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of meanings">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Meanings{# Number of meanings per language #}
+                  </div>
+                </div>
+              </th>
               {# entd_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -265,7 +294,18 @@
                   title="Number of entries">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
-                    Entered{# Number of entries per language #}
+                    Lexemes{# Number of entries per language #}
+                  </div>
+                </div>
+              </th>
+              {# lex_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of lexemes">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Swadesh{# Number of lexemes per language #}
                   </div>
                 </div>
               </th>
@@ -280,28 +320,6 @@
                   </div>
                 </div>
               </th>
-              {# lex_title.html #}
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Number of lexemes">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Swh Lex.{# Number of lexemes per language #}
-                  </div>
-                </div>
-              </th>
-              {# mgs_title.html #}
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Number of meanings">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Meanings{# Number of meanings per language #}
-                  </div>
-                </div>
-              </th>
               {# toomany_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -310,6 +328,17 @@
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Too many{# Lex.-Mgs #}
+                  </div>
+                </div>
+              </th>
+              {# unassigned_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of lexemes without a cognate class">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Unassigned
                   </div>
                 </div>
               </th>
@@ -323,6 +352,8 @@
               </th>
             </tr>
             <tr class="filterBar">
+              {# branchcolor_filter.html #}
+              <td colspan="2"></td>
               {# entryno_filter.html #}
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
@@ -417,21 +448,12 @@
               <td></td>
               {# name_filter.html #}
               <td>
-                {% if user.is_authenticated and user.is_staff %}
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".languageName input.language_name">
-                  <div class="btn btn-xs btn-default sortInput"
+                <input type="text" class="filterInput form-control"
                        data-selector=".languageName input.language_name">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% else %}
-                  <input type="text" class="filterText form-control"
-                         data-selector=".languageName">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".languageName">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% endif %}
+                <div class="btn btn-xs btn-default sortInput"
+                     data-selector=".languageName input.language_name">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
               </td>
               {# beast_filter.html #}
               <td class="hide">
@@ -617,17 +639,17 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
+              {# mgs_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageMgsCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               {# entd_filter.html #}
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".languageEntdCount">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </td>
-              {# notSwh_filter.html #}
-              <td>
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".languageNotSwhCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
@@ -638,10 +660,10 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
-              {# mgs_filter.html #}
+              {# notSwh_filter.html #}
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".languageMgsCount">
+                     data-selector=".languageNotSwhCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
@@ -649,6 +671,13 @@
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".languageExcessCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# unassigned_title.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageUnassignedCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
@@ -660,6 +689,11 @@
             {% for language in lang_ed_form.langlist %}
               <tr data-cladefilter-representative="{{ language.object_data.representative }}"
                   data-cladefilter-cladepath="{{ language.object_data.cladePath }}">
+                {# branchcolor_data.html #}
+                <td class="languageBranchColor"
+                    style="background-color: #{{ language.object_data.hexColor }};"
+                  ></td>
+                <td class="languageBranchColorSpace"></td>
                 {# entryno_data.html #}
                 <td class="entryNo numberField">
                   {{ forloop.counter }}
@@ -813,6 +847,7 @@
                       <button class="btn btn-default btn-xs"
                          data-toggle="cloneLanguageModal"
                          data-sourcelanguagename="{{ language.ascii_name.data }}"
+                         data-languageid="{{ language.object_data.id }}"
                          data-target="#cloneLanguageModal"
                          type="button">
                         <span class="glyphicon glyphicon-duplicate"></span>
@@ -940,16 +975,16 @@
                     {{ language.progress.data }}
                   {% endif %}
                 </td>
+                {# mgs_data.html #}
+                <td class="languageMgsCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.meaningCount }}</span>
+                  </center>
+                </td>
                 {# entd_data.html #}
                 <td class="languageEntdCount">
                   <center>
                     <span class="badge">{{ language.object_data.entryCount }}</span>
-                  </center>
-                </td>
-                {# notSwh_data.html #}
-                <td class="languageNotSwhCount">
-                  <center>
-                    <span class="badge">{{ language.object_data.nonLexCount }}</span>
                   </center>
                 </td>
                 {# lex_data.html #}
@@ -958,16 +993,22 @@
                     <span class="badge">{{ language.object_data.lexCount }}</span>
                   </center>
                 </td>
-                {# mgs_data.html #}
-                <td class="languageMgsCount">
+                {# notSwh_data.html #}
+                <td class="languageNotSwhCount">
                   <center>
-                    <span class="badge">{{ language.object_data.meaningCount }}</span>
+                    <span class="badge">{{ language.object_data.nonLexCount }}</span>
                   </center>
                 </td>
                 {# toomany_data.html #}
                 <td class="languageExcessCount">
                   <center>
                     <span class="badge">{{ language.object_data.excessCount }}</span>
+                  </center>
+                </td>
+                {# unassigned_data.html #}
+                <td class="languageUnassignedCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.unassignedCount }}</span>
                   </center>
                 </td>
                 {# check_data.html #}

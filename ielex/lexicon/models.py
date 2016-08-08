@@ -1,30 +1,20 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
-from itertools import izip
-from string import uppercase, lowercase
-from django.db import models, connection
-from django.db.models import Max, F
-from django.core.urlresolvers import reverse
-from django.db import IntegrityError
-from django.dispatch import receiver
-from django.db.models.signals import pre_delete, post_delete, post_save
-from django.db.backends.signals import connection_created
-from django.utils.safestring import SafeString
-from django.utils.encoding import python_2_unicode_compatible
-from django.contrib import messages
-import jsonfield
+import json
 import reversion
 import math
 import os.path
+from collections import defaultdict
+from string import uppercase, lowercase
+from django.db import models
+from django.db.models import Max
+from django.core.urlresolvers import reverse
+from django.utils.safestring import SafeString
+from django.utils.encoding import python_2_unicode_compatible
+# ielex specific imports:
 from ielex.utilities import two_by_two
-from ielex.lexicon.validators import *
-from itertools import izip
+from ielex.lexicon.validators import suitable_for_url, standard_reserved_names
 
-# from https://code.djangoproject.com/ticket/8399
-try:
-    from functools import wraps
-except ImportError:
-    from django.utils.functional import wraps
 import inspect
 
 
@@ -253,7 +243,7 @@ class SndComp(AbstractTimestamped):
             try:
                 d = dict(wanted[:i])
                 return Clade.objects.get(**d)
-            except Exception, e:
+            except Exception:
                 pass
 
         return None
@@ -345,16 +335,18 @@ class Clade(AbstractTimestamped):
     # Memo for computeCognateClassConnections:
     _cognateClassConnections = []  # [Boolean]
 
-    def computeCognateClassConnections(self, cognateclasses):
+    def computeCognateClassConnections(self, cognateclasses, languageList):
         # Reset memo:
         self._cognateClassConnections = []
         # lIds that warrant a connection:
-        clIds = set(self.languageclade_set.values_list(
-            'language_id', flat=True))
+        clIds = set(self.languageclade_set.filter(
+            language__languagelistorder__language_list=languageList
+            ).values_list('language_id', flat=True))
         # Fill memo with entries for given cognateclasses:
         for cc in cognateclasses:
             lIds = set(cc.lexeme_set.filter(
-                not_swadesh_term=False).values_list('language_id', flat=True))
+                not_swadesh_term=False).values_list(
+                'language_id', flat=True))
             self._cognateClassConnections.append(bool(clIds & lIds))
 
     def connectsToNextCognateClass(self):
@@ -468,13 +460,19 @@ class Language(AbstractTimestamped):
             # Computing dependant counts:
             lexCount = entryCount - nonLexCount
             excessCount = lexCount - meaningCount
+            # Computing unassigned count (#255):
+            unassignedCount = self.lexeme_set.filter(
+                not_swadesh_term=False,
+                meaning__in=meaningIdSet,
+                cognate_class=None).count()
             # Setting counts:
             self._computeCounts = {
                 'meaningCount': meaningCount,
                 'entryCount': entryCount,
                 'nonLexCount': nonLexCount,
                 'lexCount': lexCount,
-                'excessCount': excessCount}
+                'excessCount': excessCount,
+                'unassignedCount': unassignedCount}
         return self._computeCounts
 
     def cladeByOrder(self, order):
@@ -513,6 +511,10 @@ class Language(AbstractTimestamped):
     @property
     def excessCount(self):
         return self.computeCounts()['excessCount']
+
+    @property
+    def unassignedCount(self):
+        return self.computeCounts()['unassignedCount']
 
     @property
     def level0Tooltip(self):
@@ -597,6 +599,9 @@ class Meaning(AbstractTimestamped):
     description = models.CharField(max_length=64, blank=True)
     notes = models.TextField(blank=True)
     percent_coded = models.FloatField(editable=False, default=0)
+    # Added when mobbing 2016-08-04:
+    doubleCheck = models.BooleanField(default=0)
+    exclude = models.BooleanField(default=0)
 
     def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
@@ -620,7 +625,7 @@ class Meaning(AbstractTimestamped):
         ordering = ["gloss"]
 
     def timestampedFields(self):
-        return set(['gloss', 'description', 'notes'])
+        return set(['gloss', 'description', 'notes', 'doubleCheck', 'exclude'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update meaning: ' \
@@ -732,6 +737,13 @@ class CognateClass(AbstractTimestamped):
     # Fields added for #176:
     parallelLoanEvent = models.BooleanField(default=0)
     notProtoIndoEuropean = models.BooleanField(default=0)
+    # Added when mobbing 2016-08-04:
+    idiophonic = models.BooleanField(default=0)
+    parallelDerivation = models.BooleanField(default=0)
+    dubiousSet = models.BooleanField(default=0)
+    # Added for #263:
+    revisedYet = models.BooleanField(default=0)
+    revisedBy = models.CharField(max_length=10, default='')
 
     def __str__(self):
         return self.root_form
@@ -782,7 +794,9 @@ class CognateClass(AbstractTimestamped):
                     'gloss_in_root_lang', 'loanword', 'loan_source',
                     'loan_notes', 'loanSourceId', 'loanEventTimeDepthBP',
                     'sourceFormInLoanLanguage', 'parallelLoanEvent',
-                    'notProtoIndoEuropean'])
+                    'notProtoIndoEuropean', 'idiophonic',
+                    'parallelDerivation', 'dubiousSet',
+                    'revisedYet', 'revisedBy'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update cognate class: ' \
@@ -819,9 +833,8 @@ class CognateClass(AbstractTimestamped):
                            languageList.languagelistorder_set.all())
             # Gather counts:
             lexemeCount = 0
-            lexemeLoanCount = 0
             onlyNotSwh = True  # True iff all lexemes are not_swadesh_term.
-            for l in self.lexeme_set.all():
+            for l in self.lexeme_set.filter(language__in=lSet).all():
                 # Update onlyNotSwh iff necessary:
                 if not l.not_swadesh_term:
                     onlyNotSwh = False
@@ -831,24 +844,21 @@ class CognateClass(AbstractTimestamped):
                         continue
                 # Major beef:
                 lexemeCount += 1
-                for j in self.cognatejudgement_set.all():
-                    if j.lexeme_id == l.id:
-                        if 'L' in j.reliability_ratings:
-                            lexemeLoanCount += 1
-                        break
-            # Computing percentage
-            lexemeLoanPercentage = lexemeLoanCount / lexemeCount \
-                if lexemeCount > 0 else float('nan')
-            if math.isnan(lexemeLoanPercentage):
-                lexemeLoanPercentage = 0
-            else:
-                lexemeLoanPercentage = int(lexemeLoanPercentage * 100)
+            # Computing cladeCount:
+            languageIds = self.lexeme_set.filter(
+                language_id__in=lSet,
+                not_swadesh_term=False).exclude(
+                language__level0=0).values_list(
+                'language_id', flat=True)
+            cladeCount = Clade.objects.filter(
+                languageclade__language__id__in=languageIds).exclude(
+                hexColor='').exclude(
+                shortName='').distinct().count()
             # Filling memo with data:
             self._computeCounts = {
                 'lexemeCount': lexemeCount,
-                'lexemeLoanCount': lexemeLoanCount,
-                'lexemeLoanPercentage': lexemeLoanPercentage,
-                'onlyNotSwh': onlyNotSwh}
+                'onlyNotSwh': onlyNotSwh,
+                'cladeCount': cladeCount}
         return self._computeCounts
 
     @property
@@ -868,16 +878,17 @@ class CognateClass(AbstractTimestamped):
         return self.computeCounts()['lexemeCount']
 
     @property
-    def lexemeLoanCount(self):
-        return self.computeCounts()['lexemeLoanCount']
-
-    @property
-    def lexemeLoanPercentage(self):
-        return self.computeCounts()['lexemeLoanPercentage']
-
-    @property
     def hasOnlyNotSwadesh(self):
         return self.computeCounts()['onlyNotSwh']
+
+    @property
+    def cladeCount(self):
+        return self.computeCounts()['cladeCount']
+
+    @property
+    def loanSourceCognateClassTitle(self):
+        cc = self.loanSourceCognateClass
+        return ' '.join([cc.alias, cc.root_form, cc.root_language])
 
 
 class DyenCognateSet(models.Model):
@@ -1011,11 +1022,6 @@ class Lexeme(AbstractTimestamped):
         return ('X' in self.reliability_ratings)
 
     @property
-    def is_loan_lexeme(self):
-        # Tests is_loan for #88
-        return ('L' in self.reliability_ratings)
-
-    @property
     def is_excluded_cognate(self):
         # Tests is_exc for #29
         for j in self.cognatejudgement_set.all():
@@ -1070,6 +1076,14 @@ class Lexeme(AbstractTimestamped):
         # Added for #178
         return self.cognate_class.count()
 
+    @property
+    def selectionJSON(self):
+        # Added for #219 to describe lexeme and cognate classes.
+        return json.dumps({'lexemeId': self.id,
+                           'cognateClassIds': list(
+                               self.cognate_class.values_list(
+                                   'id', flat=True))})
+
 
 @reversion.register
 class CognateJudgement(AbstractTimestamped):
@@ -1091,7 +1105,7 @@ class CognateJudgement(AbstractTimestamped):
         """
         An alphabetically sorted list of (rating_code, description) tuples
         """
-        descriptions = dict(RELIABILITY_CHOICES)
+        descriptions = defaultdict(str, RELIABILITY_CHOICES)
         return [(rating, descriptions[rating]) for rating in
                 sorted(self.reliability_ratings)]
 
@@ -1222,7 +1236,6 @@ class MeaningList(models.Model):
         validators=[suitable_for_url, standard_reserved_names])
     description = models.TextField(blank=True, null=True)
     meanings = models.ManyToManyField(Meaning, through="MeaningListOrder")
-    data = jsonfield.JSONField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
     def append(self, meaning):

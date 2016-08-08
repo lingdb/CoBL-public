@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 from django.db import migrations
-
-import ielex.lexicon.models as models
 
 
 def forwards_func(apps, schema_editor):

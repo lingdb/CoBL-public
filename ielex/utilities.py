@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from string import uppercase, lowercase
 from itertools import izip
 # from ielex.lexicon.models import Language
@@ -11,6 +12,19 @@ from django.template import RequestContext
 from django.core.management.base import NoArgsCommand
 
 codes = list(uppercase) + [i+j for i in uppercase for j in lowercase]
+
+
+def logExceptions(func):
+    '''
+    A decorator for func to make sure we log exceptions.
+    '''
+    def f(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logging.exception('Exception found by logExceptions.')
+            raise e
+    return f
 
 
 def int2alpha(n):
@@ -124,18 +138,18 @@ if __name__ == "__main__":
     for i in xrange(1, 703):
         s = int2alpha(i)
         if i < 11 or i > 692:
-            print i, s
+            print(i, s)
         elif snip_flag:
-            print "[...]"
+            print("[...]")
             snip_flag = False
         else:
             pass
         assert alpha2int(s) == i
 
     l = ["A", "B", "C"]
-    print l
-    print "next_alias(l) -->", next_alias(l)
+    print(l)
+    print("next_alias(l) -->", next_alias(l))
     l = ["none", "A", "B", "C"]
-    print l
-    print 'next_alias(l, ignore=["none","new"]) -->', \
-          next_alias(l, ignore=["none", "new"])
+    print(l)
+    print('next_alias(l, ignore=["none","new"]) -->',
+          next_alias(l, ignore=["none", "new"]))

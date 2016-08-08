@@ -1,5 +1,5 @@
-from optparse import make_option, SUPPRESS_HELP
-from django.core.management.base import NoArgsCommand, CommandError
+from optparse import make_option
+from django.core.management.base import CommandError
 from ielex.lexicon.models import LanguageList, LanguageListOrder
 from ielex.utilities import LexDBManagementCommand
 

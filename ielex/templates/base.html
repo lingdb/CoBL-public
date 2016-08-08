@@ -63,10 +63,25 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
             {% block controls %}{% endblock %}
+            <li>
+              <a href="https://github.com/lingdb/CoBL/wiki"
+                 data-toggle="tooltip"
+                 data-placement="bottom"
+                 data-container="body"
+                 title="Consult the CoBL wiki for help."
+                 target="_blank">
+                <span class="glyphicon glyphicon-question-sign text-danger"></span>
+                Help
+              </a>
+            </li>
             <li class="btn-group">
-              <a class="dropdown-toggle" title="Info"
-                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              <a class="dropdown-toggle"
+                 title="Info"
+                 data-toggle="dropdown"
+                 aria-haspopup="true"
+                 aria-expanded="false">
+                <span class="glyphicon glyphicon-info-sign text-info"
+                      aria-hidden="true"></span>
                 <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">

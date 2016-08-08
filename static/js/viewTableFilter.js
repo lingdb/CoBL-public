@@ -27,7 +27,11 @@
         el = $(el);
       }
       //floatThead for #31:
-      el.floatThead({position: 'absolute'});
+      var floatOptions = {position: 'absolute'};
+      if(el.data('floatheadtop')){
+        floatOptions.top = parseInt(el.data('floatheadtop'), 10);
+      }
+      el.floatThead(floatOptions);
       //Actual init work:
       el.each(function(){
         var table = $(this);
