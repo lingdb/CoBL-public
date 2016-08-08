@@ -4,10 +4,13 @@
                  'js/gatherCheckboxValues'],
                 function($, _, bootbox, gatherCheckboxValues){
     $('.editCognateClassButton').click(function(){
+      var btn = $(this);
+      // In case a row without a cognate class was selected:
+      var addNew = btn.data('add') === 'new';
       //Gathering selected lexemes and their infos:
       var selected = gatherCheckboxValues('input.lexemeSelection');
-      selected.push($(this).val());
       selected = _.map(selected, JSON.parse);
+      selected.push(btn.data('json'));
       //Deconstructing selected data:
       var lexemeIds = _.chain(selected).map(function(x){
         return x.lexemeId;
@@ -84,20 +87,21 @@
           var name = mkCognateClassName(current, '<br>');
           form.prepend(mkCognateClassSelection(current.id, name));
         });
-        //Handling the add button:
-        form.find('#addEntryCognateClassButton').click(function(){
-          var msg = 'Are you sure that you want to ' +
-                    'add an additional cognate class?';
-          bootbox.confirm(msg, function(result){
-            if(result === true){
-              form.prepend(mkCognateClassSelection('new', 'new'));
-              //Making sure only one is added:
-              form.find('#addEntryCognateClassButton').remove();
-            }
-          });
-        });
+        //Adding a new assignment:
+        var addNewAssignment = function(){
+          form.prepend(mkCognateClassSelection('new', 'new'));
+          form.find('#addEntryCognateClassButton').addClass('hide');
+        };
+        //Handling the addNew case:
+        if(addNew){
+          addNewAssignment();
+        }else{
+          //Handling the add button:
+          form.find('#addEntryCognateClassButton').removeClass('hide');
+          form.find('#addEntryCognateClassButton').off('click').click(addNewAssignment);
+        }
         //Handling the save button:
-        form.find('#editCognateClassButton').click(function(){
+        form.find('#editCognateClassButton').off('click').click(function(){
           //Gather cognate class assignments:
           var cognateClassAssignments = {};
           form.find('.cognateClassSelection').each(function(){
@@ -115,14 +119,18 @@
       };
       //Checking if we've got a nice selection:
       if(cognateClassIds.length === 0){
-        var msg = 'The lexemes in your selection share ' +
-                  'no common cognate class. ' +
-                  'Are you sure you want to continue?';
-        bootbox.confirm(msg, function(result){
-          if(result === true){
-            handleForm();
-          }
-        });
+        if(addNew){
+          handleForm();
+        }else{
+          var msg = 'The lexemes in your selection share ' +
+                    'no common cognate class. ' +
+                    'Are you sure you want to continue?';
+          bootbox.confirm(msg, function(result){
+            if(result === true){
+              handleForm();
+            }
+          });
+        }
       }else{
         handleForm();
       }

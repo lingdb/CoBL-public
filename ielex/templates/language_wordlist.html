@@ -81,6 +81,9 @@
             <tr>
               {# id_title.html #}
               <th class="hide"></th>
+              {# FIXME warning label for Dbl check ones #}
+              {# warnings_title.html #}
+              <th></th>
               {# meaning_title.html #}
               <th colspan="2">Meaning</th>
               {# sourceform_title.html #}
@@ -102,14 +105,6 @@
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Lex. excl
-                  </div>
-                </div>
-              </th>
-              {# isloan_lexeme_title.html #}
-              <th>
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Lex. loan
                   </div>
                 </div>
               </th>
@@ -197,6 +192,8 @@
             <tr class="filterBar">
               {# id_filter.html #}
               <td class="hide"></td>
+              {# warnings_filter.html #}
+              <td></td>
               {# meaning_filter.html #}
               <td colspan="2">
                 <input type="text" class="filterText form-control narrow"
@@ -259,13 +256,6 @@
               <td>
                 <button type="button" class="filterBool btn btn-xs btn-default"
                         data-selector=".lexemeIsExcludedLexeme input">
-                  <span class="glyphicon glyphicon-question-sign"></span>
-                </button>
-              </td>
-              {# isloan_lexeme_filter.html #}
-              <td>
-                <button type="button" class="filterBool btn btn-xs btn-default"
-                        data-selector=".lexemeIsLoanLexeme input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </td>
@@ -454,6 +444,18 @@
                   {{ lexeme.lastTouched }}
                   {{ lexeme.lastEditedBy }}
                 </td>
+                {# warnings_data.html #}
+                <td>
+                  {% if lexeme.object_data.meaning.doubleCheck %}
+                  <div style="color: #ff0000;"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       data-container="body"
+                       title="Special care and attention needed with this meaning. Please click on the i icon to read the full specification of the precise comparison meaning intended, and the exact term required here.">
+                    <span class="glyphicon glyphicon-warning-sign"></span>
+                  </div>
+                  {% endif %}
+                </td>
                 {# meaning_data.html #}
                 <td>
                   <a href="https://github.com/lingdb/IELex2-CognaC/wiki/{{ lexeme.data.meaning }}"
@@ -535,15 +537,6 @@
                 <td class="lexemeIsExcludedLexeme">
                   <input type="checkbox"
                     {% if lexeme.object_data.is_excluded_lexeme %}
-                      checked="checked"
-                    {% endif %}
-                    class="form-control"
-                    disabled="disabled">
-                </td>
-                {# isloan_lexeme_data.html #}
-                <td class="lexemeIsLoanLexeme">
-                  <input type="checkbox"
-                    {% if lexeme.object_data.is_loan_lexeme %}
                       checked="checked"
                     {% endif %}
                     class="form-control"

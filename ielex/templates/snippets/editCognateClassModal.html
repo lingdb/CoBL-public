@@ -32,13 +32,15 @@
                      name="lexemeIds"
                      class="hide"
                      value="">
-              <input class="btn btn-info"
-                     id="addEntryCognateClassButton"
-                     type="button"
-                     data-toggle="tooltip"
-                     data-placement="top"
-                     title="Add an additional cognate class"
-                     value="Add">
+              {% if user.is_staff %}
+                <input class="btn btn-info hide"
+                       id="addEntryCognateClassButton"
+                       type="button"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       title="Add an additional cognate class"
+                       value="Add">
+              {% endif %}
               <input class="btn btn-danger"
                      id="editCognateClassButton"
                      data-toggle="tooltip"

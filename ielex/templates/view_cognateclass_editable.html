@@ -69,7 +69,7 @@
                   title="Number of clades each cognate class belongs to">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
-                    Clade. Count
+                    Clade Count
                   </div>
                 </div>
               </th>
@@ -85,7 +85,7 @@
                 </div>
               </th>
               {# id_title.html #}
-              <th>
+              <th style="border-left: 2px solid #dddddd;">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Cog. ID
@@ -127,8 +127,42 @@
               <th>Root<br>Gloss</th>
               {# notes_title.html #}
               <th>Root<br>Notes</th>
+              {# idiophonic_title.html #}
+              <th style="border-left: 2px solid #dddddd;"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Possibly onomatopoeic or nursery term, so not truly cognate?">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Idiophonic
+                  </div>
+                </div>
+              </th>
+              {# parallelDerivation_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Possibly a parallel later derivations using the same original roots.">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Pll. deriv.
+                  </div>
+                </div>
+              </th>
+              {# dubiousSet_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Some member lexemes may not actually be cognates but just lookalikes.">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Dubious set
+                  </div>
+                </div>
+              </th>
               {# loanword_title.html #}
-              <th>
+              <th style="border-left: 2px solid #dddddd;">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Loan Event
@@ -152,11 +186,7 @@
                   data-container="body"
                   title="Loan Source Cognate Set Id"
                   style="width: 5em;">
-                  <div class="vertical-text">
-                    <div class="vertical-text__inner">
-                      Source ID
-                    </div>
-                  </div>
+                  Loan source cog. ID
               </th>
               {# loansource_title.html #}
               <th>Loan<br>Source Lg.</th>
@@ -176,25 +206,19 @@
               </th>
               {# loannotes_title.html #}
               <th>Loan<br>Notes</th>
-              {# lexemeLoanCount_title.html #}
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Number of lexemes in each cognate class that are marked as loan words">
+              {# revisedYet_title.html #}
+              <th>
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
-                    Lex. Loans
+                    Revised Yet?
                   </div>
                 </div>
               </th>
-              {# lexemeLoanPercentage_title.html #}
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Number of loan words over number of total lexemes for each cognate class">
+              {# revisedBy_title.html #}
+              <th>
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
-                    Lex. Loan %
+                    Revised By
                   </div>
                 </div>
               </th>
@@ -230,7 +254,7 @@
                 </div>
               </td>
               {# id_filter.html #}
-              <td>
+              <td style="border-left: 2px solid #dddddd;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".cogClassId">
                   <span class="glyphicon glyphicon-sort"></span>
@@ -342,8 +366,29 @@
                   </div>
                 {% endif %}
               </td>
-              {# loanword_filter.html #}
+              {# idiophonic_filter.html #}
+              <td style="border-left: 2px solid #dddddd;">
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".idiophonic input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# parallelDerivation_filter.html #}
               <td>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".parallelDerivation input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# dubiousSet_filter.html #}
+              <td>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".dubiousSet input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# loanword_filter.html #}
+              <td style="border-left: 2px solid #dddddd;">
                 <button type="button" class="filterBool btn btn-xs btn-default"
                         data-selector=".cogLoanword input">
                   <span class="glyphicon glyphicon-question-sign"></span>
@@ -460,19 +505,33 @@
                   </div>
                 {% endif %}
               </td>
-              {# lexemeLoanCount_filter.html #}
+              {# revisedYet_filter.html #}
               <td>
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".lexemeLoanCount">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".revisedYet input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
               </td>
-              {# lexemeLoanPercentage_filter.html #}
+              {# revisedBy_filter.html #}
               <td>
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".lexemeLoanPercentage">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".revisedBy input"
+                         style="width: 2em;">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".revisedBy input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".revisedBy">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".revisedBy">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
               </td>
               {# onlyNotSwh_filter.html #}
               <td>
@@ -507,7 +566,9 @@
                 </td>
                 {# id_data.html #}
                 <td class="cogClassId text-right"
-                    style="color: #8B4510; text-align: center;">
+                    style="color: #8B4510;
+                           text-align: center;
+                           border-left: 2px solid #dddddd;">
                   {{ cc.idField.data }}
                   {% if user.is_authenticated %}
                     {% form_field cc.idField class="hide" required="required" %}
@@ -570,8 +631,34 @@
                     {{ cc.notes.data }}
                   {% endif %}
                 </td>
+                {# idiophonic_data.html #}
+                <td class="idiophonic"
+                    style="border-left: 2px solid #dddddd;">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.idiophonic class="form-control" %}
+                  {% elif cc.gloss_in_root_lang.data %}
+                    {% form_field cc.idiophonic class="form-control" disabled="disabled" %}
+                  {% endif %}
+                </td>
+                {# parallelDerivation_datahtml #}
+                <td class="parallelDerivation">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.parallelDerivation class="form-control" %}
+                  {% elif cc.gloss_in_root_lang.data %}
+                    {% form_field cc.parallelDerivation class="form-control" disabled="disabled "%}
+                  {% endif %}
+                </td>
+                {# dubiousSet_datahtml #}
+                <td class="dubiousSet">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.dubiousSet class="form-control" %}
+                  {% elif cc.gloss_in_root_lang.data %}
+                    {% form_field cc.dubiousSet class="form-control" disabled="disabled" %}
+                  {% endif %}
+                </td>
                 {# loanword_data.html #}
-                <td class="cogLoanword">
+                <td style="border-left: 2px solid #dddddd;"
+                    class="cogLoanword">
                   {% if user.is_authenticated %}
                     {% form_field cc.loanword class="form-control" %}
                   {% else %}
@@ -634,22 +721,22 @@
                     {{ cc.loan_notes.data }}
                   {% endif %}
                 </td>
-                {# lexemeLoanCount_data.html #}
-                <td class="lexemeLoanCount">
-                  {% if cc.object_data.lexemeLoanCount %}
-                    <span class="badge">
-                      {{ cc.object_data.lexemeLoanCount }}
-                    </span>
+                {# revisedYet_data.html #}
+                <th class="revisedYet">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.revisedYet class="form-control" %}
+                  {% elif cc.loan_notes.data %}
+                    {% form_field cc.revisedYet class="form-control" disabled="disabled" %}
                   {% endif %}
-                </td>
-                {# lexemeLoanPercentage_data.html #}
-                <td class="lexemeLoanPercentage">
-                  {% if cc.object_data.lexemeLoanPercentage %}
-                    <span class="badge">
-                      {{ cc.object_data.lexemeLoanPercentage }}
-                    </span>
+                </th>
+                {# revisedBy_data.html #}
+                <th class="revisedBy">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.revisedBy class="form-control" style="width: 2em;" pattern="^.{0,10}$" %}
+                  {% elif cc.loan_notes.data %}
+                    {% form_field cc.revisedBy.data class="form-control" %}
                   {% endif %}
-                </td>
+                </th>
                 {# onlyNotSwh_data.html #}
                 <td class="onlyNotSwh">
                   <input type="checkbox"

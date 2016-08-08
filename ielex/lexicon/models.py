@@ -599,6 +599,9 @@ class Meaning(AbstractTimestamped):
     description = models.CharField(max_length=64, blank=True)
     notes = models.TextField(blank=True)
     percent_coded = models.FloatField(editable=False, default=0)
+    # Added when mobbing 2016-08-04:
+    doubleCheck = models.BooleanField(default=0)
+    exclude = models.BooleanField(default=0)
 
     def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
@@ -622,7 +625,7 @@ class Meaning(AbstractTimestamped):
         ordering = ["gloss"]
 
     def timestampedFields(self):
-        return set(['gloss', 'description', 'notes'])
+        return set(['gloss', 'description', 'notes', 'doubleCheck', 'exclude'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update meaning: ' \
@@ -734,6 +737,13 @@ class CognateClass(AbstractTimestamped):
     # Fields added for #176:
     parallelLoanEvent = models.BooleanField(default=0)
     notProtoIndoEuropean = models.BooleanField(default=0)
+    # Added when mobbing 2016-08-04:
+    idiophonic = models.BooleanField(default=0)
+    parallelDerivation = models.BooleanField(default=0)
+    dubiousSet = models.BooleanField(default=0)
+    # Added for #263:
+    revisedYet = models.BooleanField(default=0)
+    revisedBy = models.CharField(max_length=10, default='')
 
     def __str__(self):
         return self.root_form
@@ -784,7 +794,9 @@ class CognateClass(AbstractTimestamped):
                     'gloss_in_root_lang', 'loanword', 'loan_source',
                     'loan_notes', 'loanSourceId', 'loanEventTimeDepthBP',
                     'sourceFormInLoanLanguage', 'parallelLoanEvent',
-                    'notProtoIndoEuropean'])
+                    'notProtoIndoEuropean', 'idiophonic',
+                    'parallelDerivation', 'dubiousSet',
+                    'revisedYet', 'revisedBy'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update cognate class: ' \
@@ -821,7 +833,6 @@ class CognateClass(AbstractTimestamped):
                            languageList.languagelistorder_set.all())
             # Gather counts:
             lexemeCount = 0
-            lexemeLoanCount = 0
             onlyNotSwh = True  # True iff all lexemes are not_swadesh_term.
             for l in self.lexeme_set.all():
                 # Update onlyNotSwh iff necessary:
@@ -833,18 +844,6 @@ class CognateClass(AbstractTimestamped):
                         continue
                 # Major beef:
                 lexemeCount += 1
-                for j in self.cognatejudgement_set.all():
-                    if j.lexeme_id == l.id:
-                        if 'L' in j.reliability_ratings:
-                            lexemeLoanCount += 1
-                        break
-            # Computing percentage
-            lexemeLoanPercentage = lexemeLoanCount / lexemeCount \
-                if lexemeCount > 0 else float('nan')
-            if math.isnan(lexemeLoanPercentage):
-                lexemeLoanPercentage = 0
-            else:
-                lexemeLoanPercentage = int(lexemeLoanPercentage * 100)
             # Computing cladeCount:
             languageIds = self.lexeme_set.filter(
                 language_id__in=lSet,
@@ -858,8 +857,6 @@ class CognateClass(AbstractTimestamped):
             # Filling memo with data:
             self._computeCounts = {
                 'lexemeCount': lexemeCount,
-                'lexemeLoanCount': lexemeLoanCount,
-                'lexemeLoanPercentage': lexemeLoanPercentage,
                 'onlyNotSwh': onlyNotSwh,
                 'cladeCount': cladeCount}
         return self._computeCounts
@@ -879,14 +876,6 @@ class CognateClass(AbstractTimestamped):
     @property
     def lexemeCount(self):
         return self.computeCounts()['lexemeCount']
-
-    @property
-    def lexemeLoanCount(self):
-        return self.computeCounts()['lexemeLoanCount']
-
-    @property
-    def lexemeLoanPercentage(self):
-        return self.computeCounts()['lexemeLoanPercentage']
 
     @property
     def hasOnlyNotSwadesh(self):
@@ -1031,11 +1020,6 @@ class Lexeme(AbstractTimestamped):
     def is_excluded_lexeme(self):
         # Tests is_exc for #88
         return ('X' in self.reliability_ratings)
-
-    @property
-    def is_loan_lexeme(self):
-        # Tests is_loan for #88
-        return ('L' in self.reliability_ratings)
 
     @property
     def is_excluded_cognate(self):

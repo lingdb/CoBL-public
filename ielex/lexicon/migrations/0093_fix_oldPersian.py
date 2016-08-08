@@ -5,26 +5,26 @@ from django.db import migrations
 
 def forwards_func(apps, schema_editor):
     '''
-    BhojpuriNew is missing some lexemes present in Bhojpuri,
-    so we move them there and leave Bhojpuri empty.
+    OldPersian doesn't have lexemes for some meanings.
+    This migration generates them.
     '''
     # Models to work with:
     Language = apps.get_model('lexicon', 'Language')
+    MeaningList = apps.get_model('lexicon', 'MeaningList')
     Lexeme = apps.get_model('lexicon', 'Lexeme')
     # Data to work with:
-    source = Language.objects.get(ascii_name='Bhojpuri')
-    target = Language.objects.get(ascii_name='BhojpuriNew')
+    target = Language.objects.get(ascii_name='OldPersian')
     # Mapping meaning.id -> Lexeme
     mIdLexemeMap = {}
     for l in Lexeme.objects.filter(language=target).all():
         mIdLexemeMap[l.meaning_id] = l
-    # Replacing lexemes in target:
-    for l in Lexeme.objects.filter(language=source).all():
-        mId = l.meaning_id
-        if mId in mIdLexemeMap:
-            mIdLexemeMap[mId].delete()
-            l.language_id = target.id
-            l.save()
+    # Searching for missing lexemes:
+    mList = MeaningList.objects.get(name='Jena200')
+    for m in mList.meanings.all():
+        if m.id not in mIdLexemeMap:
+            Lexeme.objects.create(
+                meaning=m,
+                language=target)
 
 
 def reverse_func(apps, schema_editor):
@@ -33,7 +33,7 @@ def reverse_func(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('lexicon', '0090_remove_meaninglist_data')]
+    dependencies = [('lexicon', '0092_set_cjc_reliabilities_high')]
 
     operations = [
         migrations.RunPython(forwards_func, reverse_func),
