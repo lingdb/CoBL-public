@@ -2026,8 +2026,7 @@ def lexeme_add(request, meaning=None, language=None):
         form = AddLexemeForm(request.POST)
         try:
             form.validate()
-            l = Lexeme(language_id=form.data['languageId'],
-                       meaning_id=form.data['meaning_id'])
+            l = Lexeme(**form.data)
             l.bump(request)
             l.save()
             messages.success(request, 'Created lexeme %s.' % l.id)
@@ -2042,13 +2041,20 @@ def lexeme_add(request, meaning=None, language=None):
     data = {}
     if language:
         language = get_canonical_language(language, request)
-        data['languageId'] = language.id
+        data['language_id'] = language.id
     if meaning:
         meaning = get_canonical_meaning(meaning)
-        data["meaningId"] = meaning.id
-    # Adding typeahead info:
-    languageTypeahead = json.dumps({'foo': 'bar'})  # FIXME
-    meaningTypeahead = json.dumps({'bar': 'baz'})  # FIXME
+        data["meaning_id"] = meaning.id
+    # Computing typeahead info:
+    languageTypeahead = json.dumps(dict(
+        Language.objects.filter(
+            languagelist__name=getDefaultLanguagelist(request)
+            ).values_list(
+            'utf8_name', 'id')))
+    meaningTypeahead = json.dumps(dict(
+        Meaning.objects.filter(
+            meaninglist__name=getDefaultWordlist(request)
+            ).values_list('gloss', 'id')))
 
     return render_template(request, "lexeme_add.html",
                            {"form": AddLexemeForm(data=data),

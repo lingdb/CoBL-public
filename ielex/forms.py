@@ -106,18 +106,23 @@ class ChooseOneSourceField(forms.ModelChoiceField):
 
 
 class AddLexemeForm(WTForm):
-    languageId = IntegerField('Language:', validators=[InputRequired()])
-    meaningId = IntegerField('Meaning:', validators=[InputRequired()])
+    language_id = IntegerField('Language:', validators=[InputRequired()])
+    meaning_id = IntegerField('Meaning:', validators=[InputRequired()])
+    source_form = StringField('Orthographic:', validators=[InputRequired()])
+    transliteration = StringField('Transliteration:',
+                                  validators=[InputRequired()])
+    phon_form = StringField('PhoneTic:', validators=[InputRequired()])
+    phoneMic = StringField('phoneMic:', validators=[InputRequired()])
 
-    def validate_languageId(form, field):
+    def validate_language_id(form, field):
         exists = Language.objects.filter(id=field.data).exists()
         if not exists:
-            raise ValueError('LanguageId %s does not exist.' % field.data)
+            raise ValueError('language_id %s does not exist.' % field.data)
 
-    def validate_meaningId(form, field):
+    def validate_meaning_id(form, field):
         exists = Meaning.objects.filter(id=field.data).exists()
         if not exists:
-            raise ValueError('MeaningId %s does not exist.' % field.data)
+            raise ValueError('meaning_id %s does not exist.' % field.data)
 
 
 class EditLexemeForm(forms.ModelForm):

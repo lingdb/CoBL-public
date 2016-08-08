@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load wtforms %}
+
 {% block title %}Add lexeme{% endblock %}
 
 {% block top %}
@@ -11,32 +13,64 @@
     {% csrf_token %}
     <div class="form-group">
       <label for="typeaheadLanguageId" class="col-sm-2 control-label">
-        {{ form.languageId.label }}
+        {{ form.language_id.label }}
       </label>
       <div class="col-sm-3">
         <input id="typeaheadLanguageId"
                type="text"
                class="typeaheadInput form-control"
-               data-inputfor="languageId"
+               data-inputfor="language_id"
                data-typeahead="{{ languageTypeahead | escapejs }}"
                value="">
       </div>
     </div>
     <div class="form-group">
       <label for="typeaheadMeaningId" class="col-sm-2 control-label">
-        {{ form.meaningId.label }}
+        {{ form.meaning_id.label }}
       </label>
       <div class="col-sm-3">
         <input id="typeaheadMeaningId"
                type="text"
                class="typeaheadInput form-control"
-               data-inputfor="meaningId"
+               data-inputfor="meaning_id"
                data-typeahead="{{ meaningTypeahead | escapejs }}"
                value="">
       </div>
     </div>
-    <input class="hide" type="text" name="languageId" value="">
-    <input class="hide" type="text" name="meaningId" value="">
+    <div class="form-group">
+      <label for="source_form" class="col-sm-2 control-label">
+        {{ form.source_form.label }}
+      </label>
+      <div class="col-sm-3">
+        {% form_field form.source_form class="form-control" %}
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="transliteration" class="col-sm-2 control-label">
+        {{ form.transliteration.label }}
+      </label>
+      <div class="col-sm-3">
+        {% form_field form.transliteration class="form-control" %}
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="phon_form" class="col-sm-2 control-label">
+        {{ form.phon_form.label }}
+      </label>
+      <div class="col-sm-3">
+        {% form_field form.phon_form class="form-control" %}
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="phoneMic" class="col-sm-2 control-label">
+        {{ form.phoneMic.label }}
+      </label>
+      <div class="col-sm-3">
+        {% form_field form.phoneMic class="form-control" %}
+      </div>
+    </div>
+    {% form_field form.language_id pattern="\d+" class="hide" %}
+    {% form_field form.meaning_id pattern="\d+" class="hide" %}
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-3">
         <a href="." class="btn btn-default">Cancel</a>
