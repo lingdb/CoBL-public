@@ -8,6 +8,7 @@
       style="color: #006400;">
     <input class="typeaheadText"
            value="{{ meaning.gloss }}"
+           type="text"
            data-typeahead="{{ typeahead | escapejs }}">
   </h1>
   <a href="{% url 'meaning-report' next_meaning.gloss %}"

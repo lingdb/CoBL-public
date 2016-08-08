@@ -404,6 +404,14 @@ class CogClassRowForm(AbstractTimestampedForm):
         'Parallel Loan Event', validators=[InputRequired()])
     notProtoIndoEuropean = BooleanField(
         'Not Proto-Indo-European?', validators=[InputRequired()])
+    # Added when mobbing 2016-08-04:
+    idiophonic = BooleanField('Idiophonic', validators=[InputRequired()])
+    parallelDerivation = BooleanField('Parallel Derivation',
+                                      validators=[InputRequired()])
+    dubiousSet = BooleanField('Dubious set', validators=[InputRequired()])
+    # Added for #263:
+    revisedYet = BooleanField('Revised Yet?', validators=[InputRequired()])
+    revisedBy = TextField('Revised by', validators=[InputRequired()])
 
     def __str__(self):
         cogclass_form_vals = (
@@ -584,6 +592,8 @@ class MeaningListRowForm(AbstractTimestampedForm):
     gloss = StringField('Gloss', validators=[InputRequired()])
     description = StringField('Description', validators=[InputRequired()])
     notes = TextAreaField('Notes', validators=[InputRequired()])
+    doubleCheck = BooleanField('Double check', validators=[InputRequired()])
+    exclude = BooleanField('Exclude?', validators=[InputRequired()])
 
 
 class MeaningListTableForm(WTForm):

@@ -75,14 +75,6 @@
                 </div>
               </div>
             </th>
-            {# isloan_lexeme_title.html #}
-            <th>
-              <div class="vertical-text">
-                <div class="vertical-text__inner">
-                  Lex. loan
-                </div>
-              </div>
-            </th>
             {# ncog_title.html #}
             <th title="Number of cognate classes"
                 data-toggle="tooltip"
@@ -229,14 +221,6 @@
               <button type="button"
                       class="filterBool btn btn-xs btn-default"
                       data-selector=".lexemeIsExcludedLexeme input">
-                <span class="glyphicon glyphicon-question-sign"></span>
-              </button>
-            </td>
-            {# isloan_lexeme_filter.html #}
-            <td>
-              <button type="button"
-                      class="filterBool btn btn-xs btn-default"
-                      data-selector=".lexemeIsLoanLexeme input">
                 <span class="glyphicon glyphicon-question-sign"></span>
               </button>
             </td>
@@ -524,15 +508,6 @@
                   disabled="disabled"
                   class="form-control">
               </td>
-              {# isloan_lexeme_data.html #}
-              <td class="lexemeIsLoanLexeme">
-                <input type="checkbox"
-                  {% if lexeme.object_data.is_loan_lexeme %}
-                  checked="checked"
-                  {% endif %}
-                  disabled="disabled"
-                  class="form-control">
-              </td>
               {# ncog_data.html #}
               <td class="lexemeNCog"
                   style="border-left: 2px solid #dddddd;">
@@ -576,27 +551,27 @@
                   {% endif %}
                   {% if lexeme.object_data.allCognateClasses %}
                     {% for c in lexeme.object_data.allCognateClasses %}
-                      <button type="button"
-                              class="btn btn-xs editCognateClassButton inline"
-                              style="background-color: #CD7432;"
-                              data-toggle="tooltip"
-                              data-placement="bottom"
-                              data-container="body"
-                              title="Click to re-assign this lexeme to a different cognate class."
-                              value='{{ lexeme.object_data.selectionJSON }}'>
+                      <a type="button"
+                         class="editCognateClassButton inline"
+                         style="color: #CD7432;"
+                         data-toggle="tooltip"
+                         data-placement="bottom"
+                         data-container="body"
+                         title="Click to re-assign this lexeme to a different cognate class."
+                         data-json='{{ lexeme.object_data.selectionJSON }}'>
                         {{ c.alias }}
-                      </button>
+                      </a>
                     {% endfor %}
                   {% else %}
-                    <button type="button"
-                            class="btn btn-xs editCognateClassButton inline"
-                            style="background-color: #CD7432;"
-                            value='{{ lexeme.object_data.selectionJSON }}'
-                            data-toggle="tooltip"
-                            data-placement="bottom"
-                            data-container="body"
-                            title="Click to assign this lexeme to a cognate class."
-                            data-add="new">
+                    <a type="button"
+                       class="editCognateClassButton inline"
+                       style="color: #CD7432;"
+                       data-json='{{ lexeme.object_data.selectionJSON }}'
+                       data-toggle="tooltip"
+                       data-placement="bottom"
+                       data-container="body"
+                       title="Click to assign this lexeme to a cognate class."
+                       data-add="new">
                       <span class="glyphicon glyphicon-plus-sign"></span>
                     </button>
                   {% endif %}
