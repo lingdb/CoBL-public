@@ -2,9 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from django.db.models import Max
-
-from datetime import datetime
 
 
 def forwards_func(apps, schema_editor):
@@ -135,7 +132,7 @@ def reverse_func(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('lexicon', '0093_fix_oldPersian')]
+    dependencies = [('lexicon', '0096_auto_20160805_1330')]
 
     operations = [
         migrations.RunPython(forwards_func, reverse_func),
