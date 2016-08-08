@@ -49,6 +49,10 @@ class Command(BaseCommand):
                                      meaningIds, languageIds))
         elif(options['task'] == 3):
             self.stdout.write('Task 3')
+            unwantedCognateClassIds = set(
+                [c.id for c in self.compute(1, cognateClasses,
+                                            meaningIds,
+                                            languageIds) if c is not None])
             for clade in Clade.objects.exclude(cladeLevel0=0).all():
                 subSelection = [('cladeLevel0', clade.cladeLevel0),
                                 ('cladeLevel1', clade.cladeLevel1),
@@ -69,11 +73,11 @@ class Command(BaseCommand):
                     language_id__in=wantedLanguageIds,
                     meaning_id__in=meaningIds,
                     not_swadesh_term=False).all()
-                cognateClassIds = CognateJudgement.objects.filter(
+                cognateClassIds = set(CognateJudgement.objects.filter(
                     lexeme__in=lexemes).values_list(
-                    'cognate_class_id', flat=True)
+                    'cognate_class_id', flat=True))
                 cognateClasses = CognateClass.objects.filter(
-                    id__in=cognateClassIds,
+                    id__in=cognateClassIds - unwantedCognateClassIds,
                     root_form='').order_by('id').values_list('id', flat=True)
                 fname = '/tmp/%s.md' % clade.taxonsetName
                 self.stdout.write("Writing file '%s'." % fname)
