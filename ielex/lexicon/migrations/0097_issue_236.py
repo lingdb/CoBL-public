@@ -124,7 +124,7 @@ def forwards_func(apps, schema_editor):
                     ' = meaning [%s](http://cobl.info/meaning/%s/)' %
                     (m.gloss, m.gloss) for m in meanings])
                 markdown.append(s)
-            f.write("\n".join(markdown))
+            f.write("\n".join(markdown)+"\n")
     print(1/0)  # Break migration.
 
 
