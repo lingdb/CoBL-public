@@ -102,7 +102,8 @@ def forwards_func(apps, schema_editor):
                                            unwantedLanguageIds)
         lexemes = Lexeme.objects.filter(
             language_id__in=wantedLanguageIds,
-            meaning_id__in=meaningIds).all()
+            meaning_id__in=meaningIds,
+            not_swadesh_term=False).all()
         cognateClassIds = CognateJudgement.objects.filter(
             lexeme__in=lexemes).values_list(
             'cognate_class_id', flat=True)
@@ -117,7 +118,8 @@ def forwards_func(apps, schema_editor):
                 s = '- [ ] cog. class [%s](http://cobl.info/cognate/%s/)' % \
                     (c, c)
                 meanings = Meaning.objects.filter(
-                    lexeme__cognate_class=c).distinct().all()
+                    lexeme__cognate_class=c,
+                    lexeme__not_swadesh_term=False).distinct().all()
                 s += ''.join([
                     ' = meaning [%s](http://cobl.info/meaning/%s/)' %
                     (m.gloss, m.gloss) for m in meanings])
