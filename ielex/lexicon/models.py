@@ -834,7 +834,7 @@ class CognateClass(AbstractTimestamped):
             # Gather counts:
             lexemeCount = 0
             onlyNotSwh = True  # True iff all lexemes are not_swadesh_term.
-            for l in self.lexeme_set.all():
+            for l in self.lexeme_set.filter(language__in=lSet).all():
                 # Update onlyNotSwh iff necessary:
                 if not l.not_swadesh_term:
                     onlyNotSwh = False
