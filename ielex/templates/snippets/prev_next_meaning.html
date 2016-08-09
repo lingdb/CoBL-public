@@ -10,6 +10,12 @@
            value="{{ meaning.gloss }}"
            type="text"
            data-typeahead="{{ typeahead | escapejs }}">
+    <a href="https://github.com/lingdb/IELex2-CognaC/wiki/{{ meaning.gloss }}"
+       title="View wiki page."
+       target="_blank"
+       style="color: #006400;">
+      <span class="glyphicon glyphicon-info-sign"></span>
+    </a>
   </h1>
   <a href="{% url 'meaning-report' next_meaning.gloss %}"
      class="pull-right prevNextLink"
