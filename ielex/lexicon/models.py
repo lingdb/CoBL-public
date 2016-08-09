@@ -738,7 +738,7 @@ class CognateClass(AbstractTimestamped):
     parallelLoanEvent = models.BooleanField(default=0)
     notProtoIndoEuropean = models.BooleanField(default=0)
     # Added when mobbing 2016-08-04:
-    idiophonic = models.BooleanField(default=0)
+    ideophonic = models.BooleanField(default=0)
     parallelDerivation = models.BooleanField(default=0)
     dubiousSet = models.BooleanField(default=0)
     # Added for #263:
@@ -794,7 +794,7 @@ class CognateClass(AbstractTimestamped):
                     'gloss_in_root_lang', 'loanword', 'loan_source',
                     'loan_notes', 'loanSourceId', 'loanEventTimeDepthBP',
                     'sourceFormInLoanLanguage', 'parallelLoanEvent',
-                    'notProtoIndoEuropean', 'idiophonic',
+                    'notProtoIndoEuropean', 'ideophonic',
                     'parallelDerivation', 'dubiousSet',
                     'revisedYet', 'revisedBy'])
 

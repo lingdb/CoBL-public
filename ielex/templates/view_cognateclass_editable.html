@@ -137,7 +137,7 @@
               <th>Root<br>Gloss</th>
               {# notes_title.html #}
               <th>Root<br>Notes</th>
-              {# idiophonic_title.html #}
+              {# ideophonic_title.html #}
               <th style="border-left: 2px solid #dddddd;"
                   data-toggle="tooltip"
                   data-placement="bottom"
@@ -145,7 +145,7 @@
                   title="Possibly onomatopoeic or nursery term, so not truly cognate?">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
-                    Idiophonic
+                    Ideophonic
                   </div>
                 </div>
               </th>
@@ -376,10 +376,10 @@
                   </div>
                 {% endif %}
               </td>
-              {# idiophonic_filter.html #}
+              {# ideophonic_filter.html #}
               <td style="border-left: 2px solid #dddddd;">
                 <button type="button" class="filterBool btn btn-xs btn-default"
-                        data-selector=".idiophonic input">
+                        data-selector=".ideophonic input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </td>
@@ -641,13 +641,13 @@
                     {{ cc.notes.data }}
                   {% endif %}
                 </td>
-                {# idiophonic_data.html #}
-                <td class="idiophonic"
+                {# ideophonic_data.html #}
+                <td class="ideophonic"
                     style="border-left: 2px solid #dddddd;">
                   {% if user.is_authenticated %}
-                    {% form_field cc.idiophonic class="form-control" %}
+                    {% form_field cc.ideophonic class="form-control" %}
                   {% elif cc.gloss_in_root_lang.data %}
-                    {% form_field cc.idiophonic class="form-control" disabled="disabled" %}
+                    {% form_field cc.ideophonic class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
                 {# parallelDerivation_datahtml #}

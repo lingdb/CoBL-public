@@ -405,7 +405,7 @@ class CogClassRowForm(AbstractTimestampedForm):
     notProtoIndoEuropean = BooleanField(
         'Not Proto-Indo-European?', validators=[InputRequired()])
     # Added when mobbing 2016-08-04:
-    idiophonic = BooleanField('Idiophonic', validators=[InputRequired()])
+    ideophonic = BooleanField('Idiophonic', validators=[InputRequired()])
     parallelDerivation = BooleanField('Parallel Derivation',
                                       validators=[InputRequired()])
     dubiousSet = BooleanField('Dubious set', validators=[InputRequired()])
