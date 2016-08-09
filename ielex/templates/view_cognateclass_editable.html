@@ -217,7 +217,7 @@
               {# loannotes_title.html #}
               <th>Loan<br>Notes</th>
               {# revisedYet_title.html #}
-              <th>
+              <th style="border-left: 2px solid #dddddd;">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Revised Yet?
@@ -516,7 +516,7 @@
                 {% endif %}
               </td>
               {# revisedYet_filter.html #}
-              <td>
+              <td style="border-left: 2px solid #dddddd;">
                 <button type="button" class="filterBool btn btn-xs btn-default"
                         data-selector=".revisedYet input">
                   <span class="glyphicon glyphicon-question-sign"></span>
@@ -732,7 +732,8 @@
                   {% endif %}
                 </td>
                 {# revisedYet_data.html #}
-                <th class="revisedYet">
+                <th class="revisedYet"
+                    style="border-left: 2px solid #dddddd;">
                   {% if user.is_authenticated %}
                     {% form_field cc.revisedYet class="form-control" %}
                   {% elif cc.loan_notes.data %}
