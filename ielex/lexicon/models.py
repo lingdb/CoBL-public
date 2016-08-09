@@ -370,28 +370,6 @@ class Clade(AbstractTimestamped):
         subSelection = {k: v for k, v in subSelection if v != 0}
         return Clade.objects.filter(**subSelection).exclude(id=self.id)
 
-    def computeParent(self):
-        # Used in stats236.py
-        selection = [('cladeLevel0', self.cladeLevel0),
-                     ('cladeLevel1', self.cladeLevel1),
-                     ('cladeLevel2', self.cladeLevel2),
-                     ('cladeLevel3', self.cladeLevel3)]
-        selection = [(k, v) for k, v in selection if v != 0]
-        # Iterating selection prefixes:
-        for i in xrange(1, len(selection)):
-            subSelection = dict(selection[0:i])
-            for c in ['cladeLevel0',
-                      'cladeLevel1',
-                      'cladeLevel2',
-                      'cladeLevel3']:
-                if c not in subSelection:
-                    subSelection[c] = 0
-            parents = Clade.objects.filter(**subSelection).all()
-            if len(parents) == 0:
-                return parents[0]
-        # Fallback: no parent
-        return None
-
 
 @reversion.register
 class Language(AbstractTimestamped):
