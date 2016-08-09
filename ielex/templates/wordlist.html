@@ -54,13 +54,16 @@
                   </div>
                 </div>
               </th>
-              <th>
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Exclude?
+              {# exclude_title.html #}
+              {% if user.is_authenticated and user.is_staff %}
+                <th>
+                  <div class="vertical-text">
+                    <div class="vertical-text__inner">
+                      Exclude?
+                    </div>
                   </div>
-                </div>
-              </th>
+                </th>
+              {% endif %}
               <th></th>
               <th>Meaning</th>
               <th>Show<br>Languages</th>
@@ -113,12 +116,15 @@
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </td>
-              <td>
-                <button type="button" class="filterBool btn btn-xs btn-default"
-                        data-selector=".exclude input">
-                  <span class="glyphicon glyphicon-question-sign"></span>
-                </button>
-              </td>
+              {# exclude_filter.html #}
+              {% if user.is_authenticated and user.is_staff %}
+                <td>
+                  <button type="button" class="filterBool btn btn-xs btn-default"
+                          data-selector=".exclude input">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                  </button>
+                </td>
+              {% endif %}
               <td></td>
               <td>
                 {% if user.is_authenticated %}
@@ -198,13 +204,16 @@
                     {% form_field meaning.doubleCheck class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
-                <td class="exclude">
-                  {% if user.is_authenticated and user.is_staff %}
-                    {% form_field meaning.exclude class="form-control" %}
-                  {% else %}
-                    {% form_field meaning.exclude class="form-control" disabled="disabled" %}
-                  {% endif %}
-                </td>
+                {# exclude_data.html #}
+                {% if user.is_authenticated and user.is_staff %}
+                  <td class="exclude">
+                    {% if user.is_authenticated and user.is_staff %}
+                      {% form_field meaning.exclude class="form-control" %}
+                    {% else %}
+                      {% form_field meaning.exclude class="form-control" disabled="disabled" %}
+                    {% endif %}
+                  </td>
+                {% endif %}
                 <td>
                   {% if meaning.data.gloss %}
                     <a href="https://github.com/lingdb/IELex2-CognaC/wiki/{{ meaning.data.gloss }}"
