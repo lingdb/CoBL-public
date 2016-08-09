@@ -2030,9 +2030,10 @@ def lexeme_add(request, meaning=None, language=None):
             l.bump(request)
             l.save()
             messages.success(request, 'Created lexeme %s.' % l.id)
-            return HttpResponseRedirect(reverse(
-                "view-meaning-languages",
-                args=[l.meaning.gloss, getDefaultLanguagelist(request)]))
+            return HttpResponseRedirect(
+                reverse("view-language-wordlist",
+                        args=[l.language.ascii_name,
+                              getDefaultWordlist(request)]))
         except Exception:
             logging.exception('Problem adding Lexeme in lexeme_add.')
             messages.error(request, 'Sorry, the server could not '
