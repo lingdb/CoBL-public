@@ -165,7 +165,10 @@
               <td>{{ cj.object_data.lexeme.source_form }}</td>
               <td>{{ cj.object_data.lexeme.phon_form }}</td>
               <td class="nowrap">
-                {{ cj.object_data.lexeme.meaning.gloss }}
+                <div class="inline"
+                     style="font-size: 15px; color: #006400;">
+                  {{ cj.object_data.lexeme.meaning.gloss }}
+                </div>
                 <a href="{% url 'meaning-report' cj.object_data.lexeme.meaning.gloss %}">
                   <img src="{% static '1w.png' %}"
                        alt="Open 1 meaning all languages view for this meaning." />
