@@ -45,8 +45,11 @@ class Command(BaseCommand):
                                      meaningIds, languageIds))
         elif(options['task'] == 2):
             self.stdout.write('Task 2')
-            self.report(self.compute(1, cognateClasses,
-                                     meaningIds, languageIds))
+            task1CCIds = set([c.id for c in self.compute(
+                2, cognateClasses, meaningIds, languageIds) if c is not None])
+            self.report([c for c in self.compute(
+                1, cognateClasses, meaningIds, languageIds)
+                if c is not None and c.id not in task1CCIds])
         elif(options['task'] == 3):
             self.stdout.write('Task 3')
             unwantedCognateClassIds = set(
