@@ -109,6 +109,7 @@ class Command(BaseCommand):
             cladeNamesSet = set()
             for lexeme in Lexeme.objects.filter(
                     id__in=lexemeIds,
+                    language_id__in=languageIds,
                     meaning_id__in=meaningIds).all():
                 # Need to investigate clades:
                 clades = Clade.objects.filter(
