@@ -143,7 +143,9 @@
                   data-placement="top"
                   data-container="body"
                   title="Lexeme Id">
-                {{ cj.object_data.lexeme.id }}
+                <a href="/lexeme/{{ cj.object_data.lexeme.id }}">
+                  {{ cj.object_data.lexeme.id }}
+                </a>
                 {% if user.is_authenticated %}
                   {% form_field cj.idField class="hide" required="required" %}
                   {% form_field cj.lastTouched class="hide" required="required" %}
