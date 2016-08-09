@@ -94,24 +94,32 @@ class Command(BaseCommand):
                              if count == 1])
             # Creating .txt files:
             for _, clade in cIdcladeMap.iteritems():
-                fname = '/tmp/%s.txt' % clade.taxonsetName
-                self.stdout.write("Writing file '%s'." % fname)
-                with open(fname, 'w') as f:
-                    markdown = []
-                    for c in clade._cognateClassIds:
-                        s = '- [ ] cog. class '\
-                            '[%s](http://cobl.info/cognate/%s/)' % (c, c)
-                        # FIXME group by meaning:
-                        meanings = Meaning.objects.filter(
-                            lexeme__cognate_class=c,
-                            lexeme__language_id__in=languageIds,
-                            lexeme__not_swadesh_term=False,
-                            id__in=meaningIds).distinct().all()
-                        s += ''.join([
-                            ' = meaning [%s](http://cobl.info/meaning/%s/)' %
-                            (m.gloss, m.gloss) for m in meanings])
-                        markdown.append(s)
-                    if len(markdown) > 0:
+                # Grouping by meaning:
+                meaningMarkdowns = {}
+                for c in clade._cognateClassIds:
+                    s = '- [ ] cog. class '\
+                        '[%s](http://cobl.info/cognate/%s/)' % (c, c)
+                    meanings = Meaning.objects.filter(
+                        lexeme__cognate_class=c,
+                        lexeme__language_id__in=languageIds,
+                        lexeme__not_swadesh_term=False,
+                        id__in=meaningIds).distinct().all()
+                    s += ''.join([
+                        ' = meaning [%s](http://cobl.info/meaning/%s/)' %
+                        (m.gloss, m.gloss) for m in meanings])
+                    for m in meanings:
+                        if m.gloss not in meaningMarkdowns:
+                            meaningMarkdowns[m.gloss] = []
+                        meaningMarkdowns[m.gloss].append(s)
+                # Composing markdown:
+                markdown = []
+                for k in sorted(meaningMarkdowns.keys()):
+                    markdown += meaningMarkdowns[k]
+                # Writing if content:
+                if len(markdown) > 0:
+                    fname = '/tmp/%s.txt' % clade.taxonsetName
+                    self.stdout.write("Writing file '%s'." % fname)
+                    with open(fname, 'w') as f:
                         f.write("\n".join(markdown)+"\n")
 
     def compute(self, lowerBranchBound,
