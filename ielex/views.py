@@ -1273,11 +1273,12 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             try:
                 lexemesTableForm = LexemeTableViewMeaningsForm(request.POST)
                 lexemesTableForm.validate()
+                changedCogIdSet = set()  # Not changing a cognate class twice
 
                 for entry in lexemesTableForm.lexemes:
                     data = entry.data
-                    # Updating the lexeme:
                     try:
+                        # Updating the lexeme:
                         lex = Lexeme.objects.get(id=data['id'])
                         if lex.isChanged(**data):
                             problem = lex.setDelta(request, **data)
@@ -1286,6 +1287,19 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                             else:
                                 messages.error(request,
                                                lex.deltaReport(**problem))
+                        # Updating cognate class if requested:
+                        for cData in data['allCognateClasses']:
+                            if cData['id'] in changedCogIdSet:
+                                continue
+                            c = CognateClass.objects.get(id=cData['id'])
+                            if c.isChanged(**cData):
+                                problem = c.setDelta(request, **cData)
+                                if problem is None:
+                                    c.save()
+                                    changedCogIdSet.add(c.id)
+                                else:
+                                    messages.error(
+                                        request, c.deltaReport(**problem))
                     except Exception:
                         logging.exception('Problem updating Lexeme '
                                           'in view_meaning.')
