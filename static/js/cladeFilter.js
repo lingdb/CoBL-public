@@ -101,7 +101,7 @@
         var cladepath = row.data('cladefilter-cladepath');
         if(!_.isUndefined(cladepath)){
           return _.some(_.keys(settings.cladepaths), function(prefix){
-            return _.startsWith(cladepath, prefix);
+            return _.startsWith(cladepath, prefix+',');
           });
         }
         //Default is not to hide:
