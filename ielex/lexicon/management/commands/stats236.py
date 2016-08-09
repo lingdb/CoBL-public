@@ -39,18 +39,18 @@ class Command(BaseCommand):
             id__in=cognateClassIds,
             root_form='').all()  # Only without root_form is wanted.
 
-        if(options['task'] == 1):
+        if options['task'] == 1:
             self.stdout.write('Task 1')
             self.report(self.compute(2, cognateClasses,
                                      meaningIds, languageIds), meaningIds)
-        elif(options['task'] == 2):
+        elif options['task'] == 2:
             self.stdout.write('Task 2')
             task1 = self.compute(2, cognateClasses, meaningIds, languageIds)
             task1CCIds = set([c.id for c in task1 if c is not None])
             self.report([c for c in self.compute(
                 1, cognateClasses, meaningIds, languageIds)
                 if c is not None and c.id not in task1CCIds], meaningIds)
-        elif(options['task'] == 3):
+        elif options['task'] == 3:
             self.stdout.write('Task 3')
             unwantedCognateClassIds = set(
                 [c.id for c in self.compute(1, cognateClasses,
