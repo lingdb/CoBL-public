@@ -164,8 +164,16 @@
               </td>
               <td>{{ cj.object_data.lexeme.source_form }}</td>
               <td>{{ cj.object_data.lexeme.phon_form }}</td>
-              <td>
-                <a href="{% url 'meaning-report' cj.object_data.lexeme.meaning.gloss %}">{{ cj.object_data.lexeme.meaning.gloss }}</a>
+              <td class="nowrap">
+                {{ cj.object_data.lexeme.meaning.gloss }}
+                <a href="{% url 'meaning-report' cj.object_data.lexeme.meaning.gloss %}">
+                  <img src="{% static '1w.png' %}"
+                       alt="Open 1 meaning all languages view for this meaning." />
+                </a>
+                <a href="/meaning/{{ cj.object_data.lexeme.meaning.gloss }}/cognateclasslist/">
+                  <img src="{% static '1c.png' %}"
+                       alt="Open 1 meaning all cognate sets view for this meaning." />
+                </a>
               </td>
               <td>{{ cj.object_data.lexeme.notes|wikilink }}</td>
               <td>
