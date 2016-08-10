@@ -43,7 +43,7 @@
         });
         //Building the name for a cognate class:
         var mkCognateClassName = function(cc, deli){
-          deli = deli || ' , ';
+          deli = deli || ' = ';
           return _.filter([cc.alias,
                            cc.root_form,
                            cc.root_language], function(s){

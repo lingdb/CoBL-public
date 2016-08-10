@@ -931,10 +931,13 @@ class CognateClass(AbstractTimestamped):
     def rootFormOrPlaceholder(self):
         # Added for #246
         if self.root_form != '':
+            if self.loanword:
+                if self.loan_source != '':
+                    return u"%s ≤ %s" % (self.root_form, self.loan_source)
             return self.root_form
         if self.loanword:
             if self.loan_source != '':
-                return u"≤ " + self.loan_source
+                return u"≤ %s" % self.loan_source
         if self.lexeme_set.count() == 1:
             return self.lexeme_set.get().source_form
         return ''
@@ -943,18 +946,22 @@ class CognateClass(AbstractTimestamped):
     def rootLanguageOrPlaceholder(self):
         # Added for #246
         if self.root_language != '':
+            if self.loanword:
+                if self.sourceFormInLoanLanguage != '':
+                    return u"%s ≤ %s" % (self.root_language,
+                                         self.sourceFormInLoanLanguage)
             return self.root_language
         if self.loanword:
             if self.sourceFormInLoanLanguage != '':
-                return u"≤ " + self.sourceFormInLoanLanguage
+                return u"≤ %s" % self.sourceFormInLoanLanguage
         if self.lexeme_set.count() == 1:
-            return "Sgl Lg: " + self.lexeme_set.values_list(
+            return "Only in Sgl Lg: %s" % self.lexeme_set.values_list(
                 'language__utf8_name', flat=True)[0]
         languageIds = set(
             self.lexeme_set.values_list('language_id', flat=True))
         parentClade = getCladeFromLanguageIds(languageIds)
         if parentClade is not None:
-            return "Sgl Clade: " + parentClade.cladeName
+            return "Only in Clade: %s" % parentClade.cladeName
         return ''
 
 
