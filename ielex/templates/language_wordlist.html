@@ -590,13 +590,13 @@
                 {# rootform_data.html #}
                 <td class="lexemeRootForm" style="color: #8B4510;">
                   {% if lexeme.object_data.allCognateClasses|length == 1 %}
-                    {{ lexeme.object_data.allCognateClasses.0.root_form }}
+                    {{ lexeme.object_data.allCognateClasses.0.rootFormOrPlaceholder }}
                   {% endif %}
                 </td>
                 {# rootlanguage_data.html #}
                 <td class="lexemeRootLanguage nowrap" style="color: #8B4510; width: 155px;">
                   {% if lexeme.object_data.allCognateClasses|length == 1 %}
-                    {{ lexeme.object_data.allCognateClasses.0.root_language }}
+                    {{ lexeme.object_data.allCognateClasses.0.rootLanguageOrPlaceholder }}
                   {% endif %}
                 </td>
                 {# loanevent_data.html #}

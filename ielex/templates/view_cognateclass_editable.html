@@ -604,17 +604,17 @@
                 {# rootform_data.html #}
                 <td class="cogRootForm">
                   {% if user.is_authenticated %}
-                    {% form_field cc.root_form class="form-control" style="width: 12em;" %}
-                  {% elif cc.root_form.data %}
-                    {{ cc.root_form.data }}
+                    {% form_field cc.root_form class="form-control" style="width: 12em;" placeholder=cc.object_data.rootFormOrPlaceholder %}
+                  {% else %}
+                    {{ cc.object_data.rootFormOrPlaceholder }}
                   {% endif %}
                 </td>
                 {# rootlang_data.html #}
                 <td class="cogRootLang">
                   {% if user.is_authenticated %}
-                    {% form_field cc.root_language class="form-control" style="width: 12em;" %}
-                  {% elif cc.root_language.data %}
-                    {{ cc.root_language.data }}
+                    {% form_field cc.root_language class="form-control" style="width: 12em;" placeholder=cc.object_data.rootLanguageOrPlaceholder %}
+                  {% else %}
+                    {{ cc.object_data.rootLanguageOrdPlaceholder }}
                   {% endif %}
                 </td>
                 {# notProtoIndoEuropean_data.html #}

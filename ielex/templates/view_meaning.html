@@ -603,9 +603,9 @@
                       {{ lexeme.allCognateClasses.0.lastTouched }}
                       {{ lexeme.allCognateClasses.0.lastEditedBy }}
                     </span>
-                    {% form_field lexeme.allCognateClasses.0.root_form class="form-control" %}
+                    {% form_field lexeme.allCognateClasses.0.root_form class="form-control" placeholder=lexeme.allCognateClasses.0.object_data.rootFormOrPlaceholder %}
                   {% else %}
-                    {{ lexeme.object_data.allCognateClasses.0.root_form }}
+                    {{ lexeme.object_data.allCognateClasses.0.rootFormOrPlaceholder }}
                   {% endif %}
                 {% endif %}
               </td>
@@ -613,9 +613,9 @@
               <td class="lexemeRootLanguage" style="color: #8B4510; width: 160px;">
                 {% if lexeme.object_data.allCognateClasses|length == 1 %}
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.allCognateClasses.0.root_language class="form-control" %}
+                    {% form_field lexeme.allCognateClasses.0.root_language class="form-control" placeholder=lexeme.allCognateClasses.0.object_data.rootLanguageOrPlaceholder %}
                   {% else %}
-                    {{ lexeme.object_data.allCognateClasses.0.root_language }}
+                    {{ lexeme.object_data.allCognateClasses.0.rootLanguageOrPlaceholder }}
                   {% endif %}
                 {% endif %}
               </td>
