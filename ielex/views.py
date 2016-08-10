@@ -1457,8 +1457,8 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
          "cognate_form": cognate_form,
          "cognateClasses": json.dumps([{'id': c.id,
                                         'alias': c.alias,
-                                        'root_form': c.root_form,
-                                        'root_language': c.root_language}
+                                        'root_form': c.rootFormOrPlaceholder,
+                                        'root_language': c.rootLanguageOrPlaceholder}
                                        for c in cognateClasses]),
          "add_cognate_judgement": lexeme_id,
          "lex_ed_form": lexemes_editabletable_form,

@@ -383,14 +383,14 @@ def getCladeFromLanguageIds(languageIds):
         newcIdOrderMap = dict(
             LanguageClade.objects.filter(
                 language_id=languageId
-                ).values_list('clade_id', 'order'))
+                ).values_list('clade_id', 'cladesOrder'))
         if cladeIdOrderMap is None:
             cladeIdOrderMap = newcIdOrderMap
         else:
             intersection = newcIdOrderMap.viewkeys() & \
                            cladeIdOrderMap.viewkeys()
             cladeIdOrderMap.update(newcIdOrderMap)
-            cladeIdOrderMap = {k: v for k, v in cladeIdOrderMap
+            cladeIdOrderMap = {k: v for k, v in cladeIdOrderMap.iteritems()
                                if k in intersection}
     # Retrieving the Clade:
     if len(cladeIdOrderMap) > 0:
@@ -934,7 +934,7 @@ class CognateClass(AbstractTimestamped):
             return self.root_form
         if self.loanword:
             if self.loan_source != '':
-                return "≤ " + self.loan_source
+                return u"≤ " + self.loan_source
         if self.lexeme_set.count() == 1:
             return self.lexeme_set.get().source_form
         return ''
@@ -946,10 +946,10 @@ class CognateClass(AbstractTimestamped):
             return self.root_language
         if self.loanword:
             if self.sourceFormInLoanLanguage != '':
-                return "≤ " + self.sourceFormInLoanLanguage
+                return u"≤ " + self.sourceFormInLoanLanguage
         if self.lexeme_set.count() == 1:
             return "Sgl Lg: " + self.lexeme_set.values_list(
-                'language_name', flat=True)[0]
+                'language__utf8_name', flat=True)[0]
         languageIds = set(
             self.lexeme_set.values_list('language_id', flat=True))
         parentClade = getCladeFromLanguageIds(languageIds)
