@@ -371,6 +371,35 @@ class Clade(AbstractTimestamped):
         return Clade.objects.filter(**subSelection).exclude(id=self.id)
 
 
+def getCladeFromLanguageIds(languageIds):
+    '''
+    getCladeFromLanguageIds :: Clade | None
+    Tries to find the most specific clade that contains all given languageIds.
+    If no such clade can be found returns None.
+    '''
+    # Calculating clade
+    cladeIdOrderMap = None
+    for languageId in languageIds:
+        newcIdOrderMap = dict(
+            LanguageClade.objects.filter(
+                language_id=languageId
+                ).values_list('clade_id', 'order'))
+        if cladeIdOrderMap is None:
+            cladeIdOrderMap = newcIdOrderMap
+        else:
+            intersection = newcIdOrderMap.viewkeys() & \
+                           cladeIdOrderMap.viewkeys()
+            cladeIdOrderMap.update(newcIdOrderMap)
+            cladeIdOrderMap = {k: v for k, v in cladeIdOrderMap
+                               if k in intersection}
+    # Retrieving the Clade:
+    if len(cladeIdOrderMap) > 0:
+        # https://stackoverflow.com/a/3282904/448591
+        cId = min(cladeIdOrderMap, key=cladeIdOrderMap.get)
+        return Clade.objects.get(id=cId)
+    return None
+
+
 @reversion.register
 class Language(AbstractTimestamped):
     iso_code = models.CharField(max_length=3, blank=True)
@@ -897,6 +926,30 @@ class CognateClass(AbstractTimestamped):
     def loanSourceCognateClassTitle(self):
         cc = self.loanSourceCognateClass
         return ' '.join([cc.alias, cc.root_form, cc.root_language])
+
+    @property
+    def rootFormOrPlaceholder(self):
+        # Added for #246
+        if self.root_form != '':
+            return self.root_form
+        if self.lexeme_set.count() == 1:
+            return self.lexeme_set.get().source_form
+        return ''
+
+    @property
+    def rootLanguageOrPlaceholder(self):
+        # Added for #246
+        if self.root_language != '':
+            return self.root_language
+        if self.lexeme_set.count() == 1:
+            return "Sgl Lg: " + self.lexeme_set.values_list(
+                'language_name', flat=True)[0]
+        languageIds = set(
+            self.lexeme_set.values_list('language_id', flat=True))
+        parentClade = getCladeFromLanguageIds(languageIds)
+        if parentClade is not None:
+            return "Sgl Clade: " + parentClade.cladeName
+        return ''
 
 
 class DyenCognateSet(models.Model):
