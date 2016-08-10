@@ -932,6 +932,9 @@ class CognateClass(AbstractTimestamped):
         # Added for #246
         if self.root_form != '':
             return self.root_form
+        if self.loanword:
+            if self.loan_source != '':
+                return "≤ " + self.loan_source
         if self.lexeme_set.count() == 1:
             return self.lexeme_set.get().source_form
         return ''
@@ -941,6 +944,9 @@ class CognateClass(AbstractTimestamped):
         # Added for #246
         if self.root_language != '':
             return self.root_language
+        if self.loanword:
+            if self.sourceFormInLoanLanguage != '':
+                return "≤ " + self.sourceFormInLoanLanguage
         if self.lexeme_set.count() == 1:
             return "Sgl Lg: " + self.lexeme_set.values_list(
                 'language_name', flat=True)[0]
