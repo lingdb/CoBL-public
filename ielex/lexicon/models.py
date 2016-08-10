@@ -930,39 +930,61 @@ class CognateClass(AbstractTimestamped):
     @property
     def rootFormOrPlaceholder(self):
         # Added for #246
+        # If we have a root_form, we see if we can enrich it:
         if self.root_form != '':
             if self.loanword:
-                if self.loan_source != '':
-                    return u"%s ≤ %s" % (self.root_form, self.loan_source)
+                if self.sourceFormInLoanLanguage != '':
+                    return u"%s ≤ %s" % (self.root_form,
+                                         self.sourceFormInLoanLanguage)
             return self.root_form
+        # No root_form, but maybe a loanword:
         if self.loanword:
-            if self.loan_source != '':
-                return u"≤ %s" % self.loan_source
+            if self.sourceFormInLoanLanguage != '':
+                return u"≤ %s" % self.sourceFormInLoanLanguage
+        # No root_form or loanword, maybe only one lexeme in cognate class:
         if self.lexeme_set.count() == 1:
             return self.lexeme_set.get().source_form
+        # Nothing left to try:
         return ''
 
     @property
     def rootLanguageOrPlaceholder(self):
         # Added for #246
+        # If we have a root_language, we try to enrich it:
         if self.root_language != '':
             if self.loanword:
-                if self.sourceFormInLoanLanguage != '':
-                    return u"%s ≤ %s" % (self.root_language,
-                                         self.sourceFormInLoanLanguage)
+                if self.loan_source != '':
+                    return u"%s ≤ %s" % (self.root_language, self.loan_source)
             return self.root_language
+        # No root_language, but maybe a loanword:
         if self.loanword:
-            if self.sourceFormInLoanLanguage != '':
-                return u"≤ %s" % self.sourceFormInLoanLanguage
+            if self.loan_source != '':
+                return u"≤ %s" % self.loan_source
+        # No root_language or loanword, maybe only one lexeme in cognate class:
         if self.lexeme_set.count() == 1:
             return "Only in Sgl Lg: %s" % self.lexeme_set.values_list(
                 'language__utf8_name', flat=True)[0]
-        languageIds = set(
-            self.lexeme_set.values_list('language_id', flat=True))
-        parentClade = getCladeFromLanguageIds(languageIds)
+        # Maybe we can find a clade specific to the related languages:
+        parentClade = getCladeFromLanguageIds(set(
+            self.lexeme_set.values_list('language_id', flat=True)))
         if parentClade is not None:
             return "Only in Clade: %s" % parentClade.cladeName
+        # Nothing left to try:
         return ''
+
+    @property
+    def combinedRootPlaceholder(self):
+        # Added for #246
+        rootFormPl = self.rootFormOrPlaceholder().split(' ≤ ')
+        rootLangPl = self.rootLanguageOrPlaceholder().split(' ≤ ')
+        if len(rootFormPl) == len(rootLangPl) == 2:
+            return "%s IN %s ≤ %s IN %s" % (rootFormPl[0], rootLangPl[0],
+                                            rootFormPl[1], rootLangPl[1])
+        if len(rootFormPl) == 1 and len(rootLangPl) == 2:
+            pass
+        if len(rootFormPl) == 2 and len(rootLangPl) == 1:
+            pass
+        pass  # FIXME
 
 
 class DyenCognateSet(models.Model):
