@@ -475,8 +475,7 @@ class LexemeRowViewMeaningsForm(AbstractTimestampedForm):
     notes = TextField('Notes', validators=[InputRequired()])
     cogclass_link = TextField('CogClass Links', validators=[InputRequired()])
     # Re-added for #278:
-    allCognateClasses = FieldList(FormField(LexemeCognateClassRow),
-                                  min_entries=0, max_entries=1)
+    allCognateClasses = FieldList(FormField(LexemeCognateClassRow))
 
 
 class LexemeTableViewMeaningsForm(WTForm):
