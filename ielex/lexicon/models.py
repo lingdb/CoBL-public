@@ -978,8 +978,8 @@ class CognateClass(AbstractTimestamped):
                 p2 = "%s IN %s" % (self.sourceFormInLoanLanguage,
                                    self.loan_source)
             elif self.sourceFormInLoanLanguage != '':
-                p2 = "%s ((no Loan source lg entered))"
-                # % self.sourceFormInLoanLanguage
+                p2 = "%s ((no Loan source lg entered))" % \
+                    self.sourceFormInLoanLanguage
             elif self.loan_source != '':
                 p2 = "%s (no Loan source form entered)" % self.loan_source
             else:
