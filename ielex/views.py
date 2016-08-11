@@ -2526,3 +2526,44 @@ def changeDefaults(request):
 @logExceptions
 def view_frontpage(request):
     return viewAbout(request, 'home')
+
+
+@csrf_protect
+@logExceptions
+def view_two_languages_wordlist(request, lang1=None, lang2=None, wordist=None):
+    '''
+    Implements two languages * all meanings view for #256
+    lang1 :: str | None
+    lang2 :: str | None
+    wordlist :: str | None
+    If lang1 is given it will be treated as the default language.
+    '''
+    # Setting defaults if possible:
+    if lang1 is not None:
+        setDefaultLanguage(request, lang1)
+    if wordlist is not None:
+        setDefaultWordlist(request, wordlist)
+    # Fetching lang1 to operate on:
+    if lang1 is None:
+        lang1 = getDefaultLanguage(request)
+    try:
+        lang1 = Language.objects.get(ascii_name=lang1)
+    except Language.DoesNotExist:
+        raise Http404("Language '%s' does not exist" % lang1)
+    # Fetching lang2 to operate on:
+    if lang2 is None:
+        lang2 = Language.objects.exclude(
+            id=lang1.id).filter(
+            languagelist__name=getDefaultLanguageList(request))[0]
+    else:
+        try:
+            lang2 = Language.objects.get(ascii_name=lang2)
+        except Language.DoesNotExist:
+            raise Http404("Language '%s' does not exist" % lang1)
+    # Fetching wordlist to operate on:
+    try:
+        wordlist = MeaningList.objects.get(name=wordlist)
+    except MeaningList.DoesNotExist:
+        raise Http404("MeaningList '%s' does not exist" % wordlist)
+    # FIXME IMPLEMENT
+    pass
