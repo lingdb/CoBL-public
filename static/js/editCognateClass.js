@@ -37,18 +37,16 @@
         //Form to work with:
         var form = $('#addToCognateClassForm');
         //Cognate classes we know about:
-        var cognateClassMap = {}; // id -> {id, alias, root_form, root_language}
+        var cognateClassMap = {}; // id -> {id, alias, root_form, root_language, placeholder}
         _.each(form.data('cognateclasses'), function(cc){
           cognateClassMap[cc.id] = cc;
         });
         //Building the name for a cognate class:
         var mkCognateClassName = function(cc, deli){
           deli = deli || ' = ';
-          return _.filter([cc.alias,
-                           cc.root_form,
-                           cc.root_language], function(s){
-                             return !_.isEmpty(s);
-                           }).join(deli);
+          return _.filter([cc.alias, cc.placeholder], function(s){
+            return !_.isEmpty(s);
+          }).join(deli);
         };
         //Building options for a cognate class:
         var mkOptions = function(cId){

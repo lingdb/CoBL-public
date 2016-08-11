@@ -928,63 +928,116 @@ class CognateClass(AbstractTimestamped):
         return ' '.join([cc.alias, cc.root_form, cc.root_language])
 
     @property
-    def rootFormOrPlaceholder(self):
-        # Added for #246
-        # If we have a root_form, we see if we can enrich it:
-        if self.root_form != '':
-            if self.loanword:
-                if self.sourceFormInLoanLanguage != '':
-                    return u"%s ≤ %s" % (self.root_form,
-                                         self.sourceFormInLoanLanguage)
-            return self.root_form
-        # No root_form, but maybe a loanword:
+    def rootFormPlaceholder(self):
+        '''
+        Added for #246
+        rootFormPlaceholder :: {is_loanword :: bool,
+                                placeholder :: str}
+        '''
+        # Do we have a loanword?
         if self.loanword:
             if self.sourceFormInLoanLanguage != '':
-                return u"≤ %s" % self.sourceFormInLoanLanguage
+                return {'is_loanword': True,
+                        'placeholder': self.sourceFormInLoanLanguage}
         # No root_form or loanword, maybe only one lexeme in cognate class:
         if self.lexeme_set.count() == 1:
-            return self.lexeme_set.get().source_form
+            return {'is_loanword': False,
+                    'placeholder': self.lexeme_set.get().source_form}
+        # Nothing left to try:
+        return {'is_loanword': False, 'placeholder': ''}
+
+    @property
+    def rootFormOrPlaceholder(self):
+        # Added for #246
+        pData = self.rootFormPlaceholder
+        # If we have a root_form, we see if we can enrich it:
+        if self.root_form != '':
+            if pData['is_loanword']:
+                return u"%s ≤ %s" % (self.root_form, pData['placeholder'])
+            return self.root_form
+        # No root_form, but maybe a placeholder:
+        if pData['placeholder'] != '':
+            return pData['placeholder']
         # Nothing left to try:
         return ''
+
+    @property
+    def rootLanguagePlaceholder(self):
+        '''
+        Added for #246
+        rootLanguagePlaceholder :: {is_loanword :: bool,
+                                    is_clade :: bool,
+                                    placeholder :: str}
+        '''
+        # Do we have a loan language?
+        if self.loanword:
+            if self.loan_source != '':
+                return {'is_loanword': True,
+                        'is_clade': False,
+                        'placeholder': self.loan_source}
+        # No loan language, maybe only one lexeme in cognate class:
+        if self.lexeme_set.count() == 1:
+            return {'is_loanword': False,
+                    'is_clade': False,
+                    'placeholder': self.lexeme_set.values_list(
+                        'language__utf8_name', flat=True)[0]}
+        # Maybe we can find a clade specific to the related languages:
+        parentClade = getCladeFromLanguageIds(set(
+            self.lexeme_set.values_list('language_id', flat=True)))
+        if parentClade is not None:
+            return {'is_loanword': False,
+                    'is_clade': True,
+                    'placeholder': parentClade.taxonsetName}
+        # Nothing left to try:
+        return {'is_loanword': False,
+                'is_clade': False,
+                'placeholder': ''}
 
     @property
     def rootLanguageOrPlaceholder(self):
         # Added for #246
         # If we have a root_language, we try to enrich it:
         if self.root_language != '':
-            if self.loanword:
-                if self.loan_source != '':
-                    return u"%s ≤ %s" % (self.root_language, self.loan_source)
+            if self.loanword and self.loan_source != '':
+                return u"%s ≤ %s" % (self.root_language, self.loan_source)
             return self.root_language
+        # Only calculating pData if not root_language:
+        pData = self.rootLanguagePlaceholder
         # No root_language, but maybe a loanword:
-        if self.loanword:
-            if self.loan_source != '':
-                return u"≤ %s" % self.loan_source
-        # No root_language or loanword, maybe only one lexeme in cognate class:
-        if self.lexeme_set.count() == 1:
-            return "Only in Sgl Lg: %s" % self.lexeme_set.values_list(
-                'language__utf8_name', flat=True)[0]
-        # Maybe we can find a clade specific to the related languages:
-        parentClade = getCladeFromLanguageIds(set(
-            self.lexeme_set.values_list('language_id', flat=True)))
-        if parentClade is not None:
-            return "Only in Clade: %s" % parentClade.cladeName
+        if pData['is_loanword']:
+            return u"≤ %s" % pData['placeholder']
+        # No root_language but maybe a clade:
+        if pData['is_clade']:
+            return "Only in Clade: %s" % pData['placeholder']
+        # Do we have a placeholder at all?
+        if pData['placeholder'] != '':
+            return "Only in Sgl Lg: %s" % pData['placeholder']
         # Nothing left to try:
         return ''
 
     @property
     def combinedRootPlaceholder(self):
         # Added for #246
-        rootFormPl = self.rootFormOrPlaceholder().split(' ≤ ')
-        rootLangPl = self.rootLanguageOrPlaceholder().split(' ≤ ')
-        if len(rootFormPl) == len(rootLangPl) == 2:
-            return "%s IN %s ≤ %s IN %s" % (rootFormPl[0], rootLangPl[0],
-                                            rootFormPl[1], rootLangPl[1])
-        if len(rootFormPl) == 1 and len(rootLangPl) == 2:
-            pass
-        if len(rootFormPl) == 2 and len(rootLangPl) == 1:
-            pass
-        pass  # FIXME
+        # Calculating part 1:
+        p1 = self.root_form
+        if self.root_form != '' and self.root_language != '':
+            p1 = "%s IN %s" % (self.root_form, self.root_language)
+        elif self.root_language != '':
+            p1 = self.root_language
+        # Calculating part 2:
+        formPlaceholder = self.rootFormPlaceholder['placeholder']
+        langPlaceholder = self.rootLanguagePlaceholder['placeholder']
+        p2 = formPlaceholder
+        if formPlaceholder != '' and langPlaceholder != '':
+            p2 = "%s IN %s" % (formPlaceholder, langPlaceholder)
+        elif langPlaceholder != '':
+            p2 = langPlaceholder
+        # Composing parts:
+        if p1 != '' and p2 != '':
+            return u"%s ≤ %s" % (p1, p2)
+        if p2 != '':
+            return p2
+        return p1
 
 
 class DyenCognateSet(models.Model):
