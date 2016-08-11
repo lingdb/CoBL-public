@@ -118,13 +118,14 @@ class NexusExportView(TemplateView):
             filename.replace(" ", "_")
 
         write_nexus(
-            response,
-            form.cleaned_data["language_list"],
-            form.cleaned_data["meaning_list"],
-            set(form.cleaned_data["reliability"]),
-            form.cleaned_data["dialect"],
-            True,
-            form.cleaned_data["ascertainment_marker"])
+            fileobj=response,
+            language_list_name=form.cleaned_data["language_list"],
+            meaning_list_name=form.cleaned_data["meaning_list"],
+            exclude_ratings=set(form.cleaned_data["reliability"]),
+            dialect=form.cleaned_data["dialect"],
+            label_cognate_sets=True,
+            ascertainment_marker=form.cleaned_data["ascertainment_marker"],
+            excludeLoanwords=form.cleaned_data["excludeLoanwords"])
         return response
 
 
@@ -166,13 +167,14 @@ class DumpRawDataView(TemplateView):
         return response
 
 
-def write_nexus(fileobj,                # file object
-                language_list_name,     # string
-                meaning_list_name,      # string
-                exclude_ratings,        # set
-                dialect,                # string
-                label_cognate_sets,     # bool
-                ascertainment_marker):  # bool
+def write_nexus(fileobj,                  # file object
+                language_list_name,       # str
+                meaning_list_name,        # str
+                exclude_ratings,          # set str
+                dialect,                  # string
+                label_cognate_sets,       # bool
+                ascertainment_marker,     # bool
+                excludeLoanwords=False):  # bool, added for #229
     start_time = time.time()
     dialect_full_name = dict(ChooseNexusOutputForm.DIALECT)[dialect]
 
@@ -340,10 +342,11 @@ def write_delimited(fileobj,
     return fileobj
 
 
-def construct_matrix(languages,
-                     meanings,
-                     exclude_ratings,
-                     ascertainment_marker):
+def construct_matrix(languages,                # [Language]
+                     meanings,                 # [Meaning]
+                     exclude_ratings,          # set
+                     ascertainment_marker,     # bool
+                     excludeLoanwords=False):  # bool, added for #229
 
         # synonymous cognate classes (i.e. cognate reflexes representing
         # a single Swadesh meaning)
@@ -367,11 +370,18 @@ def construct_matrix(languages,
                 reliability__in=exclude_ratings).values_list(
                 "cognate_judgement__lexeme__id", flat=True))
 
-        # excluding lexemes that are marked as not_swadesh_term
-        # in their data fields:
-        for l in Lexeme.objects.all():
-            if l.not_swadesh_term:
-                exclude_lexemes.add(l.id)
+        # exclude lexemes that are marked as not_swadesh_term:
+        if 'X' in exclude_ratings:
+            exclude_lexemes |= set(Lexeme.objects.filter(
+                not_swadesh_term=True).values_list(
+                'id', flat=True))
+
+        # exclude lexemes that belong to a cognate class
+        # that is marked as loanword:
+        if excludeLoanwords:
+            exclude_lexemes |= set(Lexeme.objects.filter(
+                cognate_class__loanword=True).values_list(
+                'id', flat=True))
 
         # languages lacking any lexeme for a meaning
         languages_missing_meaning = dict()
