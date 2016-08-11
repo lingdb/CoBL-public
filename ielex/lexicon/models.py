@@ -3,6 +3,7 @@ from __future__ import division
 import json
 import reversion
 import os.path
+import zlib
 from collections import defaultdict
 from string import uppercase, lowercase
 from django.db import models
@@ -10,6 +11,7 @@ from django.db.models import Max
 from django.core.urlresolvers import reverse
 from django.utils.safestring import SafeString
 from django.utils.encoding import python_2_unicode_compatible
+from django.http import HttpResponse
 # ielex specific imports:
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import suitable_for_url, standard_reserved_names
@@ -1613,3 +1615,41 @@ class Author(AbstractTimestamped):
                              self.surname.encode('utf-8') + extension)
             if os.path.isfile(p):
                 return p
+
+
+@reversion.register
+class NexusExport(AbstractTimestamped):
+    exportName = models.CharField(max_length=256, blank=True)
+    exportSettings = models.TextField(blank=True)
+    exportData = models.BinaryField(null=True)
+
+    @property
+    def pending(self):
+        # True if calculation for export is not finished
+        return self.exportData is None
+
+    def forkComputation(self):
+        pass  # FIXME IMPLEMENT
+
+    def generateResponse(self):
+        assert self.pending, "NexusExport.generateResponse " \
+                             "impossible for pending exports."
+        response = HttpResponse(content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=%s' % \
+            self.exportName.replace(" ", "_")
+        response.write(zlib.decompress(self.exportData))
+        return response
+
+    def setExportData(self, data):
+        assert self.pending, "NexusExport.setExportData " \
+                             "requires pending export."
+        self.exportData = zlib.compress(data)
+        self.save()
+
+    def setSettings(self, settings):
+        # settings :: {}
+        self.exportSettings = json.dumps(settings)
+
+    def getSettings(self):
+        # settings :: {}
+        return json.loads(self.exportSettings)

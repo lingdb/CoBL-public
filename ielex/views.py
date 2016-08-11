@@ -76,7 +76,8 @@ from ielex.lexicon.models import Author, \
                                  MeaningListOrder, \
                                  SndComp, \
                                  Source, \
-                                 TYPE_CHOICES
+                                 TYPE_CHOICES, \
+                                 NexusExport
 from ielex.lexicon.defaultModels import getDefaultLanguage, \
                                         getDefaultLanguageId, \
                                         getDefaultLanguagelist, \
@@ -2526,3 +2527,24 @@ def changeDefaults(request):
 @logExceptions
 def view_frontpage(request):
     return viewAbout(request, 'home')
+
+
+@logExceptions
+@login_required
+def view_nexus_export(request, exportId=None):
+    if exportId is not None:
+        try:
+            export = NexusExport.objects.get(id=exportId)
+            if not export.pending:
+                return export.generateResponse()
+            # Message if pending:
+            messages.info(request,
+                          "Sorry, the server is still "
+                          "computing export %s." % exportId)
+        except NexusExport.DoesNotExist:
+            messages.error(request,
+                           "Sorry, but export %s does not "
+                           "exist in the database." % exportId)
+    return render_template(
+        request, "view_nexus_export.html",
+        {'exports': NexusExport.objects.all()[0:100]})

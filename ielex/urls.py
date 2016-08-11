@@ -42,7 +42,8 @@ from ielex.views import add_language_list, \
                         view_object_history, \
                         view_sndComp, \
                         view_wordlist, \
-                        view_wordlists
+                        view_wordlists, \
+                        view_nexus_export
 from ielex import settings
 from ielex.lexicon.views import CognateClassCitationCreateView, \
                                 cognate_class_citation_delete, \
@@ -326,6 +327,10 @@ if settings.semantic_domains:
 urlpatterns += patterns(
     '',
     url(r'^nexus/$', login_required(NexusExportView.as_view()), name="nexus"),
+    url(r'^nexus/export/(?P<exportId>\d+)/$',
+        view_nexus_export,
+        name="view_nexus_export"),
+    url(r'^nexus/export/$', view_nexus_export),
     url(r'^dump/$', login_required(DumpRawDataView.as_view()), name="dump"))
 
 urlpatterns += patterns(
