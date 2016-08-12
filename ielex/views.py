@@ -816,6 +816,17 @@ def view_language_wordlist(request, language, wordlist):
             return HttpResponseRedirect(
                 reverse("view-language-wordlist",
                         args=[language.ascii_name, wordlist.name]))
+        elif 'editCognateClass' in request.POST:
+            try:
+                form = LexemeTableEditCognateClassesForm(request.POST)
+                form.validate()
+                form.handle(request)
+            except Exception:
+                logging.exception('Problem handling editCognateClass.')
+
+            return HttpResponseRedirect(
+                reverse("view-language-wordlist",
+                        args=[language.ascii_name, wordlist.name]))
 
     # collect data
     lexemes = Lexeme.objects.filter(
@@ -826,7 +837,9 @@ def view_language_wordlist(request, language, wordlist):
         "meaning__gloss").prefetch_related(
         "cognatejudgement_set",
         "cognatejudgement_set__cognatejudgementcitation_set",
-        "cognate_class", "lexemecitation_set")
+        "cognate_class",
+        "lexemecitation_set",
+        "language")
 
     # TODO: move this out of views
     # filter by 'language' or 'meaning'
@@ -838,11 +851,17 @@ def view_language_wordlist(request, language, wordlist):
             lexemes = lexemes.filter(
                 cognate_class=request.GET.get('cognate_class'))
 
+    # Used for #219:
+    cIdCognateClassMap = {}  # :: CognateClass.id -> CognateClass
+
     lexemes_editabletable_form = LexemeTableLanguageWordlistForm()
     for lex in lexemes:
         lex.rfcWebPath1 = language.rfcWebPath1
         lex.rfcWebPath2 = language.rfcWebPath2
         lexemes_editabletable_form.lexemes.append_entry(lex)
+        ccs = lex.cognate_class.all()
+        for cc in ccs:
+            cIdCognateClassMap[cc.id] = cc
 
     otherMeaningLists = MeaningList.objects.exclude(id=wordlist.id).all()
 
@@ -855,6 +874,10 @@ def view_language_wordlist(request, language, wordlist):
     prev_language, next_language = \
         get_prev_and_next_languages(request, language,
                                     language_list=languageList)
+    cognateClasses = json.dumps([{'id': c.id,
+                                  'alias': c.alias,
+                                  'placeholder': c.combinedRootPlaceholder}
+                                 for c in cIdCognateClassMap.values()])
     return render_template(request, "language_wordlist.html",
                            {"language": language,
                             "lexemes": lexemes,
@@ -862,9 +885,10 @@ def view_language_wordlist(request, language, wordlist):
                             "next_language": next_language,
                             "wordlist": wordlist,
                             "otherMeaningLists": otherMeaningLists,
-                            'lex_ed_form': lexemes_editabletable_form,
-                            'filt_form': filt_form,
-                            'typeahead': typeahead})
+                            "lex_ed_form": lexemes_editabletable_form,
+                            "filt_form": filt_form,
+                            "cognateClasses": cognateClasses,
+                            "typeahead": typeahead})
 
 
 @login_required
@@ -1315,66 +1339,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             try:
                 form = LexemeTableEditCognateClassesForm(request.POST)
                 form.validate()
-                data = form.getValidated()
-                with transaction.atomic():
-                    for k, v in data['cognateClassAssignments'].iteritems():
-                        # Ignoring don't care cases:
-                        if k == 'new':
-                            if v == 'delete':
-                                continue
-                        elif k == v:  # new, new is permitted
-                            continue
-                        # Creating new CC or moving from an old one?
-                        if k == 'new':
-                            # Add to new class:
-                            if v == 'new':
-                                # Class to add to:
-                                newC = CognateClass()
-                                newC.bump(request)
-                                newC.save()
-                                # Adding to new class:
-                                CognateJudgement.objects.bulk_create([
-                                    CognateJudgement(lexeme_id=lId,
-                                                     cognate_class_id=newC.id)
-                                    for lId in data['lexemeIds']])
-                                # Fixing alias for new class:
-                                newC.update_alias()
-                            # Add to existing class:
-                            else:
-                                CognateJudgement.objects.bulk_create([
-                                    CognateJudgement(lexeme_id=lId,
-                                                     cognate_class_id=v)
-                                    for lId in data['lexemeIds']])
-                        else:
-                            judgements = CognateJudgement.objects.filter(
-                                lexeme_id__in=data['lexemeIds'],
-                                cognate_class_id=k)
-                            # Move to new class:
-                            if v == 'new':
-                                # Class to add to:
-                                newC = CognateClass()
-                                newC.bump(request)
-                                newC.save()
-                                # Adding to new class:
-                                judgements.update(cognate_class_id=newC.id)
-                                # Fixing alias for new class:
-                                newC.update_alias()
-                            # Deletion from current class:
-                            elif v == 'delete':
-                                judgements.delete()
-                            # Move to existing class:
-                            else:
-                                judgements.update(cognate_class_id=v)
-                            # Check for remaining entries:
-                            remaining = CognateJudgement.objects.filter(
-                                cognate_class_id=k).count()
-                            if remaining == 0:
-                                logging.info('Removed last lexemes '
-                                             'from cognate class %s.' % k)
-                                messages.warning(
-                                    request,
-                                    'Cognate class %s has no lexemes '
-                                    'left in it.' % k)
+                form.handle(request)
             except Exception:
                 logging.exception('Problem handling editCognateClass.')
 
@@ -1458,8 +1423,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
          "cognate_form": cognate_form,
          "cognateClasses": json.dumps([{'id': c.id,
                                         'alias': c.alias,
-                                        'root_form': c.root_form,
-                                        'root_language': c.root_language,
                                         'placeholder':
                                             c.combinedRootPlaceholder}
                                        for c in cognateClasses]),

@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import json
+import logging
 from django import forms
+from django.contrib import messages
+from django.db import transaction
 from django.forms import ValidationError
 from django.utils.encoding import python_2_unicode_compatible
 from ielex.lexicon.models import CognateClass, \
@@ -11,7 +14,8 @@ from ielex.lexicon.models import CognateClass, \
                                  Meaning, \
                                  MeaningList, \
                                  Source, \
-                                 TYPE_CHOICES
+                                 TYPE_CHOICES, \
+                                 CognateJudgement
 from ielex.lexicon.validators import suitable_for_url, suitable_for_url_wtforms
 # from ielex.extensional_semantics.models import *
 
@@ -531,6 +535,73 @@ class LexemeTableEditCognateClassesForm(WTForm):
                                   'found in the database.')
         # Write validated data to form.data:
         form._validated['cognateClassAssignments'] = retData
+
+    def handle(self, request):
+        '''
+        Handles the data given for an instance of this form.
+        This method assumes that validation already took place.
+        Method introduced for #219.
+        '''
+        data = self.getValidated()
+        with transaction.atomic():
+            for k, v in data['cognateClassAssignments'].iteritems():
+                # Ignoring don't care cases:
+                if k == 'new':
+                    if v == 'delete':
+                        continue
+                elif k == v:  # new, new is permitted
+                    continue
+                # Creating new CC or moving from an old one?
+                if k == 'new':
+                    # Add to new class:
+                    if v == 'new':
+                        # Class to add to:
+                        newC = CognateClass()
+                        newC.bump(request)
+                        newC.save()
+                        # Adding to new class:
+                        CognateJudgement.objects.bulk_create([
+                            CognateJudgement(lexeme_id=lId,
+                                             cognate_class_id=newC.id)
+                            for lId in data['lexemeIds']])
+                        # Fixing alias for new class:
+                        newC.update_alias()
+                    # Add to existing class:
+                    else:
+                        CognateJudgement.objects.bulk_create([
+                            CognateJudgement(lexeme_id=lId,
+                                             cognate_class_id=v)
+                            for lId in data['lexemeIds']])
+                else:
+                    judgements = CognateJudgement.objects.filter(
+                        lexeme_id__in=data['lexemeIds'],
+                        cognate_class_id=k)
+                    # Move to new class:
+                    if v == 'new':
+                        # Class to add to:
+                        newC = CognateClass()
+                        newC.bump(request)
+                        newC.save()
+                        # Adding to new class:
+                        judgements.update(cognate_class_id=newC.id)
+                        # Fixing alias for new class:
+                        newC.update_alias()
+                    # Deletion from current class:
+                    elif v == 'delete':
+                        judgements.delete()
+                    # Move to existing class:
+                    else:
+                        judgements.update(cognate_class_id=v)
+                    # Check for remaining entries:
+                    remaining = CognateJudgement.objects.filter(
+                        cognate_class_id=k).count()
+                    if remaining == 0:
+                        logging.info('Removed last lexemes '
+                                     'from cognate class %s.' % k)
+                        messages.warning(
+                            request,
+                            'Cognate class %s has no lexemes '
+                            'left in it.' % k)
 
 
 class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
