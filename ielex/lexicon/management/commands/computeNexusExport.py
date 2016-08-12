@@ -20,11 +20,11 @@ class Command(BaseCommand):
         for export in exports:
             assert export.pending, "Export must be pending for computation."
             # Calculating the export:
-            self.stdout.write('Calculating NexusExport %s.' % export.id)
+            print('Calculating NexusExport %s.' % export.id)
             output = StringIO.StringIO()
 
             write_nexus(fileobj=output, **export.getSettings())
 
             export.setExportData(output.getvalue())
             output.close()
-            self.stdout.write('Done.')
+            print('Done.')
