@@ -14,7 +14,8 @@ from ielex.lexicon.models import CognateClass, \
                                  LanguageList, \
                                  Lexeme, \
                                  LexemeCitation, \
-                                 MeaningList
+                                 MeaningList, \
+                                 NexusExport
 from ielex.forms import EditCognateClassCitationForm
 from ielex.lexicon.forms import ChooseNexusOutputForm, DumpSnapshotForm
 from ielex.lexicon.functions import nexus_comment
@@ -100,8 +101,14 @@ class NexusExportView(TemplateView):
     def post(self, request):
         form = ChooseNexusOutputForm(request.POST)
         if form.is_valid():
-            # return HttpResponseRedirect(reverse("nexus-data"))
-            return self.write_nexus_view(form)
+            # Using NexusExport instance and fork instead of
+            # return self.write_nexus_view(form)
+            export = NexusExport(exportName=self.fileNameForForm(form))
+            export.setSettings(form)
+            export.bump(request)
+            export.save()
+            return HttpResponseRedirect(reverse("view_nexus_export",
+                                        args=[export.id]))
         return self.render_to_response({"form": form})
 
     def write_nexus_view(self, form):
@@ -109,10 +116,8 @@ class NexusExportView(TemplateView):
         # TODO: contributor and sources list
 
         # Create the HttpResponse object with the appropriate header.
-        filename = "%s-%s-%s.nex" % (
-            settings.project_short_name,
-            form.cleaned_data["language_list"].name,
-            form.cleaned_data["meaning_list"].name)
+        filename = self.fileNameForForm(form)
+
         response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=%s' % \
             filename.replace(" ", "_")
@@ -127,6 +132,12 @@ class NexusExportView(TemplateView):
             ascertainment_marker=form.cleaned_data["ascertainment_marker"],
             excludeLoanwords=form.cleaned_data["excludeLoanwords"])
         return response
+
+    def fileNameForForm(self, form):
+        return "%s-%s-%s.nex" % (
+            settings.project_short_name,
+            form.cleaned_data["language_list"].name,
+            form.cleaned_data["meaning_list"].name)
 
 
 class DumpRawDataView(TemplateView):

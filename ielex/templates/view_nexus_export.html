@@ -33,18 +33,24 @@
           </thead>
           <tbody>
             {% for export in exports %}
-              <td>{{ export.id }}</td>
-              <td>
-                {% if export.pending %}
-                  <span class="glyphicon glyphicon-remove"></span>
-                {% else %}
-                  <span class="glyphicon glyphicon-ok"></span>
-                {% endif %}
-              </td>
-              <td>{{ export.exportName }}</td>
-              <td>{{ export.exportSettings }}</td>
-              <td>{{ export.lastTouched }}</td>
-              <td>{{ export.lastEditedBy }}</td>
+              <tr>
+                <td>
+                  <a href="/nexus/export/{{ export.id }}">
+                    {{ export.id }}
+                  </a>
+                </td>
+                <td>
+                  {% if export.pending %}
+                    <span class="glyphicon glyphicon-remove"></span>
+                  {% else %}
+                    <span class="glyphicon glyphicon-ok"></span>
+                  {% endif %}
+                </td>
+                <td>{{ export.exportName }}</td>
+                <td>{{ export.exportSettings }}</td>
+                <td>{{ export.lastTouched }}</td>
+                <td>{{ export.lastEditedBy }}</td>
+              </tr>
             {% endfor %}
           </tbody>
         </table>

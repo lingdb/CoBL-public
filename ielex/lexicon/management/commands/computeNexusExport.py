@@ -14,26 +14,17 @@ class Command(BaseCommand):
     help = "Computes nexus export for a given id."\
            "\nThis command is also issued by NexusExport.forkComputation."
 
-    def add_arguments(self, parser):
-        parser.add_argument('exportId', type=int)
-
-    missing_args_message = "Please provide the ID of "\
-                           "a NexusExport datbase entry."
-
     def handle(self, *args, **options):
         # Data to work with:
-        try:
-            export = NexusExport.objects.get(id=options['exportId'])
-        except NexusExport.DoesNotExist:
-            self.stderr.write("Export %s does not exist in the database." %
-                              options['exportId'])
-        assert export.pending, "Export must be pending for computation."
-        # Calculating the export:
-        self.stdout.write('Calculating NexusExport %s.' % export.id)
-        output = StringIO.StringIO()
+        exports = NexusExport.objects.filter(exportData=None).all()
+        for export in exports:
+            assert export.pending, "Export must be pending for computation."
+            # Calculating the export:
+            self.stdout.write('Calculating NexusExport %s.' % export.id)
+            output = StringIO.StringIO()
 
-        write_nexus(fileobj=output, **export.getSettings())
+            write_nexus(fileobj=output, **export.getSettings())
 
-        export.setExportData(output.getvalue())
-        output.close()
-        self.stdout.write('Done.')
+            export.setExportData(output.getvalue())
+            output.close()
+            self.stdout.write('Done.')

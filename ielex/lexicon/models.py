@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 import json
-import reversion
 import os.path
+import reversion
 import zlib
 from collections import defaultdict
 from string import uppercase, lowercase
@@ -1628,12 +1628,9 @@ class NexusExport(AbstractTimestamped):
         # True if calculation for export is not finished
         return self.exportData is None
 
-    def forkComputation(self):
-        pass  # FIXME IMPLEMENT
-
     def generateResponse(self):
-        assert self.pending, "NexusExport.generateResponse " \
-                             "impossible for pending exports."
+        assert not self.pending, "NexusExport.generateResponse " \
+                                 "impossible for pending exports."
         response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=%s' % \
             self.exportName.replace(" ", "_")
@@ -1646,10 +1643,35 @@ class NexusExport(AbstractTimestamped):
         self.exportData = zlib.compress(data)
         self.save()
 
-    def setSettings(self, settings):
-        # settings :: {}
-        self.exportSettings = json.dumps(settings)
+    def setSettings(self, form):
+        # form :: ChooseNexusOuputForm
+        self.exportSettings = json.dumps({
+            'language_list_name': form.cleaned_data["language_list"].name,
+            'meaning_list_name': form.cleaned_data["meaning_list"].name,
+            'exclude_ratings': form.cleaned_data["reliability"],
+            'dialect': form.cleaned_data["dialect"],
+            'label_cognate_sets': True,
+            'ascertainment_marker': form.cleaned_data["ascertainment_marker"],
+            'excludeLoanwords': form.cleaned_data["excludeLoanwords"]
+        })
 
     def getSettings(self):
+        '''
+        settings :: {
+            language_list_name :: LanguageList
+            meaning_list_name :: MeaningList
+            exclude_ratings :: set(str)
+            dialect=form.cleaned_data["dialect"],
+            label_cognate_sets :: Bool
+            ascertainment_marker :: Bool
+            excludeLoanwords :: Bool
+        }
+        '''
         # settings :: {}
-        return json.loads(self.exportSettings)
+        settings = json.loads(self.exportSettings)
+        settings['language_list_name'] = LanguageList.objects.get(
+            name=settings['language_list_name'])
+        settings['meaning_list_name'] = MeaningList.objects.get(
+            name=settings['meaning_list_name'])
+        settings['exclude_ratings'] = set(settings['exclude_ratings'])
+        return settings
