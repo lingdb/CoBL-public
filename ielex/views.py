@@ -2547,4 +2547,4 @@ def view_nexus_export(request, exportId=None):
                            "exist in the database." % exportId)
     return render_template(
         request, "view_nexus_export.html",
-        {'exports': NexusExport.objects.all()[0:100]})
+        {'exports': NexusExport.objects.order_by('-id').all()})
