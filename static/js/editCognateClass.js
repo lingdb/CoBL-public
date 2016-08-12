@@ -98,6 +98,15 @@
           form.find('#addEntryCognateClassButton').removeClass('hide');
           form.find('#addEntryCognateClassButton').off('click').click(addNewAssignment);
         }
+        //Automatic save if only one assignment exists:
+        (function(selections){
+          selections.off('change').change(function(){
+            if(selections.length === 1){
+              form.find('#editCognateClassButton').trigger('click');
+              $('#editCognateClassModal').modal('hide');
+            }
+          });
+        })(form.find('select[name="selectCognateClass"]'));
         //Handling the save button:
         form.find('#editCognateClassButton').off('click').click(function(){
           //Gather cognate class assignments:
