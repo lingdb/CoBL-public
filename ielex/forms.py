@@ -485,6 +485,40 @@ class LexemeRowViewMeaningsForm(AbstractTimestampedForm):
 class LexemeTableViewMeaningsForm(WTForm):
     lexemes = FieldList(FormField(LexemeRowViewMeaningsForm))
 
+    def handle(self, request):
+        # Assumes validation has already passed
+        changedCogIdSet = set()  # Not changing a cognate class twice
+        for entry in self.lexemes:
+            data = entry.data
+            try:
+                # Updating the lexeme:
+                lex = Lexeme.objects.get(id=data['id'])
+                if lex.isChanged(**data):
+                    problem = lex.setDelta(request, **data)
+                    if problem is None:
+                        lex.save()
+                    else:
+                        messages.error(request,
+                                       lex.deltaReport(**problem))
+                # Updating cognate class if requested:
+                for cData in data['allCognateClasses']:
+                    if cData['id'] in changedCogIdSet:
+                        continue
+                    c = CognateClass.objects.get(id=cData['id'])
+                    if c.isChanged(**cData):
+                        problem = c.setDelta(request, **cData)
+                        if problem is None:
+                            c.save()
+                            changedCogIdSet.add(c.id)
+                        else:
+                            messages.error(
+                                request, c.deltaReport(**problem))
+            except Exception:
+                logging.exception('Problem updating Lexeme '
+                                  'in view_meaning.')
+                messages.error(request, "The server had problems "
+                                        "updating lexeme %s." % lex.id)
+
 
 class LexemeTableEditCognateClassesForm(WTForm):
     lexemeIds = StringField('Lexeme ids', validators=[InputRequired()])
