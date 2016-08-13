@@ -636,6 +636,27 @@ class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
 class LexemeTableLanguageWordlistForm(WTForm):
     lexemes = FieldList(FormField(LexemeRowLanguageWordlistForm))
 
+    def handle(self, request):
+        # Assumes validation has already passed.
+        for entry in self.lexemes:
+            data = entry.data
+            # Updating the lexeme:
+            try:
+                with transaction.atomic():
+                    lex = Lexeme.objects.get(id=data['id'])
+                    if lex.isChanged(**data):
+                        problem = lex.setDelta(request, **data)
+                        if problem is None:
+                            lex.save()
+                        else:
+                            messages.error(
+                                request, lex.deltaReport(**problem))
+            except Exception:
+                logging.exception('Problem updating Lexeme '
+                                  'in LexemeTableLanguageWordlistForm.')
+                messages.error(request, 'Sorry, the server could '
+                               'not update lexeme %s.' % lex.gloss)
+
 
 class CloneLanguageForm(WTForm):
     sourceLanguageName = StringField(

@@ -786,28 +786,9 @@ def view_language_wordlist(request, language, wordlist):
         # Updating lexeme table data:
         if 'lex_form' in request.POST:
             try:
-                lexemesTableForm = LexemeTableLanguageWordlistForm(
-                    request.POST)
-                lexemesTableForm.validate()
-
-                for entry in lexemesTableForm.lexemes:
-                    data = entry.data
-                    # Updating the lexeme:
-                    try:
-                        with transaction.atomic():
-                            lex = Lexeme.objects.get(id=data['id'])
-                            if lex.isChanged(**data):
-                                problem = lex.setDelta(request, **data)
-                                if problem is None:
-                                    lex.save()
-                                else:
-                                    messages.error(
-                                        request, lex.deltaReport(**problem))
-                    except Exception:
-                        logging.exception('Problem updating Lexeme '
-                                          'in view_language_wordlist.')
-                        messages.error(request, 'Sorry, the server could '
-                                       'not update lexeme %s.' % lex.gloss)
+                form = LexemeTableLanguageWordlistForm(request.POST)
+                form.validate()
+                form.handle(request)
             except Exception:
                 logging.exception('Problem updating lexemes '
                                   'in view_language_wordlist.')
