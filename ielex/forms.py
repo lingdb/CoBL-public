@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
+import re
 from django import forms
 from django.contrib import messages
 from django.db import transaction
@@ -665,6 +666,20 @@ class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
     rfcWebLookup2 = StringField('This Lg lex rfc web path 2',
                                 validators=[InputRequired()])
     dubious = BooleanField('Dubious', validators=[InputRequired()])
+    # Added for #219
+    combinedCognateClassAssignment = StringField(
+        'Assignment string for cognate classes',
+        validators=[InputRequired()])
+
+    def validate_combinedCognateClassAssignment(form, field):
+        tokens = [t.strip() for t in field.data.split(',')]
+        for t in tokens:
+            if t == 'new':
+                continue
+            elif re.match('^([a-zA-Z]+|\d+)$', t) is not None:
+                continue  # Token is number or alias
+            else:
+                raise ValidationError("Unacceptable token: %s" % t)
 
 
 class LexemeTableLanguageWordlistForm(WTForm):
@@ -674,10 +689,16 @@ class LexemeTableLanguageWordlistForm(WTForm):
         # Assumes validation has already passed.
         for entry in self.lexemes:
             data = entry.data
+            # Fetching lexeme:
+            try:
+                lex = Lexeme.objects.get(id=data['id'])
+            except Lexeme.DoesNotExist:
+                messages.error(request, "Sorry, lexeme %s does not "
+                                        "exist in the database." % lex.id)
+                continue  # Skip this entry
             # Updating the lexeme:
             try:
                 with transaction.atomic():
-                    lex = Lexeme.objects.get(id=data['id'])
                     if lex.isChanged(**data):
                         problem = lex.setDelta(request, **data)
                         if problem is None:
@@ -690,6 +711,64 @@ class LexemeTableLanguageWordlistForm(WTForm):
                                   'in LexemeTableLanguageWordlistForm.')
                 messages.error(request, 'Sorry, the server could '
                                'not update lexeme %s.' % lex.gloss)
+            # Handling combineCognateClassAssignment:
+            if data['combinedCognateClassAssignment'] != \
+                    lex.combinedCognateClassAssignment:
+                # Current cognate classes:
+                currentCCs = {}  # :: id | alias -> CognateClass
+                for c in lex.cognate_class.all():
+                    currentCCs[str(c.id)] = c
+                    currentCCs[c.alias] = c
+                # cognate classes to keep:
+                keepCCs = {}  # :: id -> CognateClass
+                # Tokens to handle:
+                tokens = [
+                    t.strip() for t
+                    in data['combinedCognateClassAssignment'].data.split(',')]
+                for t in tokens:
+                    if t == 'new':  # Add lexeme to a new class:
+                        with transaction.atomic():
+                            # Class to add to:
+                            newC = CognateClass()
+                            newC.bump(request)
+                            newC.save()
+                            # Adding to new class:
+                            CognateJudgement.objects.create(
+                                lexeme_id=lex.id,
+                                cognate_class_id=newC.id)
+                            # Fixing alias for new class:
+                            newC.update_alias()
+                    elif t in currentCCs:  # Is this one satisfied?
+                        keep = currentCCs[t]
+                        keepCCs[keep.id] = keep
+                    else:  # Add lexeme to existing class if this is a new one.
+                        cc = None
+                        try:
+                            if re.match('^\d+$', t) is not None:
+                                cc = CognateClass.objects.get(id=int(t))
+                            else:
+                                cc = CognateClass.objects.filter(
+                                    lexeme__meaning__id=lex.meaning_id
+                                    ).get(alias=t)
+                        except Exception:
+                            logging.exception("Problem handling token %s" % t)
+                            messages.error(
+                                request,
+                                "Sorry, the server didn't understand "
+                                "the cognate set assignment token %s." % t)
+                            continue  # Next iteration
+                        # Adding to found cognate class:
+                        CognateJudgement.objects.create(
+                            lexeme_id=lex.id,
+                            cognate_class_id=cc.id)
+                # Remove lexeme from unwanted cognate classes:
+                removeCCs = set()  # :: set(id)
+                for cc in currentCCs.values():
+                    if cc.id not in keepCCs:
+                        removeCCs.add(cc.id)
+                CognateJudgement.objects.filter(
+                    lexeme_id=lex.id,
+                    cognate_class_id__in=removeCCs).delete()
 
 
 class CloneLanguageForm(WTForm):

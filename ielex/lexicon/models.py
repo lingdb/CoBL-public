@@ -1182,6 +1182,11 @@ class Lexeme(AbstractTimestamped):
                                self.cognate_class.values_list(
                                    'id', flat=True))})
 
+    @property
+    def combinedCognateClassAssignment(self):
+        # Added for #219
+        return ', '.join([c.alias for c in self.allCognateClasses])
+
 
 @reversion.register
 class CognateJudgement(AbstractTimestamped):
