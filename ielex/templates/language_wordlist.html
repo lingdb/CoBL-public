@@ -120,19 +120,6 @@
                   </div>
                 </div>
               </th>
-              {# selection_title.html #}
-              {% if user.is_authenticated %}
-                <th title="Select entries to assign them to a cognate set."
-                    data-container="body"
-                    data-toggle="tooltip"
-                    data-placement="bottom">
-                  <div class="vertical-text">
-                    <div class="vertical-text__inner">
-                      Select
-                    </div>
-                  </div>
-                </th>
-              {% endif %}
               {# cognateclassids_title.html #}
               <th style="width: 45px;">
                 Cog.<br>IDs
@@ -290,16 +277,6 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
-              {# selection_filter.html #}
-              {% if user.is_authenticated %}
-                <td>
-                  <button type="button"
-                          class="filterBool btn btn-xs btn-default"
-                          data-selector=".selection input">
-                    <span class="glyphicon glyphicon-question-sign"></span>
-                  </button>
-                </td>
-              {% endif %}
               {# cognateclassids_filter.html #}
               <td style="width: 45px;">
                 <div class="btn btn-xs btn-default sortIntText"
@@ -312,11 +289,19 @@
               </td>
               {# cognateclasses_filter.html #}
               <td>
-                <input type="text"
-                       class="filterText form-control"
-                       data-selector=".cognateClasses"
-                       size="1"
-                       style="padding-left: 2px; padding-right: 2px;">
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".cognateClasses input"
+                         size="1"
+                         style="padding-left: 2px; padding-right: 2px;">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".cognateClasses"
+                         size="1"
+                         style="padding-left: 2px; padding-right: 2px;">
+                {% endif %}
               </td>
               {# rootform_filter.html #}
               <td>
@@ -583,14 +568,6 @@
                     </span>
                   </center>
                 </td>
-                {# selection_data.html #}
-                {% if user.is_authenticated %}
-                  <td class="selection">
-                    <input type="checkbox"
-                           class="lexemeSelection form-control"
-                           value='{{ lexeme.object_data.selectionJSON }}'>
-                  </td>
-                {% endif %}
                 {# cognateclassids_data.html #}
                 <td class="cognateClassId" style="text-align: center; width: 45px;">
                   {% for c in lexeme.object_data.allCognateClasses %}
@@ -608,33 +585,12 @@
                   </a>
                 </td>
                 {# cognateclasses_data.html #}
-                <td style="text-align: center;">
+                <td style="text-align: center; color: #8B4510;">
                   <div class="cognateClasses">
-                    {% if lexeme.object_data.allCognateClasses %}
-                      {% for c in lexeme.object_data.allCognateClasses %}
-                        <a type="button"
-                           class="editCognateClassButton inline"
-                           style="color: #CD7432;"
-                           data-toggle="tooltip"
-                           data-placement="bottom"
-                           data-container="body"
-                           title="Click to re-assign this lexeme to a different cognate class."
-                           data-json='{{ lexeme.object_data.selectionJSON }}'>
-                          {{ c.alias }}
-                        </a>
-                      {% endfor %}
+                    {% if user.is_authenticated %}
+                      {% form_field lexeme.combinedCognateClassAssignment class="form-control" %}
                     {% else %}
-                      <a type="button"
-                         class="editCognateClassButton inline"
-                         style="color: #CD7432;"
-                         data-json='{{ lexeme.object_data.selectionJSON }}'
-                         data-toggle="tooltip"
-                         data-placement="bottom"
-                         data-container="body"
-                         title="Click to assign this lexeme to a cognate class."
-                         data-add="new">
-                        <span class="glyphicon glyphicon-plus-sign"></span>
-                      </a>
+                      {{ lexeme.object_data.combinedCognateClassAssignment }}
                     {% endif %}
                   </div>
                 </td>
@@ -782,7 +738,6 @@
         </table>
       {% if user.is_authenticated %}
         </form>
-        {% include "snippets/editCognateClassModal.html" %}
       {% endif %}
     </div>
   </div>
