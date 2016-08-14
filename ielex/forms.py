@@ -675,6 +675,11 @@ class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
         tokens = [t.strip() for t in field.data.split(',')]
         for t in tokens:
             if t == 'new':
+                '''
+                This case is subsumed by the alias regex,
+                but listed here for clarity and in case
+                we want to enhance alias validation.
+                '''
                 continue
             elif re.match('^([a-zA-Z]+|\d+)$', t) is not None:
                 continue  # Token is number or alias
@@ -721,11 +726,24 @@ class LexemeTableLanguageWordlistForm(WTForm):
                     currentCCs[c.alias] = c
                 # cognate classes to keep:
                 keepCCs = {}  # :: id -> CognateClass
+                # We expect non staff to not increase the count of currentCCs:
+                toAdd = len(currentCCs)
                 # Tokens to handle:
                 tokens = [
                     t.strip() for t
-                    in data['combinedCognateClassAssignment'].data.split(',')]
+                    in data['combinedCognateClassAssignment'].split(',')]
                 for t in tokens:
+                    toAdd -= 1  # Decrement toAdd:
+                    if toAdd <= 0 and len(currentCCs) > 0 \
+                            and not request.user.is_staff:
+                        messages.error(
+                            request,
+                            "Sorry - only staff is allowed "
+                            "to add additional cognate set assignments. "
+                            "Please contact a staff member if you feel "
+                            "that a second cognate set is necessary. "
+                            "Refused to add '%s' to lexeme %s." % (t, lex.id))
+                        break
                     if t == 'new':  # Add lexeme to a new class:
                         with transaction.atomic():
                             # Class to add to:
@@ -749,7 +767,7 @@ class LexemeTableLanguageWordlistForm(WTForm):
                             else:
                                 cc = CognateClass.objects.filter(
                                     lexeme__meaning__id=lex.meaning_id
-                                    ).get(alias=t)
+                                    ).distinct().get(alias=t)
                         except Exception:
                             logging.exception("Problem handling token %s" % t)
                             messages.error(
