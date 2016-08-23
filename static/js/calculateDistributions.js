@@ -24,7 +24,7 @@
     */
     var nameDistributionMap = {};
     // Range for distributions:
-    var distributionRange = {low: 0, high: 10000};
+    var distributionRange = {low: 0, high: 5000};
     //Chart to work with:
     var chart = null; // Initialized towards the end.
     /**
@@ -61,7 +61,7 @@
             return s !== 'reflectDistribution';
           }).join('');
           //Value of this parameter:
-          var val = parseInt($i.find('input').val(), 10);
+          var val = parseFloat($i.find('input').val(), 10);
           if(_.isNaN(val)){
             msg.send('distribution', distribution);
             return;
@@ -89,16 +89,13 @@
           case 'N':
             /*
               Normal distribution defined as follows:
-              f(x | µ,σ) = 1/σ ϕ((x - µ)/σ)
-              ϕ(x) = (e^(-½x²))/(√(π))
-              ⇒ f(x | µ,σ) = 1/σ (e^(-½((x - µ)/σ)²))/(√(π))
+              f(x | µ,σ) = e^(-(x-μ)^2/(2 σ^2))/(sqrt(2 π) σ)
               µ is the mean, σ is the standard deviation
               See https://en.wikipedia.org/wiki/Normal_distribution
+                  http://www.wolframalpha.com/input/?i=normal+distribution
             */
-            var oos = 1/params.normalStDev; // `one over sigma`
-            var sqp = Math.sqrt(Math.PI); // √(π)
             for(x = distributionRange.low; x <= distributionRange.high; x++){
-              y = oos * Math.pow(Math.E, -0.5 * ((x-params.normalMean)/params.normalStDev))/sqp;
+              y = Math.pow(Math.E, -(Math.pow(x - params.normalMean, 2)/(2 * Math.pow(params.normalStDev, 2)))) / (Math.sqrt(2 * Math.PI) * params.normalStDev);
               distribution.data.push(y);
             }
             break;
@@ -106,27 +103,35 @@
             /*
               Log-Normal distribution defined as follows:
               N_l(x | µ,σ) = (1/xσ√(2π)) e^(-((ln(x)-µ)²/(2σ²)))
+              piecewise | e^(-(log(x)-μ)^2/(2 σ^2))/(sqrt(2 π) σ x) | x>0
+                      0 | (otherwise)
               See https://en.wikipedia.org/wiki/Log-normal_distribution
+                  http://www.wolframalpha.com/input/?i=log+normal+distribution
             */
             params.logNormalOffset = 0;
             /* falls through */
           case 'O':
             /*
-              Log-Normal offset distribution defined as follows:
-              N_l_offset(x | µ,σ) = N_l(x | µ,σ) - offset
-              ⇒ N_l_offset(x | µ,σ) = (1/xσ√(2π)) e^(-((ln(x)-µ)²/(2σ²))) - offset
-              See http://wiki.analytica.com/index.php?title=LogNormal
+              * Because we want to put in years as our mean directly,
+                we take the ln(logNormalMean) as our µ.
+              * To apply the offset we take x - offset which shifts the graph into the positive x.
             */
             var ssqtp = params.logNormalStDev * Math.sqrt(2 * Math.PI); // σ√(2π)
             var tss = 2 * Math.pow(params.logNormalStDev, 2); // 2σ²
             for(x = distributionRange.low; x <= distributionRange.high; x++){
-              y = (1/(x * ssqtp)) * Math.pow(Math.E, -(Math.pow(Math.log(x) - params.logNormalMean, 2)/tss)) - params.logNormalOffset;
-              distribution.data.push(y);
+              var xi = x - params.logNormalOffset;
+              if(xi > 0){
+                y = Math.pow(Math.E, -(Math.pow(Math.log(xi) - Math.log(params.logNormalMean), 2)/(2 * Math.pow(params.logNormalStDev, 2)))) / (Math.sqrt(2 * Math.PI) * params.logNormalStDev * xi);
+                distribution.data.push(y);
+              }else{
+                distribution.data.push(0);
+              }
             }
             break;
         }
         //Add distribution to chart:
         msg.send('distribution', distribution);
+        console.log('DEBUG', distribution.name, distribution.data);
       }
     };
     // Setting up events to gather distribution data:
@@ -148,15 +153,10 @@
       });
     });
     //Waiting for request to send initial distributions
-    var sendAll = function(){
-      _.each(nameDistributionMap, _.bind(msg.send, null, 'distribution'));
-    };
     msg.listen('distribution.initial', function(req){
       if(req === 'all'){
-        sendAll();
+        _.each(nameDistributionMap, _.bind(msg.send, null, 'distribution'));
       }
     });
-    //Sending all initial distributions bc this could be loaded after the graph:
-    sendAll();
   });
 })();

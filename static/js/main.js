@@ -11,7 +11,8 @@
       'bootbox': 'bower_components/bootbox.js/bootbox',
       'awesomplete': 'bower_components/awesomplete/awesomplete.min',
       'c3': 'bower_components/c3/c3.min',
-      'd3': 'bower_components/d3/d3.min'
+      'd3': 'bower_components/d3/d3.min',
+      'intercom': 'bower_components/intercom/intercom.min'
     },
     shim: {
       'bootstrap': {deps: ['jquery']},
@@ -20,7 +21,8 @@
       'jquery': {exports: '$'},
       'markdown-it': {deps: ['jquery']},
       'awesomplete': {exports: 'Awesomplete'},
-      'bootbox': {deps: ['bootstrap']}
+      'bootbox': {deps: ['bootstrap']},
+      'intercom': {exports: 'intercom'}
     }
   });
   requirejs(['require','jquery','lodash',

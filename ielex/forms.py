@@ -29,7 +29,8 @@ from wtforms import StringField, \
                     BooleanField, \
                     DateTimeField, \
                     TextAreaField, \
-                    SelectField
+                    SelectField, \
+                    DecimalField
 from wtforms.validators import Email, InputRequired
 from wtforms.form import Form as WTForm
 from wtforms.ext.django.orm import model_form
@@ -317,7 +318,7 @@ class CladeRowForm(AbstractTimestampedForm):
                                validators=[InputRequired()])
     logNormalOffset = IntegerField('[Offset]', validators=[InputRequired()])
     logNormalMean = IntegerField('Mean', validators=[InputRequired()])
-    logNormalStDev = IntegerField('StDev', validators=[InputRequired()])
+    logNormalStDev = DecimalField('StDev', validators=[InputRequired()])
     normalMean = IntegerField('Mean', validators=[InputRequired()])
     normalStDev = IntegerField('StDev', validators=[InputRequired()])
     uniformUpper = IntegerField('Upper', validators=[InputRequired()])

@@ -146,18 +146,18 @@
                   title="StDev for normal distribution">
                 Norm StDev
               </th><!-- DATE TOOLTIP -->
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Lower bound for uniform distribution type">
+                Unif Lower
+              </th><!-- DATE TOOLTIP -->
               <!-- For Uniform: -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
                   title="Upper bound for uniform distribution type">
                 Unif Upper
-              </th><!-- DATE TOOLTIP -->
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Lower bound for uniform distribution type">
-                Unif Lower
               </th><!-- DATE TOOLTIP -->
             </tr>
             <tr class="filterBar">
@@ -504,23 +504,6 @@
               <td>
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
-                         data-selector=".uniformUpper input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".uniformUpper input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% else %}
-                  <input type="text" class="filterText form-control narrow"
-                         data-selector=".uniformUpper">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".uniformUpper">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% endif %}
-              </td>
-              <td>
-                {% if user.is_authenticated and user.is_staff %}
-                  <input type="text" class="filterInput form-control narrow"
                          data-selector=".uniformLower input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".uniformLower input">
@@ -531,6 +514,23 @@
                          data-selector=".uniformLower">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".uniformLower">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".uniformUpper input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".uniformUpper input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".uniformUpper">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".uniformUpper">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
@@ -683,7 +683,7 @@
                 </td>
                 <td class="logNormalStDev reflectDistribution" data-allowed="OL">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.logNormalStDev class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                    {% form_field clade.logNormalStDev class="form-control numberField" pattern="^[0-9\-\.]*$" disabled="disabled" %}
                   {% elif clade.logNormalStDev.data %}
                     {{ clade.logNormalStDev.data }}
                   {% endif %}
@@ -702,18 +702,18 @@
                     {{ clade.normalStDev.data }}
                   {% endif %}
                 </td>
-                <td class="uniformUpper reflectDistribution" data-allowed="U">
-                  {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.uniformUpper class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
-                  {% elif clade.uniformUpper.data %}
-                    {{ clade.uniformUpper.data }}
-                  {% endif %}
-                </td>
                 <td class="uniformLower reflectDistribution" data-allowed="U">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field clade.uniformLower class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif clade.uniformLower.data %}
                     {{ clade.uniformLower.data }}
+                  {% endif %}
+                </td>
+                <td class="uniformUpper reflectDistribution" data-allowed="U">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field clade.uniformUpper class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif clade.uniformUpper.data %}
+                    {{ clade.uniformUpper.data }}
                   {% endif %}
                 </td>
               </tr>

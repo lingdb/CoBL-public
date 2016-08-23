@@ -28,6 +28,7 @@
     "jquery.floatThead": "floatThead#^1.4.0",
     "bootbox.js": "bootbox#^4.4.0",
     "awesomplete": "https://github.com/LeaVerou/awesomplete.git#gh-pages",
-    "c3": "c3js-chart#^0.4.11"
+    "c3": "c3js-chart#^0.4.11",
+    "intercom": "^0.1.4"
   }
 }
