@@ -1427,61 +1427,7 @@ def view_cognateclasses(request, meaning):
                 # Parsing and validating data:
                 mergeCCForm = MergeCognateClassesForm(request.POST)
                 mergeCCForm.validate()
-                # Extract ids from form:
-                ids = set([int(i) for i in
-                           mergeCCForm.data['mergeIds'].split(',')])
-                # Fetching classes to merge:
-                ccs = CognateClass.objects.filter(
-                    id__in=ids).prefetch_related(
-                    "cognatejudgement_set",
-                    "cognateclasscitation_set").all()
-                # Checking ccs length:
-                if len(ccs) <= 1:
-                    logging.warning('Not enough cognateclasses to merge.',
-                                    extra=ccs)
-                    messages.error(request, 'Sorry, the server needs '
-                                   '2 or more cognateclasses to merge.')
-                else:
-                    # Merging ccs:
-                    with transaction.atomic():
-                        # Creating new CC with merged field contents:
-                        newC = CognateClass()
-                        setDict = {'notes': set(),
-                                   'root_form': set(),
-                                   'root_language': set(),
-                                   'gloss_in_root_lang': set(),
-                                   'loan_source': set(),
-                                   'loan_notes': set()}
-                        for cc in ccs:
-                            for k, v in cc.toDict().iteritems():
-                                if k in setDict:
-                                    setDict[k].add(v)
-                        delta = {k: '{'+', '.join(v)+'}'
-                                 for k, v in setDict.iteritems()}
-                        for k, v in delta.iteritems():
-                            setattr(newC, k, v)
-                        newC.bump(request)
-                        newC.save()
-                        # Retargeting CJs:
-                        cjIds = set()
-                        for cc in ccs:
-                            cjIds.update([cj.id for cj
-                                          in cc.cognatejudgement_set.all()])
-                        CognateJudgement.objects.filter(
-                            id__in=cjIds).update(
-                            cognate_class_id=newC.id)
-                        # Retargeting CCCs:
-                        cccIds = set()
-                        for cc in ccs:
-                            cccIds.update([ccc.id for ccc in
-                                           cc.cognateclasscitation_set.all()])
-                        CognateClassCitation.objects.filter(
-                            id__in=cccIds).update(
-                            cognate_class_id=newC.id)
-                        # Deleting old ccs:
-                        ccs.delete()
-                        # Fixing alias:
-                        newC.update_alias()
+                mergeCCForm.handle(request)
             except Exception:
                 logging.exception('Problem merging CognateClasses '
                                   'in view_cognateclasses.')
