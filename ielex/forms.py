@@ -699,7 +699,7 @@ class LexemeTableLanguageWordlistForm(WTForm):
                 lex = Lexeme.objects.get(id=data['id'])
             except Lexeme.DoesNotExist:
                 messages.error(request, "Sorry, lexeme %s does not "
-                                        "exist in the database." % lex.id)
+                                        "exist in the database." % data['id'])
                 continue  # Skip this entry
             # Updating the lexeme:
             try:
