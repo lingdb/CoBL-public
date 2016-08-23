@@ -60,7 +60,10 @@
           </div>
         {% endif %}
       </div>
-        <table class="table table-condensed viewTableFilter"
+        <table class="table table-condensed viewTableFilter
+                      {% if user.is_authenticated %}
+                      distributionPlot
+                      {% endif %}"
                {% if user.is_authenticated and user.is_staff %}
                   data-floatheadtop="50"
                {% else %}

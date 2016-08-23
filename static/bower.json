@@ -27,6 +27,7 @@
     "markdown-it": "^6.0.0",
     "jquery.floatThead": "floatThead#^1.4.0",
     "bootbox.js": "bootbox#^4.4.0",
-    "awesomplete": "https://github.com/LeaVerou/awesomplete.git#gh-pages"
+    "awesomplete": "https://github.com/LeaVerou/awesomplete.git#gh-pages",
+    "c3": "c3js-chart#^0.4.11"
   }
 }

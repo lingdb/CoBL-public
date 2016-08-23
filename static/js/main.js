@@ -9,7 +9,9 @@
       'lodash': 'bower_components/lodash/dist/lodash.min',
       'markdown-it': 'bower_components/markdown-it/dist/markdown-it.min',
       'bootbox': 'bower_components/bootbox.js/bootbox',
-      'awesomplete': 'bower_components/awesomplete/awesomplete.min'
+      'awesomplete': 'bower_components/awesomplete/awesomplete.min',
+      'c3': 'bower_components/c3/c3.min',
+      'd3': 'bower_components/d3/d3.min'
     },
     shim: {
       'bootstrap': {deps: ['jquery']},
@@ -35,7 +37,8 @@
              'js/typeahead',
              'js/bootboxHtmlSnippet',
              'js/inputDepends',
-             'js/editCognateClass'],
+             'js/editCognateClass',
+             'js/distributionPlot'],
             function(require, $, _){
     //Initializing viewTableFilter:
     require('js/viewTableFilter').init('table.viewTableFilter');
