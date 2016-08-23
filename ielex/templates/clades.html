@@ -96,49 +96,58 @@
               </th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="Latest plausible date at which divergence had not yet begun">
                 At most?
               </th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="Earliest plausible date divergence could have begun by">
                 At least?
               </th>
               <th>Distribution type</th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="Offset for log normal distribution">
                 [Offset]
               </th><!-- DATE TOOLTIP -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="Mean for log normal distribution">
                 LogN Mean
               </th><!-- DATE TOOLTIP -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="StDev for log normal distribution">
                 LogN StDev
               </th><!-- DATE TOOLTIP -->
               <!-- For normal: -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="Mean for normal distribution">
                 Norm Mean
               </th><!-- DATE TOOLTIP -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="StDev for normal distribution">
                 Norm StDev
               </th><!-- DATE TOOLTIP -->
               <!-- For Uniform: -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="Upper bound for uniform distribution type">
                 Unif Upper
               </th><!-- DATE TOOLTIP -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="Lower bound for uniform distribution type">
                 Unif Lower
               </th><!-- DATE TOOLTIP -->
@@ -706,6 +715,10 @@
       {% if user.is_authenticated and user.is_staff %}
         </form>
       {% endif %}
+    </div>
+  </div>
+  <div id="distributionPlot">
+    <div class="chart"></div>
   </div>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

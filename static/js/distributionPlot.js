@@ -25,6 +25,8 @@
     var nameDistributionMap = {};
     // Range for distributions:
     var distributionRange = {low: 0, high: 10000};
+    //Chart to work with:
+    var chart = null; // Initialized towards the end.
     /**
     Function to compute distribution data.
       $el :: $('select'), expected length === 1
@@ -112,12 +114,16 @@
             var ssqtp = params.logNormalStDev * Math.sqrt(2 * Math.PI); // σ√(2π)
             var tss = 2 * Math.pow(params.logNormalStDev, 2); // 2σ²
             for(x = distributionRange.low; x <= distributionRange.high; x++){
-              y = (1/(x * ssqtp)) *
-                  Math.pow(Math.E, -(Math.pow(Math.log(x) - params.logNormalMean, 2)/tss)) -
-                  params.logNormalOffset;
+              y = (1/(x * ssqtp)) * Math.pow(Math.E, -(Math.pow(Math.log(x) - params.logNormalMean, 2)/tss)) - params.logNormalOffset;
               distribution.data.push(y);
             }
             break;
+        }
+        //Add distribution to chart:
+        if(chart !== null){
+          chart.load({
+            columns: [_.concat([distribution.name], distribution.data)]
+          });
         }
       }
     };
@@ -138,6 +144,37 @@
       $inputs.each(function(){
         $(this).change(computation);
       });
+    });
+    //Initializing chart:
+    var columns = [
+      //_.concat(['x'], _.range(distributionRange.low, distributionRange.high))
+    ];
+    //Adding columns for distributions with data:
+    _.each(nameDistributionMap, function(distribution, name){
+      columns.push(_.concat(name, distribution.data));
+    });
+    chart = c3.generate({
+        axis: {x: {tick: {count: 11}}},
+        bindto: '#distributionPlot .chart',
+        data: {
+          //x: 'x',
+          columns: columns
+        },
+        transition: {
+          duration: 0
+        },
+        interaction: {
+          enabled: false
+        },
+        color: function(c, d){
+          if(d.id && d.id in nameDistributionMap){
+            return '#' + nameDistributionMap[d.id].color;
+          }
+          return c;
+        },
+        point: {
+          show: false
+        }
     });
   });
 })();
