@@ -38,7 +38,8 @@
              'js/bootboxHtmlSnippet',
              'js/inputDepends',
              'js/editCognateClass',
-             'js/distributionPlot'],
+             'js/calculateDistributions',
+             'js/plotDistributions'],
             function(require, $, _){
     //Initializing viewTableFilter:
     require('js/viewTableFilter').init('table.viewTableFilter');

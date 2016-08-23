@@ -1,0 +1,26 @@
+{% extends "base.html"%}
+
+{% load staticfiles %}
+
+{% block title %}
+  Language Branches Distributions
+{% endblock %}
+
+{% block top %}
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/defaultSelections.html" %}
+  {% include "snippets/go_to.html" %}
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-12">
+      <div id="distributionPlot">
+        <div class="chart"></div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

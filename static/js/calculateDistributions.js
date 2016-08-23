@@ -13,7 +13,7 @@
       - On change of any value
     * We plot the distribution(s) in a (special) div using c3.
   */
-  return define(['jquery','lodash','c3'], function($, _, c3){
+  return define(['jquery','lodash','js/postmessage'], function($, _, msg){
     var table = $('table.distributionPlot');
     if(table.length !== 1) return;
     /**
@@ -52,14 +52,20 @@
         $inputs.each(function(){
           var $i = $(this);
           //Filtering wanted inputs:
-          if($i.data('allowed').indexOf(wanted) < 0) return;
+          if($i.data('allowed').indexOf(wanted) < 0){
+            msg.send('distribution', distribution);
+            return;
+          }
           //Name of this parameter:
           var pName = _.filter($i.attr('class').split(' '), function(s){
             return s !== 'reflectDistribution';
           }).join('');
           //Value of this parameter:
           var val = parseInt($i.find('input').val(), 10);
-          if(_.isNaN(val)) return;
+          if(_.isNaN(val)){
+            msg.send('distribution', distribution);
+            return;
+          }
           params[pName] = val;
         });
         // General range will be [0, 10,000] years BP.
@@ -120,11 +126,7 @@
             break;
         }
         //Add distribution to chart:
-        if(chart !== null){
-          chart.load({
-            columns: [_.concat([distribution.name], distribution.data)]
-          });
-        }
+        msg.send('distribution', distribution);
       }
     };
     // Setting up events to gather distribution data:
@@ -145,36 +147,16 @@
         $(this).change(computation);
       });
     });
-    //Initializing chart:
-    var columns = [
-      //_.concat(['x'], _.range(distributionRange.low, distributionRange.high))
-    ];
-    //Adding columns for distributions with data:
-    _.each(nameDistributionMap, function(distribution, name){
-      columns.push(_.concat(name, distribution.data));
+    //Waiting for request to send initial distributions
+    var sendAll = function(){
+      _.each(nameDistributionMap, _.bind(msg.send, null, 'distribution'));
+    };
+    msg.listen('distribution.initial', function(req){
+      if(req === 'all'){
+        sendAll();
+      }
     });
-    chart = c3.generate({
-        axis: {x: {tick: {count: 11}}},
-        bindto: '#distributionPlot .chart',
-        data: {
-          //x: 'x',
-          columns: columns
-        },
-        transition: {
-          duration: 0
-        },
-        interaction: {
-          enabled: false
-        },
-        color: function(c, d){
-          if(d.id && d.id in nameDistributionMap){
-            return '#' + nameDistributionMap[d.id].color;
-          }
-          return c;
-        },
-        point: {
-          show: false
-        }
-    });
+    //Sending all initial distributions bc this could be loaded after the graph:
+    sendAll();
   });
 })();

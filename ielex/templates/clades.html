@@ -33,6 +33,14 @@
         <h3 class="inline">Clades:</h3>
         {% if user.is_authenticated and user.is_staff %}
           <div class="form-group pull-right">
+            <a href="./?plot"
+               class="btn btn-default"
+               target="_blank"
+               data-toggle="tooltip"
+               data-placement="bottom"
+               title="View clade distributions.">
+               <span class="glyphicon glyphicon-stats"></span>
+            </a>
             <div class="inline"
                  data-toggle="tooltip"
                  data-placement="bottom"
@@ -716,9 +724,6 @@
         </form>
       {% endif %}
     </div>
-  </div>
-  <div id="distributionPlot">
-    <div class="chart"></div>
   </div>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
