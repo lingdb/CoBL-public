@@ -443,6 +443,8 @@ class Language(AbstractTimestamped):
     originalAsciiName = models.CharField(
         max_length=128, validators=[suitable_for_url])
     historical = models.BooleanField(default=0)
+    # Added for #300:
+    notInExport = models.BooleanField(default=0)
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
@@ -611,7 +613,7 @@ class Language(AbstractTimestamped):
                     'rfcWebPath1', 'rfcWebPath2', 'author', 'reviewer',
                     'earliestTimeDepthBound', 'latestTimeDepthBound',
                     'progress', 'sortRankInClade', 'entryTimeframe',
-                    'historical'])
+                    'historical', 'notInExport'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update language: ' \

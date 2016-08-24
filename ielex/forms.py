@@ -275,6 +275,7 @@ class LanguageListRowForm(AbstractTimestampedForm):
     entryTimeframe = StringField('Entry timeframe',
                                  validators=[InputRequired()])
     historical = BooleanField('Historical', validators=[InputRequired()])
+    notInExport = BooleanField('Not in Export', validators=[InputRequired()])
 
     def validate_historical(form, field):
         # Assumes that field.data :: True | False
