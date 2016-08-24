@@ -22,8 +22,6 @@
                                         data :: [Int]}
     */
     var nameDistributionMap = {};
-    // Range for distributions: FIXME NECESSARY?!
-    var distributionRange = {low: 0, high: 10000};
     var chart = c3.generate({
         axis: {
           x: {
@@ -35,19 +33,25 @@
         },
         bindto: '#distributionPlot .chart',
         data: {
-          columns: []
+          columns: [],
+          color: function(c, d){
+            var wanted = c;
+            if(d.id && d.id in nameDistributionMap){
+              wanted = '#' + nameDistributionMap[d.id].color;
+            }
+            if(wanted != c){
+              var delta = {};
+              delta[d.id] = wanted;
+              chart.data.colors(_.extend(chart.data.colors(), delta));
+            }
+            return wanted;
+          }
         },
         transition: {
           duration: 0
         },
         interaction: {
           enabled: false
-        },
-        color: function(c, d){
-          if(d.id && d.id in nameDistributionMap){
-            return '#' + nameDistributionMap[d.id].color;
-          }
-          return c;
         },
         point: {
           show: false
@@ -62,6 +66,8 @@
             _.concat([distribution.name], distribution.data)
           ]
         });
+      }else{
+        chart.unload({ids: [distribution.name]});
       }
     });
     //Initial request for all distributions:
