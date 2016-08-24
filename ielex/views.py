@@ -350,23 +350,25 @@ def view_language_list(request, language_list=None):
         for entry in languageListTableForm.langlist:
             data = entry.data
             try:
-                lang = Language.objects.get(id=data['idField'])
-                if lang.isChanged(**data):
-                    try:
-                        problem = lang.setDelta(request, **data)
-                        if problem is None:
-                            lang.save()
-                            # Making sure we update clades
-                            # for changed languages:
-                            updateClades.append(lang)
-                        else:
-                            messages.error(request,
-                                           lang.deltaReport(**problem))
-                    except Exception:
-                        logging.exception('Exception while saving POST '
-                                          'in view_language_list.')
-                        messages.error(request, 'Sorry, the server failed '
-                                       'to save "%s".' % data['ascii_name'])
+                with transaction.atomic():
+                    lang = Language.objects.get(id=data['idField'])
+                    if lang.isChanged(**data):
+                        try:
+                            problem = lang.setDelta(request, **data)
+                            if problem is None:
+                                lang.save()
+                                # Making sure we update clades
+                                # for changed languages:
+                                updateClades.append(lang)
+                            else:
+                                messages.error(request,
+                                               lang.deltaReport(**problem))
+                        except Exception:
+                            logging.exception('Exception while saving POST '
+                                              'in view_language_list.')
+                            messages.error(
+                                request, 'Sorry, the server failed '
+                                         'to save "%s".' % data['ascii_name'])
             except Exception:
                 logging.exception('Exception accessing Language object '
                                   'in view_language_list.',

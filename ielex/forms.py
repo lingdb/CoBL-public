@@ -249,8 +249,8 @@ class AbstractDistributionForm(WTForm):
 
     def validate_distribution(form, field):
         wantedFields = {
-            'O': ['logNormalOffset', 'logNormalMean', 'LogNormalStDev'],
-            'L': ['logNormalMean', 'LogNormalStDev'],
+            'O': ['logNormalOffset', 'logNormalMean', 'logNormalStDev'],
+            'L': ['logNormalMean', 'logNormalStDev'],
             'N': ['normalMean', 'normalStDev'],
             'U': ['uniformLower', 'uniformUpper']}
         if field.data in wantedFields:
@@ -279,11 +279,6 @@ class LanguageListRowForm(AbstractTimestampedForm, AbstractDistributionForm):
     level3 = IntegerField('Clade level 3', validators=[InputRequired()])
     representative = BooleanField('Representative',
                                   validators=[InputRequired()])
-    mean_timedepth_BP_years = IntegerField('Mean of Time Depth BP (years)',
-                                           validators=[InputRequired()])
-    std_deviation_timedepth_BP_years = IntegerField(
-        'Standard Deviation of Time Depth BP (years)',
-        validators=[InputRequired()])
     rfcWebPath1 = StringField('This Lg lex rfc web path 1',
                               validators=[InputRequired()])
     rfcWebPath2 = StringField('This Lg lex rfc web path 2',

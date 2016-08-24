@@ -620,8 +620,6 @@ class Language(AbstractTimestamped, AbstractDistribution):
         fs = set(['iso_code', 'ascii_name', 'utf8_name', 'glottocode',
                   'variety', 'foss_stat', 'low_stat', 'soundcompcode',
                   'level0', 'level1', 'level2', 'level3', 'representative',
-                  'mean_timedepth_BP_years',
-                  'std_deviation_timedepth_BP_years',
                   'rfcWebPath1', 'rfcWebPath2', 'author', 'reviewer',
                   'earliestTimeDepthBound', 'latestTimeDepthBound',
                   'progress', 'sortRankInClade', 'entryTimeframe',
