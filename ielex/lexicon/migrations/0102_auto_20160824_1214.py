@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lexicon', '0100_nexusexport'),
+        ('lexicon', '0101_language_notinexport'),
     ]
 
     operations = [
