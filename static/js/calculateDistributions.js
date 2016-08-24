@@ -81,7 +81,7 @@
             //Computing y = 1/(b-a):
             y = 1/(params.uniformUpper - params.uniformLower);
             //Filling distribution.data:
-            for(x = distributionRange.low; x <= distributionRange.high; x++){
+            for(x = distributionRange.low; x <= distributionRange.high; x+=10){
               var onInterval = (x >= params.uniformLower && x <= params.uniformUpper);
               distribution.data.push(onInterval ? y : 0);
             }
@@ -94,7 +94,7 @@
               See https://en.wikipedia.org/wiki/Normal_distribution
                   http://www.wolframalpha.com/input/?i=normal+distribution
             */
-            for(x = distributionRange.low; x <= distributionRange.high; x++){
+            for(x = distributionRange.low; x <= distributionRange.high; x+=10){
               y = Math.pow(Math.E, -(Math.pow(x - params.normalMean, 2)/(2 * Math.pow(params.normalStDev, 2)))) / (Math.sqrt(2 * Math.PI) * params.normalStDev);
               distribution.data.push(y);
             }
@@ -116,9 +116,7 @@
                 we take the ln(logNormalMean) as our µ.
               * To apply the offset we take x - offset which shifts the graph into the positive x.
             */
-            var ssqtp = params.logNormalStDev * Math.sqrt(2 * Math.PI); // σ√(2π)
-            var tss = 2 * Math.pow(params.logNormalStDev, 2); // 2σ²
-            for(x = distributionRange.low; x <= distributionRange.high; x++){
+            for(x = distributionRange.low; x <= distributionRange.high; x+=10){
               var xi = x - params.logNormalOffset;
               if(xi > 0){
                 y = Math.pow(Math.E, -(Math.pow(Math.log(xi) - Math.log(params.logNormalMean), 2)/(2 * Math.pow(params.logNormalStDev, 2)))) / (Math.sqrt(2 * Math.PI) * params.logNormalStDev * xi);
@@ -141,6 +139,13 @@
           $inputs = $tr.find('.reflectDistribution'),
           color = $tr.find('.hexColor input').val(), // [0-9a-fA-F]{6} | ^$
           name = $tr.find('.taxonsetName input').val();
+      //In case of language table color or name may behave differently:
+      if(_.isUndefined(color)){
+        color = $tr.find('.languageBranchColor').css('background-color').substring(1);
+      }
+      if(_.isUndefined(name)){
+        name = $tr.find('.languageName input.language_name').val();
+      }
       // Computation for different occasions:
       var computation = _.bind(computeDistribution, null, $el, $inputs, color, name);
       // Initial computation:
