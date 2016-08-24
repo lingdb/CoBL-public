@@ -5,7 +5,7 @@
     $("input[data-dependencyfor-tr]").each(function(){
       var t = $(this);
       //Finding dependant inputs:
-      var selector = 'input[data-inputdepends="'+t.data('dependencyfor-tr')+'"]';
+      var selector = '[data-inputdepends="'+t.data('dependencyfor-tr')+'"]';
       var dependants = t.closest('tr').find(selector);
       //Updating dependant inputs:
       var updateDeps = function(enable){

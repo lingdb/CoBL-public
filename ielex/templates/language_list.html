@@ -1025,7 +1025,7 @@
                 {# distribution_data.html #}
                 <td class="distribution">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.distribution class="form-control distributionSelection" %}
+                    {% form_field language.distribution class="form-control distributionSelection" data-inputdepends="historical" %}
                   {% elif language.distribution.data %}
                     {{ language.distribution.data }}
                   {% endif %}
