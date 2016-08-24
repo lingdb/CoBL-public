@@ -25,7 +25,14 @@
     // Range for distributions: FIXME NECESSARY?!
     var distributionRange = {low: 0, high: 10000};
     var chart = c3.generate({
-        axis: {x: {tick: {count: 11}}},
+        axis: {
+          x: {
+            tick: {
+              count: 11,
+              format: function(x){return x*10;}
+            }
+          }
+        },
         bindto: '#distributionPlot .chart',
         data: {
           columns: []
