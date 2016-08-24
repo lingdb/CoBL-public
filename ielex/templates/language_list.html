@@ -164,6 +164,14 @@
                   </div>
                 </div>
               </th>
+              {# notInExport_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Not in Exp.
+                  </div>
+                </div>
+              </th>
               {# name_link.html #}
               <th></th>
               {# name_title.html #}
@@ -441,6 +449,14 @@
                 <button type="button"
                         class="filterBool btn btn-xs btn-default"
                         data-selector=".languageHistorical input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# notInExport_filter.html #}
+              <td>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".notInExport input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </td>
@@ -795,6 +811,14 @@
                     {% form_field language.historical class="form-control" data-dependencyfor-tr="historical" %}
                   {% else %}
                     {% form_field language.historical class="form-control" disabled=disabled %}
+                  {% endif %}
+                </td>
+                {# notInExport_data.html #}
+                <td class="notInExport">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.notInExport class="form-control" %}
+                  {% else %}
+                    {% form_field language.notInExport class="form-control" disabled=disabled %}
                   {% endif %}
                 </td>
                 {# name_link.html #}
