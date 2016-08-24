@@ -2,6 +2,7 @@
 import json
 import logging
 import re
+from collections import defaultdict
 from django import forms
 from django.contrib import messages
 from django.db import transaction
@@ -441,6 +442,92 @@ class AddCogClassTableForm(WTForm):
 class MergeCognateClassesForm(WTForm):
     mergeIds = StringField('merge ids', validators=[InputRequired()])
 
+    def handle(self, request):
+        # Extract ids from form:
+        ids = set([int(i) for i in
+                   self.data['mergeIds'].split(',')])
+        # Fetching classes to merge:
+        ccs = CognateClass.objects.filter(
+            id__in=ids).prefetch_related(
+            "cognatejudgement_set",
+            "cognateclasscitation_set").all()
+        # Checking ccs length:
+        if len(ccs) <= 1:
+            logging.warning('Not enough cognateclasses to merge.',
+                            extra=ccs)
+            messages.error(request, 'Sorry, the server needs '
+                           '2 or more cognateclasses to merge.')
+        else:
+            # Merging ccs:
+            with transaction.atomic():
+                # Creating new CC with merged field contents:
+                newC = CognateClass()
+                setDict = {'notes': set(),
+                           'root_form': set(),
+                           'root_language': set(),
+                           'gloss_in_root_lang': set(),
+                           'loan_source': set(),
+                           'loan_notes': set()}
+                for cc in ccs:
+                    for k, v in cc.toDict().iteritems():
+                        if k in setDict:
+                            setDict[k].add(v)
+                delta = {k: '{'+', '.join(v)+'}'
+                         for k, v in setDict.iteritems()}
+                for k, v in delta.iteritems():
+                    setattr(newC, k, v)
+                newC.bump(request)
+                newC.save()
+                # Retargeting CJs:
+                cjIds = set()
+                for cc in ccs:
+                    cjIds.update([cj.id for cj
+                                  in cc.cognatejudgement_set.all()])
+                CognateJudgement.objects.filter(
+                    id__in=cjIds).update(
+                    cognate_class_id=newC.id)
+                '''
+                Retargeting CCCs:
+                This needs a bit of extra handling
+                in case a source is mentioned twice.
+                Compare #294.
+                '''
+                sourceCCCMap = defaultdict(list)
+                for cc in ccs:
+                    for ccc in cc.cognateclasscitation_set.all():
+                        sourceCCCMap[ccc.source_id].append(ccc)
+                simpleCCCs = set()
+                newCCCs = []
+                oldCCCs = set()
+                for k, v in sourceCCCMap.iteritems():
+                    if len(v) == 1:
+                        simpleCCCs.add(v[0].id)
+                    else:
+                        newCCCs.append(CognateClassCitation(
+                            cognate_class_id=newC.id,
+                            source_id=k,
+                            pages='{' +
+                                  ', '.join([x.pages for x in v]) +
+                                  '}',
+                            reliability='A',
+                            comment='{' +
+                                    ', '.join([x.comment for x in v]) +
+                                    '}'))
+                        oldCCCs.update([x.id for x in v])
+                # Retargeting simple cases:
+                CognateClassCitation.objects.filter(
+                    id__in=simpleCCCs).update(
+                    cognate_class_id=newC.id)
+                # Creating new CCCs:
+                CognateClassCitation.objects.bulk_create(newCCCs)
+                # Removing old CCCs:
+                CognateClassCitation.objects.filter(
+                    id__in=oldCCCs).delete()
+                # Deleting old ccs:
+                ccs.delete()
+                # Fixing alias:
+                newC.update_alias()
+
 
 class CognateJudgementSplitRow(AbstractTimestampedForm):
     idField = IntegerField('Id', validators=[InputRequired()])
@@ -700,7 +787,7 @@ class LexemeTableLanguageWordlistForm(WTForm):
                 lex = Lexeme.objects.get(id=data['id'])
             except Lexeme.DoesNotExist:
                 messages.error(request, "Sorry, lexeme %s does not "
-                                        "exist in the database." % lex.id)
+                                        "exist in the database." % data['id'])
                 continue  # Skip this entry
             # Updating the lexeme:
             try:
