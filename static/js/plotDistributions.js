@@ -61,13 +61,16 @@
     msg.listen('distribution', function(distribution){
       nameDistributionMap[distribution.name] = distribution;
       if(distribution.data.length > 0){
+        console.log('Updating distribution:', distribution.name);
         chart.load({
           columns: [
-            _.concat([distribution.name], distribution.data)
+            _.concat([distribution.name], _.clone(distribution.data))
           ]
         });
       }else{
-        chart.unload({ids: [distribution.name]});
+        chart.unload({
+          ids: distribution.name
+        });
       }
     });
     //Initial request for all distributions:
