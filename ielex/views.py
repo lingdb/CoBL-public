@@ -786,28 +786,9 @@ def view_language_wordlist(request, language, wordlist):
         # Updating lexeme table data:
         if 'lex_form' in request.POST:
             try:
-                lexemesTableForm = LexemeTableLanguageWordlistForm(
-                    request.POST)
-                lexemesTableForm.validate()
-
-                for entry in lexemesTableForm.lexemes:
-                    data = entry.data
-                    # Updating the lexeme:
-                    try:
-                        with transaction.atomic():
-                            lex = Lexeme.objects.get(id=data['id'])
-                            if lex.isChanged(**data):
-                                problem = lex.setDelta(request, **data)
-                                if problem is None:
-                                    lex.save()
-                                else:
-                                    messages.error(
-                                        request, lex.deltaReport(**problem))
-                    except Exception:
-                        logging.exception('Problem updating Lexeme '
-                                          'in view_language_wordlist.')
-                        messages.error(request, 'Sorry, the server could '
-                                       'not update lexeme %s.' % lex.gloss)
+                form = LexemeTableLanguageWordlistForm(request.POST)
+                form.validate()
+                form.handle(request)
             except Exception:
                 logging.exception('Problem updating lexemes '
                                   'in view_language_wordlist.')
@@ -1298,38 +1279,11 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
             try:
                 lexemesTableForm = LexemeTableViewMeaningsForm(request.POST)
                 lexemesTableForm.validate()
-                changedCogIdSet = set()  # Not changing a cognate class twice
-
-                for entry in lexemesTableForm.lexemes:
-                    data = entry.data
-                    try:
-                        # Updating the lexeme:
-                        lex = Lexeme.objects.get(id=data['id'])
-                        if lex.isChanged(**data):
-                            problem = lex.setDelta(request, **data)
-                            if problem is None:
-                                lex.save()
-                            else:
-                                messages.error(request,
-                                               lex.deltaReport(**problem))
-                        # Updating cognate class if requested:
-                        for cData in data['allCognateClasses']:
-                            if cData['id'] in changedCogIdSet:
-                                continue
-                            c = CognateClass.objects.get(id=cData['id'])
-                            if c.isChanged(**cData):
-                                problem = c.setDelta(request, **cData)
-                                if problem is None:
-                                    c.save()
-                                    changedCogIdSet.add(c.id)
-                                else:
-                                    messages.error(
-                                        request, c.deltaReport(**problem))
-                    except Exception:
-                        logging.exception('Problem updating Lexeme '
-                                          'in view_meaning.')
+                lexemesTableForm.handle(request)
             except Exception:
                 logging.exception('Problem updating lexemes in view_meaning.')
+                messages.error(request, "Sorry, the server had problems "
+                                        "updating at least one lexeme.")
 
             return HttpResponseRedirect(
                 reverse("view-meaning-languages",
