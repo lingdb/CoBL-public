@@ -191,11 +191,13 @@ def write_nexus(fileobj,                  # file object
 
     # get data together
     language_list = LanguageList.objects.get(name=language_list_name)
-    languages = language_list.languages.all().order_by("languagelistorder")
+    languages = language_list.languages.exclude(
+        notInExport=True).all().order_by("languagelistorder")
     language_names = [language.ascii_name for language in languages]
 
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
-    meanings = meaning_list.meanings.all().order_by("meaninglistorder")
+    meanings = meaning_list.meanings.exclude(
+        exclude=True).all().order_by("meaninglistorder")
     max_len = max([len(l) for l in language_names])
 
     matrix, cognate_class_names, assumptions = construct_matrix(
