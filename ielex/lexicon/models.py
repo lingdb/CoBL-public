@@ -1676,7 +1676,8 @@ class NexusExport(AbstractTimestamped):
                   'excludeIdeophonic',
                   'excludeDubious',
                   'excludeLoanword',
-                  'pllLoanChoice']:
+                  'excludePllLoan',
+                  'includePllLoan']:
             settings[f] = form.cleaned_data[f]
         # Finish:
         self.exportSettings = json.dumps(settings)
@@ -1694,7 +1695,8 @@ class NexusExport(AbstractTimestamped):
             excludeIdeophonic :: Bool
             excludeDubious :: Bool
             excludeLoanword :: Bool
-            pllLoanChoice' :: "X" | "I"
+            excludePllLoan :: Bool
+            includePllLoan :: Bool
         }
         '''
         # settings :: {}

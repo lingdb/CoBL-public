@@ -1,7 +1,7 @@
 # encoding: utf-8
 from django import forms
 from ielex.forms import ChooseLanguageListField, ChooseMeaningListField
-from ielex.lexicon.models import LanguageList, MeaningList, RELIABILITY_CHOICES
+from ielex.lexicon.models import LanguageList, MeaningList
 
 
 class ChooseOutputBaseForm(forms.Form):
@@ -53,17 +53,23 @@ class ChooseNexusOutputForm(ChooseOutputBaseForm):
         required=False,
         label=u"Loanword",
         help_text="Exclude cognate sets marked as loan event.")
-    EXCLUSIONCHOICE = (("X", "Exclude Pll loans cognate sets."),
-                       ("I", "Include Pll. loans as independent sets."))
-    pllLoanChoice = forms.ChoiceField(
+    excludePllLoan = forms.BooleanField(
         required=False,
-        choices=EXCLUSIONCHOICE,
-        widget=forms.RadioSelect,
-        label="Loan handling, if `Loanword` excluded",
-        help_text="""When cognate sets shall be excluded based on
-        being marked as a loan event,
-        this option specifies how to exclude them."""
+        label=u"Exclude Pll. loan cognate sets"
     )
+    includePllLoan = forms.BooleanField(
+        required=False,
+        label=u"Include Pll. loans as independent sets."
+    )
+
+    def clean(self):
+        # Making sure excludePllLoan and includePllLoan are never both True:
+        cleaned_data = super(ChooseNexusOutputForm, self).clean()
+        if cleaned_data['excludePllLoan'] and cleaned_data['includePllLoan']:
+            raise forms.ValidationError(
+                "It's forbidden to set both excludePllLoan "
+                "and includePllLoan to true.")
+        return cleaned_data
 
 
 class DumpSnapshotForm(ChooseOutputBaseForm):
