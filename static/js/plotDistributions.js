@@ -64,7 +64,7 @@
         console.log('Updating distribution:', distribution.name);
         chart.load({
           columns: [
-            _.concat([distribution.name], _.clone(distribution.data))
+            _.concat([distribution.name], distribution.data)
           ]
         });
       }else{
