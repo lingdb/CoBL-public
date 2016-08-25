@@ -11,10 +11,8 @@ from ielex import settings
 from ielex.lexicon.models import CognateClass, \
                                  CognateClassCitation, \
                                  CognateJudgement, \
-                                 CognateJudgementCitation, \
                                  LanguageList, \
                                  Lexeme, \
-                                 LexemeCitation, \
                                  MeaningList, \
                                  NexusExport
 from ielex.forms import EditCognateClassCitationForm
@@ -94,7 +92,7 @@ class NexusExportView(TemplateView):
             "language_list": getDefaultLanguagelistId(request),
             "meaning_list": getDefaultWordlistId(request),
             "dialect": "NN",
-            "ascertainment_marker": 0,
+            "ascertainment_marker": 1,
             "excludeNotSwadesh": 1,
             "excludePllDerivation": 1,
             "excludeIdeophonic": 1,
@@ -219,7 +217,8 @@ def write_nexus(fileobj,                  # file object
     print("[ Exclude Ideophonic: %s ]" % excludeIdeophonic, file=fileobj)
     print("[ Exclude Dubious: %s ]" % excludeDubious, file=fileobj)
     print("[ Exclude Loanword: %s ]" % excludeLoanword, file=fileobj)
-    print("[ Pll Loan Choice: %s ]" % pllLoanChoice, file=fileobj)
+    print("[ Exclude Pll Loan: %s ]" % excludePllLoan, file=fileobj)
+    print("[ Include Pll Loan: %s ]" % includePllLoan, file=fileobj)
     print("[ File generated: %s ]\n" % time.strftime("%Y-%m-%d %H:%M:%S",
           time.localtime()), file=fileobj)
 
