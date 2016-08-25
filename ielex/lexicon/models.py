@@ -192,6 +192,35 @@ class AbstractTimestamped(models.Model):
         return {k: getattr(self, k) for k in self.timestampedFields()}
 
 
+class AbstractDistribution(models.Model):
+    '''
+    This model describes the types of distributions
+    we use for clades and languages.
+    '''
+    # Distribution type used:
+    distribution = models.CharField(
+        max_length=1, choices=DISTRIBUTION_CHOICES, default="_")
+    # For [offset] log normal distribution:
+    logNormalOffset = models.IntegerField(null=True)
+    logNormalMean = models.IntegerField(null=True)
+    logNormalStDev = models.DecimalField(
+        null=True, max_digits=19, decimal_places=10)
+    # For normal distribution:
+    normalMean = models.IntegerField(null=True)
+    normalStDev = models.IntegerField(null=True)
+    # For uniform distribution:
+    uniformUpper = models.IntegerField(null=True)
+    uniformLower = models.IntegerField(null=True)
+
+    class Meta:
+        abstract = True
+
+    def timestampedFields(self):
+        return set(['distribution', 'logNormalOffset', 'logNormalMean',
+                    'logNormalStDev', 'normalMean', 'normalStDev',
+                    'uniformUpper', 'uniformLower'])
+
+
 @reversion.register
 class Source(models.Model):
 
@@ -264,7 +293,7 @@ class SndComp(AbstractTimestamped):
 
 
 @reversion.register
-class Clade(AbstractTimestamped):
+class Clade(AbstractTimestamped, AbstractDistribution):
     '''
     This model was added for #153
     and shall be used to track clade constraints.
@@ -291,20 +320,6 @@ class Clade(AbstractTimestamped):
     atMost = models.IntegerField(null=True)
     # Earliest plausible date divergence could have begun by:
     atLeast = models.IntegerField(null=True)
-    # Distribution type used:
-    distribution = models.CharField(
-        max_length=1, choices=DISTRIBUTION_CHOICES, default="_")
-    # For [offset] log normal distribution:
-    logNormalOffset = models.IntegerField(null=True)
-    logNormalMean = models.IntegerField(null=True)
-    logNormalStDev = models.DecimalField(
-        null=True, max_digits=19, decimal_places=10)
-    # For normal distribution:
-    normalMean = models.IntegerField(null=True)
-    normalStDev = models.IntegerField(null=True)
-    # For uniform distribution:
-    uniformUpper = models.IntegerField(null=True)
-    uniformLower = models.IntegerField(null=True)
 
     def __unicode__(self):
         return self.cladeName
@@ -320,13 +335,11 @@ class Clade(AbstractTimestamped):
         return [cl.language_id for cl in self.languageclade_set]
 
     def timestampedFields(self):
-        return set(['cladeName', 'shortName', 'hexColor', 'export',
-                    'exportDate', 'taxonsetName', 'atMost', 'atLeast',
-                    'distribution', 'logNormalOffset', 'logNormalMean',
-                    'logNormalStDev', 'normalMean', 'normalStDev',
-                    'uniformUpper', 'uniformLower', 'cladeLevel0',
-                    'cladeLevel1', 'cladeLevel2', 'cladeLevel3',
-                    'level0Name', 'level1Name', 'level2Name', 'level3Name'])
+        fs = set(['cladeName', 'shortName', 'hexColor', 'export',
+                  'exportDate', 'taxonsetName', 'atMost', 'atLeast',
+                  'cladeLevel0', 'cladeLevel1', 'cladeLevel2', 'cladeLevel3',
+                  'level0Name', 'level1Name', 'level2Name', 'level3Name'])
+        return fs | AbstractDistribution.timestampedFields(self)
 
     def deltaReport(self, **kwargs):
         return 'Could not update Clade: ' \
@@ -404,7 +417,7 @@ def getCladeFromLanguageIds(languageIds):
 
 
 @reversion.register
-class Language(AbstractTimestamped):
+class Language(AbstractTimestamped, AbstractDistribution):
     iso_code = models.CharField(max_length=3, blank=True)
     ascii_name = models.CharField(
         max_length=128, unique=True, validators=[suitable_for_url])
@@ -422,8 +435,6 @@ class Language(AbstractTimestamped):
     level1 = models.IntegerField(default=0, null=True)
     level2 = models.IntegerField(default=0, null=True)
     level3 = models.IntegerField(default=0, null=True)
-    mean_timedepth_BP_years = models.IntegerField(null=True)
-    std_deviation_timedepth_BP_years = models.IntegerField(null=True)
     foss_stat = models.BooleanField(default=0)
     low_stat = models.BooleanField(default=0)
     representative = models.BooleanField(default=0)
@@ -606,15 +617,14 @@ class Language(AbstractTimestamped):
                          str(self.level3)])
 
     def timestampedFields(self):
-        return set(['iso_code', 'ascii_name', 'utf8_name', 'glottocode',
-                    'variety', 'foss_stat', 'low_stat', 'soundcompcode',
-                    'level0', 'level1', 'level2', 'level3', 'representative',
-                    'mean_timedepth_BP_years',
-                    'std_deviation_timedepth_BP_years',
-                    'rfcWebPath1', 'rfcWebPath2', 'author', 'reviewer',
-                    'earliestTimeDepthBound', 'latestTimeDepthBound',
-                    'progress', 'sortRankInClade', 'entryTimeframe',
-                    'historical', 'notInExport'])
+        fs = set(['iso_code', 'ascii_name', 'utf8_name', 'glottocode',
+                  'variety', 'foss_stat', 'low_stat', 'soundcompcode',
+                  'level0', 'level1', 'level2', 'level3', 'representative',
+                  'rfcWebPath1', 'rfcWebPath2', 'author', 'reviewer',
+                  'earliestTimeDepthBound', 'latestTimeDepthBound',
+                  'progress', 'sortRankInClade', 'entryTimeframe',
+                  'historical', 'notInExport'])
+        return fs | AbstractDistribution.timestampedFields(self)
 
     def deltaReport(self, **kwargs):
         return 'Could not update language: ' \

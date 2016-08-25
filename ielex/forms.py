@@ -19,8 +19,6 @@ from ielex.lexicon.models import CognateClass, \
                                  TYPE_CHOICES, \
                                  CognateJudgement
 from ielex.lexicon.validators import suitable_for_url, suitable_for_url_wtforms
-# from ielex.extensional_semantics.models import *
-
 from wtforms import StringField, \
                     IntegerField, \
                     FieldList, \
@@ -237,7 +235,33 @@ class AbstractTimestampedForm(WTForm):
     lastEditedBy = StringField('Last edited')
 
 
-class LanguageListRowForm(AbstractTimestampedForm):
+class AbstractDistributionForm(WTForm):
+    distribution = SelectField('Distribution type',
+                               choices=DISTRIBUTION_CHOICES,
+                               validators=[InputRequired()])
+    logNormalOffset = IntegerField('[Offset]', validators=[InputRequired()])
+    logNormalMean = IntegerField('Mean', validators=[InputRequired()])
+    logNormalStDev = DecimalField('StDev', validators=[InputRequired()])
+    normalMean = IntegerField('Mean', validators=[InputRequired()])
+    normalStDev = IntegerField('StDev', validators=[InputRequired()])
+    uniformLower = IntegerField('Lower', validators=[InputRequired()])
+    uniformUpper = IntegerField('Upper', validators=[InputRequired()])
+
+    def validate_distribution(form, field):
+        wantedFields = {
+            'O': ['logNormalOffset', 'logNormalMean', 'logNormalStDev'],
+            'L': ['logNormalMean', 'logNormalStDev'],
+            'N': ['normalMean', 'normalStDev'],
+            'U': ['uniformLower', 'uniformUpper']}
+        if field.data in wantedFields:
+            for f in wantedFields[field.data]:
+                if form[f] is None:
+                    raise ValidationError(
+                        'Distribution is %s, but field %s is None.' %
+                        (field.data, f))
+
+
+class LanguageListRowForm(AbstractTimestampedForm, AbstractDistributionForm):
     idField = IntegerField('Language id', validators=[InputRequired()])
     iso_code = StringField('ISO code', validators=[InputRequired()])
     utf8_name = StringField('Display name', validators=[InputRequired()])
@@ -255,11 +279,6 @@ class LanguageListRowForm(AbstractTimestampedForm):
     level3 = IntegerField('Clade level 3', validators=[InputRequired()])
     representative = BooleanField('Representative',
                                   validators=[InputRequired()])
-    mean_timedepth_BP_years = IntegerField('Mean of Time Depth BP (years)',
-                                           validators=[InputRequired()])
-    std_deviation_timedepth_BP_years = IntegerField(
-        'Standard Deviation of Time Depth BP (years)',
-        validators=[InputRequired()])
     rfcWebPath1 = StringField('This Lg lex rfc web path 1',
                               validators=[InputRequired()])
     rfcWebPath2 = StringField('This Lg lex rfc web path 2',
@@ -282,29 +301,17 @@ class LanguageListRowForm(AbstractTimestampedForm):
     def validate_historical(form, field):
         # Assumes that field.data :: True | False
         if field.data:
-            mean_timedepth_BP_years = form.data['mean_timedepth_BP_years']
-            if mean_timedepth_BP_years is None:
-                raise ValidationError('mean_timedepth_BP_years is None '
+            distribution = form.data['distribution']
+            if distribution is None or distribution == '_':
+                raise ValidationError('distribution is None '
                                       'but historical is True.')
-            if mean_timedepth_BP_years <= 0:
-                raise ValidationError('mean_timedepth_BP_years must be > 0, '
-                                      'but is %i.' % mean_timedepth_BP_years)
-        else:
-            for k in ['mean_timedepth_BP_years',
-                      'std_deviation_timedepth_BP_years',
-                      'earliestTimeDepthBound',
-                      'latestTimeDepthBound']:
-                value = form.data[k]
-                if value is not None and value != 0:
-                    raise ValidationError('Field %s should be None or 0, '
-                                          'but is: "%s"' % (k, value))
 
 
 class AddLanguageListTableForm(WTForm):
     langlist = FieldList(FormField(LanguageListRowForm))
 
 
-class CladeRowForm(AbstractTimestampedForm):
+class CladeRowForm(AbstractTimestampedForm, AbstractDistributionForm):
     idField = IntegerField('Id', validators=[InputRequired()])
     cladeName = StringField('Clade Name', validators=[InputRequired()])
     shortName = StringField('Short name', validators=[InputRequired()])
@@ -314,16 +321,6 @@ class CladeRowForm(AbstractTimestampedForm):
     taxonsetName = StringField('Texonset name', validators=[InputRequired()])
     atMost = IntegerField('At most?', validators=[InputRequired()])
     atLeast = IntegerField('At least?', validators=[InputRequired()])
-    distribution = SelectField('Distribution type',
-                               choices=DISTRIBUTION_CHOICES,
-                               validators=[InputRequired()])
-    logNormalOffset = IntegerField('[Offset]', validators=[InputRequired()])
-    logNormalMean = IntegerField('Mean', validators=[InputRequired()])
-    logNormalStDev = DecimalField('StDev', validators=[InputRequired()])
-    normalMean = IntegerField('Mean', validators=[InputRequired()])
-    normalStDev = IntegerField('StDev', validators=[InputRequired()])
-    uniformUpper = IntegerField('Upper', validators=[InputRequired()])
-    uniformLower = IntegerField('Lower', validators=[InputRequired()])
     cladeLevel0 = IntegerField('Clade Level 0',
                                validators=[InputRequired()])
     cladeLevel1 = IntegerField('Clade Level 1',
