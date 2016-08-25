@@ -360,9 +360,9 @@ def construct_matrix(languages,                # [Language]
             wantedCJs = wantedCJs.exclude(cognate_class__dubiousSet=True)
         if excludeLoanword:
             wantedCJs = wantedCJs.exclude(cognate_class__loanword=True)
-        elif excludePllLoan:  # ¬ excludeLoanword ∧ excludePllLoan
+        elif excludePllLoan:  # not excludeLoanword and excludePllLoan
             wantedCJs = wantedCJs.exclude(cognate_class_parallelLoanEvent=True)
-        elif includePllLoan:  # ¬ excludeLoanword ∧ includePllLoan
+        elif includePllLoan:  # not excludeLoanword and includePllLoan
             raise ValueError('Case not implemented.')  # FIXME IMPLEMENT
         # synonymous cognate classes (i.e. cognate reflexes representing
         # a single Swadesh meaning)
