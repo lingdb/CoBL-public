@@ -616,6 +616,11 @@ def view_clades(request):
                                'deleting the clade.')
         return HttpResponseRedirect('/clades/')
 
+    # Extra handling for graphs. See #145.
+    if request.method == 'GET':
+        if 'plot' in request.GET:
+            return render_template(request, "distributionPlot.html")
+
     form = CladeTableForm()
     for clade in Clade.objects.all():
         clade.idField = clade.id

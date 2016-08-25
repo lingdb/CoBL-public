@@ -297,7 +297,8 @@ class Clade(AbstractTimestamped):
     # For [offset] log normal distribution:
     logNormalOffset = models.IntegerField(null=True)
     logNormalMean = models.IntegerField(null=True)
-    logNormalStDev = models.IntegerField(null=True)
+    logNormalStDev = models.DecimalField(
+        null=True, max_digits=19, decimal_places=10)
     # For normal distribution:
     normalMean = models.IntegerField(null=True)
     normalStDev = models.IntegerField(null=True)
