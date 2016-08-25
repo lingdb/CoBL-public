@@ -101,8 +101,6 @@ class NexusExportView(TemplateView):
     def post(self, request):
         form = ChooseNexusOutputForm(request.POST)
         if form.is_valid():
-            # Using NexusExport instance and fork instead of
-            # return self.write_nexus_view(form)
             export = NexusExport(exportName=self.fileNameForForm(form))
             export.setSettings(form)
             export.bump(request)
@@ -110,27 +108,6 @@ class NexusExportView(TemplateView):
             return HttpResponseRedirect(reverse("view_nexus_export",
                                         args=[export.id]))
         return self.render_to_response({"form": form})
-
-    def write_nexus_view(self, form):
-        """A wrapper to call the `write_nexus` function from a view"""
-        # TODO: contributor and sources list
-
-        # Create the HttpResponse object with the appropriate header.
-        filename = self.fileNameForForm(form)
-
-        response = HttpResponse(content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename=%s' % \
-            filename.replace(" ", "_")
-
-        write_nexus(
-            fileobj=response,
-            language_list_name=form.cleaned_data["language_list"],
-            meaning_list_name=form.cleaned_data["meaning_list"],
-            exclude_ratings=set(form.cleaned_data["reliability"]),
-            dialect=form.cleaned_data["dialect"],
-            label_cognate_sets=True,
-            ascertainment_marker=form.cleaned_data["ascertainment_marker"])
-        return response
 
     def fileNameForForm(self, form):
         return "%s-%s-%s.nex" % (
