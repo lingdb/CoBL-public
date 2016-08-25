@@ -326,33 +326,6 @@ def write_nexus(fileobj,                  # file object
     return fileobj
 
 
-def write_delimited(fileobj,
-                    language_list_name,
-                    meaning_list_name,
-                    exclude_ratings,
-                    label_cognate_sets):
-    start_time = time.time()
-
-    language_list = LanguageList.objects.get(name=language_list_name)
-    languages = language_list.languages.all().order_by("languagelistorder")
-    meaning_list = MeaningList.objects.get(name=meaning_list_name)
-    meanings = meaning_list.meanings.all().order_by("meaninglistorder")
-    matrix, cognate_class_names, _ = construct_matrix(
-        languages, meanings, exclude_ratings, False)  # no ascertainment marker
-    print("\t" + "\t".join(cognate_class_names), file=fileobj)
-    for row in matrix:
-        print(*row, sep="\t", file=fileobj)
-
-    seconds = int(time.time() - start_time)
-    minutes = seconds // 60
-    seconds %= 60
-    print("# Processing time: %02d:%02d" % (minutes, seconds), file=sys.stderr)
-    print("# %s" % " ".join(sys.argv), file=sys.stderr)
-    print("# Processed %s cognate sets from %s languages" %
-          (len(cognate_class_names), len(matrix)), file=sys.stderr)
-    return fileobj
-
-
 def construct_matrix(languages,                # [Language]
                      meanings,                 # [Meaning]
                      exclude_ratings,          # set
