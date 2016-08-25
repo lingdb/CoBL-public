@@ -1663,25 +1663,38 @@ class NexusExport(AbstractTimestamped):
 
     def setSettings(self, form):
         # form :: ChooseNexusOuputForm
-        self.exportSettings = json.dumps({
+        settings = {
             'language_list_name': form.cleaned_data["language_list"].name,
             'meaning_list_name': form.cleaned_data["meaning_list"].name,
-            'exclude_ratings': form.cleaned_data["reliability"],
-            'dialect': form.cleaned_data["dialect"],
             'label_cognate_sets': True,
-            'ascertainment_marker': form.cleaned_data["ascertainment_marker"]
-        })
+        }
+        # Copying `simple` fields:
+        for f in ['dialect',
+                  'ascertainment_marker',
+                  'excludeNotSwadesh',
+                  'excludePllDerivation',
+                  'excludeIdeophonic',
+                  'excludeDubious',
+                  'excludeLoanword',
+                  'pllLoanChoice']:
+            settings[f] = form.cleaned_data[f]
+        # Finish:
+        self.exportSettings = json.dumps(settings)
 
     def getSettings(self):
         '''
         settings :: {
             language_list_name :: LanguageList
             meaning_list_name :: MeaningList
-            exclude_ratings :: set(str)
-            dialect=form.cleaned_data["dialect"],
+            dialect :: "BP" | "NN" | "MB"
             label_cognate_sets :: Bool
             ascertainment_marker :: Bool
-            excludeLoanwords :: Bool
+            excludeNotSwadesh :: Bool
+            excludePllDerivation :: Bool
+            excludeIdeophonic :: Bool
+            excludeDubious :: Bool
+            excludeLoanword :: Bool
+            pllLoanChoice' :: "X" | "I"
         }
         '''
         # settings :: {}
@@ -1690,5 +1703,4 @@ class NexusExport(AbstractTimestamped):
             name=settings['language_list_name'])
         settings['meaning_list_name'] = MeaningList.objects.get(
             name=settings['meaning_list_name'])
-        settings['exclude_ratings'] = set(settings['exclude_ratings'])
         return settings
