@@ -31,12 +31,6 @@ class ChooseNexusOutputForm(ChooseOutputBaseForm):
         widget=forms.CheckboxSelectMultiple,
         required=False,
         label="Exclude ratings")
-    excludeLoanwords = forms.BooleanField(
-        required=False,
-        label=u"Exclude lexemes from loan event cognate sets?",
-        help_text="Cognate sets can be marked as loan_event "
-                  "and can be used to exclude lexemes from the export."
-    )
     ascertainment_marker = forms.BooleanField(
         required=False,
         label=u"Ascertainment bias correction marker",

@@ -1669,8 +1669,7 @@ class NexusExport(AbstractTimestamped):
             'exclude_ratings': form.cleaned_data["reliability"],
             'dialect': form.cleaned_data["dialect"],
             'label_cognate_sets': True,
-            'ascertainment_marker': form.cleaned_data["ascertainment_marker"],
-            'excludeLoanwords': form.cleaned_data["excludeLoanwords"]
+            'ascertainment_marker': form.cleaned_data["ascertainment_marker"]
         })
 
     def getSettings(self):

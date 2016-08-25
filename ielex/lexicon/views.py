@@ -129,8 +129,7 @@ class NexusExportView(TemplateView):
             exclude_ratings=set(form.cleaned_data["reliability"]),
             dialect=form.cleaned_data["dialect"],
             label_cognate_sets=True,
-            ascertainment_marker=form.cleaned_data["ascertainment_marker"],
-            excludeLoanwords=form.cleaned_data["excludeLoanwords"])
+            ascertainment_marker=form.cleaned_data["ascertainment_marker"])
         return response
 
     def fileNameForForm(self, form):
@@ -184,8 +183,7 @@ def write_nexus(fileobj,                  # file object
                 exclude_ratings,          # set str
                 dialect,                  # string
                 label_cognate_sets,       # bool
-                ascertainment_marker,     # bool
-                excludeLoanwords=False):  # bool, added for #229
+                ascertainment_marker):    # bool
     start_time = time.time()
     dialect_full_name = dict(ChooseNexusOutputForm.DIALECT)[dialect]
 
@@ -358,8 +356,7 @@ def write_delimited(fileobj,
 def construct_matrix(languages,                # [Language]
                      meanings,                 # [Meaning]
                      exclude_ratings,          # set
-                     ascertainment_marker,     # bool
-                     excludeLoanwords=False):  # bool, added for #229
+                     ascertainment_marker):    # bool
 
         # synonymous cognate classes (i.e. cognate reflexes representing
         # a single Swadesh meaning)
@@ -387,13 +384,6 @@ def construct_matrix(languages,                # [Language]
         if 'X' in exclude_ratings:
             exclude_lexemes |= set(Lexeme.objects.filter(
                 not_swadesh_term=True).values_list(
-                'id', flat=True))
-
-        # exclude lexemes that belong to a cognate class
-        # that is marked as loanword:
-        if excludeLoanwords:
-            exclude_lexemes |= set(Lexeme.objects.filter(
-                cognate_class__loanword=True).values_list(
                 'id', flat=True))
 
         # languages lacking any lexeme for a meaning
