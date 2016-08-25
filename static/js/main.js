@@ -41,7 +41,8 @@
              'js/inputDepends',
              'js/editCognateClass',
              'js/calculateDistributions',
-             'js/plotDistributions'],
+             'js/plotDistributions',
+             'js/nexus'],
             function(require, $, _){
     //Initializing viewTableFilter:
     require('js/viewTableFilter').init('table.viewTableFilter');
