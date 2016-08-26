@@ -352,7 +352,7 @@ def construct_matrix(languages,                # [Language]
         wantedCJs = CognateJudgement.objects.filter(**cognateJudgementFilter)
         if excludePllDerivation:
             wantedCJs = wantedCJs.exclude(
-                cognate_class__parallelLoanEvent=True)
+                cognate_class__parallelDerivation=True)
         if excludeIdeophonic:
             wantedCJs = wantedCJs.exclude(cognate_class__ideophonic=True)
         if excludeDubious:
@@ -360,7 +360,8 @@ def construct_matrix(languages,                # [Language]
         if excludeLoanword:
             wantedCJs = wantedCJs.exclude(cognate_class__loanword=True)
         elif excludePllLoan:  # not excludeLoanword and excludePllLoan
-            wantedCJs = wantedCJs.exclude(cognate_class_parallelLoanEvent=True)
+            wantedCJs = wantedCJs.exclude(
+                cognate_class__parallelLoanEvent=True)
         elif includePllLoan:  # not excludeLoanword and includePllLoan
             raise ValueError('Case not implemented.')  # FIXME IMPLEMENT
         # synonymous cognate classes (i.e. cognate reflexes representing
