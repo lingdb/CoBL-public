@@ -13,7 +13,12 @@
       - On change of any value
     * We plot the distribution(s) in a (special) div using c3.
   */
-  return define(['jquery','lodash','c3','js/postmessage'], function($, _, c3, msg){
+  return define(['jquery',
+                 'lodash',
+                 'c3',
+                 'js/postmessage',
+                 'js/calculateDistributions'],
+                function($, _, c3, msg, calculate){
     if($('#distributionPlot').length !== 1) return;
     /**
       Map from taxonsetName to distribution calculated via computeDistribution.
@@ -59,6 +64,7 @@
     });
     //Listen to distribution updates:
     msg.listen('distribution', function(distribution){
+      distribution = calculate(distribution);
       nameDistributionMap[distribution.name] = distribution;
       if(distribution.data.length > 0){
         console.log('Updating distribution:', distribution.name);

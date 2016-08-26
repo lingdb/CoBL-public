@@ -40,7 +40,7 @@
              'js/bootboxHtmlSnippet',
              'js/inputDepends',
              'js/editCognateClass',
-             'js/calculateDistributions',
+             'js/gatherDistributions',
              'js/plotDistributions',
              'js/nexus'],
             function(require, $, _){
