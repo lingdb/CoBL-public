@@ -365,7 +365,7 @@ def view_language_list(request, language_list=None):
                                                lang.deltaReport(**problem))
                         except Exception:
                             logging.exception('Exception while saving POST '
-                                              'in view_language_list.')
+                                              'in view_language_list. %s' % data)
                             messages.error(
                                 request, 'Sorry, the server failed '
                                          'to save "%s".' % data['ascii_name'])
@@ -560,25 +560,7 @@ def view_clades(request):
             # Updating individual clades:
             try:
                 cladeTableForm.validate()
-                idCladeMap = {c.id: c for c in Clade.objects.all()}
-                for entry in cladeTableForm.elements:
-                    data = entry.data
-                    try:
-                        clade = idCladeMap[data['idField']]
-                        if clade.isChanged(**data):
-                            problem = clade.setDelta(request, **data)
-                            if problem is None:
-                                with transaction.atomic():
-                                    clade.save()
-                                    cladeChanged = True
-                            else:
-                                messages.error(
-                                    request, clade.deltaReport(**problem))
-                    except Exception:
-                        logging.exception('Problem saving clade '
-                                          'in view_clades.')
-                        messages.error(request,
-                                       'Problem saving clade data: %s' % data)
+                cladeChanged = cladeTableForm.handle(request)
             except Exception:
                 logging.exception('Problem updating clades in view_clades.')
                 messages.error(request, 'Sorry, the server had problems '

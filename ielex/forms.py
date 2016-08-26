@@ -17,7 +17,8 @@ from ielex.lexicon.models import CognateClass, \
                                  MeaningList, \
                                  Source, \
                                  TYPE_CHOICES, \
-                                 CognateJudgement
+                                 CognateJudgement, \
+                                 Clade
 from ielex.lexicon.validators import suitable_for_url, suitable_for_url_wtforms
 from wtforms import StringField, \
                     IntegerField, \
@@ -337,6 +338,29 @@ class CladeRowForm(AbstractTimestampedForm, AbstractDistributionForm):
 
 class CladeTableForm(WTForm):
     elements = FieldList(FormField(CladeRowForm))
+
+    def handle(self, request):
+        cladeChanged = False
+        idCladeMap = {c.id: c for c in Clade.objects.all()}
+        for entry in self.elements:
+            data = entry.data
+            try:
+                clade = idCladeMap[data['idField']]
+                if clade.isChanged(**data):
+                    problem = clade.setDelta(request, **data)
+                    if problem is None:
+                        with transaction.atomic():
+                            clade.save()
+                            cladeChanged = True
+                    else:
+                        messages.error(
+                            request, clade.deltaReport(**problem))
+            except Exception:
+                logging.exception('Problem saving clade '
+                                  'in view_clades.')
+                messages.error(request,
+                               'Problem saving clade data: %s' % data)
+        return cladeChanged
 
 
 class CladeCreationForm(WTForm):
