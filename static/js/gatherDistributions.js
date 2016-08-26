@@ -82,7 +82,17 @@
           name = $tr.find('.taxonsetName input').val();
       //In case of language table color or name may behave differently:
       if(_.isUndefined(color)){
-        color = $tr.find('.languageBranchColor').css('background-color').substring(1);
+        color = $tr.find('.languageBranchColor').css('background-color');
+        //color needs conversion to hex:
+        //Inspired by https://stackoverflow.com/a/30381663/448591
+        color = color.replace("rgba", "")
+                     .replace("rgb", "")
+                     .replace("(", "")
+                     .replace(")", "");
+        color = color.split(","); // get Array["R","G","B"]
+        color = ('0' + parseInt(color[0], 10).toString(16)).slice(-2) +
+                ('0' + parseInt(color[1], 10).toString(16)).slice(-2) +
+                ('0' + parseInt(color[2], 10).toString(16)).slice(-2);
       }
       if(_.isUndefined(name)){
         name = $tr.find('.languageName input.language_name').val();
