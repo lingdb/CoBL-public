@@ -238,6 +238,7 @@ class AbstractTimestampedForm(WTForm):
 
 class AbstractDistributionForm(WTForm):
     distribution = SelectField('Distribution type',
+                               default='_',
                                choices=DISTRIBUTION_CHOICES,
                                validators=[InputRequired()])
     logNormalOffset = IntegerField('[Offset]', validators=[InputRequired()])

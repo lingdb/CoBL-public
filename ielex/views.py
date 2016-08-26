@@ -365,7 +365,7 @@ def view_language_list(request, language_list=None):
                                                lang.deltaReport(**problem))
                         except Exception:
                             logging.exception('Exception while saving POST '
-                                              'in view_language_list. %s' % data)
+                                              'in view_language_list.')
                             messages.error(
                                 request, 'Sorry, the server failed '
                                          'to save "%s".' % data['ascii_name'])
