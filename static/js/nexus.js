@@ -5,8 +5,8 @@
     Relates to issue #146.
     This module is only active on the `/nexus/` page.
   */
-  if(window.location.pathname === "/nexus/"){
-    return define(['jquery'], function($){
+  return define(['jquery'], function($){
+    if(window.location.pathname === "/nexus/"){
       var excludeLoanword = $('#id_excludeLoanword'),
           excludePllLoan = $('#id_excludePllLoan'),
           includePllLoan = $('#id_includePllLoan');
@@ -29,6 +29,6 @@
           excludePllLoan.prop('checked', false);
         }
       });
-    });
-  }
+    }
+  });
 }());
