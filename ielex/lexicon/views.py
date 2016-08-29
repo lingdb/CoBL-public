@@ -577,13 +577,13 @@ def computeCalibrations(language_list):
             return "normal(%.3f,%.3f)" % (mean, stDev)
         if abstractDistribution.distribution == 'L':
             mean = round(abstractDistribution.logNormalMean / 1000, 3)
-            stDev = round(abstractDistribution.logNormalStDev / 1000, 3)
-            return "lognormal(%.3f,%.3f)" % (mean, stDev)
+            stDev = abstractDistribution.logNormalStDev
+            return "lognormal(%.3f,%f)" % (mean, stDev)
         if abstractDistribution.distribution == 'O':
             mean = round(abstractDistribution.logNormalMean / 1000, 3)
-            stDev = round(abstractDistribution.logNormalStDev / 1000, 3)
+            stDev = abstractDistribution.logNormalStDev
             offset = round(abstractDistribution.logNormalOffset / 1000, 3)
-            return "offsetlognormal(%.3f,%.3f,%.3f)" % (mean, stDev, offset)
+            return "offsetlognormal(%.3f,%.3f,%f)" % (offset, mean, stDev)
         return None
 
     calibrations = []
