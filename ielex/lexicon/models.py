@@ -1734,5 +1734,5 @@ class NexusExport(AbstractTimestamped):
 
     @property
     def constraintsName(self):
-        # Replaces the /\.nex$/ in exportName with .constraints.txt
-        return self.exportName[:-4] + "_Constraints.txt"
+        # Replaces the /\.nex$/ in exportName with _Constraints.nex
+        return self.exportName[:-4] + "_Constraints.nex"
