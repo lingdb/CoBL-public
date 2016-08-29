@@ -42,7 +42,8 @@
              'js/editCognateClass',
              'js/gatherDistributions',
              'js/plotDistributions',
-             'js/nexus'],
+             'js/nexus',
+             'js/datetooltip'],
             function(require, $, _){
     //Initializing viewTableFilter:
     require('js/viewTableFilter').init('table.viewTableFilter');

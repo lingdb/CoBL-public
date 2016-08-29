@@ -1041,7 +1041,7 @@
                     {{ language.distribution.data }}
                   {% endif %}
                 </td>
-                <td class="logNormalOffset reflectDistribution" data-allowed="O">
+                <td class="logNormalOffset reflectDistribution datetooltip" data-allowed="O">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.logNormalOffset class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif language.logNormalOffset.data %}
@@ -1062,7 +1062,7 @@
                     {{ language.logNormalStDev.data }}
                   {% endif %}
                 </td>
-                <td class="normalMean reflectDistribution" data-allowed="N">
+                <td class="normalMean reflectDistribution datetooltip" data-allowed="N">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.normalMean class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif language.normalMean.data %}
@@ -1076,14 +1076,14 @@
                     {{ language.normalStDev.data }}
                   {% endif %}
                 </td>
-                <td class="uniformLower reflectDistribution" data-allowed="U">
+                <td class="uniformLower reflectDistribution datetooltip" data-allowed="U">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.uniformLower class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif language.uniformLower.data %}
                     {{ language.uniformLower.data }}
                   {% endif %}
                 </td>
-                <td class="uniformUpper reflectDistribution" data-allowed="U">
+                <td class="uniformUpper reflectDistribution datetooltip" data-allowed="U">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.uniformUpper class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif language.uniformUpper.data %}
@@ -1091,7 +1091,7 @@
                   {% endif %}
                 </td>
                 {# earliest_data.html #}
-                <td class="languageEarliestTimeDepthBound">
+                <td class="languageEarliestTimeDepthBound datetooltip">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.earliestTimeDepthBound maxlength="4" class="form-control"  style="width: 3.4em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
                   {% else %}
@@ -1101,7 +1101,7 @@
                   {% endif %}
                 </td>
                 {# latest_data.html #}
-                <td class="languageLatestTimeDepthBound">
+                <td class="languageLatestTimeDepthBound datetooltip">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.latestTimeDepthBound maxlength="4" class="form-control" style="width: 3.4em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
                   {% elif language.latestTimeDepthBound.data %}
