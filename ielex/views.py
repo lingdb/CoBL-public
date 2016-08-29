@@ -1083,30 +1083,7 @@ def view_wordlist(request, wordlist=MeaningList.DEFAULT):
         if 'wordlist' in request.POST:
             mltf = MeaningListTableForm(request.POST)
             mltf.validate()
-            ms = [m.data for m in mltf.meanings]
-            for m in ms:
-                try:
-                    meaning = Meaning.objects.get(id=m['meaningId'])
-                    if meaning.isChanged(**m):
-                        try:
-                            problem = meaning.setDelta(request, **m)
-                            if problem is None:
-                                meaning.save()
-                            else:
-                                messages.error(
-                                    request, meaning.deltaReport(**problem))
-                        except Exception:
-                            logging.exception('Exception while saving POST '
-                                              'in view_wordlist.')
-                            messages.error(request, 'Sorry, the server had '
-                                           'problems saving changes for '
-                                           '"%s".' % meaning.gloss)
-                except Exception:
-                    logging.exception('Problem accessing Meaning object '
-                                      'in view_wordlist.',
-                                      extra=m)
-                    messages.error(request, 'The server had problems saving '
-                                   'at least one entry.')
+            mltf.handle(request)
 
     try:
         languageList = LanguageList.objects.get(

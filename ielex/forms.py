@@ -941,6 +941,32 @@ class MeaningListRowForm(AbstractTimestampedForm):
 class MeaningListTableForm(WTForm):
     meanings = FieldList(FormField(MeaningListRowForm))
 
+    def handle(self, request):
+        ms = [m.data for m in self.meanings]
+        for m in ms:
+            try:
+                meaning = Meaning.objects.get(id=m['meaningId'])
+                if meaning.isChanged(**m):
+                    try:
+                        problem = meaning.setDelta(request, **m)
+                        if problem is None:
+                            meaning.save()
+                        else:
+                            messages.error(
+                                request, meaning.deltaReport(**problem))
+                    except Exception:
+                        logging.exception('Exception while saving POST '
+                                          'in view_wordlist.')
+                        messages.error(request, 'Sorry, the server had '
+                                       'problems saving changes for '
+                                       '"%s".' % meaning.gloss)
+            except Exception:
+                logging.exception('Problem accessing Meaning object '
+                                  'in view_wordlist.',
+                                  extra=m)
+                messages.error(request, 'The server had problems saving '
+                               'at least one entry.')
+
 
 class ChooseSourceForm(forms.Form):
     source = ChooseSourcesField(queryset=Source.objects.all())
