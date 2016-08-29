@@ -590,12 +590,12 @@ def computeCalibrations(language_list):
         if abstractDistribution.distribution == 'L':
             mean = yearToFloat(abstractDistribution.logNormalMean)
             stDev = abstractDistribution.logNormalStDev
-            return "lognormal(%.3f,%f)" % (mean, stDev)
+            return "lognormal(%.3f,%.3f)" % (mean, stDev)
         if abstractDistribution.distribution == 'O':
             mean = yearToFloat(abstractDistribution.logNormalMean)
             stDev = abstractDistribution.logNormalStDev
             offset = yearToFloat(abstractDistribution.logNormalOffset)
-            return "offsetlognormal(%.3f,%.3f,%f)" % (offset, mean, stDev)
+            return "offsetlognormal(%.3f,%.3f,%.3f)" % (offset, mean, stDev)
         return None
 
     calibrations = []
