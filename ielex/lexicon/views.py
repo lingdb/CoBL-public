@@ -117,8 +117,11 @@ class NexusExportView(TemplateView):
         return self.render_to_response({"form": form})
 
     def fileNameForForm(self, form):
-        return "%s-%s-%s.nex" % (
-            settings.project_short_name,
+        return "%s_CoBL-IE_Lgs%s_Mgs%s_%s_%s.nex" % (
+            time.strftime("%Y-%m-%d"),
+            # settings.project_short_name,
+            form.cleaned_data["language_list"].languages.count(),
+            form.cleaned_data["meaning_list"].meanings.count(),
             form.cleaned_data["language_list"].name,
             form.cleaned_data["meaning_list"].name)
 

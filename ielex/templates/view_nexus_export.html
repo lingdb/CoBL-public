@@ -26,6 +26,7 @@
               <td>Export ID</td>
               <td>Done?</td>
               <td>Name</td>
+              <td>Constraints</td>
               <td>Settings</td>
               <td>Date</td>
               <td>Triggered by</td>
@@ -35,9 +36,7 @@
             {% for export in exports %}
               <tr>
                 <td>
-                  <a href="/nexus/export/{{ export.id }}">
-                    {{ export.id }}
-                  </a>
+                  {{ export.id }}
                 </td>
                 <td>
                   {% if export.pending %}
@@ -46,7 +45,16 @@
                     <span class="glyphicon glyphicon-ok"></span>
                   {% endif %}
                 </td>
-                <td>{{ export.exportName }}</td>
+                <td>
+                  <a href="/nexus/export/{{ export.id }}">
+                    {{ export.exportName }}
+                  </a>
+                </td>
+                <td>
+                  <a href="/nexus/export/{{ export.id }}?constraints">
+                    {{ export.constraintsName }}
+                  </a>
+                </td>
                 <td>{{ export.exportSettings }}</td>
                 <td>{{ export.lastTouched }}</td>
                 <td>{{ export.lastEditedBy }}</td>

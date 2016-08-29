@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import StringIO
+from time import strftime
 
 from django.core.management import BaseCommand
 
@@ -25,8 +26,9 @@ class Command(BaseCommand):
 
             data = write_nexus(fileobj=output, **export.getSettings())
 
-            print(data['computeCalibrations'])
-
             export.setExportData(output.getvalue())
+            export.constraintsData = "\n".join([data['cladeMemberships'],
+                                                data['computeCalibrations']])
+            export.save()
             output.close()
-            print('Done.')
+            print('Done.', strftime("%Y-%m-%d %H:%M:%S"))

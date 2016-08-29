@@ -2388,7 +2388,8 @@ def view_nexus_export(request, exportId=None):
         try:
             export = NexusExport.objects.get(id=exportId)
             if not export.pending:
-                return export.generateResponse()
+                return export.generateResponse(
+                    constraints='constraints' in request.GET)
             # Message if pending:
             messages.info(request,
                           "Sorry, the server is still "

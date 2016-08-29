@@ -1637,22 +1637,51 @@ class Author(AbstractTimestamped):
 
 @reversion.register
 class NexusExport(AbstractTimestamped):
+    # Name of .nex file:
     exportName = models.CharField(max_length=256, blank=True)
+    # Settings to compute data:
     exportSettings = models.TextField(blank=True)
+    # Compressed data of nexus file:
     exportData = models.BinaryField(null=True)
+    # Compressed data of constraints file:
+    _constraintsData = models.BinaryField(null=True)
+
+    def constraintsData():
+        doc = "The constraintsData property."
+
+        def fget(self):
+            if self._constraintsData is None:
+                return None
+            return zlib.decompress(self._constraintsData)
+
+        def fset(self, value):
+            self._constraintsData = zlib.compress(value)
+
+        def fdel(self):
+            del self._constraintsData
+        return locals()
+    constraintsData = property(**constraintsData())
 
     @property
     def pending(self):
         # True if calculation for export is not finished
         return self.exportData is None
 
-    def generateResponse(self):
+    def generateResponse(self, constraints=False):
+        '''
+        If constraints == True response shall carry the constraintsData
+        rather than the exportData.
+        '''
         assert not self.pending, "NexusExport.generateResponse " \
                                  "impossible for pending exports."
+        name = self.exportName if not constraints else self.constraintsName
+        data = zlib.decompress(self.exportData) \
+            if not constraints \
+            else self.constraintsData
         response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=%s' % \
-            self.exportName.replace(" ", "_")
-        response.write(zlib.decompress(self.exportData))
+            name.replace(" ", "_")
+        response.write(data)
         return response
 
     def setExportData(self, data):
@@ -1706,3 +1735,8 @@ class NexusExport(AbstractTimestamped):
         settings['meaning_list_name'] = MeaningList.objects.get(
             name=settings['meaning_list_name'])
         return settings
+
+    @property
+    def constraintsName(self):
+        # Replaces the /\.nex$/ in exportName with .constraints.txt
+        return self.exportName[:-4] + "_Constraints.txt"
