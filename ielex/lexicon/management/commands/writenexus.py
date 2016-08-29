@@ -49,5 +49,5 @@ class Command(LexDBManagementCommand):
             set(["L", "X"]),  # exclude
             options["dialect"],  # dialect
             True,  # label cognate sets
-            options["ascertainment_marker"])
+            options["ascertainment_marker"])['fileobj']
         fileobj.close()

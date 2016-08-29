@@ -14,7 +14,9 @@ from ielex.lexicon.models import CognateClass, \
                                  LanguageList, \
                                  Lexeme, \
                                  MeaningList, \
-                                 NexusExport
+                                 NexusExport, \
+                                 Clade, \
+                                 Language
 from ielex.forms import EditCognateClassCitationForm
 from ielex.lexicon.forms import ChooseNexusOutputForm, DumpSnapshotForm
 from ielex.lexicon.functions import nexus_comment
@@ -322,7 +324,12 @@ def write_nexus(fileobj,                  # file object
     # print("[ %s ]" % " ".join(sys.argv), file=fileobj)
     print("# Processed %s cognate sets from %s languages" %
           (len(cognate_class_names), len(matrix)), file=sys.stderr)
-    return fileobj
+    # Return combined data:
+    return {
+        'fileobj': fileobj,
+        'cladeMemberships': cladeMembership(language_list),
+        'computeCalibrations': computeCalibrations(language_list)
+    }
 
 
 def construct_matrix(languages,                # [Language]
@@ -522,3 +529,69 @@ def dump_cognate_data(
               sep="\t", file=fileobj)
 
     return fileobj
+
+
+def cladeMembership(language_list):
+    '''
+    Computes the clade memberships as described in #50:
+
+    begin sets;
+    taxset tsAnatolian = Hittite Luvian Lycian Palaic;
+    taxset tsTocharian = TocharianA TocharianB;
+    taxset tsArmenian = ArmenianClassical ArmenianWestern ArmenianEastern;
+    end;
+    '''
+    taxsets = []
+    clades = Clade.objects.filter(export=True).all()
+    for clade in clades:
+        languages = language_list.languages.exclude(
+            notInExport=True).filter(
+            languageclade__clade=clade).values_list(
+            'ascii_name', flat=True)
+        taxsets.append("taxset ts%s = %s;" %
+                       (clade.taxonsetName, " ".join(languages)))
+    return "begin sets;\n%s\nend;\n" % "\n".join(taxsets)
+
+
+def computeCalibrations(language_list):
+    '''
+    Computes the {clade,language} calibrations as described in #161:
+
+    begin assumptions;
+    calibrate tsTocharian = offsetlognormal(1.650,0.200,0.900)
+    calibrate Latin = normal(2.050,0.075)
+    end;
+    '''
+    def getDistribution(abstractDistribution):
+        if abstractDistribution.distribution == 'U':
+            upper = round(abstractDistribution.uniformUpper / 1000, 3)
+            lower = round(abstractDistribution.uniformLower / 1000, 3)
+            return "uniform(%.3f,%.3f)" % (upper, lower)
+        if abstractDistribution.distribution == 'N':
+            mean = round(abstractDistribution.normalMean / 1000, 3)
+            stDev = round(abstractDistribution.normalStDev / 1000, 3)
+            return "normal(%.3f,%.3f)" % (mean, stDev)
+        if abstractDistribution.distribution == 'L':
+            mean = round(abstractDistribution.logNormalMean / 1000, 3)
+            stDev = round(abstractDistribution.logNormalStDev / 1000, 3)
+            return "lognormal(%.3f,%.3f)" % (mean, stDev)
+        if abstractDistribution.distribution == 'O':
+            mean = round(abstractDistribution.logNormalMean / 1000, 3)
+            stDev = round(abstractDistribution.logNormalStDev / 1000, 3)
+            offset = round(abstractDistribution.logNormalOffset / 1000, 3)
+            return "offsetlognormal(%.3f,%.3f,%.3f)" % (mean, stDev, offset)
+        return None
+
+    calibrations = []
+    for clade in Clade.objects.filter(export=True, exportDate=True).all():
+        cal = getDistribution(clade)
+        if cal is not None:
+            calibrations.append("calibrate ts%s = %s" %
+                                (clade.taxonsetName, cal))
+    for language in language_list.languages.filter(
+                    historical=True, notInExport=False).all():
+        cal = getDistribution(language)
+        if cal is not None:
+            calibrations.append("calibrate %s = %s" %
+                                (language.ascii_name, cal))
+    return "begin assumptions;\n%s\nend;\n" % "\n".join(calibrations)

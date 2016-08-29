@@ -23,7 +23,9 @@ class Command(BaseCommand):
             print('Calculating NexusExport %s.' % export.id)
             output = StringIO.StringIO()
 
-            write_nexus(fileobj=output, **export.getSettings())
+            data = write_nexus(fileobj=output, **export.getSettings())
+
+            print(data['computeCalibrations'])
 
             export.setExportData(output.getvalue())
             output.close()
