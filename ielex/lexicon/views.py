@@ -185,7 +185,7 @@ def write_nexus(fileobj,                  # file object
     # get data together
     language_list = LanguageList.objects.get(name=language_list_name)
     languages = language_list.languages.exclude(
-        notInExport=True).all().order_by("languagelistorder")
+        notInExport=True).all()
     language_names = [language.ascii_name for language in languages]
 
     meaning_list = MeaningList.objects.get(name=meaning_list_name)

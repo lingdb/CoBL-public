@@ -51,9 +51,15 @@
                   </a>
                 </td>
                 <td>
-                  <a href="/nexus/export/{{ export.id }}?constraints">
+                  {% if export.constraintsData %}
+                    <a href="/nexus/export/{{ export.id }}?constraints">
+                      {{ export.constraintsName }}
+                    </a>
+                  {% elif export.pending %}
                     {{ export.constraintsName }}
-                  </a>
+                  {% else %}
+                    Not computed
+                  {% endif %}
                 </td>
                 <td>{{ export.exportSettings }}</td>
                 <td>{{ export.lastTouched }}</td>
