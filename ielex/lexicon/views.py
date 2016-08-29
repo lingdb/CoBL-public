@@ -211,16 +211,22 @@ def write_nexus(fileobj,                  # file object
           file=fileobj)
     print("[ Mark meaning sets for ascertainment correction: %s ]" %
           kwargs['ascertainment_marker'], file=fileobj)
-    print("[ Exclude not Swadesh: %s ]" % kwargs['excludeNotSwadesh'],
+    print("[ Exclude lexemes: not Swadesh: %s ]" % kwargs['excludeNotSwadesh'],
           file=fileobj)
-    print("[ Exclude Pll. Derivation: %s ]" % kwargs['excludePllDerivation'],
+    print("[ Exclude cog. sets: Pll. Derivation: %s ]" %
+          kwargs['excludePllDerivation'],
           file=fileobj)
-    print("[ Exclude Ideophonic: %s ]" % kwargs['excludeIdeophonic'],
+    print("[ Exclude cog. sets: Ideophonic: %s ]" %
+          kwargs['excludeIdeophonic'],
           file=fileobj)
-    print("[ Exclude Dubious: %s ]" % kwargs['excludeDubious'], file=fileobj)
-    print("[ Exclude Loanword: %s ]" % kwargs['excludeLoanword'], file=fileobj)
-    print("[ Exclude Pll Loan: %s ]" % kwargs['excludePllLoan'], file=fileobj)
-    print("[ Include Pll Loan: %s ]" % kwargs['includePllLoan'], file=fileobj)
+    print("[ Exclude cog. sets: Dubious: %s ]" %
+          kwargs['excludeDubious'], file=fileobj)
+    print("[ Exclude cog. sets: Loan event: %s ]" %
+          kwargs['excludeLoanword'], file=fileobj)
+    print("[ Exclude cog. sets: Pll Loan: %s ]" %
+          kwargs['excludePllLoan'], file=fileobj)
+    print("[ Include Pll Loan as independent cog. sets: %s ]" %
+          kwargs['includePllLoan'], file=fileobj)
     print("[ File generated: %s ]\n" % time.strftime("%Y-%m-%d %H:%M:%S",
           time.localtime()), file=fileobj)
 
