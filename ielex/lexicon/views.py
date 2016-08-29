@@ -575,22 +575,26 @@ def computeCalibrations(language_list):
     end;
     '''
     def getDistribution(abstractDistribution):
+
+        def yearToFloat(year):
+            return round(float(year) / 1000, 3)
+
         if abstractDistribution.distribution == 'U':
-            upper = round(abstractDistribution.uniformUpper / 1000, 3)
-            lower = round(abstractDistribution.uniformLower / 1000, 3)
+            upper = yearToFloat(abstractDistribution.uniformUpper)
+            lower = yearToFloat(abstractDistribution.uniformLower)
             return "uniform(%.3f,%.3f)" % (upper, lower)
         if abstractDistribution.distribution == 'N':
-            mean = round(abstractDistribution.normalMean / 1000, 3)
-            stDev = round(abstractDistribution.normalStDev / 1000, 3)
+            mean = yearToFloat(abstractDistribution.normalMean)
+            stDev = yearToFloat(abstractDistribution.normalStDev)
             return "normal(%.3f,%.3f)" % (mean, stDev)
         if abstractDistribution.distribution == 'L':
-            mean = round(abstractDistribution.logNormalMean / 1000, 3)
+            mean = yearToFloat(abstractDistribution.logNormalMean)
             stDev = abstractDistribution.logNormalStDev
             return "lognormal(%.3f,%f)" % (mean, stDev)
         if abstractDistribution.distribution == 'O':
-            mean = round(abstractDistribution.logNormalMean / 1000, 3)
+            mean = yearToFloat(abstractDistribution.logNormalMean)
             stDev = abstractDistribution.logNormalStDev
-            offset = round(abstractDistribution.logNormalOffset / 1000, 3)
+            offset = yearToFloat(abstractDistribution.logNormalOffset)
             return "offsetlognormal(%.3f,%.3f,%f)" % (offset, mean, stDev)
         return None
 
