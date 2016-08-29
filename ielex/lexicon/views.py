@@ -384,22 +384,13 @@ def construct_matrix(languages,                # [Language]
         '''
         data :: meaning.gloss -> cognate_classes[meaning.gloss] -> [language]
         '''
-        data = defaultdict(lambda: defaultdict(list))
+        data = dict()
         for meaning in meanings:
             languages_missing_meaning[meaning.gloss] = [
                 language for language in
                 languages if not
                 language.lexeme_set.filter(meaning=meaning).exists()]
             for cc in cognate_classes[meaning.gloss]:
-                # FIXME Potential replacement for below code:
-                # Maybe even better: fetch languages directly!
-                # matches = [
-                #     cj.lexeme.language for cj in
-                #     CognateJudgement.objects.exclude(
-                #         lexeme__id__in=exclude_lexemes).filter(
-                #         cognate_class=cc,
-                #         lexeme__meaning=meaning,
-                #         lexeme__language__in=languages).all()]
                 matches = [
                     cj.lexeme.language for cj in
                     CognateJudgement.objects.filter(
@@ -407,7 +398,7 @@ def construct_matrix(languages,                # [Language]
                         lexeme__meaning=meaning) if cj.lexeme.language in
                     languages and cj.lexeme.id not in exclude_lexemes]
                 if matches:
-                    data[meaning][cc] = matches
+                    data.setdefault(meaning.gloss, dict())[cc] = matches
 
         # adds a cc code for all singletons
         # (lexemes which are not registered as
@@ -418,7 +409,8 @@ def construct_matrix(languages,                # [Language]
                 cognate_class__isnull=True):
             if lexeme.id not in exclude_lexemes:
                 cc = ("U", lexeme.id)  # use tuple for sorting
-                data[lexeme.meaning.gloss][cc].append(lexeme.language)
+                data[lexeme.meaning.gloss].setdefault(
+                    cc, list()).append(lexeme.language)
 
         def cognate_class_name_formatter(cc, gloss):
             # gloss = cognate_class_dict[cc]
