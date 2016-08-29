@@ -551,8 +551,9 @@ def cladeMembership(language_list):
             notInExport=True).filter(
             languageclade__clade=clade).values_list(
             'ascii_name', flat=True)
-        taxsets.append("taxset ts%s = %s;" %
-                       (clade.taxonsetName, " ".join(languages)))
+        if len(languages) >= 1:
+            taxsets.append("taxset ts%s = %s;" %
+                           (clade.taxonsetName, " ".join(languages)))
     return "begin sets;\n%s\nend;\n" % "\n".join(taxsets)
 
 
@@ -588,7 +589,10 @@ def computeCalibrations(language_list):
     calibrations = []
     for clade in Clade.objects.filter(export=True, exportDate=True).all():
         cal = getDistribution(clade)
-        if cal is not None:
+        lCount = language_list.languages.exclude(
+            notInExport=True).filter(
+            languageclade__clade=clade).count()
+        if cal is not None and lCount >= 1:
             calibrations.append("calibrate ts%s = %s" %
                                 (clade.taxonsetName, cal))
     for language in language_list.languages.filter(
