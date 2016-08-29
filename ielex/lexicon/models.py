@@ -1637,35 +1637,39 @@ class Author(AbstractTimestamped):
 
 @reversion.register
 class NexusExport(AbstractTimestamped):
+    # Methods for compressed fields:
+    def compressed(field):
+
+        def fget(self):
+            data = getattr(self, field)
+            if data is None:
+                return None
+            return zlib.decompress(data)
+
+        def fset(self, value):
+            setattr(self, field, zlib.compress(value))
+
+        def fdel(self):
+            delattr(self, field)
+        return {'doc': "The compression property for %s." % field,
+                'fget': fget,
+                'fset': fset,
+                'fdel': fdel}
     # Name of .nex file:
     exportName = models.CharField(max_length=256, blank=True)
     # Settings to compute data:
     exportSettings = models.TextField(blank=True)
     # Compressed data of nexus file:
-    exportData = models.BinaryField(null=True)
+    _exportData = models.BinaryField(null=True)
+    exportData = property(**compressed('_exportData'))
     # Compressed data of constraints file:
     _constraintsData = models.BinaryField(null=True)
-
-    def constraintsData():
-        doc = "The constraintsData property."
-
-        def fget(self):
-            if self._constraintsData is None:
-                return None
-            return zlib.decompress(self._constraintsData)
-
-        def fset(self, value):
-            self._constraintsData = zlib.compress(value)
-
-        def fdel(self):
-            del self._constraintsData
-        return locals()
-    constraintsData = property(**constraintsData())
+    constraintsData = property(**compressed('_constraintsData'))
 
     @property
     def pending(self):
         # True if calculation for export is not finished
-        return self.exportData is None
+        return self._exportData is None
 
     def generateResponse(self, constraints=False):
         '''
@@ -1675,20 +1679,12 @@ class NexusExport(AbstractTimestamped):
         assert not self.pending, "NexusExport.generateResponse " \
                                  "impossible for pending exports."
         name = self.exportName if not constraints else self.constraintsName
-        data = zlib.decompress(self.exportData) \
-            if not constraints \
-            else self.constraintsData
+        data = self.exportData if not constraints else self.constraintsData
         response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=%s' % \
             name.replace(" ", "_")
         response.write(data)
         return response
-
-    def setExportData(self, data):
-        assert self.pending, "NexusExport.setExportData " \
-                             "requires pending export."
-        self.exportData = zlib.compress(data)
-        self.save()
 
     def setSettings(self, form):
         # form :: ChooseNexusOuputForm

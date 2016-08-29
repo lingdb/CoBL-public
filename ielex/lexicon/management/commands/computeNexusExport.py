@@ -17,8 +17,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Data to work with:
-        exports = NexusExport.objects.filter(exportData=None).all()
-        for export in exports:
+        for export in NexusExport.objects.filter(_exportData=None).all():
             assert export.pending, "Export must be pending for computation."
             # Calculating the export:
             print('Calculating NexusExport %s.' % export.id)
@@ -26,7 +25,7 @@ class Command(BaseCommand):
 
             data = write_nexus(fileobj=output, **export.getSettings())
 
-            export.setExportData(output.getvalue())
+            export.exportData = output.getvalue()
             export.constraintsData = "\n".join([data['cladeMemberships'],
                                                 data['computeCalibrations']])
             export.save()
