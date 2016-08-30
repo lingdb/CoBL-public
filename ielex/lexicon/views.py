@@ -206,31 +206,11 @@ def write_nexus(fileobj,                  # file object
     except AttributeError:
         pass
 
-    print("[ Language list: %s ]" % language_list_name, file=fileobj)
-    print("[ Meaning list: %s ]" % meaning_list_name, file=fileobj)
-    print("[ Nexus dialect: %s ]" % dialect_full_name, file=fileobj)
-    print("[ Cognate set labels: %s ]" % kwargs['label_cognate_sets'],
+    print(getNexusComments(language_list_name,
+                           meaning_list_name,
+                           dialect_full_name,
+                           **kwargs),
           file=fileobj)
-    print("[ Mark meaning sets for ascertainment correction: %s ]" %
-          kwargs['ascertainment_marker'], file=fileobj)
-    print("[ Exclude lexemes: not Swadesh: %s ]" % kwargs['excludeNotSwadesh'],
-          file=fileobj)
-    print("[ Exclude cog. sets: Pll. Derivation: %s ]" %
-          kwargs['excludePllDerivation'],
-          file=fileobj)
-    print("[ Exclude cog. sets: Ideophonic: %s ]" %
-          kwargs['excludeIdeophonic'],
-          file=fileobj)
-    print("[ Exclude cog. sets: Dubious: %s ]" %
-          kwargs['excludeDubious'], file=fileobj)
-    print("[ Exclude cog. sets: Loan event: %s ]" %
-          kwargs['excludeLoanword'], file=fileobj)
-    print("[ Exclude cog. sets: Pll Loan: %s ]" %
-          kwargs['excludePllLoan'], file=fileobj)
-    print("[ Include Pll Loan as independent cog. sets: %s ]" %
-          kwargs['includePllLoan'], file=fileobj)
-    print("[ File generated: %s ]\n" % time.strftime("%Y-%m-%d %H:%M:%S",
-          time.localtime()), file=fileobj)
 
     if dialect == "NN":
         max_len += 2  # taxlabels are quoted
@@ -614,3 +594,31 @@ def computeCalibrations(language_list):
             calibrations.append("calibrate %s = %s" %
                                 (language.ascii_name, cal))
     return "begin assumptions;\n%s\nend;\n" % "\n".join(calibrations)
+
+
+def getNexusComments(
+        language_list_name,
+        meaning_list_name,
+        dialect_full_name,
+        **kwargs):
+    lines = ["[ Language list: %s ]" % language_list_name,
+             "[ Meaning list: %s ]" % meaning_list_name,
+             "[ Nexus dialect: %s ]" % dialect_full_name]
+    comments = [
+        ('label_cognate_sets', "[ Cognate set labels: %s ]"),
+        ('ascertainment_marker',
+         "[ Mark meaning sets for ascertainment correction: %s ]"),
+        ('excludeNotSwadesh', "[ Exclude lexemes: not Swadesh: %s ]"),
+        ('excludePllDerivation', "[ Exclude cog. sets: Pll. Derivation: %s ]"),
+        ('excludeIdeophonic', "[ Exclude cog. sets: Ideophonic: %s ]"),
+        ('excludeDubious', "[ Exclude cog. sets: Dubious: %s ]"),
+        ('excludeLoanword', "[ Exclude cog. sets: Loan event: %s ]"),
+        ('excludePllLoan', "[ Exclude cog. sets: Pll Loan: %s ]"),
+        ('includePllLoan', "[ Include Pll Loan as independent cog. sets: %s ]")
+    ]
+    for k, v in comments:
+        if k in kwargs:
+            lines.append(v % kwargs[k])
+    lines.append("[ File generated: %s ]\n" %
+                 time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+    return '\n'.join(lines)
