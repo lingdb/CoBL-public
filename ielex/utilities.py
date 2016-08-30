@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import logging
 from string import uppercase, lowercase
 from itertools import izip

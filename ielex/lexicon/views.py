@@ -309,7 +309,7 @@ def write_nexus(language_list_name,       # str
     if assumptions:
         appendExports("begin assumptions;")
         for charset in assumptions:
-            appendExports("   "+charset)
+            appendExports("    "+charset)
         appendExports("end;")
 
     # get contributor list:

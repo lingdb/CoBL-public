@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import os
 import logging
 
@@ -124,8 +125,8 @@ if not os.path.exists(local_settings_path):
         BASE_DIR, "ielex/local_settings.py")).read()
     key_chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
     secret_key = "".join([random.choice(key_chars) for i in xrange(50)])
-    print>>file(local_settings_path, "w"), \
-        settings_template.replace("<++>", secret_key)
+    print(settings_template.replace("<++>", secret_key),
+          file=file(local_settings_path, "w"))
 
 from local_settings import *
 
