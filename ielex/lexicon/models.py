@@ -1662,6 +1662,9 @@ class NexusExport(AbstractTimestamped):
     # Compressed data of nexus file:
     _exportData = models.BinaryField(null=True)
     exportData = property(**compressed('_exportData'))
+    # Compressed data of BEAUti nexus file:
+    _exportBEAUti = models.BinaryField(null=True)
+    exportBEAUti = property(**compressed('_exportBEAUti'))
     # Compressed data of constraints file:
     _constraintsData = models.BinaryField(null=True)
     constraintsData = property(**compressed('_constraintsData'))
@@ -1671,15 +1674,30 @@ class NexusExport(AbstractTimestamped):
         # True if calculation for export is not finished
         return self._exportData is None
 
-    def generateResponse(self, constraints=False):
+    def generateResponse(self, constraints=False, beauti=False):
         '''
         If constraints == True response shall carry the constraintsData
         rather than the exportData.
+        If beauti == True response shall carry exportBEAUti
+        rather than exportData.
         '''
         assert not self.pending, "NexusExport.generateResponse " \
                                  "impossible for pending exports."
-        name = self.exportName if not constraints else self.constraintsName
-        data = self.exportData if not constraints else self.constraintsData
+        # name for the export file:
+        if constraints:
+            name = self.constraintsName
+        elif beauti:
+            name = self.beautiName
+        else:
+            name = self.exportName
+        # data for the export file:
+        if constraints:
+            data = self.constraintsData
+        elif beauti:
+            data = self.exportBEAUti
+        else:
+            data = self.exportData
+        # The response itself:
         response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=%s' % \
             name.replace(" ", "_")
@@ -1736,3 +1754,8 @@ class NexusExport(AbstractTimestamped):
     def constraintsName(self):
         # Replaces the /\.nex$/ in exportName with _Constraints.nex
         return self.exportName[:-4] + "_Constraints.nex"
+
+    @property
+    def beautiName(self):
+        # Replaces the /\.nex$/ in exportName with _BEAUti.nex
+        return self.exportName[:-4] + "_BEAUti.nex"

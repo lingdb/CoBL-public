@@ -109,8 +109,7 @@ class NexusExportView(TemplateView):
             export.setSettings(form)
             export.bump(request)
             export.save()
-            return HttpResponseRedirect(reverse("view_nexus_export",
-                                        args=[export.id]))
+            return HttpResponseRedirect('/nexus/export/')
         return self.render_to_response({"form": form})
 
     def fileNameForForm(self, form):
@@ -234,12 +233,17 @@ def write_nexus(language_list_name,       # str
               dimensions nchar=%s;
               format symbols="01" missing=?;
               charstatelabels""" % len(cognate_class_names)))
+        exportBEAUti.append(dedent("""\
+            begin characters;
+              dimensions nchar=%s;
+              format symbols="01" missing=?;""" % len(cognate_class_names)))
         labels = []
 
         for i, cc in enumerate(cognate_class_names):
             labels.append("    %d %s" % (i+1, cc))
         exportData.append(",\n".join(labels))
         exportData.append("  ;\n  matrix")
+        exportBEAUti.append("  matrix")
 
     elif dialect == "MB":
         exportData.append(dedent("""\
@@ -247,18 +251,18 @@ def write_nexus(language_list_name,       # str
               dimensions ntax=%s;
               taxlabels %s;
             end;
-
+            """ % (len(languages),
+                   " ".join(language_names))))
+        appendExports(dedent("""\
             begin characters;
               dimensions nchar=%s;
               format missing=? datatype=restriction;
               matrix
-            """ % (len(languages),
-                   " ".join(language_names),
-                   len(cognate_class_names))))
+            """ % len(cognate_class_names)))
 
     else:
         assert dialect == "BP"
-        exportData.append(dedent("""\
+        appendExports(dedent("""\
             begin data;
               dimensions ntax=%s nchar=%s;
               taxlabels %s;
@@ -305,12 +309,12 @@ def write_nexus(language_list_name,       # str
             end;
             """))
 
-    # write assumptions
-    if assumptions:
-        appendExports("begin assumptions;")
+    # write charset assumptions
+    if assumptions and dialect != "NN":
+        exportData.append("begin assumptions;")
         for charset in assumptions:
-            appendExports("    "+charset)
-        appendExports("end;")
+            exportData.append("    "+charset)
+        exportData.append("end;")
 
     # get contributor list:
     # lexical sources
@@ -318,20 +322,25 @@ def write_nexus(language_list_name,       # str
     # cognate sources
     # cognates coded by
 
+    # appendExports("[ %s ]" % " ".join(sys.argv))
+    print("# Processed %s cognate sets from %s languages" %
+          (len(cognate_class_names), len(matrix)), file=sys.stderr)
+    # Data for exportBEAUti and constraints:
+    memberships = cladeMembership(language_list)
+    calibrations = computeCalibrations(language_list)
+    exportBEAUti.append(memberships)
+    exportBEAUti.append(calibrations)
     # timing
     seconds = int(time.time() - start_time)
     minutes = seconds // 60
     seconds %= 60
     appendExports("[ Processing time: %02d:%02d ]" % (minutes, seconds))
-    # appendExports("[ %s ]" % " ".join(sys.argv))
-    print("# Processed %s cognate sets from %s languages" %
-          (len(cognate_class_names), len(matrix)), file=sys.stderr)
     # Return combined data:
     return {
         'exportData': "\n".join(exportData),      # Requested export
         'exportBEAUti': "\n".join(exportBEAUti),  # BEAUti specific export
-        'cladeMemberships': cladeMembership(language_list),
-        'computeCalibrations': computeCalibrations(language_list)
+        'cladeMemberships': memberships,
+        'computeCalibrations': calibrations
     }
 
 

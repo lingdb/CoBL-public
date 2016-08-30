@@ -26,7 +26,7 @@
               <td>Export ID</td>
               <td>Done?</td>
               <td>Name</td>
-              <td>Constraints</td>
+              <td>Additional files</td>
               <td>Settings</td>
               <td>Date</td>
               <td>Triggered by</td>
@@ -50,15 +50,21 @@
                     {{ export.exportName }}
                   </a>
                 </td>
-                <td>
+                <td class="nowrap">
                   {% if export.constraintsData %}
                     <a href="/nexus/export/{{ export.id }}?constraints">
-                      {{ export.constraintsName }}
+                      [ Constraints ]
                     </a>
                   {% elif export.pending %}
-                    {{ export.constraintsName }}
-                  {% else %}
-                    Not computed
+                      [ Constraints ]
+                  {% endif %}
+                  <br>
+                  {% if export.exportBEAUti %}
+                    <a href="/nexus/export/{{ export.id }}?beauti">
+                      [ BEAUti ]
+                    </a>
+                  {% elif export.pending %}
+                      [ BEAUti ]
                   {% endif %}
                 </td>
                 <td>{{ export.exportSettings }}</td>

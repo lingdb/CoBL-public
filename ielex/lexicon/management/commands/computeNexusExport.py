@@ -26,5 +26,6 @@ class Command(BaseCommand):
             export.exportData = data['exportData']
             export.constraintsData = "\n".join([data['cladeMemberships'],
                                                 data['computeCalibrations']])
+            export.exportBEAUti = data['exportBEAUti']
             export.save()
             print('Done.', strftime("%Y-%m-%d %H:%M:%S"))
