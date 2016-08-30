@@ -15,8 +15,7 @@ from ielex.lexicon.models import CognateClass, \
                                  Lexeme, \
                                  MeaningList, \
                                  NexusExport, \
-                                 Clade, \
-                                 Language
+                                 Clade
 from ielex.forms import EditCognateClassCitationForm
 from ielex.lexicon.forms import ChooseNexusOutputForm, DumpSnapshotForm
 from ielex.lexicon.functions import nexus_comment
