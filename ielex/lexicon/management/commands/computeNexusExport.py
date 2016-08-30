@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import StringIO
 from time import strftime
 
 from django.core.management import BaseCommand
@@ -21,13 +20,11 @@ class Command(BaseCommand):
             assert export.pending, "Export must be pending for computation."
             # Calculating the export:
             print('Calculating NexusExport %s.' % export.id)
-            output = StringIO.StringIO()
 
-            data = write_nexus(fileobj=output, **export.getSettings())
+            data = write_nexus(**export.getSettings())
 
-            export.exportData = output.getvalue()
+            export.exportData = data['exportData']
             export.constraintsData = "\n".join([data['cladeMemberships'],
                                                 data['computeCalibrations']])
             export.save()
-            output.close()
             print('Done.', strftime("%Y-%m-%d %H:%M:%S"))
