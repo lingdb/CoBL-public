@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.db import migrations
-from ielex.languageCladeLogic import updateLanguageCladeRelations
+from ielex.languageCladeLogic import mkUpdateLanguageCladeRelations
 
 
 def forwards_func(apps, schema_editor):
+    updateLanguageCladeRelations = mkUpdateLanguageCladeRelations(
+        apps.get_model('lexicon', "Language"),
+        apps.get_model('lexicon', "Language"),
+        apps.get_model('lexicon', "Language"))
     updateLanguageCladeRelations()
 
 
