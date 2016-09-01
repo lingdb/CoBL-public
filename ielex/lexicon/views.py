@@ -337,7 +337,8 @@ def write_nexus(language_list_name,       # str
     # Data for exportBEAUti and constraints:
     memberships = cladeMembership(
         language_list, kwargs.get('excludeMarkedLanguages', True))
-    calibrations = computeCalibrations(language_list)
+    calibrations = computeCalibrations(
+        language_list, kwargs.get('excludeMarkedLanguages', True))
     exportBEAUti.append(memberships)
     exportBEAUti.append(calibrations)
     # timing
