@@ -900,6 +900,60 @@ class LexemeTableLanguageWordlistForm(WTForm):
                     cognate_class_id__in=removeCCs).delete()
 
 
+class AddMissingLexemsForLanguageForm(WTForm):
+    '''
+    Added for #304, this form adds lexeme entries for each meaning that
+    doesn't already have at least one entry linking to the given language.
+    '''
+    language = StringField('Ascii name of the language',
+                           validators=[InputRequired()])
+
+    def handle(self, request):
+        language = Language.objects.get(ascii_name=self.data['language'])
+        meanings = Meaning.objects.exclude(
+            id__in=set(Lexeme.objects.filter(
+                       language=language).values_list(
+                       'meaning_id', flat=True))).all()
+        if len(meanings) > 0:
+            with transaction.atomic():
+                for m in meanings:
+                    Lexeme.objects.create(language=language, meaning=m)
+            messages.info(
+                request,
+                "Added lexemes for meanings: " +
+                ", ".join([m.gloss for m in meanings]))
+        else:
+            messages.info(
+                request,
+                'There is at least one lexeme '
+                'for every meaning in the database.')
+
+
+class RemoveEmptyLexemsForLanguageForm(WTForm):
+    '''
+    Added for #304, this form removes lexeme entries for a given language
+    that have empty data for 'Orthographic'.
+    '''
+    language = StringField('Ascii name of the language',
+                           validators=[InputRequired()])
+
+    def handle(self, request):
+        language = Language.objects.get(ascii_name=self.data['language'])
+        with transaction.atomic():
+            wanted = Lexeme.objects.filter(source_form='', language=language)
+            meanings = wanted.values_list('meaning__gloss', flat=True)
+            if len(meanings) > 0:
+                wanted.delete()
+                messages.info(
+                    request,
+                    'Removed entries for meanings: '+', '.join(meanings))
+            else:
+                messages.info(
+                    request,
+                    'All meanings have Orthographic data entered, '
+                    'nothing to remove.')
+
+
 class CloneLanguageForm(WTForm):
     sourceLanguageName = StringField(
         'Name of source language',

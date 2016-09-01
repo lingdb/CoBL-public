@@ -58,7 +58,9 @@ from ielex.forms import AddCitationForm, \
                         SndCompDeletionForm, \
                         SndCompTableForm, \
                         make_reorder_languagelist_form, \
-                        make_reorder_meaninglist_form
+                        make_reorder_meaninglist_form, \
+                        AddMissingLexemsForLanguageForm, \
+                        RemoveEmptyLexemsForLanguageForm
 from ielex.lexicon.models import Author, \
                                  Clade, \
                                  CognateClass, \
@@ -783,9 +785,6 @@ def view_language_wordlist(request, language, wordlist):
                                   'in view_language_wordlist.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least one lexeme.')
-            return HttpResponseRedirect(
-                reverse("view-language-wordlist",
-                        args=[language.ascii_name, wordlist.name]))
         elif 'editCognateClass' in request.POST:
             try:
                 form = LexemeTableEditCognateClassesForm(request.POST)
@@ -793,10 +792,32 @@ def view_language_wordlist(request, language, wordlist):
                 form.handle(request)
             except Exception:
                 logging.exception('Problem handling editCognateClass.')
+        elif 'addMissingLexemes' in request.POST:
+            try:
+                form = AddMissingLexemsForLanguageForm(request.POST)
+                form.validate()
+                form.handle(request)
+            except Exception:
+                logging.exception(
+                    'Problem with AddMissingLexemsForLanguageForm '
+                    'in view_language_wordlist')
+                messages.error(request, 'Sorry, the server had problems '
+                                        'adding missing lexemes.')
+        elif 'removeEmptyLexemes' in request.POST:
+            try:
+                form = RemoveEmptyLexemsForLanguageForm(request.POST)
+                form.validate()
+                form.handle(request)
+            except Exception:
+                logging.exception(
+                    'Problem with RemoveEmptyLexemsForLanguageForm '
+                    'in view_language_wordlist')
+                messages.error(request, 'Sorry, the server had problems '
+                                        'removing empty lexemes.')
 
-            return HttpResponseRedirect(
-                reverse("view-language-wordlist",
-                        args=[language.ascii_name, wordlist.name]))
+        return HttpResponseRedirect(
+            reverse("view-language-wordlist",
+                    args=[language.ascii_name, wordlist.name]))
 
     # collect data
     lexemes = Lexeme.objects.filter(
