@@ -98,7 +98,9 @@ class NexusExportView(TemplateView):
             "excludeDubious": 1,
             "excludeLoanword": 0,
             "excludePllLoan": 1,
-            "includePllLoan": 0}
+            "includePllLoan": 0,
+            "excludeMarkedMeanings": 1,
+            "excludeMarkedLanguages": 1}
         form = ChooseNexusOutputForm(defaults)
         return self.render_to_response({"form": form})
 
@@ -176,6 +178,8 @@ def write_nexus(language_list_name,       # str
     excludeLoanword :: bool
     excludePllLoan :: bool
     includePllLoan :: bool
+    excludeMarkedLanguages :: bool | missing in older settings
+    excludeMarkedMeanings :: bool | missing in older settings
     Returns:
     {exportData :: str,
      exportBEAUti :: str,
@@ -187,13 +191,18 @@ def write_nexus(language_list_name,       # str
 
     # get data together
     language_list = LanguageList.objects.get(name=language_list_name)
-    languages = language_list.languages.exclude(
-        notInExport=True).all()
+    if kwargs.get('excludeMarkedLanguages', True):
+        languages = language_list.languages.exclude(notInExport=True).all()
+    else:
+        languages = language_list.languages.all()
     language_names = [language.ascii_name for language in languages]
 
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
-    meanings = meaning_list.meanings.exclude(
-        exclude=True).all().order_by("meaninglistorder")
+    if kwargs.get('excludeMarkedMeanings', True):
+        meanings = meaning_list.meanings.exclude(
+            exclude=True).all().order_by("meaninglistorder")
+    else:
+        meanings = meaning_list.meanings.all().order_by("meaninglistorder")
     max_len = max([len(l) for l in language_names])
 
     matrix, cognate_class_names, assumptions = construct_matrix(
@@ -326,7 +335,8 @@ def write_nexus(language_list_name,       # str
     print("# Processed %s cognate sets from %s languages" %
           (len(cognate_class_names), len(matrix)), file=sys.stderr)
     # Data for exportBEAUti and constraints:
-    memberships = cladeMembership(language_list)
+    memberships = cladeMembership(
+        language_list, kwargs.get('excludeMarkedLanguages', True))
     calibrations = computeCalibrations(language_list)
     exportBEAUti.append(memberships)
     exportBEAUti.append(calibrations)
@@ -551,7 +561,7 @@ def dump_cognate_data(
     return "\n".join(lines) + "\n"
 
 
-def cladeMembership(language_list):
+def cladeMembership(language_list, excludeMarkedLanguages):
     '''
     Computes the clade memberships as described in #50:
 
@@ -563,9 +573,12 @@ def cladeMembership(language_list):
     '''
     taxsets = []
     clades = Clade.objects.filter(export=True).all()
+    if excludeMarkedLanguages:
+        baseLanguages = language_list.languages.exclude(notInExport=True)
+    else:
+        baseLanguages = language_list.languages
     for clade in clades:
-        languages = language_list.languages.exclude(
-            notInExport=True).filter(
+        languages = baseLanguages.filter(
             languageclade__clade=clade).values_list(
             'ascii_name', flat=True)
         if len(languages) >= 1:
@@ -574,7 +587,7 @@ def cladeMembership(language_list):
     return "begin sets;\n%s\nend;\n" % "\n".join(taxsets)
 
 
-def computeCalibrations(language_list):
+def computeCalibrations(language_list, excludeMarkedLanguages):
     '''
     Computes the {clade,language} calibrations as described in #161:
 
@@ -607,17 +620,18 @@ def computeCalibrations(language_list):
             return "offsetlognormal(%.3f,%.3f,%.3f)" % (offset, mean, stDev)
         return None
 
+    if excludeMarkedLanguages:
+        baseLanguages = language_list.languages.exclude(notInExport=True)
+    else:
+        baseLanguages = language_list.languages
     calibrations = []
     for clade in Clade.objects.filter(export=True, exportDate=True).all():
         cal = getDistribution(clade)
-        lCount = language_list.languages.exclude(
-            notInExport=True).filter(
-            languageclade__clade=clade).count()
+        lCount = baseLanguages.filter(languageclade__clade=clade).count()
         if cal is not None and lCount >= 1:
             calibrations.append("calibrate ts%s = %s" %
                                 (clade.taxonsetName, cal))
-    for language in language_list.languages.filter(
-                    historical=True, notInExport=False).all():
+    for language in baseLanguages.filter(historical=True).all():
         cal = getDistribution(language)
         if cal is not None:
             calibrations.append("calibrate %s = %s" %
@@ -643,7 +657,12 @@ def getNexusComments(
         ('excludeDubious', "[ Exclude cog. sets: Dubious: %s ]"),
         ('excludeLoanword', "[ Exclude cog. sets: Loan event: %s ]"),
         ('excludePllLoan', "[ Exclude cog. sets: Pll Loan: %s ]"),
-        ('includePllLoan', "[ Include Pll Loan as independent cog. sets: %s ]")
+        ('includePllLoan',
+         "[ Include Pll Loan as independent cog. sets: %s ]"),
+        ('excludeMarkedLanguages',
+         "[ Exclude languages marked as 'not for export': %s ]"),
+        ('excludeMarkedMeanings',
+         "[ Exclude meanings marked as 'not for export': %s ]")
     ]
     for k, v in comments:
         if k in kwargs:

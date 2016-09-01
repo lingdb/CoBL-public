@@ -61,6 +61,16 @@ class ChooseNexusOutputForm(ChooseOutputBaseForm):
         required=False,
         label=u"Include Pll. loans as independent sets."
     )
+    excludeMarkedMeanings = forms.BooleanField(
+        required=False,
+        label=u"Exclude meanings?",
+        help_text="Exclude meanings marked [Not for Export]"
+    )
+    excludeMarkedLanguages = forms.BooleanField(
+        required=False,
+        label=u"Exclude languages?",
+        help_text="Exclude languages marked [Not for Export]"
+    )
 
     def clean(self):
         # Making sure excludePllLoan and includePllLoan are never both True:
