@@ -866,7 +866,6 @@ def view_language_wordlist(request, language, wordlist):
                             "wordlist": wordlist,
                             "otherMeaningLists": otherMeaningLists,
                             "lex_ed_form": lexemes_editabletable_form,
-                            "filt_form": filt_form,
                             "cognateClasses": cognateClasses,
                             "typeahead": typeahead})
 
