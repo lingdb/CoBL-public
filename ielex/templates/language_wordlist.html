@@ -23,6 +23,7 @@
 {% endblock %}
 
 {% block content %}
+  {% include "snippets/lexemeHandlingModal.html" %}
   <div class="row">
     <div class="col-md-12"
          {% if user.is_authenticated %}
@@ -37,6 +38,17 @@
       <div class="fixedContainer">
         {% if user.is_authenticated %}
           <div class="form-group pull-right">
+            <div class="inline"
+                 data-toggle="tooltip"
+                 data-placement="bottom"
+                 title="Handle lexemes for this table.">
+                 <button type="button"
+                         data-toggle="modal"
+                         data-target="#lexemeHandlingModal"
+                         class="btn btn-default">
+                   <span class="glyphicon glyphicon-list-alt"></span>
+                 </button>
+            </div>
             <span class="badge important">{{ lexemes|length }}</span>
             Dup. mgs:
             <button type="button"
@@ -289,11 +301,19 @@
               </td>
               {# cognateclasses_filter.html #}
               <td>
-                <input type="text"
-                       class="filterText form-control"
-                       data-selector=".cognateClasses"
-                       size="1"
-                       style="padding-left: 2px; padding-right: 2px;">
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".cognateClasses input"
+                         size="1"
+                         style="padding-left: 2px; padding-right: 2px;">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".cognateClasses"
+                         size="1"
+                         style="padding-left: 2px; padding-right: 2px;">
+                {% endif %}
               </td>
               {# rootform_filter.html #}
               <td>
@@ -577,14 +597,13 @@
                   </a>
                 </td>
                 {# cognateclasses_data.html #}
-                <td style="text-align: center;">
+                <td style="text-align: center; color: #8B4510;">
                   <div class="cognateClasses">
-                    {% for c in lexeme.object_data.allCognateClasses %}
-                    <a href="/cognate/{{ c.id }}/"
-                       style="color: #8B4510;">
-                      {{ c.alias }}
-                    </a>
-                    {% endfor %}
+                    {% if user.is_authenticated %}
+                      {% form_field lexeme.combinedCognateClassAssignment class="form-control" %}
+                    {% else %}
+                      {{ lexeme.object_data.combinedCognateClassAssignment }}
+                    {% endif %}
                   </div>
                 </td>
                 {# rootform_data.html #}

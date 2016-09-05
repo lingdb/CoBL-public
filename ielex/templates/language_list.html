@@ -38,6 +38,14 @@
       <div class="fixedContainer">
         {% if user.is_authenticated and user.is_staff %}
           <div class="form-group pull-right">
+            <a href="/clades/?plot"
+               class="btn btn-default"
+               target="_blank"
+               data-toggle="tooltip"
+               data-placement="bottom"
+               title="View language distributions.">
+               <span class="glyphicon glyphicon-stats"></span>
+            </a>
             <a href="{% url 'language-add-new' current_language_list_name %}"
                class="btn btn-default"
                data-toggle="tooltip" data-placement="bottom"
@@ -78,7 +86,10 @@
           {% endif %}
           {% include "snippets/cladeFilter.html" %}
         </div>{# .fixedContainer #}
-        <table class="table table-striped viewTableFilter"
+        <table class="table table-striped viewTableFilter
+                     {% if user.is_authenticated %}
+                     distributionPlot
+                     {% endif %}"
                {% if user.is_authenticated and user.is_staff %}
                   data-floatheadtop="65"
                {% else %}
@@ -164,6 +175,14 @@
                   </div>
                 </div>
               </th>
+              {# notInExport_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Not in Exp.
+                  </div>
+                </div>
+              </th>
               {# name_link.html #}
               <th></th>
               {# name_title.html #}
@@ -177,27 +196,51 @@
               <th>ISO</th>
               {# glotto_title.html #}
               <th style="width: 100px;">Glotto</th>
-              {# meantd_title.html #}
+              {# distribution_title.html #}
+              <th>Distribution type</th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Mean time depth (yrs)">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Mean TD
-                  </div>
-                </div>
+                  title="Offset for log normal distribution">
+                [Offset]
               </th>
-              {# stddev_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Std Dev. time depth (yrs)">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Std Dev.
-                  </div>
-                </div>
+                  title="Mean for log normal distribution">
+                LogN Mean
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="StDev for log normal distribution">
+                LogN StDev
+              </th>
+              <!-- For normal: -->
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Mean for normal distribution">
+                Norm Mean
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="StDev for normal distribution">
+                Norm StDev
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Lower bound for uniform distribution type">
+                Unif Lower
+              </th>
+              <!-- For Uniform: -->
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Upper bound for uniform distribution type">
+                Unif Upper
               </th>
               {# earliest_title.html #}
               <th data-toggle="tooltip"
@@ -444,6 +487,14 @@
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </td>
+              {# notInExport_filter.html #}
+              <td>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".notInExport input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
               {# name_link.html #}
               <td></td>
               {# name_filter.html #}
@@ -509,32 +560,127 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
-              {# meantd_filter.html #}
+              {# distribution_filter.html #}
+              <td>
+                {# No filtering for selections implemented. #}
+              </td>
               <td>
                 {% if user.is_authenticated and user.is_staff %}
-                  <input type="text"
-                         class="filterInput form-control"
-                         data-selector=".languageMeanTimeDepth input"
-                         style="width: 3.2em;">
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".logNormalOffset input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".logNormalOffset input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
                 {% else %}
-                  <input type="text"
-                         class="filterText form-control"
-                         data-selector=".languageMeanTimeDepth"
-                         style="width: 3.2em;">
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".logNormalOffset">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".logNormalOffset">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
                 {% endif %}
               </td>
-              {# stddev_filter.html #}
               <td>
                 {% if user.is_authenticated and user.is_staff %}
-                  <input type="text"
-                         class="filterInput form-control"
-                         data-selector=".languageStdDeviationTimeDepth input"
-                         style="width: 2.5em;">
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".logNormalMean input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".logNormalMean input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
                 {% else %}
-                  <input type="text"
-                         class="filterText form-control"
-                         data-selector=".languageStdDeviationTimeDepth"
-                         style="width: 2.5em;">
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".logNormalMean">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".logNormalMean">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".logNormalStDev input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".logNormalStDev input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".logNormalStDev">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".logNormalStDev">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".normalMean input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".normalMean input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".normalMean">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".normalMean">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".normalStDev input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".normalStDev input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".normalStDev">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".normalStDev">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".uniformLower input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".uniformLower input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".uniformLower">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".uniformLower">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".uniformUpper input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".uniformUpper input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".uniformUpper">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".uniformUpper">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
                 {% endif %}
               </td>
               {# earliest_filter.html #}
@@ -797,6 +943,14 @@
                     {% form_field language.historical class="form-control" disabled=disabled %}
                   {% endif %}
                 </td>
+                {# notInExport_data.html #}
+                <td class="notInExport">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.notInExport class="form-control" %}
+                  {% else %}
+                    {% form_field language.notInExport class="form-control" disabled=disabled %}
+                  {% endif %}
+                </td>
                 {# name_link.html #}
                 <td>
                   <a href="{% url 'view-language-wordlist' language.ascii_name.data wordlist %}"
@@ -879,24 +1033,65 @@
                     {% form_field language.glottocode maxlength="8" size="8" class="form-control" %}
                   {% endif %}
                 </td>
-                {# meantd_data.html #}
-                <td class="languageMeanTimeDepth">
+                {# distribution_data.html #}
+                <td class="distribution">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.mean_timedepth_BP_years maxlength="4" class="form-control numberField" style="width: 3.2em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
-                  {% elif language.mean_timedepth_BP_years.data %}
-                    {{ language.mean_timedepth_BP_years.data }}
+                    {% form_field language.distribution class="form-control distributionSelection" data-inputdepends="historical" %}
+                  {% elif language.distribution.data %}
+                    {{ language.distribution.data }}
                   {% endif %}
                 </td>
-                {# stddev_data.html #}
-                <td class="languageStdDeviationTimeDepth">
+                <td class="logNormalOffset reflectDistribution datetooltip" data-allowed="O">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.std_deviation_timedepth_BP_years maxlength="4" class="form-control numberField" style="width: 2.5em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
-                  {% elif language.std_deviation_timedepth_BP_years.data %}
-                    {{ language.std_deviation_timedepth_BP_years.data }}
+                    {% form_field language.logNormalOffset class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif language.logNormalOffset.data %}
+                    {{ language.logNormalOffset.data }}
+                  {% endif %}
+                </td>
+                <td class="logNormalMean reflectDistribution" data-allowed="OL">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.logNormalMean class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif language.logNormalMean.data %}
+                    {{ language.logNormalMean.data }}
+                  {% endif %}
+                </td>
+                <td class="logNormalStDev reflectDistribution" data-allowed="OL">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.logNormalStDev class="form-control numberField" pattern="^[0-9\-\.]*$" disabled="disabled" %}
+                  {% elif language.logNormalStDev.data %}
+                    {{ language.logNormalStDev.data }}
+                  {% endif %}
+                </td>
+                <td class="normalMean reflectDistribution datetooltip" data-allowed="N">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.normalMean class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif language.normalMean.data %}
+                    {{ language.normalMean.data }}
+                  {% endif %}
+                </td>
+                <td class="normalStDev reflectDistribution" data-allowed="N">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.normalStDev class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif language.normalStDev.data %}
+                    {{ language.normalStDev.data }}
+                  {% endif %}
+                </td>
+                <td class="uniformLower reflectDistribution datetooltip" data-allowed="U">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.uniformLower class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif language.uniformLower.data %}
+                    {{ language.uniformLower.data }}
+                  {% endif %}
+                </td>
+                <td class="uniformUpper reflectDistribution datetooltip" data-allowed="U">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.uniformUpper class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif language.uniformUpper.data %}
+                    {{ language.uniformUpper.data }}
                   {% endif %}
                 </td>
                 {# earliest_data.html #}
-                <td class="languageEarliestTimeDepthBound">
+                <td class="languageEarliestTimeDepthBound datetooltip">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.earliestTimeDepthBound maxlength="4" class="form-control"  style="width: 3.4em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
                   {% else %}
@@ -906,7 +1101,7 @@
                   {% endif %}
                 </td>
                 {# latest_data.html #}
-                <td class="languageLatestTimeDepthBound">
+                <td class="languageLatestTimeDepthBound datetooltip">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.latestTimeDepthBound maxlength="4" class="form-control" style="width: 3.4em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
                   {% elif language.latestTimeDepthBound.data %}

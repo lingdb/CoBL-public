@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load lexicon_utils %}
+{% load wtforms %}
+
+{% block title %}
+  {{ meaning.gloss }}
+{% endblock %}
+
+{% block top %}
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/defaultSelections.html" %}
+  {% include "snippets/go_to.html" %}
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-12" style="margin-top: 71px;">
+      {% if user.is_authenticated and user.is_staff %}
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <td>Export ID</td>
+              <td>Done?</td>
+              <td>Name</td>
+              <td>Additional files</td>
+              <td>Settings</td>
+              <td>Date</td>
+              <td>Triggered by</td>
+            </tr>
+          </thead>
+          <tbody>
+            {% for export in exports %}
+              <tr>
+                <td>
+                  {{ export.id }}
+                </td>
+                <td>
+                  {% if export.pending %}
+                    <span class="glyphicon glyphicon-remove"></span>
+                  {% else %}
+                    <span class="glyphicon glyphicon-ok"></span>
+                  {% endif %}
+                </td>
+                <td>
+                  <a href="/nexus/export/{{ export.id }}">
+                    {{ export.exportName }}
+                  </a>
+                </td>
+                <td class="nowrap">
+                  {% if export.constraintsData %}
+                    <a href="/nexus/export/{{ export.id }}?constraints">
+                      [ Constraints ]
+                    </a>
+                  {% elif export.pending %}
+                      [ Constraints ]
+                  {% endif %}
+                  <br>
+                  {% if export.exportBEAUti %}
+                    <a href="/nexus/export/{{ export.id }}?beauti">
+                      [ BEAUti ]
+                    </a>
+                  {% elif export.pending %}
+                      [ BEAUti ]
+                  {% endif %}
+                </td>
+                <td>{{ export.exportSettings }}</td>
+                <td>{{ export.lastTouched }}</td>
+                <td>{{ export.lastEditedBy }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="well">
+          Sorry, nothing to see here.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

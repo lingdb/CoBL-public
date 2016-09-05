@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 import json
+import logging
+import re
+from collections import defaultdict
 from django import forms
+from django.contrib import messages
+from django.db import transaction
 from django.forms import ValidationError
 from django.utils.encoding import python_2_unicode_compatible
 from ielex.lexicon.models import CognateClass, \
@@ -11,10 +16,10 @@ from ielex.lexicon.models import CognateClass, \
                                  Meaning, \
                                  MeaningList, \
                                  Source, \
-                                 TYPE_CHOICES
+                                 TYPE_CHOICES, \
+                                 CognateJudgement, \
+                                 Clade
 from ielex.lexicon.validators import suitable_for_url, suitable_for_url_wtforms
-# from ielex.extensional_semantics.models import *
-
 from wtforms import StringField, \
                     IntegerField, \
                     FieldList, \
@@ -23,7 +28,8 @@ from wtforms import StringField, \
                     BooleanField, \
                     DateTimeField, \
                     TextAreaField, \
-                    SelectField
+                    SelectField, \
+                    DecimalField
 from wtforms.validators import Email, InputRequired
 from wtforms.form import Form as WTForm
 from wtforms.ext.django.orm import model_form
@@ -230,7 +236,34 @@ class AbstractTimestampedForm(WTForm):
     lastEditedBy = StringField('Last edited')
 
 
-class LanguageListRowForm(AbstractTimestampedForm):
+class AbstractDistributionForm(WTForm):
+    distribution = SelectField('Distribution type',
+                               default='_',
+                               choices=DISTRIBUTION_CHOICES,
+                               validators=[InputRequired()])
+    logNormalOffset = IntegerField('[Offset]', validators=[InputRequired()])
+    logNormalMean = IntegerField('Mean', validators=[InputRequired()])
+    logNormalStDev = DecimalField('StDev', validators=[InputRequired()])
+    normalMean = IntegerField('Mean', validators=[InputRequired()])
+    normalStDev = IntegerField('StDev', validators=[InputRequired()])
+    uniformLower = IntegerField('Lower', validators=[InputRequired()])
+    uniformUpper = IntegerField('Upper', validators=[InputRequired()])
+
+    def validate_distribution(form, field):
+        wantedFields = {
+            'O': ['logNormalOffset', 'logNormalMean', 'logNormalStDev'],
+            'L': ['logNormalMean', 'logNormalStDev'],
+            'N': ['normalMean', 'normalStDev'],
+            'U': ['uniformLower', 'uniformUpper']}
+        if field.data in wantedFields:
+            for f in wantedFields[field.data]:
+                if form[f] is None:
+                    raise ValidationError(
+                        'Distribution is %s, but field %s is None.' %
+                        (field.data, f))
+
+
+class LanguageListRowForm(AbstractTimestampedForm, AbstractDistributionForm):
     idField = IntegerField('Language id', validators=[InputRequired()])
     iso_code = StringField('ISO code', validators=[InputRequired()])
     utf8_name = StringField('Display name', validators=[InputRequired()])
@@ -248,11 +281,6 @@ class LanguageListRowForm(AbstractTimestampedForm):
     level3 = IntegerField('Clade level 3', validators=[InputRequired()])
     representative = BooleanField('Representative',
                                   validators=[InputRequired()])
-    mean_timedepth_BP_years = IntegerField('Mean of Time Depth BP (years)',
-                                           validators=[InputRequired()])
-    std_deviation_timedepth_BP_years = IntegerField(
-        'Standard Deviation of Time Depth BP (years)',
-        validators=[InputRequired()])
     rfcWebPath1 = StringField('This Lg lex rfc web path 1',
                               validators=[InputRequired()])
     rfcWebPath2 = StringField('This Lg lex rfc web path 2',
@@ -270,33 +298,22 @@ class LanguageListRowForm(AbstractTimestampedForm):
     entryTimeframe = StringField('Entry timeframe',
                                  validators=[InputRequired()])
     historical = BooleanField('Historical', validators=[InputRequired()])
+    notInExport = BooleanField('Not in Export', validators=[InputRequired()])
 
     def validate_historical(form, field):
         # Assumes that field.data :: True | False
         if field.data:
-            mean_timedepth_BP_years = form.data['mean_timedepth_BP_years']
-            if mean_timedepth_BP_years is None:
-                raise ValidationError('mean_timedepth_BP_years is None '
+            distribution = form.data['distribution']
+            if distribution is None or distribution == '_':
+                raise ValidationError('distribution is None '
                                       'but historical is True.')
-            if mean_timedepth_BP_years <= 0:
-                raise ValidationError('mean_timedepth_BP_years must be > 0, '
-                                      'but is %i.' % mean_timedepth_BP_years)
-        else:
-            for k in ['mean_timedepth_BP_years',
-                      'std_deviation_timedepth_BP_years',
-                      'earliestTimeDepthBound',
-                      'latestTimeDepthBound']:
-                value = form.data[k]
-                if value is not None and value != 0:
-                    raise ValidationError('Field %s should be None or 0, '
-                                          'but is: "%s"' % (k, value))
 
 
 class AddLanguageListTableForm(WTForm):
     langlist = FieldList(FormField(LanguageListRowForm))
 
 
-class CladeRowForm(AbstractTimestampedForm):
+class CladeRowForm(AbstractTimestampedForm, AbstractDistributionForm):
     idField = IntegerField('Id', validators=[InputRequired()])
     cladeName = StringField('Clade Name', validators=[InputRequired()])
     shortName = StringField('Short name', validators=[InputRequired()])
@@ -306,16 +323,6 @@ class CladeRowForm(AbstractTimestampedForm):
     taxonsetName = StringField('Texonset name', validators=[InputRequired()])
     atMost = IntegerField('At most?', validators=[InputRequired()])
     atLeast = IntegerField('At least?', validators=[InputRequired()])
-    distribution = SelectField('Distribution type',
-                               choices=DISTRIBUTION_CHOICES,
-                               validators=[InputRequired()])
-    logNormalOffset = IntegerField('[Offset]', validators=[InputRequired()])
-    logNormalMean = IntegerField('Mean', validators=[InputRequired()])
-    logNormalStDev = IntegerField('StDev', validators=[InputRequired()])
-    normalMean = IntegerField('Mean', validators=[InputRequired()])
-    normalStDev = IntegerField('StDev', validators=[InputRequired()])
-    uniformUpper = IntegerField('Upper', validators=[InputRequired()])
-    uniformLower = IntegerField('Lower', validators=[InputRequired()])
     cladeLevel0 = IntegerField('Clade Level 0',
                                validators=[InputRequired()])
     cladeLevel1 = IntegerField('Clade Level 1',
@@ -332,6 +339,29 @@ class CladeRowForm(AbstractTimestampedForm):
 
 class CladeTableForm(WTForm):
     elements = FieldList(FormField(CladeRowForm))
+
+    def handle(self, request):
+        cladeChanged = False
+        idCladeMap = {c.id: c for c in Clade.objects.all()}
+        for entry in self.elements:
+            data = entry.data
+            try:
+                clade = idCladeMap[data['idField']]
+                if clade.isChanged(**data):
+                    problem = clade.setDelta(request, **data)
+                    if problem is None:
+                        with transaction.atomic():
+                            clade.save()
+                            cladeChanged = True
+                    else:
+                        messages.error(
+                            request, clade.deltaReport(**problem))
+            except Exception:
+                logging.exception('Problem saving clade '
+                                  'in view_clades.')
+                messages.error(request,
+                               'Problem saving clade data: %s' % data)
+        return cladeChanged
 
 
 class CladeCreationForm(WTForm):
@@ -435,6 +465,92 @@ class AddCogClassTableForm(WTForm):
 class MergeCognateClassesForm(WTForm):
     mergeIds = StringField('merge ids', validators=[InputRequired()])
 
+    def handle(self, request):
+        # Extract ids from form:
+        ids = set([int(i) for i in
+                   self.data['mergeIds'].split(',')])
+        # Fetching classes to merge:
+        ccs = CognateClass.objects.filter(
+            id__in=ids).prefetch_related(
+            "cognatejudgement_set",
+            "cognateclasscitation_set").all()
+        # Checking ccs length:
+        if len(ccs) <= 1:
+            logging.warning('Not enough cognateclasses to merge.',
+                            extra=ccs)
+            messages.error(request, 'Sorry, the server needs '
+                           '2 or more cognateclasses to merge.')
+        else:
+            # Merging ccs:
+            with transaction.atomic():
+                # Creating new CC with merged field contents:
+                newC = CognateClass()
+                setDict = {'notes': set(),
+                           'root_form': set(),
+                           'root_language': set(),
+                           'gloss_in_root_lang': set(),
+                           'loan_source': set(),
+                           'loan_notes': set()}
+                for cc in ccs:
+                    for k, v in cc.toDict().iteritems():
+                        if k in setDict:
+                            setDict[k].add(v)
+                delta = {k: '{'+', '.join(v)+'}'
+                         for k, v in setDict.iteritems()}
+                for k, v in delta.iteritems():
+                    setattr(newC, k, v)
+                newC.bump(request)
+                newC.save()
+                # Retargeting CJs:
+                cjIds = set()
+                for cc in ccs:
+                    cjIds.update([cj.id for cj
+                                  in cc.cognatejudgement_set.all()])
+                CognateJudgement.objects.filter(
+                    id__in=cjIds).update(
+                    cognate_class_id=newC.id)
+                '''
+                Retargeting CCCs:
+                This needs a bit of extra handling
+                in case a source is mentioned twice.
+                Compare #294.
+                '''
+                sourceCCCMap = defaultdict(list)
+                for cc in ccs:
+                    for ccc in cc.cognateclasscitation_set.all():
+                        sourceCCCMap[ccc.source_id].append(ccc)
+                simpleCCCs = set()
+                newCCCs = []
+                oldCCCs = set()
+                for k, v in sourceCCCMap.iteritems():
+                    if len(v) == 1:
+                        simpleCCCs.add(v[0].id)
+                    else:
+                        newCCCs.append(CognateClassCitation(
+                            cognate_class_id=newC.id,
+                            source_id=k,
+                            pages='{' +
+                                  ', '.join([x.pages for x in v]) +
+                                  '}',
+                            reliability='A',
+                            comment='{' +
+                                    ', '.join([x.comment for x in v]) +
+                                    '}'))
+                        oldCCCs.update([x.id for x in v])
+                # Retargeting simple cases:
+                CognateClassCitation.objects.filter(
+                    id__in=simpleCCCs).update(
+                    cognate_class_id=newC.id)
+                # Creating new CCCs:
+                CognateClassCitation.objects.bulk_create(newCCCs)
+                # Removing old CCCs:
+                CognateClassCitation.objects.filter(
+                    id__in=oldCCCs).delete()
+                # Deleting old ccs:
+                ccs.delete()
+                # Fixing alias:
+                newC.update_alias()
+
 
 class CognateJudgementSplitRow(AbstractTimestampedForm):
     idField = IntegerField('Id', validators=[InputRequired()])
@@ -480,6 +596,40 @@ class LexemeRowViewMeaningsForm(AbstractTimestampedForm):
 
 class LexemeTableViewMeaningsForm(WTForm):
     lexemes = FieldList(FormField(LexemeRowViewMeaningsForm))
+
+    def handle(self, request):
+        # Assumes validation has already passed
+        changedCogIdSet = set()  # Not changing a cognate class twice
+        for entry in self.lexemes:
+            data = entry.data
+            try:
+                # Updating the lexeme:
+                lex = Lexeme.objects.get(id=data['id'])
+                if lex.isChanged(**data):
+                    problem = lex.setDelta(request, **data)
+                    if problem is None:
+                        lex.save()
+                    else:
+                        messages.error(request,
+                                       lex.deltaReport(**problem))
+                # Updating cognate class if requested:
+                for cData in data['allCognateClasses']:
+                    if cData['id'] in changedCogIdSet:
+                        continue
+                    c = CognateClass.objects.get(id=cData['id'])
+                    if c.isChanged(**cData):
+                        problem = c.setDelta(request, **cData)
+                        if problem is None:
+                            c.save()
+                            changedCogIdSet.add(c.id)
+                        else:
+                            messages.error(
+                                request, c.deltaReport(**problem))
+            except Exception:
+                logging.exception('Problem updating Lexeme '
+                                  'in view_meaning.')
+                messages.error(request, "The server had problems "
+                                        "updating lexeme %s." % lex.id)
 
 
 class LexemeTableEditCognateClassesForm(WTForm):
@@ -532,6 +682,73 @@ class LexemeTableEditCognateClassesForm(WTForm):
         # Write validated data to form.data:
         form._validated['cognateClassAssignments'] = retData
 
+    def handle(self, request):
+        '''
+        Handles the data given for an instance of this form.
+        This method assumes that validation already took place.
+        Method introduced for #219.
+        '''
+        data = self.getValidated()
+        with transaction.atomic():
+            for k, v in data['cognateClassAssignments'].iteritems():
+                # Ignoring don't care cases:
+                if k == 'new':
+                    if v == 'delete':
+                        continue
+                elif k == v:  # new, new is permitted
+                    continue
+                # Creating new CC or moving from an old one?
+                if k == 'new':
+                    # Add to new class:
+                    if v == 'new':
+                        # Class to add to:
+                        newC = CognateClass()
+                        newC.bump(request)
+                        newC.save()
+                        # Adding to new class:
+                        CognateJudgement.objects.bulk_create([
+                            CognateJudgement(lexeme_id=lId,
+                                             cognate_class_id=newC.id)
+                            for lId in data['lexemeIds']])
+                        # Fixing alias for new class:
+                        newC.update_alias()
+                    # Add to existing class:
+                    else:
+                        CognateJudgement.objects.bulk_create([
+                            CognateJudgement(lexeme_id=lId,
+                                             cognate_class_id=v)
+                            for lId in data['lexemeIds']])
+                else:
+                    judgements = CognateJudgement.objects.filter(
+                        lexeme_id__in=data['lexemeIds'],
+                        cognate_class_id=k)
+                    # Move to new class:
+                    if v == 'new':
+                        # Class to add to:
+                        newC = CognateClass()
+                        newC.bump(request)
+                        newC.save()
+                        # Adding to new class:
+                        judgements.update(cognate_class_id=newC.id)
+                        # Fixing alias for new class:
+                        newC.update_alias()
+                    # Deletion from current class:
+                    elif v == 'delete':
+                        judgements.delete()
+                    # Move to existing class:
+                    else:
+                        judgements.update(cognate_class_id=v)
+                    # Check for remaining entries:
+                    remaining = CognateJudgement.objects.filter(
+                        cognate_class_id=k).count()
+                    if remaining == 0:
+                        logging.info('Removed last lexemes '
+                                     'from cognate class %s.' % k)
+                        messages.warning(
+                            request,
+                            'Cognate class %s has no lexemes '
+                            'left in it.' % k)
+
 
 class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
     id = IntegerField('Lexeme Id', validators=[InputRequired()])
@@ -560,10 +777,181 @@ class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
     rfcWebLookup2 = StringField('This Lg lex rfc web path 2',
                                 validators=[InputRequired()])
     dubious = BooleanField('Dubious', validators=[InputRequired()])
+    # Added for #219
+    combinedCognateClassAssignment = StringField(
+        'Assignment string for cognate classes',
+        validators=[InputRequired()])
+
+    def validate_combinedCognateClassAssignment(form, field):
+        tokens = [t.strip() for t in field.data.split(',')]
+        for t in tokens:
+            if t == 'new':
+                '''
+                This case is subsumed by the alias regex,
+                but listed here for clarity and in case
+                we want to enhance alias validation.
+                '''
+                continue
+            elif re.match('^([a-zA-Z]+|\d+)$', t) is not None:
+                continue  # Token is number or alias
+            else:
+                raise ValidationError("Unacceptable token: %s" % t)
 
 
 class LexemeTableLanguageWordlistForm(WTForm):
     lexemes = FieldList(FormField(LexemeRowLanguageWordlistForm))
+
+    def handle(self, request):
+        # Assumes validation has already passed.
+        for entry in self.lexemes:
+            data = entry.data
+            # Fetching lexeme:
+            try:
+                lex = Lexeme.objects.get(id=data['id'])
+            except Lexeme.DoesNotExist:
+                messages.error(request, "Sorry, lexeme %s does not "
+                                        "exist in the database." % data['id'])
+                continue  # Skip this entry
+            # Updating the lexeme:
+            try:
+                with transaction.atomic():
+                    if lex.isChanged(**data):
+                        problem = lex.setDelta(request, **data)
+                        if problem is None:
+                            lex.save()
+                        else:
+                            messages.error(
+                                request, lex.deltaReport(**problem))
+            except Exception:
+                logging.exception('Problem updating Lexeme '
+                                  'in LexemeTableLanguageWordlistForm.')
+                messages.error(request, 'Sorry, the server could '
+                               'not update lexeme %s.' % lex.gloss)
+            # Handling combineCognateClassAssignment:
+            if data['combinedCognateClassAssignment'] != \
+                    lex.combinedCognateClassAssignment:
+                # Current cognate classes:
+                currentCCs = {}  # :: id | alias -> CognateClass
+                for c in lex.cognate_class.all():
+                    currentCCs[str(c.id)] = c
+                    currentCCs[c.alias] = c
+                # cognate classes to keep:
+                keepCCs = {}  # :: id -> CognateClass
+                # We expect non staff to not increase the count of currentCCs:
+                toAdd = len(currentCCs)
+                # Tokens to handle:
+                tokens = [
+                    t.strip() for t
+                    in data['combinedCognateClassAssignment'].split(',')]
+                for t in tokens:
+                    toAdd -= 1  # Decrement toAdd:
+                    if toAdd <= 0 and len(currentCCs) > 0 \
+                            and not request.user.is_staff:
+                        messages.error(
+                            request,
+                            "Sorry - only staff is allowed "
+                            "to add additional cognate set assignments. "
+                            "Please contact a staff member if you feel "
+                            "that a second cognate set is necessary. "
+                            "Refused to add '%s' to lexeme %s." % (t, lex.id))
+                        break
+                    if t == 'new':  # Add lexeme to a new class:
+                        with transaction.atomic():
+                            # Class to add to:
+                            newC = CognateClass()
+                            newC.bump(request)
+                            newC.save()
+                            # Adding to new class:
+                            CognateJudgement.objects.create(
+                                lexeme_id=lex.id,
+                                cognate_class_id=newC.id)
+                            # Fixing alias for new class:
+                            newC.update_alias()
+                    elif t in currentCCs:  # Is this one satisfied?
+                        keep = currentCCs[t]
+                        keepCCs[keep.id] = keep
+                    else:  # Add lexeme to existing class if this is a new one.
+                        cc = None
+                        try:
+                            if re.match('^\d+$', t) is not None:
+                                cc = CognateClass.objects.get(id=int(t))
+                            else:
+                                cc = CognateClass.objects.filter(
+                                    lexeme__meaning__id=lex.meaning_id
+                                    ).distinct().get(alias=t)
+                        except Exception:
+                            logging.exception("Problem handling token %s" % t)
+                            messages.error(
+                                request,
+                                "Sorry, the server didn't understand "
+                                "the cognate set assignment token %s." % t)
+                            continue  # Next iteration
+                        # Adding to found cognate class:
+                        CognateJudgement.objects.create(
+                            lexeme_id=lex.id,
+                            cognate_class_id=cc.id)
+                # Remove lexeme from unwanted cognate classes:
+                removeCCs = set()  # :: set(id)
+                for cc in currentCCs.values():
+                    if cc.id not in keepCCs:
+                        removeCCs.add(cc.id)
+                CognateJudgement.objects.filter(
+                    lexeme_id=lex.id,
+                    cognate_class_id__in=removeCCs).delete()
+
+
+class AddMissingLexemsForLanguageForm(WTForm):
+    '''
+    Added for #304, this form adds lexeme entries for each meaning that
+    doesn't already have at least one entry linking to the given language.
+    '''
+    language = StringField('Ascii name of the language',
+                           validators=[InputRequired()])
+
+    def handle(self, request):
+        language = Language.objects.get(ascii_name=self.data['language'])
+        meanings = Meaning.objects.exclude(
+            id__in=set(Lexeme.objects.filter(
+                       language=language).values_list(
+                       'meaning_id', flat=True))).all()
+        if len(meanings) > 0:
+            with transaction.atomic():
+                for m in meanings:
+                    Lexeme.objects.create(language=language, meaning=m)
+            messages.info(
+                request,
+                "Added lexemes for meanings: " +
+                ", ".join([m.gloss for m in meanings]))
+        else:
+            messages.info(
+                request,
+                'There is at least one lexeme '
+                'for every meaning in the database.')
+
+
+class RemoveEmptyLexemsForLanguageForm(WTForm):
+    '''
+    Added for #304, this form removes lexeme entries for a given language
+    that have empty data for 'Orthographic'.
+    '''
+    language = StringField('Ascii name of the language',
+                           validators=[InputRequired()])
+
+    def handle(self, request):
+        language = Language.objects.get(ascii_name=self.data['language'])
+        with transaction.atomic():
+            wanted = Lexeme.objects.filter(source_form='', language=language)
+            meanings = wanted.values_list('meaning__gloss', flat=True)
+            if len(meanings) > 0:
+                wanted.delete()
+                messages.info(
+                    request,
+                    'Removed entries for meanings: '+', '.join(meanings))
+            else:
+                messages.info(
+                    request,
+                    'All meanings have Orthographic data entered, '
+                    'nothing to remove.')
 
 
 class CloneLanguageForm(WTForm):
@@ -607,6 +995,32 @@ class MeaningListRowForm(AbstractTimestampedForm):
 class MeaningListTableForm(WTForm):
     meanings = FieldList(FormField(MeaningListRowForm))
 
+    def handle(self, request):
+        ms = [m.data for m in self.meanings]
+        for m in ms:
+            try:
+                meaning = Meaning.objects.get(id=m['meaningId'])
+                if meaning.isChanged(**m):
+                    try:
+                        problem = meaning.setDelta(request, **m)
+                        if problem is None:
+                            meaning.save()
+                        else:
+                            messages.error(
+                                request, meaning.deltaReport(**problem))
+                    except Exception:
+                        logging.exception('Exception while saving POST '
+                                          'in view_wordlist.')
+                        messages.error(request, 'Sorry, the server had '
+                                       'problems saving changes for '
+                                       '"%s".' % meaning.gloss)
+            except Exception:
+                logging.exception('Problem accessing Meaning object '
+                                  'in view_wordlist.',
+                                  extra=m)
+                messages.error(request, 'The server had problems saving '
+                               'at least one entry.')
+
 
 class ChooseSourceForm(forms.Form):
     source = ChooseSourcesField(queryset=Source.objects.all())
@@ -637,7 +1051,7 @@ class EditCognateClassCitationForm(forms.ModelForm):
 
     class Meta:
         model = CognateClassCitation
-        fields = ["source", "pages", "reliability", "comment"]
+        fields = ["source", "pages", "comment"]
 
 
 class AddCitationForm(forms.Form):

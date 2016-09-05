@@ -2,6 +2,7 @@ from __future__ import print_function
 from textwrap import dedent
 import time
 import sys
+from collections import defaultdict
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -10,11 +11,11 @@ from ielex import settings
 from ielex.lexicon.models import CognateClass, \
                                  CognateClassCitation, \
                                  CognateJudgement, \
-                                 CognateJudgementCitation, \
                                  LanguageList, \
                                  Lexeme, \
-                                 LexemeCitation, \
-                                 MeaningList
+                                 MeaningList, \
+                                 NexusExport, \
+                                 Clade
 from ielex.forms import EditCognateClassCitationForm
 from ielex.lexicon.forms import ChooseNexusOutputForm, DumpSnapshotForm
 from ielex.lexicon.functions import nexus_comment
@@ -71,8 +72,6 @@ class CognateClassCitationCreateView(CreateView):
             CognateClassCitationCreateView, self).get_form_kwargs()
         return kwargs
 
-# class CognateClassRedirectView(RedirectView):
-
 
 @login_required
 def cognate_class_citation_delete(request, pk):
@@ -89,43 +88,42 @@ class NexusExportView(TemplateView):
     def get(self, request):
         defaults = {
             "unique": 1,
-            "reliability": ["L", "X"],
             "language_list": getDefaultLanguagelistId(request),
             "meaning_list": getDefaultWordlistId(request),
             "dialect": "NN",
-            "ascertainment_marker": 0}
+            "ascertainment_marker": 1,
+            "excludeNotSwadesh": 1,
+            "excludePllDerivation": 1,
+            "excludeIdeophonic": 1,
+            "excludeDubious": 1,
+            "excludeLoanword": 0,
+            "excludePllLoan": 1,
+            "includePllLoan": 0,
+            "excludeMarkedMeanings": 1,
+            "excludeMarkedLanguages": 1}
         form = ChooseNexusOutputForm(defaults)
         return self.render_to_response({"form": form})
 
     def post(self, request):
         form = ChooseNexusOutputForm(request.POST)
         if form.is_valid():
-            # return HttpResponseRedirect(reverse("nexus-data"))
-            return self.write_nexus_view(form)
+            export = NexusExport(exportName=self.fileNameForForm(form))
+            export.setSettings(form)
+            export.bump(request)
+            export.save()
+            return HttpResponseRedirect('/nexus/export/')
         return self.render_to_response({"form": form})
 
-    def write_nexus_view(self, form):
-        """A wrapper to call the `write_nexus` function from a view"""
-        # TODO: contributor and sources list
-
-        # Create the HttpResponse object with the appropriate header.
-        filename = "%s-%s-%s.nex" % (
-            settings.project_short_name,
+    def fileNameForForm(self, form):
+        return "%s_CoBL-IE_Lgs%03d_Mgs%03d_%s_%s.nex" % (
+            time.strftime("%Y-%m-%d"),
+            # settings.project_short_name,
+            form.cleaned_data["language_list"].languages.filter(
+                notInExport=False).count(),
+            form.cleaned_data["meaning_list"].meanings.filter(
+                exclude=False).count(),
             form.cleaned_data["language_list"].name,
             form.cleaned_data["meaning_list"].name)
-        response = HttpResponse(content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename=%s' % \
-            filename.replace(" ", "_")
-
-        write_nexus(
-            response,
-            form.cleaned_data["language_list"],
-            form.cleaned_data["meaning_list"],
-            set(form.cleaned_data["reliability"]),
-            form.cleaned_data["dialect"],
-            True,
-            form.cleaned_data["ascertainment_marker"])
-        return response
 
 
 class DumpRawDataView(TemplateView):
@@ -157,110 +155,140 @@ class DumpRawDataView(TemplateView):
         response['Content-Disposition'] = 'attachment; filename=%s' % \
             filename.replace(" ", "_")
 
-        dump_cognate_data(
-            response,
+        print(dump_cognate_data(
             form.cleaned_data["language_list"],
             form.cleaned_data["meaning_list"]
             # set(form.cleaned_data["reliability"]),
-            )
+            ), file=response)
         return response
 
 
-def write_nexus(fileobj,                # file object
-                language_list_name,     # string
-                meaning_list_name,      # string
-                exclude_ratings,        # set
-                dialect,                # string
-                label_cognate_sets,     # bool
-                ascertainment_marker):  # bool
+def write_nexus(language_list_name,       # str
+                meaning_list_name,        # str
+                dialect,                  # string
+                **kwargs):
+    '''
+    In kwargs:
+    label_cognate_sets :: bool
+    ascertainment_marker :: bool
+    excludeNotSwadesh :: bool
+    excludePllDerivation :: bool
+    excludeIdeophonic :: bool
+    excludeDubious :: bool
+    excludeLoanword :: bool
+    excludePllLoan :: bool
+    includePllLoan :: bool
+    excludeMarkedLanguages :: bool | missing in older settings
+    excludeMarkedMeanings :: bool | missing in older settings
+    Returns:
+    {exportData :: str,
+     exportBEAUti :: str,
+     cladeMemberships :: str,
+     computeCalibrations :: str}
+    '''
     start_time = time.time()
     dialect_full_name = dict(ChooseNexusOutputForm.DIALECT)[dialect]
 
     # get data together
     language_list = LanguageList.objects.get(name=language_list_name)
-    languages = language_list.languages.all().order_by("languagelistorder")
+    if kwargs.get('excludeMarkedLanguages', True):
+        languages = language_list.languages.exclude(notInExport=True).all()
+    else:
+        languages = language_list.languages.all()
     language_names = [language.ascii_name for language in languages]
 
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
-    meanings = meaning_list.meanings.all().order_by("meaninglistorder")
+    if kwargs.get('excludeMarkedMeanings', True):
+        meanings = meaning_list.meanings.exclude(
+            exclude=True).all().order_by("meaninglistorder")
+    else:
+        meanings = meaning_list.meanings.all().order_by("meaninglistorder")
     max_len = max([len(l) for l in language_names])
 
     matrix, cognate_class_names, assumptions = construct_matrix(
-        languages, meanings, exclude_ratings, ascertainment_marker)
+        languages, meanings, **kwargs)
 
-    print("#NEXUS\n\n[ Generated by: %s ]" %
-          settings.project_long_name, file=fileobj)
+    # Export data to compose:
+    exportData = []
+    exportBEAUti = []
+
+    def appendExports(s):
+        exportData.append(s)
+        exportBEAUti.append(s)
+
+    appendExports("#NEXUS\n\n[ Generated by: %s ]\n" %
+                  settings.project_long_name)
     try:
         if settings.project_citation:
-            print(nexus_comment(settings.project_citation), file=fileobj)
+            appendExports(nexus_comment(settings.project_citation))
     except AttributeError:
         pass
 
-    print("[ Language list: %s ]" % language_list_name, file=fileobj)
-    print("[ Meaning list: %s ]" % meaning_list_name, file=fileobj)
-    print("[ Exclude rating/s: %s ]" %
-          ", ".join(sorted(exclude_ratings)), file=fileobj)
-    print("[ Nexus dialect: %s ]" % dialect_full_name, file=fileobj)
-    print("[ Cognate set labels: %s ]" % label_cognate_sets, file=fileobj)
-    print("[ Mark meaning sets for ascertainment correction: %s ]" %
-          ascertainment_marker, file=fileobj)
-    print("[ File generated: %s ]\n" % time.strftime("%Y-%m-%d %H:%M:%S",
-          time.localtime()), file=fileobj)
+    appendExports(getNexusComments(language_list_name,
+                                   meaning_list_name,
+                                   dialect_full_name,
+                                   **kwargs))
 
     if dialect == "NN":
         max_len += 2  # taxlabels are quoted
-        print(dedent("""\
+        exportData.append(dedent("""\
             begin taxa;
               dimensions ntax=%s;
               taxlabels %s;
             end;
-            """ % (len(languages), " ".join(language_names))), file=fileobj)
-        print(dedent("""\
+            """ % (len(languages), " ".join(language_names))))
+        exportData.append(dedent("""\
             begin characters;
               dimensions nchar=%s;
               format symbols="01" missing=?;
-              charstatelabels""" % len(cognate_class_names)), file=fileobj)
+              charstatelabels""" % len(cognate_class_names)))
+        exportBEAUti.append(dedent("""\
+            begin characters;
+              dimensions nchar=%s;
+              format symbols="01" missing=?;""" % len(cognate_class_names)))
         labels = []
 
         for i, cc in enumerate(cognate_class_names):
             labels.append("    %d %s" % (i+1, cc))
-        print(*labels, sep=",\n", file=fileobj)
-        print("  ;\n  matrix", file=fileobj)
+        exportData.append(",\n".join(labels))
+        exportData.append("  ;\n  matrix")
+        exportBEAUti.append("  matrix")
 
     elif dialect == "MB":
-        print(dedent("""\
+        exportData.append(dedent("""\
             begin taxa;
               dimensions ntax=%s;
               taxlabels %s;
             end;
-
+            """ % (len(languages),
+                   " ".join(language_names))))
+        appendExports(dedent("""\
             begin characters;
               dimensions nchar=%s;
               format missing=? datatype=restriction;
               matrix
-            """ % (len(languages), " ".join(language_names),
-                     len(cognate_class_names))), file=fileobj)
+            """ % len(cognate_class_names)))
 
     else:
         assert dialect == "BP"
-        print(dedent("""\
+        appendExports(dedent("""\
             begin data;
               dimensions ntax=%s nchar=%s;
               taxlabels %s;
               format symbols="01";
               matrix
             """ % (len(languages),
-                   len(cognate_class_names), " ".join(language_names))),
-              file=fileobj)
+                   len(cognate_class_names),
+                   " ".join(language_names))))
 
-    if label_cognate_sets:
+    if kwargs['label_cognate_sets']:
         row = [" "*9] + [
             str(i).ljust(10) for i in
             range(len(cognate_class_names))[10::10]]
-        print("   %s[ %s ]" % (" "*max_len, "".join(row)), file=fileobj)
+        appendExports("   %s[ %s ]" % (" "*max_len, "".join(row)))
         row = [" "*9] + [
             ".         " for i in range(len(cognate_class_names))[10::10]]
-        print("   %s[ %s ]" % (" "*max_len, "".join(row)), file=fileobj)
+        appendExports("   %s[ %s ]" % (" "*max_len, "".join(row)))
 
     # write matrix
     for row in matrix:
@@ -271,13 +299,14 @@ def write_nexus(fileobj,                # file object
         else:
             def quoted(s):
                 return s
-        print("    %s %s%s" % (quoted(language_name),
-              " "*(max_len - len(quoted(language_name))),
-              "".join(row)), file=fileobj)
-    print("  ;\nend;\n", file=fileobj)
+        appendExports("    %s %s%s" %
+                      (quoted(language_name),
+                       " "*(max_len - len(quoted(language_name))),
+                       "".join(row)))
+    appendExports("  ;\nend;\n")
 
     if dialect == "BP":
-        print(dedent("""\
+        exportData.append(dedent("""\
             begin BayesPhylogenies;
                 Chains 1;
                 it 12000000;
@@ -287,14 +316,14 @@ def write_nexus(fileobj,                # file object
                 pf 10000;
                 autorun;
             end;
-            """), file=fileobj)
+            """))
 
-    # write assumptions
-    if assumptions:
-        print("begin assumptions;", file=fileobj)
+    # write charset assumptions
+    if assumptions and dialect != "NN":
+        exportData.append("begin assumptions;")
         for charset in assumptions:
-            print("   ", charset, file=fileobj)
-        print("end;", file=fileobj)
+            exportData.append("    "+charset)
+        exportData.append("end;")
 
     # get contributor list:
     # lexical sources
@@ -302,80 +331,89 @@ def write_nexus(fileobj,                # file object
     # cognate sources
     # cognates coded by
 
+    # appendExports("[ %s ]" % " ".join(sys.argv))
+    print("# Processed %s cognate sets from %s languages" %
+          (len(cognate_class_names), len(matrix)), file=sys.stderr)
+    # Data for exportBEAUti and constraints:
+    memberships = cladeMembership(
+        language_list, kwargs.get('excludeMarkedLanguages', True))
+    calibrations = computeCalibrations(
+        language_list, kwargs.get('excludeMarkedLanguages', True))
+    exportBEAUti.append(memberships)
+    exportBEAUti.append(calibrations)
     # timing
     seconds = int(time.time() - start_time)
     minutes = seconds // 60
     seconds %= 60
-    print("[ Processing time: %02d:%02d ]" % (minutes, seconds), file=fileobj)
-    # print("[ %s ]" % " ".join(sys.argv), file=fileobj)
-    print("# Processed %s cognate sets from %s languages" %
-          (len(cognate_class_names), len(matrix)), file=sys.stderr)
-    return fileobj
+    appendExports("[ Processing time: %02d:%02d ]" % (minutes, seconds))
+    # Return combined data:
+    return {
+        'exportData': "\n".join(exportData),      # Requested export
+        'exportBEAUti': "\n".join(exportBEAUti),  # BEAUti specific export
+        'cladeMemberships': memberships,
+        'computeCalibrations': calibrations
+    }
 
 
-def write_delimited(fileobj,
-                    language_list_name,
-                    meaning_list_name,
-                    exclude_ratings,
-                    label_cognate_sets):
-    start_time = time.time()
+def construct_matrix(languages,                # [Language]
+                     meanings,                 # [Meaning]
+                     ascertainment_marker,     # bool
+                     excludeNotSwadesh,        # bool
+                     excludePllDerivation,     # bool
+                     excludeIdeophonic,        # bool
+                     excludeDubious,           # bool
+                     excludeLoanword,          # bool
+                     excludePllLoan,           # bool
+                     includePllLoan,           # bool
+                     **kwargs):                # don't care
 
-    language_list = LanguageList.objects.get(name=language_list_name)
-    languages = language_list.languages.all().order_by("languagelistorder")
-    meaning_list = MeaningList.objects.get(name=meaning_list_name)
-    meanings = meaning_list.meanings.all().order_by("meaninglistorder")
-    matrix, cognate_class_names, _ = construct_matrix(
-        languages, meanings, exclude_ratings, False)  # no ascertainment marker
-    print("\t" + "\t".join(cognate_class_names), file=fileobj)
-    for row in matrix:
-        print(*row, sep="\t", file=fileobj)
-
-    seconds = int(time.time() - start_time)
-    minutes = seconds // 60
-    seconds %= 60
-    print("# Processing time: %02d:%02d" % (minutes, seconds), file=sys.stderr)
-    print("# %s" % " ".join(sys.argv), file=sys.stderr)
-    print("# Processed %s cognate sets from %s languages" %
-          (len(cognate_class_names), len(matrix)), file=sys.stderr)
-    return fileobj
-
-
-def construct_matrix(languages,
-                     meanings,
-                     exclude_ratings,
-                     ascertainment_marker):
-
+        # Specifying cognate classes we're interested in:
+        cognateJudgementFilter = {
+            'lexeme__language__in': languages,
+            'lexeme__meaning__in': meanings
+        }
+        # If excludeNotSwadesh, only allow cjs
+        # with a lexeme that is not_swadesh_term=False
+        if excludeNotSwadesh:
+            cognateJudgementFilter['lexeme__not_swadesh_term'] = False
+        # Filtering interesting cognate judgements:
+        wantedCJs = CognateJudgement.objects.filter(**cognateJudgementFilter)
+        if excludePllDerivation:
+            wantedCJs = wantedCJs.exclude(
+                cognate_class__parallelDerivation=True)
+        if excludeIdeophonic:
+            wantedCJs = wantedCJs.exclude(cognate_class__ideophonic=True)
+        if excludeDubious:
+            wantedCJs = wantedCJs.exclude(cognate_class__dubiousSet=True)
+        if excludeLoanword:
+            wantedCJs = wantedCJs.exclude(cognate_class__loanword=True)
+        elif excludePllLoan:  # not excludeLoanword and excludePllLoan
+            wantedCJs = wantedCJs.exclude(
+                cognate_class__parallelLoanEvent=True)
+        elif includePllLoan:  # not excludeLoanword and includePllLoan
+            raise ValueError('Case not implemented.')  # FIXME IMPLEMENT
         # synonymous cognate classes (i.e. cognate reflexes representing
         # a single Swadesh meaning)
-        cognate_classes = dict()
-        for cc, meaning in CognateJudgement.objects.filter(
-                lexeme__language__in=languages, lexeme__meaning__in=meanings
-                ).order_by(
-                    "lexeme__meaning",
-                    "cognate_class").values_list(
-                        "cognate_class__id",
-                        "lexeme__meaning__gloss").distinct():
-            cognate_classes.setdefault(meaning, list()).append(cc)
+        cognate_classes = defaultdict(list)
+        for cc, meaning in wantedCJs.order_by(
+                           "lexeme__meaning",
+                           "cognate_class").values_list(
+                               "cognate_class__id",
+                               "lexeme__meaning__gloss").distinct():
+            cognate_classes[meaning].append(cc)
 
-        # lexemes which have been marked as being excluded
-        exclude_lexemes = set(LexemeCitation.objects.filter(
-                lexeme__language__in=languages,
-                reliability__in=exclude_ratings).values_list(
-                "lexeme__id", flat=True))
-        exclude_lexemes |= set(CognateJudgementCitation.objects.filter(
-                cognate_judgement__lexeme__language__in=languages,
-                reliability__in=exclude_ratings).values_list(
-                "cognate_judgement__lexeme__id", flat=True))
-
-        # excluding lexemes that are marked as not_swadesh_term
-        # in their data fields:
-        for l in Lexeme.objects.all():
-            if l.not_swadesh_term:
-                exclude_lexemes.add(l.id)
+        # Lexemes which shall be excluded:
+        exclude_lexemes = set()  # :: set(lexeme.id)
+        if excludeNotSwadesh:
+            exclude_lexemes |= set(Lexeme.objects.filter(
+                not_swadesh_term=True).values_list("id", flat=True))
 
         # languages lacking any lexeme for a meaning
         languages_missing_meaning = dict()
         # languages having a reflex for a cognate set
+        '''
+        data :: meaning.gloss -> cognate_classes[meaning.gloss] -> [language]
+        '''
         data = dict()
         for meaning in meanings:
             languages_missing_meaning[meaning.gloss] = [
@@ -452,7 +490,6 @@ def construct_matrix(languages,
 
 
 def dump_cognate_data(
-            fileobj,
             language_list_name,
             meaning_list_name):
     language_list = LanguageList.objects.get(name=language_list_name)
@@ -468,11 +505,15 @@ def dump_cognate_data(
                 "cognate_class__alias",
                 "lexeme__language")
 
+    lines = []  # lines in string to be returned by dump_cognate_data
     print("Processed", cognate_judgements.count(),
           "cognate judgements", file=sys.stderr)
-    print("cc_alias", "cc_id", "language",
-          "lexeme", "lexeme_id", "status",
-          sep="\t", file=fileobj)
+    lines.append("\t".join(["cc_alias",
+                            "cc_id",
+                            "language",
+                            "lexeme",
+                            "lexeme_id",
+                            "status"]))
     for cj in cognate_judgements:
         if ("L" in cj.reliability_ratings) or \
            ("L" in cj.lexeme.reliability_ratings):
@@ -486,11 +527,14 @@ def dump_cognate_data(
             else:
                 loanword_flag += "EXCLUDE"
 
-        print(cj.lexeme.meaning.gloss+"-"+cj.cognate_class.alias,
-              cj.cognate_class.id, cj.lexeme.language.ascii_name,
-              unicode(cj.lexeme.phon_form.strip() or
-                      cj.lexeme.source_form.strip()), cj.lexeme.id,
-              loanword_flag, sep="\t", file=fileobj)
+        lines.append("\t".join([
+            cj.lexeme.meaning.gloss+"-"+cj.cognate_class.alias,
+            cj.cognate_class.id,
+            cj.lexeme.language.ascii_name,
+            unicode(cj.lexeme.phon_form.strip() or
+                    cj.lexeme.source_form.strip()),
+            cj.lexeme.id,
+            loanword_flag]))
     lexemes = Lexeme.objects.filter(
             language__in=languages,
             meaning__in=meanings,
@@ -506,11 +550,124 @@ def dump_cognate_data(
                 loanword_flag += ",EXCLUDE"
             else:
                 loanword_flag += "EXCLUDE"
-        print(lexeme.meaning.gloss,
-              "", lexeme.language.ascii_name,
-              unicode(lexeme.phon_form.strip() or
-                      lexeme.source_form.strip()),
-              lexeme.id, loanword_flag,
-              sep="\t", file=fileobj)
+        lines.append("\t".join([
+            lexeme.meaning.gloss,
+            "",
+            lexeme.language.ascii_name,
+            unicode(lexeme.phon_form.strip() or
+                    lexeme.source_form.strip()),
+            lexeme.id,
+            loanword_flag]))
 
-    return fileobj
+    return "\n".join(lines) + "\n"
+
+
+def cladeMembership(language_list, excludeMarkedLanguages):
+    '''
+    Computes the clade memberships as described in #50:
+
+    begin sets;
+    taxset tsAnatolian = Hittite Luvian Lycian Palaic;
+    taxset tsTocharian = TocharianA TocharianB;
+    taxset tsArmenian = ArmenianClassical ArmenianWestern ArmenianEastern;
+    end;
+    '''
+    taxsets = []
+    clades = Clade.objects.filter(export=True).all()
+    if excludeMarkedLanguages:
+        baseLanguages = language_list.languages.exclude(notInExport=True)
+    else:
+        baseLanguages = language_list.languages
+    for clade in clades:
+        languages = baseLanguages.filter(
+            languageclade__clade=clade).values_list(
+            'ascii_name', flat=True)
+        if len(languages) >= 1:
+            taxsets.append("taxset ts%s = %s;" %
+                           (clade.taxonsetName, " ".join(languages)))
+    return "begin sets;\n%s\nend;\n" % "\n".join(taxsets)
+
+
+def computeCalibrations(language_list, excludeMarkedLanguages):
+    '''
+    Computes the {clade,language} calibrations as described in #161:
+
+    begin assumptions;
+    calibrate tsTocharian = offsetlognormal(1.650,0.200,0.900)
+    calibrate Latin = normal(2.050,0.075)
+    end;
+    '''
+    def getDistribution(abstractDistribution):
+
+        def yearToFloat(year):
+            return round(float(year) / 1000, 3)
+
+        if abstractDistribution.distribution == 'U':
+            upper = yearToFloat(abstractDistribution.uniformUpper)
+            lower = yearToFloat(abstractDistribution.uniformLower)
+            return "uniform(%.3f,%.3f)" % (upper, lower)
+        if abstractDistribution.distribution == 'N':
+            mean = yearToFloat(abstractDistribution.normalMean)
+            stDev = yearToFloat(abstractDistribution.normalStDev)
+            return "normal(%.3f,%.3f)" % (mean, stDev)
+        if abstractDistribution.distribution == 'L':
+            mean = yearToFloat(abstractDistribution.logNormalMean)
+            stDev = abstractDistribution.logNormalStDev
+            return "lognormal(%.3f,%.3f)" % (mean, stDev)
+        if abstractDistribution.distribution == 'O':
+            mean = yearToFloat(abstractDistribution.logNormalMean)
+            stDev = abstractDistribution.logNormalStDev
+            offset = yearToFloat(abstractDistribution.logNormalOffset)
+            return "offsetlognormal(%.3f,%.3f,%.3f)" % (offset, mean, stDev)
+        return None
+
+    if excludeMarkedLanguages:
+        baseLanguages = language_list.languages.exclude(notInExport=True)
+    else:
+        baseLanguages = language_list.languages
+    calibrations = []
+    for clade in Clade.objects.filter(export=True, exportDate=True).all():
+        cal = getDistribution(clade)
+        lCount = baseLanguages.filter(languageclade__clade=clade).count()
+        if cal is not None and lCount >= 1:
+            calibrations.append("calibrate ts%s = %s" %
+                                (clade.taxonsetName, cal))
+    for language in baseLanguages.filter(historical=True).all():
+        cal = getDistribution(language)
+        if cal is not None:
+            calibrations.append("calibrate %s = %s" %
+                                (language.ascii_name, cal))
+    return "begin assumptions;\n%s\nend;\n" % "\n".join(calibrations)
+
+
+def getNexusComments(
+        language_list_name,
+        meaning_list_name,
+        dialect_full_name,
+        **kwargs):
+    lines = ["[ Language list: %s ]" % language_list_name,
+             "[ Meaning list: %s ]" % meaning_list_name,
+             "[ Nexus dialect: %s ]" % dialect_full_name]
+    comments = [
+        ('label_cognate_sets', "[ Cognate set labels: %s ]"),
+        ('ascertainment_marker',
+         "[ Mark meaning sets for ascertainment correction: %s ]"),
+        ('excludeNotSwadesh', "[ Exclude lexemes: not Swadesh: %s ]"),
+        ('excludePllDerivation', "[ Exclude cog. sets: Pll. Derivation: %s ]"),
+        ('excludeIdeophonic', "[ Exclude cog. sets: Ideophonic: %s ]"),
+        ('excludeDubious', "[ Exclude cog. sets: Dubious: %s ]"),
+        ('excludeLoanword', "[ Exclude cog. sets: Loan event: %s ]"),
+        ('excludePllLoan', "[ Exclude cog. sets: Pll Loan: %s ]"),
+        ('includePllLoan',
+         "[ Include Pll Loan as independent cog. sets: %s ]"),
+        ('excludeMarkedLanguages',
+         "[ Exclude languages marked as 'not for export': %s ]"),
+        ('excludeMarkedMeanings',
+         "[ Exclude meanings marked as 'not for export': %s ]")
+    ]
+    for k, v in comments:
+        if k in kwargs:
+            lines.append(v % kwargs[k])
+    lines.append("[ File generated: %s ]\n" %
+                 time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+    return '\n'.join(lines)

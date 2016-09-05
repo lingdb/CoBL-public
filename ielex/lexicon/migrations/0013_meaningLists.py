@@ -2,7 +2,7 @@
 # Inspired by:
 # https://docs.djangoproject.com/en/1.9/ref/migration-operations/#runpython
 # http://clld.org/2015/11/13/glottocode-to-isocode.html
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 from django.db import migrations
 
 # data :: [{name :: String, meanings :: [{id :: Int, name :: String}]}]

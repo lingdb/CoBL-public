@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 from django.db import migrations
 
 # data :: [{name :: String, meanings :: [{id :: Int, name :: String}]}]

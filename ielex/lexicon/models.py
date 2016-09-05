@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 import json
-import reversion
 import os.path
+import reversion
+import zlib
 from collections import defaultdict
 from string import uppercase, lowercase
 from django.db import models
@@ -10,6 +11,7 @@ from django.db.models import Max
 from django.core.urlresolvers import reverse
 from django.utils.safestring import SafeString
 from django.utils.encoding import python_2_unicode_compatible
+from django.http import HttpResponse
 # ielex specific imports:
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import suitable_for_url, standard_reserved_names
@@ -190,6 +192,35 @@ class AbstractTimestamped(models.Model):
         return {k: getattr(self, k) for k in self.timestampedFields()}
 
 
+class AbstractDistribution(models.Model):
+    '''
+    This model describes the types of distributions
+    we use for clades and languages.
+    '''
+    # Distribution type used:
+    distribution = models.CharField(
+        max_length=1, choices=DISTRIBUTION_CHOICES, default="_")
+    # For [offset] log normal distribution:
+    logNormalOffset = models.IntegerField(null=True)
+    logNormalMean = models.IntegerField(null=True)
+    logNormalStDev = models.DecimalField(
+        null=True, max_digits=19, decimal_places=10)
+    # For normal distribution:
+    normalMean = models.IntegerField(null=True)
+    normalStDev = models.IntegerField(null=True)
+    # For uniform distribution:
+    uniformUpper = models.IntegerField(null=True)
+    uniformLower = models.IntegerField(null=True)
+
+    class Meta:
+        abstract = True
+
+    def timestampedFields(self):
+        return set(['distribution', 'logNormalOffset', 'logNormalMean',
+                    'logNormalStDev', 'normalMean', 'normalStDev',
+                    'uniformUpper', 'uniformLower'])
+
+
 @reversion.register
 class Source(models.Model):
 
@@ -262,7 +293,7 @@ class SndComp(AbstractTimestamped):
 
 
 @reversion.register
-class Clade(AbstractTimestamped):
+class Clade(AbstractTimestamped, AbstractDistribution):
     '''
     This model was added for #153
     and shall be used to track clade constraints.
@@ -289,19 +320,6 @@ class Clade(AbstractTimestamped):
     atMost = models.IntegerField(null=True)
     # Earliest plausible date divergence could have begun by:
     atLeast = models.IntegerField(null=True)
-    # Distribution type used:
-    distribution = models.CharField(
-        max_length=1, choices=DISTRIBUTION_CHOICES, default="_")
-    # For [offset] log normal distribution:
-    logNormalOffset = models.IntegerField(null=True)
-    logNormalMean = models.IntegerField(null=True)
-    logNormalStDev = models.IntegerField(null=True)
-    # For normal distribution:
-    normalMean = models.IntegerField(null=True)
-    normalStDev = models.IntegerField(null=True)
-    # For uniform distribution:
-    uniformUpper = models.IntegerField(null=True)
-    uniformLower = models.IntegerField(null=True)
 
     def __unicode__(self):
         return self.cladeName
@@ -317,13 +335,11 @@ class Clade(AbstractTimestamped):
         return [cl.language_id for cl in self.languageclade_set]
 
     def timestampedFields(self):
-        return set(['cladeName', 'shortName', 'hexColor', 'export',
-                    'exportDate', 'taxonsetName', 'atMost', 'atLeast',
-                    'distribution', 'logNormalOffset', 'logNormalMean',
-                    'logNormalStDev', 'normalMean', 'normalStDev',
-                    'uniformUpper', 'uniformLower', 'cladeLevel0',
-                    'cladeLevel1', 'cladeLevel2', 'cladeLevel3',
-                    'level0Name', 'level1Name', 'level2Name', 'level3Name'])
+        fs = set(['cladeName', 'shortName', 'hexColor', 'export',
+                  'exportDate', 'taxonsetName', 'atMost', 'atLeast',
+                  'cladeLevel0', 'cladeLevel1', 'cladeLevel2', 'cladeLevel3',
+                  'level0Name', 'level1Name', 'level2Name', 'level3Name'])
+        return fs | AbstractDistribution.timestampedFields(self)
 
     def deltaReport(self, **kwargs):
         return 'Could not update Clade: ' \
@@ -401,7 +417,7 @@ def getCladeFromLanguageIds(languageIds):
 
 
 @reversion.register
-class Language(AbstractTimestamped):
+class Language(AbstractTimestamped, AbstractDistribution):
     iso_code = models.CharField(max_length=3, blank=True)
     ascii_name = models.CharField(
         max_length=128, unique=True, validators=[suitable_for_url])
@@ -419,8 +435,6 @@ class Language(AbstractTimestamped):
     level1 = models.IntegerField(default=0, null=True)
     level2 = models.IntegerField(default=0, null=True)
     level3 = models.IntegerField(default=0, null=True)
-    mean_timedepth_BP_years = models.IntegerField(null=True)
-    std_deviation_timedepth_BP_years = models.IntegerField(null=True)
     foss_stat = models.BooleanField(default=0)
     low_stat = models.BooleanField(default=0)
     representative = models.BooleanField(default=0)
@@ -441,6 +455,8 @@ class Language(AbstractTimestamped):
     originalAsciiName = models.CharField(
         max_length=128, validators=[suitable_for_url])
     historical = models.BooleanField(default=0)
+    # Added for #300:
+    notInExport = models.BooleanField(default=0)
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
@@ -601,15 +617,14 @@ class Language(AbstractTimestamped):
                          str(self.level3)])
 
     def timestampedFields(self):
-        return set(['iso_code', 'ascii_name', 'utf8_name', 'glottocode',
-                    'variety', 'foss_stat', 'low_stat', 'soundcompcode',
-                    'level0', 'level1', 'level2', 'level3', 'representative',
-                    'mean_timedepth_BP_years',
-                    'std_deviation_timedepth_BP_years',
-                    'rfcWebPath1', 'rfcWebPath2', 'author', 'reviewer',
-                    'earliestTimeDepthBound', 'latestTimeDepthBound',
-                    'progress', 'sortRankInClade', 'entryTimeframe',
-                    'historical'])
+        fs = set(['iso_code', 'ascii_name', 'utf8_name', 'glottocode',
+                  'variety', 'foss_stat', 'low_stat', 'soundcompcode',
+                  'level0', 'level1', 'level2', 'level3', 'representative',
+                  'rfcWebPath1', 'rfcWebPath2', 'author', 'reviewer',
+                  'earliestTimeDepthBound', 'latestTimeDepthBound',
+                  'progress', 'sortRankInClade', 'entryTimeframe',
+                  'historical', 'notInExport'])
+        return fs | AbstractDistribution.timestampedFields(self)
 
     def deltaReport(self, **kwargs):
         return 'Could not update language: ' \
@@ -1180,6 +1195,11 @@ class Lexeme(AbstractTimestamped):
                                self.cognate_class.values_list(
                                    'id', flat=True))})
 
+    @property
+    def combinedCognateClassAssignment(self):
+        # Added for #219
+        return ', '.join([c.alias for c in self.allCognateClasses])
+
 
 @reversion.register
 class CognateJudgement(AbstractTimestamped):
@@ -1613,3 +1633,133 @@ class Author(AbstractTimestamped):
                              self.surname.encode('utf-8') + extension)
             if os.path.isfile(p):
                 return p
+
+
+@reversion.register
+class NexusExport(AbstractTimestamped):
+    # Methods for compressed fields:
+    def compressed(field):
+
+        def fget(self):
+            data = getattr(self, field)
+            if data is None:
+                return None
+            return zlib.decompress(data)
+
+        def fset(self, value):
+            setattr(self, field, zlib.compress(value))
+
+        def fdel(self):
+            delattr(self, field)
+        return {'doc': "The compression property for %s." % field,
+                'fget': fget,
+                'fset': fset,
+                'fdel': fdel}
+    # Name of .nex file:
+    exportName = models.CharField(max_length=256, blank=True)
+    # Settings to compute data:
+    exportSettings = models.TextField(blank=True)
+    # Compressed data of nexus file:
+    _exportData = models.BinaryField(null=True)
+    exportData = property(**compressed('_exportData'))
+    # Compressed data of BEAUti nexus file:
+    _exportBEAUti = models.BinaryField(null=True)
+    exportBEAUti = property(**compressed('_exportBEAUti'))
+    # Compressed data of constraints file:
+    _constraintsData = models.BinaryField(null=True)
+    constraintsData = property(**compressed('_constraintsData'))
+
+    @property
+    def pending(self):
+        # True if calculation for export is not finished
+        return self._exportData is None
+
+    def generateResponse(self, constraints=False, beauti=False):
+        '''
+        If constraints == True response shall carry the constraintsData
+        rather than the exportData.
+        If beauti == True response shall carry exportBEAUti
+        rather than exportData.
+        '''
+        assert not self.pending, "NexusExport.generateResponse " \
+                                 "impossible for pending exports."
+        # name for the export file:
+        if constraints:
+            name = self.constraintsName
+        elif beauti:
+            name = self.beautiName
+        else:
+            name = self.exportName
+        # data for the export file:
+        if constraints:
+            data = self.constraintsData
+        elif beauti:
+            data = self.exportBEAUti
+        else:
+            data = self.exportData
+        # The response itself:
+        response = HttpResponse(content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=%s' % \
+            name.replace(" ", "_")
+        response.write(data)
+        return response
+
+    def setSettings(self, form):
+        # form :: ChooseNexusOuputForm
+        settings = {
+            'language_list_name': form.cleaned_data["language_list"].name,
+            'meaning_list_name': form.cleaned_data["meaning_list"].name,
+            'label_cognate_sets': True,
+        }
+        # Copying `simple` fields:
+        for f in ['dialect',
+                  'ascertainment_marker',
+                  'excludeNotSwadesh',
+                  'excludePllDerivation',
+                  'excludeIdeophonic',
+                  'excludeDubious',
+                  'excludeLoanword',
+                  'excludePllLoan',
+                  'includePllLoan',
+                  'excludeMarkedMeanings',
+                  'excludeMarkedLanguages']:
+            settings[f] = form.cleaned_data[f]
+        # Finish:
+        self.exportSettings = json.dumps(settings)
+
+    def getSettings(self):
+        '''
+        settings :: {
+            language_list_name :: LanguageList
+            meaning_list_name :: MeaningList
+            dialect :: "BP" | "NN" | "MB"
+            label_cognate_sets :: Bool
+            ascertainment_marker :: Bool
+            excludeNotSwadesh :: Bool
+            excludePllDerivation :: Bool
+            excludeIdeophonic :: Bool
+            excludeDubious :: Bool
+            excludeLoanword :: Bool
+            excludePllLoan :: Bool
+            includePllLoan :: Bool
+            excludeMarkedMeanings :: Bool
+            excludeMarkedLanguages :: Bool
+        }
+        '''
+        # settings :: {}
+        settings = json.loads(self.exportSettings)
+        settings['language_list_name'] = LanguageList.objects.get(
+            name=settings['language_list_name'])
+        settings['meaning_list_name'] = MeaningList.objects.get(
+            name=settings['meaning_list_name'])
+        return settings
+
+    @property
+    def constraintsName(self):
+        # Replaces the /\.nex$/ in exportName with _Constraints.nex
+        return self.exportName[:-4] + "_Constraints.nex"
+
+    @property
+    def beautiName(self):
+        # Replaces the /\.nex$/ in exportName with _BEAUti.nex
+        return self.exportName[:-4] + "_BEAUti.nex"

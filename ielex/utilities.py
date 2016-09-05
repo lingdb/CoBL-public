@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import logging
 from string import uppercase, lowercase
 from itertools import izip
@@ -7,6 +8,7 @@ try:
     from functools import wraps
 except ImportError:
     from django.utils.functional import wraps
+from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.management.base import NoArgsCommand
@@ -22,7 +24,8 @@ def logExceptions(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            logging.exception('Exception found by logExceptions.')
+            if type(e) != Http404:
+                logging.exception('Exception found by logExceptions.')
             raise e
     return f
 

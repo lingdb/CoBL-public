@@ -33,6 +33,14 @@
         <h3 class="inline">Clades:</h3>
         {% if user.is_authenticated and user.is_staff %}
           <div class="form-group pull-right">
+            <a href="./?plot"
+               class="btn btn-default"
+               target="_blank"
+               data-toggle="tooltip"
+               data-placement="bottom"
+               title="View clade distributions.">
+               <span class="glyphicon glyphicon-stats"></span>
+            </a>
             <div class="inline"
                  data-toggle="tooltip"
                  data-placement="bottom"
@@ -60,7 +68,10 @@
           </div>
         {% endif %}
       </div>
-        <table class="table table-condensed viewTableFilter"
+        <table class="table table-condensed viewTableFilter
+                      {% if user.is_authenticated %}
+                      distributionPlot
+                      {% endif %}"
                {% if user.is_authenticated and user.is_staff %}
                   data-floatheadtop="50"
                {% else %}
@@ -93,52 +104,61 @@
               </th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="Latest plausible date at which divergence had not yet begun">
                 At most?
               </th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="Earliest plausible date divergence could have begun by">
                 At least?
               </th>
               <th>Distribution type</th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="Offset for log normal distribution">
                 [Offset]
-              </th><!-- DATE TOOLTIP -->
+              </th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="Mean for log normal distribution">
                 LogN Mean
-              </th><!-- DATE TOOLTIP -->
+              </th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="StDev for log normal distribution">
                 LogN StDev
-              </th><!-- DATE TOOLTIP -->
+              </th>
               <!-- For normal: -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="Mean for normal distribution">
                 Norm Mean
-              </th><!-- DATE TOOLTIP -->
+              </th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="StDev for normal distribution">
                 Norm StDev
-              </th><!-- DATE TOOLTIP -->
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Lower bound for uniform distribution type">
+                Unif Lower
+              </th>
               <!-- For Uniform: -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
+                  data-container="body"
                   title="Upper bound for uniform distribution type">
                 Unif Upper
-              </th><!-- DATE TOOLTIP -->
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  title="Lower bound for uniform distribution type">
-                Unif Lower
-              </th><!-- DATE TOOLTIP -->
+              </th>
             </tr>
             <tr class="filterBar">
               <td>
@@ -484,23 +504,6 @@
               <td>
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
-                         data-selector=".uniformUpper input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".uniformUpper input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% else %}
-                  <input type="text" class="filterText form-control narrow"
-                         data-selector=".uniformUpper">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".uniformUpper">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% endif %}
-              </td>
-              <td>
-                {% if user.is_authenticated and user.is_staff %}
-                  <input type="text" class="filterInput form-control narrow"
                          data-selector=".uniformLower input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".uniformLower input">
@@ -511,6 +514,23 @@
                          data-selector=".uniformLower">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".uniformLower">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".uniformUpper input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".uniformUpper input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".uniformUpper">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".uniformUpper">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
@@ -626,14 +646,14 @@
                     {% form_field clade.exportDate class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
-                <td class="atMost">
+                <td class="atMost datetooltip">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field clade.atMost class="form-control numberField" pattern="^[0-9]{0,4}$" %}
                   {% elif clade.atMost.data %}
                     {{ clade.atMost.data }}
                   {% endif %}
                 </td>
-                <td class="atLeast">
+                <td class="atLeast datetooltip">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field clade.atLeast class="form-control numberField" pattern="^[0-9]{0,4}$" %}
                   {% elif clade.atLeast.data %}
@@ -647,7 +667,7 @@
                     {{ clade.distribution.data }}
                   {% endif %}
                 </td>
-                <td class="logNormalOffset reflectDistribution" data-allowed="O">
+                <td class="logNormalOffset reflectDistribution datetooltip" data-allowed="O">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field clade.logNormalOffset class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif clade.logNormalOffset.data %}
@@ -663,12 +683,12 @@
                 </td>
                 <td class="logNormalStDev reflectDistribution" data-allowed="OL">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.logNormalStDev class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                    {% form_field clade.logNormalStDev class="form-control numberField" pattern="^[0-9\-\.]*$" disabled="disabled" %}
                   {% elif clade.logNormalStDev.data %}
                     {{ clade.logNormalStDev.data }}
                   {% endif %}
                 </td>
-                <td class="normalMean reflectDistribution" data-allowed="N">
+                <td class="normalMean reflectDistribution datetooltip" data-allowed="N">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field clade.normalMean class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif clade.normalMean.data %}
@@ -682,18 +702,18 @@
                     {{ clade.normalStDev.data }}
                   {% endif %}
                 </td>
-                <td class="uniformUpper reflectDistribution" data-allowed="U">
-                  {% if user.is_authenticated and user.is_staff %}
-                    {% form_field clade.uniformUpper class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
-                  {% elif clade.uniformUpper.data %}
-                    {{ clade.uniformUpper.data }}
-                  {% endif %}
-                </td>
-                <td class="uniformLower reflectDistribution" data-allowed="U">
+                <td class="uniformLower reflectDistribution datetooltip" data-allowed="U">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field clade.uniformLower class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
                   {% elif clade.uniformLower.data %}
                     {{ clade.uniformLower.data }}
+                  {% endif %}
+                </td>
+                <td class="uniformUpper reflectDistribution datetooltip" data-allowed="U">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field clade.uniformUpper class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif clade.uniformUpper.data %}
+                    {{ clade.uniformUpper.data }}
                   {% endif %}
                 </td>
               </tr>
@@ -703,6 +723,7 @@
       {% if user.is_authenticated and user.is_staff %}
         </form>
       {% endif %}
+    </div>
   </div>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
