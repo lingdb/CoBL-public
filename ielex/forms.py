@@ -1051,7 +1051,7 @@ class EditCognateClassCitationForm(forms.ModelForm):
 
     class Meta:
         model = CognateClassCitation
-        fields = ["source", "pages", "reliability", "comment"]
+        fields = ["source", "pages", "comment"]
 
 
 class AddCitationForm(forms.Form):
