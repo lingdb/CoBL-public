@@ -836,8 +836,6 @@ def view_language_wordlist(request, language, wordlist):
 
     lexemes_editabletable_form = LexemeTableLanguageWordlistForm()
     for lex in lexemes:
-        lex.rfcWebPath1 = language.rfcWebPath1
-        lex.rfcWebPath2 = language.rfcWebPath2
         lexemes_editabletable_form.lexemes.append_entry(lex)
         ccs = lex.cognate_class.all()
         for cc in ccs:
