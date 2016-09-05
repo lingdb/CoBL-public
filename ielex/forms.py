@@ -969,13 +969,6 @@ class CloneLanguageForm(WTForm):
     emptyLexemes = BooleanField('Should lexemes be emptied?')
 
 
-class LexemeTableFilterForm(forms.ModelForm):
-
-    class Meta:
-        model = Lexeme
-        fields = ['meaning']  # , 'cognate_class']
-
-
 class MeaningTableFilterForm(forms.ModelForm):
 
     class Meta:

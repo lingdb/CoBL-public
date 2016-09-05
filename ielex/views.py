@@ -47,7 +47,6 @@ from ielex.forms import AddCitationForm, \
                         EditSourceForm, \
                         LanguageListRowForm, \
                         LexemeTableEditCognateClassesForm, \
-                        LexemeTableFilterForm, \
                         LexemeTableLanguageWordlistForm, \
                         LexemeTableViewMeaningsForm, \
                         MeaningListTableForm, \
@@ -831,16 +830,6 @@ def view_language_wordlist(request, language, wordlist):
         "cognate_class",
         "lexemecitation_set",
         "language")
-
-    # TODO: move this out of views
-    # filter by 'language' or 'meaning'
-    filt_form = LexemeTableFilterForm(request.GET)
-    if filt_form.is_valid():
-        if request.GET.get('meaning'):
-            lexemes = lexemes.filter(meaning=int(request.GET.get('meaning')))
-        if request.GET.get('cognate_class'):
-            lexemes = lexemes.filter(
-                cognate_class=request.GET.get('cognate_class'))
 
     # Used for #219:
     cIdCognateClassMap = {}  # :: CognateClass.id -> CognateClass
