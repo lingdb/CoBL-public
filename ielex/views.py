@@ -824,13 +824,12 @@ def view_language_wordlist(request, language, wordlist):
         language=language,
         meaning__in=wordlist.meanings.all()
         ).select_related(
-        "meaning").order_by(
+        "meaning", "language").order_by(
         "meaning__gloss").prefetch_related(
         "cognatejudgement_set",
         "cognatejudgement_set__cognatejudgementcitation_set",
         "cognate_class",
-        "lexemecitation_set",
-        "language")
+        "lexemecitation_set")
 
     # Used for #219:
     cIdCognateClassMap = {}  # :: CognateClass.id -> CognateClass
@@ -2431,19 +2430,37 @@ def view_two_languages_wordlist(request,
         wordlist = MeaningList.objects.get(name=wordlist)
     except MeaningList.DoesNotExist:
         raise Http404("MeaningList '%s' does not exist" % wordlist)
-    # collect data:
+
+    if request.method == 'POST':
+        # Updating lexeme table data:
+        if 'lex_form' in request.POST:
+            try:
+                form = LexemeTableLanguageWordlistForm(request.POST)
+                form.validate()
+                form.handle(request)
+            except Exception:
+                logging.exception('Problem updating lexemes '
+                                  'in view_two_languages_wordlist.')
+                messages.error(request, 'Sorry, the server had problems '
+                               'updating at least one lexeme.')
+        return HttpResponseRedirect(
+            reverse("view-two-languages",
+                    args=[lang1.ascii_name,
+                          lang2.ascii_name,
+                          wordlist.name]))
 
     def getLexemes(lang):
+        # Helper function to fetch lexemes
         return Lexeme.objects.filter(
             language=lang,
             meaning__meaninglist=wordlist
-        ).select_related("meaning").prefetch_related(
+        ).select_related("meaning", "language").prefetch_related(
             "cognatejudgement_set",
             "cognatejudgement_set__cognatejudgementcitation_set",
             "cognate_class",
-            "lexemecitation_set",
-            "language").order_by("meaning__gloss")
+            "lexemecitation_set").order_by("meaning__gloss")
 
+    # collect data:
     mIdOrigLexDict = defaultdict(deque)  # Meaning.id -> [Lexeme]
     for l in getLexemes(lang2):
         mIdOrigLexDict[l.meaning.id].append(l)
@@ -2455,9 +2472,6 @@ def view_two_languages_wordlist(request,
                 l.original = mIdOrigLexDict[l.meaning.id].popleft()
             except IndexError:
                 pass
-
-    # for l1, l2 in izip(lexemes, getLexemes(lang2)):
-    #     l1.original = l2
 
     lexemeTable = LexemeTableLanguageWordlistForm(lexemes=lexemes)
 
