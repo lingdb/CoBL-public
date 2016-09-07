@@ -5,6 +5,7 @@ import json
 import re
 import requests
 import time
+from collections import defaultdict, deque
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -2443,10 +2444,20 @@ def view_two_languages_wordlist(request,
             "lexemecitation_set",
             "language").order_by("meaning__gloss")
 
-    lexemes = getLexemes(lang1)
+    mIdOrigLexDict = defaultdict(deque)  # Meaning.id -> [Lexeme]
+    for l in getLexemes(lang2):
+        mIdOrigLexDict[l.meaning.id].append(l)
 
-    for l1, l2 in izip(lexemes, getLexemes(lang2)):
-        l1.original = l2
+    lexemes = getLexemes(lang1)
+    for l in lexemes:
+        if l.meaning.id in mIdOrigLexDict:
+            try:
+                l.original = mIdOrigLexDict[l.meaning.id].popleft()
+            except IndexError:
+                pass
+
+    # for l1, l2 in izip(lexemes, getLexemes(lang2)):
+    #     l1.original = l2
 
     lexemeTable = LexemeTableLanguageWordlistForm(lexemes=lexemes)
 
