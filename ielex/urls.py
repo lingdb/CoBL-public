@@ -312,9 +312,11 @@ urlpatterns = patterns(
 
     # Added for #256
     url(r'^twoLanguages/$', view_two_languages_wordlist),
-    url(r'^twoLanguages/(.+)/$', view_two_languages_wordlist),
-    url(r'^twoLanguages/(.+)/(.+)/$', view_two_languages_wordlist),
-    url(r'^twoLanguages/(.+)/(.+)/(.+)/$', view_two_languages_wordlist),
+    url(r'^twoLanguages/([^\/]+)/$', view_two_languages_wordlist),
+    url(r'^twoLanguages/([^\/]+)/([^\/]+)/$', view_two_languages_wordlist),
+    url(r'^twoLanguages/([^\/]+)/([^\/]+)/([^\/]+)/$',
+        view_two_languages_wordlist,
+        name="view-two-languages"),
 
     url(r'^revert/(?P<revision_id>\d+)/$', revert_version, name="revert-item"),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),

@@ -2434,7 +2434,7 @@ def view_two_languages_wordlist(request,
 
     def getLexemes(lang):
         return Lexeme.objects.filter(
-            language__in=lang,
+            language=lang,
             meaning__meaninglist=wordlist
         ).select_related("meaning").prefetch_related(
             "cognatejudgement_set",
@@ -2443,20 +2443,24 @@ def view_two_languages_wordlist(request,
             "lexemecitation_set",
             "language").order_by("meaning__gloss")
 
-    ls1 = getLexemes(lang1)
-    ls2 = getLexemes(lang2)
+    lexemes = getLexemes(lang1)
 
-    for l1, l2 in izip(ls1, ls2):
+    for l1, l2 in izip(lexemes, getLexemes(lang2)):
         l1.original = l2
 
-    lexemeTable = LexemeTableLanguageWordlistForm(lexemes=ls1)
+    lexemeTable = LexemeTableLanguageWordlistForm(lexemes=lexemes)
 
     otherMeaningLists = MeaningList.objects.exclude(id=wordlist.id).all()
 
     languageList = LanguageList.objects.prefetch_related('languages').get(
         name=getDefaultLanguagelist(request))
-    typeahead = json.dumps({l.utf8_name: reverse(
-        "view-language-wordlist", args=[l.ascii_name, wordlist.name])
+    typeahead1 = json.dumps({l.utf8_name: reverse(
+        "view-two-languages",
+        args=[l.ascii_name, lang2.ascii_name, wordlist.name])
+        for l in languageList.languages.all()})
+    typeahead2 = json.dumps({l.utf8_name: reverse(
+        "view-two-languages",
+        args=[lang1.ascii_name, l.ascii_name, wordlist.name])
         for l in languageList.languages.all()})
 
     prev1, next1 = \
@@ -2465,7 +2469,7 @@ def view_two_languages_wordlist(request,
     prev2, next2 = \
         get_prev_and_next_languages(request, lang2,
                                     language_list=languageList)
-    return render_template(request, "language_wordlist.html",
+    return render_template(request, "twoLanguages.html",
                            {"lang1": lang1,
                             "lang2": lang2,
                             "prev1": prev1, "next1": next1,
@@ -2473,4 +2477,5 @@ def view_two_languages_wordlist(request,
                             "wordlist": wordlist,
                             "otherMeaningLists": otherMeaningLists,
                             "lex_ed_form": lexemeTable,
-                            "typeahead": typeahead})
+                            "typeahead1": typeahead1,
+                            "typeahead2": typeahead2})

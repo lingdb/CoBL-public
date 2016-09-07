@@ -1,0 +1,42 @@
+<center>
+  <a href="{% url 'view-two-languages' prev1.ascii_name lang2.ascii_name wordlist %}"
+     class="prevNextLink pull-left">
+    <strong>«&nbsp;{{ prev1.utf8_name }}</strong>
+  </a>
+  <h1 class="inline"
+      {% if lang1.description %}
+      data-toggle="tooltip"
+      data-placement="bottom"
+      title="{{ lang1.description }}"
+      {% endif %}>
+    <input class="typeaheadText"
+           value="{{ lang1.utf8_name }}"
+           type="text"
+           data-typeahead="{{ typeahead1 | escapejs }}">
+  </h1>
+  <a href="{% url 'view-two-languages' next1.ascii_name lang2.ascii_name wordlist %}"
+     class="prevNextLink pull-right">
+    <strong>{{ next1.utf8_name }}&nbsp;»</strong>
+  </a>
+  <br>
+  <a href="{% url 'view-two-languages' lang1.ascii_name prev2.ascii_name wordlist %}"
+     class="prevNextLink pull-left">
+    <strong>«&nbsp;{{ prev2.utf8_name }}</strong>
+  </a>
+  <h1 class="inline"
+      {% if lang2.description %}
+      data-toggle="tooltip"
+      data-placement="bottom"
+      title="{{ lang2.description }}"
+      {% endif %}>
+    <input class="typeaheadText"
+           value="{{ lang2.utf8_name }}"
+           type="text"
+           data-typeahead="{{ typeahead2 | escapejs }}">
+  </h1>
+  <a href="{% url 'view-two-languages' lang1.ascii_name next2.ascii_name wordlist %}"
+     class="prevNextLink pull-right">
+    <strong>{{ next2.utf8_name }}&nbsp;»</strong>
+  </a>
+</center>
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
