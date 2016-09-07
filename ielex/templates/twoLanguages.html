@@ -31,18 +31,7 @@
       <div class="fixedContainer">
         {% if user.is_authenticated %}
           <div class="form-group pull-right">
-            <div class="inline"
-                 data-toggle="tooltip"
-                 data-placement="bottom"
-                 title="Handle lexemes for this table.">
-                 <button type="button"
-                         data-toggle="modal"
-                         data-target="#lexemeHandlingModal"
-                         class="btn btn-default">
-                   <span class="glyphicon glyphicon-list-alt"></span>
-                 </button>
-            </div>
-            <span class="badge important">{{ lexemes|length }}</span>
+            <span class="badge important">{{ lex_ed_form.lexemes|length }}</span>
             Dup. mgs:
             <button type="button"
                     class="filterDistinct btn btn-default"
@@ -72,7 +61,6 @@
             <tr>
               {# id_title.html #}
               <th class="hide"></th>
-              {# FIXME warning label for Dbl check ones #}
               {# warnings_title.html #}
               <th></th>
               {# meaning_title.html #}
@@ -444,6 +432,180 @@
           </thead>
           <tbody>
             {% for lexeme in lex_ed_form.lexemes %}
+              <tr class="original_row">
+                {# id_original.html #}
+                <td class="hide"></td>
+                {# warnings_original.html #}
+                <td></td>
+                {# meaning_original.html #}
+                <td></td>
+                <td class="lexemeMeaning">
+                  <a href="{# url 'meaning-report' lexeme.object_data.original.meaning.id #}"{# FIXME #}
+                     style="font-size: 15px; color: #FF0000;">
+                    {{ lexeme.object_data.original.meaning.gloss }}
+                  </a>
+                  {% if lexeme.object_data.original.language.rfcWebPath1 and lexeme.object_data.original.rfcWebLookup1 %}
+                    <a href="{{ lexeme.object_data.original.language.rfcWebPath1 }}{{ lexeme.object_data.original.rfcWebLookup1 }}"
+                       target="_blank"
+                       class="pull-right">
+                      <span class="glyphicon glyphicon-link"></span>
+                    </a>
+                  {% endif %}
+                  {% if lexeme.object_data.original.language.rfcWebPath2 and lexeme.object_data.original.rfcWebLookup2 %}
+                    <a href="{{ lexeme.object_data.original.language.rfcWebPath2 }}{{ lexeme.object_data.original.rfcWebLookup2 }}"
+                       target="_blank"
+                       class="pull-right">
+                      <span class="glyphicon glyphicon-info-sign"></span>
+                    </a>
+                  {% endif %}
+                </td>
+                {# sourceform_original.html #}
+                <td class="lexemeSourceForm">
+                  {{ lexeme.object_data.original.source_form }}
+                </td>
+                {# viewcopy_original.html #}
+                <td></td>
+                <td></td>
+                <td></td>
+                {# transliteration_original.html #}
+                <td class="lexemeTransliteration">
+                  {{ lexeme.object_data.original.transliteration.data }}
+                </td>
+                {# notswadesh_original.html #}
+                <td class="lexemeNotSwadeshTerm">
+                  <input type="checkbox"
+                         {% if lexeme.object_data.original.not_swadesh_term %}
+                           checked="checked"
+                         {% endif %}
+                         class="form-control"
+                         disabled="disabled">
+                </td>
+                {# isexcluded_lexeme_original.html #}
+                <td class="lexemeIsExcludedLexeme">
+                  <input type="checkbox"
+                    {% if lexeme.object_data.original.is_excluded_lexeme %}
+                      checked="checked"
+                    {% endif %}
+                    class="form-control"
+                    disabled="disabled">
+                </td>
+                {# ncog_original.html #}
+                <td class="lexemeNumCogCoded"
+                    style="width: 50px; border-left: 2px solid #dddddd;">
+                  <center>
+                    <span class="badge">
+                      {{ lexeme.object_data.original.number_cognate_coded }}
+                    </span>
+                  </center>
+                </td>
+                {# cognateclassids_original.html #}
+                <td class="cognateClassId" style="text-align: center; width: 45px;">
+                  {% for c in lexeme.object_data.original.allCognateClasses %}
+                    <a href="/cognate/{{ c.id }}/"
+                       target="_blank"
+                       style="color: #8B4510;">
+                      {{ c.id }}
+                    </a>
+                  {% endfor %}
+                </td>
+                {# cognateclassview_original.html #}
+                <td style="padding-left: 4px; padding-right: 4px;">
+                  <a href="/meaning/{{ lexeme.object_data.original.meaning.gloss }}/cognateclasslist/">
+                    <img src="{% static '1c.png' %}">
+                  </a>
+                </td>
+                {# cognateclasses_original.html #}
+                <td style="text-align: center; color: #8B4510;">
+                  <div class="cognateClasses">
+                  {% for c in lexeme.object_data.original.allCognateClasses %}
+                    <a href="/cognate/{{ c.id }}/"
+                       target="_blank"
+                       style="color: #8B4510;">
+                      {{ c.alias }}
+                    </a>
+                  {% endfor %}
+                  </div>
+                </td>
+                {# rootform_original.html #}
+                <td class="lexemeRootForm" style="color: #8B4510;">
+                  {% if lexeme.object_data.original.allCognateClasses|length == 1 %}
+                    {{ lexeme.object_data.original.allCognateClasses.0.rootFormOrPlaceholder }}
+                  {% endif %}
+                </td>
+                {# rootlanguage_original.html #}
+                <td class="lexemeRootLanguage nowrap" style="color: #8B4510; width: 155px;">
+                  {% if lexeme.object_data.original.allCognateClasses|length == 1 %}
+                    {{ lexeme.object_data.original.allCognateClasses.0.rootLanguageOrPlaceholder }}
+                  {% endif %}
+                </td>
+                {# loanevent_original.html #}
+                <td class="lexemeLoanEvent">
+                  {% if lexeme.object_data.original.show_loan_event %}
+                    <input type="checkbox"
+                      {% if lexeme.object_data.original.loan_event %}
+                        checked="checked"
+                      {% endif %}
+                      class="form-control"
+                      disabled="disabled">
+                  {% endif %}
+                </td>
+                {# isloan_cognate_original.html #}
+                <td class="lexemeIsLoanCognate">
+                  <input type="checkbox"
+                    {% if lexeme.object_data.original.is_loan_cognate %}
+                      checked="checked"
+                    {% endif %}
+                    class="form-control"
+                    disabled="disabled">
+                </td>
+                {# isexcluded_cognate_original.html #}
+                <td class="lexemeIsExcludedCognate"
+                    style="border-right: 2px solid #dddddd;">
+                  <input type="checkbox"
+                    {% if lexeme.object_data.original.is_excluded_cognate %}
+                      checked="checked"
+                    {% endif %}
+                    class="form-control"
+                    disabled="disabled">
+                </td>
+                {# phonemic_original.html #}
+                <td class="lexemePhoneMic">
+                  {{ lexeme.object_data.original.phoneMic }}
+                </td>
+                {# phonecopy_original.html #}
+                <td></td>
+                <td></td>
+                {# phonetic_original.html #}
+                <td class="lexemePhonForm">
+                  {{ lexeme.object_data.original.phon_form }}
+                </td>
+                {# gloss_original.html #}
+                <td class="lexemeGloss">
+                  {{ lexeme.object_data.original.gloss }}
+                </td>
+                {# notes_original.html #}
+                <td class="lexemeNotes">
+                  {{ lexeme.object_data.original.notes }}
+                </td>
+                {# weblookup_original.html #}
+                <td></td>
+                <td class="lexemeRfcWebLookup1">
+                  {{ lexeme.object_data.original.rfcWebLookup1 }}
+                </td>
+                <td class="hide"></td>
+                <td class="lexemeRfcWebLookup2 hide">
+                  {{ lexeme.object_data.original.rfcWebLookup2 }}
+                </td>
+                {# dubious_original.html #}
+                <td class="lexemeDubious">
+                  <input type="checkbox"
+                         {% if lexeme.object_data.original.dubious %}
+                           checked="checked"
+                         {% endif %}
+                         class="form-control"
+                         disabled="disabled">
+                </td>
+              </tr>
               <tr class="content_row"
                   data-meaningid="{{ lexeme.data.meaning_id }}">
                 {# id_data.html #}
