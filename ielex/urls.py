@@ -43,7 +43,8 @@ from ielex.views import add_language_list, \
                         view_sndComp, \
                         view_wordlist, \
                         view_wordlists, \
-                        view_nexus_export
+                        view_nexus_export, \
+                        view_two_languages_wordlist
 from ielex import settings
 from ielex.lexicon.views import CognateClassCitationCreateView, \
                                 cognate_class_citation_delete, \
@@ -309,8 +310,11 @@ urlpatterns = patterns(
                            context_object_name="citation"),
         name="cognate-judgement-citation-detail"),
 
-    # url(r'^set/(?P<key>%(identifier)s)/(?P<value>%(identifier)s)/$' % R,
-    #         set_key_value),
+    # Added for #256
+    url(r'^twoLanguages/$', view_two_languages_wordlist),
+    url(r'^twoLanguages/(.+)/$', view_two_languages_wordlist),
+    url(r'^twoLanguages/(.+)/(.+)/$', view_two_languages_wordlist),
+    url(r'^twoLanguages/(.+)/(.+)/(.+)/$', view_two_languages_wordlist),
 
     url(r'^revert/(?P<revision_id>\d+)/$', revert_version, name="revert-item"),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
@@ -357,7 +361,6 @@ urlpatterns += patterns(
 
 urlpatterns += staticfiles_urlpatterns()
 
-
 if settings.DEBUG:  # additional urls for testing purposes
     urlpatterns += patterns(
         '',
@@ -365,14 +368,5 @@ if settings.DEBUG:  # additional urls for testing purposes
         url(r'^static/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.STATIC_ROOT}),
     )
-
-# if settings.DEBUG: # additional urls for testing purposes
-#    urlpatterns += patterns('',
-#    # this is needed for running the development server
-#    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
-#     {'document_root': settings.MEDIA_ROOT}),
-#    )
-
-#############################################
 
 # vim:nowrap

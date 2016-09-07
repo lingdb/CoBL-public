@@ -2424,9 +2424,53 @@ def view_two_languages_wordlist(request,
         except Language.DoesNotExist:
             raise Http404("Language '%s' does not exist" % lang1)
     # Fetching wordlist to operate on:
+    if wordlist is None:
+        wordlist = getDefaultWordlist(request)
     try:
         wordlist = MeaningList.objects.get(name=wordlist)
     except MeaningList.DoesNotExist:
         raise Http404("MeaningList '%s' does not exist" % wordlist)
-    # FIXME IMPLEMENT
-    pass
+    # collect data:
+
+    def getLexemes(lang):
+        return Lexeme.objects.filter(
+            language__in=lang,
+            meaning__meaninglist=wordlist
+        ).select_related("meaning").prefetch_related(
+            "cognatejudgement_set",
+            "cognatejudgement_set__cognatejudgementcitation_set",
+            "cognate_class",
+            "lexemecitation_set",
+            "language").order_by("meaning__gloss")
+
+    ls1 = getLexemes(lang1)
+    ls2 = getLexemes(lang2)
+
+    for l1, l2 in izip(ls1, ls2):
+        l1.original = l2
+
+    lexemeTable = LexemeTableLanguageWordlistForm(lexemes=ls1)
+
+    otherMeaningLists = MeaningList.objects.exclude(id=wordlist.id).all()
+
+    languageList = LanguageList.objects.prefetch_related('languages').get(
+        name=getDefaultLanguagelist(request))
+    typeahead = json.dumps({l.utf8_name: reverse(
+        "view-language-wordlist", args=[l.ascii_name, wordlist.name])
+        for l in languageList.languages.all()})
+
+    prev1, next1 = \
+        get_prev_and_next_languages(request, lang1,
+                                    language_list=languageList)
+    prev2, next2 = \
+        get_prev_and_next_languages(request, lang2,
+                                    language_list=languageList)
+    return render_template(request, "language_wordlist.html",
+                           {"lang1": lang1,
+                            "lang2": lang2,
+                            "prev1": prev1, "next1": next1,
+                            "prev2": prev2, "next2": next2,
+                            "wordlist": wordlist,
+                            "otherMeaningLists": otherMeaningLists,
+                            "lex_ed_form": lexemeTable,
+                            "typeahead": typeahead})
