@@ -478,7 +478,7 @@
                   <td></td>
                   {# transliteration_original.html #}
                   <td class="lexemeTransliteration">
-                    {{ lexeme.object_data.original.transliteration.data }}
+                    {{ lexeme.object_data.original.transliteration }}
                   </td>
                   {# notswadesh_original.html #}
                   <td class="lexemeNotSwadeshTerm">
@@ -617,7 +617,7 @@
                 </tr>
               {% endif %}
               <tr class="content_row"
-                  data-meaningid="{{ lexeme.data.meaning_id }}">
+                  data-meaningid="{{ lexeme.object_data.meaning_id }}">
                 {# id_data.html #}
                 <td class="hide">
                   {{ lexeme.id }}
@@ -638,7 +638,7 @@
                 </td>
                 {# meaning_data.html #}
                 <td>
-                  <a href="https://github.com/lingdb/IELex2-CognaC/wiki/{{ lexeme.data.meaning }}"
+                  <a href="https://github.com/lingdb/IELex2-CognaC/wiki/{{ lexeme.object_data.meaning.gloss }}"
                      title="View wiki page."
                      target="_blank"
                      style="color: #006400;">
@@ -646,19 +646,19 @@
                   </a>
                 </td>
                 <td class="lexemeMeaning">
-                  <a href="{% url 'meaning-report' lexeme.meaning_id.data %}"
+                  <a href="{% url 'meaning-report' lexeme.object_data.meaning_id %}"
                      style="font-size: 15px; color: #006400;">
-                    {{ lexeme.data.meaning }}
+                    {{ lexeme.object_data.meaning }}
                   </a>
-                  {% if lexeme.object_data.language.rfcWebPath1 and lexeme.data.rfcWebLookup1 %}
-                    <a href="{{ lexeme.object_data.language.rfcWebPath1 }}{{ lexeme.data.rfcWebLookup1 }}"
+                  {% if lexeme.object_data.language.rfcWebPath1 and lexeme.object_data.rfcWebLookup1 %}
+                    <a href="{{ lexeme.object_data.language.rfcWebPath1 }}{{ lexeme.object_data.rfcWebLookup1 }}"
                        target="_blank"
                        class="pull-right">
                       <span class="glyphicon glyphicon-link"></span>
                     </a>
                   {% endif %}
-                  {% if lexeme.object_data.language.rfcWebPath2 and lexeme.data.rfcWebLookup2 %}
-                    <a href="{{ lexeme.object_data.language.rfcWebPath2 }}{{ lexeme.data.rfcWebLookup2 }}"
+                  {% if lexeme.object_data.language.rfcWebPath2 and lexeme.object_data.rfcWebLookup2 %}
+                    <a href="{{ lexeme.object_data.language.rfcWebPath2 }}{{ lexeme.object_data.rfcWebLookup2 }}"
                        target="_blank"
                        class="pull-right">
                       <span class="glyphicon glyphicon-info-sign"></span>
@@ -669,13 +669,13 @@
                 <td class="lexemeSourceForm">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.source_form id="source_form" class="form-control" style="font-size: 15px;" %}
-                  {% elif lexeme.source_form.data %}
-                    {{ lexeme.source_form.data }}
+                  {% elif lexeme.object_data.source_form %}
+                    {{ lexeme.object_data.source_form }}
                   {% endif %}
                 </td>
                 {# viewcopy_data.html #}
                 <td>
-                  <a href="{% url 'view-lexeme' lexeme.id.data %}" title="View detailed information on lexeme">
+                  <a href="{% url 'view-lexeme' lexeme.object_data.id %}" title="View detailed information on lexeme">
                     <span class="glyphicon glyphicon-search"></span>
                   </a>
                 </td>
@@ -701,8 +701,8 @@
                 <td class="lexemeTransliteration">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.transliteration id="transliteration" class="form-control" %}
-                  {% elif lexeme.transliteration.data %}
-                    {{ lexeme.transliteration.data }}
+                  {% elif lexeme.object_data.transliteration %}
+                    {{ lexeme.object_data.transliteration }}
                   {% endif %}
                 </td>
                 {# notswadesh_data.html #}
@@ -803,8 +803,8 @@
                 <td class="lexemePhoneMic">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.phoneMic id="phoneMic" size="8" class="form-control" %}
-                  {% elif lexeme.phoneMic.data %}
-                    {{ lexeme.phoneMic.data }}
+                  {% elif lexeme.object_data.phoneMic %}
+                    {{ lexeme.object_data.phoneMic }}
                   {% endif %}
                 </td>
                 {# phonecopy_data.html #}
@@ -832,24 +832,24 @@
                 <td class="lexemePhonForm">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.phon_form id="phoneTic" size="8" class="form-control" %}
-                  {% elif lexeme.phon_form.data %}
-                    {{ lexeme.phon_form.data }}
+                  {% elif lexeme.object_data.phon_form %}
+                    {{ lexeme.object_data.phon_form }}
                   {% endif %}
                 </td>
                 {# gloss_data.html #}
                 <td class="lexemeGloss">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.gloss size="8" class="form-control" %}
-                  {% elif lexeme.gloss.data %}
-                    {{ lexeme.gloss.data }}
+                  {% elif lexeme.object_data.gloss %}
+                    {{ lexeme.object_data.gloss }}
                   {% endif %}
                 </td>
                 {# notes_data.html #}
                 <td class="lexemeNotes">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.notes class="form-control" %}
-                  {% elif lexeme.notes.data %}
-                    {{ lexeme.notes.data }}
+                  {% elif lexeme.object_data.notes %}
+                    {{ lexeme.object_data.notes }}
                   {% endif %}
                 </td>
                 {# weblookup_data.html #}
@@ -866,8 +866,8 @@
                 <td class="lexemeRfcWebLookup1">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.rfcWebLookup1 class="form-control" %}
-                  {% elif lexeme.rfcWebLookup1.data %}
-                    {{ lexeme.rfcWebLookup1.data }}
+                  {% elif lexeme.object_data.rfcWebLookup1 %}
+                    {{ lexeme.object_data.rfcWebLookup1 }}
                   {% endif %}
                 </td>
                 <td class="hide">
@@ -883,8 +883,8 @@
                 <td class="lexemeRfcWebLookup2 hide">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.rfcWebLookup2 class="form-control" %}
-                  {% elif lexeme.rfcWebLookup2.data %}
-                    {{ lexeme.rfcWebLookup2.data }}
+                  {% elif lexeme.object_data.rfcWebLookup2 %}
+                    {{ lexeme.object_data.rfcWebLookup2 }}
                   {% endif %}
                 </td>
                 {# dubious_data.html #}
