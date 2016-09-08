@@ -441,8 +441,8 @@
                   {# meaning_original.html #}
                   <td></td>
                   <td class="lexemeMeaning">
-                    <a href="{# url 'meaning-report' lexeme.object_data.original.meaning.id #}"{# FIXME #}
-                       style="font-size: 15px; color: #FF0000;">
+                    <a href="/meaning/{{ lexeme.object_data.original.meaning.id }}/"
+                       style="font-size: 15px; color: #006400;">
                       {{ lexeme.object_data.original.meaning.gloss }}
                     </a>
                     {% if lexeme.object_data.original.language.rfcWebPath1 and lexeme.object_data.original.rfcWebLookup1 %}
