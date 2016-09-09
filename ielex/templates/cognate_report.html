@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block top %}
-  <h1>Cognate class {% firstof cognate_class.name cognate_class.id %}</h1>
+  <h1>Cognate class {% firstof cognate_class.name cognate_class.id %} {{ cognate_class.alias }}</h1>
 {% endblock %}
 
 {% block controls %}
