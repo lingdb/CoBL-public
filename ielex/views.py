@@ -1966,45 +1966,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
             form = CognateJudgementSplitTable(request.POST)
             try:
                 form.validate()
-                # Gathering data to operate on:
-                idTMap = {j.data['idField']: j.data['lastTouched']
-                          for j in form.judgements
-                          if j.data['splitOff']}
-                idCjMap = {cj.id: cj for cj in
-                           CognateJudgement.objects.filter(
-                               id__in=idTMap.keys()).all()}
-                # Bumping judgements:
-                bumped = True
-                try:
-                    for id, t in idTMap.iteritems():
-                        idCjMap[id].bump(request, t)
-                except Exception:
-                    logging.exception('Problem splitting cognate judgements '
-                                      'in cognate_report.')
-                    messages.error(request, 'The server refused to split '
-                                   'the cognate judgements, because someone '
-                                   'changed one of them before your request.')
-                    bumped = False
-                # Create new CognateClass on successful bump:
-                if bumped:
-                    cc = CognateClass()
-                    try:
-                        cc.save()
-                        for _, cj in idCjMap.iteritems():
-                            cj.cognate_class = cc
-                            cj.save()
-                        cc.update_alias()
-                        messages.success(
-                            request,
-                            'Created new Cognate Class at '
-                            '[%s](/cognate/%s/) containing the judgements %s.'
-                            % (cc.id, cc.id, idTMap.keys()))
-                    except Exception:
-                        logging.exception('Problem creating a new '
-                                          'CognateClass on split '
-                                          'in cognate_report.')
-                        messages.error(request, 'Sorry the server could not '
-                                       'create a new cognate class.')
+                form.handle(request)
             except Exception:
                 logging.exception('Problem when splitting CognateClasses '
                                   'in cognate_report.')
