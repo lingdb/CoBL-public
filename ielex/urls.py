@@ -247,12 +247,6 @@ urlpatterns = patterns(
 
     # Cognate
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report, name="cognate-set"),
-    url(r'^cognate/(?P<cognate_id>\d+)/edit-name/$',
-        login_required(cognate_report), {"action": "edit-name"},
-        name="edit-cognate-name"),
-    url(r'^cognate/(?P<cognate_id>\d+)/edit-notes/$',
-        login_required(cognate_report), {"action": "edit-notes"},
-        name="edit-cognate-notes"),
     url(r'^cognate/%(COGNATE_NAME)s/$' % R, cognate_report),
     url(r'^meaning/%(MEANING)s/cognate/(?P<code>[A-Z]+[0-9]*)/$' % R,
         cognate_report),

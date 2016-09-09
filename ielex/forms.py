@@ -552,6 +552,38 @@ class MergeCognateClassesForm(WTForm):
                 newC.update_alias()
 
 
+class CognateClassEditForm(AbstractTimestampedForm):
+    id = IntegerField('Cognate Class id', validators=[InputRequired()])
+    name = StringField('Name', validators=[InputRequired()])
+    notes = TextField('Notes', validators=[InputRequired()])
+    root_form = StringField('Root form', validators=[InputRequired()])
+
+    def handle(self, request):
+        try:
+            c = CognateClass.objects.get(id=self.data['id'])
+            if c.isChanged(**self.data):
+                with transaction.atomic():
+                    try:
+                        problem = c.setDelta(**self.data)
+                        if problem is None:
+                            c.save()
+                        else:
+                            messages.error(request, c.deltaReport(**problem))
+                    except Exception:
+                        logging.exception(
+                            'Exception handling CognateClassEditForm.')
+                        messages.error(
+                            request,
+                            'Sorry, the server had problems '
+                            'updating the cognate set.')
+        except CognateClass.DoesNotExist:
+            logging.exception('Cognate class does not exist in database.')
+            messages.error(
+                request,
+                "Sorry, cognate class %s does not exist on the server." %
+                self.data['id'])
+
+
 class CognateJudgementSplitRow(AbstractTimestampedForm):
     idField = IntegerField('Id', validators=[InputRequired()])
     splitOff = BooleanField('Checked implies split off',
@@ -1103,23 +1135,6 @@ class ChooseCognateClassForm(forms.Form):
         widget=forms.Select(attrs={"onchange": "this.form.submit()"}),
         empty_label="---",  # make this into the "new" button?
         label="")
-
-
-class EditCognateClassNameForm(forms.ModelForm):
-    name = forms.CharField(required=False)
-
-    class Meta:
-        model = CognateClass
-        fields = ["name"]
-
-
-class EditCognateClassNotesForm(forms.ModelForm):
-    notes = forms.CharField(
-        widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}), required=False)
-
-    class Meta:
-        model = CognateClass
-        fields = ["notes"]
 
 
 def make_reorder_languagelist_form(objlist):

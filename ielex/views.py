@@ -37,8 +37,6 @@ from ielex.forms import AddCitationForm, \
                         CloneLanguageForm, \
                         CognateJudgementSplitTable, \
                         EditCitationForm, \
-                        EditCognateClassNameForm, \
-                        EditCognateClassNotesForm, \
                         EditLanguageForm, \
                         EditLanguageListForm, \
                         EditLanguageListMembersForm, \
@@ -60,7 +58,8 @@ from ielex.forms import AddCitationForm, \
                         make_reorder_languagelist_form, \
                         make_reorder_meaninglist_form, \
                         AddMissingLexemsForLanguageForm, \
-                        RemoveEmptyLexemsForLanguageForm
+                        RemoveEmptyLexemsForLanguageForm, \
+                        CognateClassEditForm
 from ielex.lexicon.models import Author, \
                                  Clade, \
                                  CognateClass, \
@@ -1935,12 +1934,8 @@ def redirect_lexeme_citation(request, lexeme_id):
 
 @logExceptions
 def cognate_report(request, cognate_id=0, meaning=None, code=None,
-                   cognate_name=None, action=""):
+                   cognate_name=None):
 
-    form_dict = {
-        "edit-name": EditCognateClassNameForm,
-        "edit-notes": EditCognateClassNotesForm
-        }
     if cognate_id:
         cognate_class = CognateClass.objects.get(id=int(cognate_id))
     elif cognate_name:
@@ -1994,21 +1989,18 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                                   'in cognate_report.')
                 messages.error(request, 'Sorry, the server could not delete '
                                'the citation.')
-
-    if action in ["edit-notes", "edit-name"]:
-        if request.method == 'POST':
-            form = form_dict[action](request.POST, instance=cognate_class)
-            if "cancel" in form.data:
-                return HttpResponseRedirect(reverse('cognate-set',
-                                            args=[cognate_class.id]))
-            if form.is_valid():
-                form.save()
-                return HttpResponseRedirect(reverse('cognate-set',
-                                            args=[cognate_class.id]))
-        else:
-            form = form_dict[action](instance=cognate_class)
-    else:
-        form = None
+        elif 'cognateClassEditForm' in request.POST:
+            try:
+                form = CognateClassEditForm(request.POST)
+                form.validate()
+                form.handle(request)
+            except Exception:
+                logging.exception('Problem handling CognateClassEditForm.')
+                messages.error(
+                    request,
+                    'Sorry, the server had trouble understanding the request.')
+        return HttpResponseRedirect(reverse(
+            'cognate-set', args=[cognate_id]))
 
     language_list = LanguageList.objects.get(
         name=getDefaultLanguagelist(request))
@@ -2023,9 +2015,9 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
 
     return render_template(request, "cognate_report.html",
                            {"cognate_class": cognate_class,
-                            "splitTable": splitTable,
-                            "action": action,
-                            "form": form})
+                            "cognateClassForm": CognateClassEditForm(
+                                obj=cognate_class),
+                            "splitTable": splitTable})
 
 # -- /source/ -------------------------------------------------------------
 
