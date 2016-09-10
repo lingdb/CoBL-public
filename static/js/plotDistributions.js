@@ -60,7 +60,8 @@
         },
         point: {
           show: false
-        }
+        },
+        size: {height: 600}
     });
     //Listen to distribution updates:
     msg.listen('distribution', function(distribution){
