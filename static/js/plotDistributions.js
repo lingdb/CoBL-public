@@ -64,9 +64,10 @@
     });
     //Listen to distribution updates:
     msg.listen('distribution', function(distribution){
+      console.log('Calculating distribution:', distribution);
       distribution = calculate(distribution);
       nameDistributionMap[distribution.name] = distribution;
-      if(distribution.data.length > 0){
+      if(distribution.data.length > 0 && !_.some(distribution.data, _.isNaN)){
         console.log('Updating distribution:', distribution.name);
         chart.load({
           columns: [
@@ -74,6 +75,7 @@
           ]
         });
       }else{
+        console.log('Unloading distribution:', distribution.name);
         chart.unload({
           ids: distribution.name
         });
