@@ -319,11 +319,15 @@ def write_nexus(language_list_name,       # str
             """))
 
     # write charset assumptions
-    if assumptions and dialect != "NN":
-        exportData.append("begin assumptions;")
+    def writeCharsetAssumptions(appendTo):
+        appendTo.append("begin assumptions;")
         for charset in assumptions:
-            exportData.append("    "+charset)
-        exportData.append("end;")
+            appendTo.append("    "+charset)
+        appendTo.append("end;")
+    if assumptions and dialect != "NN":
+        writeCharsetAssumptions(exportData)
+    # Always write charset assumptions to BEAUti export:
+    writeCharsetAssumptions(exportBEAUti)
 
     # get contributor list:
     # lexical sources
