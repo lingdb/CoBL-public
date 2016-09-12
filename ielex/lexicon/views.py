@@ -329,6 +329,9 @@ def write_nexus(language_list_name,       # str
     # Always write charset assumptions to BEAUti export:
     writeCharsetAssumptions(exportBEAUti)
 
+    # Add location data to BEAUti export:
+    exportBEAUti.append(getNexusLocations(languages))
+
     # get contributor list:
     # lexical sources
     # lexemes coded by
@@ -675,3 +678,17 @@ def getNexusComments(
     lines.append("[ File generated: %s ]\n" %
                  time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     return '\n'.join(lines)
+
+
+def getNexusLocations(languages):
+    '''
+    This function computes a `locations` block from some languages.
+    '''
+    lines = []
+    for language in languages:
+        if language.latitude is None or language.longitude is None:
+            continue
+        lines.append("  %s = %s %s;" % (language.ascii_name,
+                                        language.latitude,
+                                        language.longitude))
+    return "\nbegin locations;\n%s\nend;\n" % "\n".join(lines)
