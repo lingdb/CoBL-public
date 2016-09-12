@@ -457,6 +457,11 @@ class Language(AbstractTimestamped, AbstractDistribution):
     historical = models.BooleanField(default=0)
     # Added for #300:
     notInExport = models.BooleanField(default=0)
+    # Lat/Lon:
+    latitude = models.DecimalField(
+        null=True, max_digits=19, decimal_places=10)
+    longitude = models.DecimalField(
+        null=True, max_digits=19, decimal_places=10)
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
