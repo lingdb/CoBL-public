@@ -15,7 +15,8 @@
     var module = {
       inputClasses: ['filterText', 'filterInput',
                      'filterBool', 'filterDistinct'],
-      btnClasses: ['sortInput', 'sortText', 'sortIntText']
+      btnClasses: ['sortInput', 'sortText', 'sortIntText'],
+      callbacks: {} // :: Identifier -> IO ()
     };
     /**
       Function to initialize viewTableFilter:
@@ -172,6 +173,7 @@
       @param table :: $ ∧ table
       The general filter function
       used by the modules specialised filter functions.
+      Filtering triggers module.callbacks.
     */
     var filter = function(table){
       table.find('tbody > tr').each(function(){
@@ -185,6 +187,10 @@
           row.removeClass('hide');
         }
       });
+      //Trigger callbacks:
+      _.each(module.callbacks, function(λ){
+        λ.call(this);
+      }, this);
     };
     /**
       @param prefix :: string

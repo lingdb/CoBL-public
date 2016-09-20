@@ -74,7 +74,12 @@
               <span class="glyphicon glyphicon-edit"></span>
               sort order ‘{{ current_language_list_name }}’
             </a>
-            <span class="badge important">
+            <span class="badge important updateCounts"
+                  data-countformat="countVisible initial"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Visible / Total rows">
               {{ lang_ed_form.langlist|length }}
             </span>
             <a href="{% url 'view-language-list' current_list.name %}" class="btn btn-default"> undo</a>
