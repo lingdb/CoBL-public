@@ -32,6 +32,15 @@
                title="add a new lexeme">
               <span class="glyphicon glyphicon-plus-sign"></span>
             </a>
+            <span class="badge important updateCounts"
+                  data-countformat="countVisible countSwadesh initial"
+                  data-swadeshselector=".lexemeSwadeshTerm input"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Visible / Swadesh / Total rows">
+              {{ lex_ed_form.lexemes|length }}
+            </span>
             <a href="{% url 'view-meaning-languages' meaning.gloss defaultLanguagelist %}"
                class="btn btn-default">Undo</a>
             <input type="submit" value="Save"
