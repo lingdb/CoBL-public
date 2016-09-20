@@ -247,7 +247,6 @@ def write_nexus(language_list_name,       # str
               dimensions nchar=%s;
               format symbols="01" missing=?;""" % len(cognate_class_names)))
         labels = []
-
         for i, cc in enumerate(cognate_class_names):
             labels.append("    %d %s" % (i+1, cc))
         exportData.append(",\n".join(labels))
@@ -331,6 +330,8 @@ def write_nexus(language_list_name,       # str
 
     # Add location data to BEAUti export:
     exportBEAUti.append(getNexusLocations(languages))
+    # Add charstatelabels data to BEAUTi export:
+    exportBEAUti.append(getCharstateLabels(cognate_class_names))
 
     # get contributor list:
     # lexical sources
@@ -692,3 +693,14 @@ def getNexusLocations(languages):
                                         language.latitude,
                                         language.longitude))
     return "\nbegin locations;\n%s\nend;\n" % "\n".join(lines)
+
+
+def getCharstateLabels(cognate_class_names):
+    '''
+    This function computes a `charstatelabels` block
+    for a given set of cognate classes.
+    '''
+    labels = []
+    for i, cc in enumerate(cognate_class_names):
+        labels.append("    %d %s" % (i+1, cc))
+    return "\nbegin charstatelabels;\n%s\nend;\n" % "\n".join(labels)
