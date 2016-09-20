@@ -42,8 +42,15 @@
       module.$countTarget.text(counts.join(module.separator));
     };
     module.countVisible = function(){
-      var count = $(module.tableTarget + ' tbody>tr:visible').length;
-      return count;
+      return $(module.tableTarget + ' tbody>tr:visible').length;
+    };
+    module.countSwadesh = function(){
+      //This count function expects a 'data-swadeshselector'.
+      var swadeshSelector = module.$countTarget.data('swadeshselector');
+      var selector = [module.tableTarget,
+                      'tbody>tr',
+                      swadeshSelector+':checked'].join(' ');
+      return parseInt(module.initial) - $(selector).length;
     };
     return module;
   });

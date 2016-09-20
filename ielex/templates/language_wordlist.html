@@ -49,7 +49,15 @@
                    <span class="glyphicon glyphicon-list-alt"></span>
                  </button>
             </div>
-            <span class="badge important">{{ lexemes|length }}</span>
+            <span class="badge important updateCounts"
+                  data-countformat="countVisible countSwadesh initial"
+                  data-swadeshselector=".lexemeNotSwadeshTerm input"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Visible / Swadesh / Total rows">
+              {{ lexemes|length }}
+            </span>
             Dup. mgs:
             <button type="button"
                     class="filterDistinct btn btn-default"
