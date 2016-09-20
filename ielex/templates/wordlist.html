@@ -42,6 +42,14 @@
               </a>
             </h1>
           {% endif %}
+          <span class="badge important updateCounts"
+                data-countformat="countVisible initial"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                data-container="body"
+                title="Visible / Total rows">
+            {{ mltf.meanings | length}}
+          </span>
         </div>
         <table class="table table-striped viewTableFilter"
                data-floatheadtop="45">
