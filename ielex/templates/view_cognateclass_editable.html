@@ -38,6 +38,14 @@
                title="Merge selected cognate classes">
               <span class="glyphicon glyphicon-resize-small"></span>
             </a>
+            <span class="badge important updateCounts"
+                  data-countformat="countVisible initial"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Visible / Total rows">
+              {{ cogclass_editable_form.cogclass|length }}
+            </span>
             <a href="{% url 'edit-cogclasses' meaning %}" class="btn btn-default">undo</a>
             <input type="submit" value="Save" name="cogclass_form" class="btn btn-danger">
           </div>
