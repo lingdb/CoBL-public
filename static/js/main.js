@@ -44,11 +44,13 @@
              'js/plotDistributions',
              'js/nexus',
              'js/datetooltip',
-             'js/updateCounts'],
+             'js/updateCounts',
+             'js/updatePercentages'],
             function(require, $, _){
     //Initializing viewTableFilter:
     require('js/viewTableFilter').init('table.viewTableFilter');
     require('js/updateCounts').init();
+    require('js/updatePercentages').init();
     //Rendering MarkDown:
     (function(viewMarkDown){
       $('.markdown').each(function(){

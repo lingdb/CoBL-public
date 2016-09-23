@@ -637,6 +637,31 @@ class Language(AbstractTimestamped, AbstractDistribution):
             'It was last touched by "%s" %s.' % \
             (self.ascii_name, kwargs, self.lastEditedBy, self.lastTouched)
 
+    @property
+    def progressPercentage(self):
+        percentages = {
+          0: 0,
+          1: 20,
+          2: 40,
+          3: 60,
+          4: 80,
+          5: 100
+        }
+        return percentages[self.progress]
+
+    @property
+    def progressBarClass(self):
+        # Return class string to color progress bar
+        percentages = {
+          0: 'progress-bar-danger',
+          1: 'progress-bar-danger',
+          2: 'progress-bar-warning',
+          3: 'progress-bar-info',
+          4: 'progress-bar-info',
+          5: 'progress-bar-success'
+        }
+        return percentages[self.progress]
+
 
 @reversion.register
 class LanguageClade(models.Model):

@@ -74,6 +74,25 @@
               <span class="glyphicon glyphicon-edit"></span>
               sort order ‘{{ current_language_list_name }}’
             </a>
+            <span class="badge important updatePercentages"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Overall progress of visible entries">
+              <div class="progress"
+                   style="width: 100px; margin-top: 2.5px; margin-bottom: 2.5px;">
+                <div class="progress-bar"
+                     role="progressbar"
+                     aria-valuenow="0"
+                     aria-valuemin="0"
+                     aria-valuemax="100"
+                     style="width: 0%;">
+                  <span class="sr-only">
+                    0% Complete
+                  </span>
+                </div>
+              </div>
+            </span>
             <span class="badge important updateCounts"
                   data-countformat="countVisible initial"
                   data-toggle="tooltip"
@@ -337,7 +356,7 @@
                 </div>
               </th>
               {# progress_title.html #}
-              <th>
+              <th style="min-width: 100px;">
                 Progress
               </th>
               {# mgs_title.html #}
@@ -676,14 +695,16 @@
               </td>
               <td>
                 {% if user.is_authenticated and user.is_staff %}
-                  <input type="text" class="filterInput form-control narrow"
+                  <input type="text"
+                         class="filterInput form-control narrow"
                          data-selector=".uniformLower input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".uniformLower input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% else %}
-                  <input type="text" class="filterText form-control narrow"
+                  <input type="text"
+                         class="filterText form-control narrow"
                          data-selector=".uniformLower">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".uniformLower">
@@ -801,10 +822,12 @@
                 {% endif %}
               </td>
               {# progress_filter.html #}
-              <td class="nowrap">
-                <input type="text" class="filterInput form-control"
+              <td class="nowrap"
+                  style="min-width: 100px;">
+                <input type="text"
+                       class="filterInput form-control"
                        data-selector=".progressData input"
-                       style="width: 1em;">
+                       style="width: 1.5em;">
                 <div class="btn btn-xs btn-default sortInput"
                      data-selector=".progressData input">
                   <span class="glyphicon glyphicon-sort"></span>
@@ -1204,12 +1227,26 @@
                   {% endif %}
                 </td>
                 {# progress_data.html #}
-                <td class="progressData">
+                <td class="progressData nowrap"
+                    style="min-width: 100px;">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.progress class="form-control numberField" pattern="^[0-5]{1}$" style="max-width: 1.5em;" %}
+                    {% form_field language.progress class="form-control numberField inline" pattern="^[0-5]{1}$" style="max-width: 1.5em;" %}
                   {% else %}
                     {{ language.progress.data }}
                   {% endif %}
+                  <div class="progress pull-right"
+                       style="width: 75px;">
+                    <div class="progress-bar {{ language.object_data.progressBarClass }}"
+                         role="progressbar"
+                         aria-valuenow="{{ language.object_data.progressPercentage }}"
+                         aria-valuemin="0"
+                         aria-valuemax="100"
+                         style="width: {{ language.object_data.progressPercentage }}%;">
+                      <span class="sr-only">
+                        {{ language.object_data.progressPercentage }}% Complete
+                      </span>
+                    </div>
+                  </div>
                 </td>
                 {# mgs_data.html #}
                 <td class="languageMgsCount">
