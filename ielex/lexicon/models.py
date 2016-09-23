@@ -4,6 +4,7 @@ import json
 import os.path
 import reversion
 import zlib
+import datetime
 from collections import defaultdict
 from string import uppercase, lowercase
 from django.db import models
@@ -60,6 +61,11 @@ LANGUAGE_PROGRESS = (  # used by Languages
     (3, 'Revision underway'),
     (4, 'Revision complete'),
     (5, 'Second review complete'))
+
+
+YEAR_CHOICES = []
+for r in range(1800, (datetime.datetime.now().year+1)):
+    YEAR_CHOICES.append((r,r))
 
 # http://south.aeracode.org/docs/customfields.html#extending-introspection
 # add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])
@@ -224,12 +230,42 @@ class AbstractDistribution(models.Model):
 @reversion.register
 class Source(models.Model):
 
-    citation_text = models.TextField(unique=True)
+    '''
+    Used for bibliographical references.
+    Relates to: Author, Journal, Series, Publisher.
+    '''
+
+    #OLD FIELDS:
+
+    citation_text = models.TextField(unique=True) #to be discarded
     type_code = models.CharField(
         max_length=1, choices=TYPE_CHOICES, default="P")
     description = models.TextField(blank=True)
     modified = models.DateTimeField(auto_now=True)
 
+    #NEW FIELDS:
+    #bibtex_type = Column(bibtex.EntryType.db_type())
+    
+    author = models.ManyToManyField('Author', related_name="author", blank=True)
+    year = models.IntegerField(choices=YEAR_CHOICES, default=datetime.datetime.now().year, null=True)
+    title = models.TextField(blank=True)
+    type = models.CharField(max_length=32, blank=True) #add choices!
+    booktitle = models.TextField(blank=True)
+    editor = models.ManyToManyField('Author', related_name="editor", blank=True)
+    pages = models.CharField(max_length=32, blank=True)
+    edition = models.IntegerField(blank=True, null=True)
+    journal = models.ForeignKey('Journal', blank=True, null=True)
+    address = models.CharField(max_length=128, blank=True)
+    url = models.URLField(blank=True)
+    note = models.TextField(blank=True)
+    number = models.IntegerField(null=True)
+    series = models.ForeignKey('Series', blank=True, null=True)
+    volume = models.CharField(max_length=16, blank=True)
+    publisher = models.ManyToManyField('Publisher', blank=True)
+    organization = models.CharField(max_length=64, blank=True)
+    chapter = models.TextField(blank=True)
+    howpublished = models.TextField(blank=True)
+    
     def get_absolute_url(self):
         return "/source/%s/" % self.id
 
@@ -238,6 +274,30 @@ class Source(models.Model):
 
     class Meta:
         ordering = ["type_code", "citation_text"]
+
+@reversion.register
+class Journal(models.Model):
+    '''
+    Bibliographical model, related to source
+    '''
+    name = models.CharField(max_length=64)
+    abbreviation = models.CharField(max_length=16, blank=True)
+
+@reversion.register
+class Series(models.Model):
+    '''
+    Bibliographical model, related to source
+    '''
+    name = models.CharField(max_length=64)
+    abbreviation = models.CharField(max_length=16, blank=True)
+
+@reversion.register
+class Publisher(models.Model):
+    '''
+    Bibliographical model, related to source
+    '''
+    name = models.CharField(max_length=64)
+    address = models.CharField(max_length=128, blank=True)
 
 
 @reversion.register
@@ -1592,17 +1652,18 @@ models.signals.post_delete.connect(
 class Author(AbstractTimestamped):
     # See https://github.com/lingdb/CoBL/issues/106
     # We leave out the ix field in favour
-    # of the id field provided by reversion.
+    # of the id field provided by reversion.    
+
     # Author Surname
     surname = models.TextField(blank=True)
     # Author First names
     firstNames = models.TextField(blank=True)
+    # Initials
+    initials = models.TextField(blank=True, unique=True)
     # Email address
     email = models.TextField(blank=True, unique=True)
     # Personal website URL
     website = models.TextField(blank=True)
-    # Initials
-    initials = models.TextField(blank=True, unique=True)
 
     def timestampedFields(self):
         return set(['surname', 'firstNames', 'email', 'website', 'initials'])
@@ -1633,7 +1694,6 @@ class Author(AbstractTimestamped):
                              self.surname.encode('utf-8') + extension)
             if os.path.isfile(p):
                 return p
-
 
 @reversion.register
 class NexusExport(AbstractTimestamped):
