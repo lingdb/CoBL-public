@@ -356,7 +356,7 @@
                 </div>
               </th>
               {# progress_title.html #}
-              <th style="min-width: 100px;">
+              <th colspan="2">
                 Progress
               </th>
               {# mgs_title.html #}
@@ -823,7 +823,7 @@
               </td>
               {# progress_filter.html #}
               <td class="nowrap"
-                  style="min-width: 100px;">
+                  colspan="2">
                 <input type="text"
                        class="filterInput form-control"
                        data-selector=".progressData input"
@@ -1227,25 +1227,25 @@
                   {% endif %}
                 </td>
                 {# progress_data.html #}
-                <td class="progressData nowrap"
-                    style="min-width: 100px;">
+                <td class="progressData">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.progress class="form-control numberField inline" pattern="^[0-5]{1}$" style="max-width: 1.5em;" %}
+                    {% form_field language.progress class="form-control numberField" pattern="^[0-5]{1}$" style="width: 1.5em;" %}
                   {% else %}
                     {{ language.progress.data }}
                   {% endif %}
-                  <div class="progress pull-right"
-                       style="width: 75px;">
-                    <div class="progress-bar {{ language.object_data.progressBarClass }}"
-                         role="progressbar"
-                         aria-valuenow="{{ language.object_data.progressPercentage }}"
-                         aria-valuemin="0"
-                         aria-valuemax="100"
-                         style="width: {{ language.object_data.progressPercentage }}%;">
-                      <span class="sr-only">
-                        {{ language.object_data.progressPercentage }}% Complete
-                      </span>
-                    </div>
+                </td>
+                <td class="progressBar">
+                 <div class="progress">
+                     <div class="progress-bar {{ language.object_data.progressBarClass }}"
+                          role="progressbar"
+                          aria-valuenow="{{ language.object_data.progressPercentage }}"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                          style="width: {{ language.object_data.progressPercentage }}%;">
+                       <span class="sr-only">
+                         {{ language.object_data.progressPercentage }}% Complete
+                       </span>
+                     </div>
                   </div>
                 </td>
                 {# mgs_data.html #}
