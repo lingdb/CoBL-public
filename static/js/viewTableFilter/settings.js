@@ -8,35 +8,44 @@
       This module aims to provide settings to viewTableFilter
       so that we can restore given filters when navigating pages.
     */
-    var module = {};
+    var module = {
+    };
     (function(){ //Loading session settings:
+      var viewIdentifier = _
+        .chain(window.location.pathname.split('/'))
+        .filter(function(s){ return s.length > 0; })
+        .head()
+        .value();
+
       var settings = ('viewTableFilter' in window.sessionStorage) ?
                      JSON.parse(window.sessionStorage.viewTableFilter)
                    : {};
-      module.settings = _.extend({keyupInput: {}}, settings);
+
+      var extension = {};
+      extension[viewIdentifier] = {
+        keyupInput: {},
+        buttonInput: {}};
+      settings = _.extend(extension, settings);
+
+      module.settings = settings[viewIdentifier];
+      module.saveSettings = function(){
+        window.sessionStorage.viewTableFilter = JSON.stringify(settings);
+      };
     })();
 
-    module.saveSettings = function(){
-      window.sessionStorage.viewTableFilter = JSON.stringify(module.settings);
-    };
-    /*
-      Factory for functions to update sessionStorage
-      for a given $('input.'+inputClass).
-    */
-    module.mkStoreKeyupInput = function($input, inputClass){
-        return function(){
-          if(!(inputClass in module.settings)){
-            module.settings.keyupInput[inputClass] = {};
-          }
-          var inputObj = module.settings.keyupInput[inputClass];
-          inputObj[$input.data('selector')] = $input.val();
-          module.saveSettings();
-        };
+    module.storeKeyupInput = function($input, inputClass){
+        if(!(inputClass in module.settings.keyupInput)){
+          module.settings.keyupInput[inputClass] = {};
+        }
+        var inputObj = module.settings.keyupInput[inputClass];
+        inputObj[$input.data('selector')] = $input.val();
+        module.saveSettings();
     };
 
     module.restoreKeyupInputs = function(){
       _.each(module.settings.keyupInput, function(selectorValMap, inputClass){
         _.each(selectorValMap, function(val, selector){
+          if(val === '') return;
           var $input = $('input.'+inputClass+'[data-selector="'+selector+'"]');
           if($input.length > 0){
             $input.val(val);
@@ -45,6 +54,37 @@
         });
       });
     };
+
+    (function(){
+      var btnClasses = ['btn-default', 'btn-success', 'btn-danger'];
+      // mkStoreKeyupInput for buttons.
+      module.storeButtonInput = function($button, inputClass){
+        if(!(inputClass in module.settings.buttonInput)){
+          module.settings.buttonInput[inputClass] = {};
+        }
+        var inputObj = module.settings.buttonInput[inputClass];
+        _.find(btnClasses, function(cls){
+          var has = $button.hasClass(cls);
+          if(has){
+            inputObj[$button.data('selector')] = cls;
+          }
+          return has;
+        });
+        module.saveSettings();
+      };
+
+      module.restoreButtonInputs = function(){
+        _.each(module.settings.buttonInput, function(selectorValMap, inputClass){
+          _.each(selectorValMap, function(val, selector){
+            var $button = $('button.'+inputClass+'[data-selector="'+selector+'"]');
+            if($button.length > 0){
+              $button.removeClass(btnClasses.join(" "));
+              $button.addClass(val);
+            }
+          });
+        });
+      };
+    })();
 
     return module;
   });

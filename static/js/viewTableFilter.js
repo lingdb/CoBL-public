@@ -37,24 +37,26 @@
       //Actual init work:
       el.each(function(){
         var table = $(this);
+        //Restoring buttons before initial filtering.
+        settings.restoreButtonInputs();
         //Attaching inputClasses:
         _.each(module.inputClasses, function(inputClass){
           if(inputClass in module){
             $('input.'+inputClass).each(function(){
               var $input = $(this);
-              var storeInput = settings.mkStoreKeyupInput($input, inputClass);
               $input.keyup(function(){
                 module[inputClass]($input, table);
-                storeInput();
+                settings.storeKeyupInput($input, inputClass);
               });
             });
             $('button.'+inputClass).each(function(){
-              var button = $(this);
-              button.click(function(){
-                module[inputClass](button, table);
+              var $button = $(this);
+              $button.click(function(){
+                module[inputClass]($button, table);
+                settings.storeButtonInput($button, inputClass);
               });
               //Initial filtering for buttons:
-              module[inputClass](button, table, true);
+              module[inputClass]($button, table, true);
             });
           }else{
             console.log('inputClass not implemented:', inputClass);
@@ -243,22 +245,21 @@
       If initial is not set, the button will be changed to the next state.
     */
     var filterBoolButtton = function(btn, initial){
-      var span = btn.find('.glyphicon');
       var wanted;
       if(initial !== true){
-        if(span.hasClass('glyphicon-remove-sign')){
+        if(btn.hasClass('btn-danger')){
           wanted = null; // remove -> question
-        }else if(span.hasClass('glyphicon-ok-sign')){
+        }else if(btn.hasClass('btn-success')){
           wanted = false; // ok -> remove
-        }else if(span.hasClass('glyphicon-question-sign')){
+        }else if(btn.hasClass('btn-default')){
           wanted = true; // question -> ok
         }
       }else{
-        if(span.hasClass('glyphicon-remove-sign')){
+        if(btn.hasClass('btn-danger')){
           wanted = false; // remove -> remove
-        }else if(span.hasClass('glyphicon-ok-sign')){
+        }else if(btn.hasClass('btn-success')){
           wanted = true; // ok -> ok
-        }else if(span.hasClass('glyphicon-question-sign')){
+        }else if(btn.hasClass('btn-default')){
           wanted = null; // question -> question
         }
       }
