@@ -678,7 +678,7 @@
                 <td style="border-left: 2px solid #dddddd;"
                     class="cogLoanword">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loanword class="form-control" %}
+                    {% form_field cc.loanword class="form-control" data-dependencyfor-tr="loanevent" %}
                   {% else %}
                     {% form_field cc.loanword class="form-control" disabled="disabled" %}
                   {% endif %}
@@ -686,7 +686,7 @@
                 {# parallelLoanEvent_data.html #}
                 <td class="parallelLoanEvent">
                   {% if user.is_authenticated %}
-                    {% form_field cc.parallelLoanEvent class="form-control" %}
+                    {% form_field cc.parallelLoanEvent class="form-control" data-inputdepends="loanevent" %}
                   {% else %}
                     {% form_field cc.parallelLoanEvent class="form-control" disabled="disabled" %}
                   {% endif %}
@@ -694,7 +694,7 @@
                 {# loanSourceId_data.html #}
                 <td class="loanSourceId nowrap" style="width: 5em;">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loanSourceId class="form-control numberField inline" pattern="^[0-9]*$" style="width: 3em;" %}
+                    {% form_field cc.loanSourceId class="form-control numberField inline" pattern="^[0-9]*$" style="width: 3em;" data-inputdepends="loanevent" %}
                   {% endif %}
                   {% if cc.loanSourceId.data %}
                     <a href="/cognate/{{ cc.loanSourceId.data }}/"
@@ -710,7 +710,7 @@
                 {# loansource_data.html #}
                 <td class="cogLoanSource">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loan_source class="form-control" %}
+                    {% form_field cc.loan_source class="form-control" data-inputdepends="loanevent" %}
                   {% elif cc.loan_source.data %}
                     {{ cc.loan_source.data }}
                   {% endif %}
@@ -718,7 +718,7 @@
                 {# loanEventTimeDepthBP_data.html #}
                 <td class="loanEventTimeDepthBP">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loanEventTimeDepthBP class="form-control" style="width: 5em;" %}
+                    {% form_field cc.loanEventTimeDepthBP class="form-control" style="width: 5em;" data-inputdepends="loanevent" %}
                   {% elif cc.loanEventTimeDepthBP.data %}
                     {{ cc.loanEventTimeDepthBP.data }}
                   {% endif %}
@@ -726,7 +726,7 @@
                 {# sourceFormInLoanLanguage_data.html #}
                 <td class="sourceFormInLoanLanguage">
                   {% if user.is_authenticated %}
-                    {% form_field cc.sourceFormInLoanLanguage class="form-control" %}
+                    {% form_field cc.sourceFormInLoanLanguage class="form-control" data-inputdepends="loanevent" %}
                   {% elif cc.sourceFormInLoanLanguage.data %}
                     {{ cc.sourceFormInLoanLanguage.data }}
                   {% endif %}
@@ -734,7 +734,7 @@
                 {# loannotes_data.html #}
                 <td class="cogLoanNotes">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loan_notes class="form-control" %}
+                    {% form_field cc.loan_notes class="form-control" data-inputdepends="loanevent" %}
                   {% elif cc.loan_notes.data %}
                     {{ cc.loan_notes.data }}
                   {% endif %}

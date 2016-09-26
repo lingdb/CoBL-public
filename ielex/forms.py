@@ -459,9 +459,49 @@ class CogClassRowForm(AbstractTimestampedForm):
                'alias=%s, loanword=%s, notes=%s )'
         return tmpl % cogclass_form_vals
 
+    def validate_loanword(form, field):
+        fieldList = ['parallelLoanEvent',
+                     'loanSourceId',
+                     'loan_source',
+                     'loanEventTimeDepthBP',
+                     'sourceFormInLoanLanguage',
+                     'loan_notes ']
+        if field.data:
+            # loanword -> any(fieldList)
+            for fieldName in fieldList:
+                if fieldName in form.data:
+                    if form.data[fieldName]:
+                        break
+            else:
+                raise ValidationError(
+                    'Loanword is %s, but none of the fields %s is set.' %
+                    (field.data, fieldList))
+
 
 class AddCogClassTableForm(WTForm):
     cogclass = FieldList(FormField(CogClassRowForm))
+
+    def handle(self, request):
+        # Iterate entries that may be changed:
+        for entry in self.cogclass:
+            data = entry.data
+            cogclass = CognateClass.objects.get(
+                id=int(data['idField']))
+            # Check if entry changed and try to update:
+            if cogclass.isChanged(**data):
+                try:
+                    problem = cogclass.setDelta(request, **data)
+                    if problem is None:
+                        cogclass.save()
+                    else:
+                        messages.error(
+                            request, cogclass.deltaReport(**problem))
+                except Exception:
+                    logging.exception('Problem saving CognateClass '
+                                      'in view_cognateclasses.')
+                    messages.error(
+                        request,
+                        'Problem while saving entry: %s' % data)
 
 
 class MergeCognateClassesForm(WTForm):

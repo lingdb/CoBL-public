@@ -1369,26 +1369,7 @@ def view_cognateclasses(request, meaning):
             try:
                 cogClassTableForm = AddCogClassTableForm(request.POST)
                 cogClassTableForm.validate()
-                # Iterate entries that may be changed:
-                for entry in cogClassTableForm.cogclass:
-                    data = entry.data
-                    cogclass = CognateClass.objects.get(
-                        id=int(data['idField']))
-                    # Check if entry changed and try to update:
-                    if cogclass.isChanged(**data):
-                        try:
-                            problem = cogclass.setDelta(request, **data)
-                            if problem is None:
-                                cogclass.save()
-                            else:
-                                messages.error(
-                                    request, cogclass.deltaReport(**problem))
-                        except Exception:
-                            logging.exception('Problem saving CognateClass '
-                                              'in view_cognateclasses.')
-                            messages.error(
-                                request,
-                                'Problem while saving entry: %s' % data)
+                cogClassTableForm.handle(request)
             except Exception:
                 logging.exception('Problem updating CognateClasses '
                                   'in view_cognateclasses.')
