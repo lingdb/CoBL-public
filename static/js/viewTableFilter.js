@@ -66,15 +66,17 @@
         _.each(module.btnClasses, function(btnClass){
           if(btnClass in module){
             table.find('.btn.'+btnClass).each(function(){
-              var btn = $(this);
-              btn.click(function(){
-                module[btnClass](btn, table);
+              var $btn = $(this);
+              $btn.click(function(){
+                module[btnClass]($btn, table);
+                settings.storeSortInput($btn, btnClass);
               });
             });
           }else{
             console.log('btnClass not implemented:', btnClass);
           }
         });
+        settings.restoreSortInput(module);
         //cladeFilter:
         var λ = _.bind(filter, null, table);
         var cladeFilter = mkCladeFilter(λ);
@@ -107,7 +109,7 @@
       @param table :: $ ∧ table
       @return reverse :: Bool
     */
-    var updateSortButtons = function(btn, table){
+    module.updateSortButtons = function(btn, table){
       var reverse = (btn.find('.glyphicon-sort-by-attributes').length !== 0);
       //Set .btn icons:
       _.each(module.btnClasses, function(btnClass){
@@ -132,7 +134,7 @@
     */
     var sortTableBy = function(λ){
       return function(btn, table){
-        var reverse = updateSortButtons(btn, table);
+        var reverse = module.updateSortButtons(btn, table);
         var iteratee = λ(btn.data('selector'));
         var rows = sortBy(table, reverse, iteratee);
         _.each(rows, function(row){

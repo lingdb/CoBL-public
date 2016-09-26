@@ -24,7 +24,8 @@
       var extension = {};
       extension[viewIdentifier] = {
         keyupInput: {},
-        buttonInput: {}};
+        buttonInput: {},
+        sortInput: {}};
       settings = _.extend(extension, settings);
 
       module.settings = settings[viewIdentifier];
@@ -85,6 +86,39 @@
         });
       };
     })();
+
+    module.storeSortInput = function($btn, btnClass){
+      var reverse = ($btn.find('.glyphicon-sort-by-attributes').length !== 0);
+      var store = {};
+      store[btnClass] = {};
+      store[btnClass][$btn.data('selector')] = reverse;
+      //store = {[btnClass]: {[$btn.data('selector')]: reverse}}
+      module.settings.sortInput = store;
+      module.saveSettings();
+    };
+
+    module.restoreSortInput = function(viewTableFilter){
+      /*
+      This function needs access to the viewTableFilter module to do it's job.
+      That is specifically an object that contains the sort methods.
+      */
+      _.find(module.settings.sortInput, function(selectorFlagMap, btnClass){
+        _.find(selectorFlagMap, function(reverse, selector){
+          var $btn = $('.btn.'+btnClass+'[data-selector="'+selector+'"]');
+          var table = $btn.closest('table');
+
+          if(!reverse){
+            viewTableFilter.updateSortButtons($btn, table);
+          }
+
+          var sortFunc = viewTableFilter[btnClass];
+          sortFunc($btn, table);
+
+          return true;
+        });
+        return true;
+      });
+    };
 
     return module;
   });
