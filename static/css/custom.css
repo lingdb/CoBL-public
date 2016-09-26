@@ -164,3 +164,10 @@ table.floatThead-table {
   left: 15px;
   right: 15px;
 }
+
+/* Positioning of progressBars for #215 */
+.progressBar .progress {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 75px;
+}

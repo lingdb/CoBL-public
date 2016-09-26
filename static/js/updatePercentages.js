@@ -25,7 +25,7 @@
     };
     module.updatePercentages = function(){
       //Calculate current average:
-      var bars = $(module.tableTarget+' tbody tr:visible .progressData .progress-bar');
+      var bars = $(module.tableTarget+' tbody tr:visible .progressBar .progress-bar');
       var barSum = 0;
       bars.each(function(){
         barSum += parseInt($(this).attr('aria-valuenow'));

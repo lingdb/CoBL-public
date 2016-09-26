@@ -2,8 +2,9 @@
   "use strict";
   return define(['jquery','lodash',
                  'js/cladeFilter',
+                 'js/viewTableFilter/settings',
                  'floatThead'],
-    function($, _, mkCladeFilter){
+    function($, _, mkCladeFilter, settings){
     /*
       This view can be used to filter and sort tables.
       The table is expected to contain input elements
@@ -36,22 +37,26 @@
       //Actual init work:
       el.each(function(){
         var table = $(this);
+        //Restoring buttons before initial filtering.
+        settings.restoreButtonInputs();
         //Attaching inputClasses:
         _.each(module.inputClasses, function(inputClass){
           if(inputClass in module){
             $('input.'+inputClass).each(function(){
-              var input = $(this);
-              input.keyup(function(){
-                module[inputClass](input, table);
+              var $input = $(this);
+              $input.keyup(function(){
+                module[inputClass]($input, table);
+                settings.storeKeyupInput($input, inputClass);
               });
             });
             $('button.'+inputClass).each(function(){
-              var button = $(this);
-              button.click(function(){
-                module[inputClass](button, table);
+              var $button = $(this);
+              $button.click(function(){
+                module[inputClass]($button, table);
+                settings.storeButtonInput($button, inputClass);
               });
               //Initial filtering for buttons:
-              module[inputClass](button, table, true);
+              module[inputClass]($button, table, true);
             });
           }else{
             console.log('inputClass not implemented:', inputClass);
@@ -61,15 +66,17 @@
         _.each(module.btnClasses, function(btnClass){
           if(btnClass in module){
             table.find('.btn.'+btnClass).each(function(){
-              var btn = $(this);
-              btn.click(function(){
-                module[btnClass](btn, table);
+              var $btn = $(this);
+              $btn.click(function(){
+                module[btnClass]($btn, table);
+                settings.storeSortInput($btn, btnClass);
               });
             });
           }else{
             console.log('btnClass not implemented:', btnClass);
           }
         });
+        settings.restoreSortInput(module);
         //cladeFilter:
         var λ = _.bind(filter, null, table);
         var cladeFilter = mkCladeFilter(λ);
@@ -78,6 +85,8 @@
           λ();
         }
       });
+      //Load previous settings:
+      settings.restoreKeyupInputs();
     };
     /**
       @param table    :: $ ∧ table
@@ -100,7 +109,7 @@
       @param table :: $ ∧ table
       @return reverse :: Bool
     */
-    var updateSortButtons = function(btn, table){
+    module.updateSortButtons = function(btn, table){
       var reverse = (btn.find('.glyphicon-sort-by-attributes').length !== 0);
       //Set .btn icons:
       _.each(module.btnClasses, function(btnClass){
@@ -125,7 +134,7 @@
     */
     var sortTableBy = function(λ){
       return function(btn, table){
-        var reverse = updateSortButtons(btn, table);
+        var reverse = module.updateSortButtons(btn, table);
         var iteratee = λ(btn.data('selector'));
         var rows = sortBy(table, reverse, iteratee);
         _.each(rows, function(row){
@@ -238,22 +247,21 @@
       If initial is not set, the button will be changed to the next state.
     */
     var filterBoolButtton = function(btn, initial){
-      var span = btn.find('.glyphicon');
       var wanted;
       if(initial !== true){
-        if(span.hasClass('glyphicon-remove-sign')){
+        if(btn.hasClass('btn-danger')){
           wanted = null; // remove -> question
-        }else if(span.hasClass('glyphicon-ok-sign')){
+        }else if(btn.hasClass('btn-success')){
           wanted = false; // ok -> remove
-        }else if(span.hasClass('glyphicon-question-sign')){
+        }else if(btn.hasClass('btn-default')){
           wanted = true; // question -> ok
         }
       }else{
-        if(span.hasClass('glyphicon-remove-sign')){
+        if(btn.hasClass('btn-danger')){
           wanted = false; // remove -> remove
-        }else if(span.hasClass('glyphicon-ok-sign')){
+        }else if(btn.hasClass('btn-success')){
           wanted = true; // ok -> ok
-        }else if(span.hasClass('glyphicon-question-sign')){
+        }else if(btn.hasClass('btn-default')){
           wanted = null; // question -> question
         }
       }
