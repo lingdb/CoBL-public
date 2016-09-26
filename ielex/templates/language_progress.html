@@ -1,0 +1,1307 @@
+{% extends "base.html" %}
+{% load lexicon_utils %}
+{% load staticfiles %}
+{% load wtforms %}
+
+{% block title %}
+  Language list: {{ current_language_list_name }}
+{% endblock %}
+
+{% block top %}
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/defaultSelections.html" %}
+  <li>
+    <a href="?exportCsv=utf8_name,mean_timedepth_BP_years,std_deviation_timedepth_BP_years,level0,level1"
+       title="Download current language list as .csv"
+       data-toggle="tooltip" data-placement="bottom">
+      <span class="glyphicon glyphicon-download-alt"></span>
+    </a>
+  </li>
+  {% include "snippets/go_to.html" %}
+{% endblock %}
+
+{% block content %}
+  {% include "snippets/cloneLanguageModal.html" %}
+  <div class="row">
+    <div class="col-md-12"
+         {% if user.is_authenticated and user.is_staff %}
+            style="margin-top: 75px;"
+         {% else %}
+            style="margin-top: 32px;"
+         {% endif %}>
+      {% if user.is_authenticated and user.is_staff %}
+        <form action="" method="POST" name="langlist_ed_form">
+          {% csrf_token %}
+      {% endif %}
+      <div class="fixedContainer">
+        {% if user.is_authenticated and user.is_staff %}
+          <div class="form-group pull-right">
+            <a href="/clades/?plot"
+               class="btn btn-default"
+               target="_blank"
+               data-toggle="tooltip"
+               data-placement="bottom"
+               title="View language distributions.">
+               <span class="glyphicon glyphicon-stats"></span>
+            </a>
+            <a href="{% url 'language-add-new' current_language_list_name %}"
+               class="btn btn-default"
+               data-toggle="tooltip" data-placement="bottom"
+               title="Add new language">
+              <span class="glyphicon glyphicon-plus"></span>
+              lg
+            </a>
+            <a href="{% url 'add-language-list' %}"
+               class="btn btn-default"
+               data-toggle="tooltip" data-placement="bottom"
+               title="New language list">
+              <span class="glyphicon glyphicon-plus"></span>
+              lg list
+            </a>
+            <a href="{% url 'edit-language-list' current_language_list_name %}"
+               class="btn btn-default"
+               data-toggle="tooltip" data-placement="bottom"
+               title="Edit language list">
+              <span class="glyphicon glyphicon-edit"></span>
+              lg list ‘{{ current_language_list_name }}’
+            </a>
+            <a href="{% url 'reorder-language-list' current_language_list_name %}"
+               class="btn btn-default space-right"
+               data-toggle="tooltip" data-placement="bottom"
+               title="Edit sort order">
+              <span class="glyphicon glyphicon-edit"></span>
+              sort order ‘{{ current_language_list_name }}’
+            </a>
+            <span class="badge important updatePercentages"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Overall progress of visible entries">
+              <div class="progress"
+                   style="width: 100px; margin-top: 2.5px; margin-bottom: 2.5px;">
+                <div class="progress-bar"
+                     role="progressbar"
+                     aria-valuenow="0"
+                     aria-valuemin="0"
+                     aria-valuemax="100"
+                     style="width: 0%;">
+                  <span class="sr-only">
+                    0% Complete
+                  </span>
+                </div>
+              </div>
+            </span>
+            <span class="badge important updateCounts"
+                  data-countformat="countVisible initial"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Visible / Total rows">
+              {{ lang_ed_form.langlist|length }}
+            </span>
+            <a href="{% url 'view-language-list' current_list.name %}" class="btn btn-default"> undo</a>
+            <input type="submit" value="Save" name="langlist_form" class="btn btn-danger">
+          </div>
+          <h1 class="inline">
+            Language list: {{ current_language_list_name }}
+          </h1>
+          {% endif %}
+          {% include "snippets/cladeFilter.html" %}
+        </div>{# .fixedContainer #}
+        <table class="table table-striped viewTableFilter
+                     {% if user.is_authenticated %}
+                     distributionPlot
+                     {% endif %}"
+               {% if user.is_authenticated and user.is_staff %}
+                  data-floatheadtop="65"
+               {% else %}
+                  data-floatheadtop="32"
+               {% endif %}>
+          <thead>
+            <tr>
+              {# branchcolor_title.html #}
+              <th colspan="2"></th>
+              {# entryno_title.html #}
+              <th></th>
+              {# lv_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Clade level 0">
+                Cl 0
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Clade level 0 abbreviation">
+                Cl 0 abbr.
+              </th>
+              {% if user.is_staff %}
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    data-container="body"
+                    title="Clade level 1">
+                  Cl 1
+                </th>
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    data-container="body"
+                    title="Clade level 1 abbreviation">
+                  Cl 1 abbr.
+                </th>
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    data-container="body"
+                    title="Clade level 2">
+                  Cl 2
+                </th>
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    data-container="body"
+                    title="Clade level 2 abbreviation">
+                  Cl 2 abbr.
+                </th>
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    data-container="body"
+                    title="Clade level 3"
+                    class="hide">
+                  Cl 3
+                </th>
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    data-container="body"
+                    title="Clade level 3 abbreviation"
+                    class="hide">
+                  Cl 3 abbr.
+                </th>
+                {# sortRankInClade_title.html #}
+                <th data-toggle="tooltip"
+                    data-placement="bottom"
+                    data-container="body"
+                    title="Sort rank in clade">
+                  <div class="vertical-text">
+                    <div class="vertical-text__inner">
+                      Sort Ix
+                    </div>
+                  </div>
+                </th>
+                {# sndcomp_title.html #}
+                <th class="hide">SndComp<br>code</th>
+              {% endif %}
+              {# historical_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Historical
+                  </div>
+                </div>
+              </th>
+              {# notInExport_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Not in Exp.
+                  </div>
+                </div>
+              </th>
+              {# name_link.html #}
+              <th></th>
+              {# name_title.html #}
+              <th>Display name</th>
+              {# beast_title.html #}
+              <th class="hide">Url name</th>
+              {# variety_title.html #}
+              <th class="hide">Variety</th>
+              <th></th>{# title for edit #}
+              {# iso_title.html #}
+              <th>ISO</th>
+              {# glotto_title.html #}
+              <th style="width: 100px;">Glotto</th>
+              {# latitude_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Latitude
+                  </div>
+                </div>
+              </th>
+              {# longitude_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Longitude
+                  </div>
+                </div>
+              </th>
+              {# distribution_title.html #}
+              <th>Distribution type</th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Offset for log normal distribution">
+                [Offset]
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Mean for log normal distribution">
+                LogN Mean
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="StDev for log normal distribution">
+                LogN StDev
+              </th>
+              <!-- For normal: -->
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Mean for normal distribution">
+                Norm Mean
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="StDev for normal distribution">
+                Norm StDev
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Lower bound for uniform distribution type">
+                Unif Lower
+              </th>
+              <!-- For Uniform: -->
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Upper bound for uniform distribution type">
+                Unif Upper
+              </th>
+              {# earliest_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Earliest Time-Depth Bound">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Earliest
+                  </div>
+                </div>
+              </th>
+              {# latest_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Latest Time-Depth Bound">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Latest
+                  </div>
+                </div>
+              </th>
+              {# reference_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Reference">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Ref. Lg.
+                  </div>
+                </div>
+              </th>
+              {# fossstat_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Foss. Stat.
+                  </div>
+                </div>
+              </th>
+              {# lowstat_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Low. Stat.
+                  </div>
+                </div>
+              </th>
+              {# webpath_title.html #}
+              {% if user.is_staff %}
+                <th>
+                  <div class="vertical-text">
+                    <div class="vertical-text__inner">
+                      Web path
+                    </div>
+                  </div>
+                </th>
+              {% endif %}
+              {# author_title.html #}
+              <th>Author</th>
+              {# entryTimeframe_title.html #}
+              {% if user.is_authenticated and user.is_staff %}
+                <th>Timeframe</th>
+              {% endif %}
+              {# reviewer_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Reviewer
+                  </div>
+                </div>
+              </th>
+              {# progress_title.html #}
+              <th style="min-width: 100px;">
+                Progress
+              </th>
+              {# mgs_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of meanings">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Meanings{# Number of meanings per language #}
+                  </div>
+                </div>
+              </th>
+              {# entd_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of entries">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Lexemes{# Number of entries per language #}
+                  </div>
+                </div>
+              </th>
+              {# lex_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of lexemes">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Swadesh{# Number of lexemes per language #}
+                  </div>
+                </div>
+              </th>
+              {# notSwh_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of exluded lexemes per language">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Not Swh{# Number of excluded lexemes per language #}
+                  </div>
+                </div>
+              </th>
+              {# toomany_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="(#lexemes - #meanings)">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Too many{# Lex.-Mgs #}
+                  </div>
+                </div>
+              </th>
+              {# unassigned_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of lexemes without a cognate class">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Unassigned
+                  </div>
+                </div>
+              </th>
+              {# check_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Check
+                  </div>
+                </div>
+              </th>
+            </tr>
+            <tr class="filterBar">
+              {# branchcolor_filter.html #}
+              <td colspan="2"></td>
+              {# entryno_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".entryNo">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# lv_filter.html #}
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageLevel0 input"
+                         style="width: 1.5em;">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageLevel0"
+                         style="width: 1.5em;">
+                {% endif %}
+              </td>
+              <td>
+                <input type="text"
+                       class="filterText form-control"
+                       data-selector=".languageLevel0Abbr"
+                       style="width: 4em;">
+              </td>
+              {% if user.is_staff %}
+                <td>
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageLevel1 input"
+                         style="width: 1.5em;">
+                </td>
+                <td>
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageLevel1Abbr"
+                         style="width: 4em;">
+                </td>
+                <td>
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageLevel2 input"
+                         style="width: 1.5em;">
+                </td>
+                <td>
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageLevel2Abbr"
+                         style="width: 4em;">
+                </td>
+                <td class="hide">
+                    <input type="text"
+                           class="filterInput form-control"
+                           data-selector=".languageLevel3 input"
+                           style="width: 1.5em;">
+                </td>
+                <td class="hide">
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageLevel3Abbr"
+                         style="width: 4em;">
+                </td>
+                {# sortRankInClade_filter.html #}
+                <td>
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".sortRankInClade input"
+                         style="width: 1.5em;">
+                </td>
+                {# sndcomp_filter.html #}
+                <td class="hide">
+                  <input type="text"
+                         class="filterInput form-control narrow"
+                         data-selector=".languageSndCompCode input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".languageSndCompCode input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                </td>
+              {% endif %}
+              {# historical_filter.html #}
+              <td>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".languageHistorical input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# notInExport_filter.html #}
+              <td>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".notInExport input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# name_link.html #}
+              <td></td>
+              {# name_filter.html #}
+              <td>
+                <input type="text" class="filterInput form-control"
+                       data-selector=".languageName input.language_name">
+                <div class="btn btn-xs btn-default sortInput"
+                     data-selector=".languageName input.language_name">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# beast_filter.html #}
+              <td class="hide">
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".beastName input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".beastName input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".beastName">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".beastName">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              {# variety_filter.html #}
+              <td class="hide">
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".languageVariety input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".languageVariety input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".languageVariety">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".languageVariety">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td></td>{# filter for edit #}
+              {# iso_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterText form-control"
+                       data-selector=".languageIsoCode"
+                       style="width: 2em;">
+              </td>
+              {# glotto_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterText form-control narrow"
+                       data-selector=".languageGlottocode">
+                <div class="btn btn-xs btn-default sortText"
+                     data-selector=".languageGlottocode">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# latitude_filter.html #}
+              <td></td>
+              {# longitude_filter.html #}
+              <td></td>
+              {# distribution_filter.html #}
+              <td>
+                {# No filtering for selections implemented. #}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".logNormalOffset input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".logNormalOffset input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".logNormalOffset">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".logNormalOffset">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".logNormalMean input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".logNormalMean input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".logNormalMean">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".logNormalMean">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".logNormalStDev input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".logNormalStDev input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".logNormalStDev">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".logNormalStDev">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".normalMean input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".normalMean input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".normalMean">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".normalMean">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".normalStDev input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".normalStDev input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".normalStDev">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".normalStDev">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control narrow"
+                         data-selector=".uniformLower input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".uniformLower input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control narrow"
+                         data-selector=".uniformLower">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".uniformLower">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".uniformUpper input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".uniformUpper input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".uniformUpper">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".uniformUpper">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              {# earliest_filter.html #}
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageEarliestTimeDepthBound input"
+                         style="width: 3.4em;">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageEarliestTimeDepthBound"
+                         style="width: 3.4em;">
+                {% endif %}
+              </td>
+              {# latest_filter.html #}
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageLatestTimeDepthBound input"
+                         style="width: 3.4em;">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageLatestTimeDepthBound"
+                         style="width: 3.4em;">
+                {% endif %}
+              </td>
+              {# reference_filter.html #}
+              <td>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".languageRepresentative input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# fossstat_filter.html #}
+              <td>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".languageFossStat input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# lowstat_filter.html #}
+              <td>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".languageLowStat input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# webpath_filter.html #}
+              {% if user.is_staff %}
+                <td>
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageRfcWebPath1 input">
+                </td>
+              {% endif %}
+              {# author_filter.html #}
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageAuthor input">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageAuthor">
+                {% endif %}
+              </td>
+              {# entryTimeframe_filter.html #}
+              {% if user.is_authenticated and user.is_staff %}
+              <td>
+                <input type="text"
+                       class="filterInput form-control"
+                       data-selector=".entryTimeframe input">
+              </td>
+              {% endif %}
+              {# reviewer_filter.html #}
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageReviewer input">
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".languageReviewer">
+                {% endif %}
+              </td>
+              {# progress_filter.html #}
+              <td class="nowrap"
+                  style="min-width: 100px;">
+                <input type="text"
+                       class="filterInput form-control"
+                       data-selector=".progressData input"
+                       style="width: 1.5em;">
+                <div class="btn btn-xs btn-default sortInput"
+                     data-selector=".progressData input">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# mgs_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageMgsCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# entd_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageEntdCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# lex_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageLexCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# notSwh_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageNotSwhCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# toomany_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageExcessCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# unassigned_title.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageUnassignedCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# check_filter.html #}
+              <td></td>
+            </tr>
+          </thead>
+          <tbody>
+            {% for language in lang_ed_form.langlist %}
+              <tr data-cladefilter-representative="{{ language.object_data.representative }}"
+                  data-cladefilter-cladepath="{{ language.object_data.cladePath }}">
+                {# branchcolor_data.html #}
+                <td class="languageBranchColor"
+                    style="background-color: #{{ language.object_data.hexColor }};"
+                  ></td>
+                <td class="languageBranchColorSpace"></td>
+                {# entryno_data.html #}
+                <td class="entryNo numberField">
+                  {{ forloop.counter }}
+                </td>
+                {# lv_data.html #}
+                <td class="languageLevel0"
+                  {% if language.object_data.level0Tooltip %}
+                    title="{{ language.object_data.level0Tooltip }}"
+                    data-toggle="tooltip"
+                    data-placement="bottom"
+                    data-container="body"
+                  {% endif %}
+                  >
+                  <center>
+                    {% if user.is_authenticated and user.is_staff %}
+                      {% form_field language.level0 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                    {% elif language.level0.data %}
+                      {{ language.level0.data }}
+                    {% endif %}
+                  </center>
+                </td>
+                <td class="languageLevel0Abbr">
+                  {% if language.object_data.level0Tooltip %}
+                    <span class="badge" style="background-color: #{{ language.object_data.level0Color }};">
+                      {{ language.object_data.level0Tooltip }}
+                    </span>
+                  {% endif %}
+                </td>
+                {% if user.is_staff %}
+                  <td class="languageLevel1"
+                    {% if language.object_data.level1Tooltip %}
+                      title="{{ language.object_data.level1Tooltip }}"
+                      data-toggle="tooltip"
+                      data-placement="bottom"
+                      data-container="body"
+                    {% endif %}
+                    >
+                    <center>
+                      {% form_field language.level1 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                    </center>
+                  </td>
+                  <td class="languageLevel1Abbr">
+                    {% if language.object_data.level1Tooltip %}
+                      <span class="badge" style="background-color: #{{ language.object_data.level1Color }};">
+                        {{ language.object_data.level1Tooltip }}
+                      </span>
+                    {% endif %}
+                  </td>
+                  <td class="languageLevel2"
+                    {% if language.object_data.level2Tooltip %}
+                      title="{{ language.object_data.level2Tooltip }}"
+                      data-toggle="tooltip"
+                      data-placement="bottom"
+                      data-container="body"
+                    {% endif %}
+                    >
+                    <center>
+                      {% form_field language.level2 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                    </center>
+                  </td>
+                  <td class="languageLevel2Abbr">
+                    {% if language.object_data.level2Tooltip %}
+                      <span class="badge" style="background-color: #{{ language.object_data.level2Color }};">
+                        {{ language.object_data.level2Tooltip }}
+                      </span>
+                    {% endif %}
+                  </td>
+                  <td class="languageLevel3 hide"
+                    {% if language.object_data.level3Tooltip %}
+                      title="{{ language.object_data.level3Tooltip }}"
+                      data-toggle="tooltip"
+                      data-placement="bottom"
+                      data-container="body"
+                    {% endif %}
+                    >
+                    <center>
+                      {% form_field language.level3 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                    </center>
+                  </td>
+                  <td class="languageLevel3Abbr hide">
+                    {% if language.object_data.level3Tooltip %}
+                      <span class="badge" style="background-color: #{{ language.object_data.level3Color }};">
+                        {{ language.object_data.level3Tooltip }}
+                      </span>
+                    {% endif %}
+                  </td>
+                  {# sortRankInClade_data.html #}
+                  <td class="sortRankInClade">
+                    {% form_field language.sortRankInClade size="2" class="form-control numberField" pattern="^[0-9]{1,3}$" style="width: 2em;" %}
+                  </td>
+                  {# sndcomp_data.html #}
+                  <td class="languageSndCompCode hide">
+                    {% form_field language.soundcompcode size="8" class="form-control" %}
+                  </td>
+                {% endif %}
+                {# historical_data.html #}
+                <td class="languageHistorical">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.historical class="form-control" data-dependencyfor-tr="historical" %}
+                  {% else %}
+                    {% form_field language.historical class="form-control" disabled=disabled %}
+                  {% endif %}
+                </td>
+                {# notInExport_data.html #}
+                <td class="notInExport">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.notInExport class="form-control" %}
+                  {% else %}
+                    {% form_field language.notInExport class="form-control" disabled=disabled %}
+                  {% endif %}
+                </td>
+                {# name_link.html #}
+                <td>
+                  <a href="{% url 'view-language-wordlist' language.ascii_name.data wordlist %}"
+                     alt="view lexeme list"
+                     title="View wordlist list for {{ language.utf8_name.data }}">
+                    <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+                  </a>
+                </td>
+                {# name_data.html #}
+                <td class="languageName">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.idField class="hide" %}
+                    {% form_field language.lastTouched class="hide" %}
+                    {% form_field language.lastEditedBy class="hide" %}
+                  {% endif %}
+                  {% form_field language.utf8_name class="language_name form-control" required="required" style="width: 13em;" %}
+                </td>
+                {# beast_data.html #}
+                <td class="beastName hide">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.ascii_name class="form-control" required="required" pattern="[a-zA-Z0-9_\-]+" style="width: 13em;" %}
+                  {% else %}
+                    {{ language.ascii_name.data }}
+                  {% endif %}
+                </td>
+                {# variety_data.html #}
+                <td class="languageVariety hide">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.variety size="8" class="form-control" %}
+                  {% elif language.variety.data %}
+                    {{ language.variety.data }}
+                  {% endif %}
+                </td>
+                {# edit_data.html #}
+                <td class="nowrap">
+                  {% if user.is_authenticated and user.is_staff %}
+                    <a href="{% url 'language-edit' language.ascii_name.data %}"
+                       title="Edit {{ language.utf8_name.data }} metadata"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       class="inline">
+                      <span class="glyphicon glyphicon-edit"></span>
+                    </a>
+                    <div class="inline"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       title="clone this language">
+                      <button class="btn btn-default btn-xs"
+                         data-toggle="cloneLanguageModal"
+                         data-sourcelanguagename="{{ language.ascii_name.data }}"
+                         data-languageid="{{ language.object_data.id }}"
+                         data-target="#cloneLanguageModal"
+                         type="button">
+                        <span class="glyphicon glyphicon-duplicate"></span>
+                      </button>
+                    </div>
+                  {% endif %}
+                </td>
+                {# iso_data.html #}
+                <td class="languageIsoCode" style="padding-left: 0.5em;">
+                  {% if language.iso_code.data %}
+                    <a href="http://en.wikipedia.org/wiki/ISO_639:{{ language.iso_code.data }}"
+                       target="_blank">
+                      {{ language.iso_code.data }}
+                    </a>
+                    {% form_field language.iso_code class="hide" %}
+                  {% elif user.is_authenticated and user.is_staff %}
+                    {% form_field language.iso_code maxlength="3" class="form-control" style="width: 2.5em;" %}
+                  {% endif %}
+                </td>
+                {# glotto_data.html #}
+                <td class="languageGlottocode">
+                  {% if language.data.glottocode %}
+                    <a href="http://glottolog.org/resource/languoid/id/{{ language.data.glottocode }}"
+                       target="_blank">
+                      {{ language.data.glottocode }}
+                    </a>
+                    {% form_field language.glottocode class="hide" %}
+                  {% elif user.is_authenticated and user.is_staff %}
+                    {% form_field language.glottocode maxlength="8" size="8" class="form-control" %}
+                  {% endif %}
+                </td>
+                {# latitude_data.html #}
+                <td>
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.latitude class="form-control" %}
+                  {% else %}
+                    {{ language.object_data.latitude }}
+                  {% endif %}
+                </td>
+                {# longitude_data.html #}
+                <td>
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.longitude class="form-control" %}
+                  {% else %}
+                    {{ language.object_data.longitude }}
+                  {% endif %}
+                </td>
+                {# distribution_data.html #}
+                <td class="distribution">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.distribution class="form-control distributionSelection" data-inputdepends="historical" %}
+                  {% elif language.distribution.data %}
+                    {{ language.distribution.data }}
+                  {% endif %}
+                </td>
+                <td class="logNormalOffset reflectDistribution datetooltip" data-allowed="O">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.logNormalOffset class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif language.logNormalOffset.data %}
+                    {{ language.logNormalOffset.data }}
+                  {% endif %}
+                </td>
+                <td class="logNormalMean reflectDistribution" data-allowed="OL">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.logNormalMean class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif language.logNormalMean.data %}
+                    {{ language.logNormalMean.data }}
+                  {% endif %}
+                </td>
+                <td class="logNormalStDev reflectDistribution" data-allowed="OL">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.logNormalStDev class="form-control numberField" pattern="^[0-9\-\.]*$" disabled="disabled" %}
+                  {% elif language.logNormalStDev.data %}
+                    {{ language.logNormalStDev.data }}
+                  {% endif %}
+                </td>
+                <td class="normalMean reflectDistribution datetooltip" data-allowed="N">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.normalMean class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif language.normalMean.data %}
+                    {{ language.normalMean.data }}
+                  {% endif %}
+                </td>
+                <td class="normalStDev reflectDistribution" data-allowed="N">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.normalStDev class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif language.normalStDev.data %}
+                    {{ language.normalStDev.data }}
+                  {% endif %}
+                </td>
+                <td class="uniformLower reflectDistribution datetooltip" data-allowed="U">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.uniformLower class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif language.uniformLower.data %}
+                    {{ language.uniformLower.data }}
+                  {% endif %}
+                </td>
+                <td class="uniformUpper reflectDistribution datetooltip" data-allowed="U">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.uniformUpper class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif language.uniformUpper.data %}
+                    {{ language.uniformUpper.data }}
+                  {% endif %}
+                </td>
+                {# earliest_data.html #}
+                <td class="languageEarliestTimeDepthBound datetooltip">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.earliestTimeDepthBound maxlength="4" class="form-control"  style="width: 3.4em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
+                  {% else %}
+                    {% if language.earliestTimeDepthBound.data %}
+                      {{ language.earliestTimeDepthBound.data }}
+                    {% endif %}
+                  {% endif %}
+                </td>
+                {# latest_data.html #}
+                <td class="languageLatestTimeDepthBound datetooltip">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.latestTimeDepthBound maxlength="4" class="form-control" style="width: 3.4em;" pattern="[0-9]{0,4}" data-inputdepends="historical" %}
+                  {% elif language.latestTimeDepthBound.data %}
+                    {{ language.latestTimeDepthBound.data }}
+                  {% endif %}
+                </td>
+                {# reference_data.html #}
+                <td class="languageRepresentative">
+                  <div class="centralised_checkbox">
+                    {% if user.is_authenticated and user.is_staff %}
+                      {% form_field language.representative class="form-control" %}
+                    {% else %}
+                      {% form_field language.representative class="form-control" disabled="disabled" %}
+                    {% endif %}
+                  </div>
+                </td>
+                {# fossstat_data.html #}
+                <td class="languageFossStat">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.foss_stat onclick="MutexCheckbox(this)" class="MutexCheckbox form-control" %}
+                  {% else %}
+                    {% form_field language.foss_stat disabled="disabled" class="form-control" %}
+                  {% endif %}
+                </td>
+                {# lowstat_data.html #}
+                <td class="languageLowStat">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.low_stat onclick="MutexCheckbox(this)" class="MutexCheckbox form-control" %}
+                  {% else %}
+                    {% form_field language.low_stat class="form-control" disabled="disabled" %}
+                  {% endif %}
+                </td>
+                {# webpath_data.html #}
+                {% if user.is_staff %}
+                  <td class="languageRfcWebPath1">
+                    {% form_field language.rfcWebPath1 class="form-control" style="width: 4em;" %}
+                  </td>
+                {% endif %}
+                {# author_data.html #}
+                <td class="languageAuthor">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.author class="form-control" style="width: 12em;" %}
+                  {% else %}
+                    {{ language.author.data }}
+                  {% endif %}
+                </td>
+                {# entryTimeframe_data.html #}
+                {% if user.is_authenticated and user.is_staff %}
+                <td class="entryTimeframe">
+                  {% form_field language.entryTimeframe class="form-control" style="width: 10em;" %}
+                </td>
+                {% endif %}
+                {# reviewer_data.html #}
+                <td class="languageReviewer">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.reviewer size="8" class="form-control" style="width: 3em;" %}
+                  {% elif language.reviewer.data %}
+                    {{ language.reviewer.data }}
+                  {% endif %}
+                </td>
+                {# progress_data.html #}
+                <td class="progressData nowrap"
+                    style="min-width: 100px;">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.progress class="form-control numberField inline" pattern="^[0-5]{1}$" style="max-width: 1.5em;" %}
+                  {% else %}
+                    {{ language.progress.data }}
+                  {% endif %}
+                  <div class="progress pull-right"
+                       style="width: 75px;">
+                    <div class="progress-bar {{ language.object_data.progressBarClass }}"
+                         role="progressbar"
+                         aria-valuenow="{{ language.object_data.progressPercentage }}"
+                         aria-valuemin="0"
+                         aria-valuemax="100"
+                         style="width: {{ language.object_data.progressPercentage }}%;">
+                      <span class="sr-only">
+                        {{ language.object_data.progressPercentage }}% Complete
+                      </span>
+                    </div>
+                  </div>
+                </td>
+                {# mgs_data.html #}
+                <td class="languageMgsCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.meaningCount }}</span>
+                  </center>
+                </td>
+                {# entd_data.html #}
+                <td class="languageEntdCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.entryCount }}</span>
+                  </center>
+                </td>
+                {# lex_data.html #}
+                <td class="languageLexCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.lexCount }}</span>
+                  </center>
+                </td>
+                {# notSwh_data.html #}
+                <td class="languageNotSwhCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.nonLexCount }}</span>
+                  </center>
+                </td>
+                {# toomany_data.html #}
+                <td class="languageExcessCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.excessCount }}</span>
+                  </center>
+                </td>
+                {# unassigned_data.html #}
+                <td class="languageUnassignedCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.unassignedCount }}</span>
+                  </center>
+                </td>
+                {# check_data.html #}
+                <td>
+                  <a class="btn btn-default bootboxHtmlSnippet"
+                     data-toggle="tooltip"
+                     data-placement="bottom"
+                     data-htmlsource="/language/{{ language.ascii_name.data }}/check"
+                     title="Check this language.">
+                    <span class="glyphicon glyphicon-list"></span>
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% if user.is_authenticated and user.is_staff %}
+        </form>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

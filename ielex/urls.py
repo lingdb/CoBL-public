@@ -44,7 +44,8 @@ from ielex.views import add_language_list, \
                         view_wordlist, \
                         view_wordlists, \
                         view_nexus_export, \
-                        view_two_languages_wordlist
+                        view_two_languages_wordlist, \
+                        view_language_progress
 from ielex import settings
 from ielex.lexicon.views import CognateClassCitationCreateView, \
                                 cognate_class_citation_delete, \
@@ -110,6 +111,10 @@ urlpatterns = patterns(
             queryset=LanguageList.objects.all(),
             context_object_name="language_lists"),
         name="view-language-lists"),
+
+    # Language progress (#311):
+    url(r'^languageprogress/%(LANGUAGELIST)s/$' % R, view_language_progress,
+        name="view-language-progress"),
 
     # Language check (#159):
     url(r'^language/check$' % R, view_language_check),
