@@ -74,25 +74,6 @@
               <span class="glyphicon glyphicon-edit"></span>
               sort order ‘{{ current_language_list_name }}’
             </a>
-            <span class="badge important updatePercentages"
-                  data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Overall progress of visible entries">
-              <div class="progress"
-                   style="width: 100px; margin-top: 2.5px; margin-bottom: 2.5px;">
-                <div class="progress-bar"
-                     role="progressbar"
-                     aria-valuenow="0"
-                     aria-valuemin="0"
-                     aria-valuemax="100"
-                     style="width: 0%;">
-                  <span class="sr-only">
-                    0% Complete
-                  </span>
-                </div>
-              </div>
-            </span>
             <span class="badge important updateCounts"
                   data-countformat="countVisible initial"
                   data-toggle="tooltip"
@@ -238,6 +219,20 @@
               </th>
               {# distribution_title.html #}
               <th>Distribution type</th>
+              <!-- For normal: -->
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Mean for normal distribution">
+                Norm Mean
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="StDev for normal distribution">
+                Norm StDev
+              </th>
+              <!-- For log: -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
@@ -256,26 +251,13 @@
                   title="StDev for log normal distribution">
                 LogN StDev
               </th>
-              <!-- For normal: -->
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Mean for normal distribution">
-                Norm Mean
-              </th>
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="StDev for normal distribution">
-                Norm StDev
-              </th>
+              <!-- For Uniform: -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
                   title="Lower bound for uniform distribution type">
                 Unif Lower
               </th>
-              <!-- For Uniform: -->
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
@@ -341,98 +323,6 @@
                   </div>
                 </th>
               {% endif %}
-              {# author_title.html #}
-              <th>Author</th>
-              {# entryTimeframe_title.html #}
-              {% if user.is_authenticated and user.is_staff %}
-                <th>Timeframe</th>
-              {% endif %}
-              {# reviewer_title.html #}
-              <th>
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Reviewer
-                  </div>
-                </div>
-              </th>
-              {# progress_title.html #}
-              <th colspan="2">
-                Progress
-              </th>
-              {# mgs_title.html #}
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Number of meanings">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Meanings{# Number of meanings per language #}
-                  </div>
-                </div>
-              </th>
-              {# entd_title.html #}
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Number of entries">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Lexemes{# Number of entries per language #}
-                  </div>
-                </div>
-              </th>
-              {# lex_title.html #}
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Number of lexemes">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Swadesh{# Number of lexemes per language #}
-                  </div>
-                </div>
-              </th>
-              {# notSwh_title.html #}
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Number of exluded lexemes per language">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Not Swh{# Number of excluded lexemes per language #}
-                  </div>
-                </div>
-              </th>
-              {# toomany_title.html #}
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="(#lexemes - #meanings)">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Too many{# Lex.-Mgs #}
-                  </div>
-                </div>
-              </th>
-              {# unassigned_title.html #}
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
-                  title="Number of lexemes without a cognate class">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Unassigned
-                  </div>
-                </div>
-              </th>
-              {# check_title.html #}
-              <th>
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Check
-                  </div>
-                </div>
-              </th>
             </tr>
             <tr class="filterBar">
               {# branchcolor_filter.html #}
@@ -611,6 +501,40 @@
               <td>
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text" class="filterInput form-control narrow"
+                         data-selector=".normalMean input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".normalMean input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".normalMean">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".normalMean">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
+                         data-selector=".normalStDev input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".normalStDev input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control narrow"
+                         data-selector=".normalStDev">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".normalStDev">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control narrow"
                          data-selector=".logNormalOffset input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".logNormalOffset input">
@@ -655,40 +579,6 @@
                          data-selector=".logNormalStDev">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".logNormalStDev">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% endif %}
-              </td>
-              <td>
-                {% if user.is_authenticated and user.is_staff %}
-                  <input type="text" class="filterInput form-control narrow"
-                         data-selector=".normalMean input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".normalMean input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% else %}
-                  <input type="text" class="filterText form-control narrow"
-                         data-selector=".normalMean">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".normalMean">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% endif %}
-              </td>
-              <td>
-                {% if user.is_authenticated and user.is_staff %}
-                  <input type="text" class="filterInput form-control narrow"
-                         data-selector=".normalStDev input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".normalStDev input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% else %}
-                  <input type="text" class="filterText form-control narrow"
-                         data-selector=".normalStDev">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".normalStDev">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
@@ -789,94 +679,6 @@
                          data-selector=".languageRfcWebPath1 input">
                 </td>
               {% endif %}
-              {# author_filter.html #}
-              <td>
-                {% if user.is_authenticated and user.is_staff %}
-                  <input type="text"
-                         class="filterInput form-control"
-                         data-selector=".languageAuthor input">
-                {% else %}
-                  <input type="text"
-                         class="filterText form-control"
-                         data-selector=".languageAuthor">
-                {% endif %}
-              </td>
-              {# entryTimeframe_filter.html #}
-              {% if user.is_authenticated and user.is_staff %}
-              <td>
-                <input type="text"
-                       class="filterInput form-control"
-                       data-selector=".entryTimeframe input">
-              </td>
-              {% endif %}
-              {# reviewer_filter.html #}
-              <td>
-                {% if user.is_authenticated and user.is_staff %}
-                  <input type="text"
-                         class="filterInput form-control"
-                         data-selector=".languageReviewer input">
-                {% else %}
-                  <input type="text"
-                         class="filterText form-control"
-                         data-selector=".languageReviewer">
-                {% endif %}
-              </td>
-              {# progress_filter.html #}
-              <td class="nowrap"
-                  colspan="2">
-                <input type="text"
-                       class="filterInput form-control"
-                       data-selector=".progressData input"
-                       style="width: 1.5em;">
-                <div class="btn btn-xs btn-default sortInput"
-                     data-selector=".progressData input">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </td>
-              {# mgs_filter.html #}
-              <td>
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".languageMgsCount">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </td>
-              {# entd_filter.html #}
-              <td>
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".languageEntdCount">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </td>
-              {# lex_filter.html #}
-              <td>
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".languageLexCount">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </td>
-              {# notSwh_filter.html #}
-              <td>
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".languageNotSwhCount">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </td>
-              {# toomany_filter.html #}
-              <td>
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".languageExcessCount">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </td>
-              {# unassigned_title.html #}
-              <td>
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".languageUnassignedCount">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </td>
-              {# check_filter.html #}
-              <td></td>
             </tr>
           </thead>
           <tbody>
@@ -1105,6 +907,20 @@
                     {{ language.distribution.data }}
                   {% endif %}
                 </td>
+                <td class="normalMean reflectDistribution datetooltip" data-allowed="N">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.normalMean class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif language.normalMean.data %}
+                    {{ language.normalMean.data }}
+                  {% endif %}
+                </td>
+                <td class="normalStDev reflectDistribution" data-allowed="N">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.normalStDev class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
+                  {% elif language.normalStDev.data %}
+                    {{ language.normalStDev.data }}
+                  {% endif %}
+                </td>
                 <td class="logNormalOffset reflectDistribution datetooltip" data-allowed="O">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.logNormalOffset class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
@@ -1124,20 +940,6 @@
                     {% form_field language.logNormalStDev class="form-control numberField" pattern="^[0-9\-\.]*$" disabled="disabled" %}
                   {% elif language.logNormalStDev.data %}
                     {{ language.logNormalStDev.data }}
-                  {% endif %}
-                </td>
-                <td class="normalMean reflectDistribution datetooltip" data-allowed="N">
-                  {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.normalMean class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
-                  {% elif language.normalMean.data %}
-                    {{ language.normalMean.data }}
-                  {% endif %}
-                </td>
-                <td class="normalStDev reflectDistribution" data-allowed="N">
-                  {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.normalStDev class="form-control numberField" pattern="^[0-9]{0,4}$" disabled="disabled" %}
-                  {% elif language.normalStDev.data %}
-                    {{ language.normalStDev.data }}
                   {% endif %}
                 </td>
                 <td class="uniformLower reflectDistribution datetooltip" data-allowed="U">
@@ -1204,96 +1006,6 @@
                     {% form_field language.rfcWebPath1 class="form-control" style="width: 4em;" %}
                   </td>
                 {% endif %}
-                {# author_data.html #}
-                <td class="languageAuthor">
-                  {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.author class="form-control" style="width: 12em;" %}
-                  {% else %}
-                    {{ language.author.data }}
-                  {% endif %}
-                </td>
-                {# entryTimeframe_data.html #}
-                {% if user.is_authenticated and user.is_staff %}
-                <td class="entryTimeframe">
-                  {% form_field language.entryTimeframe class="form-control" style="width: 10em;" %}
-                </td>
-                {% endif %}
-                {# reviewer_data.html #}
-                <td class="languageReviewer">
-                  {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.reviewer size="8" class="form-control" style="width: 3em;" %}
-                  {% elif language.reviewer.data %}
-                    {{ language.reviewer.data }}
-                  {% endif %}
-                </td>
-                {# progress_data.html #}
-                <td class="progressData">
-                  {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.progress class="form-control numberField" pattern="^[0-5]{1}$" style="width: 1.5em;" %}
-                  {% else %}
-                    {{ language.progress.data }}
-                  {% endif %}
-                </td>
-                <td class="progressBar">
-                 <div class="progress">
-                     <div class="progress-bar {{ language.object_data.progressBarClass }}"
-                          role="progressbar"
-                          aria-valuenow="{{ language.object_data.progressPercentage }}"
-                          aria-valuemin="0"
-                          aria-valuemax="100"
-                          style="width: {{ language.object_data.progressPercentage }}%;">
-                       <span class="sr-only">
-                         {{ language.object_data.progressPercentage }}% Complete
-                       </span>
-                     </div>
-                  </div>
-                </td>
-                {# mgs_data.html #}
-                <td class="languageMgsCount">
-                  <center>
-                    <span class="badge">{{ language.object_data.meaningCount }}</span>
-                  </center>
-                </td>
-                {# entd_data.html #}
-                <td class="languageEntdCount">
-                  <center>
-                    <span class="badge">{{ language.object_data.entryCount }}</span>
-                  </center>
-                </td>
-                {# lex_data.html #}
-                <td class="languageLexCount">
-                  <center>
-                    <span class="badge">{{ language.object_data.lexCount }}</span>
-                  </center>
-                </td>
-                {# notSwh_data.html #}
-                <td class="languageNotSwhCount">
-                  <center>
-                    <span class="badge">{{ language.object_data.nonLexCount }}</span>
-                  </center>
-                </td>
-                {# toomany_data.html #}
-                <td class="languageExcessCount">
-                  <center>
-                    <span class="badge">{{ language.object_data.excessCount }}</span>
-                  </center>
-                </td>
-                {# unassigned_data.html #}
-                <td class="languageUnassignedCount">
-                  <center>
-                    <span class="badge">{{ language.object_data.unassignedCount }}</span>
-                  </center>
-                </td>
-                {# check_data.html #}
-                <td>
-                  <a class="btn btn-default bootboxHtmlSnippet"
-                     data-toggle="tooltip"
-                     data-placement="bottom"
-                     data-htmlsource="/language/{{ language.ascii_name.data }}/check"
-                     title="Check this language.">
-                    <span class="glyphicon glyphicon-list"></span>
-                  </a>
-                </td>
               </tr>
             {% endfor %}
           </tbody>
