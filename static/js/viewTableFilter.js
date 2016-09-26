@@ -2,8 +2,9 @@
   "use strict";
   return define(['jquery','lodash',
                  'js/cladeFilter',
+                 'js/viewTableFilter/settings',
                  'floatThead'],
-    function($, _, mkCladeFilter){
+    function($, _, mkCladeFilter, settings){
     /*
       This view can be used to filter and sort tables.
       The table is expected to contain input elements
@@ -40,9 +41,11 @@
         _.each(module.inputClasses, function(inputClass){
           if(inputClass in module){
             $('input.'+inputClass).each(function(){
-              var input = $(this);
-              input.keyup(function(){
-                module[inputClass](input, table);
+              var $input = $(this);
+              var storeInput = settings.mkStoreKeyupInput($input, inputClass);
+              $input.keyup(function(){
+                module[inputClass]($input, table);
+                storeInput();
               });
             });
             $('button.'+inputClass).each(function(){
@@ -78,6 +81,8 @@
           λ();
         }
       });
+      //Load previous settings:
+      settings.restoreKeyupInputs();
     };
     /**
       @param table    :: $ ∧ table
