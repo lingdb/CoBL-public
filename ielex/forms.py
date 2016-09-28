@@ -8,6 +8,8 @@ from django.contrib import messages
 from django.db import transaction
 from django.forms import ValidationError
 from django.utils.encoding import python_2_unicode_compatible
+from itertools import izip
+from ielex.lexicon.defaultModels import getDefaultWordlist
 from ielex.lexicon.models import CognateClass, \
                                  CognateClassCitation, \
                                  DISTRIBUTION_CHOICES, \
@@ -18,7 +20,10 @@ from ielex.lexicon.models import CognateClass, \
                                  Source, \
                                  TYPE_CHOICES, \
                                  CognateJudgement, \
-                                 Clade
+                                 Clade, \
+                                 MeaningListOrder, \
+                                 LexemeCitation, \
+                                 CognateJudgementCitation
 from ielex.lexicon.validators import suitable_for_url, suitable_for_url_wtforms
 from wtforms import StringField, \
                     IntegerField, \
@@ -313,6 +318,89 @@ class LanguageListRowForm(AbstractTimestampedForm, AbstractDistributionForm):
 
 class AddLanguageListTableForm(WTForm):
     langlist = FieldList(FormField(LanguageListRowForm))
+
+    def handle(self, request):
+        # Languages that may need clade updates:
+        updateClades = []
+        # Iterating form to update languages:
+        for entry in self.langlist:
+            data = entry.data
+            try:
+                with transaction.atomic():
+                    lang = Language.objects.get(id=data['idField'])
+                    if lang.isChanged(**data):
+                        try:
+                            problem = lang.setDelta(request, **data)
+                            if problem is None:
+                                lang.save()
+                                # Making sure we update clades
+                                # for changed languages:
+                                updateClades.append(lang)
+                            else:
+                                messages.error(request,
+                                               lang.deltaReport(**problem))
+                        except Exception:
+                            logging.exception('Exception while saving POST '
+                                              'in view_language_list.')
+                            messages.error(
+                                request, 'Sorry, the server failed '
+                                         'to save "%s".' % data['ascii_name'])
+            except Exception:
+                logging.exception('Exception accessing Language object '
+                                  'in AddLanguageListTableForm.handle().',
+                                  extra=data)
+                messages.error(request, 'Sorry, the server had problems '
+                               'saving at least one language entry.')
+        return updateClades
+
+
+class LanguageListProgressRowForm(AbstractTimestampedForm):
+    idField = IntegerField('Language id', validators=[InputRequired()])
+    level0 = IntegerField('Clade level 0', validators=[InputRequired()])
+    level1 = IntegerField('Clade level 1', validators=[InputRequired()])
+    level2 = IntegerField('Clade level 2', validators=[InputRequired()])
+    level3 = IntegerField('Clade level 3', validators=[InputRequired()])
+    sortRankInClade = IntegerField(
+        'Sort rank in clade', validators=[InputRequired()])
+    notInExport = BooleanField('Not in Export', validators=[InputRequired()])
+    utf8_name = StringField('Display name', validators=[InputRequired()])
+    author = StringField('Author', validators=[InputRequired()])
+    entryTimeframe = StringField('Entry timeframe',
+                                 validators=[InputRequired()])
+    reviewer = StringField('Reviewer', validators=[InputRequired()])
+    progress = IntegerField('Progress on this language',
+                            validators=[InputRequired()])
+
+
+class LanguageListProgressForm(WTForm):
+    langlist = FieldList(FormField(LanguageListProgressRowForm))
+
+    def handle(self, request):
+        # Languages that may need clade updates:
+        updateClades = []
+        # Iterating form to update languages:
+        for entry in self.langlist:
+            try:
+                with transaction.atomic():
+                    lang = Language.objects.get(id=entry.data['idField'])
+                    if lang.isChanged(**entry.data):
+                        problem = lang.setDelta(request, **entry.data)
+                        if problem is None:
+                            lang.save()
+                            updateClades.append(lang)
+                        else:
+                            messages.error(request,
+                                           lang.deltaReport(**problem))
+            except Exception:
+                logging.exception('Exception saving Language '
+                                  'in LanguageListProgressForm.handle().',
+                                  extra=entry.data)
+                messages.error(
+                    request,
+                    'Sorry, the server had problems saving '
+                    'data for the language entry %s.' %
+                    entry.data['utf8_name'])
+        return updateClades
 
 
 class CladeRowForm(AbstractTimestampedForm, AbstractDistributionForm):
@@ -1082,6 +1170,113 @@ class CloneLanguageForm(WTForm):
         'Id of the language to clone',
         validators=[InputRequired()])
     emptyLexemes = BooleanField('Should lexemes be emptied?')
+
+    def handle(self, request, current_list):
+        with transaction.atomic():
+            sourceLanguage = Language.objects.get(
+                id=self.data['languageId'])
+            # Creating language clone:
+            cloneData = {'ascii_name': self.data['languageName'],
+                         'utf8_name': self.data['languageName']}
+            for f in sourceLanguage.timestampedFields():
+                if f not in cloneData:
+                    cloneData[f] = getattr(sourceLanguage, f)
+            clone = Language(**cloneData)
+            clone.bump(request)
+            clone.save()
+            # Adding language to current language list, if not viewing all:
+            if current_list.name != LanguageList.ALL:
+                current_list.append(clone)
+            # Wordlist to use:
+            meaningIds = MeaningListOrder.objects.filter(
+                meaning_list__name=getDefaultWordlist(request)
+                ).values_list(
+                "meaning_id", flat=True)
+            # Lexemes to copy:
+            sourceLexemes = Lexeme.objects.filter(
+                language__ascii_name=self.data['sourceLanguageName'],
+                meaning__in=meaningIds).all(
+                ).prefetch_related('meaning')
+            # Editor for AbstractTimestamped:
+            lastEditedBy = ' '.join([request.user.first_name,
+                                     request.user.last_name])
+            # Copy lexemes to clone language:
+            currentLexemeIds = set(Lexeme.objects.values_list(
+                'id', flat=True))
+            newLexemes = []
+            order = 1  # Increasing values for _order fields of Lexemes
+            for sLexeme in sourceLexemes:
+                # Basic data:
+                data = {'language': clone,
+                        'meaning': sLexeme.meaning,
+                        '_order': order,
+                        'lastEditedBy': lastEditedBy}
+                order += 1
+                # Copying lexeme data if specified:
+                if not self.data['emptyLexemes']:
+                    for f in sLexeme.timestampedFields():
+                        if f != 'lastEditedBy':
+                            data[f] = getattr(sLexeme, f)
+                # New lexeme to create:
+                newLexeme = Lexeme(**data)
+                newLexemes.append(newLexeme)
+            Lexeme.objects.bulk_create(newLexemes)
+            # Copying CognateJudgements for newLexemes:
+            if not self.data['emptyLexemes']:
+                newLexemeIds = Lexeme.objects.exclude(
+                    id__in=currentLexemeIds).order_by(
+                    'id').values_list('id', flat=True)
+                # Cloning LexemeCitations:
+                newLexemeCitations = []
+                for newId, lexeme in izip(newLexemeIds, sourceLexemes):
+                    for lc in lexeme.lexemecitation_set.all():
+                        newLexemeCitations.append(LexemeCitation(
+                            lexeme_id=newId,
+                            source_id=lc.source_id,
+                            pages=lc.pages,
+                            reliability=lc.reliability,
+                            comment=lc.comment,
+                            modified=lc.modified
+                        ))
+                LexemeCitation.objects.bulk_create(newLexemeCitations)
+                # Cloning CognateJudgements:
+                currentCognateJudgementIds = set(
+                    CognateJudgement.objects.values_list('id', flat=True))
+                newCognateJudgements = []
+                sourceCJs = []
+                for newId, lexeme in izip(newLexemeIds, sourceLexemes):
+                    cjs = CognateJudgement.objects.filter(
+                        lexeme_id=lexeme.id).prefetch_related(
+                        'cognatejudgementcitation_set').all()
+                    sourceCJs += cjs
+                    for cj in cjs:
+                        newCognateJudgement = CognateJudgement(
+                            lexeme_id=newId,
+                            cognate_class_id=cj.cognate_class_id,
+                            lastEditedBy=lastEditedBy
+                        )
+                        newCognateJudgements.append(newCognateJudgement)
+                CognateJudgement.objects.bulk_create(newCognateJudgements)
+                # Copying CognateJudgementCitations
+                # for newCognateJudgements:
+                newCognateJudgementIds = CognateJudgement.objects.exclude(
+                    id__in=currentCognateJudgementIds).order_by(
+                    'id').values_list(
+                    'id', flat=True)
+                newCognateJudgementCitations = []
+                for newId, cj in izip(newCognateJudgementIds, sourceCJs):
+                    for cjc in cj.cognatejudgementcitation_set.all():
+                        newCognateJudgementCitations.append(
+                            CognateJudgementCitation(
+                                cognate_judgement_id=newId,
+                                source_id=cjc.source_id,
+                                pages=cjc.pages,
+                                reliability=cjc.reliability,
+                                comment=cjc.comment,
+                                modified=cjc.modified
+                            ))
+                CognateJudgementCitation.objects.bulk_create(
+                    newCognateJudgementCitations)
 
 
 class MeaningTableFilterForm(forms.ModelForm):

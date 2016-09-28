@@ -90,10 +90,10 @@
                   data-placement="bottom"
                   data-container="body"
                   title="Visible / Total rows">
-              {{ lang_ed_form.langlist|length }}
+              {{ form.langlist|length }}
             </span>
-            <a href="{% url 'view-language-list' current_list.name %}" class="btn btn-default"> undo</a>
-            <input type="submit" value="Save" name="langlist_form" class="btn btn-danger">
+            <a href="{% url 'view-language-progress' current_list.name %}" class="btn btn-default"> undo</a>
+            <input type="submit" value="Save" name="progress_form" class="btn btn-danger">
           </div>
           <h1 class="inline">
             Language list: {{ current_language_list_name }}
@@ -212,11 +212,7 @@
               {% endif %}
               {# reviewer_title.html #}
               <th>
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Reviewer
-                  </div>
-                </div>
+                Reviewer
               </th>
               {# progress_title.html #}
               <th colspan="2">
@@ -432,11 +428,13 @@
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text"
                          class="filterInput form-control"
-                         data-selector=".languageAuthor input">
+                         data-selector=".languageAuthor input"
+                         style="width: 100%;">
                 {% else %}
                   <input type="text"
                          class="filterText form-control"
-                         data-selector=".languageAuthor">
+                         data-selector=".languageAuthor"
+                         style="width: 100%;">
                 {% endif %}
               </td>
               {# entryTimeframe_filter.html #}
@@ -444,7 +442,8 @@
               <td>
                 <input type="text"
                        class="filterInput form-control"
-                       data-selector=".entryTimeframe input">
+                       data-selector=".entryTimeframe input"
+                       style="width: 100%;">
               </td>
               {% endif %}
               {# reviewer_filter.html #}
@@ -452,11 +451,13 @@
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text"
                          class="filterInput form-control"
-                         data-selector=".languageReviewer input">
+                         data-selector=".languageReviewer input"
+                         style="width: 100%;">
                 {% else %}
                   <input type="text"
                          class="filterText form-control"
-                         data-selector=".languageReviewer">
+                         data-selector=".languageReviewer"
+                         style="width: 100%;">
                 {% endif %}
               </td>
               {# progress_filter.html #}
@@ -518,7 +519,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for language in lang_ed_form.langlist %}
+            {% for language in form.langlist %}
               <tr data-cladefilter-representative="{{ language.object_data.representative }}"
                   data-cladefilter-cladepath="{{ language.object_data.cladePath }}">
                 {# branchcolor_data.html #}
@@ -623,11 +624,12 @@
                 {% endif %}
                 {# historical_data.html #}
                 <td class="languageHistorical">
-                  {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.historical class="form-control" data-dependencyfor-tr="historical" %}
-                  {% else %}
-                    {% form_field language.historical class="form-control" disabled=disabled %}
-                  {% endif %}
+                  <input type="checkbox"
+                         disabled="disabled"
+                         class="form-control"
+                         {% if language.object_data.historical %}
+                         checked="checked"
+                         {% endif %}>
                 </td>
                 {# notInExport_data.html #}
                 <td class="notInExport">
@@ -639,7 +641,7 @@
                 </td>
                 {# name_link.html #}
                 <td>
-                  <a href="{% url 'view-language-wordlist' language.ascii_name.data wordlist %}"
+                  <a href="{% url 'view-language-wordlist' language.object_data.ascii_name wordlist %}"
                      alt="view lexeme list"
                      title="View wordlist list for {{ language.utf8_name.data }}">
                     <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
@@ -665,7 +667,7 @@
                 {# author_data.html #}
                 <td class="languageAuthor">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.author class="form-control" style="width: 12em;" %}
+                    {% form_field language.author class="form-control" %}
                   {% else %}
                     {{ language.author.data }}
                   {% endif %}
@@ -673,13 +675,13 @@
                 {# entryTimeframe_data.html #}
                 {% if user.is_authenticated and user.is_staff %}
                 <td class="entryTimeframe">
-                  {% form_field language.entryTimeframe class="form-control" style="width: 10em;" %}
+                  {% form_field language.entryTimeframe class="form-control" %}
                 </td>
                 {% endif %}
                 {# reviewer_data.html #}
                 <td class="languageReviewer">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.reviewer size="8" class="form-control" style="width: 3em;" %}
+                    {% form_field language.reviewer size="8" class="form-control" %}
                   {% elif language.reviewer.data %}
                     {{ language.reviewer.data }}
                   {% endif %}

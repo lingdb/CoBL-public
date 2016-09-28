@@ -45,6 +45,7 @@ from ielex.forms import AddCitationForm, \
                         EditMeaningListForm, \
                         EditSourceForm, \
                         LanguageListRowForm, \
+                        LanguageListProgressForm, \
                         LexemeTableEditCognateClassesForm, \
                         LexemeTableLanguageWordlistForm, \
                         LexemeTableViewMeaningsForm, \
@@ -345,37 +346,8 @@ def view_language_list(request, language_list=None):
                            'did not pass server side validation.')
             return HttpResponseRedirect(
                 reverse("view-language-list", args=[current_list.name]))
-        # Languages that may need clade updates:
-        updateClades = []
-        # Iterating form to update languages:
-        for entry in languageListTableForm.langlist:
-            data = entry.data
-            try:
-                with transaction.atomic():
-                    lang = Language.objects.get(id=data['idField'])
-                    if lang.isChanged(**data):
-                        try:
-                            problem = lang.setDelta(request, **data)
-                            if problem is None:
-                                lang.save()
-                                # Making sure we update clades
-                                # for changed languages:
-                                updateClades.append(lang)
-                            else:
-                                messages.error(request,
-                                               lang.deltaReport(**problem))
-                        except Exception:
-                            logging.exception('Exception while saving POST '
-                                              'in view_language_list.')
-                            messages.error(
-                                request, 'Sorry, the server failed '
-                                         'to save "%s".' % data['ascii_name'])
-            except Exception:
-                logging.exception('Exception accessing Language object '
-                                  'in view_language_list.',
-                                  extra=data)
-                messages.error(request, 'Sorry, the server had problems '
-                               'saving at least one language entry.')
+        # Updating languages and gathering clades to update:
+        updateClades = languageListTableForm.handle(request)
         # Updating clade relations for changes languages:
         if len(updateClades) > 0:
             updateLanguageCladeRelations(languages=updateClades)
@@ -387,115 +359,11 @@ def view_language_list(request, language_list=None):
         form = CloneLanguageForm(request.POST)
         try:
             form.validate()
-            with transaction.atomic():
-                sourceLanguage = Language.objects.get(
-                    id=form.data['languageId'])
-                # Creating language clone:
-                cloneData = {'ascii_name': form.data['languageName'],
-                             'utf8_name': form.data['languageName']}
-                for f in sourceLanguage.timestampedFields():
-                    if f not in cloneData:
-                        cloneData[f] = getattr(sourceLanguage, f)
-                clone = Language(**cloneData)
-                clone.bump(request)
-                clone.save()
-                # Adding language to current language list, if not viewing all:
-                if current_list.name != LanguageList.ALL:
-                    current_list.append(clone)
-                # Wordlist to use:
-                meaningIds = MeaningListOrder.objects.filter(
-                    meaning_list__name=getDefaultWordlist(request)
-                    ).values_list(
-                    "meaning_id", flat=True)
-                # Lexemes to copy:
-                sourceLexemes = Lexeme.objects.filter(
-                    language__ascii_name=form.data['sourceLanguageName'],
-                    meaning__in=meaningIds).all(
-                    ).prefetch_related('meaning')
-                # Editor for AbstractTimestamped:
-                lastEditedBy = ' '.join([request.user.first_name,
-                                         request.user.last_name])
-                # Copy lexemes to clone language:
-                currentLexemeIds = set(Lexeme.objects.values_list(
-                    'id', flat=True))
-                newLexemes = []
-                order = 1  # Increasing values for _order fields of Lexemes
-                for sLexeme in sourceLexemes:
-                    # Basic data:
-                    data = {'language': clone,
-                            'meaning': sLexeme.meaning,
-                            '_order': order,
-                            'lastEditedBy': lastEditedBy}
-                    order += 1
-                    # Copying lexeme data if specified:
-                    if not form.data['emptyLexemes']:
-                        for f in sLexeme.timestampedFields():
-                            if f != 'lastEditedBy':
-                                data[f] = getattr(sLexeme, f)
-                    # New lexeme to create:
-                    newLexeme = Lexeme(**data)
-                    newLexemes.append(newLexeme)
-                Lexeme.objects.bulk_create(newLexemes)
-                # Copying CognateJudgements for newLexemes:
-                if not form.data['emptyLexemes']:
-                    newLexemeIds = Lexeme.objects.exclude(
-                        id__in=currentLexemeIds).order_by(
-                        'id').values_list('id', flat=True)
-                    # Cloning LexemeCitations:
-                    newLexemeCitations = []
-                    for newId, lexeme in izip(newLexemeIds, sourceLexemes):
-                        for lc in lexeme.lexemecitation_set.all():
-                            newLexemeCitations.append(LexemeCitation(
-                                lexeme_id=newId,
-                                source_id=lc.source_id,
-                                pages=lc.pages,
-                                reliability=lc.reliability,
-                                comment=lc.comment,
-                                modified=lc.modified
-                            ))
-                    LexemeCitation.objects.bulk_create(newLexemeCitations)
-                    # Cloning CognateJudgements:
-                    currentCognateJudgementIds = set(
-                        CognateJudgement.objects.values_list('id', flat=True))
-                    newCognateJudgements = []
-                    sourceCJs = []
-                    for newId, lexeme in izip(newLexemeIds, sourceLexemes):
-                        cjs = CognateJudgement.objects.filter(
-                            lexeme_id=lexeme.id).prefetch_related(
-                            'cognatejudgementcitation_set').all()
-                        sourceCJs += cjs
-                        for cj in cjs:
-                            newCognateJudgement = CognateJudgement(
-                                lexeme_id=newId,
-                                cognate_class_id=cj.cognate_class_id,
-                                lastEditedBy=lastEditedBy
-                            )
-                            newCognateJudgements.append(newCognateJudgement)
-                    CognateJudgement.objects.bulk_create(newCognateJudgements)
-                    # Copying CognateJudgementCitations
-                    # for newCognateJudgements:
-                    newCognateJudgementIds = CognateJudgement.objects.exclude(
-                        id__in=currentCognateJudgementIds).order_by(
-                        'id').values_list(
-                        'id', flat=True)
-                    newCognateJudgementCitations = []
-                    for newId, cj in izip(newCognateJudgementIds, sourceCJs):
-                        for cjc in cj.cognatejudgementcitation_set.all():
-                            newCognateJudgementCitations.append(
-                                CognateJudgementCitation(
-                                    cognate_judgement_id=newId,
-                                    source_id=cjc.source_id,
-                                    pages=cjc.pages,
-                                    reliability=cjc.reliability,
-                                    comment=cjc.comment,
-                                    modified=cjc.modified
-                                ))
-                    CognateJudgementCitation.objects.bulk_create(
-                        newCognateJudgementCitations)
-                # Redirect to newly created language:
-                messages.success(request, 'Language cloned.')
-                return HttpResponseRedirect(
-                    reverse("view-language-list", args=[current_list.name]))
+            form.handle(request, current_list)
+            # Redirect to newly created language:
+            messages.success(request, 'Language cloned.')
+            return HttpResponseRedirect(
+                reverse("view-language-list", args=[current_list.name]))
         except Exception:
             logging.exception('Problem cloning Language in view_language_list')
             messages.error(request, 'Sorry, a problem occured '
@@ -2446,193 +2314,42 @@ def view_two_languages_wordlist(request,
 def view_language_progress(request, language_list=None):
     current_list = get_canonical_language_list(language_list, request)
     setDefaultLanguagelist(request, current_list.name)
-    languages = current_list.languages.all().prefetch_related(
-        "lexeme_set", "lexeme_set__meaning",
-        "languageclade_set", "clades")
 
-    if (request.method == 'POST') and ('langlist_form' in request.POST):
-        languageListTableForm = AddLanguageListTableForm(request.POST)
+    if (request.method == 'POST') and ('progress_form' in request.POST):
+        form = LanguageListProgressForm(request.POST)
         try:
-            languageListTableForm.validate()
+            form.validate()
         except Exception:
             logging.exception(
-                'Exception in POST validation for view_language_progress')
+                'Exception in POST validation for view_language_list')
             messages.error(request, 'Sorry, the form data sent '
                            'did not pass server side validation.')
             return HttpResponseRedirect(
-                reverse("view-language-list", args=[current_list.name]))
-        # Languages that may need clade updates:
-        updateClades = []
-        # Iterating form to update languages:
-        for entry in languageListTableForm.langlist:
-            data = entry.data
-            try:
-                with transaction.atomic():
-                    lang = Language.objects.get(id=data['idField'])
-                    if lang.isChanged(**data):
-                        try:
-                            problem = lang.setDelta(request, **data)
-                            if problem is None:
-                                lang.save()
-                                # Making sure we update clades
-                                # for changed languages:
-                                updateClades.append(lang)
-                            else:
-                                messages.error(request,
-                                               lang.deltaReport(**problem))
-                        except Exception:
-                            logging.exception('Exception while saving POST '
-                                              'in view_language_progress.')
-                            messages.error(
-                                request, 'Sorry, the server failed '
-                                         'to save "%s".' % data['ascii_name'])
-            except Exception:
-                logging.exception('Exception accessing Language object '
-                                  'in view_language_progress.',
-                                  extra=data)
-                messages.error(request, 'Sorry, the server had problems '
-                               'saving at least one language entry.')
+                reverse("view-language-progress", args=[current_list.name]))
+        # Updating languages and gathering clades to update:
+        updateClades = form.handle(request)
         # Updating clade relations for changes languages:
         if len(updateClades) > 0:
             updateLanguageCladeRelations(languages=updateClades)
         # Redirecting so that UA makes a GET.
         return HttpResponseRedirect(
-            reverse("view-language-list", args=[current_list.name]))
-    elif (request.method == 'POST') and ('cloneLanguage' in request.POST):
-        # Cloning language and lexemes:
-        form = CloneLanguageForm(request.POST)
-        try:
-            form.validate()
-            with transaction.atomic():
-                sourceLanguage = Language.objects.get(
-                    id=form.data['languageId'])
-                # Creating language clone:
-                cloneData = {'ascii_name': form.data['languageName'],
-                             'utf8_name': form.data['languageName']}
-                for f in sourceLanguage.timestampedFields():
-                    if f not in cloneData:
-                        cloneData[f] = getattr(sourceLanguage, f)
-                clone = Language(**cloneData)
-                clone.bump(request)
-                clone.save()
-                # Adding language to current language list, if not viewing all:
-                if current_list.name != LanguageList.ALL:
-                    current_list.append(clone)
-                # Wordlist to use:
-                meaningIds = MeaningListOrder.objects.filter(
-                    meaning_list__name=getDefaultWordlist(request)
-                    ).values_list(
-                    "meaning_id", flat=True)
-                # Lexemes to copy:
-                sourceLexemes = Lexeme.objects.filter(
-                    language__ascii_name=form.data['sourceLanguageName'],
-                    meaning__in=meaningIds).all(
-                    ).prefetch_related('meaning')
-                # Editor for AbstractTimestamped:
-                lastEditedBy = ' '.join([request.user.first_name,
-                                         request.user.last_name])
-                # Copy lexemes to clone language:
-                currentLexemeIds = set(Lexeme.objects.values_list(
-                    'id', flat=True))
-                newLexemes = []
-                order = 1  # Increasing values for _order fields of Lexemes
-                for sLexeme in sourceLexemes:
-                    # Basic data:
-                    data = {'language': clone,
-                            'meaning': sLexeme.meaning,
-                            '_order': order,
-                            'lastEditedBy': lastEditedBy}
-                    order += 1
-                    # Copying lexeme data if specified:
-                    if not form.data['emptyLexemes']:
-                        for f in sLexeme.timestampedFields():
-                            if f != 'lastEditedBy':
-                                data[f] = getattr(sLexeme, f)
-                    # New lexeme to create:
-                    newLexeme = Lexeme(**data)
-                    newLexemes.append(newLexeme)
-                Lexeme.objects.bulk_create(newLexemes)
-                # Copying CognateJudgements for newLexemes:
-                if not form.data['emptyLexemes']:
-                    newLexemeIds = Lexeme.objects.exclude(
-                        id__in=currentLexemeIds).order_by(
-                        'id').values_list('id', flat=True)
-                    # Cloning LexemeCitations:
-                    newLexemeCitations = []
-                    for newId, lexeme in izip(newLexemeIds, sourceLexemes):
-                        for lc in lexeme.lexemecitation_set.all():
-                            newLexemeCitations.append(LexemeCitation(
-                                lexeme_id=newId,
-                                source_id=lc.source_id,
-                                pages=lc.pages,
-                                reliability=lc.reliability,
-                                comment=lc.comment,
-                                modified=lc.modified
-                            ))
-                    LexemeCitation.objects.bulk_create(newLexemeCitations)
-                    # Cloning CognateJudgements:
-                    currentCognateJudgementIds = set(
-                        CognateJudgement.objects.values_list('id', flat=True))
-                    newCognateJudgements = []
-                    sourceCJs = []
-                    for newId, lexeme in izip(newLexemeIds, sourceLexemes):
-                        cjs = CognateJudgement.objects.filter(
-                            lexeme_id=lexeme.id).prefetch_related(
-                            'cognatejudgementcitation_set').all()
-                        sourceCJs += cjs
-                        for cj in cjs:
-                            newCognateJudgement = CognateJudgement(
-                                lexeme_id=newId,
-                                cognate_class_id=cj.cognate_class_id,
-                                lastEditedBy=lastEditedBy
-                            )
-                            newCognateJudgements.append(newCognateJudgement)
-                    CognateJudgement.objects.bulk_create(newCognateJudgements)
-                    # Copying CognateJudgementCitations
-                    # for newCognateJudgements:
-                    newCognateJudgementIds = CognateJudgement.objects.exclude(
-                        id__in=currentCognateJudgementIds).order_by(
-                        'id').values_list(
-                        'id', flat=True)
-                    newCognateJudgementCitations = []
-                    for newId, cj in izip(newCognateJudgementIds, sourceCJs):
-                        for cjc in cj.cognatejudgementcitation_set.all():
-                            newCognateJudgementCitations.append(
-                                CognateJudgementCitation(
-                                    cognate_judgement_id=newId,
-                                    source_id=cjc.source_id,
-                                    pages=cjc.pages,
-                                    reliability=cjc.reliability,
-                                    comment=cjc.comment,
-                                    modified=cjc.modified
-                                ))
-                    CognateJudgementCitation.objects.bulk_create(
-                        newCognateJudgementCitations)
-                # Redirect to newly created language:
-                messages.success(request, 'Language cloned.')
-                return HttpResponseRedirect(
-                    reverse("view-language-progress",
-                            args=[current_list.name]))
-        except Exception:
-            logging.exception(
-                'Problem cloning Language in view_language_progress')
-            messages.error(request, 'Sorry, a problem occured '
-                           'when cloning the language.')
-            return HttpResponseRedirect(
-                reverse("view-language-progress", args=[current_list.name]))
+            reverse("view-language-progress", args=[current_list.name]))
 
+    languages = current_list.languages.all().prefetch_related(
+        "lexeme_set", "lexeme_set__meaning",
+        "languageclade_set", "clades")
     meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
-    languages_editabletable_form = AddLanguageListTableForm()
+    form = LanguageListProgressForm()
     for lang in languages:
         lang.idField = lang.id
         lang.computeCounts(meaningList)
-        languages_editabletable_form.langlist.append_entry(lang)
+        form.langlist.append_entry(lang)
 
     otherLanguageLists = LanguageList.objects.exclude(name=current_list).all()
 
     return render_template(request, "language_progress.html",
                            {"languages": languages,
-                            'lang_ed_form': languages_editabletable_form,
+                            'form': form,
                             "current_list": current_list,
                             "otherLanguageLists": otherLanguageLists,
                             "wordlist": getDefaultWordlist(request),
