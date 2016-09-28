@@ -1677,6 +1677,9 @@ class Author(AbstractTimestamped):
     class Meta:
         ordering = ["surname", "firstNames"]
 
+    def __unicode__(self):
+        return '%s, %s' %(self.surname, self.firstNames)
+
     @property
     def getAvatar(self):
         '''
