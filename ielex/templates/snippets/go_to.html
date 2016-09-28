@@ -27,14 +27,16 @@
     <span class="glyphicon glyphicon-headphones"></span>
   </a>
 </li>
-<li>
-  <a href={% url 'view-language-progress' current_language_list_name %}
-     title="View database progress"
-     data-toggle="tooltip"
-     data-placement="bottom">
-    <span class="glyphicon glyphicon-scale"></span>
-  </a>
-</li>
+{% if user.is_authenticated %}
+  <li>
+    <a href={% url 'view-language-progress' current_language_list_name %}
+       title="View database progress"
+       data-toggle="tooltip"
+       data-placement="bottom">
+      <span class="glyphicon glyphicon-scale"></span>
+    </a>
+  </li>
+{% endif %}
 <li>
   <a href={% url 'view-language-list' current_language_list_name %}
      title="View list of languages"

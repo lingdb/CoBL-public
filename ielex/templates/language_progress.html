@@ -101,10 +101,7 @@
           {% endif %}
           {% include "snippets/cladeFilter.html" %}
         </div>{# .fixedContainer #}
-        <table class="table table-striped viewTableFilter
-                     {% if user.is_authenticated %}
-                     distributionPlot
-                     {% endif %}"
+        <table class="table table-striped viewTableFilter"
                {% if user.is_authenticated and user.is_staff %}
                   data-floatheadtop="65"
                {% else %}

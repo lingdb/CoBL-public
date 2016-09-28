@@ -803,9 +803,9 @@
                 </td>
                 {# name_link.html #}
                 <td>
-                  <a href="{% url 'view-language-wordlist' language.ascii_name.data wordlist %}"
+                  <a href="{% url 'view-language-wordlist' language.object_data.ascii_name wordlist %}"
                      alt="view lexeme list"
-                     title="View wordlist list for {{ language.utf8_name.data }}">
+                     title="View wordlist list for {{ language.object_data.utf8_name }}">
                     <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
                   </a>
                 </td>
@@ -837,8 +837,8 @@
                 {# edit_data.html #}
                 <td class="nowrap">
                   {% if user.is_authenticated and user.is_staff %}
-                    <a href="{% url 'language-edit' language.ascii_name.data %}"
-                       title="Edit {{ language.utf8_name.data }} metadata"
+                    <a href="{% url 'language-edit' language.object_data.ascii_name %}"
+                       title="Edit {{ language.object_data.utf8_name }} metadata"
                        data-toggle="tooltip"
                        data-placement="top"
                        class="inline">
@@ -850,7 +850,7 @@
                        title="clone this language">
                       <button class="btn btn-default btn-xs"
                          data-toggle="cloneLanguageModal"
-                         data-sourcelanguagename="{{ language.ascii_name.data }}"
+                         data-sourcelanguagename="{{ language.object_data.ascii_name }}"
                          data-languageid="{{ language.object_data.id }}"
                          data-target="#cloneLanguageModal"
                          type="button">

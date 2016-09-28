@@ -270,42 +270,31 @@ class AbstractDistributionForm(WTForm):
 
 class LanguageListRowForm(AbstractTimestampedForm, AbstractDistributionForm):
     idField = IntegerField('Language id', validators=[InputRequired()])
-    iso_code = StringField('ISO code', validators=[InputRequired()])
-    utf8_name = StringField('Display name', validators=[InputRequired()])
-    ascii_name = StringField(
-        'URL name', validators=[InputRequired(), suitable_for_url_wtforms])
-    glottocode = StringField('Glottocode', validators=[InputRequired()])
-    variety = StringField('Language Variety', validators=[InputRequired()])
-    foss_stat = BooleanField('Fossilised Status', validators=[InputRequired()])
-    low_stat = BooleanField('Low Status', validators=[InputRequired()])
-    soundcompcode = StringField('Sound Comparisons Code',
-                                validators=[InputRequired()])
     level0 = IntegerField('Clade level 0', validators=[InputRequired()])
     level1 = IntegerField('Clade level 1', validators=[InputRequired()])
     level2 = IntegerField('Clade level 2', validators=[InputRequired()])
     level3 = IntegerField('Clade level 3', validators=[InputRequired()])
-    representative = BooleanField('Representative',
-                                  validators=[InputRequired()])
-    rfcWebPath1 = StringField('This Lg lex rfc web path 1',
-                              validators=[InputRequired()])
-    rfcWebPath2 = StringField('This Lg lex rfc web path 2',
-                              validators=[InputRequired()])
-    author = StringField('Author', validators=[InputRequired()])
-    reviewer = StringField('Reviewer', validators=[InputRequired()])
+    sortRankInClade = IntegerField(
+        'Sort rank in clade', validators=[InputRequired()])
+    historical = BooleanField('Historical', validators=[InputRequired()])
+    notInExport = BooleanField('Not in Export', validators=[InputRequired()])
+    utf8_name = StringField('Display name', validators=[InputRequired()])
+    iso_code = StringField('ISO code', validators=[InputRequired()])
+    glottocode = StringField('Glottocode', validators=[InputRequired()])
+    latitude = DecimalField('Latitude', validators=[InputRequired()])
+    longitude = DecimalField('Longitude', validators=[InputRequired()])
     earliestTimeDepthBound = IntegerField('Earliest Time-Depth Bound',
                                           validators=[InputRequired()])
     latestTimeDepthBound = IntegerField('Latest Time-Depth Bound',
                                         validators=[InputRequired()])
-    progress = IntegerField('Progress on this language',
-                            validators=[InputRequired()])
-    sortRankInClade = IntegerField(
-        'Sort rank in clade', validators=[InputRequired()])
-    entryTimeframe = StringField('Entry timeframe',
-                                 validators=[InputRequired()])
-    historical = BooleanField('Historical', validators=[InputRequired()])
-    notInExport = BooleanField('Not in Export', validators=[InputRequired()])
-    latitude = DecimalField('Latitude', validators=[InputRequired()])
-    longitude = DecimalField('Longitude', validators=[InputRequired()])
+    representative = BooleanField('Representative',
+                                  validators=[InputRequired()])
+    foss_stat = BooleanField('Fossilised Status', validators=[InputRequired()])
+    low_stat = BooleanField('Low Status', validators=[InputRequired()])
+    rfcWebPath1 = StringField('This Lg lex rfc web path 1',
+                              validators=[InputRequired()])
+    rfcWebPath2 = StringField('This Lg lex rfc web path 2',
+                              validators=[InputRequired()])
 
     def validate_historical(form, field):
         # Assumes that field.data :: True | False
@@ -324,31 +313,21 @@ class AddLanguageListTableForm(WTForm):
         updateClades = []
         # Iterating form to update languages:
         for entry in self.langlist:
-            data = entry.data
             try:
                 with transaction.atomic():
-                    lang = Language.objects.get(id=data['idField'])
-                    if lang.isChanged(**data):
-                        try:
-                            problem = lang.setDelta(request, **data)
-                            if problem is None:
-                                lang.save()
-                                # Making sure we update clades
-                                # for changed languages:
-                                updateClades.append(lang)
-                            else:
-                                messages.error(request,
-                                               lang.deltaReport(**problem))
-                        except Exception:
-                            logging.exception('Exception while saving POST '
-                                              'in view_language_list.')
-                            messages.error(
-                                request, 'Sorry, the server failed '
-                                         'to save "%s".' % data['ascii_name'])
+                    lang = Language.objects.get(id=entry.data['idField'])
+                    if lang.isChanged(**entry.data):
+                        problem = lang.setDelta(request, **entry.data)
+                        if problem is None:
+                            lang.save()
+                            updateClades.append(lang)
+                        else:
+                            messages.error(request,
+                                           lang.deltaReport(**problem))
             except Exception:
-                logging.exception('Exception accessing Language object '
-                                  'in AddLanguageListTableForm.handle().',
-                                  extra=data)
+                logging.exception(
+                    'Exception in AddLanguageListTableForm.handle().',
+                    extra=entry.data)
                 messages.error(request, 'Sorry, the server had problems '
                                'saving at least one language entry.')
         return updateClades
