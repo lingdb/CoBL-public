@@ -63,9 +63,25 @@ LANGUAGE_PROGRESS = (  # used by Languages
     (5, 'Second review complete'))
 
 
-YEAR_CHOICES = []
+YEAR_CHOICES = [] #used by Source
 for r in range(1800, (datetime.datetime.now().year+1)):
     YEAR_CHOICES.append((r,r))
+
+SOURCE_TYPE_CHOICES = ( #used by Source
+    ('article', 'article'),
+    ('book', 'book'),
+    ('booklet', 'booklet'),
+    ('conference', 'conference'),
+    ('inbook', 'in book'),
+    ('incollection', 'in collection'),
+    ('inproceedings', 'in proceedings'),
+    ('manual', 'manual'),
+    ('mastersthesis', 'masters thesis'),
+    ('misc', 'misc'),
+    ('phdthesis', 'phd thesis'),
+    ('proceedings', 'proceedings'),
+    ('unpublished', 'unpublished'),
+    )
 
 # http://south.aeracode.org/docs/customfields.html#extending-introspection
 # add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])
@@ -249,7 +265,7 @@ class Source(models.Model):
     author = models.ManyToManyField('Author', related_name="author", blank=True)
     year = models.IntegerField(choices=YEAR_CHOICES, default=datetime.datetime.now().year, null=True)
     title = models.TextField(blank=True)
-    type = models.CharField(max_length=32, blank=True) #add choices!
+    type = models.CharField(choices=SOURCE_TYPE_CHOICES, max_length=32, blank=True) #add choices!
     booktitle = models.TextField(blank=True)
     editor = models.ManyToManyField('Author', related_name="editor", blank=True)
     pages = models.CharField(max_length=32, blank=True)
