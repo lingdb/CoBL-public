@@ -171,3 +171,7 @@ table.floatThead-table {
   margin-bottom: 10px;
   width: 75px;
 }
+
+.loanEventCell {
+  background-color: #BBBBBB;
+}
