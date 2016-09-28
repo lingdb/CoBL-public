@@ -263,7 +263,7 @@ class Source(models.Model):
     #bibtex_type = Column(bibtex.EntryType.db_type())
     
     author = models.ManyToManyField('Author', related_name="author", blank=True)
-    year = models.IntegerField(choices=YEAR_CHOICES, default=datetime.datetime.now().year, null=True)
+    year = models.IntegerField(choices=YEAR_CHOICES, null=True)
     title = models.TextField(blank=True)
     type = models.CharField(choices=SOURCE_TYPE_CHOICES, max_length=32, blank=True) #add choices!
     booktitle = models.TextField(blank=True)
