@@ -451,7 +451,13 @@
                   </td>
                   <td class="lexemeMeaning">
                     <a href="/meaning/{{ lexeme.object_data.original.meaning.id }}/"
-                       style="font-size: 15px; color: #006400;">
+                       style="font-size: 15px; color: #006400;"
+                       {% if lexeme.object_data.meaning.tooltip %}
+                         data-toggle="tooltip"
+                         data-placement="top"
+                         data-container="body"
+                         title="{{ lexeme.object_data.meaning.tooltip }}"
+                       {% endif %}>
                       {{ lexeme.object_data.original.meaning.gloss }}
                     </a>
                     {% if lexeme.object_data.original.language.rfcWebPath1 and lexeme.object_data.original.rfcWebLookup1 %}
@@ -648,7 +654,13 @@
                 </td>
                 <td class="lexemeMeaning">
                   <a href="{% url 'meaning-report' lexeme.object_data.meaning_id %}"
-                     style="font-size: 15px; color: #006400;">
+                     style="font-size: 15px; color: #006400;"
+                     {% if lexeme.object_data.meaning.tooltip %}
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       data-container="body"
+                       title="{{ lexeme.object_data.meaning.tooltip }}"
+                     {% endif %}>
                     {{ lexeme.object_data.meaning }}
                   </a>
                   {% if lexeme.object_data.language.rfcWebPath1 and lexeme.object_data.rfcWebLookup1 %}

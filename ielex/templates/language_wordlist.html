@@ -505,7 +505,13 @@
                 </td>
                 <td class="lexemeMeaning">
                   <a href="{% url 'meaning-report' lexeme.meaning_id.data %}"
-                     style="font-size: 15px; color: #006400;">
+                     style="font-size: 15px; color: #006400;"
+                     {% if lexeme.object_data.meaning.tooltip %}
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       data-container="body"
+                       title="{{ lexeme.object_data.meaning.tooltip }}"
+                     {% endif %}>
                     {{ lexeme.data.meaning }}
                   </a>
                   {% if lexeme.object_data.language.rfcWebPath1 and lexeme.data.rfcWebLookup1 %}
@@ -698,8 +704,8 @@
                 <td class="lexemeGloss">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.gloss size="8" class="form-control" %}
-                  {% elif lexeme.gloss.data %}
-                    {{ lexeme.gloss.data }}
+                  {% elif lexeme.object_data.gloss %}
+                    {{ lexeme.object_data.gloss }}
                   {% endif %}
                 </td>
                 {# notes_data.html #}

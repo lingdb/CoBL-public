@@ -9,9 +9,10 @@
     <div class="col-md-4">
       <h1 class="inline"
           {% if lang1.description %}
-          data-toggle="tooltip"
-          data-placement="right"
-          title="{{ lang1.description }}"
+            data-toggle="tooltip"
+            data-placement="right"
+            data-container="body"
+            title="{{ lang1.description }}"
           {% endif %}>
         <input class="typeaheadText"
                value="{{ lang1.utf8_name }}"
@@ -37,9 +38,10 @@
     <div class="col-md-4">
       <h1 class="inline"
           {% if lang2.description %}
-          data-toggle="tooltip"
-          data-placement="right"
-          title="{{ lang2.description }}"
+            data-toggle="tooltip"
+            data-placement="right"
+            data-container="body"
+            title="{{ lang2.description }}"
           {% endif %}>
         <input class="typeaheadText"
                value="{{ lang2.utf8_name }}"
