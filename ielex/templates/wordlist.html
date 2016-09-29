@@ -155,6 +155,44 @@
                   </div>
                 {% endif %}
               </td>
+              <td>
+                {% if user.is_authenticated %}
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".meaningTooltip input"
+                         style="width: 6em;">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".meaningTooltip input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control"
+                         data-selector=".meaningTooltip"
+                         style="width: 6em;">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".meaningTooltip">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated %}
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".meaningElicitation input"
+                         style="width: 6em;">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".meaningElicitation input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control"
+                         data-selector=".meaningElicitation"
+                         style="width: 6em;">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".meaningElicitation">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
               {% if user.is_authenticated %}
                 <td colspan="3"></td>
               {% else %}
