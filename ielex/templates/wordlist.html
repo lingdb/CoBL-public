@@ -74,6 +74,8 @@
               {% endif %}
               <th></th>
               <th>Meaning</th>
+              <th>Meaning specification tooltip</th>
+              <th>Elicitation Ix</th>
               <th>Show<br>Languages</th>
               <th>Show<br>Cog. Sets</th>
               {% if user.is_authenticated %}
@@ -230,18 +232,30 @@
                     </a>
                   {% endif %}
                 </td>
+                <td class="meaningGloss">
                 {% if user.is_authenticated and user.is_staff %}
                   {% form_field meaning.meaningId class="hide" %}
                   {% form_field meaning.lastTouched class="hide" %}
                   {% form_field meaning.lastEditedBy class="hide" %}
-                  <td class="meaningGloss">
-                    {% form_field meaning.gloss class="form-control" size="4" style="width: 6em;" %}
-                  </td>
+                  {% form_field meaning.gloss class="form-control" size="4" style="width: 6em;" %}
                 {% else %}
-                  <td class="meaningGloss">
-                    {{ meaning.data.gloss }}
-                  </td>
+                  {{ meaning.object_data.gloss }}
                 {% endif %}
+                </td>
+                <td class="meaningTooltip">
+                {% if user.is_authenticated and user.is_staff %}
+                  {% form_field meaning.tooltip class="form-control" %}
+                {% else %}
+                  {{ meaning.object_data.tooltip }}
+                {% endif %}
+                </td>
+                <td class="meaningElicitation">
+                {% if user.is_authenticated and user.is_staff %}
+                  {% form_field meaning.elicitation class="form-control numberField" %}
+                {% else %}
+                  {{ meaning.object_data.elicitation }}
+                {% endif %}
+                </td>
                 <td>
                   <a href="{% url 'view-meaning-languages' meaning.data.gloss defaultLanguagelist %}"
                      title="Edit ‘{{ meaning.data.gloss }}' by language list">
