@@ -848,7 +848,8 @@ class LexemeCognateClassRow(AbstractTimestampedForm):
     root_language = StringField('Root language', validators=[InputRequired()])
 
 
-class LexemeRowViewMeaningsForm(AbstractTimestampedForm):
+class LexemeRowViewMeaningsForm(AbstractTimestampedForm,
+                                AbstractCognateClassAssignmentForm):
     '''
     Since WTForms always fills fields with their default values
     we need different forms for cases where different fields are presented.
@@ -904,6 +905,8 @@ class LexemeTableViewMeaningsForm(WTForm):
                         else:
                             messages.error(
                                 request, c.deltaReport(**problem))
+                # Handling AbstractCognateClassAssignmentForm:
+                entry.handle(request, lex)
             except Exception:
                 logging.exception('Problem updating Lexeme '
                                   'in view_meaning.')

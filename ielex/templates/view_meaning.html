@@ -565,32 +565,9 @@
                         {{ cognate_form.cognate_class }}
                       </form>
                     {% endifequal %}
-                  {% endif %}
-                  {% if lexeme.object_data.allCognateClasses %}
-                    {% for c in lexeme.object_data.allCognateClasses %}
-                      <a type="button"
-                         class="editCognateClassButton inline"
-                         style="color: #CD7432;"
-                         data-toggle="tooltip"
-                         data-placement="bottom"
-                         data-container="body"
-                         title="Click to re-assign this lexeme to a different cognate class."
-                         data-json='{{ lexeme.object_data.selectionJSON }}'>
-                        {{ c.alias }}
-                      </a>
-                    {% endfor %}
+                    {% form_field lexeme.combinedCognateClassAssignment class="form-control" %}
                   {% else %}
-                    <a type="button"
-                       class="editCognateClassButton inline"
-                       style="color: #CD7432;"
-                       data-json='{{ lexeme.object_data.selectionJSON }}'
-                       data-toggle="tooltip"
-                       data-placement="bottom"
-                       data-container="body"
-                       title="Click to assign this lexeme to a cognate class."
-                       data-add="new">
-                      <span class="glyphicon glyphicon-plus-sign"></span>
-                    </a>
+                    {{ lexeme.object_data.combinedCognateClassAssignment }}
                   {% endif %}
                 </div>
               </td>
