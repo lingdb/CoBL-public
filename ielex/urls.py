@@ -45,7 +45,8 @@ from ielex.views import add_language_list, \
                         view_wordlists, \
                         view_nexus_export, \
                         view_two_languages_wordlist, \
-                        view_language_progress
+                        view_language_progress, \
+                        json_cognateClass_placeholders
 from ielex import settings
 from ielex.lexicon.views import CognateClassCitationCreateView, \
                                 cognate_class_citation_delete, \
@@ -309,13 +310,16 @@ urlpatterns = patterns(
                            context_object_name="citation"),
         name="cognate-judgement-citation-detail"),
 
-    # Added for #256
+    # Added for #256:
     url(r'^twoLanguages/$', view_two_languages_wordlist),
     url(r'^twoLanguages/([^\/]+)/$', view_two_languages_wordlist),
     url(r'^twoLanguages/([^\/]+)/([^\/]+)/$', view_two_languages_wordlist),
     url(r'^twoLanguages/([^\/]+)/([^\/]+)/([^\/]+)/$',
         view_two_languages_wordlist,
         name="view-two-languages"),
+
+    # Added for #51:
+    url(r'^json/cognateClassPlaceholders$', json_cognateClass_placeholders),
 
     url(r'^revert/(?P<revision_id>\d+)/$', revert_version, name="revert-item"),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),

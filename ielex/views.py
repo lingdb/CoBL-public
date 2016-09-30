@@ -2329,3 +2329,19 @@ def view_language_progress(request, language_list=None):
                             "otherLanguageLists": otherLanguageLists,
                             "wordlist": getDefaultWordlist(request),
                             "clades": Clade.objects.all()})
+
+
+@logExceptions
+def json_cognateClass_placeholders(request):
+    if request.method == 'GET' and 'lexemes' in request.GET:
+        lexemes = [int(s) for s in request.GET['lexemes'].split(',')]
+        cognateClasses = CognateClass.objects.filter(
+            lexeme__in=lexemes).distinct()
+        dump = json.dumps([{'id': c.id,
+                            'alias': c.alias,
+                            'placeholder':
+                                c.combinedRootPlaceholder}
+                           for c in cognateClasses]),
+        return HttpResponse(dump)
+    return HttpResponse(
+        "Please provide `lexemes` parameter detailing lexeme ids.")
