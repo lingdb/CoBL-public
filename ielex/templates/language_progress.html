@@ -111,6 +111,8 @@
             <tr>
               {# branchcolor_title.html #}
               <th colspan="2"></th>
+              {# id_title.html #}
+              <th>ID</th>
               {# entryno_title.html #}
               <th></th>
               {# lv_title.html #}
@@ -293,6 +295,13 @@
             <tr class="filterBar">
               {# branchcolor_filter.html #}
               <td colspan="2"></td>
+              {# id_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".idField">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               {# entryno_filter.html #}
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
@@ -524,6 +533,10 @@
                     style="background-color: #{{ language.object_data.hexColor }};"
                   ></td>
                 <td class="languageBranchColorSpace"></td>
+                {# id_data.html #}
+                <td class="idField numberField">
+                  {{ language.object_data.id }}
+                </td>
                 {# entryno_data.html #}
                 <td class="entryNo numberField">
                   {{ forloop.counter }}
