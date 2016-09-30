@@ -1258,13 +1258,6 @@ class CloneLanguageForm(WTForm):
                     newCognateJudgementCitations)
 
 
-class MeaningTableFilterForm(forms.ModelForm):
-
-    class Meta:
-        model = Lexeme
-        fields = ['language']
-
-
 class MeaningListRowForm(AbstractTimestampedForm):
     meaningId = IntegerField('Meaning Id', validators=[InputRequired()])
     gloss = StringField('Gloss', validators=[InputRequired()])

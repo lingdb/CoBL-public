@@ -50,7 +50,6 @@ from ielex.forms import AddCitationForm, \
                         LexemeTableLanguageWordlistForm, \
                         LexemeTableViewMeaningsForm, \
                         MeaningListTableForm, \
-                        MeaningTableFilterForm, \
                         MergeCognateClassesForm, \
                         SearchLexemeForm, \
                         SndCompCreationForm, \
@@ -1183,16 +1182,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     cognate_form = ChooseCognateClassForm()
     cognate_form.fields["cognate_class"].queryset = cognateClasses
 
-    # TODO: move this out of views
-    # filter by 'language' or 'meaning'
-    filt_form = MeaningTableFilterForm(request.GET)
-    if filt_form.is_valid():
-        if request.GET.get('language'):
-            lexemes = lexemes.filter(language=request.GET.get('language'))
-    # TODO: suppress errorlist with error
-    # "This field is required.", but only here:
-    # Here this is not needed.
-    filt_form.errors['language'] = ''
     # Fill lexemes_editabletable_form:
     lexemes_editabletable_form = LexemeTableViewMeaningsForm()
     for lex in lexemes:
@@ -1222,7 +1211,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                                        for c in cognateClasses]),
          "add_cognate_judgement": lexeme_id,
          "lex_ed_form": lexemes_editabletable_form,
-         "filt_form": filt_form,
          "typeahead": typeahead,
          "clades": Clade.objects.all()})
 
