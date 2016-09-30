@@ -269,11 +269,19 @@
             </td>
             {# cognateclasses_filter.html #}
             <td>
-              <input type="text"
-                     class="filterText form-control"
-                     data-selector=".cognateClasses"
-                     size="1"
-                     style="padding-left: 2px; padding-right: 2px;">
+              {% if user.is_authenticated %}
+                <input type="text"
+                       class="filterInput form-control"
+                       data-selector=".cognateClasses input"
+                       size="1"
+                       style="width: 100%;">
+              {% else %}
+                <input type="text"
+                       class="filterText form-control"
+                       data-selector=".cognateClasses"
+                       size="1"
+                       style="width: 100%;">
+              {% endif %}
             </td>
             {# cognateclassview_filter.html #}
             <td></td>
@@ -565,7 +573,7 @@
                         {{ cognate_form.cognate_class }}
                       </form>
                     {% endifequal %}
-                    {% form_field lexeme.combinedCognateClassAssignment class="form-control" %}
+                    {% form_field lexeme.combinedCognateClassAssignment class="form-control combinedCognateClassAssignment" %}
                   {% else %}
                     {{ lexeme.object_data.combinedCognateClassAssignment }}
                   {% endif %}
