@@ -268,6 +268,103 @@ class AbstractDistributionForm(WTForm):
                         (field.data, f))
 
 
+class AbstractCognateClassAssignmentForm(WTForm):
+    # Added for #219
+    combinedCognateClassAssignment = StringField(
+        'Assignment string for cognate classes',
+        validators=[InputRequired()])
+
+    def validate_combinedCognateClassAssignment(form, field):
+        tokens = [t.strip() for t in field.data.split(',')]
+        for t in tokens:
+            if t == 'new':
+                '''
+                This case is subsumed by the alias regex,
+                but listed here for clarity and in case
+                we want to enhance alias validation.
+                '''
+                continue
+            elif re.match('^([a-zA-Z]+|\d+)$', t) is not None:
+                continue  # Token is number or alias
+            else:
+                raise ValidationError("Unacceptable token: %s" % t)
+
+    def handle(self, request, lexeme):
+        data = self.data
+        # Guard to only update in case of change:
+        if data['combinedCognateClassAssignment'] == \
+                lexeme.combinedCognateClassAssignment:
+            return
+        # Current cognate classes:
+        currentCCs = {}  # :: id | alias -> CognateClass
+        for c in lexeme.cognate_class.all():
+            currentCCs[str(c.id)] = c
+            currentCCs[c.alias] = c
+        # cognate classes to keep:
+        keepCCs = {}  # :: id -> CognateClass
+        # We expect non staff to not increase the count of currentCCs:
+        toAdd = len(currentCCs)
+        # Tokens to handle:
+        tokens = [
+            t.strip() for t
+            in data['combinedCognateClassAssignment'].split(',')]
+        for t in tokens:
+            toAdd -= 1  # Decrement toAdd:
+            if toAdd <= 0 and len(currentCCs) > 0 \
+                    and not request.user.is_staff:
+                messages.error(
+                    request,
+                    "Sorry - only staff is allowed "
+                    "to add additional cognate set assignments. "
+                    "Please contact a staff member if you feel "
+                    "that a second cognate set is necessary. "
+                    "Refused to add '%s' to lexeme %s." % (t, lexeme.id))
+                break
+            if t == 'new':  # Add lexeme to a new class:
+                with transaction.atomic():
+                    # Class to add to:
+                    newC = CognateClass()
+                    newC.bump(request)
+                    newC.save()
+                    # Adding to new class:
+                    CognateJudgement.objects.create(
+                        lexeme_id=lexeme.id,
+                        cognate_class_id=newC.id)
+                    # Fixing alias for new class:
+                    newC.update_alias()
+            elif t in currentCCs:  # Is this one satisfied?
+                keep = currentCCs[t]
+                keepCCs[keep.id] = keep
+            else:  # Add lexeme to existing class if this is a new one.
+                cc = None
+                try:
+                    if re.match('^\d+$', t) is not None:
+                        cc = CognateClass.objects.get(id=int(t))
+                    else:
+                        cc = CognateClass.objects.filter(
+                            lexeme__meaning__id=lexeme.meaning_id
+                            ).distinct().get(alias=t)
+                except Exception:
+                    logging.exception("Problem handling token %s" % t)
+                    messages.error(
+                        request,
+                        "Sorry, the server didn't understand "
+                        "the cognate set assignment token %s." % t)
+                    continue  # Next iteration
+                # Adding to found cognate class:
+                CognateJudgement.objects.create(
+                    lexeme_id=lexeme.id,
+                    cognate_class_id=cc.id)
+        # Remove lexeme from unwanted cognate classes:
+        removeCCs = set()  # :: set(id)
+        for cc in currentCCs.values():
+            if cc.id not in keepCCs:
+                removeCCs.add(cc.id)
+        CognateJudgement.objects.filter(
+            lexeme_id=lexeme.id,
+            cognate_class_id__in=removeCCs).delete()
+
+
 class LanguageListRowForm(AbstractTimestampedForm, AbstractDistributionForm):
     idField = IntegerField('Language id', validators=[InputRequired()])
     level0 = IntegerField('Clade level 0', validators=[InputRequired()])
@@ -932,7 +1029,8 @@ class LexemeTableEditCognateClassesForm(WTForm):
                             'left in it.' % k)
 
 
-class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
+class LexemeRowLanguageWordlistForm(AbstractTimestampedForm,
+                                    AbstractCognateClassAssignmentForm):
     id = IntegerField('Lexeme Id', validators=[InputRequired()])
     language_id = StringField('Language Id', validators=[InputRequired()])
     language = StringField('Language', validators=[InputRequired()])
@@ -959,25 +1057,6 @@ class LexemeRowLanguageWordlistForm(AbstractTimestampedForm):
     rfcWebLookup2 = StringField('This Lg lex rfc web path 2',
                                 validators=[InputRequired()])
     dubious = BooleanField('Dubious', validators=[InputRequired()])
-    # Added for #219
-    combinedCognateClassAssignment = StringField(
-        'Assignment string for cognate classes',
-        validators=[InputRequired()])
-
-    def validate_combinedCognateClassAssignment(form, field):
-        tokens = [t.strip() for t in field.data.split(',')]
-        for t in tokens:
-            if t == 'new':
-                '''
-                This case is subsumed by the alias regex,
-                but listed here for clarity and in case
-                we want to enhance alias validation.
-                '''
-                continue
-            elif re.match('^([a-zA-Z]+|\d+)$', t) is not None:
-                continue  # Token is number or alias
-            else:
-                raise ValidationError("Unacceptable token: %s" % t)
 
 
 class LexemeTableLanguageWordlistForm(WTForm):
@@ -1009,77 +1088,7 @@ class LexemeTableLanguageWordlistForm(WTForm):
                                   'in LexemeTableLanguageWordlistForm.')
                 messages.error(request, 'Sorry, the server could '
                                'not update lexeme %s.' % lex.gloss)
-            # Handling combineCognateClassAssignment:
-            if data['combinedCognateClassAssignment'] != \
-                    lex.combinedCognateClassAssignment:
-                # Current cognate classes:
-                currentCCs = {}  # :: id | alias -> CognateClass
-                for c in lex.cognate_class.all():
-                    currentCCs[str(c.id)] = c
-                    currentCCs[c.alias] = c
-                # cognate classes to keep:
-                keepCCs = {}  # :: id -> CognateClass
-                # We expect non staff to not increase the count of currentCCs:
-                toAdd = len(currentCCs)
-                # Tokens to handle:
-                tokens = [
-                    t.strip() for t
-                    in data['combinedCognateClassAssignment'].split(',')]
-                for t in tokens:
-                    toAdd -= 1  # Decrement toAdd:
-                    if toAdd <= 0 and len(currentCCs) > 0 \
-                            and not request.user.is_staff:
-                        messages.error(
-                            request,
-                            "Sorry - only staff is allowed "
-                            "to add additional cognate set assignments. "
-                            "Please contact a staff member if you feel "
-                            "that a second cognate set is necessary. "
-                            "Refused to add '%s' to lexeme %s." % (t, lex.id))
-                        break
-                    if t == 'new':  # Add lexeme to a new class:
-                        with transaction.atomic():
-                            # Class to add to:
-                            newC = CognateClass()
-                            newC.bump(request)
-                            newC.save()
-                            # Adding to new class:
-                            CognateJudgement.objects.create(
-                                lexeme_id=lex.id,
-                                cognate_class_id=newC.id)
-                            # Fixing alias for new class:
-                            newC.update_alias()
-                    elif t in currentCCs:  # Is this one satisfied?
-                        keep = currentCCs[t]
-                        keepCCs[keep.id] = keep
-                    else:  # Add lexeme to existing class if this is a new one.
-                        cc = None
-                        try:
-                            if re.match('^\d+$', t) is not None:
-                                cc = CognateClass.objects.get(id=int(t))
-                            else:
-                                cc = CognateClass.objects.filter(
-                                    lexeme__meaning__id=lex.meaning_id
-                                    ).distinct().get(alias=t)
-                        except Exception:
-                            logging.exception("Problem handling token %s" % t)
-                            messages.error(
-                                request,
-                                "Sorry, the server didn't understand "
-                                "the cognate set assignment token %s." % t)
-                            continue  # Next iteration
-                        # Adding to found cognate class:
-                        CognateJudgement.objects.create(
-                            lexeme_id=lex.id,
-                            cognate_class_id=cc.id)
-                # Remove lexeme from unwanted cognate classes:
-                removeCCs = set()  # :: set(id)
-                for cc in currentCCs.values():
-                    if cc.id not in keepCCs:
-                        removeCCs.add(cc.id)
-                CognateJudgement.objects.filter(
-                    lexeme_id=lex.id,
-                    cognate_class_id__in=removeCCs).delete()
+            entry.handle(request, lex)
 
 
 class AddMissingLexemsForLanguageForm(WTForm):
