@@ -18,7 +18,6 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template import Template
-from itertools import izip
 from reversion.models import Revision, Version
 # from reversion import revision
 from ielex.settings import LIMIT_TO, META_TAGS
@@ -74,7 +73,6 @@ from ielex.lexicon.models import Author, \
                                  LexemeCitation, \
                                  Meaning, \
                                  MeaningList, \
-                                 MeaningListOrder, \
                                  SndComp, \
                                  Source, \
                                  TYPE_CHOICES, \
