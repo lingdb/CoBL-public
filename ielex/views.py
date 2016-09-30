@@ -1143,18 +1143,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         else:  # not ('meang_form' in request.POST)
             cognate_form = ChooseCognateClassForm(request.POST)
             if cognate_form.is_valid():
-                cd = cognate_form.cleaned_data
-                cognate_class = cd["cognate_class"]
-                # if not cogjudge_id: # new cognate judgement
-                lexeme = Lexeme.objects.get(id=lexeme_id)
-                if cognate_class not in lexeme.cognate_class.all():
-                    cj = CognateJudgement.objects.create(
-                            lexeme=lexeme,
-                            cognate_class=cognate_class)
-                else:
-                    cj = CognateJudgement.objects.get(
-                            lexeme=lexeme,
-                            cognate_class=cognate_class)
+                cj = cognate_form.handle(request, lexeme_id)
 
                 # change this to a reverse() pattern
                 return HttpResponseRedirect(anchored(

@@ -1348,6 +1348,21 @@ class ChooseCognateClassForm(forms.Form):
         empty_label="---",  # make this into the "new" button?
         label="")
 
+    def handle(self, request, lexeme_id):
+        # Returns CognateJudgement
+        cd = self.cleaned_data
+        cognate_class = cd["cognate_class"]
+        # if not cogjudge_id: # new cognate judgement
+        lexeme = Lexeme.objects.get(id=lexeme_id)
+        if cognate_class not in lexeme.cognate_class.all():
+            return CognateJudgement.objects.create(
+                    lexeme=lexeme,
+                    cognate_class=cognate_class)
+        else:
+            return CognateJudgement.objects.get(
+                    lexeme=lexeme,
+                    cognate_class=cognate_class)
+
 
 def make_reorder_languagelist_form(objlist):
     choices = [(e.id, e.ascii_name) for e in objlist]
