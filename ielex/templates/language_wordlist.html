@@ -615,7 +615,7 @@
                 <td style="text-align: center; color: #8B4510;">
                   <div class="cognateClasses">
                     {% if user.is_authenticated %}
-                      {% form_field lexeme.combinedCognateClassAssignment class="form-control combinedCognateClassAssignment" %}
+                      {% form_field lexeme.combinedCognateClassAssignment class="form-control combinedCognateClassAssignment" data-lexemeid=lexeme.object_data.id %}
                     {% else %}
                       {{ lexeme.object_data.combinedCognateClassAssignment }}
                     {% endif %}

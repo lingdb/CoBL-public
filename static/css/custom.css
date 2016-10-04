@@ -175,3 +175,15 @@ table.floatThead-table {
 .loanEventCell {
   background-color: #BBBBBB;
 }
+
+/* Table style for #51 */
+#editCognateClassContent {
+  position: fixed;
+  top: 60px;
+  bottom: 0px;
+  right: 0px;
+  width: 400px;
+  background-color: #FFFFFF;
+  z-index: 1004;
+  overflow-y: scroll;
+}

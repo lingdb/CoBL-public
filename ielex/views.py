@@ -2333,10 +2333,15 @@ def view_language_progress(request, language_list=None):
 
 @logExceptions
 def json_cognateClass_placeholders(request):
-    if request.method == 'GET' and 'lexemes' in request.GET:
-        lexemes = [int(s) for s in request.GET['lexemes'].split(',')]
+    if request.method == 'GET' and 'lexemeid' in request.GET:
+        meaningIds = Lexeme.objects.filter(
+            id=int(request.GET['lexemeid'])).values_list(
+            'meaning_id', flat=True)
         cognateClasses = CognateClass.objects.filter(
-            lexeme__in=lexemes).distinct()
+            lexeme__meaning_id__in=meaningIds).distinct()
+        # lexemes = [int(s) for s in request.GET['lexemes'].split(',')]
+        # cognateClasses = CognateClass.objects.filter(
+        # lexeme__in=lexemes).distinct()
         dump = json.dumps([{'id': c.id,
                             'alias': c.alias,
                             'placeholder':

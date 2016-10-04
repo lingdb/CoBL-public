@@ -567,13 +567,13 @@
               <td class="selection">
                 <div class="cognateClasses nowrap" style="text-align: center;">
                   {% if user.is_authenticated %}
-                    {% ifequal add_cognate_judgement|asint lexeme.id.data|asint %}
+                    {% ifequal add_cognate_judgement|asint lexeme.object_data.id %}
                       <form action="" method="post">
                         {% csrf_token %}
                         {{ cognate_form.cognate_class }}
                       </form>
                     {% endifequal %}
-                    {% form_field lexeme.combinedCognateClassAssignment class="form-control combinedCognateClassAssignment" %}
+                    {% form_field lexeme.combinedCognateClassAssignment class="form-control combinedCognateClassAssignment" data-lexemeid=lexeme.object_data.id %}
                   {% else %}
                     {{ lexeme.object_data.combinedCognateClassAssignment }}
                   {% endif %}

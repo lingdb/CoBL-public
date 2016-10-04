@@ -319,7 +319,7 @@ urlpatterns = patterns(
         name="view-two-languages"),
 
     # Added for #51:
-    url(r'^json/cognateClassPlaceholders$', json_cognateClass_placeholders),
+    url(r'^json/cognateClassPlaceholders/$', json_cognateClass_placeholders),
 
     url(r'^revert/(?P<revision_id>\d+)/$', revert_version, name="revert-item"),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
