@@ -75,7 +75,8 @@
               <th></th>
               <th>Meaning</th>
               <th>Meaning specification tooltip</th>
-              <th>Elicitation Ix</th>
+              <th>MeaningSetMember</th>
+              <th>MeaningSetIx</th>
               <th>Show<br>Languages</th>
               <th>Show<br>Cog. Sets</th>
               {% if user.is_authenticated %}
@@ -177,18 +178,37 @@
               <td>
                 {% if user.is_authenticated %}
                   <input type="text" class="filterInput form-control"
-                         data-selector=".meaningElicitation input"
+                         data-selector=".meaningSetMember input"
                          style="width: 6em;">
                   <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".meaningElicitation input">
+                       data-selector=".meaningSetMember input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% else %}
                   <input type="text" class="filterText form-control"
-                         data-selector=".meaningElicitation"
+                         data-selector=".meaningSetMember"
                          style="width: 6em;">
                   <div class="btn btn-xs btn-default sortText"
-                       data-selector=".meaningElicitation">
+                       data-selector=".meaningSetMember">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated %}
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".meaningSetIx input"
+                         style="width: 6em;">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".meaningSetIx input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control"
+                         data-selector=".meaningSetIx"
+                         style="width: 6em;">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".meaningSetIx">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
@@ -287,11 +307,18 @@
                   {{ meaning.object_data.tooltip }}
                 {% endif %}
                 </td>
-                <td class="meaningElicitation">
+                <td class="meaningSetMember">
                 {% if user.is_authenticated and user.is_staff %}
-                  {% form_field meaning.elicitation class="form-control numberField" %}
+                  {% form_field meaning.meaningSetMember class="form-control numberField" %}
                 {% else %}
-                  {{ meaning.object_data.elicitation }}
+                  {{ meaning.object_data.meaningSetMember }}
+                {% endif %}
+                </td>
+                <td class="meaningSetIx">
+                {% if user.is_authenticated and user.is_staff %}
+                  {% form_field meaning.meaningSetIx class="form-control numberField" %}
+                {% else %}
+                  {{ meaning.object_data.meaningSetIx }}
                 {% endif %}
                 </td>
                 <td>

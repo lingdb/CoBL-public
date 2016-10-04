@@ -686,7 +686,8 @@ class Meaning(AbstractTimestamped):
     exclude = models.BooleanField(default=0)
     # Added for #313:
     tooltip = models.TextField(blank=True)
-    elicitation = models.IntegerField(default=0, null=False)
+    meaningSetMember = models.IntegerField(default=0, null=False)
+    meaningSetIx = models.IntegerField(default=0, null=False)
 
     def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
@@ -707,11 +708,12 @@ class Meaning(AbstractTimestamped):
         return self.gloss.upper()
 
     class Meta:
-        ordering = ["elicitation", "gloss"]
+        ordering = ["gloss"]
 
     def timestampedFields(self):
         return set(['gloss', 'description', 'notes', 'doubleCheck',
-                    'exclude', 'tooltip', 'elicitation'])
+                    'exclude', 'tooltip',
+                    'meaningSetMember', 'meaningSetIx'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update meaning: ' \
