@@ -290,7 +290,8 @@ def write_nexus(language_list_name,       # str
         appendExports("   %s[ %s ]" % (" "*max_len, row))
 
     # matrix comments requested in #314:
-    appendExports(getMatrixCommentsFromCognateNames(cognate_class_names))
+    appendExports(getMatrixCommentsFromCognateNames(
+        cognate_class_names, padding=max_len+4))
 
     # write matrix
     for row in matrix:
@@ -709,7 +710,7 @@ def getCharstateLabels(cognate_class_names):
     return "\nbegin charstatelabels;\n%s\nend;\n" % "\n".join(labels)
 
 
-def getMatrixCommentsFromCognateNames(cognate_class_names):
+def getMatrixCommentsFromCognateNames(cognate_class_names, padding=0):
     # cognate_class_names :: [String]
     meaningRow = []  # Pieces to be joined with ''
     flagRow = ''
@@ -752,6 +753,7 @@ def getMatrixCommentsFromCognateNames(cognate_class_names):
         meaning, meaningLength = nextMeaning('')
         flagRow += '?'
         idBucket.append('')
+    nextMeaning('')  # Append last meaning to meaningRow
 
     # Create idRows by padding and transposing ids:
     idMaxLen = max(*[len(i) for i in idBucket])
@@ -759,9 +761,13 @@ def getMatrixCommentsFromCognateNames(cognate_class_names):
     idRows = [''.join(row) for row in zip(*idRows)]
 
     commentRows = []
-    commentRows.append("[ %s ]" % ''.join(meaningRow))
-    commentRows.append("[ %s ]" % flagRow)
+
+    def addComment(c):
+        commentRows.append(" "*(padding-1) + "[ %s ]" % c)
+
+    addComment(''.join(meaningRow))
+    addComment(flagRow)
     for idRow in idRows:
-        commentRows.append("[ %s ]" % idRow)
+        addComment(idRow)
 
     return '\n'.join(commentRows)
