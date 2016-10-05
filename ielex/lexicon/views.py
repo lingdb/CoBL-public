@@ -1,7 +1,8 @@
 from __future__ import print_function
 from textwrap import dedent
-import time
+import re
 import sys
+import time
 from collections import defaultdict
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -285,9 +286,11 @@ def write_nexus(language_list_name,       # str
             str(i).ljust(10) for i in
             range(len(cognate_class_names))[10::10]]
         appendExports("   %s[ %s ]" % (" "*max_len, "".join(row)))
-        row = [" "*9] + [
-            ".         " for i in range(len(cognate_class_names))[10::10]]
-        appendExports("   %s[ %s ]" % (" "*max_len, "".join(row)))
+        row = ".".join([" "*9]*(int((len(cognate_class_names)+9)/10)))
+        appendExports("   %s[ %s ]" % (" "*max_len, row))
+
+    # matrix comments requested in #314:
+    appendExports(getMatrixCommentsFromCognateNames(cognate_class_names))
 
     # write matrix
     for row in matrix:
@@ -704,3 +707,61 @@ def getCharstateLabels(cognate_class_names):
     for i, cc in enumerate(cognate_class_names):
         labels.append("    %d %s" % (i+1, cc))
     return "\nbegin charstatelabels;\n%s\nend;\n" % "\n".join(labels)
+
+
+def getMatrixCommentsFromCognateNames(cognate_class_names):
+    # cognate_class_names :: [String]
+    meaningRow = []  # Pieces to be joined with ''
+    flagRow = ''
+    idBucket = []  # Matrix of id chars
+
+    meaning = ''
+    meaningLength = 0
+
+    def nextMeaning(m):
+        if m != meaning:
+            label = (' ' + meaning)[:meaningLength].ljust(meaningLength, ' ')
+            meaningRow.append(label)
+            return m, 1
+        return meaning, meaningLength + 1
+
+    groupRegex = r'^(.+)_group$'
+    lexemeRegex = r'^(.+)_lexeme_(.+)$'
+    cognateRegex = r'^(.+)_cognate_(.+)$'
+
+    for name in cognate_class_names:
+        groupMatch = re.match(groupRegex, name)
+        if groupMatch:
+            meaning, meaningLength = nextMeaning(groupMatch.group(1))
+            flagRow += ' '
+            idBucket.append('')
+            continue
+        lexemeMatch = re.match(lexemeRegex, name)
+        if lexemeMatch:
+            meaning, meaningLength = nextMeaning(lexemeMatch.group(1))
+            flagRow += 'L'
+            idBucket.append(lexemeMatch.group(2))
+            continue
+        cognateMatch = re.match(cognateRegex, name)
+        if cognateMatch:
+            meaning, meaningLength = nextMeaning(cognateMatch.group(1))
+            flagRow += 'C'
+            idBucket.append(cognateMatch.group(2))
+            continue
+        # Nothing matches:
+        meaning, meaningLength = nextMeaning('')
+        flagRow += '?'
+        idBucket.append('')
+
+    # Create idRows by padding and transposing ids:
+    idMaxLen = max(*[len(i) for i in idBucket])
+    idRows = [[x for x in id.rjust(idMaxLen, '-')] for id in idBucket]
+    idRows = [''.join(row) for row in zip(*idRows)]
+
+    commentRows = []
+    commentRows.append("[ %s ]" % ''.join(meaningRow))
+    commentRows.append("[ %s ]" % flagRow)
+    for idRow in idRows:
+        commentRows.append("[ %s ]" % idRow)
+
+    return '\n'.join(commentRows)
