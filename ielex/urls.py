@@ -339,7 +339,7 @@ urlpatterns += patterns(
     url(r'^nexus/export/(?P<exportId>\d+)/$',
         view_nexus_export,
         name="view_nexus_export"),
-    url(r'^nexus/export/$', view_nexus_export),
+    url(r'^nexus/export/$', view_nexus_export, name="view_nexus_export_base"),
     url(r'^dump/$', login_required(DumpRawDataView.as_view()), name="dump"))
 
 urlpatterns += patterns(

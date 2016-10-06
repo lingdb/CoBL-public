@@ -2166,6 +2166,7 @@ def view_nexus_export(request, exportId=None):
         elif request.method == 'POST' and 'delete' in request.POST:
             NexusExport.objects.filter(id=exportId).delete()
             messages.info(request, "Deleted export %s." % exportId)
+            return HttpResponseRedirect(reverse("view_nexus_export_base"))
     return render_template(
         request, "view_nexus_export.html",
         {'exports': NexusExport.objects.order_by('-id').all()})
