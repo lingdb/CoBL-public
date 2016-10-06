@@ -45,7 +45,8 @@
              'js/nexus',
              'js/datetooltip',
              'js/updateCounts',
-             'js/updatePercentages'],
+             'js/updatePercentages',
+             'js/confirmSubmit'],
             function(require, $, _){
     //Initializing viewTableFilter:
     require('js/viewTableFilter').init('table.viewTableFilter');
@@ -61,5 +62,6 @@
     })(require('js/viewMarkDown'));
 
     require('js/editCognateClass').init();
+    require('js/confirmSubmit').init();
   });
 })();

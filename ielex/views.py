@@ -2144,23 +2144,28 @@ def view_frontpage(request):
 
 
 @logExceptions
+@csrf_protect
 @login_required
 def view_nexus_export(request, exportId=None):
     if exportId is not None:
-        try:
-            export = NexusExport.objects.get(id=exportId)
-            if not export.pending:
-                return export.generateResponse(
-                    constraints='constraints' in request.GET,
-                    beauti='beauti' in request.GET)
-            # Message if pending:
-            messages.info(request,
-                          "Sorry, the server is still "
-                          "computing export %s." % exportId)
-        except NexusExport.DoesNotExist:
-            messages.error(request,
-                           "Sorry, but export %s does not "
-                           "exist in the database." % exportId)
+        if request.method == 'GET':
+            try:
+                export = NexusExport.objects.get(id=exportId)
+                if not export.pending:
+                    return export.generateResponse(
+                        constraints='constraints' in request.GET,
+                        beauti='beauti' in request.GET)
+                # Message if pending:
+                messages.info(request,
+                              "Sorry, the server is still "
+                              "computing export %s." % exportId)
+            except NexusExport.DoesNotExist:
+                messages.error(request,
+                               "Sorry, but export %s does not "
+                               "exist in the database." % exportId)
+        elif request.method == 'POST' and 'delete' in request.POST:
+            NexusExport.objects.filter(id=exportId).delete()
+            messages.info(request, "Deleted export %s." % exportId)
     return render_template(
         request, "view_nexus_export.html",
         {'exports': NexusExport.objects.order_by('-id').all()})
