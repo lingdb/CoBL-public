@@ -290,8 +290,9 @@ def write_nexus(language_list_name,       # str
         appendExports("   %s[ %s ]" % (" "*max_len, row))
 
     # matrix comments requested in #314:
-    appendExports(getMatrixCommentsFromCognateNames(
-        cognate_class_names, padding=max_len+4))
+    matrixComments = getMatrixCommentsFromCognateNames(
+        cognate_class_names, padding=max_len+4)
+    appendExports(matrixComments + "\n")
 
     # write matrix
     for row in matrix:
@@ -306,6 +307,8 @@ def write_nexus(language_list_name,       # str
                       (quoted(language_name),
                        " "*(max_len - len(quoted(language_name))),
                        "".join(row)))
+    # matrix comments requested in #314:
+    appendExports(matrixComments)
     appendExports("  ;\nend;\n")
 
     if dialect == "BP":
@@ -766,7 +769,9 @@ def getMatrixCommentsFromCognateNames(cognate_class_names, padding=0):
         commentRows.append(" "*(padding-1) + "[ %s ]" % c)
 
     addComment(''.join(meaningRow))
+    commentRows.append("")
     addComment(flagRow)
+    commentRows.append("")
     for idRow in idRows:
         addComment(idRow)
 
