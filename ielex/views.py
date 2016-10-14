@@ -14,6 +14,7 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
 from django.db.models import Q
+from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import redirect
 from django.template import RequestContext
@@ -1213,6 +1214,10 @@ def view_cognateclasses(request, meaning):
                 cogClassTableForm = AddCogClassTableForm(request.POST)
                 cogClassTableForm.validate()
                 cogClassTableForm.handle(request)
+            except ValidationError as e:
+                logging.exception(
+                    'Validation did not work in view_cognateclasses.')
+                messages.error(request, ' '.join(e.messages))
             except Exception:
                 logging.exception('Problem updating CognateClasses '
                                   'in view_cognateclasses.')

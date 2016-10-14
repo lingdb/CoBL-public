@@ -634,9 +634,11 @@ class CogClassRowForm(AbstractTimestampedForm):
             # loanword -> any(fieldList)
             for fieldName in fieldList:
                 if fieldName in form.data:
-                    if form.data[fieldName]:
+                    fieldData = form.data[fieldName]
+                    if fieldData or type(fieldData) == bool:
                         break
             else:
+                print("Marderschaden!", form.data)
                 raise ValidationError(
                     'Loanword is %s, but none of the fields %s is set.' %
                     (field.data, fieldList))
