@@ -622,7 +622,7 @@
                   {% if user.is_authenticated %}
                     {% form_field cc.root_language class="form-control" style="width: 12em;" placeholder=cc.object_data.rootLanguageOrPlaceholder %}
                   {% else %}
-                    {{ cc.object_data.rootLanguageOrdPlaceholder }}
+                    {{ cc.object_data.rootLanguageOrPlaceholder }}
                   {% endif %}
                 </td>
                 {# notProtoIndoEuropean_data.html #}
@@ -753,7 +753,7 @@
                   {% if user.is_authenticated %}
                     {% form_field cc.revisedBy class="form-control" style="width: 2em;" pattern="^.{0,10}$" %}
                   {% elif cc.object_data.revisedBy %}
-                    {% form_field cc.object_data.revisedBy class="form-control" %}
+                    {{ cc.object_data.revisedBy }}
                   {% endif %}
                 </th>
                 {# onlyNotSwh_data.html #}
