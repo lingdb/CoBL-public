@@ -30,6 +30,7 @@
               <td>Settings</td>
               <td>Date</td>
               <td>Triggered by</td>
+              <td>Del?</td>
             </tr>
           </thead>
           <tbody>
@@ -70,6 +71,20 @@
                 <td>{{ export.exportSettings }}</td>
                 <td>{{ export.lastTouched }}</td>
                 <td>{{ export.lastEditedBy }}</td>
+                <td>
+                  <form action="/nexus/export/{{ export.id }}/" method="post">
+                    {% csrf_token %}
+                    <input class="hide" type="submit" name="delete" value="delete">
+                    <a class="btn btn-xs btn-danger confirmSubmit"
+                       data-toggle="tooltip"
+                       data-placement="bottom"
+                       data-container="body"
+                       title="Remove this export?"
+                       data-confirm="Are you sure? Please delete only if an export was done with erroneous settings. Otherwise, keep every export as a record of all analyses performed.">
+                      <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+                  </form>
+                </td>
               </tr>
             {% endfor %}
           </tbody>
