@@ -744,7 +744,7 @@
                     style="border-left: 2px solid #dddddd;">
                   {% if user.is_authenticated %}
                     {% form_field cc.revisedYet class="form-control" %}
-                  {% elif cc.loan_notes.data %}
+                  {% elif cc.object_data.revisedYet %}
                     {% form_field cc.revisedYet class="form-control" disabled="disabled" %}
                   {% endif %}
                 </th>
@@ -752,8 +752,8 @@
                 <th class="revisedBy">
                   {% if user.is_authenticated %}
                     {% form_field cc.revisedBy class="form-control" style="width: 2em;" pattern="^.{0,10}$" %}
-                  {% elif cc.loan_notes.data %}
-                    {% form_field cc.revisedBy.data class="form-control" %}
+                  {% elif cc.object_data.revisedBy %}
+                    {% form_field cc.object_data.revisedBy class="form-control" %}
                   {% endif %}
                 </th>
                 {# onlyNotSwh_data.html #}
