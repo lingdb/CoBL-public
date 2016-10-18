@@ -61,6 +61,13 @@ LANGUAGE_PROGRESS = (  # used by Languages
     (4, 'Revision complete'),
     (5, 'Second review complete'))
 
+PROPOSED_AS_COGNATE_TO_SCALE = (  # Used by CognateClass
+    (0, '1/6=small minority view'),
+    (1, '2/6=sig. minority view'),
+    (2, '3/6=50/50 balance'),
+    (3, '4/6=small majority view'),
+    (4, '5/6=large majority view'))
+
 # http://south.aeracode.org/docs/customfields.html#extending-introspection
 # add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])
 
@@ -832,6 +839,11 @@ class CognateClass(AbstractTimestamped):
     # Added for #263:
     revisedYet = models.BooleanField(default=0)
     revisedBy = models.CharField(max_length=10, default='')
+    # Added for #319:
+    proposedAsCognateTo = models.ForeignKey(
+        "self", null=True, related_name='+')
+    proposedAsCognateToScale = models.IntegerField(
+        default=0, choices=PROPOSED_AS_COGNATE_TO_SCALE)
 
     def __str__(self):
         return self.root_form
