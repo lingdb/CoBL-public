@@ -4,6 +4,7 @@ import json
 import os.path
 import reversion
 import zlib
+import datetime
 from collections import defaultdict
 from string import uppercase, lowercase
 from django.db import models
@@ -12,6 +13,8 @@ from django.core.urlresolvers import reverse
 from django.utils.safestring import SafeString
 from django.utils.encoding import python_2_unicode_compatible
 from django.http import HttpResponse
+from django.utils.html import format_html
+
 # ielex specific imports:
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import suitable_for_url, standard_reserved_names
@@ -60,6 +63,27 @@ LANGUAGE_PROGRESS = (  # used by Languages
     (3, 'Revision underway'),
     (4, 'Revision complete'),
     (5, 'Second review complete'))
+
+
+YEAR_CHOICES = [] #used by Source
+for r in reversed(range(1800, (datetime.datetime.now().year+1))):
+    YEAR_CHOICES.append((r,r))
+
+SOURCE_TYPE_CHOICES = ( #used by Source
+    ('article', 'article'),
+    ('book', 'book'),
+    ('booklet', 'booklet'),
+    ('conference', 'conference'),
+    ('inbook', 'in book'),
+    ('incollection', 'in collection'),
+    ('inproceedings', 'in proceedings'),
+    ('manual', 'manual'),
+    ('mastersthesis', 'masters thesis'),
+    ('misc', 'misc'),
+    ('phdthesis', 'phd thesis'),
+    ('proceedings', 'proceedings'),
+    ('unpublished', 'unpublished'),
+    )
 
 # http://south.aeracode.org/docs/customfields.html#extending-introspection
 # add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])
@@ -220,24 +244,105 @@ class AbstractDistribution(models.Model):
                     'logNormalStDev', 'normalMean', 'normalStDev',
                     'uniformUpper', 'uniformLower'])
 
+from django.db.utils import DataError
 
 @reversion.register
 class Source(models.Model):
 
-    citation_text = models.TextField(unique=True)
-    type_code = models.CharField(
-        max_length=1, choices=TYPE_CHOICES, default="P")
-    description = models.TextField(blank=True)
-    modified = models.DateTimeField(auto_now=True)
+    '''
+    Used for bibliographical references.
+    '''
+    #OLD FIELDS:
+
+    citation_text = models.TextField(unique=True) #to be discarded
+##    type_code = models.CharField(
+##        max_length=1, choices=TYPE_CHOICES, default="P")
+    description = models.TextField(blank=True) #keep for now
+    modified = models.DateTimeField(auto_now=True) #(in fact, when was added) keep for now
+
+    #NEW FIELDS:
+    ENTRYTYPE = models.CharField(max_length=32, blank=True)
+    #type = models.CharField(max_length=4, blank=True) #discard
+
+    author = models.CharField(max_length=128, blank=True)
+    authortype = models.CharField(max_length=16, blank=True)
+    year = models.CharField(max_length=4, blank=True, null=True) #choices=YEAR_CHOICES
+    title = models.TextField(blank=True)
+    subtitle = models.TextField(blank=True)
+    booktitle = models.TextField(blank=True)
+    booksubtitle = models.TextField(blank=True)
+    bookauthor = models.CharField(max_length=128, blank=True)
+    editor = models.CharField(max_length=128, blank=True)
+    editora = models.CharField(max_length=128, blank=True)
+    editortype = models.CharField(max_length=16, blank=True)
+    editoratype = models.CharField(max_length=16, blank=True)
+    pages = models.CharField(max_length=32, blank=True)
+    part = models.CharField(max_length=32, blank=True)
+    edition = models.IntegerField(blank=True, null=True)
+    journaltitle = models.CharField(max_length=128, blank=True)
+    location = models.CharField(max_length=128, blank=True)
+    link = models.URLField(blank=True)
+    note = models.TextField(blank=True)
+    number = models.IntegerField(null=True, blank=True)
+    series = models.CharField(max_length=128, blank=True)
+    volume = models.CharField(max_length=16, blank=True)
+    publisher = models.CharField(max_length=128, blank=True)
+    institution = models.CharField(max_length=128, blank=True)
+    chapter = models.TextField(blank=True)
+    howpublished = models.TextField(blank=True)
+    shorthand = models.CharField(max_length=8, blank=True)
+    isbn = models.CharField(max_length=32, blank=True)
+
+    deprecated = models.BooleanField(default=False)
+
+    source_attr_lst = ['ENTRYTYPE', 'citation_text', 'author',
+                       'year', 'title', 'booktitle', 'editor',
+                       'pages', 'edition', 'journaltitle', 'location',
+                       'link', 'note', 'number', 'series', 'volume',
+                       'publisher', 'institution', 'chapter',
+                       'howpublished', 'deprecated']
 
     def get_absolute_url(self):
         return "/source/%s/" % self.id
 
+    @property
+    def edit_link(self):
+        return format_html(
+            '<a href="%sedit" title="Edit this source" '
+            'class="pull-right">Edit</a>' % (self.get_absolute_url()))
+
     def __unicode__(self):
         return self.citation_text[:64]
 
-    class Meta:
-        ordering = ["type_code", "citation_text"]
+    def populate_from_bibtex(self, bibtex_dict):
+        for key in bibtex_dict.keys():
+            if key not in ['ID', 'date']:
+                setattr(self, key, bibtex_dict[key])
+                # print(key, bibtex_dict[key])
+        try:
+            self.save()
+        except DataError as e:
+            print(e, bibtex_dict)
+
+# import bibtexparser
+# from bibtexparser.bparser import BibTexParser
+# from django.core.exceptions import ObjectDoesNotExist
+#
+# with open('lexicon_source.bib') as bibtex_file:
+#     bibtex_str = bibtex_file.read()
+#
+# parser = BibTexParser()
+# parser.ignore_nonstandard_types = False
+#
+# bib_database = bibtexparser.loads(bibtex_str, parser)
+# missing_fields_lst = []
+# for entry in bib_database.entries:
+#     try:
+#       source_obj = Source.objects.get(pk=entry['ID'])
+#       source_obj.populate_from_bibtex(entry)
+#     except (ValueError, ObjectDoesNotExist) as e:
+#         print 'Failed to handle BibTeX entry with '
+#               'ID %s: %s' %([entry['ID']], e)
 
 
 @reversion.register
@@ -440,8 +545,8 @@ class Language(AbstractTimestamped, AbstractDistribution):
     representative = models.BooleanField(default=0)
     rfcWebPath1 = models.TextField(blank=True, null=True)
     rfcWebPath2 = models.TextField(blank=True, null=True)
-    author = models.CharField(max_length=256, null=True)
-    reviewer = models.CharField(max_length=256, null=True)
+    author = models.CharField(max_length=256, null=True) # to be replaced with ForeignKey, see below
+    reviewer = models.CharField(max_length=256, null=True) # to be replaced with ForeignKey, see below
     # Added for #153:
     sortRankInClade = models.IntegerField(default=0, null=False)
     # Backup of level entries that still correspond to SndComp levels:
@@ -462,6 +567,8 @@ class Language(AbstractTimestamped, AbstractDistribution):
         null=True, max_digits=19, decimal_places=10)
     longitude = models.DecimalField(
         null=True, max_digits=19, decimal_places=10)
+    # author = models.ForeignKey(author, related_name="author", null=True)
+    # reviewer = models.ForeignKey(author, related_name="reviewer", null=True)
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
@@ -1629,16 +1736,17 @@ class Author(AbstractTimestamped):
     # See https://github.com/lingdb/CoBL/issues/106
     # We leave out the ix field in favour
     # of the id field provided by reversion.
+
     # Author Surname
     surname = models.TextField(blank=True)
     # Author First names
     firstNames = models.TextField(blank=True)
+    # Initials
+    initials = models.TextField(blank=True, unique=True)
     # Email address
     email = models.TextField(blank=True, unique=True)
     # Personal website URL
     website = models.TextField(blank=True)
-    # Initials
-    initials = models.TextField(blank=True, unique=True)
 
     def timestampedFields(self):
         return set(['surname', 'firstNames', 'email', 'website', 'initials'])
@@ -1651,6 +1759,9 @@ class Author(AbstractTimestamped):
 
     class Meta:
         ordering = ["surname", "firstNames"]
+
+    def __unicode__(self):
+        return '%s, %s' %(self.surname, self.firstNames)
 
     @property
     def getAvatar(self):
@@ -1669,7 +1780,6 @@ class Author(AbstractTimestamped):
                              self.surname.encode('utf-8') + extension)
             if os.path.isfile(p):
                 return p
-
 
 @reversion.register
 class NexusExport(AbstractTimestamped):

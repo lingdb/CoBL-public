@@ -1,19 +1,37 @@
 # -*- coding: utf-8 -*-
 
+import os
+import codecs
+codecs.register(lambda name: codecs.lookup('utf-8') if name == 'cp65001' else None)
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
 # Development settings
 # IMPORTANT: do not change DEBUG to True until after the first syncdb
-DEBUG = False
+DEBUG = True
 
 # Database backend
+##DATABASES = {
+##    'default': {
+##        'ENGINE': 'django.db.backends.sqlite3',
+##        'NAME': os.path.join(os.path.abspath(os.path.dirname(__file__)), 'db.sqlite3'),
+##        'USER': '',                      # Not used with sqlite3.
+##        'PASSWORD': '',                  # Not used with sqlite3.
+##        'HOST': '',                      # Not used with sqlite3.
+##        'PORT': '',                      # Not used with sqlite3.
+##        'ATOMIC_REQUESTS': True,         # Required by sqlite3 (only)
+##    }
+##}
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(os.path.abspath(os.path.dirname(__file__)), 'db.sqlite3'),
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Not used with sqlite3.
-        'PORT': '',                      # Not used with sqlite3.
-        'ATOMIC_REQUESTS': True,         # Required by sqlite3 (only)
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'CoBL',
+        'USER': 'postgres',
+        'PASSWORD': '9679842EkhEkh',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -67,6 +85,5 @@ structural_features = False  # NotImplemented
 
 # Maximum number of search results
 LIMIT_TO = 500
-
 
 # vim:ft=python
