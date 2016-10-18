@@ -144,16 +144,6 @@ class EditLexemeForm(forms.ModelForm):
         exclude = ["language", "cognate_class", "source"]
 
 
-class EditSourceForm(forms.ModelForm):
-
-    type_code = forms.ChoiceField(
-        choices=TYPE_CHOICES, widget=forms.RadioSelect())
-
-    class Meta:
-        model = Source
-        fields = "__all__"
-
-
 class EditLanguageForm(forms.ModelForm):
 
     def clean_ascii_name(self):
@@ -1196,3 +1186,54 @@ class AuthorCreationForm(WTForm):
 
 class AuthorDeletionForm(WTForm):
     initials = StringField('Initials', validators=[InputRequired()])
+
+
+
+# -- /source/ -------------------------------------------------------------
+
+def validate_bibtex_extension(value):
+    if not value.name.endswith('.bib'):
+        raise ValidationError(u'Error: The uploaded file should be BibTeX (.bib)')
+
+class SourceDetailsForm(forms.ModelForm):
+    class Meta:
+        model = Source
+        fields = ['subtitle', 'booktitle', 'booksubtitle', 'bookauthor', 'editor', 'editora', 'editortype', 'editoratype', 'pages', 'part', 'edition',
+                  'journaltitle', 'location', 'link', 'note', 'number', 'series', 'volume', 'publisher', 'institution', 'chapter', 'howpublished', 'shorthand', 'isbn']
+
+    def __init__(self, *args, **kwargs):
+        super(SourceDetailsForm, self).__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+        for field in self.fields:
+            self.fields[field].widget.attrs['readonly'] = True
+            if instance:
+                value = getattr(instance, field)
+                if value in ['', None]:
+                    del self.fields[field]
+
+class SourceEditForm(forms.ModelForm):
+    class Meta:
+        model = Source
+        fields = ['ENTRYTYPE', 'author', 'year', 'title', 'subtitle', 'booktitle', 'booksubtitle', 'bookauthor', 'editor', 'editora', 'editortype', 'editoratype',
+                  'pages', 'part', 'edition', 'journaltitle', 'location', 'link', 'note', 'number', 'series', 'volume', 'publisher', 'institution', 'chapter',
+                  'howpublished', 'shorthand', 'isbn']
+    def __init__(self, *args, **kwargs):
+        super(SourceEditForm, self).__init__(*args, **kwargs)
+        self.empty_permitted = False
+        for field in self.fields:
+            if field not in ['year', 'pages', 'number', 'edition', 'part', 'volume', 'ENTRYTYPE']:
+                self.fields[field].widget = forms.Textarea(attrs={'cols': 30, 'rows': 3})
+
+class UploadBiBTeXFileForm(forms.Form):
+    title = forms.CharField(max_length=50, required=False)
+    file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), validators=[validate_bibtex_extension])
+
+# OLD, discard:
+class EditSourceForm(forms.ModelForm):
+
+    type_code = forms.ChoiceField(
+        choices=TYPE_CHOICES, widget=forms.RadioSelect())
+
+    class Meta:
+        model = Source
+        fields = "__all__"

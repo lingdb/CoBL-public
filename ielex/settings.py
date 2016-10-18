@@ -48,6 +48,7 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.template.context_processors.request',
+                'django.core.context_processors.request', #required by django_tables2 for sorting
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'ielex.context_processors.configuration',

@@ -25,6 +25,7 @@ from ielex.views import add_language_list, \
                         source_edit, \
                         source_list, \
                         source_view, \
+                        source_import, \
                         viewAbout, \
                         viewAuthors, \
                         view_changes, \
@@ -244,7 +245,8 @@ urlpatterns = patterns(
     url(r'^source/add/lexeme/%(LEXEME_ID)s/$' % R,
         source_edit, {"action": "add"},
         name="lexeme-add-new-source"),
-
+    url(r'^sources/import/$', source_import.as_view(), name="import-sources"),
+    
     # Cognate
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report, name="cognate-set"),
     url(r'^cognate/%(COGNATE_NAME)s/$' % R, cognate_report),
