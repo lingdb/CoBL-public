@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lexicon', '0117_source_active'),
+        ('lexicon', '306_0117_source_active'),
     ]
 
     operations = [

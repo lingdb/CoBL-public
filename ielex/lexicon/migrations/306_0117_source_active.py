@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lexicon', '0121_source_type'),
+        ('lexicon', '306_0116_auto_20160930_1750'),
     ]
 
     operations = [
-        migrations.AlterField(
+        migrations.AddField(
             model_name='source',
-            name='institution',
-            field=models.CharField(max_length=128, blank=True),
+            name='active',
+            field=models.BooleanField(default=True),
         ),
     ]
