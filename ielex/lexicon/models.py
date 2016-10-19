@@ -4,6 +4,7 @@ import json
 import os.path
 import reversion
 import zlib
+import datetime
 from collections import defaultdict
 from string import uppercase, lowercase
 from django.db import models
@@ -12,6 +13,9 @@ from django.core.urlresolvers import reverse
 from django.utils.safestring import SafeString
 from django.utils.encoding import python_2_unicode_compatible
 from django.http import HttpResponse
+from django.utils.html import format_html
+from django.db.utils import DataError
+
 # ielex specific imports:
 from ielex.utilities import two_by_two
 from ielex.lexicon.validators import suitable_for_url, standard_reserved_names
@@ -61,6 +65,33 @@ LANGUAGE_PROGRESS = (  # used by Languages
     (4, 'Revision complete'),
     (5, 'Second review complete'))
 
+YEAR_CHOICES = []  # used by Source
+for r in reversed(range(1800, (datetime.datetime.now().year + 1))):
+    YEAR_CHOICES.append((r, r))
+
+SOURCE_TYPE_CHOICES = (  # used by Source
+    ('article', 'article'),
+    ('book', 'book'),
+    ('booklet', 'booklet'),
+    ('conference', 'conference'),
+    ('inbook', 'in book'),
+    ('incollection', 'in collection'),
+    ('inproceedings', 'in proceedings'),
+    ('manual', 'manual'),
+    ('mastersthesis', 'masters thesis'),
+    ('misc', 'misc'),
+    ('phdthesis', 'phd thesis'),
+    ('proceedings', 'proceedings'),
+    ('unpublished', 'unpublished'),
+)
+
+PROPOSED_AS_COGNATE_TO_SCALE = (  # Used by CognateClass
+    (0, '1/6=small minority view'),
+    (1, '2/6=sig. minority view'),
+    (2, '3/6=50/50 balance'),
+    (3, '4/6=small majority view'),
+    (4, '5/6=large majority view'))
+
 # http://south.aeracode.org/docs/customfields.html#extending-introspection
 # add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])
 
@@ -71,6 +102,7 @@ class CharNullField(models.CharField):
     are allowed (following ANSI SQL standard). For example, if
     CognateClass objects have an explicit name, it must be unique, but
     having a name is optional."""
+
     def to_python(self, value):
         if isinstance(value, models.CharField):
             return value
@@ -224,20 +256,102 @@ class AbstractDistribution(models.Model):
 @reversion.register
 class Source(models.Model):
 
-    citation_text = models.TextField(unique=True)
-    type_code = models.CharField(
-        max_length=1, choices=TYPE_CHOICES, default="P")
-    description = models.TextField(blank=True)
+    '''
+    Used for bibliographical references.
+    '''
+    # OLD FIELDS:
+
+    citation_text = models.TextField(unique=True)  # to be discarded
+# type_code = models.CharField(
+# max_length=1, choices=TYPE_CHOICES, default="P")
+    description = models.TextField(blank=True)  # keep for now
+    # (in fact, when was added) keep for now
     modified = models.DateTimeField(auto_now=True)
+
+    # NEW FIELDS:
+    ENTRYTYPE = models.CharField(max_length=32, blank=True)
+    # type = models.CharField(max_length=4, blank=True) #discard
+
+    author = models.CharField(max_length=128, blank=True)
+    authortype = models.CharField(max_length=16, blank=True)
+    year = models.CharField(max_length=4, blank=True,
+                            null=True)  # choices=YEAR_CHOICES
+    title = models.TextField(blank=True)
+    subtitle = models.TextField(blank=True)
+    booktitle = models.TextField(blank=True)
+    booksubtitle = models.TextField(blank=True)
+    bookauthor = models.CharField(max_length=128, blank=True)
+    editor = models.CharField(max_length=128, blank=True)
+    editora = models.CharField(max_length=128, blank=True)
+    editortype = models.CharField(max_length=16, blank=True)
+    editoratype = models.CharField(max_length=16, blank=True)
+    pages = models.CharField(max_length=32, blank=True)
+    part = models.CharField(max_length=32, blank=True)
+    edition = models.IntegerField(blank=True, null=True)
+    journaltitle = models.CharField(max_length=128, blank=True)
+    location = models.CharField(max_length=128, blank=True)
+    link = models.URLField(blank=True)
+    note = models.TextField(blank=True)
+    number = models.IntegerField(null=True, blank=True)
+    series = models.CharField(max_length=128, blank=True)
+    volume = models.CharField(max_length=16, blank=True)
+    publisher = models.CharField(max_length=128, blank=True)
+    institution = models.CharField(max_length=128, blank=True)
+    chapter = models.TextField(blank=True)
+    howpublished = models.TextField(blank=True)
+    shorthand = models.CharField(max_length=8, blank=True)
+    isbn = models.CharField(max_length=32, blank=True)
+
+    deprecated = models.BooleanField(default=False)
+
+    source_attr_lst = ['ENTRYTYPE', 'citation_text', 'author',
+                       'year', 'title', 'booktitle', 'editor',
+                       'pages', 'edition', 'journaltitle', 'location',
+                       'link', 'note', 'number', 'series', 'volume',
+                       'publisher', 'institution', 'chapter',
+                       'howpublished', 'deprecated']
 
     def get_absolute_url(self):
         return "/source/%s/" % self.id
 
+    @property
+    def edit_link(self):
+        return format_html(
+            '<a href="%sedit" title="Edit this source" '
+            'class="pull-right">Edit</a>' % (self.get_absolute_url()))
+
     def __unicode__(self):
         return self.citation_text[:64]
 
-    class Meta:
-        ordering = ["type_code", "citation_text"]
+    def populate_from_bibtex(self, bibtex_dict):
+        for key in bibtex_dict.keys():
+            if key not in ['ID', 'date']:
+                setattr(self, key, bibtex_dict[key])
+                # print(key, bibtex_dict[key])
+        try:
+            self.save()
+        except DataError as e:
+            print(e, bibtex_dict)
+
+# import bibtexparser
+# from bibtexparser.bparser import BibTexParser
+# from django.core.exceptions import ObjectDoesNotExist
+#
+# with open('lexicon_source.bib') as bibtex_file:
+#     bibtex_str = bibtex_file.read()
+#
+# parser = BibTexParser()
+# parser.ignore_nonstandard_types = False
+#
+# bib_database = bibtexparser.loads(bibtex_str, parser)
+# missing_fields_lst = []
+# for entry in bib_database.entries:
+#     try:
+#       source_obj = Source.objects.get(pk=entry['ID'])
+#       source_obj.populate_from_bibtex(entry)
+#     except (ValueError, ObjectDoesNotExist) as e:
+#         print 'Failed to handle BibTeX entry with '
+#               'ID %s: %s' %([entry['ID']], e)
 
 
 @reversion.register
@@ -356,7 +470,7 @@ class Clade(AbstractTimestamped, AbstractDistribution):
         # lIds that warrant a connection:
         clIds = set(self.languageclade_set.filter(
             language__languagelistorder__language_list=languageList
-            ).values_list('language_id', flat=True))
+        ).values_list('language_id', flat=True))
         # Fill memo with entries for given cognateclasses:
         for cc in cognateclasses:
             lIds = set(cc.lexeme_set.filter(
@@ -399,12 +513,12 @@ def getCladeFromLanguageIds(languageIds):
         newcIdOrderMap = dict(
             LanguageClade.objects.filter(
                 language_id=languageId
-                ).values_list('clade_id', 'cladesOrder'))
+            ).values_list('clade_id', 'cladesOrder'))
         if cladeIdOrderMap is None:
             cladeIdOrderMap = newcIdOrderMap
         else:
             intersection = newcIdOrderMap.viewkeys() & \
-                           cladeIdOrderMap.viewkeys()
+                cladeIdOrderMap.viewkeys()
             cladeIdOrderMap.update(newcIdOrderMap)
             cladeIdOrderMap = {k: v for k, v in cladeIdOrderMap.iteritems()
                                if k in intersection}
@@ -440,7 +554,9 @@ class Language(AbstractTimestamped, AbstractDistribution):
     representative = models.BooleanField(default=0)
     rfcWebPath1 = models.TextField(blank=True, null=True)
     rfcWebPath2 = models.TextField(blank=True, null=True)
+    # to be replaced with ForeignKey, see below
     author = models.CharField(max_length=256, null=True)
+    # to be replaced with ForeignKey, see below
     reviewer = models.CharField(max_length=256, null=True)
     # Added for #153:
     sortRankInClade = models.IntegerField(default=0, null=False)
@@ -457,6 +573,13 @@ class Language(AbstractTimestamped, AbstractDistribution):
     historical = models.BooleanField(default=0)
     # Added for #300:
     notInExport = models.BooleanField(default=0)
+    # Lat/Lon:
+    latitude = models.DecimalField(
+        null=True, max_digits=19, decimal_places=10)
+    longitude = models.DecimalField(
+        null=True, max_digits=19, decimal_places=10)
+    # author = models.ForeignKey(author, related_name="author", null=True)
+    # reviewer = models.ForeignKey(author, related_name="reviewer", null=True)
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
@@ -508,8 +631,8 @@ class Language(AbstractTimestamped, AbstractDistribution):
             entryCount = len([l for l in self.lexeme_set.all()
                               if l.meaning_id in meaningIdSet])
             nonLexCount = len([l for l in self.lexeme_set.all()
-                              if l.meaning_id in meaningIdSet and
-                              l.not_swadesh_term])
+                               if l.meaning_id in meaningIdSet and
+                               l.not_swadesh_term])
             # Computing dependant counts:
             lexCount = entryCount - nonLexCount
             excessCount = lexCount - meaningCount
@@ -632,6 +755,31 @@ class Language(AbstractTimestamped, AbstractDistribution):
             'It was last touched by "%s" %s.' % \
             (self.ascii_name, kwargs, self.lastEditedBy, self.lastTouched)
 
+    @property
+    def progressPercentage(self):
+        percentages = {
+            0: 0,
+            1: 20,
+            2: 40,
+            3: 60,
+            4: 80,
+            5: 100
+        }
+        return percentages[self.progress]
+
+    @property
+    def progressBarClass(self):
+        # Return class string to color progress bar
+        percentages = {
+            0: 'progress-bar-danger',
+            1: 'progress-bar-danger',
+            2: 'progress-bar-warning',
+            3: 'progress-bar-info',
+            4: 'progress-bar-info',
+            5: 'progress-bar-success'
+        }
+        return percentages[self.progress]
+
 
 @reversion.register
 class LanguageClade(models.Model):
@@ -654,6 +802,10 @@ class Meaning(AbstractTimestamped):
     # Added when mobbing 2016-08-04:
     doubleCheck = models.BooleanField(default=0)
     exclude = models.BooleanField(default=0)
+    # Added for #313:
+    tooltip = models.TextField(blank=True)
+    meaningSetMember = models.IntegerField(default=0, null=False)
+    meaningSetIx = models.IntegerField(default=0, null=False)
 
     def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
@@ -677,7 +829,9 @@ class Meaning(AbstractTimestamped):
         ordering = ["gloss"]
 
     def timestampedFields(self):
-        return set(['gloss', 'description', 'notes', 'doubleCheck', 'exclude'])
+        return set(['gloss', 'description', 'notes', 'doubleCheck',
+                    'exclude', 'tooltip',
+                    'meaningSetMember', 'meaningSetIx'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update meaning: ' \
@@ -782,9 +936,6 @@ class CognateClass(AbstractTimestamped):
     # Fields added for #162:
     loanEventTimeDepthBP = models.TextField(blank=True)
     sourceFormInLoanLanguage = models.TextField(blank=True)
-    loanSourceId = models.IntegerField(null=True)
-    # Not given via timestampedFields;
-    # self.save takes care of it automagically:
     loanSourceCognateClass = models.ForeignKey("self", null=True)
     # Fields added for #176:
     parallelLoanEvent = models.BooleanField(default=0)
@@ -796,6 +947,11 @@ class CognateClass(AbstractTimestamped):
     # Added for #263:
     revisedYet = models.BooleanField(default=0)
     revisedBy = models.CharField(max_length=10, default='')
+    # Added for #319:
+    proposedAsCognateTo = models.ForeignKey(
+        "self", null=True, related_name='+')
+    proposedAsCognateToScale = models.IntegerField(
+        default=0, choices=PROPOSED_AS_COGNATE_TO_SCALE)
 
     def __str__(self):
         return self.root_form
@@ -803,12 +959,12 @@ class CognateClass(AbstractTimestamped):
     def update_alias(self, save=True):
         """Reset alias to the first unused letter"""
         codes = set(uppercase) | \
-            set([i+j for i in uppercase for j in lowercase])
+            set([i + j for i in uppercase for j in lowercase])
         meanings = Meaning.objects.filter(
             lexeme__cognate_class=self).distinct()
         current_aliases = CognateClass.objects.filter(
-                lexeme__meaning__in=meanings).distinct().exclude(
-                id=self.id).values_list("alias", flat=True)
+            lexeme__meaning__in=meanings).distinct().exclude(
+            id=self.id).values_list("alias", flat=True)
         codes -= set(current_aliases)
         self.alias = sorted(codes, key=lambda i: (len(i), i))[0]
         if save:
@@ -844,31 +1000,18 @@ class CognateClass(AbstractTimestamped):
     def timestampedFields(self):
         return set(['alias', 'notes', 'name', 'root_form', 'root_language',
                     'gloss_in_root_lang', 'loanword', 'loan_source',
-                    'loan_notes', 'loanSourceId', 'loanEventTimeDepthBP',
-                    'sourceFormInLoanLanguage', 'parallelLoanEvent',
-                    'notProtoIndoEuropean', 'ideophonic',
+                    'loan_notes', 'loanSourceCognateClass',
+                    'loanEventTimeDepthBP', 'sourceFormInLoanLanguage',
+                    'parallelLoanEvent', 'notProtoIndoEuropean', 'ideophonic',
                     'parallelDerivation', 'dubiousSet',
-                    'revisedYet', 'revisedBy'])
+                    'revisedYet', 'revisedBy',
+                    'proposedAsCognateTo', 'proposedAsCognateToScale'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update cognate class: ' \
             '"%s" with values %s. ' \
             'It was last touched by "%s" %s.' % \
             (self.id, kwargs, self.lastEditedBy, self.lastTouched)
-
-    def save(self, *args, **kwargs):
-        '''
-        Overwriting save method to make sure loanSourceId
-        and loanSourceCognateClass are handled correctly.
-        '''
-        if self.loanSourceId != self.loanSourceCognateClass_id:
-            if self.loanSourceId is None:
-                self.loanSourceCognateClass = None
-            else:
-                self.loanSourceCognateClass = CognateClass.objects.get(
-                    id=self.loanSourceId)
-        # Relaying to parent:
-        return super(CognateClass, self).save(*args, **kwargs)
 
     _computeCounts = {}  # Memo for computeCounts
 
@@ -915,11 +1058,11 @@ class CognateClass(AbstractTimestamped):
 
     @property
     def root_form_compare(self):
-        return 'root_form'+str(self.id)
+        return 'root_form' + str(self.id)
 
     @property
     def root_language_compare(self):
-        return 'root_language'+str(self.id)
+        return 'root_language' + str(self.id)
 
     @property
     def idField(self):
@@ -1268,9 +1411,9 @@ class LanguageList(models.Model):
             assert N is None
             N = 0
         LanguageListOrder.objects.create(
-                language=language,
-                language_list=self,
-                order=N)
+            language=language,
+            language_list=self,
+            order=N)
 
     def insert(self, N, language):
         """
@@ -1278,16 +1421,16 @@ class LanguageList(models.Model):
         ordering before the object position N
         """
         llo = LanguageListOrder.objects.get(
-                language=language,
-                language_list=self)
+            language=language,
+            language_list=self)
         target = self.languagelistorder_set.all()[N]
         llo.order = target.order - 0.0001
         llo.save()
 
     def remove(self, language):
         llo = LanguageListOrder.objects.get(
-                language=language,
-                language_list=self)
+            language=language,
+            language_list=self)
         llo.delete()
 
     def sequentialize(self):
@@ -1304,11 +1447,11 @@ class LanguageList(models.Model):
     def swap(self, languageA, languageB):
         """Swap the order of two languages"""
         orderA = LanguageListOrder.objects.get(
-                language=languageA,
-                language_list=self)
+            language=languageA,
+            language_list=self)
         orderB = LanguageListOrder.objects.get(
-                language=languageB,
-                language_list=self)
+            language=languageB,
+            language_list=self)
         orderB.delete()
         orderA.order, orderB.order = orderB.order, orderA.order
         orderA.save()
@@ -1363,9 +1506,9 @@ class MeaningList(models.Model):
             assert N is None
             N = 0
         MeaningListOrder.objects.create(
-                meaning=meaning,
-                meaning_list=self,
-                order=N)
+            meaning=meaning,
+            meaning_list=self,
+            order=N)
 
     def insert(self, N, meaning):
         """
@@ -1373,16 +1516,16 @@ class MeaningList(models.Model):
         ordering before the object position N
         """
         llo = MeaningListOrder.objects.get(
-                meaning=meaning,
-                meaning_list=self)
+            meaning=meaning,
+            meaning_list=self)
         target = self.meaninglistorder_set.all()[N]
         llo.order = target.order - 0.0001
         llo.save()
 
     def remove(self, meaning):
         llo = MeaningListOrder.objects.get(
-                meaning=meaning,
-                meaning_list=self)
+            meaning=meaning,
+            meaning_list=self)
         llo.delete()
 
     def sequentialize(self):
@@ -1399,11 +1542,11 @@ class MeaningList(models.Model):
     def swap(self, meaningA, meaningB):
         """Swap the order of two meanings"""
         orderA = MeaningListOrder.objects.get(
-                meaning=meaningA,
-                meaning_list=self)
+            meaning=meaningA,
+            meaning_list=self)
         orderB = MeaningListOrder.objects.get(
-                meaning=meaningB,
-                meaning_list=self)
+            meaning=meaningB,
+            meaning_list=self)
         orderB.delete()
         orderA.order, orderB.order = orderB.order, orderA.order
         orderA.save()
@@ -1529,7 +1672,7 @@ def update_language_list_all(sender, instance, **kwargs):
 
     if missing_langs:
         # make a new alphabetized list
-        default_alpha = LanguageList.DEFAULT+"-alpha"
+        default_alpha = LanguageList.DEFAULT + "-alpha"
         try:  # zap the old one
             ll_alpha = LanguageList.objects.get(name=default_alpha)
             ll_alpha.delete()
@@ -1554,7 +1697,7 @@ def update_meaning_list_all(sender, instance, **kwargs):
 
     if missing_meanings:
         # make a new alphabetized list
-        default_alpha = MeaningList.DEFAULT+"-alpha"
+        default_alpha = MeaningList.DEFAULT + "-alpha"
         try:
             ml_alpha = MeaningList.objects.get(name=default_alpha)
             ml_alpha.delete()
@@ -1593,16 +1736,17 @@ class Author(AbstractTimestamped):
     # See https://github.com/lingdb/CoBL/issues/106
     # We leave out the ix field in favour
     # of the id field provided by reversion.
+
     # Author Surname
     surname = models.TextField(blank=True)
     # Author First names
     firstNames = models.TextField(blank=True)
+    # Initials
+    initials = models.TextField(blank=True, unique=True)
     # Email address
     email = models.TextField(blank=True, unique=True)
     # Personal website URL
     website = models.TextField(blank=True)
-    # Initials
-    initials = models.TextField(blank=True, unique=True)
 
     def timestampedFields(self):
         return set(['surname', 'firstNames', 'email', 'website', 'initials'])
@@ -1615,6 +1759,9 @@ class Author(AbstractTimestamped):
 
     class Meta:
         ordering = ["surname", "firstNames"]
+
+    def __unicode__(self):
+        return '%s, %s' % (self.surname, self.firstNames)
 
     @property
     def getAvatar(self):
@@ -1638,6 +1785,7 @@ class Author(AbstractTimestamped):
 @reversion.register
 class NexusExport(AbstractTimestamped):
     # Methods for compressed fields:
+
     def compressed(field):
 
         def fget(self):
@@ -1662,6 +1810,9 @@ class NexusExport(AbstractTimestamped):
     # Compressed data of nexus file:
     _exportData = models.BinaryField(null=True)
     exportData = property(**compressed('_exportData'))
+    # Compressed data of BEAUti nexus file:
+    _exportBEAUti = models.BinaryField(null=True)
+    exportBEAUti = property(**compressed('_exportBEAUti'))
     # Compressed data of constraints file:
     _constraintsData = models.BinaryField(null=True)
     constraintsData = property(**compressed('_constraintsData'))
@@ -1671,15 +1822,30 @@ class NexusExport(AbstractTimestamped):
         # True if calculation for export is not finished
         return self._exportData is None
 
-    def generateResponse(self, constraints=False):
+    def generateResponse(self, constraints=False, beauti=False):
         '''
         If constraints == True response shall carry the constraintsData
         rather than the exportData.
+        If beauti == True response shall carry exportBEAUti
+        rather than exportData.
         '''
         assert not self.pending, "NexusExport.generateResponse " \
                                  "impossible for pending exports."
-        name = self.exportName if not constraints else self.constraintsName
-        data = self.exportData if not constraints else self.constraintsData
+        # name for the export file:
+        if constraints:
+            name = self.constraintsName
+        elif beauti:
+            name = self.beautiName
+        else:
+            name = self.exportName
+        # data for the export file:
+        if constraints:
+            data = self.constraintsData
+        elif beauti:
+            data = self.exportBEAUti
+        else:
+            data = self.exportData
+        # The response itself:
         response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=%s' % \
             name.replace(" ", "_")
@@ -1702,7 +1868,9 @@ class NexusExport(AbstractTimestamped):
                   'excludeDubious',
                   'excludeLoanword',
                   'excludePllLoan',
-                  'includePllLoan']:
+                  'includePllLoan',
+                  'excludeMarkedMeanings',
+                  'excludeMarkedLanguages']:
             settings[f] = form.cleaned_data[f]
         # Finish:
         self.exportSettings = json.dumps(settings)
@@ -1722,6 +1890,8 @@ class NexusExport(AbstractTimestamped):
             excludeLoanword :: Bool
             excludePllLoan :: Bool
             includePllLoan :: Bool
+            excludeMarkedMeanings :: Bool
+            excludeMarkedLanguages :: Bool
         }
         '''
         # settings :: {}
@@ -1736,3 +1906,8 @@ class NexusExport(AbstractTimestamped):
     def constraintsName(self):
         # Replaces the /\.nex$/ in exportName with _Constraints.nex
         return self.exportName[:-4] + "_Constraints.nex"
+
+    @property
+    def beautiName(self):
+        # Replaces the /\.nex$/ in exportName with _BEAUti.nex
+        return self.exportName[:-4] + "_BEAUti.nex"

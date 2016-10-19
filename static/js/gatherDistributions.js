@@ -56,7 +56,14 @@
           }
           //Name of this parameter:
           var pName = _.filter($i.attr('class').split(' '), function(s){
-            return s !== 'reflectDistribution';
+            return _.some(['logNormalOffset',
+                           'logNormalMean',
+                           'logNormalStDev',
+                           'normalMean',
+                           'normalStDev',
+                           'uniformLower',
+                           'uniformUpper'],
+                          function(x){return x === s;});
           }).join('');
           //Value of this parameter:
           var val = parseFloat($i.find('input').val(), 10);

@@ -42,6 +42,14 @@
               </a>
             </h1>
           {% endif %}
+          <span class="badge important updateCounts"
+                data-countformat="countVisible initial"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                data-container="body"
+                title="Visible / Total rows">
+            {{ mltf.meanings | length}}
+          </span>
         </div>
         <table class="table table-striped viewTableFilter"
                data-floatheadtop="45">
@@ -59,13 +67,16 @@
                 <th>
                   <div class="vertical-text">
                     <div class="vertical-text__inner">
-                      Exclude?
+                      Not for Export
                     </div>
                   </div>
                 </th>
               {% endif %}
               <th></th>
               <th>Meaning</th>
+              <th>Meaning specification tooltip</th>
+              <th>MeaningSetMember</th>
+              <th>MeaningSetIx</th>
               <th>Show<br>Languages</th>
               <th>Show<br>Cog. Sets</th>
               {% if user.is_authenticated %}
@@ -141,6 +152,63 @@
                          style="width: 6em;">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".meaningGloss">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated %}
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".meaningTooltip input"
+                         style="width: 6em;">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".meaningTooltip input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control"
+                         data-selector=".meaningTooltip"
+                         style="width: 6em;">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".meaningTooltip">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated %}
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".meaningSetMember input"
+                         style="width: 6em;">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".meaningSetMember input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control"
+                         data-selector=".meaningSetMember"
+                         style="width: 6em;">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".meaningSetMember">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated %}
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".meaningSetIx input"
+                         style="width: 6em;">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".meaningSetIx input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control"
+                         data-selector=".meaningSetIx"
+                         style="width: 6em;">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".meaningSetIx">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
@@ -222,18 +290,37 @@
                     </a>
                   {% endif %}
                 </td>
+                <td class="meaningGloss">
                 {% if user.is_authenticated and user.is_staff %}
                   {% form_field meaning.meaningId class="hide" %}
                   {% form_field meaning.lastTouched class="hide" %}
                   {% form_field meaning.lastEditedBy class="hide" %}
-                  <td class="meaningGloss">
-                    {% form_field meaning.gloss class="form-control" size="4" style="width: 6em;" %}
-                  </td>
+                  {% form_field meaning.gloss class="form-control" size="4" style="width: 6em;" %}
                 {% else %}
-                  <td class="meaningGloss">
-                    {{ meaning.data.gloss }}
-                  </td>
+                  {{ meaning.object_data.gloss }}
                 {% endif %}
+                </td>
+                <td class="meaningTooltip">
+                {% if user.is_authenticated and user.is_staff %}
+                  {% form_field meaning.tooltip class="form-control" %}
+                {% else %}
+                  {{ meaning.object_data.tooltip }}
+                {% endif %}
+                </td>
+                <td class="meaningSetMember">
+                {% if user.is_authenticated and user.is_staff %}
+                  {% form_field meaning.meaningSetMember class="form-control numberField" %}
+                {% else %}
+                  {{ meaning.object_data.meaningSetMember }}
+                {% endif %}
+                </td>
+                <td class="meaningSetIx">
+                {% if user.is_authenticated and user.is_staff %}
+                  {% form_field meaning.meaningSetIx class="form-control numberField" %}
+                {% else %}
+                  {{ meaning.object_data.meaningSetIx }}
+                {% endif %}
+                </td>
                 <td>
                   <a href="{% url 'view-meaning-languages' meaning.data.gloss defaultLanguagelist %}"
                      title="Edit ‘{{ meaning.data.gloss }}' by language list">

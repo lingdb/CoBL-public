@@ -1,0 +1,34 @@
+{% load render_table from django_tables2 %}
+{# do permissions #}
+
+{% load staticfiles %}
+
+<title>{% block title %}Import sources{% endblock %}</title>
+
+{% block top %}
+  <h1>Import sources</h1>
+{% endblock %}
+{% block controls %}
+	<link rel="stylesheet" href="{% static 'django_tables2/themes/CoBL/css/screen.css' %}" />
+	<style>
+		.changed {background-color: orange}
+		.same {background-color: lightgrey}
+		.new {background-color: green}
+		.oldValue {text-decoration: line-through}
+	</style>
+
+{% endblock %}
+
+{% block content %}
+{% if not update_sources_table %}
+  <div class="row">
+	<!-- Upload form. Note enctype attribute! -->
+	<form action="{% url 'import-sources' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+		{% csrf_token %}
+			{{ form.file.errors }}
+		<span>{{ form.file }}<input type="submit" value="Submit" style="display: inline;"/></span>
+{% endif %}
+{% if update_sources_table %}
+	{% render_table update_sources_table %}
+{% endif %}
+{% endblock %}

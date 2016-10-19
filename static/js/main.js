@@ -43,10 +43,15 @@
              'js/gatherDistributions',
              'js/plotDistributions',
              'js/nexus',
-             'js/datetooltip'],
+             'js/datetooltip',
+             'js/updateCounts',
+             'js/updatePercentages',
+             'js/confirmSubmit'],
             function(require, $, _){
     //Initializing viewTableFilter:
     require('js/viewTableFilter').init('table.viewTableFilter');
+    require('js/updateCounts').init();
+    require('js/updatePercentages').init();
     //Rendering MarkDown:
     (function(viewMarkDown){
       $('.markdown').each(function(){
@@ -55,12 +60,8 @@
         target.removeClass('markdown');
       });
     })(require('js/viewMarkDown'));
-    /**
-      Aiding some tooltips with rel:
-      https://stackoverflow.com/a/18017051/448591
-    */
-  //(function(){
-  //  $('[rel="tooltip"]').tooltip();
-  //})(require('bootstrap'));
+
+    require('js/editCognateClass').init();
+    require('js/confirmSubmit').init();
   });
 })();

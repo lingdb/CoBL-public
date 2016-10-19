@@ -3,7 +3,13 @@
      class="prevNextLink pull-left">
     <strong>«&nbsp;{{ prev_language.utf8_name }}</strong>
   </a>
-  <h1 class="inline" {% if language.description %}data-toggle="tooltip" data-placement="bottom" title="{{ language.description }}"{% endif %}>
+  <h1 class="inline"
+      {% if language.description %}
+        data-toggle="tooltip"
+        data-placement="right"
+        data-container="body"
+        title="{{ language.description }}"
+      {% endif %}>
     <input class="typeaheadText"
            value="{{ language.utf8_name }}"
            type="text"

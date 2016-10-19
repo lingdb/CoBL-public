@@ -14,7 +14,14 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='language',
             name='distribution',
-            field=models.CharField(default=b'_', max_length=1, choices=[(b'U', b'Uniform'), (b'N', b'Normal'), (b'L', b'Log normal'), (b'O', b'Offset log normal'), (b'_', b'None')]),
+            field=models.CharField(
+                default=b'_',
+                max_length=1,
+                choices=[(b'U', b'Uniform'),
+                         (b'N', b'Normal'),
+                         (b'L', b'Log normal'),
+                         (b'O', b'Offset log normal'),
+                         (b'_', b'None')]),
         ),
         migrations.AddField(
             model_name='language',
@@ -29,7 +36,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='language',
             name='logNormalStDev',
-            field=models.DecimalField(null=True, max_digits=19, decimal_places=10),
+            field=models.DecimalField(
+                null=True, max_digits=19, decimal_places=10),
         ),
         migrations.AddField(
             model_name='language',

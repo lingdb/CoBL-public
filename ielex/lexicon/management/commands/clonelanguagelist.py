@@ -1,3 +1,4 @@
+from __future__ import print_function
 from optparse import make_option
 from django.core.management.base import CommandError
 from ielex.lexicon.models import LanguageList

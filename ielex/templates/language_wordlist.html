@@ -23,6 +23,7 @@
 {% endblock %}
 
 {% block content %}
+  {% include "snippets/lexemeHandlingModal.html" %}
   <div class="row">
     <div class="col-md-12"
          {% if user.is_authenticated %}
@@ -37,14 +38,34 @@
       <div class="fixedContainer">
         {% if user.is_authenticated %}
           <div class="form-group pull-right">
-            <span class="badge important">{{ lexemes|length }}</span>
+            <div class="inline"
+                 data-toggle="tooltip"
+                 data-placement="bottom"
+                 title="Handle lexemes for this table.">
+                 <button type="button"
+                         data-toggle="modal"
+                         data-target="#lexemeHandlingModal"
+                         class="btn btn-default">
+                   <span class="glyphicon glyphicon-list-alt"></span>
+                 </button>
+            </div>
+            <span class="badge important updateCounts"
+                  data-countformat="countVisible countSwadesh initial"
+                  data-swadeshselector=".lexemeNotSwadeshTerm input"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Visible / Swadesh / Total rows">
+              {{ lexemes|length }}
+            </span>
             Dup. mgs:
             <button type="button"
                     class="filterDistinct btn btn-default"
                     data-attr="meaningid"
                     data-toggle="tooltip"
                     data-placement="bottom"
-                    title="Filter duplicate meanings">
+                    title="Filter duplicate meanings"
+                    data-selector="filterDistinct">
               <span class="glyphicon glyphicon-question-sign"></span>
             </button>
             <a class="btn btn-default bootboxHtmlSnippet"
@@ -484,18 +505,24 @@
                 </td>
                 <td class="lexemeMeaning">
                   <a href="{% url 'meaning-report' lexeme.meaning_id.data %}"
-                     style="font-size: 15px; color: #006400;">
+                     style="font-size: 15px; color: #006400;"
+                     {% if lexeme.object_data.meaning.tooltip %}
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       data-container="body"
+                       title="{{ lexeme.object_data.meaning.tooltip }}"
+                     {% endif %}>
                     {{ lexeme.data.meaning }}
                   </a>
-                  {% if lexeme.object_data.rfcWebPath1 and lexeme.data.rfcWebLookup1 %}
-                    <a href="{{ lexeme.object_data.rfcWebPath1 }}{{ lexeme.data.rfcWebLookup1 }}"
+                  {% if lexeme.object_data.language.rfcWebPath1 and lexeme.data.rfcWebLookup1 %}
+                    <a href="{{ lexeme.object_data.language.rfcWebPath1 }}{{ lexeme.data.rfcWebLookup1 }}"
                        target="_blank"
                        class="pull-right">
                       <span class="glyphicon glyphicon-link"></span>
                     </a>
                   {% endif %}
-                  {% if lexeme.object_data.rfcWebPath2 and lexeme.data.rfcWebLookup2 %}
-                    <a href="{{ lexeme.object_data.rfcWebPath2 }}{{ lexeme.data.rfcWebLookup2 }}"
+                  {% if lexeme.object_data.language.rfcWebPath2 and lexeme.data.rfcWebLookup2 %}
+                    <a href="{{ lexeme.object_data.language.rfcWebPath2 }}{{ lexeme.data.rfcWebLookup2 }}"
                        target="_blank"
                        class="pull-right">
                       <span class="glyphicon glyphicon-info-sign"></span>
@@ -588,7 +615,7 @@
                 <td style="text-align: center; color: #8B4510;">
                   <div class="cognateClasses">
                     {% if user.is_authenticated %}
-                      {% form_field lexeme.combinedCognateClassAssignment class="form-control" %}
+                      {% form_field lexeme.combinedCognateClassAssignment class="form-control combinedCognateClassAssignment" data-lexemeid=lexeme.object_data.id %}
                     {% else %}
                       {{ lexeme.object_data.combinedCognateClassAssignment }}
                     {% endif %}
@@ -677,8 +704,8 @@
                 <td class="lexemeGloss">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.gloss size="8" class="form-control" %}
-                  {% elif lexeme.gloss.data %}
-                    {{ lexeme.gloss.data }}
+                  {% elif lexeme.object_data.gloss %}
+                    {{ lexeme.object_data.gloss }}
                   {% endif %}
                 </td>
                 {# notes_data.html #}

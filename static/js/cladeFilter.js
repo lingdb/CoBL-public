@@ -21,9 +21,11 @@
       //Loading session settings:
       var settings = ('cladeFilter' in window.sessionStorage) ?
                      JSON.parse(window.sessionStorage.cladeFilter)
-                   : {representative: false, // :: Bool
-                      cladepaths: {} // :: cladepath -> 0
-                     };
+                   : {};
+      settings = _.extend({representative: false, // :: Bool
+                    cladepaths: {}, // :: cladepath -> 0
+                    fadeToggleall: true // :: Bool, true when toggleall was clicked.
+                  }, settings);
       //Function to save settings to the session:
       var saveSettings = function(){
         window.sessionStorage.cladeFilter = JSON.stringify(settings);
@@ -54,10 +56,11 @@
               _.each(_.keys(settings.cladepaths), function(cp){
                 cladeFilter.find('li[data-cladefilter-cladepath="'+cp+'"]').trigger('click');
               });
+              settings.fadeToggleall = false;
             }else{
               cladeFilter.find('li[data-cladefilter-cladepath]').trigger('click');
+              settings.fadeToggleall = true;
             }
-            return; // Nothing else to do for ALL button
           }
           saveSettings();
         }
@@ -67,6 +70,8 @@
           grey = settings.representative;
         }else if(!_.isUndefined(cladepath)){
           grey = cladepath in settings.cladepaths;
+        }else if(!_.isUndefined(toggleall)){
+          grey = settings.fadeToggleall;
         }
         //Adjust style:
         li.css('opacity', (grey === true) ? 0.25 : 1);

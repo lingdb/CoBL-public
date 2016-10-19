@@ -5,6 +5,7 @@ import json
 import re
 import requests
 import time
+from collections import defaultdict, deque
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -13,11 +14,11 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.forms import ValidationError
+from django.http import HttpResponse, HttpResponseRedirect, Http404, QueryDict
 from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template import Template
-from itertools import izip
 from reversion.models import Revision, Version
 # from reversion import revision
 from ielex.settings import LIMIT_TO, META_TAGS
@@ -36,8 +37,6 @@ from ielex.forms import AddCitationForm, \
                         CloneLanguageForm, \
                         CognateJudgementSplitTable, \
                         EditCitationForm, \
-                        EditCognateClassNameForm, \
-                        EditCognateClassNotesForm, \
                         EditLanguageForm, \
                         EditLanguageListForm, \
                         EditLanguageListMembersForm, \
@@ -46,19 +45,24 @@ from ielex.forms import AddCitationForm, \
                         EditMeaningListForm, \
                         EditSourceForm, \
                         LanguageListRowForm, \
+                        LanguageListProgressForm, \
                         LexemeTableEditCognateClassesForm, \
-                        LexemeTableFilterForm, \
                         LexemeTableLanguageWordlistForm, \
                         LexemeTableViewMeaningsForm, \
                         MeaningListTableForm, \
-                        MeaningTableFilterForm, \
                         MergeCognateClassesForm, \
                         SearchLexemeForm, \
                         SndCompCreationForm, \
                         SndCompDeletionForm, \
                         SndCompTableForm, \
                         make_reorder_languagelist_form, \
-                        make_reorder_meaninglist_form
+                        make_reorder_meaninglist_form, \
+                        AddMissingLexemsForLanguageForm, \
+                        RemoveEmptyLexemsForLanguageForm, \
+                        CognateClassEditForm, \
+                        SourceDetailsForm, \
+                        SourceEditForm, \
+                        UploadBiBTeXFileForm
 from ielex.lexicon.models import Author, \
                                  Clade, \
                                  CognateClass, \
@@ -73,10 +77,8 @@ from ielex.lexicon.models import Author, \
                                  LexemeCitation, \
                                  Meaning, \
                                  MeaningList, \
-                                 MeaningListOrder, \
                                  SndComp, \
                                  Source, \
-                                 TYPE_CHOICES, \
                                  NexusExport
 from ielex.lexicon.defaultModels import getDefaultLanguage, \
                                         getDefaultLanguageId, \
@@ -94,8 +96,17 @@ from ielex.shortcuts import render_template
 from ielex.utilities import next_alias, \
                             anchored, oneline, logExceptions
 from ielex.languageCladeLogic import updateLanguageCladeRelations
+from ielex.tables import SourcesTable, SourcesUpdateTable
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_protect
+from django.views.generic.edit import FormView
+from django.utils.safestring import mark_safe
+from django.utils.decorators import method_decorator
+
+import bibtexparser
+from bibtexparser.bparser import BibTexParser
+from django_tables2 import RequestConfig
 
 # Refactoring:
 # - rename the functions which render to response with the format
@@ -344,37 +355,8 @@ def view_language_list(request, language_list=None):
                            'did not pass server side validation.')
             return HttpResponseRedirect(
                 reverse("view-language-list", args=[current_list.name]))
-        # Languages that may need clade updates:
-        updateClades = []
-        # Iterating form to update languages:
-        for entry in languageListTableForm.langlist:
-            data = entry.data
-            try:
-                with transaction.atomic():
-                    lang = Language.objects.get(id=data['idField'])
-                    if lang.isChanged(**data):
-                        try:
-                            problem = lang.setDelta(request, **data)
-                            if problem is None:
-                                lang.save()
-                                # Making sure we update clades
-                                # for changed languages:
-                                updateClades.append(lang)
-                            else:
-                                messages.error(request,
-                                               lang.deltaReport(**problem))
-                        except Exception:
-                            logging.exception('Exception while saving POST '
-                                              'in view_language_list.')
-                            messages.error(
-                                request, 'Sorry, the server failed '
-                                         'to save "%s".' % data['ascii_name'])
-            except Exception:
-                logging.exception('Exception accessing Language object '
-                                  'in view_language_list.',
-                                  extra=data)
-                messages.error(request, 'Sorry, the server had problems '
-                               'saving at least one language entry.')
+        # Updating languages and gathering clades to update:
+        updateClades = languageListTableForm.handle(request)
         # Updating clade relations for changes languages:
         if len(updateClades) > 0:
             updateLanguageCladeRelations(languages=updateClades)
@@ -386,115 +368,11 @@ def view_language_list(request, language_list=None):
         form = CloneLanguageForm(request.POST)
         try:
             form.validate()
-            with transaction.atomic():
-                sourceLanguage = Language.objects.get(
-                    id=form.data['languageId'])
-                # Creating language clone:
-                cloneData = {'ascii_name': form.data['languageName'],
-                             'utf8_name': form.data['languageName']}
-                for f in sourceLanguage.timestampedFields():
-                    if f not in cloneData:
-                        cloneData[f] = getattr(sourceLanguage, f)
-                clone = Language(**cloneData)
-                clone.bump(request)
-                clone.save()
-                # Adding language to current language list, if not viewing all:
-                if current_list.name != LanguageList.ALL:
-                    current_list.append(clone)
-                # Wordlist to use:
-                meaningIds = MeaningListOrder.objects.filter(
-                    meaning_list__name=getDefaultWordlist(request)
-                    ).values_list(
-                    "meaning_id", flat=True)
-                # Lexemes to copy:
-                sourceLexemes = Lexeme.objects.filter(
-                    language__ascii_name=form.data['sourceLanguageName'],
-                    meaning__in=meaningIds).all(
-                    ).prefetch_related('meaning')
-                # Editor for AbstractTimestamped:
-                lastEditedBy = ' '.join([request.user.first_name,
-                                         request.user.last_name])
-                # Copy lexemes to clone language:
-                currentLexemeIds = set(Lexeme.objects.values_list(
-                    'id', flat=True))
-                newLexemes = []
-                order = 1  # Increasing values for _order fields of Lexemes
-                for sLexeme in sourceLexemes:
-                    # Basic data:
-                    data = {'language': clone,
-                            'meaning': sLexeme.meaning,
-                            '_order': order,
-                            'lastEditedBy': lastEditedBy}
-                    order += 1
-                    # Copying lexeme data if specified:
-                    if not form.data['emptyLexemes']:
-                        for f in sLexeme.timestampedFields():
-                            if f != 'lastEditedBy':
-                                data[f] = getattr(sLexeme, f)
-                    # New lexeme to create:
-                    newLexeme = Lexeme(**data)
-                    newLexemes.append(newLexeme)
-                Lexeme.objects.bulk_create(newLexemes)
-                # Copying CognateJudgements for newLexemes:
-                if not form.data['emptyLexemes']:
-                    newLexemeIds = Lexeme.objects.exclude(
-                        id__in=currentLexemeIds).order_by(
-                        'id').values_list('id', flat=True)
-                    # Cloning LexemeCitations:
-                    newLexemeCitations = []
-                    for newId, lexeme in izip(newLexemeIds, sourceLexemes):
-                        for lc in lexeme.lexemecitation_set.all():
-                            newLexemeCitations.append(LexemeCitation(
-                                lexeme_id=newId,
-                                source_id=lc.source_id,
-                                pages=lc.pages,
-                                reliability=lc.reliability,
-                                comment=lc.comment,
-                                modified=lc.modified
-                            ))
-                    LexemeCitation.objects.bulk_create(newLexemeCitations)
-                    # Cloning CognateJudgements:
-                    currentCognateJudgementIds = set(
-                        CognateJudgement.objects.values_list('id', flat=True))
-                    newCognateJudgements = []
-                    sourceCJs = []
-                    for newId, lexeme in izip(newLexemeIds, sourceLexemes):
-                        cjs = CognateJudgement.objects.filter(
-                            lexeme_id=lexeme.id).prefetch_related(
-                            'cognatejudgementcitation_set').all()
-                        sourceCJs += cjs
-                        for cj in cjs:
-                            newCognateJudgement = CognateJudgement(
-                                lexeme_id=newId,
-                                cognate_class_id=cj.cognate_class_id,
-                                lastEditedBy=lastEditedBy
-                            )
-                            newCognateJudgements.append(newCognateJudgement)
-                    CognateJudgement.objects.bulk_create(newCognateJudgements)
-                    # Copying CognateJudgementCitations
-                    # for newCognateJudgements:
-                    newCognateJudgementIds = CognateJudgement.objects.exclude(
-                        id__in=currentCognateJudgementIds).order_by(
-                        'id').values_list(
-                        'id', flat=True)
-                    newCognateJudgementCitations = []
-                    for newId, cj in izip(newCognateJudgementIds, sourceCJs):
-                        for cjc in cj.cognatejudgementcitation_set.all():
-                            newCognateJudgementCitations.append(
-                                CognateJudgementCitation(
-                                    cognate_judgement_id=newId,
-                                    source_id=cjc.source_id,
-                                    pages=cjc.pages,
-                                    reliability=cjc.reliability,
-                                    comment=cjc.comment,
-                                    modified=cjc.modified
-                                ))
-                    CognateJudgementCitation.objects.bulk_create(
-                        newCognateJudgementCitations)
-                # Redirect to newly created language:
-                messages.success(request, 'Language cloned.')
-                return HttpResponseRedirect(
-                    reverse("view-language-list", args=[current_list.name]))
+            form.handle(request, current_list)
+            # Redirect to newly created language:
+            messages.success(request, 'Language cloned.')
+            return HttpResponseRedirect(
+                reverse("view-language-list", args=[current_list.name]))
         except Exception:
             logging.exception('Problem cloning Language in view_language_list')
             messages.error(request, 'Sorry, a problem occured '
@@ -783,9 +661,6 @@ def view_language_wordlist(request, language, wordlist):
                                   'in view_language_wordlist.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least one lexeme.')
-            return HttpResponseRedirect(
-                reverse("view-language-wordlist",
-                        args=[language.ascii_name, wordlist.name]))
         elif 'editCognateClass' in request.POST:
             try:
                 form = LexemeTableEditCognateClassesForm(request.POST)
@@ -793,41 +668,50 @@ def view_language_wordlist(request, language, wordlist):
                 form.handle(request)
             except Exception:
                 logging.exception('Problem handling editCognateClass.')
+        elif 'addMissingLexemes' in request.POST:
+            try:
+                form = AddMissingLexemsForLanguageForm(request.POST)
+                form.validate()
+                form.handle(request)
+            except Exception:
+                logging.exception(
+                    'Problem with AddMissingLexemsForLanguageForm '
+                    'in view_language_wordlist')
+                messages.error(request, 'Sorry, the server had problems '
+                                        'adding missing lexemes.')
+        elif 'removeEmptyLexemes' in request.POST:
+            try:
+                form = RemoveEmptyLexemsForLanguageForm(request.POST)
+                form.validate()
+                form.handle(request)
+            except Exception:
+                logging.exception(
+                    'Problem with RemoveEmptyLexemsForLanguageForm '
+                    'in view_language_wordlist')
+                messages.error(request, 'Sorry, the server had problems '
+                                        'removing empty lexemes.')
 
-            return HttpResponseRedirect(
-                reverse("view-language-wordlist",
-                        args=[language.ascii_name, wordlist.name]))
+        return HttpResponseRedirect(
+            reverse("view-language-wordlist",
+                    args=[language.ascii_name, wordlist.name]))
 
     # collect data
     lexemes = Lexeme.objects.filter(
         language=language,
         meaning__in=wordlist.meanings.all()
         ).select_related(
-        "meaning").order_by(
+        "meaning", "language").order_by(
         "meaning__gloss").prefetch_related(
         "cognatejudgement_set",
         "cognatejudgement_set__cognatejudgementcitation_set",
         "cognate_class",
-        "lexemecitation_set",
-        "language")
-
-    # TODO: move this out of views
-    # filter by 'language' or 'meaning'
-    filt_form = LexemeTableFilterForm(request.GET)
-    if filt_form.is_valid():
-        if request.GET.get('meaning'):
-            lexemes = lexemes.filter(meaning=int(request.GET.get('meaning')))
-        if request.GET.get('cognate_class'):
-            lexemes = lexemes.filter(
-                cognate_class=request.GET.get('cognate_class'))
+        "lexemecitation_set")
 
     # Used for #219:
     cIdCognateClassMap = {}  # :: CognateClass.id -> CognateClass
 
     lexemes_editabletable_form = LexemeTableLanguageWordlistForm()
     for lex in lexemes:
-        lex.rfcWebPath1 = language.rfcWebPath1
-        lex.rfcWebPath2 = language.rfcWebPath2
         lexemes_editabletable_form.lexemes.append_entry(lex)
         ccs = lex.cognate_class.all()
         for cc in ccs:
@@ -856,7 +740,6 @@ def view_language_wordlist(request, language, wordlist):
                             "wordlist": wordlist,
                             "otherMeaningLists": otherMeaningLists,
                             "lex_ed_form": lexemes_editabletable_form,
-                            "filt_form": filt_form,
                             "cognateClasses": cognateClasses,
                             "typeahead": typeahead})
 
@@ -1270,18 +1153,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         else:  # not ('meang_form' in request.POST)
             cognate_form = ChooseCognateClassForm(request.POST)
             if cognate_form.is_valid():
-                cd = cognate_form.cleaned_data
-                cognate_class = cd["cognate_class"]
-                # if not cogjudge_id: # new cognate judgement
-                lexeme = Lexeme.objects.get(id=lexeme_id)
-                if cognate_class not in lexeme.cognate_class.all():
-                    cj = CognateJudgement.objects.create(
-                            lexeme=lexeme,
-                            cognate_class=cognate_class)
-                else:
-                    cj = CognateJudgement.objects.get(
-                            lexeme=lexeme,
-                            cognate_class=cognate_class)
+                cj = cognate_form.handle(request, lexeme_id)
 
                 # change this to a reverse() pattern
                 return HttpResponseRedirect(anchored(
@@ -1309,16 +1181,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     cognate_form = ChooseCognateClassForm()
     cognate_form.fields["cognate_class"].queryset = cognateClasses
 
-    # TODO: move this out of views
-    # filter by 'language' or 'meaning'
-    filt_form = MeaningTableFilterForm(request.GET)
-    if filt_form.is_valid():
-        if request.GET.get('language'):
-            lexemes = lexemes.filter(language=request.GET.get('language'))
-    # TODO: suppress errorlist with error
-    # "This field is required.", but only here:
-    # Here this is not needed.
-    filt_form.errors['language'] = ''
     # Fill lexemes_editabletable_form:
     lexemes_editabletable_form = LexemeTableViewMeaningsForm()
     for lex in lexemes:
@@ -1348,7 +1210,6 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                                        for c in cognateClasses]),
          "add_cognate_judgement": lexeme_id,
          "lex_ed_form": lexemes_editabletable_form,
-         "filt_form": filt_form,
          "typeahead": typeahead,
          "clades": Clade.objects.all()})
 
@@ -1363,26 +1224,11 @@ def view_cognateclasses(request, meaning):
             try:
                 cogClassTableForm = AddCogClassTableForm(request.POST)
                 cogClassTableForm.validate()
-                # Iterate entries that may be changed:
-                for entry in cogClassTableForm.cogclass:
-                    data = entry.data
-                    cogclass = CognateClass.objects.get(
-                        id=int(data['idField']))
-                    # Check if entry changed and try to update:
-                    if cogclass.isChanged(**data):
-                        try:
-                            problem = cogclass.setDelta(request, **data)
-                            if problem is None:
-                                cogclass.save()
-                            else:
-                                messages.error(
-                                    request, cogclass.deltaReport(**problem))
-                        except Exception:
-                            logging.exception('Problem saving CognateClass '
-                                              'in view_cognateclasses.')
-                            messages.error(
-                                request,
-                                'Problem while saving entry: %s' % data)
+                cogClassTableForm.handle(request)
+            except ValidationError as e:
+                logging.exception(
+                    'Validation did not work in view_cognateclasses.')
+                messages.error(request, ' '.join(e.messages))
             except Exception:
                 logging.exception('Problem updating CognateClasses '
                                   'in view_cognateclasses.')
@@ -1928,12 +1774,8 @@ def redirect_lexeme_citation(request, lexeme_id):
 
 @logExceptions
 def cognate_report(request, cognate_id=0, meaning=None, code=None,
-                   cognate_name=None, action=""):
+                   cognate_name=None):
 
-    form_dict = {
-        "edit-name": EditCognateClassNameForm,
-        "edit-notes": EditCognateClassNotesForm
-        }
     if cognate_id:
         cognate_class = CognateClass.objects.get(id=int(cognate_id))
     elif cognate_name:
@@ -1959,45 +1801,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
             form = CognateJudgementSplitTable(request.POST)
             try:
                 form.validate()
-                # Gathering data to operate on:
-                idTMap = {j.data['idField']: j.data['lastTouched']
-                          for j in form.judgements
-                          if j.data['splitOff']}
-                idCjMap = {cj.id: cj for cj in
-                           CognateJudgement.objects.filter(
-                               id__in=idTMap.keys()).all()}
-                # Bumping judgements:
-                bumped = True
-                try:
-                    for id, t in idTMap.iteritems():
-                        idCjMap[id].bump(request, t)
-                except Exception:
-                    logging.exception('Problem splitting cognate judgements '
-                                      'in cognate_report.')
-                    messages.error(request, 'The server refused to split '
-                                   'the cognate judgements, because someone '
-                                   'changed one of them before your request.')
-                    bumped = False
-                # Create new CognateClass on successful bump:
-                if bumped:
-                    cc = CognateClass()
-                    try:
-                        cc.save()
-                        for _, cj in idCjMap.iteritems():
-                            cj.cognate_class = cc
-                            cj.save()
-                        cc.update_alias()
-                        messages.success(
-                            request,
-                            'Created new Cognate Class at '
-                            '[%s](/cognate/%s/) containing the judgements %s.'
-                            % (cc.id, cc.id, idTMap.keys()))
-                    except Exception:
-                        logging.exception('Problem creating a new '
-                                          'CognateClass on split '
-                                          'in cognate_report.')
-                        messages.error(request, 'Sorry the server could not '
-                                       'create a new cognate class.')
+                form.handle(request)
             except Exception:
                 logging.exception('Problem when splitting CognateClasses '
                                   'in cognate_report.')
@@ -2025,21 +1829,18 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                                   'in cognate_report.')
                 messages.error(request, 'Sorry, the server could not delete '
                                'the citation.')
-
-    if action in ["edit-notes", "edit-name"]:
-        if request.method == 'POST':
-            form = form_dict[action](request.POST, instance=cognate_class)
-            if "cancel" in form.data:
-                return HttpResponseRedirect(reverse('cognate-set',
-                                            args=[cognate_class.id]))
-            if form.is_valid():
-                form.save()
-                return HttpResponseRedirect(reverse('cognate-set',
-                                            args=[cognate_class.id]))
-        else:
-            form = form_dict[action](instance=cognate_class)
-    else:
-        form = None
+        elif 'cognateClassEditForm' in request.POST:
+            try:
+                form = CognateClassEditForm(request.POST)
+                form.validate()
+                form.handle(request)
+            except Exception:
+                logging.exception('Problem handling CognateClassEditForm.')
+                messages.error(
+                    request,
+                    'Sorry, the server had trouble understanding the request.')
+        return HttpResponseRedirect(reverse(
+            'cognate-set', args=[cognate_id]))
 
     language_list = LanguageList.objects.get(
         name=getDefaultLanguagelist(request))
@@ -2054,9 +1855,9 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
 
     return render_template(request, "cognate_report.html",
                            {"cognate_class": cognate_class,
-                            "splitTable": splitTable,
-                            "action": action,
-                            "form": form})
+                            "cognateClassForm": CognateClassEditForm(
+                                obj=cognate_class),
+                            "splitTable": splitTable})
 
 # -- /source/ -------------------------------------------------------------
 
@@ -2125,12 +1926,147 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
 
 @logExceptions
 def source_list(request):
-    grouped_sources = []
-    for type_code, type_name in TYPE_CHOICES:
-        grouped_sources.append(
-            (type_name, Source.objects.filter(type_code=type_code)))
-    return render_template(request, "source_list.html",
-                           {"grouped_sources": grouped_sources})
+
+    if request.POST.get("postType") == 'details':
+        source_obj = Source.objects.get(pk=request.POST.get("id"))
+        response = HttpResponse()
+        response.write(SourceDetailsForm(instance=source_obj).as_table())
+        return response
+    elif request.POST.get("postType") == 'edit' and \
+            request.user.is_authenticated():
+        source_obj = Source.objects.get(pk=request.POST.get("id"))
+        response = HttpResponse()
+        response.write(SourceEditForm(instance=source_obj).as_table())
+        return response
+    elif request.POST.get("postType") == 'update' and \
+            request.user.is_authenticated():
+        source_obj = Source.objects.get(pk=request.POST.get("id"))
+        source_data = QueryDict(request.POST['source_data'].encode('ASCII'))
+        form = SourceEditForm(source_data, instance=source_obj)
+        print(source_data)  # , [(field, form[field]) for field in form.fields]
+        if form.is_valid():
+            print(form.cleaned_data)
+            form.save()
+        else:
+            print(form.errors)
+        return HttpResponse()
+    else:
+        sources_dict_lst = []
+        for source_obj in Source.objects.all():
+            source_dict = {}
+            for attr in source_obj.source_attr_lst:
+                source_dict[attr] = getattr(source_obj, attr)
+            source_dict['details'] = mark_safe(
+                '<button class="details_button show_d" '
+                'id="%s">More</button>' % (source_obj.pk))
+            if request.user.is_authenticated():
+                source_dict['edit'] = mark_safe(
+                    '<button class="edit_button show_e" '
+                    'id="%s">Edit</button>' % (source_obj.pk))
+            sources_dict_lst.append(source_dict)
+        sources_table = SourcesTable(sources_dict_lst)  # Source.objects.all()
+        RequestConfig(request,
+                      paginate={'per_page': 100}).configure(sources_table)
+
+        return render_template(request, "source_list.html",
+                               {"sources": sources_table,
+                                })
+
+
+class source_import(FormView):
+    form_class = UploadBiBTeXFileForm
+    template_name = 'source_import.html'
+    success_url = '/sources/'  # Replace with your URL or reverse().
+
+    @method_decorator(logExceptions)
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(source_import, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
+        return render_template(
+            request,
+            self.template_name, {'form': form, 'update_sources_table': None})
+
+    def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        files = request.FILES.getlist('file')
+        if form.is_valid():
+            sources_dict_lst = []
+            for f in files:
+                sources_dict_lst += self.get_bibtex_data(f)
+            update_sources_table = SourcesUpdateTable(sources_dict_lst)
+            RequestConfig(
+                request,
+                paginate={'per_page': 1000}).configure(update_sources_table)
+            return render_template(request, self.template_name, {
+                'form': self.form_class(),
+                'update_sources_table': update_sources_table,
+                })
+            # return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def get_bibtex_data(self, f):
+
+        parser = BibTexParser()
+        parser.ignore_nonstandard_types = False
+        bib_database = bibtexparser.loads(f.read(), parser)
+        sources_dict_lst = []
+        for entry in bib_database.entries:
+            sources_dict_lst.append(self.get_comparison_dict(entry))
+        return sources_dict_lst
+
+    def get_comparison_dict(self, entry):
+
+        source_attr_lst = [
+            'ENTRYTYPE', 'citation_text', 'author', 'year', 'title',
+            'booktitle', 'editor', 'pages', 'edition', 'journaltitle',
+            'location', 'link', 'note', 'number', 'series', 'volume',
+            'publisher', 'institution', 'chapter', 'howpublished']
+
+        comparison_dict = {}
+        try:
+            source_obj = Source.objects.get(pk=entry['ID'])
+            for key in [key for key in entry.keys()
+                        if key not in ['ID', 'date']]:
+                if getattr(source_obj, key) == entry[key]:
+                    comparison_dict[key] = [entry[key], 'same']
+                else:
+                    old_value = getattr(source_obj, key)
+                    if old_value in ['', u'—', None]:
+                        old_value = '(none)'
+                    new_value = entry[key]
+                    if new_value in ['', u'—', None]:
+                        new_value = '(none)'
+                    comparison_dict[key] = [
+                        '<p class="oldValue">%s</p>'
+                        '<p class="newValue">%s</p>' %
+                        (old_value, new_value), 'changed']
+            for key in source_attr_lst:
+                if key not in comparison_dict.keys():
+                    if getattr(source_obj, key) not in ['', None]:
+                        comparison_dict[key] = [
+                            '<p class="oldValue">%s</p>'
+                            '<p class="newValue">(none)</p>' %
+                            (getattr(source_obj, key)), 'changed']
+
+        except (ValueError, ObjectDoesNotExist) as e:
+            for key in entry.keys():
+                comparison_dict[key] = [entry[key], 'new']
+        return comparison_dict
+
+#             print(entry)
+#             try:
+#               source_obj = Source.objects.get(pk=entry['ID'])
+#               source_obj.populate_from_bibtex(entry)
+#             except (ValueError, ObjectDoesNotExist) as e:
+#                 print('Failed to handle BibTeX entry with ID %s: %s' %
+#                       ([entry['ID']], e))
+
+# -- /source end/ -------------------------------------------------------------
 
 
 @logExceptions
@@ -2359,22 +2295,215 @@ def view_frontpage(request):
 
 
 @logExceptions
+@csrf_protect
 @login_required
 def view_nexus_export(request, exportId=None):
     if exportId is not None:
-        try:
-            export = NexusExport.objects.get(id=exportId)
-            if not export.pending:
-                return export.generateResponse(
-                    constraints='constraints' in request.GET)
-            # Message if pending:
-            messages.info(request,
-                          "Sorry, the server is still "
-                          "computing export %s." % exportId)
-        except NexusExport.DoesNotExist:
-            messages.error(request,
-                           "Sorry, but export %s does not "
-                           "exist in the database." % exportId)
+        if request.method == 'GET':
+            try:
+                export = NexusExport.objects.get(id=exportId)
+                if not export.pending:
+                    return export.generateResponse(
+                        constraints='constraints' in request.GET,
+                        beauti='beauti' in request.GET)
+                # Message if pending:
+                messages.info(request,
+                              "Sorry, the server is still "
+                              "computing export %s." % exportId)
+            except NexusExport.DoesNotExist:
+                messages.error(request,
+                               "Sorry, but export %s does not "
+                               "exist in the database." % exportId)
+        elif request.method == 'POST' and 'delete' in request.POST:
+            NexusExport.objects.filter(id=exportId).delete()
+            messages.info(request, "Deleted export %s." % exportId)
+            return HttpResponseRedirect(reverse("view_nexus_export_base"))
     return render_template(
         request, "view_nexus_export.html",
         {'exports': NexusExport.objects.order_by('-id').all()})
+
+
+@csrf_protect
+@logExceptions
+def view_two_languages_wordlist(request,
+                                lang1=None,
+                                lang2=None,
+                                wordlist=None):
+    '''
+    Implements two languages * all meanings view for #256
+    lang1 :: str | None
+    lang2 :: str | None
+    wordlist :: str | None
+    If lang1 is given it will be treated as the default language.
+    '''
+    # Setting defaults if possible:
+    if lang1 is not None:
+        setDefaultLanguage(request, lang1)
+    if wordlist is not None:
+        setDefaultWordlist(request, wordlist)
+    # Fetching lang1 to operate on:
+    if lang1 is None:
+        lang1 = getDefaultLanguage(request)
+    try:
+        lang1 = Language.objects.get(ascii_name=lang1)
+    except Language.DoesNotExist:
+        raise Http404("Language '%s' does not exist" % lang1)
+    # Fetching lang2 to operate on:
+    if lang2 is None:
+        lang2 = Language.objects.exclude(
+            id=lang1.id).filter(
+            languagelist__name=getDefaultLanguagelist(request))[0]
+    else:
+        try:
+            lang2 = Language.objects.get(ascii_name=lang2)
+        except Language.DoesNotExist:
+            raise Http404("Language '%s' does not exist" % lang1)
+    # Fetching wordlist to operate on:
+    if wordlist is None:
+        wordlist = getDefaultWordlist(request)
+    try:
+        wordlist = MeaningList.objects.get(name=wordlist)
+    except MeaningList.DoesNotExist:
+        raise Http404("MeaningList '%s' does not exist" % wordlist)
+
+    if request.method == 'POST':
+        # Updating lexeme table data:
+        if 'lex_form' in request.POST:
+            try:
+                form = LexemeTableLanguageWordlistForm(request.POST)
+                form.validate()
+                form.handle(request)
+            except Exception:
+                logging.exception('Problem updating lexemes '
+                                  'in view_two_languages_wordlist.')
+                messages.error(request, 'Sorry, the server had problems '
+                               'updating at least one lexeme.')
+        return HttpResponseRedirect(
+            reverse("view-two-languages",
+                    args=[lang1.ascii_name,
+                          lang2.ascii_name,
+                          wordlist.name]))
+
+    def getLexemes(lang):
+        # Helper function to fetch lexemes
+        return Lexeme.objects.filter(
+            language=lang,
+            meaning__meaninglist=wordlist
+        ).select_related("meaning", "language").prefetch_related(
+            "cognatejudgement_set",
+            "cognatejudgement_set__cognatejudgementcitation_set",
+            "cognate_class",
+            "lexemecitation_set").order_by("meaning__gloss")
+
+    # collect data:
+    mIdOrigLexDict = defaultdict(deque)  # Meaning.id -> [Lexeme]
+    for l in getLexemes(lang2):
+        mIdOrigLexDict[l.meaning.id].append(l)
+
+    lexemes = getLexemes(lang1)
+    for l in lexemes:
+        if l.meaning.id in mIdOrigLexDict:
+            try:
+                l.original = mIdOrigLexDict[l.meaning.id].popleft()
+            except IndexError:
+                pass
+
+    lexemeTable = LexemeTableLanguageWordlistForm(lexemes=lexemes)
+
+    otherMeaningLists = MeaningList.objects.exclude(id=wordlist.id).all()
+
+    languageList = LanguageList.objects.prefetch_related('languages').get(
+        name=getDefaultLanguagelist(request))
+    typeahead1 = json.dumps({l.utf8_name: reverse(
+        "view-two-languages",
+        args=[l.ascii_name, lang2.ascii_name, wordlist.name])
+        for l in languageList.languages.all()})
+    typeahead2 = json.dumps({l.utf8_name: reverse(
+        "view-two-languages",
+        args=[lang1.ascii_name, l.ascii_name, wordlist.name])
+        for l in languageList.languages.all()})
+
+    prev1, next1 = \
+        get_prev_and_next_languages(request, lang1,
+                                    language_list=languageList)
+    prev2, next2 = \
+        get_prev_and_next_languages(request, lang2,
+                                    language_list=languageList)
+    return render_template(request, "twoLanguages.html",
+                           {"lang1": lang1,
+                            "lang2": lang2,
+                            "prev1": prev1, "next1": next1,
+                            "prev2": prev2, "next2": next2,
+                            "wordlist": wordlist,
+                            "otherMeaningLists": otherMeaningLists,
+                            "lex_ed_form": lexemeTable,
+                            "typeahead1": typeahead1,
+                            "typeahead2": typeahead2})
+
+
+@csrf_protect
+@logExceptions
+def view_language_progress(request, language_list=None):
+    current_list = get_canonical_language_list(language_list, request)
+    setDefaultLanguagelist(request, current_list.name)
+
+    if (request.method == 'POST') and ('progress_form' in request.POST):
+        form = LanguageListProgressForm(request.POST)
+        try:
+            form.validate()
+        except Exception:
+            logging.exception(
+                'Exception in POST validation for view_language_list')
+            messages.error(request, 'Sorry, the form data sent '
+                           'did not pass server side validation.')
+            return HttpResponseRedirect(
+                reverse("view-language-progress", args=[current_list.name]))
+        # Updating languages and gathering clades to update:
+        updateClades = form.handle(request)
+        # Updating clade relations for changes languages:
+        if len(updateClades) > 0:
+            updateLanguageCladeRelations(languages=updateClades)
+        # Redirecting so that UA makes a GET.
+        return HttpResponseRedirect(
+            reverse("view-language-progress", args=[current_list.name]))
+
+    languages = current_list.languages.all().prefetch_related(
+        "lexeme_set", "lexeme_set__meaning",
+        "languageclade_set", "clades")
+    meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
+    form = LanguageListProgressForm()
+    for lang in languages:
+        lang.idField = lang.id
+        lang.computeCounts(meaningList)
+        form.langlist.append_entry(lang)
+
+    otherLanguageLists = LanguageList.objects.exclude(name=current_list).all()
+
+    return render_template(request, "language_progress.html",
+                           {"languages": languages,
+                            'form': form,
+                            "current_list": current_list,
+                            "otherLanguageLists": otherLanguageLists,
+                            "wordlist": getDefaultWordlist(request),
+                            "clades": Clade.objects.all()})
+
+
+@logExceptions
+def json_cognateClass_placeholders(request):
+    if request.method == 'GET' and 'lexemeid' in request.GET:
+        meaningIds = Lexeme.objects.filter(
+            id=int(request.GET['lexemeid'])).values_list(
+            'meaning_id', flat=True)
+        cognateClasses = CognateClass.objects.filter(
+            lexeme__meaning_id__in=meaningIds).distinct()
+        # lexemes = [int(s) for s in request.GET['lexemes'].split(',')]
+        # cognateClasses = CognateClass.objects.filter(
+        # lexeme__in=lexemes).distinct()
+        dump = json.dumps([{'id': c.id,
+                            'alias': c.alias,
+                            'placeholder':
+                                c.combinedRootPlaceholder}
+                           for c in cognateClasses]),
+        return HttpResponse(dump)
+    return HttpResponse(
+        "Please provide `lexemes` parameter detailing lexeme ids.")

@@ -24,6 +24,7 @@
         <form action="" method="POST">
           {% csrf_token %}
           <div class="form-group">
+		  <!-- Django admin forms -->
             <table class="table">
               {{ form.as_table }}
             </table>

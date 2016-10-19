@@ -4,7 +4,14 @@
      style="color: #006400;">
     <strong>«&nbsp;{{ prev_meaning.gloss }}</strong>
   </a>
-  <h1 class="inline" style="color: #006400;">
+  <h1 class="inline"
+      style="color: #006400;"
+      {% if meaning.tooltip %}
+        data-toggle="tooltip"
+        data-placement="right"
+        data-container="body"
+        title="{{ meaning.tooltip }}"
+      {% endif %}>
     <input class="typeaheadText"
            value="{{ meaning.gloss }}"
            data-typeahead="{{ typeahead | escapejs }}">

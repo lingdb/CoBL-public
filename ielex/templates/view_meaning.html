@@ -32,6 +32,15 @@
                title="add a new lexeme">
               <span class="glyphicon glyphicon-plus-sign"></span>
             </a>
+            <span class="badge important updateCounts"
+                  data-countformat="countVisible countSwadesh initial"
+                  data-swadeshselector=".lexemeSwadeshTerm input"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Visible / Swadesh / Total rows">
+              {{ lex_ed_form.lexemes|length }}
+            </span>
             <a href="{% url 'view-meaning-languages' meaning.gloss defaultLanguagelist %}"
                class="btn btn-default">Undo</a>
             <input type="submit" value="Save"
@@ -260,11 +269,19 @@
             </td>
             {# cognateclasses_filter.html #}
             <td>
-              <input type="text"
-                     class="filterText form-control"
-                     data-selector=".cognateClasses"
-                     size="1"
-                     style="padding-left: 2px; padding-right: 2px;">
+              {% if user.is_authenticated %}
+                <input type="text"
+                       class="filterInput form-control"
+                       data-selector=".cognateClasses input"
+                       size="1"
+                       style="width: 100%;">
+              {% else %}
+                <input type="text"
+                       class="filterText form-control"
+                       data-selector=".cognateClasses"
+                       size="1"
+                       style="width: 100%;">
+              {% endif %}
             </td>
             {# cognateclassview_filter.html #}
             <td></td>
@@ -550,38 +567,15 @@
               <td class="selection">
                 <div class="cognateClasses nowrap" style="text-align: center;">
                   {% if user.is_authenticated %}
-                    {% ifequal add_cognate_judgement|asint lexeme.id.data|asint %}
+                    {% ifequal add_cognate_judgement|asint lexeme.object_data.id %}
                       <form action="" method="post">
                         {% csrf_token %}
                         {{ cognate_form.cognate_class }}
                       </form>
                     {% endifequal %}
-                  {% endif %}
-                  {% if lexeme.object_data.allCognateClasses %}
-                    {% for c in lexeme.object_data.allCognateClasses %}
-                      <a type="button"
-                         class="editCognateClassButton inline"
-                         style="color: #CD7432;"
-                         data-toggle="tooltip"
-                         data-placement="bottom"
-                         data-container="body"
-                         title="Click to re-assign this lexeme to a different cognate class."
-                         data-json='{{ lexeme.object_data.selectionJSON }}'>
-                        {{ c.alias }}
-                      </a>
-                    {% endfor %}
+                    {% form_field lexeme.combinedCognateClassAssignment class="form-control combinedCognateClassAssignment" data-lexemeid=lexeme.object_data.id %}
                   {% else %}
-                    <a type="button"
-                       class="editCognateClassButton inline"
-                       style="color: #CD7432;"
-                       data-json='{{ lexeme.object_data.selectionJSON }}'
-                       data-toggle="tooltip"
-                       data-placement="bottom"
-                       data-container="body"
-                       title="Click to assign this lexeme to a cognate class."
-                       data-add="new">
-                      <span class="glyphicon glyphicon-plus-sign"></span>
-                    </a>
+                    {{ lexeme.object_data.combinedCognateClassAssignment }}
                   {% endif %}
                 </div>
               </td>
@@ -717,7 +711,6 @@
                  name="createCognateClass"
                  class="btn btn-default">
         </form>
-        {% include "snippets/editCognateClassModal.html" %}
       {% endif %}
     </div>
   </div>

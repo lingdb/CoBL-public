@@ -14,6 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='clade',
             name='logNormalStDev',
-            field=models.DecimalField(null=True, max_digits=19, decimal_places=10),
+            field=models.DecimalField(
+                null=True, max_digits=19, decimal_places=10),
         ),
     ]

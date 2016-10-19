@@ -25,6 +25,7 @@ from ielex.views import add_language_list, \
                         source_edit, \
                         source_list, \
                         source_view, \
+                        source_import, \
                         viewAbout, \
                         viewAuthors, \
                         view_changes, \
@@ -43,7 +44,10 @@ from ielex.views import add_language_list, \
                         view_sndComp, \
                         view_wordlist, \
                         view_wordlists, \
-                        view_nexus_export
+                        view_nexus_export, \
+                        view_two_languages_wordlist, \
+                        view_language_progress, \
+                        json_cognateClass_placeholders
 from ielex import settings
 from ielex.lexicon.views import CognateClassCitationCreateView, \
                                 cognate_class_citation_delete, \
@@ -109,6 +113,10 @@ urlpatterns = patterns(
             queryset=LanguageList.objects.all(),
             context_object_name="language_lists"),
         name="view-language-lists"),
+
+    # Language progress (#311):
+    url(r'^languageprogress/%(LANGUAGELIST)s/$' % R, view_language_progress,
+        name="view-language-progress"),
 
     # Language check (#159):
     url(r'^language/check$' % R, view_language_check),
@@ -243,15 +251,10 @@ urlpatterns = patterns(
     url(r'^source/add/lexeme/%(LEXEME_ID)s/$' % R,
         source_edit, {"action": "add"},
         name="lexeme-add-new-source"),
+    url(r'^sources/import/$', source_import.as_view(), name="import-sources"),
 
     # Cognate
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report, name="cognate-set"),
-    url(r'^cognate/(?P<cognate_id>\d+)/edit-name/$',
-        login_required(cognate_report), {"action": "edit-name"},
-        name="edit-cognate-name"),
-    url(r'^cognate/(?P<cognate_id>\d+)/edit-notes/$',
-        login_required(cognate_report), {"action": "edit-notes"},
-        name="edit-cognate-notes"),
     url(r'^cognate/%(COGNATE_NAME)s/$' % R, cognate_report),
     url(r'^meaning/%(MEANING)s/cognate/(?P<code>[A-Z]+[0-9]*)/$' % R,
         cognate_report),
@@ -309,8 +312,16 @@ urlpatterns = patterns(
                            context_object_name="citation"),
         name="cognate-judgement-citation-detail"),
 
-    # url(r'^set/(?P<key>%(identifier)s)/(?P<value>%(identifier)s)/$' % R,
-    #         set_key_value),
+    # Added for #256:
+    url(r'^twoLanguages/$', view_two_languages_wordlist),
+    url(r'^twoLanguages/([^\/]+)/$', view_two_languages_wordlist),
+    url(r'^twoLanguages/([^\/]+)/([^\/]+)/$', view_two_languages_wordlist),
+    url(r'^twoLanguages/([^\/]+)/([^\/]+)/([^\/]+)/$',
+        view_two_languages_wordlist,
+        name="view-two-languages"),
+
+    # Added for #51:
+    url(r'^json/cognateClassPlaceholders/$', json_cognateClass_placeholders),
 
     url(r'^revert/(?P<revision_id>\d+)/$', revert_version, name="revert-item"),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
@@ -330,7 +341,7 @@ urlpatterns += patterns(
     url(r'^nexus/export/(?P<exportId>\d+)/$',
         view_nexus_export,
         name="view_nexus_export"),
-    url(r'^nexus/export/$', view_nexus_export),
+    url(r'^nexus/export/$', view_nexus_export, name="view_nexus_export_base"),
     url(r'^dump/$', login_required(DumpRawDataView.as_view()), name="dump"))
 
 urlpatterns += patterns(
@@ -357,7 +368,6 @@ urlpatterns += patterns(
 
 urlpatterns += staticfiles_urlpatterns()
 
-
 if settings.DEBUG:  # additional urls for testing purposes
     urlpatterns += patterns(
         '',
@@ -365,14 +375,5 @@ if settings.DEBUG:  # additional urls for testing purposes
         url(r'^static/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.STATIC_ROOT}),
     )
-
-# if settings.DEBUG: # additional urls for testing purposes
-#    urlpatterns += patterns('',
-#    # this is needed for running the development server
-#    (r'^media/(?P<path>.*)$', 'django.views.static.serve',
-#     {'document_root': settings.MEDIA_ROOT}),
-#    )
-
-#############################################
 
 # vim:nowrap

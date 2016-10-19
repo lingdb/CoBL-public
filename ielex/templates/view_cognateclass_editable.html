@@ -38,6 +38,14 @@
                title="Merge selected cognate classes">
               <span class="glyphicon glyphicon-resize-small"></span>
             </a>
+            <span class="badge important updateCounts"
+                  data-countformat="countVisible initial"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Visible / Total rows">
+              {{ cogclass_editable_form.cogclass|length }}
+            </span>
             <a href="{% url 'edit-cogclasses' meaning %}" class="btn btn-default">undo</a>
             <input type="submit" value="Save" name="cogclass_form" class="btn btn-danger">
           </div>
@@ -137,6 +145,10 @@
               <th>Root<br>Gloss</th>
               {# notes_title.html #}
               <th>Root<br>Notes</th>
+              {# proposedAs_title.html #}
+              <th colspan="2">
+                Proposed as cognate to:
+              </th>
               {# ideophonic_title.html #}
               <th style="border-left: 2px solid #dddddd;"
                   data-toggle="tooltip"
@@ -190,7 +202,7 @@
                   </div>
                 </div>
               </th>
-              {# loanSourceId_title.html #}
+              {# loanSourceCognateClass_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
@@ -376,6 +388,26 @@
                   </div>
                 {% endif %}
               </td>
+              {# proposedAs_filter.html #}
+              <td colspan="2">
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".proposedAsCognateToCell input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".proposedAsCognateToCell input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".proposedAsCognateToCell">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".proposedAsCognateToCell">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
               {# ideophonic_filter.html #}
               <td style="border-left: 2px solid #dddddd;">
                 <button type="button" class="filterBool btn btn-xs btn-default"
@@ -411,24 +443,24 @@
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </td>
-              {# loanSourceId_filter.html #}
+              {# loanSourceCognateClass_filter.html #}
               <td style="width: 5em;">
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
-                         data-selector=".loanSourceId input"
+                         data-selector=".loanSourceCognateClass input"
                          style="width: 2em;">
                   <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".loanSourceId input">
+                       data-selector=".loanSourceCognateClass input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% else %}
                   <input type="text"
                          class="filterText form-control"
-                         data-selector=".loanSourceId"
+                         data-selector=".loanSourceCognateClass"
                          style="width: 2em;">
                   <div class="btn btn-xs btn-default sortText"
-                       data-selector=".loanSourceId">
+                       data-selector=".loanSourceCognateClass">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
@@ -614,7 +646,7 @@
                   {% if user.is_authenticated %}
                     {% form_field cc.root_language class="form-control" style="width: 12em;" placeholder=cc.object_data.rootLanguageOrPlaceholder %}
                   {% else %}
-                    {{ cc.object_data.rootLanguageOrdPlaceholder }}
+                    {{ cc.object_data.rootLanguageOrPlaceholder }}
                   {% endif %}
                 </td>
                 {# notProtoIndoEuropean_data.html #}
@@ -637,8 +669,23 @@
                 <td class="cogNotes">
                   {% if user.is_authenticated %}
                     {% form_field cc.notes class="form-control" %}
-                  {% elif cc.notes.data %}
-                    {{ cc.notes.data }}
+                  {% elif cc.object_data.notes %}
+                    {{ cc.object_data.notes }}
+                  {% endif %}
+                </td>
+                {# proposedAs_data.html #}
+                <td class="proposedAsCognateToCell">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.proposedAsCognateTo class="form-control numberField" data-dependencyfor-tr="proposedAsCognateTo" pattern="^\d*$" %}
+                  {% elif cc.object_data.proposedAsCognateTo_id %}
+                    {{ cc.object_data.proposedAsCognateTo_id }}
+                  {% endif %}
+                </td>
+                <td class="proposedAsCognateToScale">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.proposedAsCognateToScale class="form-control" data-inputdepends="proposedAsCognateTo" %}
+                  {% elif cc.object_data.proposedAsCognateToScale %}
+                    {{ cc.object_data.proposedAsCognateToScale }}
                   {% endif %}
                 </td>
                 {# ideophonic_data.html #}
@@ -668,28 +715,28 @@
                 </td>
                 {# loanword_data.html #}
                 <td style="border-left: 2px solid #dddddd;"
-                    class="cogLoanword">
+                    class="cogLoanword loanEventCell">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loanword class="form-control" %}
+                    {% form_field cc.loanword class="form-control" data-dependencyfor-tr="loanevent" %}
                   {% else %}
                     {% form_field cc.loanword class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
                 {# parallelLoanEvent_data.html #}
-                <td class="parallelLoanEvent">
+                <td class="parallelLoanEvent loanEventCell">
                   {% if user.is_authenticated %}
-                    {% form_field cc.parallelLoanEvent class="form-control" %}
+                    {% form_field cc.parallelLoanEvent class="form-control" data-inputdepends="loanevent" %}
                   {% else %}
                     {% form_field cc.parallelLoanEvent class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
-                {# loanSourceId_data.html #}
-                <td class="loanSourceId nowrap" style="width: 5em;">
+                {# loanSourceCognateClass_data.html #}
+                <td class="loanSourceCognateClass nowrap loanEventCell" style="width: 5em;">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loanSourceId class="form-control numberField inline" pattern="^[0-9]*$" style="width: 3em;" %}
+                    {% form_field cc.loanSourceCognateClass class="form-control numberField inline" pattern="^[0-9]*$" style="width: 3em;" data-inputdepends="loanevent" %}
                   {% endif %}
-                  {% if cc.loanSourceId.data %}
-                    <a href="/cognate/{{ cc.loanSourceId.data }}/"
+                  {% if cc.loanSourceCognateClass.data %}
+                    <a href="/cognate/{{ cc.loanSourceCognateClass.data }}/"
                        data-toggle="tooltip"
                        data-placement="top"
                        title="{{ cc.object_data.loanSourceCognateClassTitle }}"
@@ -700,33 +747,33 @@
                   {% endif %}
                 </td>
                 {# loansource_data.html #}
-                <td class="cogLoanSource">
+                <td class="cogLoanSource loanEventCell">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loan_source class="form-control" %}
+                    {% form_field cc.loan_source class="form-control" data-inputdepends="loanevent" %}
                   {% elif cc.loan_source.data %}
                     {{ cc.loan_source.data }}
                   {% endif %}
                 </td>
                 {# loanEventTimeDepthBP_data.html #}
-                <td class="loanEventTimeDepthBP">
+                <td class="loanEventTimeDepthBP loanEventCell">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loanEventTimeDepthBP class="form-control" style="width: 5em;" %}
+                    {% form_field cc.loanEventTimeDepthBP class="form-control" style="width: 5em;" data-inputdepends="loanevent" %}
                   {% elif cc.loanEventTimeDepthBP.data %}
                     {{ cc.loanEventTimeDepthBP.data }}
                   {% endif %}
                 </td>
                 {# sourceFormInLoanLanguage_data.html #}
-                <td class="sourceFormInLoanLanguage">
+                <td class="sourceFormInLoanLanguage loanEventCell">
                   {% if user.is_authenticated %}
-                    {% form_field cc.sourceFormInLoanLanguage class="form-control" %}
+                    {% form_field cc.sourceFormInLoanLanguage class="form-control" data-inputdepends="loanevent" %}
                   {% elif cc.sourceFormInLoanLanguage.data %}
                     {{ cc.sourceFormInLoanLanguage.data }}
                   {% endif %}
                 </td>
                 {# loannotes_data.html #}
-                <td class="cogLoanNotes">
+                <td class="cogLoanNotes loanEventCell">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loan_notes class="form-control" %}
+                    {% form_field cc.loan_notes class="form-control" data-inputdepends="loanevent" %}
                   {% elif cc.loan_notes.data %}
                     {{ cc.loan_notes.data }}
                   {% endif %}
@@ -736,7 +783,7 @@
                     style="border-left: 2px solid #dddddd;">
                   {% if user.is_authenticated %}
                     {% form_field cc.revisedYet class="form-control" %}
-                  {% elif cc.loan_notes.data %}
+                  {% elif cc.object_data.revisedYet %}
                     {% form_field cc.revisedYet class="form-control" disabled="disabled" %}
                   {% endif %}
                 </th>
@@ -744,8 +791,8 @@
                 <th class="revisedBy">
                   {% if user.is_authenticated %}
                     {% form_field cc.revisedBy class="form-control" style="width: 2em;" pattern="^.{0,10}$" %}
-                  {% elif cc.loan_notes.data %}
-                    {% form_field cc.revisedBy.data class="form-control" %}
+                  {% elif cc.object_data.revisedBy %}
+                    {{ cc.object_data.revisedBy }}
                   {% endif %}
                 </th>
                 {# onlyNotSwh_data.html #}
