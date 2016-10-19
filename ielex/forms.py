@@ -575,6 +575,30 @@ class SndCompDeletionForm(WTForm):
     lgSetName = StringField('Language set name', validators=[InputRequired()])
 
 
+class CognateClassField(IntegerField):
+    '''
+    A specialized IntegerField that hands an Id to the client,
+    but presents a CognateClass on the server side.
+    '''
+    def process_formdata(self, valuelist):
+        self.data = None
+        if len(valuelist) == 1:
+            i = valuelist[0]
+            if i == '':
+                return
+            try:
+                i = int(valuelist[0])
+            except Exception:
+                return
+            self.data = CognateClass.objects.get(id=i)
+
+    def process_data(self, data):
+        if data is None:
+            self.data = None
+        else:
+            self.data = data.id
+
+
 # TODO: return to this if/when moving to Python 3
 @python_2_unicode_compatible
 class CogClassRowForm(AbstractTimestampedForm):
@@ -589,7 +613,7 @@ class CogClassRowForm(AbstractTimestampedForm):
     notes = TextField('Notes', validators=[InputRequired()])
     loan_source = TextField('Loan Source', validators=[InputRequired()])
     loan_notes = TextField('Loan Notes', validators=[InputRequired()])
-    loanSourceId = IntegerField(
+    loanSourceCognateClass = CognateClassField(
         'Id of related cc', validators=[InputRequired()])
     loanEventTimeDepthBP = StringField(
         'Time depth of loan event', validators=[InputRequired()])
@@ -608,11 +632,11 @@ class CogClassRowForm(AbstractTimestampedForm):
     revisedYet = BooleanField('Revised Yet?', validators=[InputRequired()])
     revisedBy = TextField('Revised by', validators=[InputRequired()])
     # Added for #319:
-    proposedAsCognateToId = IntegerField(
+    proposedAsCognateTo = CognateClassField(
         'Proposed as cognate to:', validators=[])
     proposedAsCognateToScale = SelectField(
         'Proposed as cognate to:',
-        default=None,
+        default=0,
         choices=PROPOSED_AS_COGNATE_TO_SCALE,
         validators=[])
 
@@ -632,7 +656,7 @@ class CogClassRowForm(AbstractTimestampedForm):
 
     def validate_loanword(form, field):
         fieldList = ['parallelLoanEvent',
-                     'loanSourceId',
+                     'loanSourceCognateClass',
                      'loan_source',
                      'loanEventTimeDepthBP',
                      'sourceFormInLoanLanguage',
@@ -662,10 +686,6 @@ class CogClassRowForm(AbstractTimestampedForm):
                 raise ValidationError(
                     'proposedAsCognateToScale is not given, '
                     'but proposedAsCognateToId is.')
-        elif form.data['proposedAsCognateToId'] is None:
-            raise ValidationError(
-                'proposedAsCognateToScale is given '
-                'but proposedAsCognateToId is not.')
 
 
 class AddCogClassTableForm(WTForm):
@@ -680,12 +700,13 @@ class AddCogClassTableForm(WTForm):
             # Check if entry changed and try to update:
             if cogclass.isChanged(**data):
                 try:
-                    problem = cogclass.setDelta(request, **data)
-                    if problem is None:
-                        cogclass.save()
-                    else:
-                        messages.error(
-                            request, cogclass.deltaReport(**problem))
+                    with transaction.atomic():
+                        problem = cogclass.setDelta(request, **data)
+                        if problem is None:
+                            cogclass.save()
+                        else:
+                            messages.error(
+                                request, cogclass.deltaReport(**problem))
                 except Exception:
                     logging.exception('Problem saving CognateClass '
                                       'in view_cognateclasses.')

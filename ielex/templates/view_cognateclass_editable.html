@@ -202,7 +202,7 @@
                   </div>
                 </div>
               </th>
-              {# loanSourceId_title.html #}
+              {# loanSourceCognateClass_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
@@ -390,7 +390,23 @@
               </td>
               {# proposedAs_filter.html #}
               <td colspan="2">
-
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".proposedAsCognateToCell input">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".proposedAsCognateToCell input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".proposedAsCognateToCell">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".proposedAsCognateToCell">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
               </td>
               {# ideophonic_filter.html #}
               <td style="border-left: 2px solid #dddddd;">
@@ -427,24 +443,24 @@
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </td>
-              {# loanSourceId_filter.html #}
+              {# loanSourceCognateClass_filter.html #}
               <td style="width: 5em;">
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
-                         data-selector=".loanSourceId input"
+                         data-selector=".loanSourceCognateClass input"
                          style="width: 2em;">
                   <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".loanSourceId input">
+                       data-selector=".loanSourceCognateClass input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% else %}
                   <input type="text"
                          class="filterText form-control"
-                         data-selector=".loanSourceId"
+                         data-selector=".loanSourceCognateClass"
                          style="width: 2em;">
                   <div class="btn btn-xs btn-default sortText"
-                       data-selector=".loanSourceId">
+                       data-selector=".loanSourceCognateClass">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
@@ -658,16 +674,16 @@
                   {% endif %}
                 </td>
                 {# proposedAs_data.html #}
-                <td class="proposedAsCognateToIdCell">
+                <td class="proposedAsCognateToCell">
                   {% if user.is_authenticated %}
-                    {% form_field cc.proposedAsCognateToId class="form-control numberField" data-dependencyfor-tr="proposedAsCognateToId" pattern="^\d*$" %}
-                  {% elif cc.object_data.proposedAsCognateToId %}
-                    {{ cc.object_data.proposedAsCognateToId }}
+                    {% form_field cc.proposedAsCognateTo class="form-control numberField" data-dependencyfor-tr="proposedAsCognateTo" pattern="^\d*$" %}
+                  {% elif cc.object_data.proposedAsCognateTo_id %}
+                    {{ cc.object_data.proposedAsCognateTo_id }}
                   {% endif %}
                 </td>
                 <td class="proposedAsCognateToScale">
                   {% if user.is_authenticated %}
-                    {% form_field cc.proposedAsCognateToScale class="form-control" data-inputdepends="proposedAsCognateToId" %}
+                    {% form_field cc.proposedAsCognateToScale class="form-control" data-inputdepends="proposedAsCognateTo" %}
                   {% elif cc.object_data.proposedAsCognateToScale %}
                     {{ cc.object_data.proposedAsCognateToScale }}
                   {% endif %}
@@ -714,13 +730,13 @@
                     {% form_field cc.parallelLoanEvent class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
-                {# loanSourceId_data.html #}
-                <td class="loanSourceId nowrap loanEventCell" style="width: 5em;">
+                {# loanSourceCognateClass_data.html #}
+                <td class="loanSourceCognateClass nowrap loanEventCell" style="width: 5em;">
                   {% if user.is_authenticated %}
-                    {% form_field cc.loanSourceId class="form-control numberField inline" pattern="^[0-9]*$" style="width: 3em;" data-inputdepends="loanevent" %}
+                    {% form_field cc.loanSourceCognateClass class="form-control numberField inline" pattern="^[0-9]*$" style="width: 3em;" data-inputdepends="loanevent" %}
                   {% endif %}
-                  {% if cc.loanSourceId.data %}
-                    <a href="/cognate/{{ cc.loanSourceId.data }}/"
+                  {% if cc.loanSourceCognateClass.data %}
+                    <a href="/cognate/{{ cc.loanSourceCognateClass.data }}/"
                        data-toggle="tooltip"
                        data-placement="top"
                        title="{{ cc.object_data.loanSourceCognateClassTitle }}"

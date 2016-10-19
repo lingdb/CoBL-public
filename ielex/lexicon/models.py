@@ -936,9 +936,6 @@ class CognateClass(AbstractTimestamped):
     # Fields added for #162:
     loanEventTimeDepthBP = models.TextField(blank=True)
     sourceFormInLoanLanguage = models.TextField(blank=True)
-    loanSourceId = models.IntegerField(null=True)
-    # Not given via timestampedFields;
-    # self.save takes care of it automagically:
     loanSourceCognateClass = models.ForeignKey("self", null=True)
     # Fields added for #176:
     parallelLoanEvent = models.BooleanField(default=0)
@@ -1003,32 +1000,18 @@ class CognateClass(AbstractTimestamped):
     def timestampedFields(self):
         return set(['alias', 'notes', 'name', 'root_form', 'root_language',
                     'gloss_in_root_lang', 'loanword', 'loan_source',
-                    'loan_notes', 'loanSourceId', 'loanEventTimeDepthBP',
-                    'sourceFormInLoanLanguage', 'parallelLoanEvent',
-                    'notProtoIndoEuropean', 'ideophonic',
+                    'loan_notes', 'loanSourceCognateClass',
+                    'loanEventTimeDepthBP', 'sourceFormInLoanLanguage',
+                    'parallelLoanEvent', 'notProtoIndoEuropean', 'ideophonic',
                     'parallelDerivation', 'dubiousSet',
                     'revisedYet', 'revisedBy',
-                    'proposedAsCognateToId', 'proposedAsCognateToScale'])
+                    'proposedAsCognateTo', 'proposedAsCognateToScale'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update cognate class: ' \
             '"%s" with values %s. ' \
             'It was last touched by "%s" %s.' % \
             (self.id, kwargs, self.lastEditedBy, self.lastTouched)
-
-    def save(self, *args, **kwargs):
-        '''
-        Overwriting save method to make sure loanSourceId
-        and loanSourceCognateClass are handled correctly.
-        '''
-        if self.loanSourceId != self.loanSourceCognateClass_id:
-            if self.loanSourceId is None:
-                self.loanSourceCognateClass = None
-            else:
-                self.loanSourceCognateClass = CognateClass.objects.get(
-                    id=self.loanSourceId)
-        # Relaying to parent:
-        return super(CognateClass, self).save(*args, **kwargs)
 
     _computeCounts = {}  # Memo for computeCounts
 
@@ -1160,23 +1143,6 @@ class CognateClass(AbstractTimestamped):
         if self.loanword:
             return u"%s ≤ %s" % (p1, p2)
         return p1
-
-    def getProposedAsCognateToId(self):
-        if self.proposedAsCognateTo is None:
-            return None
-        return self.proposedAsCognateTo.id
-
-    def setProposedAsCognateToId(self, value):
-        if value is None:
-            self.proposedAsCognateTo = None
-        else:
-            self.proposedAsCognateTo = CognateClass.objects.get(id=value)
-
-    def delProposedAsCognateToId(self):
-        self.proposedAsCognateTo = None
-    proposedAsCognateToId = property(fget=getProposedAsCognateToId,
-                                     fset=setProposedAsCognateToId,
-                                     fdel=delProposedAsCognateToId)
 
 
 class DyenCognateSet(models.Model):
