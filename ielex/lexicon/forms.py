@@ -2,7 +2,7 @@
 from django import forms
 from ielex.forms import ChooseLanguageListField, ChooseMeaningListField
 from ielex.lexicon.models import LanguageList, MeaningList
-
+from django.core.exceptions import ValidationError
 
 class ChooseOutputBaseForm(forms.Form):
     language_list = ChooseLanguageListField(

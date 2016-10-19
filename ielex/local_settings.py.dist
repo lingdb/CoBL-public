@@ -7,13 +7,12 @@ DEBUG = False
 # Database backend
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(os.path.abspath(os.path.dirname(__file__)), 'db.sqlite3'),
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Not used with sqlite3.
-        'PORT': '',                      # Not used with sqlite3.
-        'ATOMIC_REQUESTS': True,         # Required by sqlite3 (only)
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'CoBL',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -67,6 +66,5 @@ structural_features = False  # NotImplemented
 
 # Maximum number of search results
 LIMIT_TO = 500
-
 
 # vim:ft=python

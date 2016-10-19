@@ -1,4 +1,5 @@
 *.pyc
+*.bat
 .RData
 .Rhistory
 .venv
@@ -7,3 +8,4 @@ ielex/db.dump
 ielex/local_settings.py
 unittest.log
 htmlcov
+_DB/

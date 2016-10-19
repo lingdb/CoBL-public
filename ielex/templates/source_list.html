@@ -1,67 +1,197 @@
 {% extends "base.html" %}
+{% load render_table from django_tables2 %}
 {# do permissions #}
-
 {% load staticfiles %}
-
 {% block title %}
   List of sources
 {% endblock %}
 
+{% block meta %}
+{{ block.super }}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+$(document).ready(function () {
+	
+	/**** DETAILS *****/
+	$(document.body).on('click', '.details_button.show_d', function() {
+		$(this).toggleClass('show_d hide_d');
+		$(this).text('Hide')
+		var row = $(this).parent().parent()
+		row.addClass('highlighted')
+		var postdata = {
+			'postType': 'details',
+			'id': $(this).attr('id'),
+			'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value')
+		};
+		$.post("/sources/", postdata, function (data) {
+			var details_table = $('<tr><td colspan="10"><table class="details_table"/></td></tr>').insertAfter(row);
+			$(data).children('th').appendTo(details_table.find('table.details_table')).wrapAll('<thead class="_details"/>');
+			$(data).children('td').appendTo(details_table.find('table.details_table')).wrapAll('<tbody><tr class="_details"/></tbody>');
+			details_table.find('input, textarea').each(function() {
+				$(this).replaceWith("<p>" + this.value + "</p>");
+			});
+		});
+		return false
+	}).on('click', '.hide_d', function() {
+		$(this).parent().parent().removeClass('highlighted')
+		$(this).parent().parent().next().remove();
+		$(this).toggleClass('show_d hide_d');
+		$(this).text('More')
+		return false
+	});
+	
+	/**** EDIT *****/
+	
+	$(document.body).on('click', '.edit_button.show_e', function() {
+		$('#editSourceContainer').empty();
+		$('#editSource').attr('source_id', $(this).attr('id'))
+		var postdata = {
+			'postType': 'edit',
+			'id': $(this).attr('id'),
+			'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value')
+		};
+		$.post("/sources/", postdata, function (data) {
+			$('#editSourceContainer').append('<table id="edit_modal"/>')
+			$('#edit_modal').append($(data));
+			$('<thead/>').appendTo($('#edit_modal'))
+			$('<tbody/>').appendTo($('#edit_modal'))
+			$('#edit_modal').find('tr').each(function (i) {
+				$(this).children('th').appendTo($('#edit_modal').find('thead:last-of-type'));
+				$(this).children('td').appendTo($('#edit_modal').find('tbody:last-of-type'));
+				$(this).remove()
+				if ((i+1) % 4==0) {
+					$('<thead/>').appendTo($('#edit_modal'))
+					$('<tbody/>').appendTo($('#edit_modal'))
+				};
+			})
+		});
+		$('#editModal')[0].style.display = "block";
+		return false
+	});
+	
+	$(document.body).on('click', '.close', function() {
+		$('#editModal')[0].style.display = "none";
+		return false
+	});
+	
+/*	window.onclick = function(event) {
+		if (event.target == $('#editModal')[0]) {
+			$('#editModal')[0].style.display = "none";
+		}
+	}*/
+	
+	$('#editSource').submit(function() { // catch the form's submit event
+		var postdata = {'postType': 'update',
+									'id':$('#editSource').attr('source_id'), 
+									'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value'), 
+									'source_data': $(this).serialize()
+									}
+		$.ajax({ // create an AJAX call...
+			data: postdata, // get the form data
+			type: $(this).attr('method'), // GET or POST
+			url: $(this).attr('action'), // the file to call
+			success: function(response) { // on success..
+				//$('#DIV_CONTAINING_FORM').html(response); // update the DIV
+			}
+		});
+		$('#editModal')[0].style.display = "none";
+		return false;
+	});
+});
+</script>
+<style>
+/* Details preview table */
+.details_table {
+	width: 100%;
+}
+.details_button.hide_d {
+    background: rgb(39, 144, 219);
+    color: white;
+}
+thead._details th {
+	background: #de9191 !important;
+	color: white !important;
+}
+tr._details td {
+	border: none !important;
+}
+.highlighted {
+	background: #fadddd !important;
+}
+
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 1020px;
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+table#edit_modal tbody td, table#edit_modal thead th {
+	padding-left: 10px;
+}
+
+table#edit_modal tbody td, table#edit_modal tbody td * {
+    vertical-align: top;
+}
+</style>
+{% endblock %}
 {% block top %}
   <h1>Sources</h1>
 {% endblock %}
-
 {% block controls %}
+	<link rel="stylesheet" href="{% static 'django_tables2/themes/CoBL/css/screen.css' %}" />
   {% include "snippets/defaultSelections.html" %}
   {% include "snippets/go_to.html" %}
 {% endblock %}
 
 {% block content %}
-  <div class="row">
-    {% if user.is_authenticated %}
-      <a href="/source/add/" class="btn btn-default"
-         data-toggle="tooltip"
-         data-placement="bottom"
-         title="Add new source">
-        <span class="glyphicon glyphicon-plus-sign"></span>source
-      </a>
-    {% endif %}
-    <div class="col-md-6">
-      {% for type_name, sources in grouped_sources %}
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h2 class="panel-title">
-              {{ type_name }}
-            </h2>
-          </div>
-          <div class="panel-body">
-            {% for source in sources %}
-              <dl class="well">
-                <a href="{% url 'view-source' source.id %}" title="Edit this source" class="pull-right">
-                  <span class="glyphicon glyphicon-search"></span>
-                </a>
-                <dd>
-                  {{ source.citation_text }}
-                </dd>
-                {% if source.description %}
-                  <dt>
-                    Notes:
-                  </dt>
-                  <dd>
-                    <em>{{ source.description }}</em>
-                  </dd>
-                {% endif %}
-                <dd style="padding-top: 1em;">
-                  Lexemes: <strong>{{ source.lexemecitation_set.count }}</strong><br>
-                  Cognate Judgements: <strong>{{ source.cognatejudgementcitation_set.count }}</strong><br>
-                  [{{ source.modified|date:"r"  }}]
-                </dd>
-              </dl>
-            {% endfor %}
-          </div>
-        </div>
-      {% endfor %}
-    </div>
+<!-- Edit modal -->
+<div id="editModal" class="modal">
+  <!-- Edit modal content -->
+  <div class="modal-content">
+    <span class="close">x</span>
+	<form id='editSource' action="/sources/" method="post">
+	{% csrf_token %}
+	<div id='editSourceContainer'></div>
+    <input type="submit" value="Update">
+	</form>
   </div>
+</div>
+
+  <div class="row">
+	{% render_table sources %}
+	</div>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
