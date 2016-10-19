@@ -17,11 +17,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='source',
             name='author',
-            field=models.ManyToManyField(related_name='author', to='lexicon.Author', blank=True),
+            field=models.ManyToManyField(
+                related_name='author', to='lexicon.Author', blank=True),
         ),
         migrations.AddField(
             model_name='source',
             name='editor',
-            field=models.ManyToManyField(related_name='editor', to='lexicon.Author', blank=True),
+            field=models.ManyToManyField(
+                related_name='editor', to='lexicon.Author', blank=True),
         ),
     ]

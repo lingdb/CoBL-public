@@ -59,16 +59,19 @@ def strip_whitespace(instance, field_label):
 
 
 class ChooseLanguageField(forms.ModelChoiceField):
+
     def label_from_instance(self, obj):
         return obj.utf8_name or obj.ascii_name
 
 
 class ChooseLanguagesField(forms.ModelMultipleChoiceField):
+
     def label_from_instance(self, obj):
         return obj.utf8_name or obj.ascii_name
 
 
 class ChooseLanguageListField(forms.ModelChoiceField):
+
     def label_from_instance(self, obj):
         return obj.name
 
@@ -82,37 +85,42 @@ class ChooseExcludedLanguagesField(ChooseLanguageField):
 
 
 class ChooseMeaningListField(forms.ModelChoiceField):
+
     def label_from_instance(self, obj):
         return obj.name
 
 
 class ChooseMeaningField(forms.ModelChoiceField):
+
     def label_from_instance(self, obj):
         return obj.gloss
 
 
 class ChooseCognateClassField(forms.ModelChoiceField):
+
     def label_from_instance(self, obj):
         return obj.alias
 
 
 class ChooseSourcesField(forms.ModelMultipleChoiceField):
+
     def label_from_instance(self, obj):
         def truncate(s, l):
             if len(s) < l:
                 return s
             else:
-                return s[:l-4]+" ..."
+                return s[:l - 4] + " ..."
         return truncate(obj.citation_text, 124)
 
 
 class ChooseOneSourceField(forms.ModelChoiceField):
+
     def label_from_instance(self, obj):
         def truncate(s, l):
             if len(s) < l:
                 return s
             else:
-                return s[:l-4]+" ..."
+                return s[:l - 4] + " ..."
         return truncate(obj.citation_text, 124)
 
 
@@ -193,10 +201,10 @@ class ChooseLanguageForm(forms.Form):
 class AddLanguageListForm(forms.ModelForm):
     help_text = "The new language list will start as a clone of this one"
     language_list = ChooseLanguageListField(
-            queryset=LanguageList.objects.all(),
-            empty_label=None,
-            widget=forms.Select(),
-            help_text=help_text)
+        queryset=LanguageList.objects.all(),
+        empty_label=None,
+        widget=forms.Select(),
+        help_text=help_text)
 
     class Meta:
         model = LanguageList
@@ -215,15 +223,15 @@ class EditLanguageListForm(forms.ModelForm):
 
 class EditLanguageListMembersForm(forms.Form):
     included_languages = ChooseIncludedLanguagesField(
-            required=False, empty_label=None,
-            queryset=Language.objects.none(),
-            widget=forms.Select(
-                attrs={"size": 20, "onchange": "this.form.submit()"}))
+        required=False, empty_label=None,
+        queryset=Language.objects.none(),
+        widget=forms.Select(
+            attrs={"size": 20, "onchange": "this.form.submit()"}))
     excluded_languages = ChooseExcludedLanguagesField(
-            required=False, empty_label=None,
-            queryset=Language.objects.all(),
-            widget=forms.Select(
-                attrs={"size": 20, "onchange": "this.form.submit()"}))
+        required=False, empty_label=None,
+        queryset=Language.objects.all(),
+        widget=forms.Select(
+            attrs={"size": 20, "onchange": "this.form.submit()"}))
 
 
 class AbstractTimestampedForm(WTForm):
@@ -333,7 +341,7 @@ class AbstractCognateClassAssignmentForm(WTForm):
                     else:
                         cc = CognateClass.objects.filter(
                             lexeme__meaning__id=lexeme.meaning_id
-                            ).distinct().get(alias=t)
+                        ).distinct().get(alias=t)
                 except Exception:
                     logging.exception("Problem handling token %s" % t)
                     messages.error(
@@ -601,14 +609,14 @@ class CogClassRowForm(AbstractTimestampedForm):
 
     def __str__(self):
         cogclass_form_vals = (
-                              str(self.idField),
-                              self.alias,
-                              self.root_form,  # .encode('ascii', 'replace'),
-                              self.root_language,
-                              self.gloss_in_root_lang,
-                              str(self.loanword),
-                              self.notes
-                              )
+            str(self.idField),
+            self.alias,
+            self.root_form,  # .encode('ascii', 'replace'),
+            self.root_language,
+            self.gloss_in_root_lang,
+            str(self.loanword),
+            self.notes
+        )
         tmpl = '( id=%s, root=%s, language=%s, gloss=%s, '\
                'alias=%s, loanword=%s, notes=%s )'
         return tmpl % cogclass_form_vals
@@ -693,7 +701,7 @@ class MergeCognateClassesForm(WTForm):
                     for k, v in cc.toDict().iteritems():
                         if k in setDict:
                             setDict[k].add(v)
-                delta = {k: '{'+', '.join(v)+'}'
+                delta = {k: '{' + ', '.join(v) + '}'
                          for k, v in setDict.iteritems()}
                 for k, v in delta.iteritems():
                     setattr(newC, k, v)
@@ -1132,7 +1140,7 @@ class RemoveEmptyLexemsForLanguageForm(WTForm):
                 wanted.delete()
                 messages.info(
                     request,
-                    'Removed entries for meanings: '+', '.join(meanings))
+                    'Removed entries for meanings: ' + ', '.join(meanings))
             else:
                 messages.info(
                     request,
@@ -1173,13 +1181,13 @@ class CloneLanguageForm(WTForm):
             # Wordlist to use:
             meaningIds = MeaningListOrder.objects.filter(
                 meaning_list__name=getDefaultWordlist(request)
-                ).values_list(
+            ).values_list(
                 "meaning_id", flat=True)
             # Lexemes to copy:
             sourceLexemes = Lexeme.objects.filter(
                 language__ascii_name=self.data['sourceLanguageName'],
                 meaning__in=meaningIds).all(
-                ).prefetch_related('meaning')
+            ).prefetch_related('meaning')
             # Editor for AbstractTimestamped:
             lastEditedBy = ' '.join([request.user.first_name,
                                      request.user.last_name])
@@ -1362,12 +1370,12 @@ class ChooseCognateClassForm(forms.Form):
         lexeme = Lexeme.objects.get(id=lexeme_id)
         if cognate_class not in lexeme.cognate_class.all():
             return CognateJudgement.objects.create(
-                    lexeme=lexeme,
-                    cognate_class=cognate_class)
+                lexeme=lexeme,
+                cognate_class=cognate_class)
         else:
             return CognateJudgement.objects.get(
-                    lexeme=lexeme,
-                    cognate_class=cognate_class)
+                lexeme=lexeme,
+                cognate_class=cognate_class)
 
 
 def make_reorder_languagelist_form(objlist):
@@ -1431,18 +1439,24 @@ class AuthorDeletionForm(WTForm):
     initials = StringField('Initials', validators=[InputRequired()])
 
 
-
 # -- /source/ -------------------------------------------------------------
 
 def validate_bibtex_extension(value):
     if not value.name.endswith('.bib'):
-        raise ValidationError(u'Error: The uploaded file should be BibTeX (.bib)')
+        raise ValidationError(
+            u'Error: The uploaded file should be BibTeX (.bib)')
+
 
 class SourceDetailsForm(forms.ModelForm):
+
     class Meta:
         model = Source
-        fields = ['subtitle', 'booktitle', 'booksubtitle', 'bookauthor', 'editor', 'editora', 'editortype', 'editoratype', 'pages', 'part', 'edition',
-                  'journaltitle', 'location', 'link', 'note', 'number', 'series', 'volume', 'publisher', 'institution', 'chapter', 'howpublished', 'shorthand', 'isbn']
+        fields = ['subtitle', 'booktitle', 'booksubtitle', 'bookauthor',
+                  'editor', 'editora', 'editortype', 'editoratype',
+                  'pages', 'part', 'edition', 'journaltitle', 'location',
+                  'link', 'note', 'number', 'series', 'volume', 'publisher',
+                  'institution', 'chapter', 'howpublished',
+                  'shorthand', 'isbn']
 
     def __init__(self, *args, **kwargs):
         super(SourceDetailsForm, self).__init__(*args, **kwargs)
@@ -1454,24 +1468,37 @@ class SourceDetailsForm(forms.ModelForm):
                 if value in ['', None]:
                     del self.fields[field]
 
+
 class SourceEditForm(forms.ModelForm):
+
     class Meta:
         model = Source
-        fields = ['ENTRYTYPE', 'author', 'year', 'title', 'subtitle', 'booktitle', 'booksubtitle', 'bookauthor', 'editor', 'editora', 'editortype', 'editoratype',
-                  'pages', 'part', 'edition', 'journaltitle', 'location', 'link', 'note', 'number', 'series', 'volume', 'publisher', 'institution', 'chapter',
+        fields = ['ENTRYTYPE', 'author', 'year', 'title', 'subtitle',
+                  'booktitle', 'booksubtitle', 'bookauthor', 'editor',
+                  'editora', 'editortype', 'editoratype', 'pages',
+                  'part', 'edition', 'journaltitle', 'location',
+                  'link', 'note', 'number', 'series', 'volume',
+                  'publisher', 'institution', 'chapter',
                   'howpublished', 'shorthand', 'isbn']
+
     def __init__(self, *args, **kwargs):
         super(SourceEditForm, self).__init__(*args, **kwargs)
         self.empty_permitted = False
         for field in self.fields:
-            if field not in ['year', 'pages', 'number', 'edition', 'part', 'volume', 'ENTRYTYPE']:
-                self.fields[field].widget = forms.Textarea(attrs={'cols': 30, 'rows': 3})
+            if field not in ['year', 'pages', 'number', 'edition',
+                             'part', 'volume', 'ENTRYTYPE']:
+                self.fields[field].widget = forms.Textarea(
+                    attrs={'cols': 30, 'rows': 3})
+
 
 class UploadBiBTeXFileForm(forms.Form):
     title = forms.CharField(max_length=50, required=False)
-    file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), validators=[validate_bibtex_extension])
+    file = forms.FileField(widget=forms.ClearableFileInput(
+        attrs={'multiple': True}), validators=[validate_bibtex_extension])
 
 # OLD, discard:
+
+
 class EditSourceForm(forms.ModelForm):
 
     type_code = forms.ChoiceField(

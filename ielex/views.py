@@ -15,7 +15,7 @@ from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 from django.forms import ValidationError
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404, QueryDict
 from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template import Template
@@ -79,7 +79,6 @@ from ielex.lexicon.models import Author, \
                                  MeaningList, \
                                  SndComp, \
                                  Source, \
-                                 TYPE_CHOICES, \
                                  NexusExport
 from ielex.lexicon.defaultModels import getDefaultLanguage, \
                                         getDefaultLanguageId, \
@@ -1862,6 +1861,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
 
 # -- /source/ -------------------------------------------------------------
 
+
 @logExceptions
 def source_view(request, source_id):
     source = Source.objects.get(id=source_id)
@@ -1869,6 +1869,7 @@ def source_view(request, source_id):
             "form": None,
             "source": source,
             "action": ""})
+
 
 @login_required
 @logExceptions
@@ -1923,8 +1924,6 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
             "action": action})
 
 
-from django.http import QueryDict
-
 @logExceptions
 def source_list(request):
 
@@ -1933,21 +1932,23 @@ def source_list(request):
         response = HttpResponse()
         response.write(SourceDetailsForm(instance=source_obj).as_table())
         return response
-    elif request.POST.get("postType") == 'edit' and request.user.is_authenticated():
+    elif request.POST.get("postType") == 'edit' and \
+            request.user.is_authenticated():
         source_obj = Source.objects.get(pk=request.POST.get("id"))
         response = HttpResponse()
         response.write(SourceEditForm(instance=source_obj).as_table())
         return response
-    elif request.POST.get("postType") == 'update' and request.user.is_authenticated():
+    elif request.POST.get("postType") == 'update' and \
+            request.user.is_authenticated():
         source_obj = Source.objects.get(pk=request.POST.get("id"))
         source_data = QueryDict(request.POST['source_data'].encode('ASCII'))
         form = SourceEditForm(source_data, instance=source_obj)
-        print source_data#, [(field, form[field]) for field in form.fields]
+        print(source_data)  # , [(field, form[field]) for field in form.fields]
         if form.is_valid():
-            print form.cleaned_data
+            print(form.cleaned_data)
             form.save()
         else:
-            print form.errors
+            print(form.errors)
         return HttpResponse()
     else:
         sources_dict_lst = []
@@ -1955,16 +1956,22 @@ def source_list(request):
             source_dict = {}
             for attr in source_obj.source_attr_lst:
                 source_dict[attr] = getattr(source_obj, attr)
-            source_dict['details'] = mark_safe('<button class="details_button show_d" id="%s">More</button>' %(source_obj.pk))
+            source_dict['details'] = mark_safe(
+                '<button class="details_button show_d" '
+                'id="%s">More</button>' % (source_obj.pk))
             if request.user.is_authenticated():
-                source_dict['edit'] = mark_safe('<button class="edit_button show_e" id="%s">Edit</button>' %(source_obj.pk))
+                source_dict['edit'] = mark_safe(
+                    '<button class="edit_button show_e" '
+                    'id="%s">Edit</button>' % (source_obj.pk))
             sources_dict_lst.append(source_dict)
-        sources_table = SourcesTable(sources_dict_lst) #Source.objects.all()
-        RequestConfig(request, paginate={'per_page': 100}).configure(sources_table)
-        
+        sources_table = SourcesTable(sources_dict_lst)  # Source.objects.all()
+        RequestConfig(request,
+                      paginate={'per_page': 100}).configure(sources_table)
+
         return render_template(request, "source_list.html",
                                {"sources": sources_table,
                                 })
+
 
 class source_import(FormView):
     form_class = UploadBiBTeXFileForm
@@ -1978,8 +1985,10 @@ class source_import(FormView):
 
     def get(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
-        return render_template(request, self.template_name, {'form': form, 'update_sources_table': None})
-    
+        return render_template(
+            request,
+            self.template_name, {'form': form, 'update_sources_table': None})
+
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
@@ -1988,18 +1997,20 @@ class source_import(FormView):
             sources_dict_lst = []
             for f in files:
                 sources_dict_lst += self.get_bibtex_data(f)
-            update_sources_table = SourcesUpdateTable(sources_dict_lst) #Source.objects.all()
-            RequestConfig(request, paginate={'per_page': 1000}).configure(update_sources_table)
+            update_sources_table = SourcesUpdateTable(sources_dict_lst)
+            RequestConfig(
+                request,
+                paginate={'per_page': 1000}).configure(update_sources_table)
             return render_template(request, self.template_name, {
                 'form': self.form_class(),
                 'update_sources_table': update_sources_table,
                 })
-            #return self.form_valid(form)
+            # return self.form_valid(form)
         else:
             return self.form_invalid(form)
 
     def get_bibtex_data(self, f):
-        
+
         parser = BibTexParser()
         parser.ignore_nonstandard_types = False
         bib_database = bibtexparser.loads(f.read(), parser)
@@ -2010,41 +2021,53 @@ class source_import(FormView):
 
     def get_comparison_dict(self, entry):
 
-        source_attr_lst = ['ENTRYTYPE', 'citation_text', 'author', 'year', 'title', 'booktitle', 'editor', 'pages', 'edition', 'journaltitle', 'location',
-                       'link', 'note', 'number', 'series', 'volume', 'publisher', 'institution', 'chapter', 'howpublished']
-        
+        source_attr_lst = [
+            'ENTRYTYPE', 'citation_text', 'author', 'year', 'title',
+            'booktitle', 'editor', 'pages', 'edition', 'journaltitle',
+            'location', 'link', 'note', 'number', 'series', 'volume',
+            'publisher', 'institution', 'chapter', 'howpublished']
+
         comparison_dict = {}
         try:
             source_obj = Source.objects.get(pk=entry['ID'])
-            for key in [key for key in entry.keys() if key not in ['ID', 'date']]:
+            for key in [key for key in entry.keys()
+                        if key not in ['ID', 'date']]:
                 if getattr(source_obj, key) == entry[key]:
                     comparison_dict[key] = [entry[key], 'same']
                 else:
                     old_value = getattr(source_obj, key)
                     if old_value in ['', u'—', None]:
-                       old_value = '(none)'
+                        old_value = '(none)'
                     new_value = entry[key]
                     if new_value in ['', u'—', None]:
                         new_value = '(none)'
-                    comparison_dict[key] = ['<p class="oldValue">%s</p><p class="newValue">%s</p>' %(old_value, new_value), 'changed']
+                    comparison_dict[key] = [
+                        '<p class="oldValue">%s</p>'
+                        '<p class="newValue">%s</p>' %
+                        (old_value, new_value), 'changed']
             for key in source_attr_lst:
                 if key not in comparison_dict.keys():
                     if getattr(source_obj, key) not in ['', None]:
-                        comparison_dict[key] = ['<p class="oldValue">%s</p><p class="newValue">(none)</p>' %(getattr(source_obj, key)), 'changed']
-                    
+                        comparison_dict[key] = [
+                            '<p class="oldValue">%s</p>'
+                            '<p class="newValue">(none)</p>' %
+                            (getattr(source_obj, key)), 'changed']
+
         except (ValueError, ObjectDoesNotExist) as e:
             for key in entry.keys():
                 comparison_dict[key] = [entry[key], 'new']
         return comparison_dict
-        
-##            print(entry)
-##            try:
-##              source_obj = Source.objects.get(pk=entry['ID'])
-##              source_obj.populate_from_bibtex(entry)
-##            except (ValueError, ObjectDoesNotExist) as e:
-##                print 'Failed to handle BibTeX entry with ID %s: %s' %([entry['ID']], e)
+
+#             print(entry)
+#             try:
+#               source_obj = Source.objects.get(pk=entry['ID'])
+#               source_obj.populate_from_bibtex(entry)
+#             except (ValueError, ObjectDoesNotExist) as e:
+#                 print('Failed to handle BibTeX entry with ID %s: %s' %
+#                       ([entry['ID']], e))
 
 # -- /source end/ -------------------------------------------------------------
+
 
 @logExceptions
 def lexeme_search(request):

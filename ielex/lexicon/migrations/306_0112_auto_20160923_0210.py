@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='source',
             name='publisher',
-            field=models.ManyToManyField(to='lexicon.Publisher', blank=True),
+            field=models.ManyToManyField(to='lexicon.Publisher', blank=True)
         ),
         migrations.AddField(
             model_name='source',
             name='series',
-            field=models.ForeignKey(blank=True, to='lexicon.Series', null=True),
+            field=models.ForeignKey(blank=True, to='lexicon.Series', null=True)
         ),
     ]

@@ -14,6 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='source',
             name='journal',
-            field=models.ForeignKey(blank=True, to='lexicon.Journal', null=True),
+            field=models.ForeignKey(
+                blank=True, to='lexicon.Journal', null=True)
         ),
     ]

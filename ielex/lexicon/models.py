@@ -14,6 +14,7 @@ from django.utils.safestring import SafeString
 from django.utils.encoding import python_2_unicode_compatible
 from django.http import HttpResponse
 from django.utils.html import format_html
+from django.db.utils import DataError
 
 # ielex specific imports:
 from ielex.utilities import two_by_two
@@ -64,11 +65,11 @@ LANGUAGE_PROGRESS = (  # used by Languages
     (4, 'Revision complete'),
     (5, 'Second review complete'))
 
-YEAR_CHOICES = [] #used by Source
-for r in reversed(range(1800, (datetime.datetime.now().year+1))):
-    YEAR_CHOICES.append((r,r))
+YEAR_CHOICES = []  # used by Source
+for r in reversed(range(1800, (datetime.datetime.now().year + 1))):
+    YEAR_CHOICES.append((r, r))
 
-SOURCE_TYPE_CHOICES = ( #used by Source
+SOURCE_TYPE_CHOICES = (  # used by Source
     ('article', 'article'),
     ('book', 'book'),
     ('booklet', 'booklet'),
@@ -82,7 +83,7 @@ SOURCE_TYPE_CHOICES = ( #used by Source
     ('phdthesis', 'phd thesis'),
     ('proceedings', 'proceedings'),
     ('unpublished', 'unpublished'),
-    )
+)
 
 PROPOSED_AS_COGNATE_TO_SCALE = (  # Used by CognateClass
     (0, '1/6=small minority view'),
@@ -101,6 +102,7 @@ class CharNullField(models.CharField):
     are allowed (following ANSI SQL standard). For example, if
     CognateClass objects have an explicit name, it must be unique, but
     having a name is optional."""
+
     def to_python(self, value):
         if isinstance(value, models.CharField):
             return value
@@ -250,7 +252,6 @@ class AbstractDistribution(models.Model):
                     'logNormalStDev', 'normalMean', 'normalStDev',
                     'uniformUpper', 'uniformLower'])
 
-from django.db.utils import DataError
 
 @reversion.register
 class Source(models.Model):
@@ -258,21 +259,23 @@ class Source(models.Model):
     '''
     Used for bibliographical references.
     '''
-    #OLD FIELDS:
+    # OLD FIELDS:
 
-    citation_text = models.TextField(unique=True) #to be discarded
-##    type_code = models.CharField(
-##        max_length=1, choices=TYPE_CHOICES, default="P")
-    description = models.TextField(blank=True) #keep for now
-    modified = models.DateTimeField(auto_now=True) #(in fact, when was added) keep for now
+    citation_text = models.TextField(unique=True)  # to be discarded
+# type_code = models.CharField(
+# max_length=1, choices=TYPE_CHOICES, default="P")
+    description = models.TextField(blank=True)  # keep for now
+    # (in fact, when was added) keep for now
+    modified = models.DateTimeField(auto_now=True)
 
-    #NEW FIELDS:
+    # NEW FIELDS:
     ENTRYTYPE = models.CharField(max_length=32, blank=True)
-    #type = models.CharField(max_length=4, blank=True) #discard
+    # type = models.CharField(max_length=4, blank=True) #discard
 
     author = models.CharField(max_length=128, blank=True)
     authortype = models.CharField(max_length=16, blank=True)
-    year = models.CharField(max_length=4, blank=True, null=True) #choices=YEAR_CHOICES
+    year = models.CharField(max_length=4, blank=True,
+                            null=True)  # choices=YEAR_CHOICES
     title = models.TextField(blank=True)
     subtitle = models.TextField(blank=True)
     booktitle = models.TextField(blank=True)
@@ -467,7 +470,7 @@ class Clade(AbstractTimestamped, AbstractDistribution):
         # lIds that warrant a connection:
         clIds = set(self.languageclade_set.filter(
             language__languagelistorder__language_list=languageList
-            ).values_list('language_id', flat=True))
+        ).values_list('language_id', flat=True))
         # Fill memo with entries for given cognateclasses:
         for cc in cognateclasses:
             lIds = set(cc.lexeme_set.filter(
@@ -510,12 +513,12 @@ def getCladeFromLanguageIds(languageIds):
         newcIdOrderMap = dict(
             LanguageClade.objects.filter(
                 language_id=languageId
-                ).values_list('clade_id', 'cladesOrder'))
+            ).values_list('clade_id', 'cladesOrder'))
         if cladeIdOrderMap is None:
             cladeIdOrderMap = newcIdOrderMap
         else:
             intersection = newcIdOrderMap.viewkeys() & \
-                           cladeIdOrderMap.viewkeys()
+                cladeIdOrderMap.viewkeys()
             cladeIdOrderMap.update(newcIdOrderMap)
             cladeIdOrderMap = {k: v for k, v in cladeIdOrderMap.iteritems()
                                if k in intersection}
@@ -551,8 +554,10 @@ class Language(AbstractTimestamped, AbstractDistribution):
     representative = models.BooleanField(default=0)
     rfcWebPath1 = models.TextField(blank=True, null=True)
     rfcWebPath2 = models.TextField(blank=True, null=True)
-    author = models.CharField(max_length=256, null=True) # to be replaced with ForeignKey, see below
-    reviewer = models.CharField(max_length=256, null=True) # to be replaced with ForeignKey, see below
+    # to be replaced with ForeignKey, see below
+    author = models.CharField(max_length=256, null=True)
+    # to be replaced with ForeignKey, see below
+    reviewer = models.CharField(max_length=256, null=True)
     # Added for #153:
     sortRankInClade = models.IntegerField(default=0, null=False)
     # Backup of level entries that still correspond to SndComp levels:
@@ -626,8 +631,8 @@ class Language(AbstractTimestamped, AbstractDistribution):
             entryCount = len([l for l in self.lexeme_set.all()
                               if l.meaning_id in meaningIdSet])
             nonLexCount = len([l for l in self.lexeme_set.all()
-                              if l.meaning_id in meaningIdSet and
-                              l.not_swadesh_term])
+                               if l.meaning_id in meaningIdSet and
+                               l.not_swadesh_term])
             # Computing dependant counts:
             lexCount = entryCount - nonLexCount
             excessCount = lexCount - meaningCount
@@ -753,12 +758,12 @@ class Language(AbstractTimestamped, AbstractDistribution):
     @property
     def progressPercentage(self):
         percentages = {
-          0: 0,
-          1: 20,
-          2: 40,
-          3: 60,
-          4: 80,
-          5: 100
+            0: 0,
+            1: 20,
+            2: 40,
+            3: 60,
+            4: 80,
+            5: 100
         }
         return percentages[self.progress]
 
@@ -766,12 +771,12 @@ class Language(AbstractTimestamped, AbstractDistribution):
     def progressBarClass(self):
         # Return class string to color progress bar
         percentages = {
-          0: 'progress-bar-danger',
-          1: 'progress-bar-danger',
-          2: 'progress-bar-warning',
-          3: 'progress-bar-info',
-          4: 'progress-bar-info',
-          5: 'progress-bar-success'
+            0: 'progress-bar-danger',
+            1: 'progress-bar-danger',
+            2: 'progress-bar-warning',
+            3: 'progress-bar-info',
+            4: 'progress-bar-info',
+            5: 'progress-bar-success'
         }
         return percentages[self.progress]
 
@@ -957,12 +962,12 @@ class CognateClass(AbstractTimestamped):
     def update_alias(self, save=True):
         """Reset alias to the first unused letter"""
         codes = set(uppercase) | \
-            set([i+j for i in uppercase for j in lowercase])
+            set([i + j for i in uppercase for j in lowercase])
         meanings = Meaning.objects.filter(
             lexeme__cognate_class=self).distinct()
         current_aliases = CognateClass.objects.filter(
-                lexeme__meaning__in=meanings).distinct().exclude(
-                id=self.id).values_list("alias", flat=True)
+            lexeme__meaning__in=meanings).distinct().exclude(
+            id=self.id).values_list("alias", flat=True)
         codes -= set(current_aliases)
         self.alias = sorted(codes, key=lambda i: (len(i), i))[0]
         if save:
@@ -1069,11 +1074,11 @@ class CognateClass(AbstractTimestamped):
 
     @property
     def root_form_compare(self):
-        return 'root_form'+str(self.id)
+        return 'root_form' + str(self.id)
 
     @property
     def root_language_compare(self):
-        return 'root_language'+str(self.id)
+        return 'root_language' + str(self.id)
 
     @property
     def idField(self):
@@ -1422,9 +1427,9 @@ class LanguageList(models.Model):
             assert N is None
             N = 0
         LanguageListOrder.objects.create(
-                language=language,
-                language_list=self,
-                order=N)
+            language=language,
+            language_list=self,
+            order=N)
 
     def insert(self, N, language):
         """
@@ -1432,16 +1437,16 @@ class LanguageList(models.Model):
         ordering before the object position N
         """
         llo = LanguageListOrder.objects.get(
-                language=language,
-                language_list=self)
+            language=language,
+            language_list=self)
         target = self.languagelistorder_set.all()[N]
         llo.order = target.order - 0.0001
         llo.save()
 
     def remove(self, language):
         llo = LanguageListOrder.objects.get(
-                language=language,
-                language_list=self)
+            language=language,
+            language_list=self)
         llo.delete()
 
     def sequentialize(self):
@@ -1458,11 +1463,11 @@ class LanguageList(models.Model):
     def swap(self, languageA, languageB):
         """Swap the order of two languages"""
         orderA = LanguageListOrder.objects.get(
-                language=languageA,
-                language_list=self)
+            language=languageA,
+            language_list=self)
         orderB = LanguageListOrder.objects.get(
-                language=languageB,
-                language_list=self)
+            language=languageB,
+            language_list=self)
         orderB.delete()
         orderA.order, orderB.order = orderB.order, orderA.order
         orderA.save()
@@ -1517,9 +1522,9 @@ class MeaningList(models.Model):
             assert N is None
             N = 0
         MeaningListOrder.objects.create(
-                meaning=meaning,
-                meaning_list=self,
-                order=N)
+            meaning=meaning,
+            meaning_list=self,
+            order=N)
 
     def insert(self, N, meaning):
         """
@@ -1527,16 +1532,16 @@ class MeaningList(models.Model):
         ordering before the object position N
         """
         llo = MeaningListOrder.objects.get(
-                meaning=meaning,
-                meaning_list=self)
+            meaning=meaning,
+            meaning_list=self)
         target = self.meaninglistorder_set.all()[N]
         llo.order = target.order - 0.0001
         llo.save()
 
     def remove(self, meaning):
         llo = MeaningListOrder.objects.get(
-                meaning=meaning,
-                meaning_list=self)
+            meaning=meaning,
+            meaning_list=self)
         llo.delete()
 
     def sequentialize(self):
@@ -1553,11 +1558,11 @@ class MeaningList(models.Model):
     def swap(self, meaningA, meaningB):
         """Swap the order of two meanings"""
         orderA = MeaningListOrder.objects.get(
-                meaning=meaningA,
-                meaning_list=self)
+            meaning=meaningA,
+            meaning_list=self)
         orderB = MeaningListOrder.objects.get(
-                meaning=meaningB,
-                meaning_list=self)
+            meaning=meaningB,
+            meaning_list=self)
         orderB.delete()
         orderA.order, orderB.order = orderB.order, orderA.order
         orderA.save()
@@ -1683,7 +1688,7 @@ def update_language_list_all(sender, instance, **kwargs):
 
     if missing_langs:
         # make a new alphabetized list
-        default_alpha = LanguageList.DEFAULT+"-alpha"
+        default_alpha = LanguageList.DEFAULT + "-alpha"
         try:  # zap the old one
             ll_alpha = LanguageList.objects.get(name=default_alpha)
             ll_alpha.delete()
@@ -1708,7 +1713,7 @@ def update_meaning_list_all(sender, instance, **kwargs):
 
     if missing_meanings:
         # make a new alphabetized list
-        default_alpha = MeaningList.DEFAULT+"-alpha"
+        default_alpha = MeaningList.DEFAULT + "-alpha"
         try:
             ml_alpha = MeaningList.objects.get(name=default_alpha)
             ml_alpha.delete()
@@ -1772,7 +1777,7 @@ class Author(AbstractTimestamped):
         ordering = ["surname", "firstNames"]
 
     def __unicode__(self):
-        return '%s, %s' %(self.surname, self.firstNames)
+        return '%s, %s' % (self.surname, self.firstNames)
 
     @property
     def getAvatar(self):
@@ -1792,9 +1797,11 @@ class Author(AbstractTimestamped):
             if os.path.isfile(p):
                 return p
 
+
 @reversion.register
 class NexusExport(AbstractTimestamped):
     # Methods for compressed fields:
+
     def compressed(field):
 
         def fget(self):

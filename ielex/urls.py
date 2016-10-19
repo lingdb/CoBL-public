@@ -252,7 +252,7 @@ urlpatterns = patterns(
         source_edit, {"action": "add"},
         name="lexeme-add-new-source"),
     url(r'^sources/import/$', source_import.as_view(), name="import-sources"),
-    
+
     # Cognate
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report, name="cognate-set"),
     url(r'^cognate/%(COGNATE_NAME)s/$' % R, cognate_report),
