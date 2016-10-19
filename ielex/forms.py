@@ -23,7 +23,8 @@ from ielex.lexicon.models import CognateClass, \
                                  Clade, \
                                  MeaningListOrder, \
                                  LexemeCitation, \
-                                 CognateJudgementCitation
+                                 CognateJudgementCitation, \
+                                 PROPOSED_AS_COGNATE_TO_SCALE
 from ielex.lexicon.validators import suitable_for_url, suitable_for_url_wtforms
 from wtforms import StringField, \
                     IntegerField, \
@@ -606,6 +607,14 @@ class CogClassRowForm(AbstractTimestampedForm):
     # Added for #263:
     revisedYet = BooleanField('Revised Yet?', validators=[InputRequired()])
     revisedBy = TextField('Revised by', validators=[InputRequired()])
+    # Added for #319:
+    proposedAsCognateToId = IntegerField(
+        'Proposed as cognate to:', validators=[])
+    proposedAsCognateToScale = SelectField(
+        'Proposed as cognate to:',
+        default=None,
+        choices=PROPOSED_AS_COGNATE_TO_SCALE,
+        validators=[])
 
     def __str__(self):
         cogclass_form_vals = (
@@ -636,10 +645,27 @@ class CogClassRowForm(AbstractTimestampedForm):
                     if fieldData or type(fieldData) == bool:
                         break
             else:
-                print("Marderschaden!", form.data)
                 raise ValidationError(
                     'Loanword is %s, but none of the fields %s is set.' %
                     (field.data, fieldList))
+
+    def validate_proposedAsCognateToId(form, field):
+        if field.data is not None:
+            if not CognateClass.objects.filter(id=field.data).exists():
+                raise ValidationError(
+                    'Cognate set with id %s does not exist.' % field.data)
+
+    def validate_proposedAsCognateToScale(form, field):
+        # The field may only be None if proposedAsCognateToId is also None.
+        if field.data is None:
+            if form.data['proposedAsCognateToId'] is not None:
+                raise ValidationError(
+                    'proposedAsCognateToScale is not given, '
+                    'but proposedAsCognateToId is.')
+        elif form.data['proposedAsCognateToId'] is None:
+            raise ValidationError(
+                'proposedAsCognateToScale is given '
+                'but proposedAsCognateToId is not.')
 
 
 class AddCogClassTableForm(WTForm):

@@ -1007,7 +1007,8 @@ class CognateClass(AbstractTimestamped):
                     'sourceFormInLoanLanguage', 'parallelLoanEvent',
                     'notProtoIndoEuropean', 'ideophonic',
                     'parallelDerivation', 'dubiousSet',
-                    'revisedYet', 'revisedBy'])
+                    'revisedYet', 'revisedBy',
+                    'proposedAsCognateToId', 'proposedAsCognateToScale'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update cognate class: ' \
@@ -1159,6 +1160,25 @@ class CognateClass(AbstractTimestamped):
         if self.loanword:
             return u"%s ≤ %s" % (p1, p2)
         return p1
+
+    @def proposedAsCognateToId():
+        doc = "The proposedAsCognateToId property."
+
+        def fget(self):
+            if self.proposedAsCognateTo is None:
+                return None
+            return self.proposedAsCognateTo.id
+
+        def fset(self, value):
+            if value is None:
+                self.proposedAsCognateTo = None
+            else:
+                self.proposedAsCognateTo = CognateClass.objects.get(id=value)
+
+        def fdel(self):
+            self.proposedAsCognateTo = None
+        return locals()
+    proposedAsCognateToId = property(**proposedAsCognateToId())
 
 
 class DyenCognateSet(models.Model):
