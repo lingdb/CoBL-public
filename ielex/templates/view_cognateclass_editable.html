@@ -145,6 +145,10 @@
               <th>Root<br>Gloss</th>
               {# notes_title.html #}
               <th>Root<br>Notes</th>
+              {# proposedAs_title.html #}
+              <th colspan="2">
+                Proposed as cognate to:
+              </th>
               {# ideophonic_title.html #}
               <th style="border-left: 2px solid #dddddd;"
                   data-toggle="tooltip"
@@ -383,6 +387,10 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
+              </td>
+              {# proposedAs_filter.html #}
+              <td colspan="2">
+
               </td>
               {# ideophonic_filter.html #}
               <td style="border-left: 2px solid #dddddd;">
@@ -645,8 +653,23 @@
                 <td class="cogNotes">
                   {% if user.is_authenticated %}
                     {% form_field cc.notes class="form-control" %}
-                  {% elif cc.notes.data %}
-                    {{ cc.notes.data }}
+                  {% elif cc.object_data.notes %}
+                    {{ cc.object_data.notes }}
+                  {% endif %}
+                </td>
+                {# proposedAs_data.html #}
+                <td class="proposedAsCognateToIdCell">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.proposedAsCognateToId class="form-control numberField" data-dependencyfor-tr="proposedAsCognateToId" pattern="^\d*$" %}
+                  {% elif cc.object_data.proposedAsCognateToId %}
+                    {{ cc.object_data.proposedAsCognateToId }}
+                  {% endif %}
+                </td>
+                <td class="proposedAsCognateToScale">
+                  {% if user.is_authenticated %}
+                    {% form_field cc.proposedAsCognateToScale class="form-control" data-inputdepends="proposedAsCognateToId" %}
+                  {% elif cc.object_data.proposedAsCognateToScale %}
+                    {{ cc.object_data.proposedAsCognateToScale }}
                   {% endif %}
                 </td>
                 {# ideophonic_data.html #}

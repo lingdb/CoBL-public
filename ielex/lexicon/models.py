@@ -1161,24 +1161,22 @@ class CognateClass(AbstractTimestamped):
             return u"%s ≤ %s" % (p1, p2)
         return p1
 
-    @def proposedAsCognateToId():
-        doc = "The proposedAsCognateToId property."
+    def getProposedAsCognateToId(self):
+        if self.proposedAsCognateTo is None:
+            return None
+        return self.proposedAsCognateTo.id
 
-        def fget(self):
-            if self.proposedAsCognateTo is None:
-                return None
-            return self.proposedAsCognateTo.id
-
-        def fset(self, value):
-            if value is None:
-                self.proposedAsCognateTo = None
-            else:
-                self.proposedAsCognateTo = CognateClass.objects.get(id=value)
-
-        def fdel(self):
+    def setProposedAsCognateToId(self, value):
+        if value is None:
             self.proposedAsCognateTo = None
-        return locals()
-    proposedAsCognateToId = property(**proposedAsCognateToId())
+        else:
+            self.proposedAsCognateTo = CognateClass.objects.get(id=value)
+
+    def delProposedAsCognateToId(self):
+        self.proposedAsCognateTo = None
+    proposedAsCognateToId = property(fget=getProposedAsCognateToId,
+                                     fset=setProposedAsCognateToId,
+                                     fdel=delProposedAsCognateToId)
 
 
 class DyenCognateSet(models.Model):

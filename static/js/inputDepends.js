@@ -17,10 +17,16 @@
           }
         });
       };
+      var handler; // var used below
       if(t.attr('type') === 'checkbox'){
         //Handling the magic:
-        var handler = function(){ updateDeps(t.is(':checked')); };
+        handler = function(){ updateDeps(t.is(':checked')); };
         t.click(handler);
+        handler();
+      }else if(t.attr('type') === 'text'){
+        //Handling the magic:
+        handler = function(){ updateDeps(t.val() !== ''); };
+        t.keyup(handler);
         handler();
       }
     });
