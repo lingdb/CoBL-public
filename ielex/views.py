@@ -1266,7 +1266,7 @@ def view_cognateclasses(request, meaning):
     ccl_ordered = CognateClass.objects.filter(
         cognatejudgement__lexeme__meaning__gloss=meaning,
         cognatejudgement__lexeme__language_id__in=languageIds
-            ).order_by('alias').distinct()
+        ).prefetch_related('lexeme_set').order_by('alias').distinct()
     # Computing counts for ccs:
     for cc in ccl_ordered:
         cc.computeCounts(languageList=languageList)
@@ -2511,6 +2511,14 @@ def json_cognateClass_placeholders(request):
 
 @logExceptions
 def view_cladecognatesearch(request):
+    # Acquiring languageList:
+    try:
+        languageList = LanguageList.objects.get(
+            name=getDefaultLanguagelist(request))
+    except LanguageList.DoesNotExist:
+        languageList = LanguageList.objects.get(
+            name=LanguageList.ALL)
+
     allClades = Clade.objects.all()
 
     # Figuring out clades to search for:
@@ -2530,6 +2538,22 @@ def view_cladecognatesearch(request):
             cognateClassIds = set(newIds)
         else:
             cognateClassIds &= set(newIds)
+    # Removing unwanted entries from cognateClassIds:
+    cognateClassIds -= set(CognateClass.objects.filter(
+        lexeme__language_id__in=Language.objects.exclude(
+            languageclade__clade_id__in=[c.id for c in currentClades]
+        ).values_list('id', flat=True)
+    ).values_list('id', flat=True))
+
+    # Form for cognateClasses:
+    cognateClasses = CognateClass.objects.filter(
+        id__in=cognateClassIds).prefetch_related(
+        'lexeme_set',
+        'lexeme_set__language',
+        'lexeme_set__meaning').all()
+    # for c in cognateClasses:
+    #     c.computeCounts(languageList)
+    form = AddCogClassTableForm(cogclass=cognateClasses)
 
     # Computing cladeLinks:
     def mkCladeLink(clade, currentTaxonsetNames):
@@ -2542,10 +2566,6 @@ def view_cladecognatesearch(request):
     cladeLinks = [mkCladeLink(c, currentTaxonsetNames)
                   for c in allClades
                   if c.shortName]
-
-    # Form for cognateClasses:
-    cognateClasses = CognateClass.objects.filter(id__in=cognateClassIds).all()
-    form = AddCogClassTableForm(cogclass=cognateClasses)
 
     return render_template(
         request, "view_cladecognatesearch.html",
