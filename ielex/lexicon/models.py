@@ -262,19 +262,14 @@ class Source(models.Model):
     # OLD FIELDS:
 
     citation_text = models.TextField(unique=True)  # to be discarded
-# type_code = models.CharField(
-# max_length=1, choices=TYPE_CHOICES, default="P")
     description = models.TextField(blank=True)  # keep for now
-    # (in fact, when was added) keep for now
-    modified = models.DateTimeField(auto_now=True)
+    modified = models.DateTimeField(auto_now=True) #in fact, when was added; keep for now
 
     # NEW FIELDS:
     ENTRYTYPE = models.CharField(max_length=32, blank=True)
-    # type = models.CharField(max_length=4, blank=True) #discard
-
     author = models.CharField(max_length=128, blank=True)
     authortype = models.CharField(max_length=16, blank=True)
-    year = models.CharField(max_length=4, blank=True,
+    year = models.CharField(max_length=16, blank=True,
                             null=True)  # choices=YEAR_CHOICES
     title = models.TextField(blank=True)
     subtitle = models.TextField(blank=True)
@@ -287,19 +282,19 @@ class Source(models.Model):
     editoratype = models.CharField(max_length=16, blank=True)
     pages = models.CharField(max_length=32, blank=True)
     part = models.CharField(max_length=32, blank=True)
-    edition = models.IntegerField(blank=True, null=True)
+    edition = models.CharField(max_length=128, blank=True)
     journaltitle = models.CharField(max_length=128, blank=True)
     location = models.CharField(max_length=128, blank=True)
     link = models.URLField(blank=True)
     note = models.TextField(blank=True)
-    number = models.IntegerField(null=True, blank=True)
+    number = models.CharField(max_length=128, blank=True)
     series = models.CharField(max_length=128, blank=True)
-    volume = models.CharField(max_length=16, blank=True)
+    volume = models.CharField(max_length=128, blank=True)
     publisher = models.CharField(max_length=128, blank=True)
     institution = models.CharField(max_length=128, blank=True)
     chapter = models.TextField(blank=True)
     howpublished = models.TextField(blank=True)
-    shorthand = models.CharField(max_length=8, blank=True)
+    shorthand = models.CharField(max_length=16, blank=True)
     isbn = models.CharField(max_length=32, blank=True)
 
     deprecated = models.BooleanField(default=False)
@@ -327,31 +322,10 @@ class Source(models.Model):
         for key in bibtex_dict.keys():
             if key not in ['ID', 'date']:
                 setattr(self, key, bibtex_dict[key])
-                # print(key, bibtex_dict[key])
         try:
             self.save()
         except DataError as e:
             print(e, bibtex_dict)
-
-# import bibtexparser
-# from bibtexparser.bparser import BibTexParser
-# from django.core.exceptions import ObjectDoesNotExist
-#
-# with open('lexicon_source.bib') as bibtex_file:
-#     bibtex_str = bibtex_file.read()
-#
-# parser = BibTexParser()
-# parser.ignore_nonstandard_types = False
-#
-# bib_database = bibtexparser.loads(bibtex_str, parser)
-# missing_fields_lst = []
-# for entry in bib_database.entries:
-#     try:
-#       source_obj = Source.objects.get(pk=entry['ID'])
-#       source_obj.populate_from_bibtex(entry)
-#     except (ValueError, ObjectDoesNotExist) as e:
-#         print 'Failed to handle BibTeX entry with '
-#               'ID %s: %s' %([entry['ID']], e)
 
 
 @reversion.register
