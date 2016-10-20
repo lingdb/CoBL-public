@@ -27,6 +27,15 @@
     <span class="glyphicon glyphicon-headphones"></span>
   </a>
 </li>
+<li>
+  <a href="/cladecognatesearch/"
+     title="Search for cognate sets by clade membership."
+     data-toggle="tooltip"
+     data-placement="bottom"
+     data-container="body">
+    <span class="glyphicon glyphicon-search"></span>
+  </a>
+</li>
 {% if user.is_authenticated %}
   <li>
     <a href={% url 'view-language-progress' current_language_list_name %}

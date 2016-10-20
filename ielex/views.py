@@ -2507,3 +2507,17 @@ def json_cognateClass_placeholders(request):
         return HttpResponse(dump)
     return HttpResponse(
         "Please provide `lexemes` parameter detailing lexeme ids.")
+
+
+@logExceptions
+def view_cladecognatesearch(request):
+    cladeIds = []
+    if request.method == 'GET' and 'clades' in request.GET:
+        cladeNames = [n.strip() for n in request.GET['clades'].split(',')]
+        cladeIds = Clade.objects.filter(
+            taxonsetName__in=cladeNames).values_list('id', flat=True)
+
+    languageIds = LanguageClade.objects.filter(
+        clade_id__in=cladeIds).values_list('language_id', flat=True)
+
+    return HttpResponse('FIXME IMPLEMENT %s -> %s' % (cladeIds, languageIds))

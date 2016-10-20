@@ -47,7 +47,8 @@ from ielex.views import add_language_list, \
                         view_nexus_export, \
                         view_two_languages_wordlist, \
                         view_language_progress, \
-                        json_cognateClass_placeholders
+                        json_cognateClass_placeholders, \
+                        view_cladecognatesearch
 from ielex import settings
 from ielex.lexicon.views import CognateClassCitationCreateView, \
                                 cognate_class_citation_delete, \
@@ -149,6 +150,8 @@ urlpatterns = patterns(
     url(r'^clades/$' % R, view_clades),
     # SndComp sets:
     url(r'^sndComp/$' % R, view_sndComp),
+    # Clade cognate search:
+    url(r'^cladecognatesearch/$' % R, view_cladecognatesearch),
 
     # Meanings (aka wordlist)
     url(r'^wordlists/$', view_wordlists, name="view-wordlists"),
