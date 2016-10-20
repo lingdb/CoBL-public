@@ -2517,7 +2517,16 @@ def view_cladecognatesearch(request):
         cladeIds = Clade.objects.filter(
             taxonsetName__in=cladeNames).values_list('id', flat=True)
 
-    languageIds = LanguageClade.objects.filter(
-        clade_id__in=cladeIds).values_list('language_id', flat=True)
+    cognateClassIds = None
+    for cId in cladeIds:
+        newIds = CognateClass.objects.filter(
+            lexeme__language__languageclade__clade_id=cId
+            ).values_list('id', flat=True)
+        if cognateClassIds is None:
+            cognateClassIds = set(newIds)
+        else:
+            cognateClassIds &= set(newIds)
 
-    return HttpResponse('FIXME IMPLEMENT %s -> %s' % (cladeIds, languageIds))
+    # FIXME IMPLEMENT RENDERING
+
+    return HttpResponse('%s -> %s' % (cladeIds, cognateClassIds))
