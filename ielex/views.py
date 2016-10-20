@@ -2511,22 +2511,43 @@ def json_cognateClass_placeholders(request):
 
 @logExceptions
 def view_cladecognatesearch(request):
-    cladeIds = []
+    allClades = Clade.objects.all()
+
+    currentClades = []
     if request.method == 'GET' and 'clades' in request.GET:
         cladeNames = [n.strip() for n in request.GET['clades'].split(',')]
-        cladeIds = Clade.objects.filter(
-            taxonsetName__in=cladeNames).values_list('id', flat=True)
+        currentClades = Clade.objects.filter(
+            taxonsetName__in=cladeNames).all()
 
     cognateClassIds = None
-    for cId in cladeIds:
+    for clade in currentClades:
         newIds = CognateClass.objects.filter(
-            lexeme__language__languageclade__clade_id=cId
+            lexeme__language__languageclade__clade_id=clade.id
             ).values_list('id', flat=True)
         if cognateClassIds is None:
             cognateClassIds = set(newIds)
         else:
             cognateClassIds &= set(newIds)
 
-    # FIXME IMPLEMENT RENDERING
+    # Computing cladeLinks:
+    def mkCladeLink(clade, currentTaxonsetNames):
+        targetSet = currentTaxonsetNames ^ set([clade.taxonsetName])
+        return {'name': clade.shortName,
+                'active': clade.taxonsetName in currentTaxonsetNames,
+                'color': clade.hexColor,
+                'href': '?clades=%s' % ','.join(targetSet)}
+    currentTaxonsetNames = set([c.taxonsetName for c in currentClades])
+    cladeLinks = [mkCladeLink(c, currentTaxonsetNames)
+                  for c in allClades
+                  if c.shortName]
 
-    return HttpResponse('%s -> %s' % (cladeIds, cognateClassIds))
+    # Form for cognateClasses:
+    cognateClasses = CognateClass.objects.filter(id__in=cognateClassIds).all()
+    form = AddCogClassTableForm(cogclass=cognateClasses)
+
+    return render_template(
+        request, "view_cladecognatesearch.html",
+        {"cladeTitle": ", ".join([c.shortName for c in currentClades]),
+         "cladeLinks": cladeLinks,
+         "allClades": allClades,
+         "AddCogClassTableForm": form})

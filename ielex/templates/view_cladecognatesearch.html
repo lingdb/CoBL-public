@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load lexicon_utils %}
+{% load wtforms %}
+
+{% block title %}
+  Clade cognate set search :: {{ cladeTitle }}
+{% endblock %}
+
+{% block top %}
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/defaultSelections.html" %}
+  {% include "snippets/go_to.html" %}
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <h2>Filter by clades:</h2>
+      {% for cladeLink in cladeLinks %}
+        <a href="{{ cladeLink.href }}"
+           class="badge"
+           style="background-color: #{{cladeLink.color}};
+                  {% if cladeLink.active%}
+                  opacity: 0.25;
+                  {% endif %}">
+          {{ cladeLink.name }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
