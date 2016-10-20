@@ -2513,12 +2513,14 @@ def json_cognateClass_placeholders(request):
 def view_cladecognatesearch(request):
     allClades = Clade.objects.all()
 
+    # Figuring out clades to search for:
     currentClades = []
     if request.method == 'GET' and 'clades' in request.GET:
         cladeNames = [n.strip() for n in request.GET['clades'].split(',')]
         currentClades = Clade.objects.filter(
             taxonsetName__in=cladeNames).all()
 
+    # Searching cognateClassIds by clades:
     cognateClassIds = None
     for clade in currentClades:
         newIds = CognateClass.objects.filter(
