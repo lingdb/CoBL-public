@@ -1950,6 +1950,13 @@ def source_list(request):
         else:
             print(form.errors)
         return HttpResponse()
+    elif request.POST.get("postType") == 'deprecated-change' and \
+            request.user.is_authenticated():
+        source_obj = Source.objects.get(pk=request.POST.get("id"))
+        status = {u'true':True, 'false':False}[request.POST.get("status")]
+        source_obj.deprecated = status
+        source_obj.save()
+        return HttpResponse()
     else:
         sources_dict_lst = []
         for source_obj in Source.objects.all():
@@ -1964,7 +1971,7 @@ def source_list(request):
                     '<button class="edit_button show_e" '
                     'id="%s">Edit</button>' % (source_obj.pk))
             sources_dict_lst.append(source_dict)
-        sources_table = SourcesTable(sources_dict_lst)  # Source.objects.all()
+        sources_table = SourcesTable(sources_dict_lst)
         RequestConfig(request,
                       paginate={'per_page': 100}).configure(sources_table)
 

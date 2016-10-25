@@ -11,6 +11,8 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script>
 $(document).ready(function () {
+
+	$('input:checked[name="deprecated"]').parent().parent().toggleClass('deprecated');
 	
 	/**** DETAILS *****/
 	$(document.body).on('click', '.details_button.show_d', function() {
@@ -74,6 +76,7 @@ $(document).ready(function () {
 		return false
 	});
 	
+	/**** Pop-up edit window dissapearance on an outside click *****/
 /*	window.onclick = function(event) {
 		if (event.target == $('#editModal')[0]) {
 			$('#editModal')[0].style.display = "none";
@@ -97,10 +100,33 @@ $(document).ready(function () {
 		$('#editModal')[0].style.display = "none";
 		return false;
 	});
+	
+	/**** CHANGE DEPRECATED STATUS *****/
+	$(document.body).on('click', 'input[name="deprecated"]', function() {
+		$(this).parent().parent().toggleClass('deprecated');
+		var postdata = {
+			'postType': 'deprecated-change',
+			'id': $(this).parent().siblings('.details').children().attr('id'),
+			'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value'),
+			'status': $(this).is(':checked'),
+		};
+		$.post("/sources/", postdata, function (data) {
+		//if (postdata['status']=='true')
+		});
+	});
 });
 </script>
 <style>
 /* Details preview table */
+
+tr.deprecated td, tr.deprecated + tr td .details_table  {
+	color: lightgrey;
+}
+
+tr.deprecated td button {
+	color: black;
+}
+
 .details_table {
 	width: 100%;
 }
@@ -118,7 +144,6 @@ tr._details td {
 .highlighted {
 	background: #fadddd !important;
 }
-
 
 /* The Modal (background) */
 .modal {
