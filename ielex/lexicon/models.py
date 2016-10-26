@@ -304,7 +304,8 @@ class Source(models.Model):
                        'pages', 'edition', 'journaltitle', 'location',
                        'link', 'note', 'number', 'series', 'volume',
                        'publisher', 'institution', 'chapter',
-                       'howpublished', 'deprecated']
+                       'howpublished', 'deprecated', 'cognacy', 'cogset',
+                       'lexeme']
 
     def get_absolute_url(self):
         return "/source/%s/" % self.id
@@ -317,6 +318,19 @@ class Source(models.Model):
 
     def __unicode__(self):
         return self.citation_text[:64]
+
+    @property
+    def cognacy(self): # cognate judgment
+        return self.cognatejudgementcitation_set.all()
+
+    @property
+    def cogset(self): # cognate classification; rename: cog. set
+        #see CognateClassCitation and CognateClass: relation missing !!
+        pass
+    
+    @property
+    def lexeme(self):
+        return self.lexemecitation_set.all()
 
     def populate_from_bibtex(self, bibtex_dict):
         for key in bibtex_dict.keys():

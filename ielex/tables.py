@@ -18,6 +18,11 @@ class CellClassColumn(tables.Column):
         self.attrs = {"td": {"class": clss}}
         return mark_safe(value)
 
+class QueryColumn(tables.Column):
+    def render(self, value):       
+        value = len(value)
+        return mark_safe(value)
+    
 class SourcesTable(tables.Table):
 
     # Details	Name (author-year-letter)	Title	Year	Author	BibTeX type
@@ -28,9 +33,9 @@ class SourcesTable(tables.Table):
     year = tables.Column()
     author = tables.Column()
     ENTRYTYPE = tables.Column()
-    cognacy = tables.Column()  # cognate judgment
+    cognacy = QueryColumn()  # cognate judgment
     cogset = tables.Column()  # cognate classification; rename: cog. set
-    lexeme = tables.Column()  # lexeme citation
+    lexeme = QueryColumn()  # lexeme citation
     deprecated = CheckBoxColumnWithName()  # tables.BooleanColumn()
     edit = tables.Column()  # link to edit view? / open new frame below ?
 
