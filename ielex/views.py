@@ -1870,7 +1870,6 @@ def source_view(request, source_id):
             "source": source,
             "action": ""})
 
-
 @login_required
 @logExceptions
 def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
@@ -1981,9 +1980,16 @@ def source_list(request):
 
 
 class source_import(FormView):
+    
     form_class = UploadBiBTeXFileForm
     template_name = 'source_import.html'
     success_url = '/sources/'  # Replace with your URL or reverse().
+    source_attr_lst = ['ENTRYTYPE', 'citation_text', 'author',
+                   'year', 'title', 'booktitle', 'editor',
+                   'pages', 'edition', 'journaltitle', 'location',
+                   'link', 'note', 'number', 'series', 'volume',
+                   'publisher', 'institution', 'chapter',
+                   'howpublished']
 
     @method_decorator(logExceptions)
     @method_decorator(login_required)
@@ -1997,73 +2003,111 @@ class source_import(FormView):
             self.template_name, {'form': form, 'update_sources_table': None})
 
     def post(self, request, *args, **kwargs):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        files = request.FILES.getlist('file')
-        if form.is_valid():
-            sources_dict_lst = []
-            for f in files:
-                sources_dict_lst += self.get_bibtex_data(f)
-            update_sources_table = SourcesUpdateTable(sources_dict_lst)
-            RequestConfig(
-                request,
-                paginate={'per_page': 1000}).configure(update_sources_table)
-            return render_template(request, self.template_name, {
-                'form': self.form_class(),
-                'update_sources_table': update_sources_table,
-                })
-            # return self.form_valid(form)
+        if request.POST.get("postType") == 'import':
+            for update_dict in request.POST.getlist('changes[]'):
+                update_dict = json.loads(update_dict)
+                if update_dict['id'] == u'new':
+                    s = Source()
+                else:
+                    s = Source.objects.get(pk=update_dict['id'])
+                for key in update_dict.keys():
+                    if key not in ['id']:
+                        value = update_dict[key]
+                        if value == u'None':
+                            value = u''
+                        setattr(s, key, value)
+                s.save()
+            return HttpResponse()
         else:
-            return self.form_invalid(form)
+            form_class = self.get_form_class()
+            form = self.get_form(form_class)
+            files = request.FILES.getlist('file')
+            if form.is_valid():
+                update_sources_dict_lst = []
+                new_sources_dict_lst = []
+                for f in files:
+                    result = self.get_bibtex_data(f)
+                    update_sources_dict_lst += result['update']
+                    new_sources_dict_lst += result['new']
+                update_sources_table = new_sources_table = ''
+                if len(update_sources_dict_lst)>0:
+                    update_sources_table = SourcesUpdateTable(update_sources_dict_lst)
+                if len(new_sources_dict_lst)>0:
+                    new_sources_table = SourcesUpdateTable(new_sources_dict_lst)
+                RequestConfig(
+                    request,
+                    paginate={'per_page': 1000}).configure(update_sources_table)
+                return render_template(request, self.template_name, {
+                    'form': self.form_class(),
+                    'update_sources_table': update_sources_table,
+                    'new_sources_table': new_sources_table,
+                    })
+            else:
+                return self.form_invalid(form)
 
     def get_bibtex_data(self, f):
 
         parser = BibTexParser()
         parser.ignore_nonstandard_types = False
         bib_database = bibtexparser.loads(f.read(), parser)
-        sources_dict_lst = []
+        update_sources_dict_lst = []
+        new_sources_dict_lst = []
         for entry in bib_database.entries:
-            sources_dict_lst.append(self.get_comparison_dict(entry))
-        return sources_dict_lst
+            result = self.get_comparison_dict(entry)
+            if result['status'] == 'update':
+                update_sources_dict_lst.append(result['dictionary'])
+            else:
+                new_sources_dict_lst.append(result['dictionary'])
+        return {'update':update_sources_dict_lst, 'new':new_sources_dict_lst}
 
     def get_comparison_dict(self, entry):
-
-        source_attr_lst = [
-            'ENTRYTYPE', 'citation_text', 'author', 'year', 'title',
-            'booktitle', 'editor', 'pages', 'edition', 'journaltitle',
-            'location', 'link', 'note', 'number', 'series', 'volume',
-            'publisher', 'institution', 'chapter', 'howpublished']
+        
+        if entry['ID']:
+            try:
+                source_obj = Source.objects.get(pk=entry['ID'])
+                return self.get_update_dict(entry, source_obj)
+            except (ValueError, ObjectDoesNotExist) as e:
+                return self.get_new_dict(entry)
+        return self.get_new_dict(entry)
+        
+    def get_update_dict(self, entry, source_obj):
 
         comparison_dict = {}
-        try:
-            source_obj = Source.objects.get(pk=entry['ID'])
-            for key in [key for key in entry.keys()
-                        if key not in ['ID', 'date']]:
-                if getattr(source_obj, key) == entry[key]:
-                    comparison_dict[key] = [entry[key], 'same']
-                else:
-                    old_value = getattr(source_obj, key)
-                    if old_value in ['', u'—', None]:
-                        old_value = '(none)'
-                    new_value = entry[key]
-                    if new_value in ['', u'—', None]:
-                        new_value = '(none)'
+        status = 'update'
+        comparison_dict['pk'] = entry['ID']
+        for key in [key for key in entry.keys()
+                    if key not in ['ID', 'date', 'type']]:
+            if getattr(source_obj, key) == entry[key]:
+                comparison_dict[key] = [entry[key], 'same']
+            else:
+                old_value = getattr(source_obj, key)
+                if old_value in ['', u'—', None]:
+                    old_value = 'None'
+                new_value = entry[key]
+                if new_value in ['', u'—', None]:
+                    new_value = 'None'
+                comparison_dict[key] = [
+                    '<p class="oldValue">%s</p>'
+                    '<p class="newValue">%s</p>' %
+                    (old_value, new_value), 'changed']
+        for key in self.source_attr_lst:
+            if key not in comparison_dict.keys():
+                if getattr(source_obj, key) not in ['', None]:
                     comparison_dict[key] = [
                         '<p class="oldValue">%s</p>'
-                        '<p class="newValue">%s</p>' %
-                        (old_value, new_value), 'changed']
-            for key in source_attr_lst:
-                if key not in comparison_dict.keys():
-                    if getattr(source_obj, key) not in ['', None]:
-                        comparison_dict[key] = [
-                            '<p class="oldValue">%s</p>'
-                            '<p class="newValue">(none)</p>' %
-                            (getattr(source_obj, key)), 'changed']
+                        '<p class="newValue">None</p>' %
+                        (getattr(source_obj, key)), 'changed']
 
-        except (ValueError, ObjectDoesNotExist) as e:
-            for key in entry.keys():
-                comparison_dict[key] = [entry[key], 'new']
-        return comparison_dict
+        return {'status': 'update', 'dictionary': comparison_dict}
+
+    def get_new_dict(self, entry):
+
+        comparison_dict = {}        
+        status = 'new'
+        comparison_dict['pk'] = 'new'
+        for key in entry.keys():
+            comparison_dict[key] = [entry[key], 'new']
+        return {'status': 'new', 'dictionary': comparison_dict}
 
 #             print(entry)
 #             try:

@@ -12,7 +12,8 @@ class CheckBoxColumnWithName(tables.CheckBoxColumn):
 
 class CellClassColumn(tables.Column):
     def render(self, value):
-        if value is None:
+        if value in [None, '', u'']:
+            self.attrs = {}
             return value
         value, clss = value
         self.attrs = {"td": {"class": clss}}
@@ -31,7 +32,7 @@ class SourcesTable(tables.Table):
     details = tables.Column()  # link to full view? / open new frame below ?
     title = tables.Column()
     year = tables.Column()
-    author = tables.Column()
+    author = tables.Column(empty_values=[])
     ENTRYTYPE = tables.Column()
     cognacy = QueryColumn()  # cognate judgment
     cogset = tables.Column()  # cognate classification; rename: cog. set
@@ -45,33 +46,45 @@ class SourcesTable(tables.Table):
     def __init__(self, *args, **kwargs):
         super(SourcesTable, self).__init__(*args, **kwargs)
 
+    def render_author(self, value, record):
+        if value == u'' and record['editor']:
+            if record['editor']:
+                if len(record['editor'].split(' and ')) > 1:
+                    return '%s (edd.)' %(record['editor'])
+                return '%s (ed.)' %(record['editor'])
+        return value
+        
+        
+
 class SourcesUpdateTable(tables.Table):
 
-    citation_text = CellClassColumn()
+    citation_text = CellClassColumn(empty_values=[])
 
-    ENTRYTYPE = CellClassColumn()
-    citation_text = CellClassColumn()
-    author = CellClassColumn()
-    year = CellClassColumn()
-    title = CellClassColumn()
-    booktitle = CellClassColumn()
-    editor = CellClassColumn()
-    pages = CellClassColumn()
-    edition = CellClassColumn()
-    journaltitle = CellClassColumn()
-    location = CellClassColumn()
-    link = CellClassColumn()
-    note = CellClassColumn()
-    number = CellClassColumn()
-    series = CellClassColumn()
-    volume = CellClassColumn()
-    publisher = CellClassColumn()
-    institution = CellClassColumn()
-    chapter = CellClassColumn()
-    howpublished = CellClassColumn()
+    ENTRYTYPE = CellClassColumn(empty_values=[])
+    citation_text = CellClassColumn(empty_values=[])
+    author = CellClassColumn(empty_values=[])
+    year = CellClassColumn(empty_values=[])
+    title = CellClassColumn(empty_values=[])
+    booktitle = CellClassColumn(empty_values=[])
+    editor = CellClassColumn(empty_values=[])
+    pages = CellClassColumn(empty_values=[])
+    edition = CellClassColumn(empty_values=[])
+    journaltitle = CellClassColumn(empty_values=[])
+    location = CellClassColumn(empty_values=[])
+    link = CellClassColumn(empty_values=[])
+    note = CellClassColumn(empty_values=[])
+    number = CellClassColumn(empty_values=[])
+    series = CellClassColumn(empty_values=[])
+    volume = CellClassColumn(empty_values=[])
+    publisher = CellClassColumn(empty_values=[])
+    institution = CellClassColumn(empty_values=[])
+    chapter = CellClassColumn(empty_values=[])
+    howpublished = CellClassColumn(empty_values=[])
 
     class Meta:
         attrs = {'class': 'paleblue'}
-
+        row_attrs = {
+            'id': lambda record: record['pk']
+        }
     def __init__(self, *args, **kwargs):
         super(SourcesUpdateTable, self).__init__(*args, **kwargs)

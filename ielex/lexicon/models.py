@@ -261,7 +261,7 @@ class Source(models.Model):
     '''
     # OLD FIELDS:
 
-    citation_text = models.TextField(unique=True)  # to be discarded
+    citation_text = models.TextField()  # to be discarded
     description = models.TextField(blank=True)  # keep for now
     modified = models.DateTimeField(auto_now=True) #in fact, when was added; keep for now
 
