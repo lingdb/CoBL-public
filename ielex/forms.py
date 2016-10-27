@@ -103,27 +103,44 @@ class ChooseCognateClassField(forms.ModelChoiceField):
         return obj.alias
 
 
+##from operator import itemgetter
+##
+##class MultipleAuthorChoiceField(forms.ModelMultipleChoiceField):
+##    def label_from_instance(self, obj):
+##        label = author_display(obj)
+##        return super(MultipleAuthorChoiceField, self).label_from_instance(label)
+##
+##    def _get_choices(self):
+##        choices = super(MultipleAuthorChoiceField, self)._get_choices()
+##        for choice in sorted(choices, key=itemgetter(1)):
+##            yield choice
+##    choices = property(_get_choices, forms.ModelMultipleChoiceField._set_choices)
+
+from operator import itemgetter
+
 class ChooseSourcesField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
-        def truncate(s, l):
-            if len(s) < l:
-                return s
-            else:
-                return s[:l - 4] + " ..."
-        return truncate(obj.citation_text, 124)
+        label = obj.name_short_with_unique_siglum
+        return super(ChooseSourcesField, self).label_from_instance(label)
 
+    def _get_choices(self):
+        choices = super(ChooseSourcesField, self)._get_choices()
+        for choice in sorted(choices, key=itemgetter(1)):
+            yield choice
+    choices = property(_get_choices, forms.ModelMultipleChoiceField._set_choices)
 
 class ChooseOneSourceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
-        def truncate(s, l):
-            if len(s) < l:
-                return s
-            else:
-                return s[:l - 4] + " ..."
-        return truncate(obj.citation_text, 124)
+        label = obj.name_short_with_unique_siglum
+        return super(ChooseOneSourceField, self).label_from_instance(label)
 
+    def _get_choices(self):
+        choices = super(ChooseOneSourceField, self)._get_choices()
+        for choice in sorted(choices, key=itemgetter(1)):
+            yield choice
+    choices = property(_get_choices, forms.ModelChoiceField._set_choices)
 
 class AddLexemeForm(WTForm):
     language_id = IntegerField('Language:', validators=[InputRequired()])
@@ -1543,7 +1560,7 @@ class UploadBiBTeXFileForm(forms.Form):
     file = forms.FileField(widget=forms.ClearableFileInput(
         attrs={'multiple': True}), validators=[validate_bibtex_extension])
 
-# OLD, discard:
+# OLDER:
 
 
 class EditSourceForm(forms.ModelForm):

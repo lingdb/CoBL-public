@@ -5,6 +5,7 @@ import json
 import re
 import requests
 import time
+import codecs
 from collections import defaultdict, deque
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -106,6 +107,9 @@ from django.utils.decorators import method_decorator
 
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
+from bibtexparser.bwriter import BibTexWriter
+from bibtexparser.bibdatabase import BibDatabase
+
 from django_tables2 import RequestConfig
 
 # Refactoring:
@@ -1942,12 +1946,20 @@ def source_list(request):
         source_obj = Source.objects.get(pk=request.POST.get("id"))
         source_data = QueryDict(request.POST['source_data'].encode('ASCII'))
         form = SourceEditForm(source_data, instance=source_obj)
-        print(source_data)  # , [(field, form[field]) for field in form.fields]
+        #print(source_data)  # , [(field, form[field]) for field in form.fields]
         if form.is_valid():
-            print(form.cleaned_data)
+            #print(form.cleaned_data)
             form.save()
         else:
             print(form.errors)
+        return HttpResponse()
+    elif request.POST.get("postType") == 'export':
+        db = BibDatabase()
+        writer = BibTexWriter()
+        for source_obj in Source.objects.all():
+            db.entries.append(source_obj.bibtex_dictionary)
+        with codecs.open('bibtex_test.bib', 'w', 'utf-8') as bibfile:
+            bibfile.write(writer.write(db))
         return HttpResponse()
     elif request.POST.get("postType") == 'deprecated-change' and \
             request.user.is_authenticated():
@@ -1984,12 +1996,7 @@ class source_import(FormView):
     form_class = UploadBiBTeXFileForm
     template_name = 'source_import.html'
     success_url = '/sources/'  # Replace with your URL or reverse().
-    source_attr_lst = ['ENTRYTYPE', 'citation_text', 'author',
-                   'year', 'title', 'booktitle', 'editor',
-                   'pages', 'edition', 'journaltitle', 'location',
-                   'link', 'note', 'number', 'series', 'volume',
-                   'publisher', 'institution', 'chapter',
-                   'howpublished']
+    source_attr_lst = Source().bibtex_attr_lst
 
     @method_decorator(logExceptions)
     @method_decorator(login_required)

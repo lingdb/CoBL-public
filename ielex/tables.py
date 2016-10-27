@@ -79,7 +79,9 @@ class SourcesUpdateTable(tables.Table):
     publisher = CellClassColumn(empty_values=[])
     institution = CellClassColumn(empty_values=[])
     chapter = CellClassColumn(empty_values=[])
+    isbn = CellClassColumn(empty_values=[])
     howpublished = CellClassColumn(empty_values=[])
+    #deprecated = CellClassColumn(empty_values=[])
 
     class Meta:
         attrs = {'class': 'paleblue'}

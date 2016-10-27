@@ -114,6 +114,15 @@ $(document).ready(function () {
 		//if (postdata['status']=='true')
 		});
 	});
+		/**** EXPORT *****/
+	$(document.body).on('click', 'button[id="export"]', function() {
+		var postdata = {
+			'postType': 'export',
+			'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value'),
+		};
+		$.post("/sources/", postdata, function (data) {
+		});
+	});	
 });
 </script>
 <style>
@@ -202,6 +211,7 @@ table#edit_modal tbody td, table#edit_modal tbody td * {
 {% endblock %}
 
 {% block content %}
+<div><button id='export'>Export</button></div>
 <!-- Edit modal -->
 <div id="editModal" class="modal">
   <!-- Edit modal content -->

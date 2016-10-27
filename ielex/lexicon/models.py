@@ -260,7 +260,6 @@ class Source(models.Model):
     Used for bibliographical references.
     '''
     # OLD FIELDS:
-
     citation_text = models.TextField()  # to be discarded
     description = models.TextField(blank=True)  # keep for now
     modified = models.DateTimeField(auto_now=True) #in fact, when was added; keep for now
@@ -299,13 +298,57 @@ class Source(models.Model):
 
     deprecated = models.BooleanField(default=False)
 
-    source_attr_lst = ['ENTRYTYPE', 'citation_text', 'author',
+    bibtex_attr_lst = ['ENTRYTYPE', 'citation_text', 'author',
                        'year', 'title', 'booktitle', 'editor',
                        'pages', 'edition', 'journaltitle', 'location',
                        'link', 'note', 'number', 'series', 'volume',
                        'publisher', 'institution', 'chapter',
-                       'howpublished', 'deprecated', 'cognacy', 'cogset',
-                       'lexeme']
+                       'howpublished', 'shorthand', 'isbn', 'deprecated',
+                       ]
+    relations_attr_lst = ['cognacy', 'cogset', 'lexeme']
+    source_attr_lst = bibtex_attr_lst + relations_attr_lst
+
+    def __unicode__(self):
+        return self.name_short_with_unique_siglum
+
+    @property
+    def name_short(self):
+        author = ''
+        names = []
+        if self.author!='':
+            names = self.author.split(' and ')
+        elif self.editor!='':
+            names = self.editor.split(' and ')            
+        if names:
+            author = names[0].split(', ')[0]
+            if len(names) > 1:
+                author = u'%s et al.' %(author)
+        short_name = u'%s %s' %(author, self.year)
+        if short_name in [u' ']:
+            if self.ENTRYTYPE == 'online':
+                short_name = self.link
+            else:
+                pass
+        return short_name
+
+    @property
+    def name_short_with_unique_siglum(self):
+        name = self.name_short
+        siglum = ''
+        counter = {'before':0, 'after':0}
+        if name not in [u'', u' ']:
+            query = self.__class__.objects.all().exclude(pk=self.pk).filter(year=self.year)
+            for obj in query:
+                if obj.name_short == name:
+                    if obj.pk < self.pk:
+                        counter['before'] += 1
+                    else:
+                        counter['after'] += 1
+        if counter['before'] > 0:
+            siglum = chr(counter['before'] + ord('a'))
+        elif counter['after'] > 0:
+            siglum = 'a'
+        return u'%s%s' %(name, siglum)
 
     def get_absolute_url(self):
         return "/source/%s/" % self.id
@@ -315,9 +358,6 @@ class Source(models.Model):
         return format_html(
             '<a href="%sedit" title="Edit this source" '
             'class="pull-right">Edit</a>' % (self.get_absolute_url()))
-
-    def __unicode__(self):
-        return self.citation_text[:64]
 
     @property
     def cognacy(self): # cognate judgment
@@ -331,6 +371,14 @@ class Source(models.Model):
     @property
     def lexeme(self):
         return self.lexemecitation_set.all()
+
+    @property
+    def bibtex_dictionary(self):
+        bibtex_dictionary = {}
+        bibtex_dictionary['ID'] = str(self.pk)
+        for key in self.bibtex_attr_lst:
+            bibtex_dictionary[key] = unicode(getattr(self, key))
+        return bibtex_dictionary
 
     def populate_from_bibtex(self, bibtex_dict):
         for key in bibtex_dict.keys():
