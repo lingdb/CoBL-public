@@ -323,7 +323,8 @@ class Source(models.Model):
             author = names[0].split(', ')[0]
             if len(names) > 1:
                 author = u'%s et al.' %(author)
-        short_name = u'%s %s' %(author, self.year)
+        year = self.year.replace('--', '–').replace('/', '–')
+        short_name = u'%s %s' %(author, year)
         if short_name in [u' ']:
             if self.ENTRYTYPE == 'online':
                 short_name = self.link

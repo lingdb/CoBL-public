@@ -1953,7 +1953,6 @@ def source_list(request):
         else:
             print(form.errors)
         return HttpResponse()
-##   
 ##    elif request.POST.get("postType") == 'export':
 ##        HttpResponseRedirect(reverse("export-sources-bibtex"))
     
