@@ -225,7 +225,7 @@
             <div class="panel-heading">
               <strong>Citation:
                 <a href="{% url 'view-source' citation.source.id %}">
-                  {{ citation.source.citation_text|truncatewords:10 }}
+                  {{ citation.source.name_short_with_unique_siglum}}
                 </a>
                 Pages:
               </strong>

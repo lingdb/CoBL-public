@@ -19,7 +19,8 @@
 					'changes': collect_changes(),
 					'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value')
 				};
-				$.post("/sources/import/", postdata, function (data) {	
+				$.post("/sources/import/", postdata, function (data) {
+					window.location.replace("/sources");
 				});
 			});
 			

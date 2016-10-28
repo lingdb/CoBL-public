@@ -16,7 +16,7 @@
       <ul>
         {% for citation in judgement.cognatejudgementcitation_set.all %}
           <li>
-            <a href="{{ citation.get_absolute_url }}">{{ citation.source.citation_text }}</a>
+            <a href="{{ citation.get_absolute_url }}">{{ citation.source.name_short_with_unique_siglum }}</a>
           </li>
         {% endfor %}
       </ul>

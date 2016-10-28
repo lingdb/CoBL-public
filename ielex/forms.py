@@ -40,6 +40,7 @@ from wtforms.validators import Email, InputRequired
 from wtforms.form import Form as WTForm
 from wtforms.ext.django.orm import model_form
 from lexicon.models import Lexeme
+from operator import itemgetter
 
 LexemeForm = model_form(Lexeme)
 
@@ -102,22 +103,6 @@ class ChooseCognateClassField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.alias
 
-
-##from operator import itemgetter
-##
-##class MultipleAuthorChoiceField(forms.ModelMultipleChoiceField):
-##    def label_from_instance(self, obj):
-##        label = author_display(obj)
-##        return super(MultipleAuthorChoiceField, self).label_from_instance(label)
-##
-##    def _get_choices(self):
-##        choices = super(MultipleAuthorChoiceField, self)._get_choices()
-##        for choice in sorted(choices, key=itemgetter(1)):
-##            yield choice
-##    choices = property(_get_choices, forms.ModelMultipleChoiceField._set_choices)
-
-from operator import itemgetter
-
 class ChooseSourcesField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
@@ -127,6 +112,7 @@ class ChooseSourcesField(forms.ModelMultipleChoiceField):
     def _get_choices(self):
         choices = super(ChooseSourcesField, self)._get_choices()
         for choice in sorted(choices, key=itemgetter(1)):
+            print [choice]
             yield choice
     choices = property(_get_choices, forms.ModelMultipleChoiceField._set_choices)
 

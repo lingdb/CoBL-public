@@ -21,6 +21,7 @@ from ielex.utilities import two_by_two
 from ielex.lexicon.validators import suitable_for_url, standard_reserved_names
 
 import inspect
+from django.db.utils import IntegrityError
 
 
 def disable_for_loaddata(signal_handler):
@@ -298,8 +299,7 @@ class Source(models.Model):
 
     deprecated = models.BooleanField(default=False)
 
-    bibtex_attr_lst = ['ENTRYTYPE', 'citation_text', 'author',
-                       'year', 'title', 'booktitle', 'editor',
+    bibtex_attr_lst = ['ENTRYTYPE', 'author', 'year', 'title', 'booktitle', 'editor',
                        'pages', 'edition', 'journaltitle', 'location',
                        'link', 'note', 'number', 'series', 'volume',
                        'publisher', 'institution', 'chapter',
@@ -327,8 +327,6 @@ class Source(models.Model):
         if short_name in [u' ']:
             if self.ENTRYTYPE == 'online':
                 short_name = self.link
-            else:
-                pass
         return short_name
 
     @property
@@ -388,6 +386,22 @@ class Source(models.Model):
             self.save()
         except DataError as e:
             print(e, bibtex_dict)
+
+    def merge_with(self, pk):
+        obj = self.__class__.objects.get(pk=pk)
+        for cj_obj in obj.cognatejudgementcitation_set.all():
+            try:
+                cj_obj.source = self
+                cj_obj.save()
+            except IntegrityError:
+                pass
+        for lc_obj in obj.lexemecitation_set.all():
+            try:
+                lc_obj.source = self
+                lc_obj.save()
+            except IntegrityError:
+                pass
+        obj.delete()
 
 
 @reversion.register

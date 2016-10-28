@@ -1953,14 +1953,10 @@ def source_list(request):
         else:
             print(form.errors)
         return HttpResponse()
-    elif request.POST.get("postType") == 'export':
-        db = BibDatabase()
-        writer = BibTexWriter()
-        for source_obj in Source.objects.all():
-            db.entries.append(source_obj.bibtex_dictionary)
-        with codecs.open('bibtex_test.bib', 'w', 'utf-8') as bibfile:
-            bibfile.write(writer.write(db))
-        return HttpResponse()
+##   
+##    elif request.POST.get("postType") == 'export':
+##        HttpResponseRedirect(reverse("export-sources-bibtex"))
+    
     elif request.POST.get("postType") == 'deprecated-change' and \
             request.user.is_authenticated():
         source_obj = Source.objects.get(pk=request.POST.get("id"))
@@ -1990,6 +1986,17 @@ def source_list(request):
                                {"sources": sources_table,
                                 })
 
+#@csrf_exempt
+def export_bibtex(request):
+    response = HttpResponse(content_type='text/plain; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="export.bib"'
+    
+    db = BibDatabase()
+    writer = BibTexWriter()
+    for source_obj in Source.objects.all():
+        db.entries.append(source_obj.bibtex_dictionary)
+    response.write(writer.write(db))
+    return response
 
 class source_import(FormView):
     
@@ -2024,7 +2031,7 @@ class source_import(FormView):
                             value = u''
                         setattr(s, key, value)
                 s.save()
-            return HttpResponse()
+            return HttpResponseRedirect(reverse("view-sources"))
         else:
             form_class = self.get_form_class()
             form = self.get_form(form_class)
