@@ -4,7 +4,7 @@
 from __future__ import unicode_literals, print_function
 from django.db import migrations
 
-sources_changes = {'merge': {369:[362], 157:[272], 78: [39], 33:[71], 93:[94],
+sources_changes = {'merge': {369:[362], 369:[362], 157:[272], 78: [39], 33:[71], 93:[94],
                              236:[298], 44:[45], 365:[366], 368:[370],
                              84:[400], 423:[424, 425, 461]},
                    'delete': [21],
