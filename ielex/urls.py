@@ -26,6 +26,7 @@ from ielex.views import add_language_list, \
                         source_list, \
                         source_view, \
                         source_import, \
+                        export_bibtex, \
                         viewAbout, \
                         viewAuthors, \
                         view_changes, \
@@ -255,6 +256,7 @@ urlpatterns = patterns(
         source_edit, {"action": "add"},
         name="lexeme-add-new-source"),
     url(r'^sources/import/$', source_import.as_view(), name="import-sources"),
+    url(r'^sources/export/$', export_bibtex, name="export-sources-bibtex"),
 
     # Cognate
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report, name="cognate-set"),

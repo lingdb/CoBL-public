@@ -23,78 +23,78 @@ from reversion.models import Revision, Version
 # from reversion import revision
 from ielex.settings import LIMIT_TO, META_TAGS
 from ielex.forms import AddCitationForm, \
-                        AddCogClassTableForm, \
-                        AddLanguageListForm, \
-                        AddLanguageListTableForm, \
-                        AddLexemeForm, \
-                        AuthorCreationForm, \
-                        AuthorDeletionForm, \
-                        AuthorTableForm, \
-                        ChooseCognateClassForm, \
-                        CladeCreationForm, \
-                        CladeDeletionForm, \
-                        CladeTableForm, \
-                        CloneLanguageForm, \
-                        CognateJudgementSplitTable, \
-                        EditCitationForm, \
-                        EditLanguageForm, \
-                        EditLanguageListForm, \
-                        EditLanguageListMembersForm, \
-                        EditLexemeForm, \
-                        EditMeaningForm, \
-                        EditMeaningListForm, \
-                        EditSourceForm, \
-                        LanguageListRowForm, \
-                        LanguageListProgressForm, \
-                        LexemeTableEditCognateClassesForm, \
-                        LexemeTableLanguageWordlistForm, \
-                        LexemeTableViewMeaningsForm, \
-                        MeaningListTableForm, \
-                        MergeCognateClassesForm, \
-                        SearchLexemeForm, \
-                        SndCompCreationForm, \
-                        SndCompDeletionForm, \
-                        SndCompTableForm, \
-                        make_reorder_languagelist_form, \
-                        make_reorder_meaninglist_form, \
-                        AddMissingLexemsForLanguageForm, \
-                        RemoveEmptyLexemsForLanguageForm, \
-                        CognateClassEditForm, \
-                        SourceDetailsForm, \
-                        SourceEditForm, \
-                        UploadBiBTeXFileForm
+    AddCogClassTableForm, \
+    AddLanguageListForm, \
+    AddLanguageListTableForm, \
+    AddLexemeForm, \
+    AuthorCreationForm, \
+    AuthorDeletionForm, \
+    AuthorTableForm, \
+    ChooseCognateClassForm, \
+    CladeCreationForm, \
+    CladeDeletionForm, \
+    CladeTableForm, \
+    CloneLanguageForm, \
+    CognateJudgementSplitTable, \
+    EditCitationForm, \
+    EditLanguageForm, \
+    EditLanguageListForm, \
+    EditLanguageListMembersForm, \
+    EditLexemeForm, \
+    EditMeaningForm, \
+    EditMeaningListForm, \
+    EditSourceForm, \
+    LanguageListRowForm, \
+    LanguageListProgressForm, \
+    LexemeTableEditCognateClassesForm, \
+    LexemeTableLanguageWordlistForm, \
+    LexemeTableViewMeaningsForm, \
+    MeaningListTableForm, \
+    MergeCognateClassesForm, \
+    SearchLexemeForm, \
+    SndCompCreationForm, \
+    SndCompDeletionForm, \
+    SndCompTableForm, \
+    make_reorder_languagelist_form, \
+    make_reorder_meaninglist_form, \
+    AddMissingLexemsForLanguageForm, \
+    RemoveEmptyLexemsForLanguageForm, \
+    CognateClassEditForm, \
+    SourceDetailsForm, \
+    SourceEditForm, \
+    UploadBiBTeXFileForm
 from ielex.lexicon.models import Author, \
-                                 Clade, \
-                                 CognateClass, \
-                                 CognateClassCitation, \
-                                 CognateJudgement, \
-                                 CognateJudgementCitation, \
-                                 Language, \
-                                 LanguageClade, \
-                                 LanguageList, \
-                                 LanguageListOrder, \
-                                 Lexeme, \
-                                 LexemeCitation, \
-                                 Meaning, \
-                                 MeaningList, \
-                                 SndComp, \
-                                 Source, \
-                                 NexusExport
+    Clade, \
+    CognateClass, \
+    CognateClassCitation, \
+    CognateJudgement, \
+    CognateJudgementCitation, \
+    Language, \
+    LanguageClade, \
+    LanguageList, \
+    LanguageListOrder, \
+    Lexeme, \
+    LexemeCitation, \
+    Meaning, \
+    MeaningList, \
+    SndComp, \
+    Source, \
+    NexusExport
 from ielex.lexicon.defaultModels import getDefaultLanguage, \
-                                        getDefaultLanguageId, \
-                                        getDefaultLanguagelist, \
-                                        getDefaultMeaning, \
-                                        getDefaultMeaningId, \
-                                        getDefaultWordlist, \
-                                        setDefaultLanguage, \
-                                        setDefaultLanguageId, \
-                                        setDefaultLanguagelist, \
-                                        setDefaultMeaning, \
-                                        setDefaultMeaningId, \
-                                        setDefaultWordlist
+    getDefaultLanguageId, \
+    getDefaultLanguagelist, \
+    getDefaultMeaning, \
+    getDefaultMeaningId, \
+    getDefaultWordlist, \
+    setDefaultLanguage, \
+    setDefaultLanguageId, \
+    setDefaultLanguagelist, \
+    setDefaultMeaning, \
+    setDefaultMeaningId, \
+    setDefaultWordlist
 from ielex.shortcuts import render_template
 from ielex.utilities import next_alias, \
-                            anchored, oneline, logExceptions
+    anchored, oneline, logExceptions
 from ielex.languageCladeLogic import updateLanguageCladeRelations
 from ielex.tables import SourcesTable, SourcesUpdateTable
 
@@ -106,6 +106,9 @@ from django.utils.decorators import method_decorator
 
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
+from bibtexparser.bwriter import BibTexWriter
+from bibtexparser.bibdatabase import BibDatabase
+
 from django_tables2 import RequestConfig
 
 # Refactoring:
@@ -131,7 +134,7 @@ def view_changes(request, username=None, revision_id=None, object_id=None):
         recent_changes = Revision.objects.all().order_by("-id")
     else:
         recent_changes = Revision.objects.filter(
-                user__username=username).order_by("-id")
+            user__username=username).order_by("-id")
     paginator = Paginator(recent_changes, 50)  # was 200
 
     try:  # Make sure page request is an int. If not, deliver first page.
@@ -146,8 +149,9 @@ def view_changes(request, username=None, revision_id=None, object_id=None):
 
     contributors = sorted([(User.objects.get(id=user_id),
                             Revision.objects.filter(user=user_id).count())
-                           for user_id in Revision.objects.values_list("user",
-                           flat=True).distinct() if user_id is not None],
+                           for user_id in Revision.objects.values_list(
+                               "user", flat=True).distinct()
+                           if user_id is not None],
                           lambda x, y: y[1] - x[1])
     # reverse sort by second element in tuple
     # TODO user_id should never be None
@@ -177,7 +181,7 @@ def view_object_history(request, version_id):
     version = Version.objects.get(pk=version_id)
     obj = version.content_type.get_object_for_this_type(id=version.object_id)
     fields = [field.name for field in obj._meta.fields]
-    versions = [[v.field_dict[f] for f in fields]+[v.id] for v in
+    versions = [[v.field_dict[f] for f in fields] + [v.id] for v in
                 Version.objects.get_for_object(obj).order_by(
                     "revision__date_created")]
     return render_template(request, "view_object_history.html",
@@ -247,9 +251,9 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
         current_idx = ids.index(current_language.id)
     except ValueError:
         current_idx = 0
-    prev_language = Language.objects.get(id=ids[current_idx-1])
+    prev_language = Language.objects.get(id=ids[current_idx - 1])
     try:
-        next_language = Language.objects.get(id=ids[current_idx+1])
+        next_language = Language.objects.get(id=ids[current_idx + 1])
     except IndexError:
         next_language = Language.objects.get(id=ids[0])
     return (prev_language, next_language)
@@ -272,11 +276,11 @@ def get_prev_and_next_meanings(request, current_meaning, meaning_list=None):
     if len(meanings) == 0:
         return (current_meaning, current_meaning)
     try:
-        prev_meaning = meanings[current_idx-1]
+        prev_meaning = meanings[current_idx - 1]
     except IndexError:
         prev_meaning = meanings[len(meanings) - 1]
     try:
-        next_meaning = meanings[current_idx+1]
+        next_meaning = meanings[current_idx + 1]
     except IndexError:
         next_meaning = meanings[0]
     return (prev_meaning, next_meaning)
@@ -294,9 +298,9 @@ def get_prev_and_next_lexemes(request, current_lexeme):
         current_idx = ids.index(current_lexeme.id)
     except ValueError:
         current_idx = 0
-    prev_lexeme = lexemes[current_idx-1]
+    prev_lexeme = lexemes[current_idx - 1]
     try:
-        next_lexeme = lexemes[current_idx+1]
+        next_lexeme = lexemes[current_idx + 1]
     except IndexError:
         next_lexeme = lexemes[0]
     return (prev_lexeme, next_lexeme)
@@ -409,7 +413,7 @@ def exportLanguageListCsv(request, languages=[]):
     """
     fields = request.GET['exportCsv'].split(',')
     rows = [l.getCsvRow(*fields) for l in languages]
-    rows.insert(0, ['"'+f+'"' for f in fields])  # Add headline
+    rows.insert(0, ['"' + f + '"' for f in fields])  # Add headline
     # Composing .csv data:
     data = '\n'.join([','.join(row) for row in rows])
     # Filename:
@@ -624,7 +628,7 @@ def move_language(language, language_list, direction):
         language_list.append(language)
     else:
         try:
-            neighbour = languages[index+direction]
+            neighbour = languages[index + direction]
             language_list.swap(language, neighbour)
         except IndexError:
             language_list.insert(0, language)
@@ -699,7 +703,7 @@ def view_language_wordlist(request, language, wordlist):
     lexemes = Lexeme.objects.filter(
         language=language,
         meaning__in=wordlist.meanings.all()
-        ).select_related(
+    ).select_related(
         "meaning", "language").order_by(
         "meaning__gloss").prefetch_related(
         "cognatejudgement_set",
@@ -802,8 +806,8 @@ def add_language_list(request):
                 new_list.append(language)
             # edit_language_list(request,
             #                    language_list=form.cleaned_data["name"])
-            return HttpResponseRedirect(reverse("edit-language-list",
-                                        args=[form.cleaned_data["name"]]))
+            return HttpResponseRedirect(reverse(
+                "edit-language-list", args=[form.cleaned_data["name"]]))
     else:
         form = AddLanguageListForm()
     return render_template(request, "add_language_list.html",
@@ -878,17 +882,17 @@ def language_add_new(request, language_list):
         form = EditLanguageForm(request.POST)
         if "cancel" in form.data:  # has to be tested before data is cleaned
             return HttpResponseRedirect(reverse("view-language-list",
-                                        args=[language_list.name]))
+                                                args=[language_list.name]))
         if form.is_valid():
             form.save()
             language = Language.objects.get(
-                    ascii_name=form.cleaned_data["ascii_name"])
+                ascii_name=form.cleaned_data["ascii_name"])
             try:
                 language_list.insert(0, language)
             except IntegrityError:
                 pass  # automatically inserted into LanguageList.DEFAULT
             return HttpResponseRedirect(reverse("language-report",
-                                        args=[language.ascii_name]))
+                                                args=[language.ascii_name]))
     else:  # first visit
         form = EditLanguageForm()
     return render_template(request, "language_add_new.html",
@@ -903,7 +907,7 @@ def edit_language(request, language):
     except Language.DoesNotExist:
         language = get_canonical_language(language, request)
         return HttpResponseRedirect(reverse("language-edit",
-                                    args=[language.ascii_name]))
+                                            args=[language.ascii_name]))
 
     if request.method == 'POST':
         form = LanguageListRowForm(request.POST)
@@ -995,11 +999,11 @@ def edit_wordlist(request, wordlist):
         form = EditMeaningListForm(request.POST, instance=wordlist)
         if "cancel" in form.data:  # has to be tested before data is cleaned
             return HttpResponseRedirect(reverse("view-wordlist",
-                                        args=[wordlist.name]))
+                                                args=[wordlist.name]))
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("view-wordlist",
-                                        args=[wordlist.name]))
+                                                args=[wordlist.name]))
     else:
         form = EditMeaningListForm(instance=wordlist)
 
@@ -1024,7 +1028,7 @@ def reorder_wordlist(request, wordlist):
             meaning = Meaning.objects.get(id=meaning_id)
             if form.data["submit"] == "Finish":
                 return HttpResponseRedirect(reverse("view-wordlist",
-                                            args=[wordlist.name]))
+                                                    args=[wordlist.name]))
             else:
                 if form.data["submit"] == "Move up":
                     move_meaning(meaning, wordlist, -1)
@@ -1033,12 +1037,12 @@ def reorder_wordlist(request, wordlist):
                 else:
                     assert False, "This shouldn't be able to happen"
                 return HttpResponseRedirect(reverse("reorder-wordlist",
-                                            args=[wordlist.name]))
+                                                    args=[wordlist.name]))
         else:  # pressed Finish without submitting changes
             # TODO might be good to zap the session variable once finished
             # request.session["current_meaning_id"] = None
             return HttpResponseRedirect(reverse("view-wordlist",
-                                        args=[wordlist.name]))
+                                                args=[wordlist.name]))
     else:  # first visit
         form = ReorderForm(initial={"meaning": meaning_id})
     return render_template(request, "reorder_wordlist.html",
@@ -1055,7 +1059,7 @@ def move_meaning(meaning, wordlist, direction):
         wordlist.append(meaning)
     else:
         try:
-            neighbour = meanings[index+direction]
+            neighbour = meanings[index + direction]
             wordlist.swap(meaning, neighbour)
         except IndexError:
             wordlist.insert(0, meaning)
@@ -1157,17 +1161,17 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 
                 # change this to a reverse() pattern
                 return HttpResponseRedirect(anchored(
-                        reverse("lexeme-add-cognate-citation",
-                                args=[lexeme_id, cj.id])))
+                    reverse("lexeme-add-cognate-citation",
+                            args=[lexeme_id, cj.id])))
 
     # Gather lexemes:
     lexemes = Lexeme.objects.filter(
         meaning=meaning,
         language__in=current_language_list.languages.exclude(level0=0).all(),
         language__languagelistorder__language_list=current_language_list
-        ).order_by(
+    ).order_by(
         "language"
-        ).select_related(
+    ).select_related(
         "language",
         "meaning").prefetch_related(
         "cognatejudgement_set",
@@ -1250,7 +1254,7 @@ def view_cognateclasses(request, meaning):
             messages.error(request, 'Sorry, the server did '
                            'not understand your request.')
         return HttpResponseRedirect(reverse("edit-cogclasses",
-                                    args=[meaning]))
+                                            args=[meaning]))
     # Acquiring languageList:
     try:
         languageList = LanguageList.objects.get(
@@ -1284,8 +1288,8 @@ def view_cognateclasses(request, meaning):
     clades = Clade.objects.filter(
         id__in=LanguageClade.objects.filter(
             language__languagelistorder__language_list=languageList
-            ).values_list('clade_id', flat=True)).exclude(
-            hexColor='').exclude(shortName='').all()
+        ).values_list('clade_id', flat=True)).exclude(
+        hexColor='').exclude(shortName='').all()
     # Compute clade <-> cc connections:
     for c in clades:
         c.computeCognateClassConnections(ccl_ordered, languageList)
@@ -1327,7 +1331,7 @@ def delete_meaning(request, meaning):
         meaning = Meaning.objects.get(id=int(meaning))
         # if there are actions and lexeme_ids these should be preserved too
         return HttpResponseRedirect(reverse("meaning-report",
-                                    args=[meaning.gloss]))
+                                            args=[meaning.gloss]))
     else:
         meaning = Meaning.objects.get(gloss=meaning)
 
@@ -1527,7 +1531,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         get_redirect_url(form, citation))
             elif action == "add-cognate":
                 languagelist = get_canonical_language_list(
-                        getDefaultLanguagelist(request), request)
+                    getDefaultLanguagelist(request), request)
                 redirect_url = '%s#lexeme_%s' % (
                     reverse("view-meaning-languages-add-cognate",
                             args=[lexeme.meaning.gloss,
@@ -1624,15 +1628,15 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 current_aliases = CognateClass.objects.filter(
                     lexeme__in=Lexeme.objects.filter(
                         meaning=lexeme.meaning)
-                    ).distinct().values_list("alias", flat=True)
+                ).distinct().values_list("alias", flat=True)
                 new_alias = next_alias(list(current_aliases))
                 cognate_class = CognateClass.objects.create(
                     alias=new_alias)
                 cj = CognateJudgement.objects.create(
                     lexeme=lexeme, cognate_class=cognate_class)
                 return HttpResponseRedirect(anchored(
-                        reverse('lexeme-add-cognate-citation',
-                                args=[lexeme_id, cj.id])))
+                    reverse('lexeme-add-cognate-citation',
+                            args=[lexeme_id, cj.id])))
             elif action == "delete":
                 redirect_url = reverse("meaning-report",
                                        args=[lexeme.meaning.gloss])
@@ -1742,12 +1746,12 @@ def lexeme_add(request, meaning=None, language=None):
     languageTypeahead = json.dumps(dict(
         Language.objects.filter(
             languagelist__name=getDefaultLanguagelist(request)
-            ).values_list(
+        ).values_list(
             'utf8_name', 'id')))
     meaningTypeahead = json.dumps(dict(
         Meaning.objects.filter(
             meaninglist__name=getDefaultWordlist(request)
-            ).values_list('gloss', 'id')))
+        ).values_list('gloss', 'id')))
 
     return render_template(request, "lexeme_add.html",
                            {"form": AddLexemeForm(data=data),
@@ -1762,7 +1766,7 @@ def redirect_lexeme_citation(request, lexeme_id):
     try:
         first_citation = lexeme.lexemecitation_set.all()[0]
         return HttpResponseRedirect(redirect("lexeme-citation-detail",
-                                    args=[first_citation.id]))
+                                             args=[first_citation.id]))
     except IndexError:
         msg = "Operation failed: this lexeme has no citations"
         messages.warning(request, msg)
@@ -1793,7 +1797,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
             cognate sets""" % (meaning, code, len(cognate_classes))
             messages.info(request, oneline(msg))
             return HttpResponseRedirect(reverse('meaning-report',
-                                        args=[meaning]))
+                                                args=[meaning]))
 
     # Handling of CognateJudgementSplitTable:
     if request.method == 'POST':
@@ -1849,7 +1853,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
     ordLangs = language_list.languages.all().order_by("languagelistorder")
     for language in ordLangs:
         for cj in cognate_class.cognatejudgement_set.filter(
-                 lexeme__language=language).all():
+                lexeme__language=language).all():
             cj.idField = cj.id
             splitTable.judgements.append_entry(cj)
 
@@ -1866,9 +1870,9 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
 def source_view(request, source_id):
     source = Source.objects.get(id=source_id)
     return render_template(request, 'source_edit.html', {
-            "form": None,
-            "source": source,
-            "action": ""})
+        "form": None,
+        "source": source,
+        "action": ""})
 
 
 @login_required
@@ -1891,23 +1895,23 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
                 if cogjudge_id:  # send back to origin
                     judgement = CognateJudgement.objects.get(id=cogjudge_id)
                     citation = CognateJudgementCitation.objects.create(
-                            cognate_judgement=judgement,
-                            source=source)
+                        cognate_judgement=judgement,
+                        source=source)
                     return HttpResponseRedirect(
-                                reverse('lexeme-edit-cognate-citation',
-                                        args=[judgement.lexeme.id,
-                                              citation.id]))
+                        reverse('lexeme-edit-cognate-citation',
+                                args=[judgement.lexeme.id,
+                                      citation.id]))
                 if lexeme_id:
                     lexeme = Lexeme.objects.get(id=lexeme_id)
                     citation = LexemeCitation.objects.create(
-                            lexeme=lexeme,
-                            source=source)
-                    return HttpResponseRedirect(reverse('lexeme-edit-citation',
-                                                args=[lexeme.id, citation.id]))
+                        lexeme=lexeme,
+                        source=source)
+                    return HttpResponseRedirect(reverse(
+                        'lexeme-edit-citation', args=[lexeme.id, citation.id]))
             elif action == "edit":
                 form.save()
             return HttpResponseRedirect(reverse('view-source',
-                                        args=[source.id]))
+                                                args=[source.id]))
     else:
         if action == "add":
             form = EditSourceForm()
@@ -1919,9 +1923,9 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
         else:
             form = None
     return render_template(request, 'source_edit.html', {
-            "form": form,
-            "source": source,
-            "action": action})
+        "form": form,
+        "source": source,
+        "action": action})
 
 
 @logExceptions
@@ -1943,12 +1947,23 @@ def source_list(request):
         source_obj = Source.objects.get(pk=request.POST.get("id"))
         source_data = QueryDict(request.POST['source_data'].encode('ASCII'))
         form = SourceEditForm(source_data, instance=source_obj)
-        print(source_data)  # , [(field, form[field]) for field in form.fields]
+        # print(source_data)  # , [(field, form[field]) for field in
+        # form.fields]
         if form.is_valid():
-            print(form.cleaned_data)
+            # print(form.cleaned_data)
             form.save()
         else:
             print(form.errors)
+        return HttpResponse()
+# elif request.POST.get("postType") == 'export':
+# HttpResponseRedirect(reverse("export-sources-bibtex"))
+
+    elif request.POST.get("postType") == 'deprecated-change' and \
+            request.user.is_authenticated():
+        source_obj = Source.objects.get(pk=request.POST.get("id"))
+        status = {u'true': True, 'false': False}[request.POST.get("status")]
+        source_obj.deprecated = status
+        source_obj.save()
         return HttpResponse()
     else:
         sources_dict_lst = []
@@ -1964,7 +1979,7 @@ def source_list(request):
                     '<button class="edit_button show_e" '
                     'id="%s">Edit</button>' % (source_obj.pk))
             sources_dict_lst.append(source_dict)
-        sources_table = SourcesTable(sources_dict_lst)  # Source.objects.all()
+        sources_table = SourcesTable(sources_dict_lst)
         RequestConfig(request,
                       paginate={'per_page': 100}).configure(sources_table)
 
@@ -1973,10 +1988,24 @@ def source_list(request):
                                 })
 
 
+def export_bibtex(request):
+    response = HttpResponse(content_type='text/plain; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="export.bib"'
+
+    db = BibDatabase()
+    writer = BibTexWriter()
+    for source_obj in Source.objects.all():
+        db.entries.append(source_obj.bibtex_dictionary)
+    response.write(writer.write(db))
+    return response
+
+
 class source_import(FormView):
+
     form_class = UploadBiBTeXFileForm
     template_name = 'source_import.html'
     success_url = '/sources/'  # Replace with your URL or reverse().
+    source_attr_lst = Source().bibtex_attr_lst
 
     @method_decorator(logExceptions)
     @method_decorator(login_required)
@@ -1990,73 +2019,113 @@ class source_import(FormView):
             self.template_name, {'form': form, 'update_sources_table': None})
 
     def post(self, request, *args, **kwargs):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        files = request.FILES.getlist('file')
-        if form.is_valid():
-            sources_dict_lst = []
-            for f in files:
-                sources_dict_lst += self.get_bibtex_data(f)
-            update_sources_table = SourcesUpdateTable(sources_dict_lst)
-            RequestConfig(
-                request,
-                paginate={'per_page': 1000}).configure(update_sources_table)
-            return render_template(request, self.template_name, {
-                'form': self.form_class(),
-                'update_sources_table': update_sources_table,
-                })
-            # return self.form_valid(form)
+        if request.POST.get("postType") == 'import':
+            for update_dict in request.POST.getlist('changes[]'):
+                update_dict = json.loads(update_dict)
+                if update_dict['id'] == u'new':
+                    s = Source()
+                else:
+                    s = Source.objects.get(pk=update_dict['id'])
+                for key in update_dict.keys():
+                    if key not in ['id']:
+                        value = update_dict[key]
+                        if value == u'None':
+                            value = u''
+                        setattr(s, key, value)
+                s.save()
+            return HttpResponseRedirect(reverse("view-sources"))
         else:
-            return self.form_invalid(form)
+            form_class = self.get_form_class()
+            form = self.get_form(form_class)
+            files = request.FILES.getlist('file')
+            if form.is_valid():
+                update_sources_dict_lst = []
+                new_sources_dict_lst = []
+                for f in files:
+                    result = self.get_bibtex_data(f)
+                    update_sources_dict_lst += result['update']
+                    new_sources_dict_lst += result['new']
+                update_sources_table = new_sources_table = ''
+                if len(update_sources_dict_lst) > 0:
+                    update_sources_table = SourcesUpdateTable(
+                        update_sources_dict_lst)
+                if len(new_sources_dict_lst) > 0:
+                    new_sources_table = SourcesUpdateTable(
+                        new_sources_dict_lst)
+                RequestConfig(
+                    request,
+                    paginate={'per_page': 1000}
+                    ).configure(update_sources_table)
+                return render_template(request, self.template_name, {
+                    'form': self.form_class(),
+                    'update_sources_table': update_sources_table,
+                    'new_sources_table': new_sources_table,
+                })
+            else:
+                return self.form_invalid(form)
 
     def get_bibtex_data(self, f):
 
         parser = BibTexParser()
         parser.ignore_nonstandard_types = False
         bib_database = bibtexparser.loads(f.read(), parser)
-        sources_dict_lst = []
+        update_sources_dict_lst = []
+        new_sources_dict_lst = []
         for entry in bib_database.entries:
-            sources_dict_lst.append(self.get_comparison_dict(entry))
-        return sources_dict_lst
+            result = self.get_comparison_dict(entry)
+            if result['status'] == 'update':
+                update_sources_dict_lst.append(result['dictionary'])
+            else:
+                new_sources_dict_lst.append(result['dictionary'])
+        return {'update': update_sources_dict_lst, 'new': new_sources_dict_lst}
 
     def get_comparison_dict(self, entry):
 
-        source_attr_lst = [
-            'ENTRYTYPE', 'citation_text', 'author', 'year', 'title',
-            'booktitle', 'editor', 'pages', 'edition', 'journaltitle',
-            'location', 'link', 'note', 'number', 'series', 'volume',
-            'publisher', 'institution', 'chapter', 'howpublished']
+        if entry['ID']:
+            try:
+                source_obj = Source.objects.get(pk=entry['ID'])
+                return self.get_update_dict(entry, source_obj)
+            except (ValueError, ObjectDoesNotExist) as e:
+                return self.get_new_dict(entry)
+        return self.get_new_dict(entry)
+
+    def get_update_dict(self, entry, source_obj):
 
         comparison_dict = {}
-        try:
-            source_obj = Source.objects.get(pk=entry['ID'])
-            for key in [key for key in entry.keys()
-                        if key not in ['ID', 'date']]:
-                if getattr(source_obj, key) == entry[key]:
-                    comparison_dict[key] = [entry[key], 'same']
-                else:
-                    old_value = getattr(source_obj, key)
-                    if old_value in ['', u'—', None]:
-                        old_value = '(none)'
-                    new_value = entry[key]
-                    if new_value in ['', u'—', None]:
-                        new_value = '(none)'
+        comparison_dict['pk'] = entry['ID']
+        for key in [key for key in entry.keys()
+                    if key not in ['ID', 'date', 'type']]:
+            if getattr(source_obj, key) == entry[key]:
+                comparison_dict[key] = [entry[key], 'same']
+            else:
+                old_value = getattr(source_obj, key)
+                if old_value in ['', u'—', None]:
+                    old_value = 'None'
+                new_value = entry[key]
+                if new_value in ['', u'—', None]:
+                    new_value = 'None'
+                comparison_dict[key] = [
+                    '<p class="oldValue">%s</p>'
+                    '<p class="newValue">%s</p>' %
+                    (old_value, new_value), 'changed']
+        for key in self.source_attr_lst:
+            if key not in comparison_dict.keys():
+                if getattr(source_obj, key) not in ['', None]:
                     comparison_dict[key] = [
                         '<p class="oldValue">%s</p>'
-                        '<p class="newValue">%s</p>' %
-                        (old_value, new_value), 'changed']
-            for key in source_attr_lst:
-                if key not in comparison_dict.keys():
-                    if getattr(source_obj, key) not in ['', None]:
-                        comparison_dict[key] = [
-                            '<p class="oldValue">%s</p>'
-                            '<p class="newValue">(none)</p>' %
-                            (getattr(source_obj, key)), 'changed']
+                        '<p class="newValue">None</p>' %
+                        (getattr(source_obj, key)), 'changed']
 
-        except (ValueError, ObjectDoesNotExist) as e:
-            for key in entry.keys():
-                comparison_dict[key] = [entry[key], 'new']
-        return comparison_dict
+        return {'status': 'update', 'dictionary': comparison_dict}
+
+    def get_new_dict(self, entry):
+
+        comparison_dict = {}
+        status = 'new'
+        comparison_dict['pk'] = 'new'
+        for key in entry.keys():
+            comparison_dict[key] = [entry[key], 'new']
+        return {'status': 'new', 'dictionary': comparison_dict}
 
 #             print(entry)
 #             try:
@@ -2083,17 +2152,17 @@ def lexeme_search(request):
             if form.cleaned_data["search_fields"] == "L":
                 # Search language fields
                 lexemes = Lexeme.objects.filter(
-                        Q(phon_form__regex=regex) |
-                        Q(source_form__regex=regex),
-                        language__in=languages)[:LIMIT_TO]
+                    Q(phon_form__regex=regex) |
+                    Q(source_form__regex=regex),
+                    language__in=languages)[:LIMIT_TO]
             else:
                 # Search English fields
                 assert form.cleaned_data["search_fields"] == "E"
                 lexemes = Lexeme.objects.filter(
-                        Q(gloss__regex=regex) |
-                        Q(notes__regex=regex) |
-                        Q(meaning__gloss__regex=regex),
-                        language__in=languages)[:LIMIT_TO]
+                    Q(gloss__regex=regex) |
+                    Q(notes__regex=regex) |
+                    Q(meaning__gloss__regex=regex),
+                    language__in=languages)[:LIMIT_TO]
             language_names = [(l.utf8_name or l.ascii_name) for l in languages]
             return render_template(request, "lexeme_search_results.html",
                                    {"regex": regex,
@@ -2139,18 +2208,18 @@ def viewAbout(request, page):
         'Sorry, we could not deliver the requested content.',
         'Maybe you have more luck consulting the ' +
         '[wiki](https://github.com/lingdb/CoBL/wiki).'
-        ])
+    ])
     pageTitleMap = {
         'contact': 'Contact',
         'furtherInfo': 'Further Info',
         'home': 'Home'
-        }
+    }
     baseUrl = 'https://raw.githubusercontent.com/wiki/lingdb/CoBL/'
     pageUrlMap = {
         'contact': baseUrl + 'About-Page:-Contact.md',
         'furtherInfo': baseUrl + 'About-Page:-Further-Info.md',
         'home': baseUrl + 'About-Page:-Home.md'
-        }
+    }
     if page in pageUrlMap:
         try:
             r = requests.get(pageUrlMap[page])

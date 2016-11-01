@@ -7,7 +7,7 @@ import zlib
 import datetime
 from collections import defaultdict
 from string import uppercase, lowercase
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Max
 from django.core.urlresolvers import reverse
 from django.utils.safestring import SafeString
@@ -21,6 +21,7 @@ from ielex.utilities import two_by_two
 from ielex.lexicon.validators import suitable_for_url, standard_reserved_names
 
 import inspect
+from django.db.utils import IntegrityError
 
 
 def disable_for_loaddata(signal_handler):
@@ -260,21 +261,16 @@ class Source(models.Model):
     Used for bibliographical references.
     '''
     # OLD FIELDS:
-
-    citation_text = models.TextField(unique=True)  # to be discarded
-# type_code = models.CharField(
-# max_length=1, choices=TYPE_CHOICES, default="P")
+    citation_text = models.TextField()  # to be discarded
     description = models.TextField(blank=True)  # keep for now
-    # (in fact, when was added) keep for now
+    # in fact, when was added; keep for now
     modified = models.DateTimeField(auto_now=True)
 
     # NEW FIELDS:
     ENTRYTYPE = models.CharField(max_length=32, blank=True)
-    # type = models.CharField(max_length=4, blank=True) #discard
-
     author = models.CharField(max_length=128, blank=True)
     authortype = models.CharField(max_length=16, blank=True)
-    year = models.CharField(max_length=4, blank=True,
+    year = models.CharField(max_length=16, blank=True,
                             null=True)  # choices=YEAR_CHOICES
     title = models.TextField(blank=True)
     subtitle = models.TextField(blank=True)
@@ -287,29 +283,73 @@ class Source(models.Model):
     editoratype = models.CharField(max_length=16, blank=True)
     pages = models.CharField(max_length=32, blank=True)
     part = models.CharField(max_length=32, blank=True)
-    edition = models.IntegerField(blank=True, null=True)
+    edition = models.CharField(max_length=128, blank=True)
     journaltitle = models.CharField(max_length=128, blank=True)
     location = models.CharField(max_length=128, blank=True)
     link = models.URLField(blank=True)
     note = models.TextField(blank=True)
-    number = models.IntegerField(null=True, blank=True)
+    number = models.CharField(max_length=128, blank=True)
     series = models.CharField(max_length=128, blank=True)
-    volume = models.CharField(max_length=16, blank=True)
+    volume = models.CharField(max_length=128, blank=True)
     publisher = models.CharField(max_length=128, blank=True)
     institution = models.CharField(max_length=128, blank=True)
     chapter = models.TextField(blank=True)
     howpublished = models.TextField(blank=True)
-    shorthand = models.CharField(max_length=8, blank=True)
+    shorthand = models.CharField(max_length=16, blank=True)
     isbn = models.CharField(max_length=32, blank=True)
 
     deprecated = models.BooleanField(default=False)
 
-    source_attr_lst = ['ENTRYTYPE', 'citation_text', 'author',
-                       'year', 'title', 'booktitle', 'editor',
-                       'pages', 'edition', 'journaltitle', 'location',
-                       'link', 'note', 'number', 'series', 'volume',
-                       'publisher', 'institution', 'chapter',
-                       'howpublished', 'deprecated']
+    bibtex_attr_lst = ['ENTRYTYPE', 'author', 'year', 'title', 'booktitle',
+                       'editor', 'pages', 'edition', 'journaltitle',
+                       'location', 'link', 'note', 'number', 'series',
+                       'volume', 'publisher', 'institution', 'chapter',
+                       'howpublished', 'shorthand', 'isbn', 'deprecated',
+                       ]
+    relations_attr_lst = ['cognacy', 'cogset', 'lexeme']
+    source_attr_lst = bibtex_attr_lst + relations_attr_lst
+
+    def __unicode__(self):
+        return self.name_short_with_unique_siglum
+
+    @property
+    def name_short(self):
+        author = ''
+        names = []
+        if self.author != '':
+            names = self.author.split(' and ')
+        elif self.editor != '':
+            names = self.editor.split(' and ')
+        if names:
+            author = names[0].split(', ')[0]
+            if len(names) > 1:
+                author = u'%s et al.' % (author)
+        year = self.year  # .replace('--', '–').replace('/', '–')
+        short_name = u'%s %s' % (author, year)
+        if short_name in [u' ']:
+            if self.ENTRYTYPE == 'online':
+                short_name = self.link
+        return short_name
+
+    @property
+    def name_short_with_unique_siglum(self):
+        name = self.name_short
+        siglum = ''
+        counter = {'before': 0, 'after': 0}
+        if name not in [u'', u' ']:
+            query = self.__class__.objects.all().exclude(
+                pk=self.pk).filter(year=self.year)
+            for obj in query:
+                if obj.name_short == name:
+                    if obj.pk < self.pk:
+                        counter['before'] += 1
+                    else:
+                        counter['after'] += 1
+        if counter['before'] > 0:
+            siglum = chr(counter['before'] + ord('a'))
+        elif counter['after'] > 0:
+            siglum = 'a'
+        return u'%s%s' % (name, siglum)
 
     def get_absolute_url(self):
         return "/source/%s/" % self.id
@@ -320,38 +360,53 @@ class Source(models.Model):
             '<a href="%sedit" title="Edit this source" '
             'class="pull-right">Edit</a>' % (self.get_absolute_url()))
 
-    def __unicode__(self):
-        return self.citation_text[:64]
+    @property
+    def cognacy(self):  # cognate judgment
+        return self.cognatejudgementcitation_set.all()
+
+    @property
+    def cogset(self):  # cognate classification; rename: cog. set
+        # see CognateClassCitation and CognateClass: relation missing !!
+        pass
+
+    @property
+    def lexeme(self):
+        return self.lexemecitation_set.all()
+
+    @property
+    def bibtex_dictionary(self):
+        bibtex_dictionary = {}
+        bibtex_dictionary['ID'] = str(self.pk)
+        for key in self.bibtex_attr_lst:
+            bibtex_dictionary[key] = unicode(getattr(self, key))
+        return bibtex_dictionary
 
     def populate_from_bibtex(self, bibtex_dict):
         for key in bibtex_dict.keys():
             if key not in ['ID', 'date']:
                 setattr(self, key, bibtex_dict[key])
-                # print(key, bibtex_dict[key])
         try:
             self.save()
         except DataError as e:
             print(e, bibtex_dict)
 
-# import bibtexparser
-# from bibtexparser.bparser import BibTexParser
-# from django.core.exceptions import ObjectDoesNotExist
-#
-# with open('lexicon_source.bib') as bibtex_file:
-#     bibtex_str = bibtex_file.read()
-#
-# parser = BibTexParser()
-# parser.ignore_nonstandard_types = False
-#
-# bib_database = bibtexparser.loads(bibtex_str, parser)
-# missing_fields_lst = []
-# for entry in bib_database.entries:
-#     try:
-#       source_obj = Source.objects.get(pk=entry['ID'])
-#       source_obj.populate_from_bibtex(entry)
-#     except (ValueError, ObjectDoesNotExist) as e:
-#         print 'Failed to handle BibTeX entry with '
-#               'ID %s: %s' %([entry['ID']], e)
+    def merge_with(self, pk):
+        obj = self.__class__.objects.get(pk=pk)
+        for cj_obj in obj.cognatejudgementcitation_set.all():
+            try:
+                with transaction.atomic():
+                    cj_obj.source = self
+                    cj_obj.save()
+            except IntegrityError:
+                pass
+        for lc_obj in obj.lexemecitation_set.all():
+            try:
+                with transaction.atomic():
+                    lc_obj.source = self
+                    lc_obj.save()
+            except IntegrityError:
+                pass
+        obj.delete()
 
 
 @reversion.register

@@ -14,6 +14,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='cognateclass',
             name='proposedAsCognateToScale',
-            field=models.IntegerField(default=0, choices=[(0, b'1/6=small minority view'), (1, b'2/6=sig. minority view'), (2, b'3/6=50/50 balance'), (3, b'4/6=small majority view'), (4, b'5/6=large majority view')]),
+            field=models.IntegerField(
+                default=0,
+                choices=[(0, b'1/6=small minority view'),
+                         (1, b'2/6=sig. minority view'),
+                         (2, b'3/6=50/50 balance'),
+                         (3, b'4/6=small majority view'),
+                         (4, b'5/6=large majority view')]),
         ),
     ]

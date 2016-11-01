@@ -37,12 +37,16 @@ table.paleblue thead td:first-child {
 
 table.paleblue thead th,
 table.paleblue thead td {
-    background: #FCFCFC url(../img/header-bg.png) left bottom repeat-x;
+    !background: #FCFCFC url(../img/header-bg.png) left bottom repeat-x;
     border-bottom: 1px solid #DDD;
     padding: 2px 5px;
     font-size: 11px;
     vertical-align: middle;
-    color: #666;
+    
+	font: 14px "Helvetica Neue",Helvetica,Arial,sans-serif;
+	color: #333;
+	font-weight: bold;
+    padding-right: 20px;
 }
 
 table.paleblue thead th > a:link,

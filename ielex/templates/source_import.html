@@ -10,25 +10,82 @@
 {% endblock %}
 {% block controls %}
 	<link rel="stylesheet" href="{% static 'django_tables2/themes/CoBL/css/screen.css' %}" />
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			$(document.body).on('click', '#update_sources', function() {
+				var postdata = {
+					'postType': 'import',
+					'changes': collect_changes(),
+					'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value')
+				};
+				$.post("/sources/import/", postdata, function (data) {
+					window.location.replace("/sources");
+				});
+			});
+			
+			function collect_changes() {
+				var changes_lst = []
+				$('.changed').parent().each( function(){
+					var attrs_dict = {};
+					attrs_dict['id'] = $(this).attr('id');
+					$(this).children('.changed').each( function(){
+						attrs_dict[$(this).attr('class').replace('changed','').replace(' ','')] = $(this).children('.newValue').text()
+					});
+					changes_lst.push(JSON.stringify(attrs_dict));
+				});
+				$('tr#new').each( function(){
+					var attrs_dict = {};
+					attrs_dict['id'] = 'new';
+					$(this).children().each( function(){
+						attrs_dict[$(this).attr('class').replace('new','').replace(' ','')] = $(this).text()
+					});
+					changes_lst.push(JSON.stringify(attrs_dict));
+				});
+				return changes_lst
+			};
+		})
+	</script>
 	<style>
-		.changed {background-color: orange}
-		.same {background-color: lightgrey}
-		.new {background-color: green}
-		.oldValue {text-decoration: line-through}
+		.changed {
+			!background-color: orange
+		}
+		.same {
+			!background-color: lightgrey
+		}
+		.new {
+			!background-color: green
+		}
+		.oldValue {
+			!text-decoration: line-through;
+			background-color: #fff3d4;
+			color: burlywood;
+		}
+		.newValue {
+			background-color: #8fd2d4;
+		}
 	</style>
 
 {% endblock %}
 
 {% block content %}
 {% if not update_sources_table %}
-  <div class="row">
 	<!-- Upload form. Note enctype attribute! -->
-	<form action="{% url 'import-sources' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+	<form action="{% url 'import-sources' %}" method="post" enctype="multipart/form-data">
 		{% csrf_token %}
 			{{ form.file.errors }}
 		<span>{{ form.file }}<input type="submit" value="Submit" style="display: inline;"/></span>
 {% endif %}
-{% if update_sources_table %}
-	{% render_table update_sources_table %}
+
+{% if update_sources_table or new_sources_table %}
+<div><button id="update_sources">Update</button></div>
+	{% if new_sources_table %}
+		<h2>New sources</h2>
+		{% render_table new_sources_table %}
+	{% endif %}
+	{% if update_sources_table %}
+		<h2>Updated sources</h2>
+		{% render_table update_sources_table %}
+	{% endif %}
 {% endif %}
 {% endblock %}
