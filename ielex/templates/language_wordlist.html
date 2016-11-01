@@ -496,7 +496,7 @@
                 </td>
                 {# meaning_data.html #}
                 <td>
-                  <a href="https://github.com/lingdb/IELex2-CognaC/wiki/{{ lexeme.data.meaning }}"
+                  <a href="https://github.com/lingdb/IELex2-CognaC/wiki/{{ lexeme.object_data.meaning }}"
                      title="View wiki page."
                      target="_blank"
                      style="color: #006400;">
@@ -514,15 +514,15 @@
                      {% endif %}>
                     {{ lexeme.data.meaning }}
                   </a>
-                  {% if lexeme.object_data.language.rfcWebPath1 and lexeme.data.rfcWebLookup1 %}
-                    <a href="{{ lexeme.object_data.language.rfcWebPath1 }}{{ lexeme.data.rfcWebLookup1 }}"
+                  {% if lexeme.object_data.language.rfcWebPath1 and lexeme.object_data.rfcWebLookup1 %}
+                    <a href="{{ lexeme.object_data.language.rfcWebPath1 }}{{ lexeme.object_data.rfcWebLookup1 }}"
                        target="_blank"
                        class="pull-right">
                       <span class="glyphicon glyphicon-link"></span>
                     </a>
                   {% endif %}
-                  {% if lexeme.object_data.language.rfcWebPath2 and lexeme.data.rfcWebLookup2 %}
-                    <a href="{{ lexeme.object_data.language.rfcWebPath2 }}{{ lexeme.data.rfcWebLookup2 }}"
+                  {% if lexeme.object_data.language.rfcWebPath2 and lexeme.object_data.rfcWebLookup2 %}
+                    <a href="{{ lexeme.object_data.language.rfcWebPath2 }}{{ lexeme.object_data.rfcWebLookup2 }}"
                        target="_blank"
                        class="pull-right">
                       <span class="glyphicon glyphicon-info-sign"></span>
