@@ -2585,6 +2585,11 @@ def view_cladecognatesearch(request):
         if request.GET and 'clades' in request.GET:
             redirect_url += '?clades=%s' % request.GET['clades']
         return HttpResponseRedirect(redirect_url)
+    # Acquiring meaningList:
+    try:
+        meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
+    except meaningList.DoesNotExist:
+        meaningList = MeaningList.objects.get(name=MeaningList.DEFAULT)
     # Acquiring languageList:
     try:
         languageList = LanguageList.objects.get(
@@ -2607,7 +2612,8 @@ def view_cladecognatesearch(request):
     for clade in currentClades:
         newIds = CognateClass.objects.filter(
             lexeme__language__languageclade__clade=clade,
-            lexeme__language__in=languageList.languages.all()
+            lexeme__language__in=languageList.languages.all(),
+            lexeme__meaning__in=meaningList.meanings.all()
             ).values_list('id', flat=True)
         if cognateClassIds is None:
             cognateClassIds = set(newIds)
@@ -2620,15 +2626,20 @@ def view_cladecognatesearch(request):
         cognateClassIds -= set(CognateClass.objects.filter(
             lexeme__language_id__in=Language.objects.exclude(
                 languageclade__clade__in=currentClades
-            ).values_list('id', flat=True)
+            ).values_list('id', flat=True),
+            lexeme__language__in=languageList.languages.all(),
+            lexeme__meaning__in=meaningList.meanings.all()
         ).values_list('id', flat=True))
 
     # Form for cognateClasses:
     cognateClasses = CognateClass.objects.filter(
-        id__in=cognateClassIds).prefetch_related(
+        id__in=cognateClassIds,
+        lexeme__language__in=languageList.languages.all(),
+        lexeme__meaning__in=meaningList.meanings.all()
+        ).prefetch_related(
         'lexeme_set',
         'lexeme_set__language',
-        'lexeme_set__meaning').all()
+        'lexeme_set__meaning').distinct().all()
     for c in cognateClasses:
         c.computeCounts(languageList)
     form = AddCogClassTableForm(cogclass=cognateClasses)
