@@ -263,7 +263,8 @@ class Source(models.Model):
     # OLD FIELDS:
     citation_text = models.TextField()  # to be discarded
     description = models.TextField(blank=True)  # keep for now
-    modified = models.DateTimeField(auto_now=True) #in fact, when was added; keep for now
+    # in fact, when was added; keep for now
+    modified = models.DateTimeField(auto_now=True)
 
     # NEW FIELDS:
     ENTRYTYPE = models.CharField(max_length=32, blank=True)
@@ -299,10 +300,10 @@ class Source(models.Model):
 
     deprecated = models.BooleanField(default=False)
 
-    bibtex_attr_lst = ['ENTRYTYPE', 'author', 'year', 'title', 'booktitle', 'editor',
-                       'pages', 'edition', 'journaltitle', 'location',
-                       'link', 'note', 'number', 'series', 'volume',
-                       'publisher', 'institution', 'chapter',
+    bibtex_attr_lst = ['ENTRYTYPE', 'author', 'year', 'title', 'booktitle',
+                       'editor', 'pages', 'edition', 'journaltitle',
+                       'location', 'link', 'note', 'number', 'series',
+                       'volume', 'publisher', 'institution', 'chapter',
                        'howpublished', 'shorthand', 'isbn', 'deprecated',
                        ]
     relations_attr_lst = ['cognacy', 'cogset', 'lexeme']
@@ -315,16 +316,16 @@ class Source(models.Model):
     def name_short(self):
         author = ''
         names = []
-        if self.author!='':
+        if self.author != '':
             names = self.author.split(' and ')
-        elif self.editor!='':
+        elif self.editor != '':
             names = self.editor.split(' and ')
         if names:
             author = names[0].split(', ')[0]
             if len(names) > 1:
-                author = u'%s et al.' %(author)
-        year = self.year#.replace('--', '–').replace('/', '–')
-        short_name = u'%s %s' %(author, year)
+                author = u'%s et al.' % (author)
+        year = self.year  # .replace('--', '–').replace('/', '–')
+        short_name = u'%s %s' % (author, year)
         if short_name in [u' ']:
             if self.ENTRYTYPE == 'online':
                 short_name = self.link
@@ -334,9 +335,10 @@ class Source(models.Model):
     def name_short_with_unique_siglum(self):
         name = self.name_short
         siglum = ''
-        counter = {'before':0, 'after':0}
+        counter = {'before': 0, 'after': 0}
         if name not in [u'', u' ']:
-            query = self.__class__.objects.all().exclude(pk=self.pk).filter(year=self.year)
+            query = self.__class__.objects.all().exclude(
+                pk=self.pk).filter(year=self.year)
             for obj in query:
                 if obj.name_short == name:
                     if obj.pk < self.pk:
@@ -347,7 +349,7 @@ class Source(models.Model):
             siglum = chr(counter['before'] + ord('a'))
         elif counter['after'] > 0:
             siglum = 'a'
-        return u'%s%s' %(name, siglum)
+        return u'%s%s' % (name, siglum)
 
     def get_absolute_url(self):
         return "/source/%s/" % self.id
@@ -359,12 +361,12 @@ class Source(models.Model):
             'class="pull-right">Edit</a>' % (self.get_absolute_url()))
 
     @property
-    def cognacy(self): # cognate judgment
+    def cognacy(self):  # cognate judgment
         return self.cognatejudgementcitation_set.all()
 
     @property
-    def cogset(self): # cognate classification; rename: cog. set
-        #see CognateClassCitation and CognateClass: relation missing !!
+    def cogset(self):  # cognate classification; rename: cog. set
+        # see CognateClassCitation and CognateClass: relation missing !!
         pass
 
     @property

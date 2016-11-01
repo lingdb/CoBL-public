@@ -11,31 +11,31 @@ from django.utils.encoding import python_2_unicode_compatible
 from itertools import izip
 from ielex.lexicon.defaultModels import getDefaultWordlist
 from ielex.lexicon.models import CognateClass, \
-                                 CognateClassCitation, \
-                                 DISTRIBUTION_CHOICES, \
-                                 Language, \
-                                 LanguageList, \
-                                 Meaning, \
-                                 MeaningList, \
-                                 Source, \
-                                 TYPE_CHOICES, \
-                                 CognateJudgement, \
-                                 Clade, \
-                                 MeaningListOrder, \
-                                 LexemeCitation, \
-                                 CognateJudgementCitation, \
-                                 PROPOSED_AS_COGNATE_TO_SCALE
+    CognateClassCitation, \
+    DISTRIBUTION_CHOICES, \
+    Language, \
+    LanguageList, \
+    Meaning, \
+    MeaningList, \
+    Source, \
+    TYPE_CHOICES, \
+    CognateJudgement, \
+    Clade, \
+    MeaningListOrder, \
+    LexemeCitation, \
+    CognateJudgementCitation, \
+    PROPOSED_AS_COGNATE_TO_SCALE
 from ielex.lexicon.validators import suitable_for_url, suitable_for_url_wtforms
 from wtforms import StringField, \
-                    IntegerField, \
-                    FieldList, \
-                    FormField, \
-                    TextField, \
-                    BooleanField, \
-                    DateTimeField, \
-                    TextAreaField, \
-                    SelectField, \
-                    DecimalField
+    IntegerField, \
+    FieldList, \
+    FormField, \
+    TextField, \
+    BooleanField, \
+    DateTimeField, \
+    TextAreaField, \
+    SelectField, \
+    DecimalField
 from wtforms.validators import Email, InputRequired
 from wtforms.form import Form as WTForm
 from wtforms.ext.django.orm import model_form
@@ -103,6 +103,7 @@ class ChooseCognateClassField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.alias
 
+
 class ChooseSourcesField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
@@ -112,9 +113,11 @@ class ChooseSourcesField(forms.ModelMultipleChoiceField):
     def _get_choices(self):
         choices = super(ChooseSourcesField, self)._get_choices()
         for choice in sorted(choices, key=itemgetter(1)):
-            print [choice]
+            print[choice]
             yield choice
-    choices = property(_get_choices, forms.ModelMultipleChoiceField._set_choices)
+    choices = property(
+        _get_choices, forms.ModelMultipleChoiceField._set_choices)
+
 
 class ChooseOneSourceField(forms.ModelChoiceField):
 
@@ -127,6 +130,7 @@ class ChooseOneSourceField(forms.ModelChoiceField):
         for choice in sorted(choices, key=itemgetter(1)):
             yield choice
     choices = property(_get_choices, forms.ModelChoiceField._set_choices)
+
 
 class AddLexemeForm(WTForm):
     language_id = IntegerField('Language:', validators=[InputRequired()])
@@ -583,6 +587,7 @@ class CognateClassField(IntegerField):
     A specialized IntegerField that hands an Id to the client,
     but presents a CognateClass on the server side.
     '''
+
     def process_formdata(self, valuelist):
         self.data = None
         if len(valuelist) == 1:
