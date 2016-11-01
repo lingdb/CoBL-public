@@ -2586,7 +2586,8 @@ def view_cladecognatesearch(request):
     cognateClassIds = None
     for clade in currentClades:
         newIds = CognateClass.objects.filter(
-            lexeme__language__languageclade__clade_id=clade.id
+            lexeme__language__languageclade__clade_id=clade.id,
+            lexeme__language__in=languageList.languages.all()
             ).values_list('id', flat=True)
         if cognateClassIds is None:
             cognateClassIds = set(newIds)
@@ -2605,8 +2606,8 @@ def view_cladecognatesearch(request):
         'lexeme_set',
         'lexeme_set__language',
         'lexeme_set__meaning').all()
-    # for c in cognateClasses:
-    #     c.computeCounts(languageList)
+    for c in cognateClasses:
+        c.computeCounts(languageList)
     form = AddCogClassTableForm(cogclass=cognateClasses)
 
     # Computing cladeLinks:
