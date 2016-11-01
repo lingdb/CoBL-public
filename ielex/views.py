@@ -2565,6 +2565,26 @@ def json_cognateClass_placeholders(request):
 
 @logExceptions
 def view_cladecognatesearch(request):
+    # Handle POST of AddCogClassTableForm:
+    if request.method == 'POST':
+        if 'AddCogClassTableForm' in request.POST:
+            try:
+                cogClassTableForm = AddCogClassTableForm(request.POST)
+                cogClassTableForm.validate()
+                cogClassTableForm.handle(request)
+            except ValidationError as e:
+                logging.exception(
+                    'Validation did not work in view_cladecognatesearch.')
+                messages.error(request, ' '.join(e.messages))
+            except Exception:
+                logging.exception('Problem updating CognateClasses '
+                                  'in view_cladecognatesearch.')
+                messages.error(request, 'Sorry, the server had problems '
+                               'updating at least one entry.')
+        redirect_url = request.path
+        if request.GET and 'clades' in request.GET:
+            redirect_url += '?clades=%s' % request.GET['clades']
+        return HttpResponseRedirect(redirect_url)
     # Acquiring languageList:
     try:
         languageList = LanguageList.objects.get(
