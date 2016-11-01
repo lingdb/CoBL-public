@@ -7,7 +7,7 @@ import zlib
 import datetime
 from collections import defaultdict
 from string import uppercase, lowercase
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Max
 from django.core.urlresolvers import reverse
 from django.utils.safestring import SafeString
@@ -318,7 +318,7 @@ class Source(models.Model):
         if self.author!='':
             names = self.author.split(' and ')
         elif self.editor!='':
-            names = self.editor.split(' and ')            
+            names = self.editor.split(' and ')
         if names:
             author = names[0].split(', ')[0]
             if len(names) > 1:
@@ -366,7 +366,7 @@ class Source(models.Model):
     def cogset(self): # cognate classification; rename: cog. set
         #see CognateClassCitation and CognateClass: relation missing !!
         pass
-    
+
     @property
     def lexeme(self):
         return self.lexemecitation_set.all()
@@ -392,14 +392,16 @@ class Source(models.Model):
         obj = self.__class__.objects.get(pk=pk)
         for cj_obj in obj.cognatejudgementcitation_set.all():
             try:
-                cj_obj.source = self
-                cj_obj.save()
+                with transaction.atomic():
+                    cj_obj.source = self
+                    cj_obj.save()
             except IntegrityError:
                 pass
         for lc_obj in obj.lexemecitation_set.all():
             try:
-                lc_obj.source = self
-                lc_obj.save()
+                with transaction.atomic():
+                    lc_obj.source = self
+                    lc_obj.save()
             except IntegrityError:
                 pass
         obj.delete()
