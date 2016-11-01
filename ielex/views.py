@@ -20,7 +20,6 @@ from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template import Template
 from reversion.models import Revision, Version
-# from reversion import revision
 from ielex.settings import LIMIT_TO, META_TAGS
 from ielex.forms import AddCitationForm, \
     AddCogClassTableForm, \
@@ -110,11 +109,6 @@ from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 
 from django_tables2 import RequestConfig
-
-# Refactoring:
-# - rename the functions which render to response with the format
-# view_TEMPLATE_NAME(request, ...). Put subsiduary functions under their main
-# caller.
 
 # -- Database input, output and maintenance functions ------------------------
 
@@ -2121,19 +2115,10 @@ class source_import(FormView):
     def get_new_dict(self, entry):
 
         comparison_dict = {}
-        status = 'new'
         comparison_dict['pk'] = 'new'
         for key in entry.keys():
             comparison_dict[key] = [entry[key], 'new']
         return {'status': 'new', 'dictionary': comparison_dict}
-
-#             print(entry)
-#             try:
-#               source_obj = Source.objects.get(pk=entry['ID'])
-#               source_obj.populate_from_bibtex(entry)
-#             except (ValueError, ObjectDoesNotExist) as e:
-#                 print('Failed to handle BibTeX entry with ID %s: %s' %
-#                       ([entry['ID']], e))
 
 # -- /source end/ -------------------------------------------------------------
 
