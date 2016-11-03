@@ -50,6 +50,7 @@ from ielex.views import add_language_list, \
                         view_language_progress, \
                         json_cognateClass_placeholders, \
                         view_cladecognatesearch
+from ielex.viewCsvImport import viewCsvImport
 from ielex import settings
 from ielex.lexicon.views import CognateClassCitationCreateView, \
                                 cognate_class_citation_delete, \
@@ -356,6 +357,10 @@ urlpatterns += patterns(
         name="login"),
     url(r'^logout/$', 'views.logout', {'template_name':
         'profiles/logout.html'}, name="logout"))
+
+urlpatterns += patterns(
+    '',
+    url(r'^admin/viewCsvImport', viewCsvImport, name="viewCsvImport"))
 
 urlpatterns += patterns(
     '',
