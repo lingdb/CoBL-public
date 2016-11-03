@@ -1,11 +1,18 @@
-{% extends "admin/base.html" %}
-{% load i18n %}
+{% extends "base.html" %}
+{% load staticfiles %}
 
-{% block title %}{{ title }} | {{ project_short_name }} site admin' {% endblock %}
-
-{% block branding %}
-<h1 id="site-name">{{ project_short_name }} administration</h1>
+{% block title %}
+  Import .csv files
 {% endblock %}
 
-{% block nav-global %}{% endblock %}
+{% block top %}
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/defaultSelections.html" %}
+  {% include "snippets/go_to.html" %}
+{% endblock %}
+
+{% block content %}
+{% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
