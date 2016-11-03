@@ -7,5 +7,11 @@
 <h1 id="site-name">{{ project_short_name }} administration</h1>
 {% endblock %}
 
-{% block nav-global %}{% endblock %}
+{% block nav-global %}
+<div style="padding: 13.2px 0px;">
+  <a href="/admin/viewCsvImport/">
+    Import .csv files
+  </a>
+</div>
+{% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
