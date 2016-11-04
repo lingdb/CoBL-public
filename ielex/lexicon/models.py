@@ -15,6 +15,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.http import HttpResponse
 from django.utils.html import format_html
 from django.db.utils import DataError
+from django.utils import timezone
 
 # ielex specific imports:
 from ielex.utilities import two_by_two
@@ -203,6 +204,12 @@ class AbstractTimestamped(models.Model):
         less then a second different from the current
         lastTouched value.
         '''
+        if self.lastTouched.tzinfo is None:
+            self.lastTouched = timezone.make_aware(
+                self.lastTouched,
+                timezone.get_current_timezone())
+        if self.lastTouched is None:
+            return True
         return abs(t - self.lastTouched).seconds == 0
 
     def bump(self, request, t=None):

@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 import dateutil.parser
+from datetime import datetime
+from collections import defaultdict
 
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import user_passes_test
+from django.utils import timezone
+
 import clldutils.dsv as dsv
 
 from ielex.lexicon.models import Lexeme
@@ -22,7 +26,7 @@ def viewCsvImport(request):
     report = []
     if request.method == 'POST' and 'CsvImportForm' in request.POST:
         importMethod = request.POST['tableType']
-        fileDicts = dsv.reader(request.FILES['csvFile'], dicts=True)
+        fileDicts = list(dsv.reader(request.FILES['csvFile'], dicts=True))
         handlerFunctions = {'ms*l': handleMeaningsLanguageImport}
         if importMethod in handlerFunctions:
             report = handlerFunctions[importMethod](fileDicts, request)
@@ -55,7 +59,7 @@ def handleMeaningsLanguageImport(fileDicts, request):
         'rfcWebLookup2': strOrEmpty,
         'transliteration': strOrEmpty,
         'lastEditedBy': strNonEmpty,
-        'lastTouched': dateutil.parser.parse
+        'lastTouched': strToDatetime
     }
 
     # Structures to generate report from:
@@ -64,6 +68,11 @@ def handleMeaningsLanguageImport(fileDicts, request):
     updatedEntries = []  # :: [{…}]
 
     newLexemes = []  # :: [Lexeme]
+
+    lexemes = Lexeme.objects.filter(
+        meaning_id__in=set([e['meaning_id'] for e in fileDicts]),
+        language_id__in=set([e['language_id'] for e in fileDicts])
+    ).all()
 
     for entry in fileDicts:
         entry, problem = sanitizeEntry(entry, fieldConversions)
@@ -74,9 +83,10 @@ def handleMeaningsLanguageImport(fileDicts, request):
         status = saveEntry(
             entry=entry,
             model=Lexeme,
+            request=request,
             ignoreMergeFields=set([
                 'id', 'language_id', 'meaning_id', '_order', 'lastTouched']),
-            instanceFinder=lexemeInstanceFinder
+            instanceFinder=mkLexemeInstanceFinder(lexemes)
         )
         if type(status) == Lexeme:
             newLexemes.append(status)
@@ -100,12 +110,12 @@ def handleMeaningsLanguageImport(fileDicts, request):
 
     # Returning report:
     return [
+        {'heading': 'Problematic entries (%s):' % len(problematicEntries),
+         'body': listToDl(problematicEntries)},
         {'heading': 'Newly created entries (%s):' % len(newEntries),
          'body': listToUl(newEntries)},
         {'heading': 'Updated entries (%s):' % len(updatedEntries),
-         'body': listToUl(updatedEntries)},
-        {'heading': 'Problematic entries (%s):' % len(problematicEntries),
-         'body': listToDl(problematicEntries)}
+         'body': listToUl(updatedEntries)}
     ]
 
 
@@ -125,6 +135,7 @@ def sanitizeEntry(entry, fieldConversions):
 
 def saveEntry(entry,
               model,
+              request,
               ignoreMergeFields=set(),
               instanceFinder=None):
     '''
@@ -138,43 +149,51 @@ def saveEntry(entry,
     instanceFinder :: entry -> model | None
     '''
     instance = None
-    if 'id' in entry and entry['id'] is not None:
-        instance = model.objects.get(id=entry['id'])
-        if not instance.checkTime(t=entry['lastTouched']):
-            return ('Refusing to update entry:', entry)
-    elif instanceFinder is not None:
+    if instanceFinder is not None:
         instance = instanceFinder(entry)
 
     if instance is None:  # Create new model
         return model(**entry)
     else:  # Merge with existing model
-        for k, v in entry.iteritems():
-            if k in ignoreMergeFields:
-                continue
-            instance[k] = v
-        instance.save()
+        delta = {k: v for k, v in entry.iteritems()
+                 if k not in ignoreMergeFields}
+        delta['lastTouched'] = datetime.now()
+        delta['lastEditedBy'] = ' '.join([request.user.first_name,
+                                          request.user.last_name])
+        model.objects.filter(id=instance.id).update(**delta)
         return entry
 
 
-def lexemeInstanceFinder(entry):
-    # Returns Lexeme | None
-    try:
-        lexemes = Lexeme.objects.filter(
-            meaning_id=entry['meaning_id'],
-            language_id=entry['language_id']).all()
-        for lexeme in lexemes:
-            if lexeme.checkTime(t=entry['lastTouched']) and \
-               lexeme.lastEditedBy == entry['lastEditedBy']:
-                return lexeme
-            for k, v in lexeme.toDict().iteritems():
-                if bool(v):
-                    print('DEBUG', 'Truthy entry: (%s,%s)' % (k, v))
-                    break
+def mkLexemeInstanceFinder(lexemes):
+
+    def lexemeToKey(lexeme):
+        return '%s:%s' % (lexeme.language_id, lexeme.meaning_id)
+    langMeanToLexemeDict = defaultdict(list)
+    for lexeme in lexemes:
+        langMeanToLexemeDict[lexemeToKey(lexeme)].append(lexeme)
+    idToLexemeMap = {l.id: l for l in lexemes}
+
+    def lexemeInstanceFinder(entry):
+        # Returns Lexeme | None
+        if entry['id'] in idToLexemeMap:
+            return idToLexemeMap[entry['id']]
+
+        ls = langMeanToLexemeDict[
+            '%s:%s' % (entry['language_id'], entry['meaning_id'])]
+        for l in ls:
+            if l.checkTime(t=entry['lastTouched']):
+                if l.lastEditedBy == entry['lastEditedBy']:
+                    return l
+            for k in l.timestampedFields():
+                lData = getattr(l, k)
+                if bool(lData):
+                    if lData != entry[k]:
+                        break
             else:
-                return lexeme
-    except:
-        pass
-    return None
+                return l
+        return None
+
+    return lexemeInstanceFinder
 
 
 def intOrNone(s):
@@ -210,3 +229,10 @@ def strOrEmpty(s):
         return str(s)
     except:
         return ''
+
+
+def strToDatetime(s):
+    date = dateutil.parser.parse(s, fuzzy=True)
+    if date.tzinfo is None:
+        date = timezone.make_aware(date, timezone.get_current_timezone())
+    return date
