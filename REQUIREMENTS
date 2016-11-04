@@ -1,5 +1,6 @@
 # usage: pip install -r REQUIREMENTS
 bibtexparser==0.6.2
+clldutils==1.5.1
 cssselect==0.9.1
 decorator==4.0.9
 Django==1.8.7
