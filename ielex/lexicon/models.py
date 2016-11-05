@@ -261,7 +261,7 @@ class Source(models.Model):
     Used for bibliographical references.
     '''
     # OLD FIELDS:
-    citation_text = models.TextField()  # to be discarded
+    citation_text = models.TextField()
     description = models.TextField(blank=True)  # keep for now
     modified = models.DateTimeField(auto_now=True) #in fact, when was added; keep for now
 
@@ -294,22 +294,45 @@ class Source(models.Model):
     institution = models.CharField(max_length=128, blank=True)
     chapter = models.TextField(blank=True)
     howpublished = models.TextField(blank=True)
-    shorthand = models.CharField(max_length=16, blank=True)
+    shorthand = models.CharField(max_length=128, blank=True)
     isbn = models.CharField(max_length=32, blank=True)
 
+    # status:
     deprecated = models.BooleanField(default=False)
 
-    bibtex_attr_lst = ['ENTRYTYPE', 'author', 'year', 'title', 'booktitle', 'editor',
-                       'pages', 'edition', 'journaltitle', 'location',
-                       'link', 'note', 'number', 'series', 'volume',
+    '''
+    Traditional reference source (dated).
+    S. https://github.com/lingdb/CoBL/issues/332#issuecomment-255142824
+    '''
+    TRS = models.BooleanField(default=False, help_text="""Traditional reference source (dated).""")
+
+    '''
+    A brief summary of the nature of the source and how its utility
+    (or otherwise) is general perceived nowadays within Indo-European studies.
+    S. https://github.com/lingdb/CoBL/issues/332#issuecomment-255142824
+    '''
+    respect = models.TextField(blank=True, help_text="""A brief summary of the nature of the source its utility.""")
+    
+
+    bibtex_attr_lst = ['citation_text', 'ENTRYTYPE', 'author',
+                       'authortype', 'year', 'title', 'booktitle',
+                       'booksubtitle', 'bookauthor', 'editor',
+                       'editortype', 'editora', 'editoratype',
+                       'pages', 'part', 'edition',
+                       'journaltitle', 'location', 'link',
+                       'note', 'number', 'series', 'volume',
                        'publisher', 'institution', 'chapter',
-                       'howpublished', 'shorthand', 'isbn', 'deprecated',
+                       'howpublished', 'shorthand', 'isbn',
+                       'deprecated', 'TRS', 'respect',
                        ]
     relations_attr_lst = ['cognacy', 'cogset', 'lexeme']
     source_attr_lst = bibtex_attr_lst + relations_attr_lst
 
+    class Meta:
+        ordering = ['shorthand']
+
     def __unicode__(self):
-        return self.name_short_with_unique_siglum
+        return self.shorthand
 
     @property
     def name_short(self):
@@ -364,8 +387,7 @@ class Source(models.Model):
 
     @property
     def cogset(self): # cognate classification; rename: cog. set
-        #see CognateClassCitation and CognateClass: relation missing !!
-        pass
+        return self.cognateclasscitation_set.all()
     
     @property
     def lexeme(self):
@@ -390,13 +412,19 @@ class Source(models.Model):
 
     def merge_with(self, pk):
         obj = self.__class__.objects.get(pk=pk)
-        for cj_obj in obj.cognatejudgementcitation_set.all():
+        for cj_obj in obj.cognacy:
             try:
                 cj_obj.source = self
                 cj_obj.save()
             except IntegrityError:
                 pass
-        for lc_obj in obj.lexemecitation_set.all():
+        for cc_obj in obj.cogset:
+            try:
+                cc_obj.source = self
+                cc_obj.save()
+            except IntegrityError:
+                pass
+        for lc_obj in obj.lexeme:
             try:
                 lc_obj.source = self
                 lc_obj.save()

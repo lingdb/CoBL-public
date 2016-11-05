@@ -15,7 +15,7 @@ sources_changes = {'merge': {369:[362], 157:[272], 78:[39], 33:[71], 93:[94],
                    }
 
 def forwards_func(apps, schema_editor):
-    from ielex.handle_duplicate_sources import *
+    from ielex.source_scripts.handle_duplicate_sources import *
     handle_sources(sources_changes)
 
 

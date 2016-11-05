@@ -13,6 +13,13 @@
 $(document).ready(function () {
 
 	$('input:checked[name="deprecated"]').parent().parent().toggleClass('deprecated');
+	$('input:checked[name="TRS"]').parent().parent().toggleClass('TRS');
+	{% if user.is_superuser %}{% else %}
+		$('th.deprecated, td.deprecated').hide();
+		$('th.TRS, td.TRS').hide();
+		$('th.edit, td.edit').hide();
+		$('button#import').hide();
+	{% endif %}
 	
 	/**** DETAILS *****/
 	$(document.body).on('click', '.details_button.show_d', function() {
@@ -42,8 +49,13 @@ $(document).ready(function () {
 		return false
 	});
 	
+	/**** EXPORT *****/
+	$(document.body).on('click', 'button[id="export"]', function() {
+		window.location.replace('export/')
+	});
+
+	{% if user.is_superuser %}
 	/**** EDIT *****/
-	
 	$(document.body).on('click', '.edit_button.show_e', function() {
 		$('#editSourceContainer').empty();
 		$('#editSource').attr('source_id', $(this).attr('id'))
@@ -102,6 +114,7 @@ $(document).ready(function () {
 	});
 	
 	/**** CHANGE DEPRECATED STATUS *****/
+	
 	$(document.body).on('click', 'input[name="deprecated"]', function() {
 		$(this).parent().parent().toggleClass('deprecated');
 		var postdata = {
@@ -114,24 +127,49 @@ $(document).ready(function () {
 		//if (postdata['status']=='true')
 		});
 	});
-		/**** EXPORT *****/
-	$(document.body).on('click', 'button[id="export"]', function() {
-		window.location.replace('export/')
+	
+	/**** CHANGE TRS STATUS *****/
+	
+	$(document.body).on('click', 'input[name="TRS"]', function() {
+		$(this).parent().parent().toggleClass('TRS');
+		var postdata = {
+			'postType': 'TRS-change',
+			'id': $(this).parent().siblings('.details').children().attr('id'),
+			'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value'),
+			'status': $(this).is(':checked'),
+		};
+		$.post("/sources/", postdata, function (data) {
+		//if (postdata['status']=='true')
+		});
 	});
+	
 		/**** IMPORT *****/
 	$(document.body).on('click', 'button[id="import"]', function() {
 		window.location.replace('import/')
-	});	
+	});
+	{% endif %}
 });
 </script>
 <style>
 /* Details preview table */
+
+div.table-container, div.table-container table {
+	min-width: 100%;
+}
+
+tr.TRS td, tr.TRS + tr td .details_table  {
+	color: #d2ae8f;
+}
 
 tr.deprecated td, tr.deprecated + tr td .details_table  {
 	color: lightgrey;
 }
 
 tr.deprecated td button {
+	color: black;
+}
+
+tr.TRS td button {
 	color: black;
 }
 

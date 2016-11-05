@@ -106,27 +106,27 @@ class ChooseCognateClassField(forms.ModelChoiceField):
 class ChooseSourcesField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
-        label = obj.name_short_with_unique_siglum
+        label = obj.shorthand
         return super(ChooseSourcesField, self).label_from_instance(label)
 
-    def _get_choices(self):
-        choices = super(ChooseSourcesField, self)._get_choices()
-        for choice in sorted(choices, key=itemgetter(1)):
-            print [choice]
-            yield choice
-    choices = property(_get_choices, forms.ModelMultipleChoiceField._set_choices)
+##    def _get_choices(self):
+##        choices = super(ChooseSourcesField, self)._get_choices()
+##        for choice in sorted(choices, key=itemgetter(1)):
+##            print [choice]
+##            yield choice
+##    choices = property(_get_choices, forms.ModelMultipleChoiceField._set_choices)
 
 class ChooseOneSourceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
-        label = obj.name_short_with_unique_siglum
+        label = obj.shorthand
         return super(ChooseOneSourceField, self).label_from_instance(label)
 
-    def _get_choices(self):
-        choices = super(ChooseOneSourceField, self)._get_choices()
-        for choice in sorted(choices, key=itemgetter(1)):
-            yield choice
-    choices = property(_get_choices, forms.ModelChoiceField._set_choices)
+##    def _get_choices(self):
+##        choices = super(ChooseOneSourceField, self)._get_choices()
+##        for choice in sorted(choices, key=itemgetter(1)):
+##            yield choice
+##    choices = property(_get_choices, forms.ModelChoiceField._set_choices)
 
 class AddLexemeForm(WTForm):
     language_id = IntegerField('Language:', validators=[InputRequired()])
@@ -1365,8 +1365,7 @@ class MeaningListTableForm(WTForm):
 
 
 class ChooseSourceForm(forms.Form):
-    source = ChooseSourcesField(queryset=Source.objects.all())
-
+    source = ChooseSourcesField(queryset=Source.objects.all().filter(deprecated=False))
 
 class EditCitationForm(forms.Form):
     pages = forms.CharField(required=False)
@@ -1398,7 +1397,8 @@ class EditCognateClassCitationForm(forms.ModelForm):
 
 class AddCitationForm(forms.Form):
     source = ChooseOneSourceField(
-        queryset=Source.objects.all(), help_text="")
+        queryset=Source.objects.all().filter(deprecated=False),
+        help_text="")
     pages = forms.CharField(required=False)
     comment = forms.CharField(
         widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}),
@@ -1501,12 +1501,15 @@ class SourceDetailsForm(forms.ModelForm):
 
     class Meta:
         model = Source
-        fields = ['subtitle', 'booktitle', 'booksubtitle', 'bookauthor',
-                  'editor', 'editora', 'editortype', 'editoratype',
-                  'pages', 'part', 'edition', 'journaltitle', 'location',
-                  'link', 'note', 'number', 'series', 'volume', 'publisher',
-                  'institution', 'chapter', 'howpublished',
-                  'shorthand', 'isbn']
+        fields = ['citation_text', 'authortype', 'booktitle',
+                  'booksubtitle', 'bookauthor', 'editor',
+                  'editortype', 'editora', 'editoratype',
+                  'pages', 'part', 'edition',
+                  'journaltitle', 'location', 'link',
+                  'note', 'number', 'series', 'volume',
+                  'publisher', 'institution', 'chapter',
+                  'howpublished', 'shorthand', 'isbn', 'respect',
+                   ]
 
     def __init__(self, *args, **kwargs):
         super(SourceDetailsForm, self).__init__(*args, **kwargs)
@@ -1529,7 +1532,8 @@ class SourceEditForm(forms.ModelForm):
                   'part', 'edition', 'journaltitle', 'location',
                   'link', 'note', 'number', 'series', 'volume',
                   'publisher', 'institution', 'chapter',
-                  'howpublished', 'shorthand', 'isbn']
+                  'howpublished', 'citation_text', 'shorthand',
+                  'isbn', 'respect']
 
     def __init__(self, *args, **kwargs):
         super(SourceEditForm, self).__init__(*args, **kwargs)

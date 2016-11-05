@@ -69,7 +69,7 @@ table.paleblue thead th.orderable.desc > a {
 }
 
 table.paleblue tr.odd {
-    background-color: #EDF3FE;
+    background-color: #f9f9f9; 
 }
 
 table.paleblue tr.even {
