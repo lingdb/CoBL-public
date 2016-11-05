@@ -37,7 +37,7 @@
           <tr>
             <th>Citation:</th>
             <td>
-              {{ source.name_short_with_unique_siglum }}
+              {{ source.shorthand }}
               {% if user.is_authenticated %}
                 <div class="pull-right">
                   <a href="{% url 'edit-source' source.id %}" title="Edit" class="btn btn-default btn-xs">

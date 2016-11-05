@@ -152,7 +152,7 @@
               {% csrf_token %}
               <fieldset>
                 <table class="table">
-                  {{ citation.source.name_short_with_unique_siglum }}
+                  {{ citation.source.shorthand }}
                   {{ form.as_table }}
                 </table>
                 {% include "buttons/submit-gloss-cancel.html" %}
@@ -279,7 +279,7 @@
                       {% csrf_token %}
                       <fieldset>
                         <table class="table">
-                          {{ citation.source.name_short_with_unique_siglum }}
+                          {{ citation.source.shorthand }}
                           {{ form.as_table }}
                         </table>
                         {% include "buttons/submit-gloss-cancel.html" %}

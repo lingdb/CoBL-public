@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+<style>
+[for~=-source], [for~=-id],  {
+	display: none;
+}
+</style>
+
+{% block title %}{% if action %}{{ action|title }}{% endif %} Source {{ name }} {% endblock %}
+
+{% block top %}
+  <h1>
+    {% if action %}
+      {{ action|title }}
+    {% endif %} Source {{ name }}
+  </h1>
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/defaultSelections.html" %}
+  {% include "snippets/go_to.html" %}
+{% endblock %}
+
+{% block content %}
+<table>
+    <thead>
+        {% for form in formset.forms %}
+            {% if forloop.first %}
+                {% for field in form %}
+                    <th>{{ field.label_tag }}</th>
+                {% endfor %}
+            {% endif %}
+    </thead>
+    <tbody>
+            <tr>
+                {% for field in form %}
+                    <td>{{ field }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
