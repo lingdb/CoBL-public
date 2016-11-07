@@ -72,7 +72,7 @@
                   </div>
                 </th>
               {% endif %}
-              <th></th>
+              <th colspan="2"></th>
               <th>Meaning</th>
               <th>Meaning specification tooltip</th>
               <th>MeaningSetMember</th>
@@ -136,7 +136,7 @@
                   </button>
                 </td>
               {% endif %}
-              <td></td>
+              <td colspan="2"></td>
               <td>
                 {% if user.is_authenticated %}
                   <input type="text" class="filterInput form-control"
@@ -288,6 +288,17 @@
                        title="View wiki page." target="_blank">
                       <span class="glyphicon glyphicon-info-sign"></span>
                     </a>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if meaning.object_data.exampleContext %}
+                  <span class="badge"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        data-container="body"
+                        title="{{ meaning.object_data.exampleContext }}">
+                    e.g.
+                  </span>
                   {% endif %}
                 </td>
                 <td class="meaningGloss">
