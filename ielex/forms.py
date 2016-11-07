@@ -1338,6 +1338,8 @@ class MeaningListRowForm(AbstractTimestampedForm):
     meaningSetMember = IntegerField(
         'MeaningSetMember', validators=[InputRequired()])
     meaningSetIx = IntegerField('MeaningSetIx', validators=[InputRequired()])
+    exampleContext = StringField(
+        'Example Context', validators=[InputRequired()])
 
 
 class MeaningListTableForm(WTForm):

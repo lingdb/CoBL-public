@@ -904,6 +904,8 @@ class Meaning(AbstractTimestamped):
     tooltip = models.TextField(blank=True)
     meaningSetMember = models.IntegerField(default=0, null=False)
     meaningSetIx = models.IntegerField(default=0, null=False)
+    # Added for #334:
+    exampleContext = models.CharField(max_length=128, blank=True)
 
     def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
@@ -929,7 +931,7 @@ class Meaning(AbstractTimestamped):
     def timestampedFields(self):
         return set(['gloss', 'description', 'notes', 'doubleCheck',
                     'exclude', 'tooltip',
-                    'meaningSetMember', 'meaningSetIx'])
+                    'meaningSetMember', 'meaningSetIx', 'exampleContext'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update meaning: ' \

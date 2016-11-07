@@ -5,7 +5,7 @@
 {% load wtforms %}
 
 {% block title %}
-  Word list
+  Meaning list
 {% endblock %}
 
 {% block top %}
@@ -72,11 +72,14 @@
                   </div>
                 </th>
               {% endif %}
-              <th></th>
+              <th colspan="2"></th>
+              <th>Id</th>
               <th>Meaning</th>
               <th>Meaning specification tooltip</th>
               <th>MeaningSetMember</th>
               <th>MeaningSetIx</th>
+              {# exampleContext_title.html #}
+              <th>Example Context</th>
               <th>Show<br>Languages</th>
               <th>Show<br>Cog. Sets</th>
               {% if user.is_authenticated %}
@@ -136,7 +139,16 @@
                   </button>
                 </td>
               {% endif %}
-              <td></td>
+              <td colspan="2"></td>
+              <td>
+                <input type="text" class="filterInput form-control"
+                       data-selector=".meaningId input.meaningId"
+                       style="width: 1.5em;">
+                <div class="btn btn-xs btn-default sortInput"
+                     data-selector=".meaningId input.meaningId">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               <td>
                 {% if user.is_authenticated %}
                   <input type="text" class="filterInput form-control"
@@ -211,6 +223,16 @@
                        data-selector=".meaningSetIx">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
+                {% endif %}
+              </td>
+              {# exampleContext_filter.html #}
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".exampleContext input">
+                {% else %}
+                  <input type="text" class="filterText form-control"
+                         data-selector=".exampleContext">
                 {% endif %}
               </td>
               {% if user.is_authenticated %}
@@ -290,11 +312,30 @@
                     </a>
                   {% endif %}
                 </td>
+                <td>
+                  {% if meaning.object_data.exampleContext %}
+                  <span class="badge"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        data-container="body"
+                        title="{{ meaning.object_data.exampleContext }}">
+                    e.g.
+                  </span>
+                  {% endif %}
+                </td>
+                <td class="meaningId">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field meaning.meaningId class="hide" %}
+                    {% form_field meaning.lastTouched class="hide" %}
+                    {% form_field meaning.lastEditedBy class="hide" %}
+                  {% endif %}
+                  <input type="text" disabled="disabled"
+                         value="{{ meaning.object_data.id }}"
+                         class="meaningId numberField form-control"
+                         style="width: 3em;">
+                </td>
                 <td class="meaningGloss">
                 {% if user.is_authenticated and user.is_staff %}
-                  {% form_field meaning.meaningId class="hide" %}
-                  {% form_field meaning.lastTouched class="hide" %}
-                  {% form_field meaning.lastEditedBy class="hide" %}
                   {% form_field meaning.gloss class="form-control" size="4" style="width: 6em;" %}
                 {% else %}
                   {{ meaning.object_data.gloss }}
@@ -321,16 +362,24 @@
                   {{ meaning.object_data.meaningSetIx }}
                 {% endif %}
                 </td>
+                {# exampleContext_data.html #}
+                <td class="exampleContext">
+                {% if user.is_authenticated and user.is_staff %}
+                  {% form_field meaning.exampleContext class="form-control" %}
+                {% else %}
+                  {{ meaning.object_data.exampleContext }}
+                {% endif %}
+                </td>
                 <td>
                   <a href="{% url 'view-meaning-languages' meaning.data.gloss defaultLanguagelist %}"
                      title="Edit ‘{{ meaning.data.gloss }}' by language list">
-                    <span class="glyphicon glyphicon-edit"></span>
+                     <img src="{% static '1w.png' %}" />
                   </a>
                 </td>
                 <td>
                   <a href="{% url 'edit-cogclasses' meaning.data.gloss %}"
                      title="Edit cognate classes for ‘{{ meaning.data.gloss }}'">
-                    <span class="glyphicon glyphicon-edit"></span>
+                     <img src="{% static '1c.png' %}" />
                   </a>
                 </td>
                 {% if user.is_authenticated %}

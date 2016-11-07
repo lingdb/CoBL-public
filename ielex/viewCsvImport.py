@@ -226,9 +226,9 @@ def strNonEmpty(s):
 
 def strOrEmpty(s):
     try:
-        return str(s)
+        return unicode(s)
     except:
-        return ''
+        return u''
 
 
 def strToDatetime(s):
