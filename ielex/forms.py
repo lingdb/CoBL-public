@@ -185,7 +185,7 @@ class EditMeaningForm(forms.ModelForm):
 
     class Meta:
         model = Meaning
-        fields = ["gloss", "description", "notes"]
+        fields = ["gloss", "description", "notes", "exampleContext"]
 
 
 class EditMeaningListForm(forms.ModelForm):
