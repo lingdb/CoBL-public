@@ -204,12 +204,17 @@ class AbstractTimestamped(models.Model):
         less then a second different from the current
         lastTouched value.
         '''
-        if self.lastTouched.tzinfo is None:
-            self.lastTouched = timezone.make_aware(
-                self.lastTouched,
-                timezone.get_current_timezone())
         if self.lastTouched is None:
             return True
+
+        def make_aware(time):
+            if time.tzinfo is None:
+                return timezone.make_aware(
+                    time, timezone.get_current_timezone())
+            return time
+
+        self.lastTouched = make_aware(self.lastTouched)
+        t = make_aware(t)
         return abs(t - self.lastTouched).seconds == 0
 
     def bump(self, request, t=None):
