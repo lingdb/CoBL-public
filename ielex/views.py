@@ -2656,28 +2656,30 @@ def view_cladecognatesearch(request):
             taxonsetName__in=cladeNames).all()
 
     # Searching cognateClassIds by clades:
-    cognateClassIds = None
+    cognateClassIds = set()
     for clade in currentClades:
         newIds = CognateClass.objects.filter(
             lexeme__language__languageclade__clade=clade,
             lexeme__language__in=languageList.languages.all(),
             lexeme__meaning__in=meaningList.meanings.all()
         ).values_list('id', flat=True)
-        if cognateClassIds is None:
+        if len(cognateClassIds) == 0:
             cognateClassIds = set(newIds)
         else:
             cognateClassIds &= set(newIds)
-    if cognateClassIds is None:
-        cognateClassIds = []
+
     # Removing unwanted entries from cognateClassIds:
     if len(currentClades) > 0:
-        cognateClassIds -= set(CognateClass.objects.filter(
-            lexeme__language_id__in=Language.objects.exclude(
+        unwantedLanguages = languageList.languages.exclude(
                 languageclade__clade__in=currentClades
-            ).values_list('id', flat=True),
-            lexeme__language__in=languageList.languages.all(),
+            ).exclude(level0=0).values_list('id', flat=True)
+
+        removeCognateClassIds = set(CognateClass.objects.filter(
+            lexeme__language__in=unwantedLanguages,
             lexeme__meaning__in=meaningList.meanings.all()
         ).values_list('id', flat=True))
+
+        cognateClassIds -= removeCognateClassIds
 
     # Form for cognateClasses:
     cognateClasses = CognateClass.objects.filter(
