@@ -7,7 +7,9 @@ from ielex.source_scripts.csv_source_import import import_csv_citations
 
 
 def forwards_func(apps, schema_editor):
-    import_csv_citations('lexicon_source.csv')
+    import_csv_citations(
+        'lexicon_source.csv',
+        model=apps.get_model('lexicon', 'Source'))
 
 
 def reverse_func(apps, schema_editor):
