@@ -931,7 +931,7 @@ class Meaning(AbstractTimestamped):
     def timestampedFields(self):
         return set(['gloss', 'description', 'notes', 'doubleCheck',
                     'exclude', 'tooltip',
-                    'meaningSetMember', 'meaningSetIx'])
+                    'meaningSetMember', 'meaningSetIx', 'exampleContext'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update meaning: ' \

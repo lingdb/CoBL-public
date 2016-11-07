@@ -77,6 +77,8 @@
               <th>Meaning specification tooltip</th>
               <th>MeaningSetMember</th>
               <th>MeaningSetIx</th>
+              {# exampleContext_title.html #}
+              <th>Example Context</th>
               <th>Show<br>Languages</th>
               <th>Show<br>Cog. Sets</th>
               {% if user.is_authenticated %}
@@ -213,6 +215,16 @@
                   </div>
                 {% endif %}
               </td>
+              {# exampleContext_filter.html #}
+              <td>
+                {% if user.is_authenticated and user.is_staff %}
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".exampleContext input">
+                {% else %}
+                  <input type="text" class="filterText form-control"
+                         data-selector=".exampleContext">
+                {% endif %}
+              </td>
               {% if user.is_authenticated %}
                 <td colspan="3"></td>
               {% else %}
@@ -330,6 +342,14 @@
                   {% form_field meaning.meaningSetIx class="form-control numberField" %}
                 {% else %}
                   {{ meaning.object_data.meaningSetIx }}
+                {% endif %}
+                </td>
+                {# exampleContext_data.html #}
+                <td class="exampleContext">
+                {% if user.is_authenticated and user.is_staff %}
+                  {% form_field meaning.exampleContext class="form-control" %}
+                {% else %}
+                  {{ meaning.object_data.exampleContext }}
                 {% endif %}
                 </td>
                 <td>
