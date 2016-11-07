@@ -9,6 +9,7 @@ from django.db import transaction
 from django.forms import ValidationError
 from django.utils.encoding import python_2_unicode_compatible
 from itertools import izip
+from django.forms import inlineformset_factory
 from ielex.lexicon.defaultModels import getDefaultWordlist
 from ielex.lexicon.models import CognateClass, \
     CognateClassCitation, \
@@ -1557,8 +1558,97 @@ class UploadBiBTeXFileForm(forms.Form):
     file = forms.FileField(widget=forms.ClearableFileInput(
         attrs={'multiple': True}), validators=[validate_bibtex_extension])
 
-# OLDER:
+# source-related inline forms:
 
+from collections import OrderedDict
+
+class OrderableInlineModelForm(forms.ModelForm):
+    
+    def order_fields(self, ordered_fields):
+        fields = OrderedDict()
+        for key in ordered_fields:
+            fields[key] = self.fields.pop(key)
+        for key, value in self.fields.items():
+            fields[key] = value
+        self.fields = fields
+    
+
+class LexemeCitationInlineForm(OrderableInlineModelForm):
+
+    language = forms.CharField()
+    lexeme = forms.CharField()
+
+    class Meta:
+        model = LexemeCitation
+        fields = ('lexeme', 'language', 'comment',)
+        readonly_fields = fields
+
+    def __init__(self, *args, **kwargs):
+        super(LexemeCitationInlineForm, self).__init__(*args, **kwargs)
+        lexeme = self.instance.lexeme
+        self.fields['language'].initial = self.instance.lexeme.language
+        self.fields['lexeme'].initial = '<a href=%s>%s</a>' % \
+                                        (lexeme.get_absolute_url(),
+                                         lexeme.source_form)
+        self.order_fields(['lexeme', 'language', 'comment',])
+
+class CognateJudgementInlineForm(OrderableInlineModelForm):
+
+    lexeme = forms.CharField()
+    language = forms.CharField()
+    cognate_judgement = forms.CharField()
+
+    class Meta:
+        model = CognateJudgementCitation
+        fields=('cognate_judgement', 'lexeme', 'language', 'comment',)
+        readonly_fields = fields
+
+    def __init__(self, *args, **kwargs):
+        super(CognateJudgementInlineForm, self).__init__(*args, **kwargs)
+        cognate_judgement = self.instance.cognate_judgement
+        lexeme = cognate_judgement.lexeme
+        self.fields['language'].initial = lexeme.language
+        self.fields['lexeme'].initial = '<a href=%s>%s</a>' % \
+                                        (lexeme.get_absolute_url(),
+                                         lexeme.source_form)
+        self.fields['cognate_judgement'].initial = '<a href=%s>%s</a>' % \
+                                               (cognate_judgement.get_absolute_url(),
+                                                cognate_judgement)
+        self.order_fields(['cognate_judgement', 'lexeme', 'language', 'comment',])
+
+class CognateClassInlineForm(OrderableInlineModelForm):
+
+    cognate_class = forms.CharField()
+
+    class Meta:
+        model = CognateClassCitation
+        fields=('cognate_class', 'comment',)
+        readonly_fields = fields
+
+    def __init__(self, *args, **kwargs):
+        super(CognateClassInlineForm, self).__init__(*args, **kwargs)
+        cognate_class = self.instance.cognate_class
+        self.fields['cognate_class'].initial = '<a href=%s>%s</a>' % \
+                                               (cognate_class.get_absolute_url(),
+                                                cognate_class)
+        self.order_fields(['cognate_class','comment'])
+
+CognateJudgementFormSet = inlineformset_factory(
+    Source, CognateJudgementCitation,
+    form = CognateJudgementInlineForm,
+    can_delete=False, fields=('comment',), extra=0)
+
+CognateClassFormSet = inlineformset_factory(
+    Source, CognateClassCitation,
+    form = CognateClassInlineForm,
+    can_delete=False, fields=('comment',), extra=0)
+
+LexemeFormSet = inlineformset_factory(
+    Source, LexemeCitation,
+    form = LexemeCitationInlineForm,
+    can_delete=False, fields=('comment',), extra=0)
+
+# OLDER:
 
 class EditSourceForm(forms.ModelForm):
 

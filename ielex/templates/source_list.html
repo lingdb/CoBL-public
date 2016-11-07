@@ -14,7 +14,7 @@ $(document).ready(function () {
 
 	$('input:checked[name="deprecated"]').parent().parent().toggleClass('deprecated');
 	$('input:checked[name="TRS"]').parent().parent().toggleClass('TRS');
-	{% if user.is_superuser %}{% else %}
+	{% if perms %}{% else %}
 		$('th.deprecated, td.deprecated').hide();
 		$('th.TRS, td.TRS').hide();
 		$('th.edit, td.edit').hide();
@@ -54,7 +54,7 @@ $(document).ready(function () {
 		window.location.replace('export/')
 	});
 
-	{% if user.is_superuser %}
+	{% if perms %}
 	/**** EDIT *****/
 	$(document.body).on('click', '.edit_button.show_e', function() {
 		$('#editSourceContainer').empty();

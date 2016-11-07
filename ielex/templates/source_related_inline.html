@@ -1,20 +1,27 @@
 {% extends "base.html" %}
-
 {% load staticfiles %}
-
+{% block title %}{{ name }} in {{ source }} {% endblock %}
+{% block meta %}
+{{ block.super }}
 <style>
 [for~=-source], [for~=-id],  {
 	display: none;
 }
+table, th, td {     
+	border: 1px solid black !important;
+}
+td, th {
+	max-width: 500px;
+    padding-right: 20px;
+}
 </style>
-
-{% block title %}{% if action %}{{ action|title }}{% endif %} Source {{ name }} {% endblock %}
+{% endblock %}
 
 {% block top %}
   <h1>
     {% if action %}
       {{ action|title }}
-    {% endif %} Source {{ name }}
+    {% endif %} {{ name }} in {{ source }}
   </h1>
 {% endblock %}
 
@@ -36,7 +43,7 @@
     <tbody>
             <tr>
                 {% for field in form %}
-                    <td>{{ field }}</td>
+                    <td>{{ field.value | safe }}</td>
                 {% endfor %}
             </tr>
         {% endfor %}

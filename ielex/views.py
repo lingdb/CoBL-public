@@ -61,7 +61,10 @@ from ielex.forms import AddCitationForm, \
     CognateClassEditForm, \
     SourceDetailsForm, \
     SourceEditForm, \
-    UploadBiBTeXFileForm
+    UploadBiBTeXFileForm, \
+    CognateJudgementFormSet, \
+    CognateClassFormSet, \
+    LexemeFormSet
 from ielex.lexicon.models import Author, \
     Clade, \
     CognateClass, \
@@ -102,7 +105,6 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import FormView
 from django.utils.safestring import mark_safe
 from django.utils.decorators import method_decorator
-from django.forms import inlineformset_factory
 
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
@@ -1922,6 +1924,12 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
         "source": source,
         "action": action})
 
+def source_perms_check(user):
+    if user.has_perm('lexicon.change_source') or \
+       user.has_perm('lexicon.add_source') or \
+       user.has_perm('lexicon.delete_source'):
+        return True
+    return False
 
 @logExceptions
 def source_list(request):
@@ -1932,36 +1940,31 @@ def source_list(request):
         response.write(SourceDetailsForm(instance=source_obj).as_table())
         return response
     elif request.POST.get("postType") == 'edit' and \
-            request.user.is_superuser:
+            source_perms_check(request.user):
         source_obj = Source.objects.get(pk=request.POST.get("id"))
         response = HttpResponse()
         response.write(SourceEditForm(instance=source_obj).as_table())
         return response
     elif request.POST.get("postType") == 'update' and \
-            request.user.is_superuser:
+            source_perms_check(request.user):
         source_obj = Source.objects.get(pk=request.POST.get("id"))
         source_data = QueryDict(request.POST['source_data'].encode('ASCII'))
         form = SourceEditForm(source_data, instance=source_obj)
-        # print(source_data)  # , [(field, form[field]) for field in
-        # form.fields]
         if form.is_valid():
-            # print(form.cleaned_data)
             form.save()
         else:
             print(form.errors)
         return HttpResponse()
-# elif request.POST.get("postType") == 'export':
-# HttpResponseRedirect(reverse("export-sources-bibtex"))
-
+    
     elif request.POST.get("postType") == 'deprecated-change' and \
-            request.user.is_superuser:
+            source_perms_check(request.user):
         source_obj = Source.objects.get(pk=request.POST.get("id"))
         status = {u'true': True, 'false': False}[request.POST.get("status")]
         source_obj.deprecated = status
         source_obj.save()
         return HttpResponse()
     elif request.POST.get("postType") == 'TRS-change' and \
-            request.user.is_superuser:
+            source_perms_check(request.user):
         source_obj = Source.objects.get(pk=request.POST.get("id"))
         status = {u'true': True, 'false': False}[request.POST.get("status")]
         source_obj.TRS = status
@@ -1977,7 +1980,7 @@ def source_list(request):
             source_dict['details'] = mark_safe(
                 '<button class="details_button show_d" '
                 'id="%s">More</button>' % (source_obj.pk))
-            if request.user.is_superuser:
+            if source_perms_check(request.user):
                 source_dict['edit'] = mark_safe(
                     '<button class="edit_button show_e" '
                     'id="%s">Edit</button>' % (source_obj.pk))
@@ -1988,6 +1991,7 @@ def source_list(request):
 
         return render_template(request, "source_list.html",
                                {"sources": sources_table,
+                                "perms": source_perms_check(request.user)
                                 })
 
 
@@ -2129,44 +2133,33 @@ class source_import(FormView):
             comparison_dict[key] = [entry[key], 'new']
         return {'status': 'new', 'dictionary': comparison_dict}
 
-CognateJudgementFormSet = inlineformset_factory(
-    Source, CognateJudgementCitation,
-    can_delete=False, fields=('cognate_judgement', 'comment'), extra=0)
-
-CognateClassFormSet = inlineformset_factory(
-    Source, CognateClassCitation,
-    can_delete=False, fields=('cognate_class', 'comment',), extra=0)
-
-LexemeFormSet = inlineformset_factory(
-    Source, LexemeCitation,
-    can_delete=False, fields=('lexeme', 'comment'), extra=0)
-
-
 def source_cognacy(request, source_id):
-
+    source_obj = Source.objects.get(pk=source_id)
     formset = CognateJudgementFormSet(
-        instance=Source.objects.get(pk=source_id))
+        instance=source_obj)
     return render_template(request, "source_related_inline.html",
                            {"formset": formset,
                             "name": "Cognacy",
+                            "source" : source_obj.shorthand
                             })
 
-
 def source_cogset(request, source_id):
-
-    formset = CognateClassFormSet(instance=Source.objects.get(pk=source_id))
+    source_obj = Source.objects.get(pk=source_id)
+    formset = CognateClassFormSet(instance=source_obj)
     return render_template(request, "source_related_inline.html",
                            {"formset": formset,
                             "name": "Cognate Sets",
+                            "source" : source_obj.shorthand
                             })
 
 
 def source_lexeme(request, source_id):
-
-    formset = LexemeFormSet(instance=Source.objects.get(pk=source_id))
+    source_obj = Source.objects.get(pk=source_id)
+    formset = LexemeFormSet(instance=source_obj)
     return render_template(request, "source_related_inline.html",
                            {"formset": formset,
                             "name": "Lexemes",
+                            "source" : source_obj.shorthand
                             })
 # -- /source end/ -------------------------------------------------------------
 
