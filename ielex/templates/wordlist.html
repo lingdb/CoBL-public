@@ -73,6 +73,7 @@
                 </th>
               {% endif %}
               <th colspan="2"></th>
+              <th>Id</th>
               <th>Meaning</th>
               <th>Meaning specification tooltip</th>
               <th>MeaningSetMember</th>
@@ -137,6 +138,15 @@
                 </td>
               {% endif %}
               <td colspan="2"></td>
+              <td>
+                <input type="text" class="filterInput form-control"
+                       data-selector=".meaningId input.meaningId"
+                       style="width: 1.5em;">
+                <div class="btn btn-xs btn-default sortInput"
+                     data-selector=".meaningId input.meaningId">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               <td>
                 {% if user.is_authenticated %}
                   <input type="text" class="filterInput form-control"
@@ -301,11 +311,19 @@
                   </span>
                   {% endif %}
                 </td>
+                <td class="meaningId">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field meaning.meaningId class="hide" %}
+                    {% form_field meaning.lastTouched class="hide" %}
+                    {% form_field meaning.lastEditedBy class="hide" %}
+                  {% endif %}
+                  <input type="text" disabled="disabled"
+                         value="{{ meaning.object_data.id }}"
+                         class="meaningId numberField form-control"
+                         style="width: 3em;">
+                </td>
                 <td class="meaningGloss">
                 {% if user.is_authenticated and user.is_staff %}
-                  {% form_field meaning.meaningId class="hide" %}
-                  {% form_field meaning.lastTouched class="hide" %}
-                  {% form_field meaning.lastEditedBy class="hide" %}
                   {% form_field meaning.gloss class="form-control" size="4" style="width: 6em;" %}
                 {% else %}
                   {{ meaning.object_data.gloss }}
