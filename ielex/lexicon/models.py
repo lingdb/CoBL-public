@@ -317,15 +317,18 @@ class Source(models.Model):
     Traditional reference source (dated).
     S. https://github.com/lingdb/CoBL/issues/332#issuecomment-255142824
     '''
-    TRS = models.BooleanField(default=False, help_text="""Traditional reference source (dated).""")
+    TRS = models.BooleanField(
+        default=False, help_text="""Traditional reference source (dated).""")
 
     '''
     A brief summary of the nature of the source and how its utility
     (or otherwise) is general perceived nowadays within Indo-European studies.
     S. https://github.com/lingdb/CoBL/issues/332#issuecomment-255142824
     '''
-    respect = models.TextField(blank=True, help_text="""A brief summary of the nature of the source its utility.""")
-    
+    respect = models.TextField(
+        blank=True,
+        help_text="""A brief summary of the nature """
+                  """of the source its utility.""")
 
     bibtex_attr_lst = ['citation_text', 'ENTRYTYPE', 'author',
                        'authortype', 'year', 'title', 'booktitle',
@@ -400,9 +403,9 @@ class Source(models.Model):
         return self.cognatejudgementcitation_set.all()
 
     @property
-    def cogset(self): # cognate classification; rename: cog. set
+    def cogset(self):  # cognate classification; rename: cog. set
         return self.cognateclasscitation_set.all()
-    
+
     @property
     def lexeme(self):
         return self.lexemecitation_set.all()

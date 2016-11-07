@@ -118,17 +118,18 @@ class ChooseSourcesField(forms.ModelMultipleChoiceField):
     choices = property(
         _get_choices, forms.ModelMultipleChoiceField._set_choices)
 
+
 class ChooseOneSourceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
         label = obj.shorthand
         return super(ChooseOneSourceField, self).label_from_instance(label)
 
-##    def _get_choices(self):
-##        choices = super(ChooseOneSourceField, self)._get_choices()
-##        for choice in sorted(choices, key=itemgetter(1)):
-##            yield choice
-##    choices = property(_get_choices, forms.ModelChoiceField._set_choices)
+# def _get_choices(self):
+#         choices = super(ChooseOneSourceField, self)._get_choices()
+# for choice in sorted(choices, key=itemgetter(1)):
+# yield choice
+#     choices = property(_get_choices, forms.ModelChoiceField._set_choices)
 
 
 class AddLexemeForm(WTForm):
@@ -1369,7 +1370,9 @@ class MeaningListTableForm(WTForm):
 
 
 class ChooseSourceForm(forms.Form):
-    source = ChooseSourcesField(queryset=Source.objects.all().filter(deprecated=False))
+    source = ChooseSourcesField(
+        queryset=Source.objects.all().filter(deprecated=False))
+
 
 class EditCitationForm(forms.Form):
     pages = forms.CharField(required=False)
@@ -1513,7 +1516,7 @@ class SourceDetailsForm(forms.ModelForm):
                   'note', 'number', 'series', 'volume',
                   'publisher', 'institution', 'chapter',
                   'howpublished', 'shorthand', 'isbn', 'respect',
-                   ]
+                  ]
 
     def __init__(self, *args, **kwargs):
         super(SourceDetailsForm, self).__init__(*args, **kwargs)

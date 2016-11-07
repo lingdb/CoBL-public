@@ -1265,7 +1265,7 @@ def view_cognateclasses(request, meaning):
     ccl_ordered = CognateClass.objects.filter(
         cognatejudgement__lexeme__meaning__gloss=meaning,
         cognatejudgement__lexeme__language_id__in=languageIds
-        ).prefetch_related('lexeme_set').order_by('alias').distinct()
+    ).prefetch_related('lexeme_set').order_by('alias').distinct()
     # Computing counts for ccs:
     for cc in ccl_ordered:
         cc.computeCounts(languageList=languageList)
@@ -1963,7 +1963,7 @@ def source_list(request):
     elif request.POST.get("postType") == 'TRS-change' and \
             request.user.is_superuser:
         source_obj = Source.objects.get(pk=request.POST.get("id"))
-        status = {u'true':True, 'false':False}[request.POST.get("status")]
+        status = {u'true': True, 'false': False}[request.POST.get("status")]
         source_obj.TRS = status
         source_obj.save()
         return HttpResponse()
@@ -2058,7 +2058,7 @@ class source_import(FormView):
                 RequestConfig(
                     request,
                     paginate={'per_page': 1000}
-                    ).configure(update_sources_table)
+                ).configure(update_sources_table)
                 return render_template(request, self.template_name, {
                     'form': self.form_class(),
                     'update_sources_table': update_sources_table,
@@ -2129,49 +2129,44 @@ class source_import(FormView):
             comparison_dict[key] = [entry[key], 'new']
         return {'status': 'new', 'dictionary': comparison_dict}
 
-CognateJudgementFormSet = inlineformset_factory(Source,
-                                                CognateJudgementCitation,
-                                                can_delete=False,
-                                                fields=('cognate_judgement','comment'),
-                                                extra=0
-                                                )
+CognateJudgementFormSet = inlineformset_factory(
+    Source, CognateJudgementCitation,
+    can_delete=False, fields=('cognate_judgement', 'comment'), extra=0)
 
-CognateClassFormSet = inlineformset_factory(Source,
-                                            CognateClassCitation,
-                                            can_delete=False,
-                                            fields=('cognate_class','comment',),
-                                            extra=0
-                                            )
+CognateClassFormSet = inlineformset_factory(
+    Source, CognateClassCitation,
+    can_delete=False, fields=('cognate_class', 'comment',), extra=0)
 
-LexemeFormSet = inlineformset_factory(Source,
-                                      LexemeCitation,
-                                      can_delete=False,
-                                      fields=('lexeme','comment'),
-                                      extra=0
-                                      )
+LexemeFormSet = inlineformset_factory(
+    Source, LexemeCitation,
+    can_delete=False, fields=('lexeme', 'comment'), extra=0)
+
 
 def source_cognacy(request, source_id):
 
-    formset = CognateJudgementFormSet(instance=Source.objects.get(pk=source_id))
+    formset = CognateJudgementFormSet(
+        instance=Source.objects.get(pk=source_id))
     return render_template(request, "source_related_inline.html",
                            {"formset": formset,
-                            "name" : "Cognacy",
+                            "name": "Cognacy",
                             })
+
 
 def source_cogset(request, source_id):
 
     formset = CognateClassFormSet(instance=Source.objects.get(pk=source_id))
     return render_template(request, "source_related_inline.html",
                            {"formset": formset,
-                            "name" : "Cognate Sets",
+                            "name": "Cognate Sets",
                             })
+
 
 def source_lexeme(request, source_id):
 
     formset = LexemeFormSet(instance=Source.objects.get(pk=source_id))
     return render_template(request, "source_related_inline.html",
                            {"formset": formset,
-                            "name" : "Lexemes",
+                            "name": "Lexemes",
                             })
 # -- /source end/ -------------------------------------------------------------
 
@@ -2667,7 +2662,7 @@ def view_cladecognatesearch(request):
             lexeme__language__languageclade__clade=clade,
             lexeme__language__in=languageList.languages.all(),
             lexeme__meaning__in=meaningList.meanings.all()
-            ).values_list('id', flat=True)
+        ).values_list('id', flat=True)
         if cognateClassIds is None:
             cognateClassIds = set(newIds)
         else:
@@ -2689,7 +2684,7 @@ def view_cladecognatesearch(request):
         id__in=cognateClassIds,
         lexeme__language__in=languageList.languages.all(),
         lexeme__meaning__in=meaningList.meanings.all()
-        ).prefetch_related(
+    ).prefetch_related(
         'lexeme_set',
         'lexeme_set__language',
         'lexeme_set__meaning').distinct().all()

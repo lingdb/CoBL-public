@@ -18,11 +18,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='source',
             name='TRS',
-            field=models.BooleanField(default=False, help_text=b'Traditional reference source (dated).'),
+            field=models.BooleanField(
+                default=False,
+                help_text=b'Traditional reference source (dated).'),
         ),
         migrations.AddField(
             model_name='source',
             name='respect',
-            field=models.TextField(help_text=b'A brief summary of the nature of the source its utility.', blank=True),
+            field=models.TextField(
+                help_text=b'A brief summary of the nature '
+                          b'of the source its utility.',
+                blank=True),
         ),
     ]

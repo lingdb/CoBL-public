@@ -2,7 +2,9 @@
 import django_tables2 as tables
 from django.utils.safestring import mark_safe
 
+
 class CheckBoxColumnDeprecated(tables.CheckBoxColumn):
+
     @property
     def header(self):
         return u'☓'
@@ -13,12 +15,15 @@ class CheckBoxColumnDeprecated(tables.CheckBoxColumn):
 
 
 class CheckBoxColumnTRS(tables.CheckBoxColumn):
+
     @property
     def header(self):
         return u'TRS'
+
     def render(self, value):
-        return mark_safe('<input type="checkbox" name="TRS"%s>' \
-                         %({True:u' checked', False:''}[value]))
+        return mark_safe('<input type="checkbox" name="TRS"%s>'
+                         % ({True: u' checked', False: ''}[value]))
+
 
 class CellClassColumn(tables.Column):
 
@@ -30,6 +35,7 @@ class CellClassColumn(tables.Column):
         self.attrs = {"td": {"class": clss}}
         return mark_safe(value)
 
+
 class SourcesTable(tables.Table):
 
     # Details	Name (author-year-letter)	Title	Year	Author	BibTeX type
@@ -40,9 +46,9 @@ class SourcesTable(tables.Table):
     year = tables.Column()
     author = tables.Column(empty_values=[])
     ENTRYTYPE = tables.Column()
-    cognacy = tables.Column() # cognate judgment
-    cogset = tables.Column() # cognate classification; rename: cog. set
-    lexeme = tables.Column() # lexeme citation
+    cognacy = tables.Column()  # cognate judgment
+    cogset = tables.Column()  # cognate classification; rename: cog. set
+    lexeme = tables.Column()  # lexeme citation
     deprecated = CheckBoxColumnDeprecated()  # tables.BooleanColumn()
     TRS = CheckBoxColumnTRS()
     edit = tables.Column()  # link to edit view? / open new frame below ?
@@ -57,15 +63,15 @@ class SourcesTable(tables.Table):
         if value == u'' and record['editor']:
             if record['editor']:
                 if len(record['editor'].split(' and ')) > 1:
-                    return '%s (eds.)' %(record['editor'])
-                return '%s (ed.)' %(record['editor'])
+                    return '%s (eds.)' % (record['editor'])
+                return '%s (ed.)' % (record['editor'])
         return value
 
     def queryset_link(self, value, record, name):
-        if len(value)!=0:
-            link = u"<a href='/sources/%s/%s'>%s</a>" %(record['pk'],
-                                                       name,
-                                                       len(value))
+        if len(value) != 0:
+            link = u"<a href='/sources/%s/%s'>%s</a>" % (record['pk'],
+                                                         name,
+                                                         len(value))
             return mark_safe(link)
         return str(len(value))
 
@@ -74,9 +80,10 @@ class SourcesTable(tables.Table):
 
     def render_cogset(self, value, record):
         return self.queryset_link(value, record, 'cogset')
-    
+
     def render_lexeme(self, value, record):
         return self.queryset_link(value, record, 'lexeme')
+
 
 class SourcesUpdateTable(tables.Table):
 
@@ -103,9 +110,9 @@ class SourcesUpdateTable(tables.Table):
     chapter = CellClassColumn(empty_values=[])
     isbn = CellClassColumn(empty_values=[])
     howpublished = CellClassColumn(empty_values=[])
-    #respect = CellClassColumn(empty_values=[])
-    #deprecated = CellClassColumn(empty_values=[])
-    #TRS = CellClassColumn(empty_values=[])
+    # respect = CellClassColumn(empty_values=[])
+    # deprecated = CellClassColumn(empty_values=[])
+    # TRS = CellClassColumn(empty_values=[])
 
     class Meta:
         attrs = {'class': 'paleblue'}

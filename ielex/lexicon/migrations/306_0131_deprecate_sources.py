@@ -3,14 +3,15 @@
 # https://github.com/lingdb/CoBL/issues/223#issuecomment-256815113
 from __future__ import unicode_literals, print_function
 from django.db import migrations
+from ielex.source_scripts.handle_duplicate_sources import handle_sources
 
 sources_changes = {'merge': {},
                    'delete': [],
                    'deprecate': [35, 191, 139, 362]
                    }
 
+
 def forwards_func(apps, schema_editor):
-    from ielex.source_scripts.handle_duplicate_sources import *
     handle_sources(sources_changes)
 
 
