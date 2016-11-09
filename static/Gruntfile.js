@@ -20,7 +20,7 @@ module.exports = function(grunt) {
           algorithm: 'sha1',
           length: 8,
           format: false,
-          rename: false
+          rename: true
         },
         src: './minified.js',
         dest: './assets.json'
