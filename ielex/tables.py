@@ -84,6 +84,24 @@ class SourcesTable(tables.Table):
     def render_lexeme(self, value, record):
         return self.queryset_link(value, record, 'lexeme')
 
+    """Filter: add second table header, e.g.:
+    <thead>
+      <tr class="filter" style="background-color: beige;">
+          <td class=""></td>
+          <td class=""><input></td>
+          <td class=""><input></td>
+          <td class=""><input></td>
+          <td class=""></td>
+          <td class=""></td>
+          <td class=""></td>
+          <td class=""></td>
+          <td class=""></td>
+          <td class=""></td>
+          <td class=""></td>
+      </tr>
+    </thead>
+    """
+
 
 class SourcesUpdateTable(tables.Table):
 

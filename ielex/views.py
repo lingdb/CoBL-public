@@ -1994,7 +1994,6 @@ def source_list(request):
                                 "perms": source_perms_check(request.user)
                                 })
 
-
 def export_bibtex(request):
     response = HttpResponse(content_type='text/plain; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename="export.bib"'
@@ -2005,7 +2004,6 @@ def export_bibtex(request):
         db.entries.append(source_obj.bibtex_dictionary)
     response.write(writer.write(db))
     return response
-
 
 class source_import(FormView):
 
