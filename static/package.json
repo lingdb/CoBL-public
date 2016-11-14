@@ -11,6 +11,7 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "grunt": "^0.4.5",
+    "grunt-asset-version-json": "^0.1.4",
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-requirejs": "^0.4.4",
     "grunt-contrib-watch": "^0.6.1"

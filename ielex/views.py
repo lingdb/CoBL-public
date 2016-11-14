@@ -1924,12 +1924,14 @@ def source_edit(request, source_id=0, action="", cogjudge_id=0, lexeme_id=0):
         "source": source,
         "action": action})
 
+
 def source_perms_check(user):
     if user.has_perm('lexicon.change_source') or \
        user.has_perm('lexicon.add_source') or \
        user.has_perm('lexicon.delete_source'):
         return True
     return False
+
 
 @logExceptions
 def source_list(request):
@@ -1955,7 +1957,7 @@ def source_list(request):
         else:
             print(form.errors)
         return HttpResponse()
-    
+
     elif request.POST.get("postType") == 'deprecated-change' and \
             source_perms_check(request.user):
         source_obj = Source.objects.get(pk=request.POST.get("id"))
@@ -2150,6 +2152,7 @@ class source_import(FormView):
             comparison_dict[key] = [entry[key], 'new']
         return {'status': 'new', 'dictionary': comparison_dict}
 
+
 def source_cognacy(request, source_id):
     source_obj = Source.objects.get(pk=source_id)
     formset = CognateJudgementFormSet(
@@ -2157,8 +2160,9 @@ def source_cognacy(request, source_id):
     return render_template(request, "source_related_inline.html",
                            {"formset": formset,
                             "name": "Cognacy",
-                            "source" : source_obj.shorthand
+                            "source": source_obj.shorthand
                             })
+
 
 def source_cogset(request, source_id):
     source_obj = Source.objects.get(pk=source_id)
@@ -2166,7 +2170,7 @@ def source_cogset(request, source_id):
     return render_template(request, "source_related_inline.html",
                            {"formset": formset,
                             "name": "Cognate Sets",
-                            "source" : source_obj.shorthand
+                            "source": source_obj.shorthand
                             })
 
 
@@ -2176,7 +2180,7 @@ def source_lexeme(request, source_id):
     return render_template(request, "source_related_inline.html",
                            {"formset": formset,
                             "name": "Lexemes",
-                            "source" : source_obj.shorthand
+                            "source": source_obj.shorthand
                             })
 # -- /source end/ -------------------------------------------------------------
 
@@ -2681,8 +2685,8 @@ def view_cladecognatesearch(request):
     # Removing unwanted entries from cognateClassIds:
     if len(currentClades) > 0:
         unwantedLanguages = languageList.languages.exclude(
-                languageclade__clade__in=currentClades
-            ).exclude(level0=0).values_list('id', flat=True)
+            languageclade__clade__in=currentClades
+        ).exclude(level0=0).values_list('id', flat=True)
 
         removeCognateClassIds = set(CognateClass.objects.filter(
             lexeme__language__in=unwantedLanguages,

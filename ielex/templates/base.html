@@ -211,11 +211,11 @@
       </div>
     </nav>
     {# Including javascript: #}
-    {% if debug %}
+    {% if minifiedJs %}
+      <script src="{% static minifiedJs %}"></script>
+    {% elif debug %}
       <script src="{% static 'bower_components/requirejs/require.js' %}"
               data-main="{% static 'js/main.js' %}"></script>
-    {% else %}
-      <script src="{% static 'minified.js' %}"></script>
     {% endif %}
   </body>
 </html>

@@ -2,7 +2,7 @@
 import json
 import logging
 import re
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from django import forms
 from django.contrib import messages
 from django.db import transaction
@@ -1562,10 +1562,9 @@ class UploadBiBTeXFileForm(forms.Form):
 
 # source-related inline forms:
 
-from collections import OrderedDict
 
 class OrderableInlineModelForm(forms.ModelForm):
-    
+
     def order_fields(self, ordered_fields):
         fields = OrderedDict()
         for key in ordered_fields:
@@ -1573,7 +1572,7 @@ class OrderableInlineModelForm(forms.ModelForm):
         for key, value in self.fields.items():
             fields[key] = value
         self.fields = fields
-        
+
 class LexemeCitationInlineForm(OrderableInlineModelForm):
 
     language = forms.CharField()
@@ -1591,7 +1590,8 @@ class LexemeCitationInlineForm(OrderableInlineModelForm):
         self.fields['lexeme'].initial = '<a href=%s>%s</a>' % \
                                         (lexeme.get_absolute_url(),
                                          lexeme.source_form)
-        self.order_fields(['lexeme', 'language', 'comment',])
+        self.order_fields(['lexeme', 'language', 'comment'])
+
 
 class CognateJudgementInlineForm(OrderableInlineModelForm):
 
@@ -1601,7 +1601,7 @@ class CognateJudgementInlineForm(OrderableInlineModelForm):
 
     class Meta:
         model = CognateJudgementCitation
-        fields=('cognate_judgement', 'lexeme', 'language', 'comment',)
+        fields = ('cognate_judgement', 'lexeme', 'language', 'comment')
         readonly_fields = fields
 
     def __init__(self, *args, **kwargs):
@@ -1612,10 +1612,12 @@ class CognateJudgementInlineForm(OrderableInlineModelForm):
         self.fields['lexeme'].initial = '<a href=%s>%s</a>' % \
                                         (lexeme.get_absolute_url(),
                                          lexeme.source_form)
-        self.fields['cognate_judgement'].initial = '<a href=%s>%s</a>' % \
-                                               (cognate_judgement.get_absolute_url(),
-                                                cognate_judgement)
-        self.order_fields(['cognate_judgement', 'lexeme', 'language', 'comment',])
+        self.fields['cognate_judgement'].initial = \
+            '<a href=%s>%s</a>' % \
+            (cognate_judgement.get_absolute_url(), cognate_judgement)
+        self.order_fields(
+            ['cognate_judgement', 'lexeme', 'language', 'comment'])
+
 
 class CognateClassInlineForm(OrderableInlineModelForm):
 
@@ -1623,33 +1625,34 @@ class CognateClassInlineForm(OrderableInlineModelForm):
 
     class Meta:
         model = CognateClassCitation
-        fields=('cognate_class', 'comment',)
+        fields = ('cognate_class', 'comment')
         readonly_fields = fields
 
     def __init__(self, *args, **kwargs):
         super(CognateClassInlineForm, self).__init__(*args, **kwargs)
         cognate_class = self.instance.cognate_class
-        self.fields['cognate_class'].initial = '<a href=%s>%s</a>' % \
-                                               (cognate_class.get_absolute_url(),
-                                                cognate_class)
-        self.order_fields(['cognate_class','comment'])
+        self.fields['cognate_class'].initial = \
+            '<a href=%s>%s</a>' % \
+            (cognate_class.get_absolute_url(), cognate_class)
+        self.order_fields(['cognate_class', 'comment'])
 
 CognateJudgementFormSet = inlineformset_factory(
     Source, CognateJudgementCitation,
-    form = CognateJudgementInlineForm,
+    form=CognateJudgementInlineForm,
     can_delete=False, fields=('comment',), extra=0)
 
 CognateClassFormSet = inlineformset_factory(
     Source, CognateClassCitation,
-    form = CognateClassInlineForm,
+    form=CognateClassInlineForm,
     can_delete=False, fields=('comment',), extra=0)
 
 LexemeFormSet = inlineformset_factory(
     Source, LexemeCitation,
-    form = LexemeCitationInlineForm,
+    form=LexemeCitationInlineForm,
     can_delete=False, fields=('comment',), extra=0)
 
 # OLDER:
+
 
 class EditSourceForm(forms.ModelForm):
 
