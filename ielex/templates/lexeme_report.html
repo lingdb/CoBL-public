@@ -57,9 +57,13 @@
           <tr>
             <th>Meaning:</th>
             <td>
+              {% if lexeme.meaning.gloss %}
               <a href="{% url 'meaning-report' lexeme.meaning.gloss %}#lexeme_{{ lexeme.id }}">
                 {{ lexeme.meaning.gloss }}
               </a>
+              {% else %}
+              This lexeme isn't linked to a meaning.
+              {% endif %}
             </td>
           </tr>
           <tr>
