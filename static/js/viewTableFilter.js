@@ -20,6 +20,11 @@
       callbacks: {} // :: Identifier -> IO ()
     };
     /**
+      Making sure resetting of filter settings is possible
+      independently of init:
+    */
+    $('#viewTableFilterReset').click(settings.cleanStorage);
+    /**
       Function to initialize viewTableFilter:
       @param el :: $ | window.Element | selector string
     */
