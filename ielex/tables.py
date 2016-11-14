@@ -41,17 +41,21 @@ class SourcesTable(tables.Table):
     # Details	Name (author-year-letter)	Title	Year	Author	BibTeX type
     # see http://wals.info/refdb for related info
 
-    details = tables.Column(empty_values=[], orderable=False)  # link to full view? / open new frame below ?
+    # link to full view? / open new frame below ?
+    details = tables.Column(empty_values=[], orderable=False)
     title = tables.Column(orderable=True)
     year = tables.Column(orderable=True)
     author = tables.Column(empty_values=[], orderable=True)
     ENTRYTYPE = tables.Column(orderable=True)
     cognacy = tables.Column(orderable=False)  # cognate judgment
-    cogset = tables.Column(orderable=False)  # cognate classification; rename: cog. set
+    # cognate classification; rename: cog. set
+    cogset = tables.Column(orderable=False)
     lexeme = tables.Column(orderable=False)  # lexeme citation
-    deprecated = CheckBoxColumnDeprecated(orderable=False)  # tables.BooleanColumn()
+    deprecated = CheckBoxColumnDeprecated(
+        orderable=False)  # tables.BooleanColumn()
     TRS = CheckBoxColumnTRS(orderable=False)
-    edit = tables.Column(empty_values=[], orderable=False)  # link to edit view? / open new frame below ?
+    # link to edit view? / open new frame below ?
+    edit = tables.Column(empty_values=[], orderable=False)
 
     class Meta:
         attrs = {'class': 'paleblue'}
@@ -94,6 +98,7 @@ class SourcesTable(tables.Table):
                                                          value.count())
             return mark_safe(link)
         return str(len(value))
+
 
 class SourcesUpdateTable(tables.Table):
 

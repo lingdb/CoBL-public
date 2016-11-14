@@ -103,7 +103,6 @@ from ielex.tables import SourcesTable, SourcesUpdateTable
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import FormView
-from django.utils.safestring import mark_safe
 from django.utils.decorators import method_decorator
 
 import bibtexparser
@@ -2000,6 +1999,7 @@ def source_list(request):
                                 "perms": source_perms_check(request.user)
                                 })
 
+
 def get_sources_table(queryset=''):
     sources_dict_lst = []
     if queryset == '':
@@ -2015,6 +2015,7 @@ def get_sources_table(queryset=''):
         sources_dict_lst.append(source_dict)
     return SourcesTable(sources_dict_lst)
 
+
 def export_bibtex(request):
     response = HttpResponse(content_type='text/plain; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename="export.bib"'
@@ -2025,6 +2026,7 @@ def export_bibtex(request):
         db.entries.append(source_obj.bibtex_dictionary)
     response.write(writer.write(db))
     return response
+
 
 class source_import(FormView):
 
