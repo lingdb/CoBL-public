@@ -1264,7 +1264,7 @@ class DyenCognateSet(models.Model):
 @reversion.register
 class Lexeme(AbstractTimestamped):
     language = models.ForeignKey(Language)
-    meaning = models.ForeignKey(Meaning, blank=True, null=True)
+    meaning = models.ForeignKey(Meaning)
     cognate_class = models.ManyToManyField(
         CognateClass, through="CognateJudgement", blank=True)
     source_form = models.CharField(max_length=128)
