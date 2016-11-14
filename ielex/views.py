@@ -1970,29 +1970,48 @@ def source_list(request):
         source_obj.TRS = status
         source_obj.save()
         return HttpResponse()
-    else:
-        sources_dict_lst = []
-        for source_obj in Source.objects.all():
-            source_dict = {}
-            source_dict['pk'] = source_obj.pk
-            for attr in source_obj.source_attr_lst:
-                source_dict[attr] = getattr(source_obj, attr)
-            source_dict['details'] = mark_safe(
-                '<button class="details_button show_d" '
-                'id="%s">More</button>' % (source_obj.pk))
-            if source_perms_check(request.user):
-                source_dict['edit'] = mark_safe(
-                    '<button class="edit_button show_e" '
-                    'id="%s">Edit</button>' % (source_obj.pk))
-            sources_dict_lst.append(source_dict)
-        sources_table = SourcesTable(sources_dict_lst)
+    elif request.POST.get("postType") == 'filter':
+        filter_dict = json.loads(request.POST.getlist("filter_dict[]")[0])
+        kwargs = {}
+        for key in filter_dict.keys():
+            value = filter_dict[key]
+            if value not in [u'', None]:
+                if key == 'entrytype':
+                    key = 'ENTRYTYPE'
+                kwargs['{0}__{1}'.format(key, 'icontains')] = value
+        if kwargs != {}:
+            queryset = Source.objects.filter(**kwargs)
+        else:
+            queryset = Source.objects.all()
+        sources_table = get_sources_table(queryset)
+        response = HttpResponse()
         RequestConfig(request,
-                      paginate={'per_page': 100}).configure(sources_table)
-
+                      paginate={'per_page': 1000}).configure(sources_table)
+        response.write(sources_table.as_html(request))
+        return response
+    else:
+        sources_table = get_sources_table()
+        RequestConfig(request,
+                      paginate={'per_page': 1000}).configure(sources_table)
         return render_template(request, "source_list.html",
                                {"sources": sources_table,
                                 "perms": source_perms_check(request.user)
                                 })
+
+def get_sources_table(queryset=''):
+    sources_dict_lst = []
+    if queryset == '':
+        queryset = Source.objects.all()
+    queryset = queryset.prefetch_related('cognatejudgementcitation_set',
+                                         'cognateclasscitation_set',
+                                         'lexemecitation_set')
+    for source_obj in queryset:
+        source_dict = {}
+        source_dict['pk'] = source_obj.pk
+        for attr in source_obj.source_attr_lst:
+            source_dict[attr] = getattr(source_obj, attr)
+        sources_dict_lst.append(source_dict)
+    return SourcesTable(sources_dict_lst)
 
 def export_bibtex(request):
     response = HttpResponse(content_type='text/plain; charset=utf-8')

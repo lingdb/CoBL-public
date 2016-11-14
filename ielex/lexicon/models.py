@@ -400,15 +400,18 @@ class Source(models.Model):
 
     @property
     def cognacy(self):  # cognate judgment
-        return self.cognatejudgementcitation_set.all()
+        return self.cognatejudgementcitation_set.all(). \
+               select_related('cognate_judgement__lexeme')
 
     @property
     def cogset(self):  # cognate classification; rename: cog. set
-        return self.cognateclasscitation_set.all()
+        return self.cognateclasscitation_set.all(). \
+               select_related('cognate_class')
 
     @property
     def lexeme(self):
-        return self.lexemecitation_set.all()
+        return self.lexemecitation_set.all(). \
+               select_related('lexeme')
 
     @property
     def bibtex_dictionary(self):

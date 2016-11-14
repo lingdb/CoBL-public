@@ -54,6 +54,41 @@ $(document).ready(function () {
 		window.location.replace('export/')
 	});
 
+	/**** FILTER TABLE *****/
+	var delay = (function(){
+	  var timer = 0;
+	  return function(callback, ms){
+	  clearTimeout (timer);
+	  timer = setTimeout(callback, ms);
+	 };
+	})();
+	
+	$('.filter-column input').keyup(function() {
+		delay(function(){
+		filter_table();
+		}, 1000 );
+	});
+	
+	function filter_table(){
+		var filter_dict = {};
+		$(".filter-column").each(function(){
+			var key = $(this).attr('id').toLowerCase();
+			var value = $(this).children('input').val();
+			filter_dict[key] = value
+		})
+		filter_dict = [JSON.stringify(filter_dict)]
+		var postdata = {
+			'postType': 'filter',
+			'filter_dict': filter_dict,
+			'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value')
+		};
+		$.post("/sources/", postdata, function (data) {
+			var $data = $( data );
+			$('tbody').replaceWith($data.find('tbody'));
+			$('ul.pagination').replaceWith($data.find('ul.pagination'));
+		});
+	};
+	
 	{% if perms %}
 	/**** EDIT *****/
 	$(document.body).on('click', '.edit_button.show_e', function() {
@@ -262,8 +297,8 @@ table#edit_modal tbody td, table#edit_modal tbody td * {
   </div>
 </div>
 
-  <div class="row">
+<div class="row">
 	{% render_table sources %}
-	</div>
+</div>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

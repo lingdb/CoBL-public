@@ -1573,8 +1573,7 @@ class OrderableInlineModelForm(forms.ModelForm):
         for key, value in self.fields.items():
             fields[key] = value
         self.fields = fields
-    
-
+        
 class LexemeCitationInlineForm(OrderableInlineModelForm):
 
     language = forms.CharField()

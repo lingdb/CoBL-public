@@ -41,20 +41,21 @@ class SourcesTable(tables.Table):
     # Details	Name (author-year-letter)	Title	Year	Author	BibTeX type
     # see http://wals.info/refdb for related info
 
-    details = tables.Column()  # link to full view? / open new frame below ?
-    title = tables.Column()
-    year = tables.Column()
-    author = tables.Column(empty_values=[])
-    ENTRYTYPE = tables.Column()
-    cognacy = tables.Column()  # cognate judgment
-    cogset = tables.Column()  # cognate classification; rename: cog. set
-    lexeme = tables.Column()  # lexeme citation
-    deprecated = CheckBoxColumnDeprecated()  # tables.BooleanColumn()
-    TRS = CheckBoxColumnTRS()
-    edit = tables.Column()  # link to edit view? / open new frame below ?
+    details = tables.Column(empty_values=[], orderable=False)  # link to full view? / open new frame below ?
+    title = tables.Column(orderable=True)
+    year = tables.Column(orderable=True)
+    author = tables.Column(empty_values=[], orderable=True)
+    ENTRYTYPE = tables.Column(orderable=True)
+    cognacy = tables.Column(orderable=False)  # cognate judgment
+    cogset = tables.Column(orderable=False)  # cognate classification; rename: cog. set
+    lexeme = tables.Column(orderable=False)  # lexeme citation
+    deprecated = CheckBoxColumnDeprecated(orderable=False)  # tables.BooleanColumn()
+    TRS = CheckBoxColumnTRS(orderable=False)
+    edit = tables.Column(empty_values=[], orderable=False)  # link to edit view? / open new frame below ?
 
     class Meta:
         attrs = {'class': 'paleblue'}
+        template = "table_filterable.html"
 
     def __init__(self, *args, **kwargs):
         super(SourcesTable, self).__init__(*args, **kwargs)
@@ -67,14 +68,6 @@ class SourcesTable(tables.Table):
                 return '%s (ed.)' % (record['editor'])
         return value
 
-    def queryset_link(self, value, record, name):
-        if len(value) != 0:
-            link = u"<a href='/sources/%s/%s'>%s</a>" % (record['pk'],
-                                                         name,
-                                                         len(value))
-            return mark_safe(link)
-        return str(len(value))
-
     def render_cognacy(self, value, record):
         return self.queryset_link(value, record, 'cognacy')
 
@@ -84,24 +77,23 @@ class SourcesTable(tables.Table):
     def render_lexeme(self, value, record):
         return self.queryset_link(value, record, 'lexeme')
 
-    """Filter: add second table header, e.g.:
-    <thead>
-      <tr class="filter" style="background-color: beige;">
-          <td class=""></td>
-          <td class=""><input></td>
-          <td class=""><input></td>
-          <td class=""><input></td>
-          <td class=""></td>
-          <td class=""></td>
-          <td class=""></td>
-          <td class=""></td>
-          <td class=""></td>
-          <td class=""></td>
-          <td class=""></td>
-      </tr>
-    </thead>
-    """
+    def render_details(self, value, record):
+        details_button = '<button class="details_button show_d" '  \
+                         'id="%s">More</button>' % (record['pk'])
+        return mark_safe(details_button)
 
+    def render_edit(self, value, record):
+        edit_button = '<button class="edit_button show_e" ' \
+                      'id="%s">Edit</button>' % (record['pk'])
+        return mark_safe(edit_button)
+
+    def queryset_link(self, value, record, name):
+        if len(value) != 0:
+            link = u"<a href='/sources/%s/%s'>%s</a>" % (record['pk'],
+                                                         name,
+                                                         value.count())
+            return mark_safe(link)
+        return str(len(value))
 
 class SourcesUpdateTable(tables.Table):
 
