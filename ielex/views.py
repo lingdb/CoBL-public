@@ -36,7 +36,7 @@ from ielex.forms import AddCitationForm, \
     CloneLanguageForm, \
     CognateJudgementSplitTable, \
     EditCitationForm, \
-    EditLanguageForm, \
+    AddLanguageForm, \
     EditLanguageListForm, \
     EditLanguageListMembersForm, \
     EditLexemeForm, \
@@ -875,7 +875,7 @@ def delete_language_list(request, language_list):
 def language_add_new(request, language_list):
     language_list = LanguageList.objects.get(name=language_list)
     if request.method == 'POST':
-        form = EditLanguageForm(request.POST)
+        form = AddLanguageForm(request.POST)
         if "cancel" in form.data:  # has to be tested before data is cleaned
             return HttpResponseRedirect(reverse("view-language-list",
                                                 args=[language_list.name]))
@@ -890,7 +890,7 @@ def language_add_new(request, language_list):
             return HttpResponseRedirect(reverse("language-report",
                                                 args=[language.ascii_name]))
     else:  # first visit
-        form = EditLanguageForm()
+        form = AddLanguageForm()
     return render_template(request, "language_add_new.html",
                            {"form": form})
 

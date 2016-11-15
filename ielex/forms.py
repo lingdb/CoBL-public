@@ -166,7 +166,7 @@ class EditLexemeForm(forms.ModelForm):
         exclude = ["language", "cognate_class", "source"]
 
 
-class EditLanguageForm(forms.ModelForm):
+class AddLanguageForm(forms.ModelForm):
 
     def clean_ascii_name(self):
         return clean_value_for_url(self, "ascii_name")
