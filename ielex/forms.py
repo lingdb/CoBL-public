@@ -176,7 +176,11 @@ class AddLanguageForm(forms.ModelForm):
 
     class Meta:
         model = Language
-        fields = ['ascii_name', 'utf8_name']
+        fields = ['utf8_name', 'ascii_name']
+        labels = {
+            'ascii_name': ('URL Name'),
+            'utf8_name': ('Display Name')
+        }
 
 
 class EditMeaningForm(forms.ModelForm):
