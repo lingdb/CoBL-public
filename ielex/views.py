@@ -918,11 +918,11 @@ def edit_language(request, language):
                     return HttpResponseRedirect(reverse("view-all-languages"))
                 else:
                     messages.error(request, language.deltaReport(**problem))
-        except Exception:
+        except Exception as e:
             logging.exception('Problem updating single language '
                               'in edit_language.')
             messages.error(request, 'Sorry, the server could not update '
-                           'the language.')
+                           'the language. %s' % e)
     language.idField = language.id
     form = LanguageListRowForm(obj=language)
 
