@@ -884,7 +884,7 @@ def language_add_new(request, language_list):
             language = Language.objects.get(
                 ascii_name=form.cleaned_data["ascii_name"])
             try:
-                language_list.insert(0, language)
+                language_list.append(language)
             except IntegrityError:
                 pass  # automatically inserted into LanguageList.DEFAULT
             return HttpResponseRedirect(reverse("language-report",
