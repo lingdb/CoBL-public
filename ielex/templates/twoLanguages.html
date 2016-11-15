@@ -435,6 +435,7 @@
             {% for lexeme in lex_ed_form.lexemes %}
               {% if lexeme.object_data.original %}
                 <tr class="original_row"
+                    id="original_row_lexeme{{ lexeme.object_data.original.id }}"
                     style="background-color: #C4C4C4;">
                   {# id_original.html #}
                   <td class="hide"></td>
@@ -675,6 +676,15 @@
                        target="_blank"
                        class="pull-right">
                       <span class="glyphicon glyphicon-info-sign"></span>
+                    </a>
+                  {% endif %}
+                  {% if lexeme.object_data.original %}
+                    <a class="btn btn-default btn-xs pull-right"
+                       data-toggle="tooltip"
+                       data-placement="bottom"
+                       title="Fill with data from original"
+                       data-copyRowFrom="original_row_lexeme{{ lexeme.object_data.original.id }}">
+                      <span class="glyphicon glyphicon-share-alt"></span>
                     </a>
                   {% endif %}
                 </td>
