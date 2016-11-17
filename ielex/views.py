@@ -880,13 +880,14 @@ def language_add_new(request, language_list):
             return HttpResponseRedirect(reverse("view-language-list",
                                                 args=[language_list.name]))
         if form.is_valid():
-            form.save()
-            language = Language.objects.get(
-                ascii_name=form.cleaned_data["ascii_name"])
-            try:
-                language_list.append(language)
-            except IntegrityError:
-                pass  # automatically inserted into LanguageList.DEFAULT
+            with transaction.atomic():
+                form.save()
+                language = Language.objects.get(
+                    ascii_name=form.cleaned_data["ascii_name"])
+                try:
+                    language_list.append(language)
+                except IntegrityError:
+                    pass  # automatically inserted into LanguageList.DEFAULT
             return HttpResponseRedirect(reverse("language-report",
                                                 args=[language.ascii_name]))
     else:  # first visit
