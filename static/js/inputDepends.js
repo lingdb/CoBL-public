@@ -1,7 +1,6 @@
 (function(){
   "use strict";
   return define(['jquery'], function($){
-    console.log('THERE!'); // FIXME DEBUG
     //Handling row dependencies:
     $("input[data-dependencyfor-tr]").each(function(){
       var t = $(this);
