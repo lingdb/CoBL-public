@@ -9,9 +9,19 @@
     $('[data-copyrowfrom]').each(function(){
       var $btn = $(this);
       $btn.click(function(){
-        $btn.closest('tr').find('input:visible').each(function(){
-          var $input = $(this);
-          console.log('Found an input element:', $input.attr('id'));
+        var copyDict = {};
+        //Gathering source data:
+        $($btn.data('copyrowfrom')).find('[data-copyrowfrom-key]').each(function(){
+          var $td = $(this);
+          copyDict[$td.data('copyrowfrom-key')] = $td.text().trim();
+        });
+        //Placeing data in target where possible:
+        $btn.closest('tr').find('input[data-copyrowfrom-key]').each(function(){
+          var $input = $(this),
+              key = $input.data('copyrowfrom-key');
+          if(!$input.val() && key in copyDict){
+            $input.val(copyDict[key]);
+          }
         });
       });
     });

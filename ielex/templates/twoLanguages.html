@@ -477,7 +477,7 @@
                     {% endif %}
                   </td>
                   {# sourceform_original.html #}
-                  <td class="lexemeSourceForm">
+                  <td class="lexemeSourceForm" data-copyrowfrom-key="lexemeSourceForm">
                     {{ lexeme.object_data.original.source_form }}
                   </td>
                   {# viewcopy_original.html #}
@@ -691,7 +691,7 @@
                 {# sourceform_data.html #}
                 <td class="lexemeSourceForm">
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.source_form id="source_form" class="form-control" style="font-size: 15px;" %}
+                    {% form_field lexeme.source_form id="source_form" class="form-control" style="font-size: 15px;" data-copyrowfrom-key="lexemeSourceForm" %}
                   {% elif lexeme.object_data.source_form %}
                     {{ lexeme.object_data.source_form }}
                   {% endif %}
