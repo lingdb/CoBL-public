@@ -43,8 +43,8 @@ from ielex.forms import AddCitationForm, \
     EditMeaningForm, \
     EditMeaningListForm, \
     EditSourceForm, \
-    LanguageListRowForm, \
     LanguageListProgressForm, \
+    EditSingleLanguageForm, \
     LexemeTableEditCognateClassesForm, \
     LexemeTableLanguageWordlistForm, \
     LexemeTableViewMeaningsForm, \
@@ -906,7 +906,7 @@ def edit_language(request, language):
                                             args=[language.ascii_name]))
 
     if request.method == 'POST':
-        form = LanguageListRowForm(request.POST)
+        form = EditSingleLanguageForm(request.POST)
         try:
             form.validate()
             data = form.data
@@ -924,7 +924,7 @@ def edit_language(request, language):
             messages.error(request, 'Sorry, the server could not update '
                            'the language. %s' % e)
     language.idField = language.id
-    form = LanguageListRowForm(obj=language)
+    form = EditSingleLanguageForm(obj=language)
 
     return render_template(request, "language_edit.html",
                            {"language": language,
