@@ -1543,7 +1543,7 @@ class LanguageList(models.Model):
         if self.languagelistorder_set.count():
             llos = self.languagelistorder_set.order_by('order').all()
             for i, llo in enumerate(llos):
-                if i != llo.order:
+                if i < llo.order:
                     llo.order = i
                     llo.save()
 

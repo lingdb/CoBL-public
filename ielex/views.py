@@ -7,7 +7,7 @@ import requests
 import time
 from collections import defaultdict, deque
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -36,15 +36,15 @@ from ielex.forms import AddCitationForm, \
     CloneLanguageForm, \
     CognateJudgementSplitTable, \
     EditCitationForm, \
-    EditLanguageForm, \
+    AddLanguageForm, \
     EditLanguageListForm, \
     EditLanguageListMembersForm, \
     EditLexemeForm, \
     EditMeaningForm, \
     EditMeaningListForm, \
     EditSourceForm, \
-    LanguageListRowForm, \
     LanguageListProgressForm, \
+    EditSingleLanguageForm, \
     LexemeTableEditCognateClassesForm, \
     LexemeTableLanguageWordlistForm, \
     LexemeTableViewMeaningsForm, \
@@ -875,27 +875,29 @@ def delete_language_list(request, language_list):
 def language_add_new(request, language_list):
     language_list = LanguageList.objects.get(name=language_list)
     if request.method == 'POST':
-        form = EditLanguageForm(request.POST)
+        form = AddLanguageForm(request.POST)
         if "cancel" in form.data:  # has to be tested before data is cleaned
             return HttpResponseRedirect(reverse("view-language-list",
                                                 args=[language_list.name]))
         if form.is_valid():
-            form.save()
-            language = Language.objects.get(
-                ascii_name=form.cleaned_data["ascii_name"])
-            try:
-                language_list.insert(0, language)
-            except IntegrityError:
-                pass  # automatically inserted into LanguageList.DEFAULT
+            with transaction.atomic():
+                form.save()
+                language = Language.objects.get(
+                    ascii_name=form.cleaned_data["ascii_name"])
+                try:
+                    language_list.append(language)
+                except IntegrityError:
+                    pass  # automatically inserted into LanguageList.DEFAULT
             return HttpResponseRedirect(reverse("language-report",
                                                 args=[language.ascii_name]))
     else:  # first visit
-        form = EditLanguageForm()
+        form = AddLanguageForm()
     return render_template(request, "language_add_new.html",
                            {"form": form})
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 @logExceptions
 def edit_language(request, language):
     try:
@@ -906,7 +908,7 @@ def edit_language(request, language):
                                             args=[language.ascii_name]))
 
     if request.method == 'POST':
-        form = LanguageListRowForm(request.POST)
+        form = EditSingleLanguageForm(request.POST)
         try:
             form.validate()
             data = form.data
@@ -918,13 +920,13 @@ def edit_language(request, language):
                     return HttpResponseRedirect(reverse("view-all-languages"))
                 else:
                     messages.error(request, language.deltaReport(**problem))
-        except Exception:
+        except Exception as e:
             logging.exception('Problem updating single language '
                               'in edit_language.')
             messages.error(request, 'Sorry, the server could not update '
-                           'the language.')
+                           'the language. %s' % e)
     language.idField = language.id
-    form = LanguageListRowForm(obj=language)
+    form = EditSingleLanguageForm(obj=language)
 
     return render_template(request, "language_edit.html",
                            {"language": language,
