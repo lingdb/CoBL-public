@@ -7,7 +7,7 @@ import requests
 import time
 from collections import defaultdict, deque
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -897,6 +897,7 @@ def language_add_new(request, language_list):
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 @logExceptions
 def edit_language(request, language):
     try:
