@@ -100,6 +100,8 @@
                   </div>
                 </div>
               </th>
+              {# copyrowfrom_title.html #}
+              <th></th>
               {# cognateclassids_title.html #}
               <th style="width: 45px;">
                 Cog.<br>IDs
@@ -257,8 +259,10 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
+              {# copyrowfrom_filter.html #}
+              <td></td>
               {# cognateclassids_filter.html #}
-              <td style="width: 45px;">
+              <td style="width: 45px;" colspan="2">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".cognateClassId">
                   <span class="glyphicon glyphicon-sort"></span>
@@ -515,6 +519,8 @@
                       </span>
                     </center>
                   </td>
+                  {# copyrowfrom_original.html #}
+                  <td></td>
                   {# cognateclassids_original.html #}
                   <td class="cognateClassId" style="text-align: center; width: 45px;">
                     {% for c in lexeme.object_data.original.allCognateClasses %}
@@ -684,15 +690,6 @@
                       <span class="glyphicon glyphicon-info-sign"></span>
                     </a>
                   {% endif %}
-                  {% if lexeme.object_data.original %}
-                    <a class="btn btn-default btn-xs pull-right"
-                       data-toggle="tooltip"
-                       data-placement="bottom"
-                       title="Fill with data from original"
-                       data-copyrowfrom="#original_row_lexeme{{ lexeme.object_data.original.id }}">
-                      <span class="glyphicon glyphicon-share-alt"></span>
-                    </a>
-                  {% endif %}
                 </td>
                 {# sourceform_data.html #}
                 <td class="lexemeSourceForm">
@@ -759,6 +756,18 @@
                       {{ lexeme.object_data.number_cognate_coded }}
                     </span>
                   </center>
+                </td>
+                {# copyrowfrom_data.html #}
+                <td>
+                  {% if lexeme.object_data.original %}
+                    <a class="btn btn-default btn-xs pull-right"
+                       data-toggle="tooltip"
+                       data-placement="bottom"
+                       title="Fill with data from original"
+                       data-copyrowfrom="#original_row_lexeme{{ lexeme.object_data.original.id }}">
+                      <span class="glyphicon glyphicon-share-alt"></span>
+                    </a>
+                  {% endif %}
                 </td>
                 {# cognateclassids_data.html #}
                 <td class="cognateClassId" style="text-align: center; width: 45px;">
