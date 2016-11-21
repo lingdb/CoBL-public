@@ -19,7 +19,7 @@
         $btn.closest('tr').find('input[data-copyrowfrom-key]').each(function(){
           var $input = $(this),
               key = $input.data('copyrowfrom-key');
-          if(!$input.val() && key in copyDict){
+          if(key in copyDict){
             $input.val(copyDict[key]);
           }
         });
