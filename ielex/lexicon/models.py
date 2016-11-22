@@ -331,18 +331,18 @@ class Source(models.Model):
                   """of the source its utility.""")
 
     bibtex_attr_lst = ['citation_text', 'ENTRYTYPE', 'author',
-                       'authortype', 'year', 'title', 'booktitle',
+                       'year', 'title', 'booktitle',
                        'booksubtitle', 'bookauthor', 'editor',
-                       'editortype', 'editora', 'editoratype',
+                       'editortype', 'editora',
                        'pages', 'part', 'edition',
                        'journaltitle', 'location', 'link',
                        'note', 'number', 'series', 'volume',
                        'publisher', 'institution', 'chapter',
                        'howpublished', 'shorthand', 'isbn',
-                       'deprecated', 'TRS', 'respect',
                        ]
-    relations_attr_lst = ['cognacy', 'cogset', 'lexeme']
-    source_attr_lst = bibtex_attr_lst + relations_attr_lst
+    cobl_attr_lst = ['authortype', 'editortype', 'editoratype',
+                     'deprecated', 'TRS', 'respect']
+    source_attr_lst = bibtex_attr_lst + cobl_attr_lst
 
     class Meta:
         ordering = ['shorthand']
@@ -399,27 +399,33 @@ class Source(models.Model):
             'class="pull-right">Edit</a>' % (self.get_absolute_url()))
 
     @property
-    def cognacy(self):  # cognate judgment
-        return self.cognatejudgementcitation_set.all(). \
-               select_related('cognate_judgement__lexeme')
-
-    @property
-    def cogset(self):  # cognate classification; rename: cog. set
-        return self.cognateclasscitation_set.all(). \
-               select_related('cognate_class')
-
-    @property
-    def lexeme(self):
-        return self.lexemecitation_set.all(). \
-               select_related('lexeme')
-
-    @property
     def bibtex_dictionary(self):
         bibtex_dictionary = {}
         bibtex_dictionary['ID'] = str(self.pk)
         for key in self.bibtex_attr_lst:
-            bibtex_dictionary[key] = unicode(getattr(self, key))
+            if unicode(getattr(self, key)) != u'':
+                bibtex_dictionary[key] = unicode(getattr(self, key))
         return bibtex_dictionary
+
+##    @property
+##    def COinS(self):
+##        bibtex_rft_dict = {'ENTRYTYPE':'genre', 'title':'title',
+##                           'year':'date','author':'au',
+##                           'booktitle':'btitle','publisher':'pub',
+##                           'journaltitle':'jtitle','location':'place',
+##                           'chapter':'atitle','pages':'pages',
+##                           'series':'series', 'volume':'volume',
+##                           'institution':'aucorp', 'isbn':'isbn',
+##                           'number':'issue', 'part':'part',
+##                           'edition':'edition'}
+####        bibtex_attr_lst = ['booksubtitle', 'bookauthor', 'editor',
+####                           'editortype', 'editora','link','note',
+####                           'howpublished', 'shorthand']
+##        rft_attrs_lst = []
+##        for key in self.bibtex_attr_lst:
+##            if key == 'link':
+##                'rft_id'
+##        return '<span class="Z3988" title="ctx_ver=Z39.88-2004&amp%s>%</span>' %('&amp;'.join(rft_attrs_lst))
 
     def populate_from_bibtex(self, bibtex_dict):
         for key in bibtex_dict.keys():
@@ -1337,8 +1343,8 @@ class Lexeme(AbstractTimestamped):
         if len(ids) == 0:
             return None
         return {
-            'id':            ','.join(ids),
-            'root_form':     ','.join(rfs),
+            'id': ','.join(ids),
+            'root_form': ','.join(rfs),
             'root_language': ','.join(rls)}
 
     def timestampedFields(self):
@@ -1817,9 +1823,9 @@ models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 @disable_for_loaddata
 def update_meaning_percent_coded(sender, instance, **kwargs):
     meaning = None
-    if type(instance) == Lexeme:
+    if isinstance(instance, Lexeme):
         meaning = instance.meaning  # Could be None
-    elif type(instance) == CognateJudgement:
+    elif isinstance(instance, CognateJudgement):
         meaning = instance.lexeme.meaning  # Could be None
     if meaning is not None:
         meaning.set_percent_coded()

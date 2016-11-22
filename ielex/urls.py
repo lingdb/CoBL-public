@@ -29,6 +29,7 @@ from ielex.views import add_language_list, \
                         source_cognacy, \
                         source_cogset, \
                         source_lexeme, \
+                        SourceAutocomplete, \
                         export_bibtex, \
                         viewAbout, \
                         viewAuthors, \
@@ -268,6 +269,11 @@ urlpatterns = patterns(
         source_cogset, name="source-cogset"),
     url(r'^sources/(?P<source_id>\d+)/lexeme/$',
         source_lexeme, name="source-lexeme"),
+    url(
+        r'^source-autocomplete/$',
+        SourceAutocomplete.as_view(),
+        name='source-autocomplete',
+    ),
 
     # Cognate
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report, name="cognate-set"),

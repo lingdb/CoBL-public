@@ -44,6 +44,7 @@ from wtforms.ext.django.orm import model_form
 from lexicon.models import Lexeme
 from operator import itemgetter
 from ielex.formHelpers import WTFormToFormgroup
+from dal import autocomplete
 
 LexemeForm = model_form(Lexeme)
 
@@ -127,12 +128,6 @@ class ChooseOneSourceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         label = obj.shorthand
         return super(ChooseOneSourceField, self).label_from_instance(label)
-
-# def _get_choices(self):
-#         choices = super(ChooseOneSourceField, self)._get_choices()
-# for choice in sorted(choices, key=itemgetter(1)):
-# yield choice
-#     choices = property(_get_choices, forms.ModelChoiceField._set_choices)
 
 
 class AddLexemeForm(WTForm):
@@ -1488,7 +1483,13 @@ class MeaningListTableForm(WTForm):
 
 class ChooseSourceForm(forms.Form):
     source = ChooseSourcesField(
-        queryset=Source.objects.all().filter(deprecated=False))
+        queryset=Source.objects.all().filter(deprecated=False),
+        widget=autocomplete.ModelSelect2(url='source-autocomplete'))
+
+    class Meta:
+        widgets = {
+            'source': autocomplete.ModelSelect2(url='source-autocomplete')
+        }
 
 
 class EditCitationForm(forms.Form):
@@ -1517,16 +1518,26 @@ class EditCognateClassCitationForm(forms.ModelForm):
     class Meta:
         model = CognateClassCitation
         fields = ["source", "pages", "comment"]
+        widgets = {
+            'source': autocomplete.ModelSelect2(url='source-autocomplete')
+        }
 
 
 class AddCitationForm(forms.Form):
     source = ChooseOneSourceField(
         queryset=Source.objects.all().filter(deprecated=False),
-        help_text="")
+        help_text="",
+        widget=autocomplete.ModelSelect2(url='source-autocomplete'))
+
     pages = forms.CharField(required=False)
     comment = forms.CharField(
         widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}),
         required=False)
+
+    class Meta:
+        widgets = {
+            'source': autocomplete.ModelSelect2(url='source-autocomplete')
+        }
 
 
 class ChooseCognateClassForm(forms.Form):
@@ -1625,15 +1636,7 @@ class SourceDetailsForm(forms.ModelForm):
 
     class Meta:
         model = Source
-        fields = ['citation_text', 'authortype', 'booktitle',
-                  'booksubtitle', 'bookauthor', 'editor',
-                  'editortype', 'editora', 'editoratype',
-                  'pages', 'part', 'edition',
-                  'journaltitle', 'location', 'link',
-                  'note', 'number', 'series', 'volume',
-                  'publisher', 'institution', 'chapter',
-                  'howpublished', 'shorthand', 'isbn', 'respect',
-                  ]
+        fields = ['citation_text']
 
     def __init__(self, *args, **kwargs):
         super(SourceDetailsForm, self).__init__(*args, **kwargs)

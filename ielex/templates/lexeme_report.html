@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% load staticfiles %}
 {% load lexicon_utils %}
 {% block title %}
@@ -389,5 +389,10 @@
       </div>
     </div>
   </div>
+{% endblock %}
+{% block media %}
+<script type="text/javascript" src="{% static 'autocomplete_light/vendor/select2/vendor/jquery-2.1.0.js' %}"></script>
+
+{{ form.media }}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

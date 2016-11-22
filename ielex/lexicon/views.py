@@ -10,18 +10,18 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import CreateView, UpdateView, TemplateView
 from ielex import settings
 from ielex.lexicon.models import CognateClass, \
-                                 CognateClassCitation, \
-                                 CognateJudgement, \
-                                 LanguageList, \
-                                 Lexeme, \
-                                 MeaningList, \
-                                 NexusExport, \
-                                 Clade
+    CognateClassCitation, \
+    CognateJudgement, \
+    LanguageList, \
+    Lexeme, \
+    MeaningList, \
+    NexusExport, \
+    Clade
 from ielex.forms import EditCognateClassCitationForm
 from ielex.lexicon.forms import ChooseNexusOutputForm, DumpSnapshotForm
 from ielex.lexicon.functions import nexus_comment
 from ielex.lexicon.defaultModels import getDefaultWordlistId, \
-                                        getDefaultLanguagelistId
+    getDefaultLanguagelistId
 
 try:
     if settings.default_language_list != "all":
@@ -160,7 +160,7 @@ class DumpRawDataView(TemplateView):
             form.cleaned_data["language_list"],
             form.cleaned_data["meaning_list"]
             # set(form.cleaned_data["reliability"]),
-            ), file=response)
+        ), file=response)
         return response
 
 
@@ -249,7 +249,7 @@ def write_nexus(language_list_name,       # str
               format symbols="01" missing=?;""" % len(cognate_class_names)))
         labels = []
         for i, cc in enumerate(cognate_class_names):
-            labels.append("    %d %s" % (i+1, cc))
+            labels.append("    %d %s" % (i + 1, cc))
         exportData.append(",\n".join(labels))
         exportData.append("  ;\n  matrix")
         exportBEAUti.append("  matrix")
@@ -282,16 +282,16 @@ def write_nexus(language_list_name,       # str
                    " ".join(language_names))))
 
     if kwargs['label_cognate_sets']:
-        row = [" "*9] + [
+        row = [" " * 9] + [
             str(i).ljust(10) for i in
             range(len(cognate_class_names))[10::10]]
-        appendExports("   %s[ %s ]" % (" "*max_len, "".join(row)))
-        row = ".".join([" "*9]*(int((len(cognate_class_names)+9)/10)))
-        appendExports("   %s[ %s ]" % (" "*max_len, row))
+        appendExports("   %s[ %s ]" % (" " * max_len, "".join(row)))
+        row = ".".join([" " * 9] * (int((len(cognate_class_names) + 9) / 10)))
+        appendExports("   %s[ %s ]" % (" " * max_len, row))
 
     # matrix comments requested in #314:
     matrixComments = getMatrixCommentsFromCognateNames(
-        cognate_class_names, padding=max_len+4)
+        cognate_class_names, padding=max_len + 4)
     appendExports(matrixComments + "\n")
 
     # write matrix
@@ -305,7 +305,7 @@ def write_nexus(language_list_name,       # str
                 return s
         appendExports("    %s %s%s" %
                       (quoted(language_name),
-                       " "*(max_len - len(quoted(language_name))),
+                       " " * (max_len - len(quoted(language_name))),
                        "".join(row)))
     # matrix comments requested in #314:
     appendExports(matrixComments)
@@ -328,7 +328,7 @@ def write_nexus(language_list_name,       # str
     def writeCharsetAssumptions(appendTo):
         appendTo.append("begin assumptions;")
         for charset in assumptions:
-            appendTo.append("    "+charset)
+            appendTo.append("    " + charset)
         appendTo.append("end;")
     if assumptions and dialect != "NN":
         writeCharsetAssumptions(exportData)
@@ -383,142 +383,142 @@ def construct_matrix(languages,                # [Language]
                      **kwargs):                # don't care
 
         # Specifying cognate classes we're interested in:
-        cognateJudgementFilter = {
-            'lexeme__language__in': languages,
-            'lexeme__meaning__in': meanings
-        }
-        # If excludeNotSwadesh, only allow cjs
-        # with a lexeme that is not_swadesh_term=False
-        if excludeNotSwadesh:
-            cognateJudgementFilter['lexeme__not_swadesh_term'] = False
-        # Filtering interesting cognate judgements:
-        wantedCJs = CognateJudgement.objects.filter(**cognateJudgementFilter)
-        if excludePllDerivation:
-            wantedCJs = wantedCJs.exclude(
-                cognate_class__parallelDerivation=True)
-        if excludeIdeophonic:
-            wantedCJs = wantedCJs.exclude(cognate_class__ideophonic=True)
-        if excludeDubious:
-            wantedCJs = wantedCJs.exclude(cognate_class__dubiousSet=True)
-        if excludeLoanword:
-            wantedCJs = wantedCJs.exclude(cognate_class__loanword=True)
-        elif excludePllLoan:  # not excludeLoanword and excludePllLoan
-            wantedCJs = wantedCJs.exclude(
-                cognate_class__parallelLoanEvent=True)
-        elif includePllLoan:  # not excludeLoanword and includePllLoan
-            raise ValueError('Case not implemented.')  # FIXME IMPLEMENT
-        # synonymous cognate classes (i.e. cognate reflexes representing
-        # a single Swadesh meaning)
-        cognate_classes = defaultdict(list)
-        for cc, meaning in wantedCJs.order_by(
-                           "lexeme__meaning",
-                           "cognate_class").values_list(
-                               "cognate_class__id",
-                               "lexeme__meaning__gloss").distinct():
-            cognate_classes[meaning].append(cc)
+    cognateJudgementFilter = {
+        'lexeme__language__in': languages,
+        'lexeme__meaning__in': meanings
+    }
+    # If excludeNotSwadesh, only allow cjs
+    # with a lexeme that is not_swadesh_term=False
+    if excludeNotSwadesh:
+        cognateJudgementFilter['lexeme__not_swadesh_term'] = False
+    # Filtering interesting cognate judgements:
+    wantedCJs = CognateJudgement.objects.filter(**cognateJudgementFilter)
+    if excludePllDerivation:
+        wantedCJs = wantedCJs.exclude(
+            cognate_class__parallelDerivation=True)
+    if excludeIdeophonic:
+        wantedCJs = wantedCJs.exclude(cognate_class__ideophonic=True)
+    if excludeDubious:
+        wantedCJs = wantedCJs.exclude(cognate_class__dubiousSet=True)
+    if excludeLoanword:
+        wantedCJs = wantedCJs.exclude(cognate_class__loanword=True)
+    elif excludePllLoan:  # not excludeLoanword and excludePllLoan
+        wantedCJs = wantedCJs.exclude(
+            cognate_class__parallelLoanEvent=True)
+    elif includePllLoan:  # not excludeLoanword and includePllLoan
+        raise ValueError('Case not implemented.')  # FIXME IMPLEMENT
+    # synonymous cognate classes (i.e. cognate reflexes representing
+    # a single Swadesh meaning)
+    cognate_classes = defaultdict(list)
+    for cc, meaning in wantedCJs.order_by(
+        "lexeme__meaning",
+        "cognate_class").values_list(
+        "cognate_class__id",
+            "lexeme__meaning__gloss").distinct():
+        cognate_classes[meaning].append(cc)
 
-        # Lexemes which shall be excluded:
-        exclude_lexemes = set()  # :: set(lexeme.id)
-        if excludeNotSwadesh:
-            exclude_lexemes |= set(Lexeme.objects.filter(
-                not_swadesh_term=True).values_list("id", flat=True))
+    # Lexemes which shall be excluded:
+    exclude_lexemes = set()  # :: set(lexeme.id)
+    if excludeNotSwadesh:
+        exclude_lexemes |= set(Lexeme.objects.filter(
+            not_swadesh_term=True).values_list("id", flat=True))
 
-        # languages lacking any lexeme for a meaning
-        languages_missing_meaning = dict()
-        # languages having a reflex for a cognate set
-        '''
+    # languages lacking any lexeme for a meaning
+    languages_missing_meaning = dict()
+    # languages having a reflex for a cognate set
+    '''
         data :: meaning.gloss -> cognate_classes[meaning.gloss] -> [language]
         '''
-        data = dict()
+    data = dict()
+    for meaning in meanings:
+        languages_missing_meaning[meaning.gloss] = [
+            language for language in
+            languages if not
+            language.lexeme_set.filter(meaning=meaning).exists()]
+        for cc in cognate_classes[meaning.gloss]:
+            matches = [
+                cj.lexeme.language for cj in
+                CognateJudgement.objects.filter(
+                    cognate_class=cc,
+                    lexeme__meaning=meaning) if cj.lexeme.language in
+                languages and cj.lexeme.id not in exclude_lexemes]
+            if matches:
+                data.setdefault(meaning.gloss, dict())[cc] = matches
+
+    # adds a cc code for all singletons
+    # (lexemes which are not registered as
+    # belonging to a cognate class), and add to cognate_class_dict
+    for lexeme in Lexeme.objects.filter(
+            language__in=languages,
+            meaning__in=meanings,
+            cognate_class__isnull=True):
+        if lexeme.id not in exclude_lexemes:
+            cc = ("U", lexeme.id)  # use tuple for sorting
+            data[lexeme.meaning.gloss].setdefault(
+                cc, list()).append(lexeme.language)
+
+    def cognate_class_name_formatter(cc, gloss):
+        # gloss = cognate_class_dict[cc]
+        if isinstance(cc, int):
+            return "%s_cognate_%s" % (gloss, cc)
+        else:
+            assert isinstance(cc, tuple)
+            return "%s_lexeme_%s" % (gloss, cc[1])
+
+    # make matrix
+    matrix, cognate_class_names, assumptions = list(), list(), list()
+    make_header = True
+    col_num = 0
+    for language in languages:
+        row = [language.ascii_name]
         for meaning in meanings:
-            languages_missing_meaning[meaning.gloss] = [
-                language for language in
-                languages if not
-                language.lexeme_set.filter(meaning=meaning).exists()]
-            for cc in cognate_classes[meaning.gloss]:
-                matches = [
-                    cj.lexeme.language for cj in
-                    CognateJudgement.objects.filter(
-                        cognate_class=cc,
-                        lexeme__meaning=meaning) if cj.lexeme.language in
-                    languages and cj.lexeme.id not in exclude_lexemes]
-                if matches:
-                    data.setdefault(meaning.gloss, dict())[cc] = matches
-
-        # adds a cc code for all singletons
-        # (lexemes which are not registered as
-        # belonging to a cognate class), and add to cognate_class_dict
-        for lexeme in Lexeme.objects.filter(
-                language__in=languages,
-                meaning__in=meanings,
-                cognate_class__isnull=True):
-            if lexeme.id not in exclude_lexemes:
-                cc = ("U", lexeme.id)  # use tuple for sorting
-                data[lexeme.meaning.gloss].setdefault(
-                    cc, list()).append(lexeme.language)
-
-        def cognate_class_name_formatter(cc, gloss):
-            # gloss = cognate_class_dict[cc]
-            if type(cc) == int:
-                return "%s_cognate_%s" % (gloss, cc)
-            else:
-                assert type(cc) == tuple
-                return "%s_lexeme_%s" % (gloss, cc[1])
-
-        # make matrix
-        matrix, cognate_class_names, assumptions = list(), list(), list()
-        make_header = True
-        col_num = 0
-        for language in languages:
-            row = [language.ascii_name]
-            for meaning in meanings:
-                if ascertainment_marker:
-                    if language in languages_missing_meaning[meaning.gloss]:
-                        row.append("?")
-                    else:
-                        row.append("0")
-                    if make_header:
-                        col_num += 1
-                        start_range = col_num
-                        cognate_class_names.append("%s_group" % meaning.gloss)
-                for cc in sorted(data[meaning.gloss]):
-                    if ascertainment_marker and make_header:
-                        col_num += 1
-                        cognate_class_names.append(
-                            cognate_class_name_formatter(cc, meaning.gloss))
-                    if language in data[meaning.gloss][cc]:
-                        row.append("1")
-                    elif language in languages_missing_meaning[meaning.gloss]:
-                        row.append("?")
-                    else:
-                        row.append("0")
+            if ascertainment_marker:
+                if language in languages_missing_meaning[meaning.gloss]:
+                    row.append("?")
+                else:
+                    row.append("0")
+                if make_header:
+                    col_num += 1
+                    start_range = col_num
+                    cognate_class_names.append("%s_group" % meaning.gloss)
+            for cc in sorted(data[meaning.gloss]):
                 if ascertainment_marker and make_header:
-                    end_range = col_num
-                    assumptions.append(
-                        "charset %s = %s-%s;" %
-                        (meaning.gloss, start_range, end_range))
+                    col_num += 1
+                    cognate_class_names.append(
+                        cognate_class_name_formatter(cc, meaning.gloss))
+                if language in data[meaning.gloss][cc]:
+                    row.append("1")
+                elif language in languages_missing_meaning[meaning.gloss]:
+                    row.append("?")
+                else:
+                    row.append("0")
+            if ascertainment_marker and make_header:
+                end_range = col_num
+                assumptions.append(
+                    "charset %s = %s-%s;" %
+                    (meaning.gloss, start_range, end_range))
 
-            matrix.append(row)
-            make_header = False
+        matrix.append(row)
+        make_header = False
 
-        return matrix, cognate_class_names, assumptions
+    return matrix, cognate_class_names, assumptions
 
 
 def dump_cognate_data(
-            language_list_name,
-            meaning_list_name):
+        language_list_name,
+        meaning_list_name):
     language_list = LanguageList.objects.get(name=language_list_name)
     languages = language_list.languages.all().order_by("languagelistorder")
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
     meanings = meaning_list.meanings.all().order_by("meaninglistorder")
 
     cognate_judgements = CognateJudgement.objects.filter(
-            lexeme__language__in=languages,
-            lexeme__meaning__in=meanings
-            ).order_by(
-                "lexeme__meaning",
-                "cognate_class__alias",
-                "lexeme__language")
+        lexeme__language__in=languages,
+        lexeme__meaning__in=meanings
+    ).order_by(
+        "lexeme__meaning",
+        "cognate_class__alias",
+        "lexeme__language")
 
     lines = []  # lines in string to be returned by dump_cognate_data
     print("Processed", cognate_judgements.count(),
@@ -543,7 +543,7 @@ def dump_cognate_data(
                 loanword_flag += "EXCLUDE"
 
         lines.append("\t".join([
-            cj.lexeme.meaning.gloss+"-"+cj.cognate_class.alias,
+            cj.lexeme.meaning.gloss + "-" + cj.cognate_class.alias,
             cj.cognate_class.id,
             cj.lexeme.language.ascii_name,
             unicode(cj.lexeme.phon_form.strip() or
@@ -551,10 +551,10 @@ def dump_cognate_data(
             cj.lexeme.id,
             loanword_flag]))
     lexemes = Lexeme.objects.filter(
-            language__in=languages,
-            meaning__in=meanings,
-            cognate_class=None
-            ).order_by("meaning", "language")
+        language__in=languages,
+        meaning__in=meanings,
+        cognate_class=None
+    ).order_by("meaning", "language")
     for lexeme in lexemes:
         if ("L" in lexeme.reliability_ratings):
             loanword_flag = "LOAN"
@@ -709,7 +709,7 @@ def getCharstateLabels(cognate_class_names):
     '''
     labels = []
     for i, cc in enumerate(cognate_class_names):
-        labels.append("    %d %s" % (i+1, cc))
+        labels.append("    %d %s" % (i + 1, cc))
     return "\nbegin charstatelabels;\n%s\nend;\n" % "\n".join(labels)
 
 
@@ -766,7 +766,7 @@ def getMatrixCommentsFromCognateNames(cognate_class_names, padding=0):
     commentRows = []
 
     def addComment(c):
-        commentRows.append(" "*(padding-1) + "[ %s ]" % c)
+        commentRows.append(" " * (padding - 1) + "[ %s ]" % c)
 
     addComment(''.join(meaningRow))
     commentRows.append("")
