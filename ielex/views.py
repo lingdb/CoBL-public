@@ -7,13 +7,13 @@ import requests
 import time
 from collections import defaultdict, deque
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, Http404, QueryDict
 from django.shortcuts import redirect
@@ -36,14 +36,12 @@ from ielex.forms import AddCitationForm, \
     CloneLanguageForm, \
     CognateJudgementSplitTable, \
     EditCitationForm, \
-    EditLanguageForm, \
     EditLanguageListForm, \
     EditLanguageListMembersForm, \
     EditLexemeForm, \
     EditMeaningForm, \
     EditMeaningListForm, \
     EditSourceForm, \
-    LanguageListRowForm, \
     LanguageListProgressForm, \
     LexemeTableEditCognateClassesForm, \
     LexemeTableLanguageWordlistForm, \
@@ -111,6 +109,7 @@ from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 
 from django_tables2 import RequestConfig
+from dal import autocomplete
 
 # -- Database input, output and maintenance functions ------------------------
 
@@ -875,27 +874,29 @@ def delete_language_list(request, language_list):
 def language_add_new(request, language_list):
     language_list = LanguageList.objects.get(name=language_list)
     if request.method == 'POST':
-        form = EditLanguageForm(request.POST)
+        form = AddLanguageForm(request.POST)
         if "cancel" in form.data:  # has to be tested before data is cleaned
             return HttpResponseRedirect(reverse("view-language-list",
                                                 args=[language_list.name]))
         if form.is_valid():
-            form.save()
-            language = Language.objects.get(
-                ascii_name=form.cleaned_data["ascii_name"])
-            try:
-                language_list.insert(0, language)
-            except IntegrityError:
-                pass  # automatically inserted into LanguageList.DEFAULT
+            with transaction.atomic():
+                form.save()
+                language = Language.objects.get(
+                    ascii_name=form.cleaned_data["ascii_name"])
+                try:
+                    language_list.append(language)
+                except IntegrityError:
+                    pass  # automatically inserted into LanguageList.DEFAULT
             return HttpResponseRedirect(reverse("language-report",
                                                 args=[language.ascii_name]))
     else:  # first visit
-        form = EditLanguageForm()
+        form = AddLanguageForm()
     return render_template(request, "language_add_new.html",
                            {"form": form})
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 @logExceptions
 def edit_language(request, language):
     try:
@@ -906,7 +907,7 @@ def edit_language(request, language):
                                             args=[language.ascii_name]))
 
     if request.method == 'POST':
-        form = LanguageListRowForm(request.POST)
+        form = EditSingleLanguageForm(request.POST)
         try:
             form.validate()
             data = form.data
@@ -918,13 +919,13 @@ def edit_language(request, language):
                     return HttpResponseRedirect(reverse("view-all-languages"))
                 else:
                     messages.error(request, language.deltaReport(**problem))
-        except Exception:
+        except Exception as e:
             logging.exception('Problem updating single language '
                               'in edit_language.')
             messages.error(request, 'Sorry, the server could not update '
-                           'the language.')
+                           'the language. %s' % e)
     language.idField = language.id
-    form = LanguageListRowForm(obj=language)
+    form = EditSingleLanguageForm(obj=language)
 
     return render_template(request, "language_edit.html",
                            {"language": language,
@@ -1986,14 +1987,12 @@ def source_list(request):
             queryset = Source.objects.all()
         sources_table = get_sources_table(queryset)
         response = HttpResponse()
-        RequestConfig(request,
-                      paginate={'per_page': 1000}).configure(sources_table)
+        RequestConfig(request).configure(sources_table)
         response.write(sources_table.as_html(request))
         return response
     else:
         sources_table = get_sources_table()
-        RequestConfig(request,
-                      paginate={'per_page': 1000}).configure(sources_table)
+        RequestConfig(request).configure(sources_table)
         return render_template(request, "source_list.html",
                                {"sources": sources_table,
                                 "perms": source_perms_check(request.user)
@@ -2001,19 +2000,14 @@ def source_list(request):
 
 
 def get_sources_table(queryset=''):
-    sources_dict_lst = []
     if queryset == '':
         queryset = Source.objects.all()
-    queryset = queryset.prefetch_related('cognatejudgementcitation_set',
-                                         'cognateclasscitation_set',
-                                         'lexemecitation_set')
-    for source_obj in queryset:
-        source_dict = {}
-        source_dict['pk'] = source_obj.pk
-        for attr in source_obj.source_attr_lst:
-            source_dict[attr] = getattr(source_obj, attr)
-        sources_dict_lst.append(source_dict)
-    return SourcesTable(sources_dict_lst)
+    queryset = queryset.annotate(
+        cognacy_count=Count('cognatejudgementcitation', distinct=True),
+        cogset_count=Count('cognateclasscitation', distinct=True),
+        lexeme_count=Count('lexemecitation', distinct=True),
+        ).order_by()
+    return SourcesTable(queryset)
 
 
 def export_bibtex(request):
@@ -2184,6 +2178,17 @@ def source_lexeme(request, source_id):
                             "name": "Lexemes",
                             "source": source_obj.shorthand
                             })
+
+
+class SourceAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated():
+            return Source.objects.none()
+        qs = Source.objects.all()
+        if self.q:
+            qs = qs.filter(shorthand__icontains=self.q)
+        return qs
+
 # -- /source end/ -------------------------------------------------------------
 
 
