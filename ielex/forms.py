@@ -254,9 +254,12 @@ class AbstractDistributionForm(WTForm):
                                default='_',
                                choices=DISTRIBUTION_CHOICES,
                                validators=[InputRequired()])
-    logNormalOffset = IntegerField('Log normal [Offset]', validators=[InputRequired()])
-    logNormalMean = IntegerField('Log normal Mean', validators=[InputRequired()])
-    logNormalStDev = DecimalField('Log normal StDev', validators=[InputRequired()])
+    logNormalOffset = IntegerField('Log normal [Offset]',
+                                   validators=[InputRequired()])
+    logNormalMean = IntegerField('Log normal Mean',
+                                 validators=[InputRequired()])
+    logNormalStDev = DecimalField('Log normal StDev',
+                                  validators=[InputRequired()])
     normalMean = IntegerField('Normal Mean', validators=[InputRequired()])
     normalStDev = IntegerField('Normal StDev', validators=[InputRequired()])
     uniformLower = IntegerField('Uniform Lower', validators=[InputRequired()])
