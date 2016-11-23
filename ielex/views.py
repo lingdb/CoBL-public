@@ -36,6 +36,7 @@ from ielex.forms import AddCitationForm, \
     CloneLanguageForm, \
     CognateJudgementSplitTable, \
     EditCitationForm, \
+    AddLanguageForm, \
     EditLanguageListForm, \
     EditLanguageListMembersForm, \
     EditLexemeForm, \
@@ -43,6 +44,7 @@ from ielex.forms import AddCitationForm, \
     EditMeaningListForm, \
     EditSourceForm, \
     LanguageListProgressForm, \
+    EditSingleLanguageForm, \
     LexemeTableEditCognateClassesForm, \
     LexemeTableLanguageWordlistForm, \
     LexemeTableViewMeaningsForm, \

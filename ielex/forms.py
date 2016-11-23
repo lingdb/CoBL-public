@@ -14,6 +14,7 @@ from ielex.lexicon.defaultModels import getDefaultWordlist
 from ielex.lexicon.models import CognateClass, \
     CognateClassCitation, \
     DISTRIBUTION_CHOICES, \
+    LANGUAGE_PROGRESS, \
     Language, \
     LanguageList, \
     Meaning, \
@@ -42,6 +43,7 @@ from wtforms.form import Form as WTForm
 from wtforms.ext.django.orm import model_form
 from lexicon.models import Lexeme
 from operator import itemgetter
+from ielex.formHelpers import WTFormToFormgroup
 from dal import autocomplete
 
 LexemeForm = model_form(Lexeme)
@@ -161,7 +163,7 @@ class EditLexemeForm(forms.ModelForm):
         exclude = ["language", "cognate_class", "source"]
 
 
-class EditLanguageForm(forms.ModelForm):
+class AddLanguageForm(forms.ModelForm):
 
     def clean_ascii_name(self):
         return clean_value_for_url(self, "ascii_name")
@@ -171,7 +173,11 @@ class EditLanguageForm(forms.ModelForm):
 
     class Meta:
         model = Language
-        fields = ['ascii_name', 'utf8_name']
+        fields = ['utf8_name', 'ascii_name']
+        labels = {
+            'ascii_name': ('URL Name'),
+            'utf8_name': ('Display Name')
+        }
 
 
 class EditMeaningForm(forms.ModelForm):
@@ -248,13 +254,16 @@ class AbstractDistributionForm(WTForm):
                                default='_',
                                choices=DISTRIBUTION_CHOICES,
                                validators=[InputRequired()])
-    logNormalOffset = IntegerField('[Offset]', validators=[InputRequired()])
-    logNormalMean = IntegerField('Mean', validators=[InputRequired()])
-    logNormalStDev = DecimalField('StDev', validators=[InputRequired()])
-    normalMean = IntegerField('Mean', validators=[InputRequired()])
-    normalStDev = IntegerField('StDev', validators=[InputRequired()])
-    uniformLower = IntegerField('Lower', validators=[InputRequired()])
-    uniformUpper = IntegerField('Upper', validators=[InputRequired()])
+    logNormalOffset = IntegerField('Log normal [Offset]',
+                                   validators=[InputRequired()])
+    logNormalMean = IntegerField('Log normal Mean',
+                                 validators=[InputRequired()])
+    logNormalStDev = DecimalField('Log normal StDev',
+                                  validators=[InputRequired()])
+    normalMean = IntegerField('Normal Mean', validators=[InputRequired()])
+    normalStDev = IntegerField('Normal StDev', validators=[InputRequired()])
+    uniformLower = IntegerField('Uniform Lower', validators=[InputRequired()])
+    uniformUpper = IntegerField('Uniform Upper', validators=[InputRequired()])
 
     def validate_distribution(form, field):
         wantedFields = {
@@ -430,6 +439,114 @@ class AddLanguageListTableForm(WTForm):
                 messages.error(request, 'Sorry, the server had problems '
                                'saving at least one language entry.')
         return updateClades
+
+
+class EditSingleLanguageForm(LanguageListRowForm, WTFormToFormgroup):
+    ascii_name = StringField('URL Name', validators=[InputRequired()])
+    description = TextAreaField('Description', validators=[InputRequired()])
+    progress = IntegerField('Progress',
+                            validators=[InputRequired()])
+    progress = SelectField('Progress',
+                           default=0,
+                           choices=LANGUAGE_PROGRESS,
+                           validators=[InputRequired()])
+    variety = StringField('Variety', validators=[InputRequired()])
+    soundcompcode = StringField('Soundcompcode', validators=[InputRequired()])
+    author = StringField('Author', validators=[InputRequired()])
+    reviewer = StringField('Reviewer', validators=[InputRequired()])
+    sndCompLevel0 = DecimalField('SndCompLevel0', validators=[InputRequired()])
+    sndCompLevel1 = DecimalField('SndCompLevel1', validators=[InputRequired()])
+    sndCompLevel2 = DecimalField('SndCompLevel2', validators=[InputRequired()])
+    sndCompLevel3 = DecimalField('SndCompLevel3', validators=[InputRequired()])
+    entryTimeframe = StringField('Entry Timeframe',
+                                 validators=[InputRequired()])
+    originalAsciiName = StringField("Original database name",
+                                    validators=[InputRequired()])
+    latitude = DecimalField('Latitude', validators=[InputRequired()])
+    longitude = DecimalField('Longitude', validators=[InputRequired()])
+
+    fieldsWithoutLabel = [
+        ('idField', {'required': 'required', 'class': 'hide'}),
+        ('lastTouched', {'required': 'required', 'class': 'hide'}),
+        ('lastEditedBy', {'required': 'required', 'class': 'hide'}),
+    ]
+    fieldsWithLabel = [
+        ('historical', {'data-dependencyfor-tr': 'historical'}),
+        ('utf8_name', {'required': 'required', 'class': 'form-control'}),
+        ('ascii_name', {'required': 'required', 'class': 'form-control'}),
+        ('description', {'class': 'form-control'}),
+        ('iso_code', {'class': 'form-control', 'pattern': '(^$|...)'}),
+        ('glottocode', {'class': 'form-control',
+                        'pattern': '(^$|[a-z]{4}\d{4})'}),
+        ('variety', {'class': 'form-control'}),
+        ('foss_stat', {}),
+        ('low_stat', {}),
+        ('soundcompcode', {'class': 'form-control'}),
+        ('level0', {'class': 'form-control', 'pattern': '\d*'}),
+        ('level1', {'class': 'form-control', 'pattern': '\d*'}),
+        ('level2', {'class': 'form-control', 'pattern': '\d*'}),
+        ('level3', {'class': 'form-control', 'pattern': '\d*'}),
+        ('representative', {}),
+        ('distribution', {'class': 'form-control distributionSelection',
+                          'data-inputdepends': 'historical',
+                          'disabled': 'disabled'}),
+        ('normalMean', {'class': 'form-control reflectDistribution '
+                                 'datetooltip numberField',
+                        'data-allowed': 'N',
+                        'pattern': '^[0-9]{0,4}$',
+                        'disabled': 'disabled'}),
+        ('normalStDev', {'class': 'form-control reflectDistribution '
+                                  'datetooltip numberField',
+                         'data-allowed': 'N',
+                         'pattern': '^[0-9]{0,4}$',
+                         'disabled': 'disabled'}),
+        ('logNormalOffset', {'class': 'form-control reflectDistribution '
+                                      'datetooltip numberField',
+                             'data-allowed': 'O',
+                             'pattern': '^[0-9]{0,4}$',
+                             'disabled': 'disabled'}),
+        ('logNormalMean', {'class': 'form-control reflectDistribution '
+                                    'numberField',
+                           'data-allowed': 'OL',
+                           'pattern': '^[0-9]{0,4}$',
+                           'disabled': 'disabled'}),
+        ('logNormalStDev', {'class': 'form-control reflectDistribution '
+                                     'numberField',
+                            'data-allowed': 'OL',
+                            'pattern': '^[0-9]{0,4}$',
+                            'disabled': 'disabled'}),
+        ('uniformLower', {'class': 'form-control reflectDistribution '
+                                   'numberField',
+                          'data-allowed': 'U',
+                          'pattern': '^[0-9]{0,4}$',
+                          'disabled': 'disabled'}),
+        ('uniformUpper', {'class': 'form-control reflectDistribution '
+                                   'numberField',
+                          'data-allowed': 'U',
+                          'pattern': '^[0-9]{0,4}$',
+                          'disabled': 'disabled'}),
+        ('earliestTimeDepthBound', {'class': 'form-control datetooltip',
+                                    'max_length': '4',
+                                    'style': 'width: 3,4em;',
+                                    'pattern': '^[0-9]{0,4}$',
+                                    'data-inputdepends': 'historical',
+                                    'disabled': 'disabled'}),
+        ('latestTimeDepthBound', {'class': 'form-control datetooltip',
+                                  'pattern': '^[0-9]{0,4}$',
+                                  'max_length': '4',
+                                  'style': 'width: 3,4em;',
+                                  'data-inputdepends': 'historical',
+                                  'disabled': 'disabled'}),
+        ('rfcWebPath1', {'class': 'form-control'}),
+        ('rfcWebPath2', {'class': 'form-control'}),
+        ('author', {'class': 'form-control'}),
+        ('entryTimeframe', {'class': 'form-control'}),
+        ('reviewer', {'class': 'form-control'}),
+        ('progress', {'class': 'form-control',
+                      'pattern': '^\d$',
+                      'required': 'required'}),
+        ('sortRankInClade', {'class': 'form-control', 'pattern': '\d*'}),
+    ]
 
 
 class LanguageListProgressRowForm(AbstractTimestampedForm):

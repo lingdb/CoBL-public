@@ -39,6 +39,7 @@ def disable_for_loaddata(signal_handler):
 # TODO: reinstate the cache stuff, but using a site specific key prefix (maybe
 # the short name of the database
 
+
 TYPE_CHOICES = (
     ("P", "Publication"),
     ("U", "URL"),
@@ -407,25 +408,27 @@ class Source(models.Model):
                 bibtex_dictionary[key] = unicode(getattr(self, key))
         return bibtex_dictionary
 
-##    @property
-##    def COinS(self):
-##        bibtex_rft_dict = {'ENTRYTYPE':'genre', 'title':'title',
-##                           'year':'date','author':'au',
-##                           'booktitle':'btitle','publisher':'pub',
-##                           'journaltitle':'jtitle','location':'place',
-##                           'chapter':'atitle','pages':'pages',
-##                           'series':'series', 'volume':'volume',
-##                           'institution':'aucorp', 'isbn':'isbn',
-##                           'number':'issue', 'part':'part',
-##                           'edition':'edition'}
-####        bibtex_attr_lst = ['booksubtitle', 'bookauthor', 'editor',
-####                           'editortype', 'editora','link','note',
-####                           'howpublished', 'shorthand']
-##        rft_attrs_lst = []
-##        for key in self.bibtex_attr_lst:
-##            if key == 'link':
-##                'rft_id'
-##        return '<span class="Z3988" title="ctx_ver=Z39.88-2004&amp%s>%</span>' %('&amp;'.join(rft_attrs_lst))
+#     @property
+#     def COinS(self):
+#         bibtex_rft_dict = {'ENTRYTYPE':'genre', 'title':'title',
+#                            'year':'date','author':'au',
+#                            'booktitle':'btitle','publisher':'pub',
+#                            'journaltitle':'jtitle','location':'place',
+#                            'chapter':'atitle','pages':'pages',
+#                            'series':'series', 'volume':'volume',
+#                            'institution':'aucorp', 'isbn':'isbn',
+#                            'number':'issue', 'part':'part',
+#                            'edition':'edition'}
+#           bibtex_attr_lst = ['booksubtitle', 'bookauthor', 'editor',
+#                              'editortype', 'editora','link','note',
+#                              'howpublished', 'shorthand']
+#         rft_attrs_lst = []
+#         for key in self.bibtex_attr_lst:
+#             if key == 'link':
+#                 'rft_id'
+#         return '<span class="Z3988" '
+#                'title="ctx_ver=Z39.88-2004&amp%s>%</span>' %
+#                ('&amp;'.join(rft_attrs_lst))
 
     def populate_from_bibtex(self, bibtex_dict):
         for key in bibtex_dict.keys():
@@ -1270,7 +1273,7 @@ class DyenCognateSet(models.Model):
 @reversion.register
 class Lexeme(AbstractTimestamped):
     language = models.ForeignKey(Language)
-    meaning = models.ForeignKey(Meaning, blank=True, null=True)
+    meaning = models.ForeignKey(Meaning)
     cognate_class = models.ManyToManyField(
         CognateClass, through="CognateJudgement", blank=True)
     source_form = models.CharField(max_length=128)
@@ -1549,7 +1552,7 @@ class LanguageList(models.Model):
         if self.languagelistorder_set.count():
             llos = self.languagelistorder_set.order_by('order').all()
             for i, llo in enumerate(llos):
-                if i != llo.order:
+                if i < llo.order:
                     llo.order = i
                     llo.save()
 
@@ -1791,6 +1794,7 @@ def update_language_list_all(sender, instance, **kwargs):
         for language in Language.objects.all().order_by("ascii_name"):
             ll_alpha.append(language)
 
+
 models.signals.post_save.connect(update_language_list_all, sender=Language)
 models.signals.post_delete.connect(update_language_list_all, sender=Language)
 
@@ -1816,6 +1820,7 @@ def update_meaning_list_all(sender, instance, **kwargs):
         for meaning in Meaning.objects.all().order_by("gloss"):
             ml_alpha.append(meaning)
 
+
 models.signals.post_save.connect(update_meaning_list_all, sender=Meaning)
 models.signals.post_delete.connect(update_meaning_list_all, sender=Meaning)
 
@@ -1829,6 +1834,7 @@ def update_meaning_percent_coded(sender, instance, **kwargs):
         meaning = instance.lexeme.meaning  # Could be None
     if meaning is not None:
         meaning.set_percent_coded()
+
 
 models.signals.post_save.connect(
     update_meaning_percent_coded, sender=Lexeme)

@@ -379,11 +379,11 @@ class CleanLexemeFormTests(TestCase):
 class LanguageFormTests(TestCase):
 
     def setUp(self):
-        from ielex.forms import EditLanguageForm
-        self.EditLanguageForm = EditLanguageForm
+        from ielex.forms import AddLanguageForm
+        self.AddLanguageForm = AddLanguageForm
 
     def test_stripped_whitespace(self):
-        form = self.EditLanguageForm({
+        form = self.AddLanguageForm({
             "ascii_name": "\tAAA\n",
             "utf8_name": " BBB\t"})
         self.assertTrue(form.is_valid())
@@ -392,7 +392,7 @@ class LanguageFormTests(TestCase):
 
     def test_invalid_for_url(self):
         for name in ["A/A", u"əŋ", "A A"]:
-            form = self.EditLanguageForm({
+            form = self.AddLanguageForm({
                 "ascii_name": name,
                 "utf8_name": "BB"})
             self.assertFalse(form.is_valid())

@@ -435,6 +435,7 @@
             {% for lexeme in lex_ed_form.lexemes %}
               {% if lexeme.object_data.original %}
                 <tr class="original_row"
+                    id="original_row_lexeme{{ lexeme.object_data.original.id }}"
                     style="background-color: #C4C4C4;">
                   {# id_original.html #}
                   <td class="hide"></td>
@@ -476,7 +477,7 @@
                     {% endif %}
                   </td>
                   {# sourceform_original.html #}
-                  <td class="lexemeSourceForm">
+                  <td class="lexemeSourceForm" data-copyrowfrom-key="lexemeSourceForm">
                     {{ lexeme.object_data.original.source_form }}
                   </td>
                   {# viewcopy_original.html #}
@@ -484,7 +485,7 @@
                   <td></td>
                   <td></td>
                   {# transliteration_original.html #}
-                  <td class="lexemeTransliteration">
+                  <td class="lexemeTransliteration" data-copyrowfrom-key="lexemeTransliteration">
                     {{ lexeme.object_data.original.transliteration }}
                   </td>
                   {# notswadesh_original.html #}
@@ -531,7 +532,8 @@
                     </a>
                   </td>
                   {# cognateclasses_original.html #}
-                  <td style="text-align: center; color: #8B4510;">
+                  <td style="text-align: center; color: #8B4510;"
+                      data-copyrowfrom-key="combinedCognateClassAssignment">
                     <div class="cognateClasses">
                     {% for c in lexeme.object_data.original.allCognateClasses %}
                       <a href="/cognate/{{ c.id }}/"
@@ -585,27 +587,32 @@
                       disabled="disabled">
                   </td>
                   {# phonemic_original.html #}
-                  <td class="lexemePhoneMic">
+                  <td class="lexemePhoneMic"
+                      data-copyrowfrom-key="lexemePhoneMic">
                     {{ lexeme.object_data.original.phoneMic }}
                   </td>
                   {# phonecopy_original.html #}
                   <td></td>
                   <td></td>
                   {# phonetic_original.html #}
-                  <td class="lexemePhonForm">
+                  <td class="lexemePhonForm"
+                      data-copyrowfrom-key="lexemePhonForm">
                     {{ lexeme.object_data.original.phon_form }}
                   </td>
                   {# gloss_original.html #}
-                  <td class="lexemeGloss">
+                  <td class="lexemeGloss"
+                      data-copyrowfrom-key="lexemeGloss">
                     {{ lexeme.object_data.original.gloss }}
                   </td>
                   {# notes_original.html #}
-                  <td class="lexemeNotes">
+                  <td class="lexemeNotes"
+                      data-copyrowfrom-key="lexemeNotes">
                     {{ lexeme.object_data.original.notes }}
                   </td>
                   {# weblookup_original.html #}
                   <td></td>
-                  <td class="lexemeRfcWebLookup1">
+                  <td class="lexemeRfcWebLookup1"
+                      data-copyrowfrom-key="lexemeRfcWebLookup1">
                     {{ lexeme.object_data.original.rfcWebLookup1 }}
                   </td>
                   <td class="hide"></td>
@@ -677,11 +684,20 @@
                       <span class="glyphicon glyphicon-info-sign"></span>
                     </a>
                   {% endif %}
+                  {% if lexeme.object_data.original %}
+                    <a class="btn btn-default btn-xs pull-right"
+                       data-toggle="tooltip"
+                       data-placement="bottom"
+                       title="Fill with data from original"
+                       data-copyrowfrom="#original_row_lexeme{{ lexeme.object_data.original.id }}">
+                      <span class="glyphicon glyphicon-share-alt"></span>
+                    </a>
+                  {% endif %}
                 </td>
                 {# sourceform_data.html #}
                 <td class="lexemeSourceForm">
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.source_form id="source_form" class="form-control" style="font-size: 15px;" %}
+                    {% form_field lexeme.source_form id="source_form" class="form-control" style="font-size: 15px;" data-copyrowfrom-key="lexemeSourceForm" %}
                   {% elif lexeme.object_data.source_form %}
                     {{ lexeme.object_data.source_form }}
                   {% endif %}
@@ -713,7 +729,7 @@
                 {# transliteration_data.html #}
                 <td class="lexemeTransliteration">
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.transliteration id="transliteration" class="form-control" %}
+                    {% form_field lexeme.transliteration id="transliteration" class="form-control"  data-copyrowfrom-key="lexemeTransliteration" %}
                   {% elif lexeme.object_data.transliteration %}
                     {{ lexeme.object_data.transliteration }}
                   {% endif %}
@@ -764,7 +780,7 @@
                 <td style="text-align: center; color: #8B4510;">
                   <div class="cognateClasses">
                     {% if user.is_authenticated %}
-                      {% form_field lexeme.combinedCognateClassAssignment class="form-control" %}
+                      {% form_field lexeme.combinedCognateClassAssignment class="form-control" data-copyrowfrom-key="combinedCognateClassAssignment" %}
                     {% else %}
                       {{ lexeme.object_data.combinedCognateClassAssignment }}
                     {% endif %}
@@ -815,7 +831,7 @@
                 {# phonemic_data.html #}
                 <td class="lexemePhoneMic">
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.phoneMic id="phoneMic" size="8" class="form-control" %}
+                    {% form_field lexeme.phoneMic id="phoneMic" size="8" class="form-control" data-copyrowfrom-key="lexemePhoneMic" %}
                   {% elif lexeme.object_data.phoneMic %}
                     {{ lexeme.object_data.phoneMic }}
                   {% endif %}
@@ -844,7 +860,7 @@
                 {# phonetic_data.html #}
                 <td class="lexemePhonForm">
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.phon_form id="phoneTic" size="8" class="form-control" %}
+                    {% form_field lexeme.phon_form id="phoneTic" size="8" class="form-control" data-copyrowfrom-key="lexemePhonForm" %}
                   {% elif lexeme.object_data.phon_form %}
                     {{ lexeme.object_data.phon_form }}
                   {% endif %}
@@ -852,7 +868,7 @@
                 {# gloss_data.html #}
                 <td class="lexemeGloss">
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.gloss size="8" class="form-control" %}
+                    {% form_field lexeme.gloss size="8" class="form-control" data-copyrowfrom-key="lexemeGloss" %}
                   {% elif lexeme.object_data.gloss %}
                     {{ lexeme.object_data.gloss }}
                   {% endif %}
@@ -860,7 +876,7 @@
                 {# notes_data.html #}
                 <td class="lexemeNotes">
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.notes class="form-control" %}
+                    {% form_field lexeme.notes class="form-control" data-copyrowfrom-key="lexemeNotes" %}
                   {% elif lexeme.object_data.notes %}
                     {{ lexeme.object_data.notes }}
                   {% endif %}
@@ -878,7 +894,7 @@
                 </td>
                 <td class="lexemeRfcWebLookup1">
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.rfcWebLookup1 class="form-control" %}
+                    {% form_field lexeme.rfcWebLookup1 class="form-control" data-copyrowfrom-key="lexemeRfcWebLookup1" %}
                   {% elif lexeme.object_data.rfcWebLookup1 %}
                     {{ lexeme.object_data.rfcWebLookup1 }}
                   {% endif %}

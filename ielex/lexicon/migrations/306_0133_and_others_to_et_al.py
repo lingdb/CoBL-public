@@ -34,7 +34,7 @@ def reverse_func(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('lexicon', '0123_fill_meaning_examplecontext')]
+    dependencies = [('lexicon', '0126_remove_languages_without_list')]
 
     operations = [
         migrations.RunPython(forwards_func, reverse_func),

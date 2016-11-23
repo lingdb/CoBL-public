@@ -57,9 +57,13 @@
           <tr>
             <th>Meaning:</th>
             <td>
+              {% if lexeme.meaning.gloss %}
               <a href="{% url 'meaning-report' lexeme.meaning.gloss %}#lexeme_{{ lexeme.id }}">
                 {{ lexeme.meaning.gloss }}
               </a>
+              {% else %}
+              This lexeme isn't linked to a meaning.
+              {% endif %}
             </td>
           </tr>
           <tr>
@@ -167,20 +171,12 @@
                   <span class="glyphicon glyphicon-tag"></span>
                   <span class="glyphicon glyphicon-edit"></span>
                 </a>
-                {% if lexeme.lexemecitation_set.count == 1 %}
-                  <div class="btn btn-danger"
-                       title="Can't delink final citation">
-                    <span class="glyphicon glyphicon-tag"></span>
-                    <span class="glyphicon glyphicon-remove-sign"></span>
-                  </div>
-                {% else %}
-                  <a href="{% url 'lexeme-delink-citation' lexeme.id citation.id %}"
-                     title="Delink citation"
-                     class="btn btn-danger">
-                    <span class="glyphicon glyphicon-tag"></span>
-                    <span class="glyphicon glyphicon-remove-sign"></span>
-                  </a>
-                {% endif %}
+                <a href="{% url 'lexeme-delink-citation' lexeme.id citation.id %}"
+                   title="Delink citation"
+                   class="btn btn-danger">
+                  <span class="glyphicon glyphicon-tag"></span>
+                  <span class="glyphicon glyphicon-remove-sign"></span>
+                </a>
               </div>
               <div class="panel-body">
                 {% include "snippets/citation_report.html" %}
@@ -197,20 +193,12 @@
                   <span class="glyphicon glyphicon-tag"></span>
                   <span class="glyphicon glyphicon-edit"></span>
                 </a>
-                {% if lexeme.lexemecitation_set.count == 1 %}
-                  <div class="btn btn-danger"
-                       title="Can't delink final citation">
-                    <span class="glyphicon glyphicon-tag"></span>
-                    <span class="glyphicon glyphicon-remove-sign"></span>
-                  </div>
-                {% else %}
-                  <a href="{% url 'lexeme-delink-citation' lexeme.id citation.id %}"
-                     title="Delink citation"
-                     class="btn btn-danger">
-                    <span class="glyphicon glyphicon-tag"></span>
-                    <span class="glyphicon glyphicon-remove-sign"></span>
-                  </a>
-                {% endif %}
+                <a href="{% url 'lexeme-delink-citation' lexeme.id citation.id %}"
+                   title="Delink citation"
+                   class="btn btn-danger">
+                  <span class="glyphicon glyphicon-tag"></span>
+                  <span class="glyphicon glyphicon-remove-sign"></span>
+                </a>
               {% endif %}
               <a href="{% url 'view-source' citation.source.id %}"
                  title="View source"
@@ -295,18 +283,11 @@
                             <span class="glyphicon glyphicon-tag"></span>
                             <span class="glyphicon glyphicon-edit"></span>
                           </a>
-                          {% if cj.cognatejudgementcitation_set.count == 1 %}
-                            <div class="btn btn-danger" title="Can't delink final citation">
-                              <span class="glyphicon glyphicon-tag"></span>
-                              <span class="glyphicon glyphicon-remove-sign"></span>
-                            </div>
-                          {% else %}
-                            <a href="{% url 'lexeme-delink-cognate-citation' lexeme.id citation.id %}"
-                               title="Delink cognate citation" class="btn btn-danger">
-                              <span class="glyphicon glyphicon-tag"></span>
-                              <span class="glyphicon glyphicon-remove-sign"></span>
-                            </a>
-                          {% endif %}
+                          <a href="{% url 'lexeme-delink-cognate-citation' lexeme.id citation.id %}"
+                             title="Delink cognate citation" class="btn btn-danger">
+                            <span class="glyphicon glyphicon-tag"></span>
+                            <span class="glyphicon glyphicon-remove-sign"></span>
+                          </a>
                         {% endif %}
                         <a href="{% url 'view-source' citation.source.id %}"
                            title="View source" class="btn btn-default">
@@ -324,19 +305,12 @@
                       <span class="glyphicon glyphicon-tag"></span>
                       <span class="glyphicon glyphicon-edit"></span>
                     </a>
-                    {% if cj.cognatejudgementcitation_set.count == 1 %}
-                      <div class="btn btn-danger" title="Can't delink final citation">
-                        <span class="glyphicon glyphicon-tag"></span>
-                        <span class="glyphicon glyphicon-remove-sign"></span>
-                      </div>
-                    {% else %}
-                      <a href="{% url 'lexeme-delink-cognate-citation' lexeme.id citation.id %}"
-                         title="Delink cognate citation"
-                         class="btn btn-danger">
-                        <span class="glyphicon glyphicon-tag"></span>
-                        <span class="glyphicon glyphicon-remove-sign"></span>
-                      </a>
-                    {% endif %}
+                    <a href="{% url 'lexeme-delink-cognate-citation' lexeme.id citation.id %}"
+                       title="Delink cognate citation"
+                       class="btn btn-danger">
+                      <span class="glyphicon glyphicon-tag"></span>
+                      <span class="glyphicon glyphicon-remove-sign"></span>
+                    </a>
                   {% endif %}
                   <a href="{% url 'view-source' citation.source.id %}"
                      title="View source" class="btn btn-default">

@@ -7,8 +7,9 @@
 {% endblock %}
 
 {% block content %}
-  The ascii_name field is obligatory. Allowable characters for an ascii name are
-  a-z, A-Z and _ (no spaces!)
+  The <strong>URL Name</strong> field is obligatory.
+  Allowable characters are
+  <code>a-z</code>, <code>A-Z</code> and <code>_</code> (no spaces!).
   <form action="" method="POST">{% csrf_token %}
     <table>
       {{ form.as_table }}

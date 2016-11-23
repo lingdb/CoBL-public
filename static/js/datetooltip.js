@@ -15,13 +15,22 @@
         return 'AD 1';
       }
     };
+    var withInput = function($datetooltip, λ){
+      if($datetooltip.length === 1){
+        if($datetooltip.get(0).tagName === 'INPUT'){
+          λ($datetooltip);
+        }
+      }
+      $datetooltip.find('input').each(function(){
+        λ($(this));
+      });
+    };
     $('.datetooltip').each(function(){
       var $datetooltip = $(this);
       $datetooltip.attr('data-toggle', 'tooltip')
                   .attr("data-placement", "bottom")
                   .attr("data-container", "body");
-      $datetooltip.find('input').each(function(){
-        var $input = $(this);
+      withInput($datetooltip, function($input){
         $input.change(function(){
           $datetooltip.tooltip('hide')
                       .attr('data-original-title', computeText($input))

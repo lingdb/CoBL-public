@@ -120,6 +120,13 @@
       });
     };
 
+    module.cleanStorage = function(){
+      if ('viewTableFilter' in window.sessionStorage){
+        delete window.sessionStorage.viewTableFilter;
+        window.location.reload(true);
+      }
+    };
+
     return module;
   });
 })();
