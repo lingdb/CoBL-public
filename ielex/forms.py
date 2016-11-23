@@ -1757,15 +1757,18 @@ class CognateClassInlineForm(OrderableInlineModelForm):
             (cognate_class.get_absolute_url(), cognate_class)
         self.order_fields(['cognate_class', 'comment'])
 
+
 CognateJudgementFormSet = inlineformset_factory(
     Source, CognateJudgementCitation,
     form=CognateJudgementInlineForm,
     can_delete=False, fields=('comment',), extra=0)
 
+
 CognateClassFormSet = inlineformset_factory(
     Source, CognateClassCitation,
     form=CognateClassInlineForm,
     can_delete=False, fields=('comment',), extra=0)
+
 
 LexemeFormSet = inlineformset_factory(
     Source, LexemeCitation,
