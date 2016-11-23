@@ -7,6 +7,7 @@ from django import forms
 from django.contrib import messages
 from django.db import transaction
 from django.forms import ValidationError
+from django.http import HttpResponse
 from django.utils.encoding import python_2_unicode_compatible
 from itertools import izip
 from django.forms import inlineformset_factory
@@ -1774,6 +1775,44 @@ LexemeFormSet = inlineformset_factory(
     Source, LexemeCitation,
     form=LexemeCitationInlineForm,
     can_delete=False, fields=('comment',), extra=0)
+
+
+class AssignCognateClassesFromLexemeForm(WTForm):
+    toLexeme = IntegerField('Lexeme to assign to',
+                            validators=[InputRequired()])
+    fromLexeme = IntegerField('Lexeme to assign from',
+                              validators=[InputRequired()])
+
+    def handle(self):
+        try:
+            toLexeme = Lexeme.objects.get(id=self.data['toLexeme'])
+            fromLexeme = Lexeme.objects.get(id=self.data['fromLexeme'])
+
+            def getCIdSet(lexeme):
+                return set([c.id for c in lexeme.cognate_class.all()])
+
+            addCIds = getCIdSet(fromLexeme) - getCIdSet(toLexeme)
+            with transaction.atomic():
+                CognateJudgement.objects.bulk_create([
+                    CognateJudgement(lexeme_id=toLexeme.id,
+                                     cognate_class_id=cId)
+                    for cId in addCIds])
+
+            currentClasses = CognateClass.objects.filter(
+                cognatejudgement__lexeme__id=toLexeme.id).values_list(
+                'id', 'alias')
+            response = {'idList': [id for id, _ in currentClasses],
+                        'aliasList': [alias for _, alias in currentClasses]}
+            return HttpResponse(
+                json.dumps(response),
+                content_type="application/json")
+        except Exception as e:
+            logging.exception(
+                'Problem in AssignCognateClassesFromLexemeForm.handle()')
+            return HttpResponse(
+                'Sorry, the server could not handle your request.',
+                content_type='text/plain; charset=utf-8',
+                status=400)
 
 # OLDER:
 

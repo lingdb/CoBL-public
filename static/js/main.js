@@ -59,7 +59,7 @@
              'js/updateCounts',
              'js/updatePercentages',
              'js/confirmSubmit',
-             'js/copyRowFrom',
+             'js/copyCognateClass',
              'js/djangoAutocompleteInclusion'],
             function(require, $, _){
     //Initializing viewTableFilter:
