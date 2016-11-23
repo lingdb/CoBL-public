@@ -13,7 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, Http404, QueryDict
 from django.shortcuts import redirect
@@ -111,6 +111,7 @@ from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 
 from django_tables2 import RequestConfig
+from dal import autocomplete
 
 # -- Database input, output and maintenance functions ------------------------
 
@@ -1988,14 +1989,12 @@ def source_list(request):
             queryset = Source.objects.all()
         sources_table = get_sources_table(queryset)
         response = HttpResponse()
-        RequestConfig(request,
-                      paginate={'per_page': 1000}).configure(sources_table)
+        RequestConfig(request).configure(sources_table)
         response.write(sources_table.as_html(request))
         return response
     else:
         sources_table = get_sources_table()
-        RequestConfig(request,
-                      paginate={'per_page': 1000}).configure(sources_table)
+        RequestConfig(request).configure(sources_table)
         return render_template(request, "source_list.html",
                                {"sources": sources_table,
                                 "perms": source_perms_check(request.user)
@@ -2003,19 +2002,14 @@ def source_list(request):
 
 
 def get_sources_table(queryset=''):
-    sources_dict_lst = []
     if queryset == '':
         queryset = Source.objects.all()
-    queryset = queryset.prefetch_related('cognatejudgementcitation_set',
-                                         'cognateclasscitation_set',
-                                         'lexemecitation_set')
-    for source_obj in queryset:
-        source_dict = {}
-        source_dict['pk'] = source_obj.pk
-        for attr in source_obj.source_attr_lst:
-            source_dict[attr] = getattr(source_obj, attr)
-        sources_dict_lst.append(source_dict)
-    return SourcesTable(sources_dict_lst)
+    queryset = queryset.annotate(
+        cognacy_count=Count('cognatejudgementcitation', distinct=True),
+        cogset_count=Count('cognateclasscitation', distinct=True),
+        lexeme_count=Count('lexemecitation', distinct=True),
+        ).order_by()
+    return SourcesTable(queryset)
 
 
 def export_bibtex(request):
@@ -2186,6 +2180,17 @@ def source_lexeme(request, source_id):
                             "name": "Lexemes",
                             "source": source_obj.shorthand
                             })
+
+
+class SourceAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated():
+            return Source.objects.none()
+        qs = Source.objects.all()
+        if self.q:
+            qs = qs.filter(shorthand__icontains=self.q)
+        return qs
+
 # -- /source end/ -------------------------------------------------------------
 
 

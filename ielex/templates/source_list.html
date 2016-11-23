@@ -19,6 +19,7 @@ $(document).ready(function () {
 		$('th.TRS, td.TRS').hide();
 		$('th.edit, td.edit').hide();
 		$('button#import').hide();
+		$('.filter-header th').slice(-3).hide()
 	{% endif %}
 	
 	/**** DETAILS *****/
@@ -33,7 +34,7 @@ $(document).ready(function () {
 			'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value')
 		};
 		$.post("/sources/", postdata, function (data) {
-			var details_table = $('<tr><td colspan="10"><table class="details_table"/></td></tr>').insertAfter(row);
+			var details_table = $('<tr><td colspan="12"><table class="details_table"/></td></tr>').insertAfter(row);
 			$(data).children('th').appendTo(details_table.find('table.details_table')).wrapAll('<thead class="_details"/>');
 			$(data).children('td').appendTo(details_table.find('table.details_table')).wrapAll('<tbody><tr class="_details"/></tbody>');
 			details_table.find('input, textarea').each(function() {

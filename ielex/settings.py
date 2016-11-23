@@ -15,6 +15,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'dal',
+    'dal_select2',
     'django.contrib.admin',
     'reversion',
     'ielex.lexicon',

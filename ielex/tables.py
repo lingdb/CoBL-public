@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import django_tables2 as tables
 from django.utils.safestring import mark_safe
+from ielex.lexicon.models import Source
 
 
 class CheckBoxColumnDeprecated(tables.CheckBoxColumn):
@@ -41,35 +42,62 @@ class SourcesTable(tables.Table):
     # Details	Name (author-year-letter)	Title	Year	Author	BibTeX type
     # see http://wals.info/refdb for related info
 
-    # link to full view? / open new frame below ?
-    details = tables.Column(empty_values=[], orderable=False)
-    title = tables.Column(orderable=True)
-    year = tables.Column(orderable=True)
-    author = tables.Column(empty_values=[], orderable=True)
-    ENTRYTYPE = tables.Column(orderable=True)
-    cognacy = tables.Column(orderable=False)  # cognate judgment
-    # cognate classification; rename: cog. set
-    cogset = tables.Column(orderable=False)
-    lexeme = tables.Column(orderable=False)  # lexeme citation
+    details = tables.Column(accessor='details',
+                            empty_values=[],
+                            orderable=False)
+    shorthand = tables.Column(accessor='shorthand',
+                              orderable=True)
+    title = tables.Column(accessor='title',
+                          orderable=True)
+    year = tables.Column(accessor='year',
+                         orderable=True)
+    author = tables.Column(accessor='author',
+                           empty_values=[],
+                           orderable=True)
+    ENTRYTYPE = tables.Column(accessor='ENTRYTYPE',
+                              orderable=True)
+    cognacy = tables.Column(accessor='cognacy_count',
+                            orderable=False)
+    cogset = tables.Column(accessor='cogset_count',
+                           orderable=False)
+    lexeme = tables.Column(accessor='lexeme_count',
+                           orderable=False)
     deprecated = CheckBoxColumnDeprecated(
-        orderable=False)  # tables.BooleanColumn()
-    TRS = CheckBoxColumnTRS(orderable=False)
-    # link to edit view? / open new frame below ?
-    edit = tables.Column(empty_values=[], orderable=False)
+        accessor='deprecated',
+        orderable=False)
+    TRS = CheckBoxColumnTRS(
+        accessor='TRS',
+        orderable=False)
+    edit = tables.Column(accessor='edit',
+                         empty_values=[],
+                         orderable=False)
 
     class Meta:
         attrs = {'class': 'paleblue'}
         template = "table_filterable.html"
+        model = Source
+        exclude = ['citation_text', 'booktitle',
+                   'booksubtitle', 'bookauthor', 'editor',
+                   'editortype', 'editora',
+                   'pages', 'part', 'edition',
+                   'journaltitle', 'location', 'link',
+                   'note', 'number', 'series', 'volume',
+                   'publisher', 'institution', 'chapter',
+                   'howpublished', 'isbn', 'description',
+                   'authortype', 'editortype', 'editoratype',
+                   'respect', 'subtitle', 'modified', 'id', 'pk']
+        sequence = ('details', 'shorthand', 'title', 'year', 'author',
+                    'ENTRYTYPE', 'cognacy', 'cogset', 'lexeme',
+                    'deprecated', 'TRS', 'edit')
 
     def __init__(self, *args, **kwargs):
         super(SourcesTable, self).__init__(*args, **kwargs)
 
     def render_author(self, value, record):
-        if value == u'' and record['editor']:
-            if record['editor']:
-                if len(record['editor'].split(' and ')) > 1:
-                    return '%s (eds.)' % (record['editor'])
-                return '%s (ed.)' % (record['editor'])
+        if value == u'' and record.editor:
+            if len(record.editor.split(' and ')) > 1:
+                return '%s (eds.)' % (record.editor)
+            return '%s (ed.)' % (record.editor)
         return value
 
     def render_cognacy(self, value, record):
@@ -83,21 +111,21 @@ class SourcesTable(tables.Table):
 
     def render_details(self, value, record):
         details_button = '<button class="details_button show_d" '  \
-                         'id="%s">More</button>' % (record['pk'])
+            'id="%s">More</button>' % (record.pk)
         return mark_safe(details_button)
 
     def render_edit(self, value, record):
         edit_button = '<button class="edit_button show_e" ' \
-                      'id="%s">Edit</button>' % (record['pk'])
+            'id="%s">Edit</button>' % (record.pk)
         return mark_safe(edit_button)
 
     def queryset_link(self, value, record, name):
-        if len(value) != 0:
-            link = u"<a href='/sources/%s/%s'>%s</a>" % (record['pk'],
+        if value != 0:
+            link = u"<a href='/sources/%s/%s'>%s</a>" % (record.pk,
                                                          name,
-                                                         value.count())
+                                                         value)
             return mark_safe(link)
-        return str(len(value))
+        return str(value)
 
 
 class SourcesUpdateTable(tables.Table):
@@ -105,7 +133,6 @@ class SourcesUpdateTable(tables.Table):
     citation_text = CellClassColumn(empty_values=[])
 
     ENTRYTYPE = CellClassColumn(empty_values=[])
-    citation_text = CellClassColumn(empty_values=[])
     author = CellClassColumn(empty_values=[])
     year = CellClassColumn(empty_values=[])
     title = CellClassColumn(empty_values=[])
@@ -125,9 +152,9 @@ class SourcesUpdateTable(tables.Table):
     chapter = CellClassColumn(empty_values=[])
     isbn = CellClassColumn(empty_values=[])
     howpublished = CellClassColumn(empty_values=[])
-    # respect = CellClassColumn(empty_values=[])
-    # deprecated = CellClassColumn(empty_values=[])
-    # TRS = CellClassColumn(empty_values=[])
+    # respect=CellClassColumn(empty_values=[])
+    # deprecated=CellClassColumn(empty_values=[])
+    # TRS=CellClassColumn(empty_values=[])
 
     class Meta:
         attrs = {'class': 'paleblue'}
