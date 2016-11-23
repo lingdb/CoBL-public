@@ -99,6 +99,7 @@ def update_semantic_domain_all(sender, instance, **kwargs):
         sd.relation_id_list = [l.id for l in SemanticRelation.objects.all()]
         sd.save(force_update=True)
 
+
 models.signals.post_save.connect(
     update_semantic_domain_all, sender=SemanticRelation)
 models.signals.post_delete.connect(
