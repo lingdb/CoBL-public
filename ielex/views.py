@@ -13,7 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
-from django.db.models import Q, Count
+from django.db.models import Q
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, Http404, QueryDict
 from django.shortcuts import redirect
@@ -1989,14 +1989,14 @@ def source_list(request):
             queryset = Source.objects.all()
         sources_table = get_sources_table(queryset)
         response = HttpResponse()
-        RequestConfig(request, paginate={'per_page': 1000}) \
-                               .configure(sources_table)
+        RequestConfig(
+            request, paginate={'per_page': 1000}).configure(sources_table)
         response.write(sources_table.as_html(request))
         return response
     else:
         sources_table = get_sources_table()
-        RequestConfig(request, paginate={'per_page': 1000}) \
-                               .configure(sources_table)
+        RequestConfig(
+            request, paginate={'per_page': 1000}).configure(sources_table)
         return render_template(request, "source_list.html",
                                {"sources": sources_table,
                                 "perms": source_perms_check(request.user)
@@ -2006,23 +2006,23 @@ def source_list(request):
 def get_sources_table(queryset=''):
     if queryset == '':
         queryset = Source.objects.all()
-    queryset = queryset.extra({'cognacy_count': \
-                               'SELECT COUNT(*) ' \
-                               'FROM lexicon_cognatejudgementcitation ' \
-                               'WHERE ' \
-                               'lexicon_cognatejudgementcitation.source_id ' \
+    queryset = queryset.extra({'cognacy_count':
+                               'SELECT COUNT(*) '
+                               'FROM lexicon_cognatejudgementcitation '
+                               'WHERE '
+                               'lexicon_cognatejudgementcitation.source_id '
                                '= lexicon_source.id',
-                               'cogset_count': \
-                               'SELECT COUNT(*) ' \
-                               'FROM lexicon_cognateclasscitation ' \
-                               'WHERE ' \
-                               'lexicon_cognateclasscitation.source_id ' \
+                               'cogset_count':
+                               'SELECT COUNT(*) '
+                               'FROM lexicon_cognateclasscitation '
+                               'WHERE '
+                               'lexicon_cognateclasscitation.source_id '
                                '= lexicon_source.id',
-                               'lexeme_count': \
-                               'SELECT COUNT(*) ' \
-                               'FROM lexicon_lexemecitation ' \
-                               'WHERE ' \
-                               'lexicon_lexemecitation.source_id ' \
+                               'lexeme_count':
+                               'SELECT COUNT(*) '
+                               'FROM lexicon_lexemecitation '
+                               'WHERE '
+                               'lexicon_lexemecitation.source_id '
                                '= lexicon_source.id'
                                })
     return SourcesTable(queryset)
