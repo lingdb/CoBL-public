@@ -64,7 +64,8 @@ from ielex.forms import AddCitationForm, \
     UploadBiBTeXFileForm, \
     CognateJudgementFormSet, \
     CognateClassFormSet, \
-    LexemeFormSet
+    LexemeFormSet, \
+    AssignCognateClassesFromLexemeForm
 from ielex.lexicon.models import Author, \
     Clade, \
     CognateClass, \
@@ -2492,8 +2493,12 @@ def view_two_languages_wordlist(request,
         raise Http404("MeaningList '%s' does not exist" % wordlist)
 
     if request.method == 'POST':
+        # Handling cognate class assignments (#312):
+        if 'assigncognates' in request.POST:
+            form = AssignCognateClassesFromLexemeForm(request.POST)
+            return form.handle()
         # Updating lexeme table data:
-        if 'lex_form' in request.POST:
+        elif 'lex_form' in request.POST:
             try:
                 form = LexemeTableLanguageWordlistForm(request.POST)
                 form.validate()
@@ -2503,11 +2508,11 @@ def view_two_languages_wordlist(request,
                                   'in view_two_languages_wordlist.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least one lexeme.')
-        return HttpResponseRedirect(
-            reverse("view-two-languages",
-                    args=[lang1.ascii_name,
-                          lang2.ascii_name,
-                          wordlist.name]))
+            return HttpResponseRedirect(
+                reverse("view-two-languages",
+                        args=[lang1.ascii_name,
+                              lang2.ascii_name,
+                              wordlist.name]))
 
     def getLexemes(lang):
         # Helper function to fetch lexemes

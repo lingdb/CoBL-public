@@ -47,7 +47,7 @@
              'js/updateCounts',
              'js/updatePercentages',
              'js/confirmSubmit',
-             'js/copyRowFrom'],
+             'js/copyCognateClass'],
             function(require, $, _){
     //Initializing viewTableFilter:
     require('js/viewTableFilter').init('table.viewTableFilter');

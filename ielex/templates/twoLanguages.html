@@ -100,7 +100,7 @@
                   </div>
                 </div>
               </th>
-              {# copyrowfrom_title.html #}
+              {# copyCognateClass_title.html #}
               <th></th>
               {# cognateclassids_title.html #}
               <th style="width: 45px;">
@@ -259,7 +259,7 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
-              {# copyrowfrom_filter.html #}
+              {# copyCognateClass_filter.html #}
               <td></td>
               {# cognateclassids_filter.html #}
               <td style="width: 45px;" colspan="2">
@@ -558,14 +558,15 @@
                     </span>
                   </center>
                 </td>
-                {# copyrowfrom_data.html #}
+                {# copyCognateClass_data.html #}
                 <td>
                   {% if lexeme.object_data.original %}
                     <a class="btn btn-default btn-xs pull-right"
                        data-toggle="tooltip"
                        data-placement="bottom"
                        title="Copy over cognate set assignment from the reference language selected here (in grey)."
-                       data-copyrowfrom="#original_row_lexeme{{ lexeme.object_data.original.id }}">
+                       data-assigncognatesfromlexeme="{{ lexeme.object_data.original.id }}"
+                       data-assigncognatestolexeme="{{ lexeme.object_data.id }}">
                       <span class="glyphicon glyphicon-share-alt"></span>
                     </a>
                   {% endif %}
@@ -590,7 +591,7 @@
                 <td style="text-align: center; color: #8B4510;">
                   <div class="cognateClasses">
                     {% if user.is_authenticated %}
-                      {% form_field lexeme.combinedCognateClassAssignment class="form-control" data-copyrowfrom-key="combinedCognateClassAssignment" %}
+                      {% form_field lexeme.combinedCognateClassAssignment class="form-control" %}
                     {% else %}
                       {{ lexeme.object_data.combinedCognateClassAssignment }}
                     {% endif %}
@@ -817,7 +818,7 @@
                       </span>
                     </center>
                   </td>
-                  {# copyrowfrom_original.html #}
+                  {# copyCognateClass_original.html #}
                   <td></td>
                   {# cognateclassids_original.html #}
                   <td class="cognateClassId" style="text-align: center; width: 45px;">
@@ -836,8 +837,7 @@
                     </a>
                   </td>
                   {# cognateclasses_original.html #}
-                  <td style="text-align: center; color: #8B4510;"
-                      data-copyrowfrom-key="combinedCognateClassAssignment">
+                  <td style="text-align: center; color: #8B4510;">
                     <div class="cognateClasses">
                     {% for c in lexeme.object_data.original.allCognateClasses %}
                       <a href="/cognate/{{ c.id }}/"
