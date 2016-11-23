@@ -34,7 +34,8 @@
       'dal-init2': {deps: ['dal-init1'], exports: 'yl'},
       'dal-forward': {deps: ['jquery'], exports: 'get_forwards'},
       'dal-select2': {deps: ['dal-init2', 'dal-forward', 'select2']},
-      'dal-init': {deps: ['dal-init2', 'dal-forward', 'dal-select2']}
+      'dal-init': {deps: ['dal-init2', 'dal-forward', 'dal-select2']},
+      'select2': {deps: ['jquery']}
     }
   });
   requirejs(['require','jquery','lodash',
