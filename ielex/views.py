@@ -1987,12 +1987,14 @@ def source_list(request):
             queryset = Source.objects.all()
         sources_table = get_sources_table(queryset)
         response = HttpResponse()
-        RequestConfig(request).configure(sources_table)
+        RequestConfig(request, paginate={'per_page': 1000}) \
+                               .configure(sources_table)
         response.write(sources_table.as_html(request))
         return response
     else:
         sources_table = get_sources_table()
-        RequestConfig(request).configure(sources_table)
+        RequestConfig(request, paginate={'per_page': 1000}) \
+                               .configure(sources_table)
         return render_template(request, "source_list.html",
                                {"sources": sources_table,
                                 "perms": source_perms_check(request.user)
@@ -2002,11 +2004,25 @@ def source_list(request):
 def get_sources_table(queryset=''):
     if queryset == '':
         queryset = Source.objects.all()
-    queryset = queryset.annotate(
-        cognacy_count=Count('cognatejudgementcitation', distinct=True),
-        cogset_count=Count('cognateclasscitation', distinct=True),
-        lexeme_count=Count('lexemecitation', distinct=True),
-        ).order_by()
+    queryset = queryset.extra({'cognacy_count': \
+                               'SELECT COUNT(*) ' \
+                               'FROM lexicon_cognatejudgementcitation ' \
+                               'WHERE ' \
+                               'lexicon_cognatejudgementcitation.source_id ' \
+                               '= lexicon_source.id',
+                               'cogset_count': \
+                               'SELECT COUNT(*) ' \
+                               'FROM lexicon_cognateclasscitation ' \
+                               'WHERE ' \
+                               'lexicon_cognateclasscitation.source_id ' \
+                               '= lexicon_source.id',
+                               'lexeme_count': \
+                               'SELECT COUNT(*) ' \
+                               'FROM lexicon_lexemecitation ' \
+                               'WHERE ' \
+                               'lexicon_lexemecitation.source_id ' \
+                               '= lexicon_source.id'
+                               })
     return SourcesTable(queryset)
 
 
