@@ -12,7 +12,13 @@
       'awesomplete': 'bower_components/awesomplete/awesomplete.min',
       'c3': 'bower_components/c3/c3.min',
       'd3': 'bower_components/d3/d3.min',
-      'intercom': 'bower_components/intercom/intercom.min'
+      'intercom': 'bower_components/intercom/intercom.min',
+      'dal-init1': 'bower_components/django-autocomplete-light/src/dal/static/admin/js/jquery.init',
+      'dal-init2': 'bower_components/django-autocomplete-light/src/dal/static/autocomplete_light/jquery.init',
+      'dal-init': 'bower_components/django-autocomplete-light/src/dal/static/autocomplete_light/autocomplete.init',
+      'dal-forward': 'bower_components/django-autocomplete-light/src/dal/static/autocomplete_light/forward',
+      'dal-select2': 'bower_components/django-autocomplete-light/src/dal_select2/static/autocomplete_light/select2',
+      'select2': 'bower_components/select2/dist/js/select2.full.min'
     },
     shim: {
       'bootstrap': {deps: ['jquery']},
@@ -22,7 +28,14 @@
       'markdown-it': {deps: ['jquery']},
       'awesomplete': {exports: 'Awesomplete'},
       'bootbox': {deps: ['bootstrap']},
-      'intercom': {exports: 'intercom'}
+      'intercom': {exports: 'intercom'},
+      //Stiched together by djanoAutocompleteInclusion:
+      'dal-init1': {deps: ['jquery'], exports: 'django'},
+      'dal-init2': {deps: ['dal-init1'], exports: 'yl'},
+      'dal-forward': {deps: ['jquery'], exports: 'get_forwards'},
+      'dal-select2': {deps: ['dal-init2', 'dal-forward', 'select2']},
+      'dal-init': {deps: ['dal-init2', 'dal-forward', 'dal-select2']},
+      'select2': {deps: ['jquery']}
     }
   });
   requirejs(['require','jquery','lodash',
@@ -47,7 +60,8 @@
              'js/updateCounts',
              'js/updatePercentages',
              'js/confirmSubmit',
-             'js/copyRowFrom'],
+             'js/copyCognateClass',
+             'js/djangoAutocompleteInclusion'],
             function(require, $, _){
     //Initializing viewTableFilter:
     require('js/viewTableFilter').init('table.viewTableFilter');

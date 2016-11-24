@@ -12,6 +12,8 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/verticalText.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'bower_components/awesomplete/awesomplete.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'bower_components/c3/c3.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bower_components/select2/dist/css/select2.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bower_components/django-autocomplete-light/src/dal_select2/static/autocomplete_light/select2.css' %}">
     <link rel="shortcut icon" type="image/ico" href="{% static 'logo/favicon.ico' %}">
     {# HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries #}
     {# WARNING: Respond.js doesn't work if you view the page via file:// #}
@@ -239,8 +241,6 @@
       <script src="{% static 'bower_components/requirejs/require.js' %}"
               data-main="{% static 'js/main.js' %}"></script>
     {% endif %}
-	{% block media %}
-	{% endblock %}
   </body>
 </html>
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
