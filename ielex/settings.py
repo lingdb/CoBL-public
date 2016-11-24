@@ -134,6 +134,19 @@ if not os.path.exists(local_settings_path):
 
 from local_settings import *
 
+# Overwrite settings from env:
+if os.getenv('DEBUG'):
+    DEBUG = os.getenv('DEBUG') == 'True'
+if os.getenv('SECRET_KEY'):
+    SECRET_KEY = os.getenv('SECRET_KEY')
+for k1, k2 in [('DB_HOST', 'HOST'),
+               ('DB_PORT', 'PORT'),
+               ('DB_NAME', 'NAME'),
+               ('DB_USER', 'USER'),
+               ('DB_PASSWORD', 'PASSWORD')]:
+    if os.getenv(k1):
+        DATABASES['default'][k2] = os.getenv(k1)
+
 if DEBUG:
     try:
         import debug_toolbar
