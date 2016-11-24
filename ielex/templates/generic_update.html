@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {# used by CognateClassCitationCreateView #}
 {# TODO use with other create citation views #}
+{% load static %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -21,5 +22,10 @@
 {% block controls %}
   {% include "snippets/defaultSelections.html" %}
   {% include "snippets/go_to.html" %}
+{% endblock %}
+{% block media %}
+<script type="text/javascript" src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+
+{{ form.media }}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
