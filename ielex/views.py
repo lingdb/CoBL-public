@@ -249,11 +249,20 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
         current_idx = ids.index(current_language.id)
     except ValueError:
         current_idx = 0
-    prev_language = Language.objects.get(id=ids[current_idx - 1])
+    try:
+        prev_language = Language.objects.get(id=ids[current_idx - 1])
+    except IndexError:
+        try:
+            prev_language = Language.objects.get(id=ids[len(ids) - 1])
+        except IndexError:
+            prev_language = current_language
     try:
         next_language = Language.objects.get(id=ids[current_idx + 1])
     except IndexError:
-        next_language = Language.objects.get(id=ids[0])
+        try:
+            next_language = Language.objects.get(id=ids[0])
+        except IndexError:
+            next_language = current_language
     return (prev_language, next_language)
 
 
@@ -2492,9 +2501,12 @@ def view_two_languages_wordlist(request,
         raise Http404("Language '%s' does not exist" % lang1)
     # Fetching lang2 to operate on:
     if lang2 is None:
-        lang2 = Language.objects.exclude(
-            id=lang1.id).filter(
-            languagelist__name=getDefaultLanguagelist(request))[0]
+        try:
+            lang2 = Language.objects.exclude(
+                id=lang1.id).filter(
+                languagelist__name=getDefaultLanguagelist(request))[0]
+        except IndexError:
+            lang2 = lang1
     else:
         try:
             lang2 = Language.objects.get(ascii_name=lang2)

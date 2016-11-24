@@ -642,6 +642,8 @@ def getCladeFromLanguageIds(languageIds):
 
 @reversion.register
 class Language(AbstractTimestamped, AbstractDistribution):
+    DEFAULT = 'AncientGreek'
+
     iso_code = models.CharField(max_length=3, blank=True)
     ascii_name = models.CharField(
         max_length=128, unique=True, validators=[suitable_for_url])
@@ -904,6 +906,8 @@ class LanguageClade(models.Model):
 
 @reversion.register
 class Meaning(AbstractTimestamped):
+    DEFAULT = 'ash'
+
     gloss = models.CharField(
         max_length=64, unique=True, validators=[suitable_for_url])
     description = models.CharField(max_length=64, blank=True)

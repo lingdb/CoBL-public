@@ -14,7 +14,7 @@ def getDefaultLanguage(request):
     """
     @return defaultLanguage :: str | unicode
     """
-    return request.session.get('defaultLanguage', 'AncientGreek')
+    return request.session.get('defaultLanguage', Language.DEFAULT)
 
 
 def setDefaultLanguage(request, language):
@@ -62,7 +62,7 @@ def getDefaultMeaning(request):
     """
     @return defaultMeaning :: str | unicode
     """
-    return request.session.get('defaultMeaning', 'ash')
+    return request.session.get('defaultMeaning', Meaning.DEFAULT)
 
 
 def setDefaultMeaning(request, meaning):
