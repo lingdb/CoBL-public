@@ -1341,7 +1341,7 @@ class Lexeme(AbstractTimestamped):
         """
         This method was added for #90 and shall return
         gathered cc data for a lexeme.
-        @return {id: …, root_form: …, root_language: …}
+        @return {id: .., root_form: .., root_language: ..}
         """
         ccs = self.cognate_class.all()
         ids = [str(cc.id) for cc in ccs]

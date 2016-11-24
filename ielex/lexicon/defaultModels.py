@@ -6,7 +6,7 @@ from ielex.lexicon.models import Language, LanguageList, \
 This module provides functions to track the default settings for a session.
 Defaults are either set initially or overwritten by the clients session.
 The implementation aims to solve the state tracking problem of #82
-that requires us to know which language,… a client last visited.
+that requires us to know which language,.. a client last visited.
 """
 
 
