@@ -50,3 +50,14 @@ def merge_and_delete_sources(dic):
                 print('Duplicate sources handling exception: '
                       'duplicate source with id %s was already deleted'
                       % (pk))
+
+
+def sourcesExist(sources_changes, model):
+    sIds = set()
+    for k, v in sources_changes['merge'].iteritems():
+        sIds.add(k)
+        sIds.update(v)
+    sIds.update(sources_changes['delete'])
+    sIds.update(sources_changes['deprecate'])
+    sCount = model.objects.filter(id__in=sIds).count()
+    return sCount == len(sIds)

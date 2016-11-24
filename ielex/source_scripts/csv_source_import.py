@@ -27,7 +27,10 @@ def parse_source_csv(path):
 def import_csv_citations(path, model=Source):
     data_dict = parse_source_csv(path)
     for key in data_dict.keys():
-        source_obj = model.objects.get(pk=key)
-        source_obj.shorthand = data_dict[key]['shorthand']
-        source_obj.citation_text = data_dict[key]['citation_text']
-        source_obj.save()
+        try:
+            source_obj = model.objects.get(pk=key)
+            source_obj.shorthand = data_dict[key]['shorthand']
+            source_obj.citation_text = data_dict[key]['citation_text']
+            source_obj.save()
+        except model.DoesNotExist:
+            pass

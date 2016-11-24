@@ -16,18 +16,23 @@ def forwards_func(apps, schema_editor):
     LanguageList = apps.get_model('lexicon', 'LanguageList')
     Lexeme = apps.get_model('lexicon', 'Lexeme')
     # Interesting data:
-    lList = LanguageList.objects.get(name='Current')
-    mList = MeaningList.objects.get(name='Jena200')
-    languageIds = lList.languages.values_list('id', flat=True)
-    meaningIds = mList.meanings.values_list('id', flat=True)
-    lexemeIds = Lexeme.objects.filter(
-        language_id__in=languageIds,
-        meaning_id__in=meaningIds).values_list('id', flat=True)
-    # Entries to modify:
-    cjcs = CognateJudgementCitation.objects.filter(
-        cognate_judgement__lexeme_id__in=lexemeIds)
-    # Setting reliability to high:
-    cjcs.update(reliability='A')
+    try:
+        lList = LanguageList.objects.get(name='Current')
+        mList = MeaningList.objects.get(name='Jena200')
+        languageIds = lList.languages.values_list('id', flat=True)
+        meaningIds = mList.meanings.values_list('id', flat=True)
+        lexemeIds = Lexeme.objects.filter(
+            language_id__in=languageIds,
+            meaning_id__in=meaningIds).values_list('id', flat=True)
+        # Entries to modify:
+        cjcs = CognateJudgementCitation.objects.filter(
+            cognate_judgement__lexeme_id__in=lexemeIds)
+        # Setting reliability to high:
+        cjcs.update(reliability='A')
+    except LanguageList.DoesNotExist:
+        pass
+    except MeaningList.DoesNotExist:
+        pass
 
 
 def reverse_func(apps, schema_editor):
