@@ -237,7 +237,7 @@
     {# Including javascript: #}
     {% if minifiedJs %}
       <script src="{% static minifiedJs %}"></script>
-    {% elif debug %}
+    {% else %}
       <script src="{% static 'bower_components/requirejs/require.js' %}"
               data-main="{% static 'js/main.js' %}"></script>
     {% endif %}

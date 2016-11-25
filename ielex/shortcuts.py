@@ -6,8 +6,6 @@ from django.template import RequestContext
 
 from ielex.lexicon.defaultModels import getDefaultDict
 
-from ielex.settings import DEBUG
-
 
 def render_template(request, template_path, extra_context={}):
     """Wrapper around render_to_response that fills in context_instance"""
