@@ -3,7 +3,8 @@
 # https://github.com/lingdb/CoBL/issues/223#issuecomment-256815113
 from __future__ import unicode_literals, print_function
 from django.db import migrations
-from ielex.source_scripts.handle_duplicate_sources import handle_sources
+from ielex.source_scripts.handle_duplicate_sources import handle_sources, \
+    sourcesExist
 
 sources_changes = {'merge': {},
                    'delete': [],
@@ -12,7 +13,9 @@ sources_changes = {'merge': {},
 
 
 def forwards_func(apps, schema_editor):
-    handle_sources(sources_changes)
+    Source = apps.get_model('lexicon', 'Source')
+    if sourcesExist(sources_changes, Source):
+        handle_sources(sources_changes)
 
 
 def reverse_func(apps, schema_editor):

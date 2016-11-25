@@ -6,7 +6,7 @@ from ielex.lexicon.models import Language, LanguageList, \
 This module provides functions to track the default settings for a session.
 Defaults are either set initially or overwritten by the clients session.
 The implementation aims to solve the state tracking problem of #82
-that requires us to know which language,… a client last visited.
+that requires us to know which language,.. a client last visited.
 """
 
 
@@ -14,7 +14,7 @@ def getDefaultLanguage(request):
     """
     @return defaultLanguage :: str | unicode
     """
-    return request.session.get('defaultLanguage', 'AncientGreek')
+    return request.session.get('defaultLanguage', Language.DEFAULT)
 
 
 def setDefaultLanguage(request, language):
@@ -62,7 +62,7 @@ def getDefaultMeaning(request):
     """
     @return defaultMeaning :: str | unicode
     """
-    return request.session.get('defaultMeaning', 'ash')
+    return request.session.get('defaultMeaning', Meaning.DEFAULT)
 
 
 def setDefaultMeaning(request, meaning):

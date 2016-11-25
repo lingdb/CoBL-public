@@ -19,7 +19,7 @@ setColors = [{'name': 'ALL Indic',        'color': 'E11D21'},
 
 def forwards_func(apps, schema_editor):
     LanguageBranches = apps.get_model("lexicon", "LanguageBranches")
-    print('Coloring LanguageBranches…')
+    print('Coloring LanguageBranches..')
     for set in setColors:
         try:
             branch = LanguageBranches.objects.get(
@@ -32,7 +32,7 @@ def forwards_func(apps, schema_editor):
 
 def reverse_func(apps, schema_editor):
     LanguageBranches = apps.get_model("lexicon", "LanguageBranches")
-    print('Discoloring LanguageBranches…')
+    print('Discoloring LanguageBranches..')
     for set in setColors:
         try:
             branch = LanguageBranches.objects.get(

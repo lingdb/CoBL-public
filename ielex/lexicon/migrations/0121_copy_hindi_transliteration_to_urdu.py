@@ -10,8 +10,11 @@ def forwards_func(apps, schema_editor):
     Meaning = apps.get_model("lexicon", "Meaning")
     Lexeme = apps.get_model("lexicon", "Lexeme")
 
-    hindi = Language.objects.get(ascii_name='Hindi')
-    urdu = Language.objects.get(ascii_name='Urdu')
+    try:
+        hindi = Language.objects.get(ascii_name='Hindi')
+        urdu = Language.objects.get(ascii_name='Urdu')
+    except Language.DoesNotExist:
+        return
 
     for meaning in Meaning.objects.all():
         hLexemes = Lexeme.objects.filter(language=hindi, meaning=meaning).all()

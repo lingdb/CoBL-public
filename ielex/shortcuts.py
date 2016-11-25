@@ -21,10 +21,9 @@ def render_template(request, template_path, extra_context={}):
 
 # When we're not in DEBUG mode, we search for the minified.js file:
 def minifiedJs():
-    if DEBUG:
-        return None
     files = glob.glob('./static/minified.*.js')
     for file in files:
         return path.basename(file)
+
 
 minifiedJs = minifiedJs()

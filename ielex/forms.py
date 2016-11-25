@@ -6,6 +6,7 @@ from collections import defaultdict, OrderedDict
 from django import forms
 from django.contrib import messages
 from django.db import transaction
+from django.db.utils import ProgrammingError
 from django.forms import ValidationError
 from django.http import HttpResponse
 from django.utils.encoding import python_2_unicode_compatible
@@ -75,6 +76,14 @@ class ChooseLanguagesField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
         return obj.utf8_name or obj.ascii_name
+
+    @staticmethod
+    def sizeAttr():
+        try:
+            return min(40, Language.objects.count())
+        except ProgrammingError as e:
+            # If the database has not tables this would break otherwise
+            return 40
 
 
 class ChooseLanguageListField(forms.ModelChoiceField):
@@ -350,12 +359,12 @@ class AbstractCognateClassAssignmentForm(WTForm):
             else:  # Add lexeme to existing class if this is a new one.
                 cc = None
                 try:
+                    ccWithSameMeaning = CognateClass.objects.filter(
+                        lexeme__meaning__id=lexeme.meaning_id).distinct()
                     if re.match('^\d+$', t) is not None:
-                        cc = CognateClass.objects.get(id=int(t))
+                        cc = ccWithSameMeaning.get(id=int(t))
                     else:
-                        cc = CognateClass.objects.filter(
-                            lexeme__meaning__id=lexeme.meaning_id
-                        ).distinct().get(alias=t)
+                        cc = ccWithSameMeaning.get(alias=t)
                 except Exception:
                     logging.exception("Problem handling token %s" % t)
                     messages.error(
@@ -1597,7 +1606,7 @@ class SearchLexemeForm(forms.Form):
     languages = ChooseLanguagesField(
         queryset=Language.objects.all(),
         required=False, widget=forms.SelectMultiple(
-            attrs={"size": min(40, Language.objects.count())}),
+            attrs={"size": ChooseLanguagesField.sizeAttr()}),
         help_text=u"no selection → all")
 
 

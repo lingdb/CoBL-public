@@ -642,6 +642,8 @@ def getCladeFromLanguageIds(languageIds):
 
 @reversion.register
 class Language(AbstractTimestamped, AbstractDistribution):
+    DEFAULT = 'AncientGreek'
+
     iso_code = models.CharField(max_length=3, blank=True)
     ascii_name = models.CharField(
         max_length=128, unique=True, validators=[suitable_for_url])
@@ -904,6 +906,8 @@ class LanguageClade(models.Model):
 
 @reversion.register
 class Meaning(AbstractTimestamped):
+    DEFAULT = 'ash'
+
     gloss = models.CharField(
         max_length=64, unique=True, validators=[suitable_for_url])
     description = models.CharField(max_length=64, blank=True)
@@ -1337,7 +1341,7 @@ class Lexeme(AbstractTimestamped):
         """
         This method was added for #90 and shall return
         gathered cc data for a lexeme.
-        @return {id: …, root_form: …, root_language: …}
+        @return {id: .., root_form: .., root_language: ..}
         """
         ccs = self.cognate_class.all()
         ids = [str(cc.id) for cc in ccs]
