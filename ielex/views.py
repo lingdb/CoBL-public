@@ -64,7 +64,8 @@ from ielex.forms import AddCitationForm, \
     UploadBiBTeXFileForm, \
     CognateJudgementFormSet, \
     CognateClassFormSet, \
-    LexemeFormSet
+    LexemeFormSet, \
+    AssignCognateClassesFromLexemeForm
 from ielex.lexicon.models import Author, \
     Clade, \
     CognateClass, \
@@ -248,11 +249,20 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
         current_idx = ids.index(current_language.id)
     except ValueError:
         current_idx = 0
-    prev_language = Language.objects.get(id=ids[current_idx - 1])
+    try:
+        prev_language = Language.objects.get(id=ids[current_idx - 1])
+    except IndexError:
+        try:
+            prev_language = Language.objects.get(id=ids[len(ids) - 1])
+        except IndexError:
+            prev_language = current_language
     try:
         next_language = Language.objects.get(id=ids[current_idx + 1])
     except IndexError:
-        next_language = Language.objects.get(id=ids[0])
+        try:
+            next_language = Language.objects.get(id=ids[0])
+        except IndexError:
+            next_language = current_language
     return (prev_language, next_language)
 
 
@@ -2491,9 +2501,12 @@ def view_two_languages_wordlist(request,
         raise Http404("Language '%s' does not exist" % lang1)
     # Fetching lang2 to operate on:
     if lang2 is None:
-        lang2 = Language.objects.exclude(
-            id=lang1.id).filter(
-            languagelist__name=getDefaultLanguagelist(request))[0]
+        try:
+            lang2 = Language.objects.exclude(
+                id=lang1.id).filter(
+                languagelist__name=getDefaultLanguagelist(request))[0]
+        except IndexError:
+            lang2 = lang1
     else:
         try:
             lang2 = Language.objects.get(ascii_name=lang2)
@@ -2508,8 +2521,12 @@ def view_two_languages_wordlist(request,
         raise Http404("MeaningList '%s' does not exist" % wordlist)
 
     if request.method == 'POST':
+        # Handling cognate class assignments (#312):
+        if 'assigncognates' in request.POST:
+            form = AssignCognateClassesFromLexemeForm(request.POST)
+            return form.handle()
         # Updating lexeme table data:
-        if 'lex_form' in request.POST:
+        elif 'lex_form' in request.POST:
             try:
                 form = LexemeTableLanguageWordlistForm(request.POST)
                 form.validate()
@@ -2519,11 +2536,11 @@ def view_two_languages_wordlist(request,
                                   'in view_two_languages_wordlist.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least one lexeme.')
-        return HttpResponseRedirect(
-            reverse("view-two-languages",
-                    args=[lang1.ascii_name,
-                          lang2.ascii_name,
-                          wordlist.name]))
+            return HttpResponseRedirect(
+                reverse("view-two-languages",
+                        args=[lang1.ascii_name,
+                              lang2.ascii_name,
+                              wordlist.name]))
 
     def getLexemes(lang):
         # Helper function to fetch lexemes
@@ -2564,17 +2581,9 @@ def view_two_languages_wordlist(request,
         args=[lang1.ascii_name, l.ascii_name, wordlist.name])
         for l in languageList.languages.all()})
 
-    prev1, next1 = \
-        get_prev_and_next_languages(request, lang1,
-                                    language_list=languageList)
-    prev2, next2 = \
-        get_prev_and_next_languages(request, lang2,
-                                    language_list=languageList)
     return render_template(request, "twoLanguages.html",
                            {"lang1": lang1,
                             "lang2": lang2,
-                            "prev1": prev1, "next1": next1,
-                            "prev2": prev2, "next2": next2,
                             "wordlist": wordlist,
                             "otherMeaningLists": otherMeaningLists,
                             "lex_ed_form": lexemeTable,

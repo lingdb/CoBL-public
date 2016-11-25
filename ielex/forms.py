@@ -6,7 +6,9 @@ from collections import defaultdict, OrderedDict
 from django import forms
 from django.contrib import messages
 from django.db import transaction
+from django.db.utils import ProgrammingError
 from django.forms import ValidationError
+from django.http import HttpResponse
 from django.utils.encoding import python_2_unicode_compatible
 from itertools import izip
 from django.forms import inlineformset_factory
@@ -74,6 +76,14 @@ class ChooseLanguagesField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
         return obj.utf8_name or obj.ascii_name
+
+    @staticmethod
+    def sizeAttr():
+        try:
+            return min(40, Language.objects.count())
+        except ProgrammingError as e:
+            # If the database has not tables this would break otherwise
+            return 40
 
 
 class ChooseLanguageListField(forms.ModelChoiceField):
@@ -349,12 +359,12 @@ class AbstractCognateClassAssignmentForm(WTForm):
             else:  # Add lexeme to existing class if this is a new one.
                 cc = None
                 try:
+                    ccWithSameMeaning = CognateClass.objects.filter(
+                        lexeme__meaning__id=lexeme.meaning_id).distinct()
                     if re.match('^\d+$', t) is not None:
-                        cc = CognateClass.objects.get(id=int(t))
+                        cc = ccWithSameMeaning.get(id=int(t))
                     else:
-                        cc = CognateClass.objects.filter(
-                            lexeme__meaning__id=lexeme.meaning_id
-                        ).distinct().get(alias=t)
+                        cc = ccWithSameMeaning.get(alias=t)
                 except Exception:
                     logging.exception("Problem handling token %s" % t)
                     messages.error(
@@ -1596,7 +1606,7 @@ class SearchLexemeForm(forms.Form):
     languages = ChooseLanguagesField(
         queryset=Language.objects.all(),
         required=False, widget=forms.SelectMultiple(
-            attrs={"size": min(40, Language.objects.count())}),
+            attrs={"size": ChooseLanguagesField.sizeAttr()}),
         help_text=u"no selection → all")
 
 
@@ -1757,20 +1767,61 @@ class CognateClassInlineForm(OrderableInlineModelForm):
             (cognate_class.get_absolute_url(), cognate_class)
         self.order_fields(['cognate_class', 'comment'])
 
+
 CognateJudgementFormSet = inlineformset_factory(
     Source, CognateJudgementCitation,
     form=CognateJudgementInlineForm,
     can_delete=False, fields=('comment',), extra=0)
+
 
 CognateClassFormSet = inlineformset_factory(
     Source, CognateClassCitation,
     form=CognateClassInlineForm,
     can_delete=False, fields=('comment',), extra=0)
 
+
 LexemeFormSet = inlineformset_factory(
     Source, LexemeCitation,
     form=LexemeCitationInlineForm,
     can_delete=False, fields=('comment',), extra=0)
+
+
+class AssignCognateClassesFromLexemeForm(WTForm):
+    toLexeme = IntegerField('Lexeme to assign to',
+                            validators=[InputRequired()])
+    fromLexeme = IntegerField('Lexeme to assign from',
+                              validators=[InputRequired()])
+
+    def handle(self):
+        try:
+            toLexeme = Lexeme.objects.get(id=self.data['toLexeme'])
+            fromLexeme = Lexeme.objects.get(id=self.data['fromLexeme'])
+
+            def getCIdSet(lexeme):
+                return set([c.id for c in lexeme.cognate_class.all()])
+
+            addCIds = getCIdSet(fromLexeme) - getCIdSet(toLexeme)
+            with transaction.atomic():
+                CognateJudgement.objects.bulk_create([
+                    CognateJudgement(lexeme_id=toLexeme.id,
+                                     cognate_class_id=cId)
+                    for cId in addCIds])
+
+            currentClasses = CognateClass.objects.filter(
+                cognatejudgement__lexeme__id=toLexeme.id).values_list(
+                'id', 'alias')
+            response = {'idList': [id for id, _ in currentClasses],
+                        'aliasList': [alias for _, alias in currentClasses]}
+            return HttpResponse(
+                json.dumps(response),
+                content_type="application/json")
+        except Exception as e:
+            logging.exception(
+                'Problem in AssignCognateClassesFromLexemeForm.handle()')
+            return HttpResponse(
+                'Sorry, the server could not handle your request.',
+                content_type='text/plain; charset=utf-8',
+                status=400)
 
 # OLDER:
 

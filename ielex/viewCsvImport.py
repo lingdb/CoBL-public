@@ -39,7 +39,7 @@ def viewCsvImport(request):
 
 def handleMeaningsLanguageImport(fileDicts, request):
     '''
-    :: [{…}] -> [str]
+    :: [{..}] -> [str]
     This function handles the import of data for the
     `all meanings single language` table.
     '''
@@ -63,9 +63,9 @@ def handleMeaningsLanguageImport(fileDicts, request):
     }
 
     # Structures to generate report from:
-    problematicEntries = []  # :: [(reason, {…}))]
-    newEntries = []  # :: [{…}]
-    updatedEntries = []  # :: [{…}]
+    problematicEntries = []  # :: [(reason, {..}))]
+    newEntries = []  # :: [{..}]
+    updatedEntries = []  # :: [{..}]
 
     newLexemes = []  # :: [Lexeme]
 
