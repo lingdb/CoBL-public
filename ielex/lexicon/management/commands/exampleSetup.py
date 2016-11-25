@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, print_function
 
+import json
+
 from django.core.management import BaseCommand
 from django.contrib.auth.models import User
 
@@ -12,6 +14,11 @@ class Command(BaseCommand):
 
     help = "Creates some example data in the database." \
            "This makes it possible to experience the site without a dump."
+
+    exampleMeanings = \
+        './ielex/lexicon/management/commands/exampleMeanings.json'
+    exampleLanguage = \
+        './ielex/lexicon/management/commands/exampleLanguage.json'
 
     def handle(self, *args, **options):
         for name in [LanguageList.ALL, LanguageList.DEFAULT]:
@@ -25,53 +32,29 @@ class Command(BaseCommand):
                 MeaningList.objects.create(name=name)
 
         if Meaning.objects.count() == 0:
-            print('Creating example Meaning.')
-            example = Meaning.objects.create(
-                gloss=Meaning.DEFAULT,
-                description='This meaning is essentially a placeholder.',
-                notes='Note that this meaning is just a placeholder.',
-                tooltip='Examples have tooltips, too!',
-                exampleContext='Used in "This example".')
+            print('Creating example Meanings.')
+            with open(self.exampleMeanings) as f:
+                mData = json.load(f)
+            Meaning.objects.bulk_create([Meaning(**mArgs) for mArgs in mData])
             mList = MeaningList.objects.get(name=MeaningList.DEFAULT)
-            mList.append(example)
+            for meaning in Meaning.objects.all():
+                mList.append(meaning)
 
         if Language.objects.count() == 0:
             print('Creating example Language.')
-            example = Language.objects.create(
-                ascii_name=Language.DEFAULT,
-                utf8_name=Language.DEFAULT,
-                description='This language should not remain.')
+            with open(self.exampleLanguage) as f:
+                lData = json.load(f)
+            language = Language.objects.create(**lData)
             lList = LanguageList.objects.get(name=LanguageList.DEFAULT)
-            lList.append(example)
+            lList.append(language)
 
         if Lexeme.objects.count() == 0:
-            print('Creating example Lexeme.')
-            Lexeme.objects.create(
-                language=Language.objects.all()[0],
-                meaning=Meaning.objects.all()[0],
-                source_form='foo',
-                phon_form='bar',
-                gloss='baz',
-                notes='The names "foo", "bar" and "baz" are placeholders. '
-                      'See https://en.wikipedia.org/wiki/Foobar',
-                phoneMic='foobar',
-                transliteration='raboof'
-            )
-
-        if CognateClass.objects.count() == 0:
-            print('Creating example CognateClass.')
-            cc = CognateClass.objects.create(
-                alias='A',
-                notes='Example cognate class',
-                name='exampleCcName',
-                root_form='root_form',
-                root_language='root_language',
-                gloss_in_root_lang='foo'
-            )
-            CognateJudgement.objects.create(
-                cognate_class=cc,
-                lexeme=Lexeme.objects.all()[0]
-            )
+            print('Creating example Lexemes.')
+            language = Language.objects.all()[0]
+            mList = MeaningList.objects.get(name=MeaningList.DEFAULT)
+            Lexeme.objects.bulk_create([
+                Lexeme(meaning=m, language=language, _order=i)
+                for i, m in enumerate(mList.meanings.all())])
 
         if User.objects.filter(is_superuser=True).count() == 0:
             print('Creating login admin:admin.')
