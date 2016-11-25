@@ -359,12 +359,12 @@ class AbstractCognateClassAssignmentForm(WTForm):
             else:  # Add lexeme to existing class if this is a new one.
                 cc = None
                 try:
+                    ccWithSameMeaning = CognateClass.objects.filter(
+                        lexeme__meaning__id=lexeme.meaning_id).distinct()
                     if re.match('^\d+$', t) is not None:
-                        cc = CognateClass.objects.get(id=int(t))
+                        cc = ccWithSameMeaning.get(id=int(t))
                     else:
-                        cc = CognateClass.objects.filter(
-                            lexeme__meaning__id=lexeme.meaning_id
-                        ).distinct().get(alias=t)
+                        cc = ccWithSameMeaning.get(alias=t)
                 except Exception:
                     logging.exception("Problem handling token %s" % t)
                     messages.error(
