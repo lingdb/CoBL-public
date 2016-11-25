@@ -91,5 +91,6 @@ def mkUpdateLanguageCladeRelations(Language, Clade, LanguageClade):
             LanguageClade.objects.bulk_create(toCreate)
     return updateLanguageCladeRelations
 
+
 updateLanguageCladeRelations = mkUpdateLanguageCladeRelations(
     Language, Clade, LanguageClade)

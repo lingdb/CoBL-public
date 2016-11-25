@@ -25,4 +25,5 @@ def minifiedJs():
     for file in files:
         return path.basename(file)
 
+
 minifiedJs = minifiedJs()
