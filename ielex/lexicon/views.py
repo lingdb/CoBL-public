@@ -18,6 +18,7 @@ from ielex.lexicon.models import CognateClass, \
     NexusExport, \
     Clade
 from ielex.forms import EditCognateClassCitationForm
+from ielex.shortcuts import minifiedJs
 from ielex.lexicon.forms import ChooseNexusOutputForm, DumpSnapshotForm
 from ielex.lexicon.functions import nexus_comment
 from ielex.lexicon.defaultModels import getDefaultWordlistId, \
@@ -43,6 +44,7 @@ class CognateClassCitationUpdateView(UpdateView):
         context["heading"] = "Citation to cognate class %s" % cc_id
         context["cancel_dest"] = reverse(
             "cognate-set", kwargs={"cognate_id": cc_id})
+        context["minifiedJs"] = minifiedJs
         return context
 
 
