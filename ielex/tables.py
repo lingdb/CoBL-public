@@ -8,7 +8,9 @@ class CheckBoxColumnDeprecated(tables.CheckBoxColumn):
 
     @property
     def header(self):
-        return u'☓'
+        return mark_safe('<span data-toggle="tooltip"' \
+                         'title="Deprecated source from IELex ' \
+                         'database, to be removed">☓</span>')
 
     def render(self, value):
         return mark_safe('<input type="checkbox" name="deprecated"%s>'
@@ -19,8 +21,10 @@ class CheckBoxColumnTRS(tables.CheckBoxColumn):
 
     @property
     def header(self):
-        return u'TRS'
-
+        return mark_safe('<span data-toggle="tooltip" ' \
+                         'title="Traditional reference source (dated)">' \
+                         'TRS</span>')
+    
     def render(self, value):
         return mark_safe('<input type="checkbox" name="TRS"%s>'
                          % ({True: u' checked', False: ''}[value]))
@@ -110,12 +114,12 @@ class SourcesTable(tables.Table):
         return self.queryset_link(value, record, 'lexeme')
 
     def render_details(self, value, record):
-        details_button = '<button class="details_button show_d" '  \
+        details_button = '<button class="details_button show_d btn btn-info btn-xs" '  \
             'id="%s">More</button>%s' % (record.pk, record.COinS)
         return mark_safe(details_button)
 
     def render_edit(self, value, record):
-        edit_button = '<button class="edit_button show_e" ' \
+        edit_button = '<button class="edit_button show_e btn btn-warning btn-xs" ' \
             'id="%s">Edit</button>' % (record.pk)
         return mark_safe(edit_button)
 

@@ -1508,12 +1508,12 @@ class ChooseSourceForm(forms.Form):
 class EditCitationForm(forms.Form):
     pages = forms.CharField(required=False)
     comment = forms.CharField(
-        widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}), required=False)
+        widget=forms.Textarea(attrs={'cols': 60, 'rows': 20}), required=False)
 
 
 class EditCognateClassCitationForm(forms.ModelForm):
     comment = forms.CharField(
-        widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}), required=False)
+        widget=forms.Textarea(attrs={'cols': 60, 'rows': 20}), required=False)
 
     def validate_unique(self):
         """Calls the instance's validate_unique() method and updates the
@@ -1544,7 +1544,7 @@ class AddCitationForm(forms.Form):
 
     pages = forms.CharField(required=False)
     comment = forms.CharField(
-        widget=forms.Textarea(attrs={'cols': 78, 'rows': 20}),
+        widget=forms.Textarea(attrs={'cols': 60, 'rows': 20}),
         required=False)
 
     class Meta:

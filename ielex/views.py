@@ -1953,6 +1953,11 @@ def source_list(request):
         response = HttpResponse()
         response.write(SourceDetailsForm(instance=source_obj).as_table())
         return response
+    elif request.POST.get("postType") == 'add' and \
+            source_perms_check(request.user):
+        response = HttpResponse()
+        response.write(SourceEditForm().as_table())
+        return response
     elif request.POST.get("postType") == 'edit' and \
             source_perms_check(request.user):
         source_obj = Source.objects.get(pk=request.POST.get("id"))
@@ -1961,15 +1966,26 @@ def source_list(request):
         return response
     elif request.POST.get("postType") == 'update' and \
             source_perms_check(request.user):
-        source_obj = Source.objects.get(pk=request.POST.get("id"))
+        print request.POST.get("action")
         source_data = QueryDict(request.POST['source_data'].encode('ASCII'))
-        form = SourceEditForm(source_data, instance=source_obj)
-        if form.is_valid():
-            form.save()
-        else:
-            print(form.errors)
+        if request.POST.get("action") == 'Delete':
+            source_obj = Source.objects.get(pk=request.POST.get("id"))
+            print '!!!!!!', source_obj.pk
+            source_obj.delete()
+        elif request.POST.get("action") == 'Update':
+            source_obj = Source.objects.get(pk=request.POST.get("id"))
+            form = SourceEditForm(source_data, instance=source_obj)
+            if form.is_valid():
+                form.save()
+            else:
+                print(form.errors)
+        elif request.POST.get("action") == 'Add':
+            form = SourceEditForm(source_data)
+            if form.is_valid():
+                form.save()
+            else:
+                print(form.errors)
         return HttpResponse()
-
     elif request.POST.get("postType") == 'deprecated-change' and \
             source_perms_check(request.user):
         source_obj = Source.objects.get(pk=request.POST.get("id"))

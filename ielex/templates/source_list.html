@@ -12,6 +12,8 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script>
 $(document).ready(function () {
+	/* Enable tooltips */
+	$('[data-toggle="tooltip"]').tooltip(); 
 	
 	function format_table() {
 		$('input:checked[name="deprecated"]').parent().parent().toggleClass('deprecated');
@@ -21,6 +23,7 @@ $(document).ready(function () {
 			$('th.TRS, td.TRS').hide();
 			$('th.edit, td.edit').hide();
 			$('button#import').hide();
+			$('button#add').hide();
 			$('.filter-header th').slice(-3).hide()
 		{% endif %}
 	};
@@ -96,17 +99,13 @@ $(document).ready(function () {
 	};
 	
 	{% if perms %}
-	/**** EDIT *****/
-	$(document.body).on('click', '.edit_button.show_e', function() {
-		$('#editSourceContainer').empty();
-		$('#editSource').attr('source_id', $(this).attr('id'))
-		var postdata = {
-			'postType': 'edit',
-			'id': $(this).attr('id'),
-			'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value')
-		};
-		$.post("/sources/", postdata, function (data) {
-			$('#editSourceContainer').append('<table id="edit_modal"/>')
+	
+	/**** EDIT / ADD / DELETE FORM *****/	
+	
+		function build_edit_form(data, type){
+		$('#editSourceContainer').append('<table id="edit_modal"/>')
+			$('#editSource input').css({'display':'none'});
+			$('#editSource input.'+type).css({'display':'initial'});
 			$('#edit_modal').append($(data));
 			$('<thead/>').appendTo($('#edit_modal'))
 			$('<tbody/>').appendTo($('#edit_modal'))
@@ -118,15 +117,41 @@ $(document).ready(function () {
 					$('<thead/>').appendTo($('#edit_modal'))
 					$('<tbody/>').appendTo($('#edit_modal'))
 				};
-			})
-		});
+			});
 		$('#editModal')[0].style.display = "block";
 		return false
-	});
+	};
 	
 	$(document.body).on('click', '.close', function() {
 		$('#editModal')[0].style.display = "none";
 		return false
+	});
+	
+	/**** ADD *****/
+	
+	$(document.body).on('click', 'button[id="add"]', function() {
+		$('#editSourceContainer').empty();
+		var postdata = {
+			'postType': 'add',
+			'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value')
+		};
+		$.post("/sources/", postdata, function (data) {
+			build_edit_form(data, 'add');
+		});
+	});
+	
+	/**** EDIT / DELETE *****/
+	$(document.body).on('click', '.edit_button.show_e', function() {
+		$('#editSourceContainer').empty();
+		$('#editSource').attr('source_id', $(this).attr('id'))
+		var postdata = {
+			'postType': 'edit',
+			'id': $(this).attr('id'),
+			'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value')
+		};
+		$.post("/sources/", postdata, function (data) {
+			build_edit_form(data, 'edit');
+		});
 	});
 	
 	/**** Pop-up edit window dissapearance on an outside click *****/
@@ -136,16 +161,20 @@ $(document).ready(function () {
 		}
 	}*/
 	
-	$('#editSource').submit(function() { // catch the form's submit event
+	/**** SUBMIT FORM *****/
+	
+	$(document).on("click", ":submit", function(e){ // catch the form's submit event
+		//$('#editSource').submit(function() { 
 		var postdata = {'postType': 'update',
 									'id':$('#editSource').attr('source_id'), 
 									'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value'), 
-									'source_data': $(this).serialize()
+									'source_data': $(this).parent().serialize(),
+									'action': $(this).val(),
 									}
 		$.ajax({ // create an AJAX call...
 			data: postdata, // get the form data
-			type: $(this).attr('method'), // GET or POST
-			url: $(this).attr('action'), // the file to call
+			type: $(this).parent().attr('method'), // GET or POST
+			url: $(this).parent().attr('action'), // the file to call
 			success: function(response) { // on success..
 				//$('#DIV_CONTAINING_FORM').html(response); // update the DIV
 			}
@@ -206,20 +235,12 @@ tr.deprecated td, tr.deprecated + tr td .details_table  {
 	color: lightgrey;
 }
 
-tr.deprecated td button {
-	color: black;
-}
-
-tr.TRS td button {
-	color: black;
-}
 
 .details_table {
 	width: 100%;
 }
 .details_button.hide_d {
     background: rgb(39, 144, 219);
-    color: white;
 }
 thead._details th {
 	background: #de9191 !important;
@@ -277,6 +298,14 @@ table#edit_modal tbody td, table#edit_modal thead th {
 table#edit_modal tbody td, table#edit_modal tbody td * {
     vertical-align: top;
 }
+
+#buttons_block {
+	padding-bottom: 10px;
+}
+#buttons_block button {
+	margin-right: 5px;
+}
+
 </style>
 {% endblock %}
 {% block top %}
@@ -289,7 +318,11 @@ table#edit_modal tbody td, table#edit_modal tbody td * {
 {% endblock %}
 
 {% block content %}
-<div><button id='import'>Import</button><button id='export'>Export</button></div>
+<div id="buttons_block">
+<button class='btn btn-warning' id='import'>Import</button>
+<button class='btn btn-warning' id='add'>Add</button>
+<button class='btn btn-primary' id='export'>Export</button>
+</div>
 <!-- Edit modal -->
 <div id="editModal" class="modal">
   <!-- Edit modal content -->
@@ -298,7 +331,9 @@ table#edit_modal tbody td, table#edit_modal tbody td * {
 	<form id='editSource' action="/sources/" method="post">
 	{% csrf_token %}
 	<div id='editSourceContainer'></div>
-    <input type="submit" value="Update">
+	<input type="submit" class="edit btn btn-danger" value="Delete">
+	<input type="submit" class="add btn btn-warning" value="Add">
+    <input type="submit" class="edit btn btn-warning" value="Update">
 	</form>
   </div>
 </div>
