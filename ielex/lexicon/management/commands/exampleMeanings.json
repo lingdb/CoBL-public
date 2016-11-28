@@ -1,0 +1,2001 @@
+[{
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "ant",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "ash",
+    "tooltip": "The powdery remains of a fire, not the tree species 'ash'.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "There was nothing left but ash.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "back",
+    "tooltip": "The noun, part of the human body, not the English adjective or adverb 'back'. ",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I fell over and now my back hurts.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "bad",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "That is a bad idea.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "bark",
+    "tooltip": "The noun for the 'bark' of a tree.  *Not* the verb for the barking of dogs!",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He tore some bark off the tree.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "belly",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He punched him in the belly.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "big",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "This is a big stone. That is a small stone.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "bird",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "What bird does this feather come from?",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "bite",
+    "tooltip": "The verb '(to) bite', not the noun for '(a) bite'.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "The dog bit him.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "bitter",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "The leaves tasted bitter.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "black",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Charcoal is black.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "blood",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Blood is red.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "blow",
+    "tooltip": "The  verb '(to) blow', not the noun for (a) blow from hitting.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He blew on the sticks to start the fire.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "bone",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He fell and broke a bone.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "breathe",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "People can't breathe underwater. ",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "burn",
+    "tooltip": "Intransitive verb, not transitive.  Most generic equivalent of 'combust' meaning.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "The wood is burning in the fire.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "carry",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "She carried her bag (under her arm).",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "chest",
+    "tooltip": "The part of the body between shoulders and stomach.  *Not* specifically the female breast.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "His wore a medal on his chest.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "child",
+    "tooltip": "Kin term, for offspring;  *not* about young age, non-adult.  Opposite of 'parent', not of 'adult;. ",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "That is their first child.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "claw",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "It caught its prey in its claws.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "cloud",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "There were white clouds in the blue sky. (WOLD)",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "cold",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "come",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I saw him on the road. I don't know where he was coming from.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "count",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I counted the stones; there were five stones.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "cry",
+    "tooltip": "The sense of shedding tears, not shouting out.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "She was crying when I saw her.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "cut",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I've cut my finger; look, it's bleeding.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "day",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Day and night.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "die",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Everyone dies sooner or later.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "dig",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He is digging in the ground.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "dirty",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "This cup is clean and that one is dirty.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "do",
+    "tooltip": ".",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "What did you **do** in the village yesterday?",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "dog",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I would like to own a dog.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "drink",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He drank because he was thirsty.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "dry",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Is it dry or wet?",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "dust",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "When the ground is dry, you kick up dust when you walk.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "ear",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "One ear of his was bigger than the other ear. ",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "earth",
+    "tooltip": "The material, not the planet.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "As he dug the hole, he threw out the earth.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "eat",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Eat some food and drink some water.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "egg",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Don't drop the egg; it will break!",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "eye",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "She closed one eye.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "fall",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I fell from the tree yesterday and hurt my back.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "far",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "You can't walk there in one day; it's too far.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "fat",
+    "tooltip": "Noun, not adjective:  the substance.  'Fat' as opposed to muscle, bone, skin, etc..  *Not* the opposite of 'thin'.",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "Cut the fat off the meat.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "father",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Everyone has a father and a mother.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "fear",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "While the dog was here, I was scared.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "feather",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "What bird does this feather come from?",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "fight",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "The two men are fighting outside.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "fire",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He was cold, so he moved closer to the fire.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "fish",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I can see a fish swimming in the water.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "five",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Four plus one is five.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "flower",
+    "tooltip": "The noun '(a) flower', to the verb 'bloom'.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "What type of flower is this?",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "fly_N",
+    "tooltip": "The noun for the insect '(a) fly'..",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He killed a fly.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "fly_V",
+    "tooltip": "The verb '(to) fly'.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Birds can fly but people cannot. (close to Kassian)",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "fog",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I couldn't see the village because of the fog.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "foot",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Her foot is injured so she cannot walk.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "forest",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "There are many animals in the forest.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "four",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Four plus one is five.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "freeze",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "When water freezes, it becomes ice. ",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "fruit",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He picked fruit from the trees.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "full",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "An empty pot is easier to carry than a full pot. (WOLD)",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "give",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "She wanted to cut the (insert name of local fruit). He gave her a knife.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "go",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I saw him on the road. I don't know where he was going.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "good",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "That is a good idea.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "grass",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "There is grass growing beside the river.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "green",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "The grass was fresh and green.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "grind",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He is grinding flour.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "guts",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He cut open the animal and pulled out its guts.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "hair",
+    "tooltip": "Hair of the head, not the body.  Of people, not of animals.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "She pulled him by his hair. (almost Kassian)",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "hand",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He burned his hand.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "hard",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "It was very hard. When he bit it he broke his tooth.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "head",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He has lots of hair on his head.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "hear",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I heard a noise last night.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "heart",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "heavy",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "The rock was very heavy.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "here",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "The knife is here.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "hide",
+    "tooltip": "The verb 'to (hide)', not the noun for an animal skin.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "They hid their food from the animal.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "hit",
+    "tooltip": "The verb '(to) hit', not the noun for a blow or strike.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He hit the ball with the stick.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "horn",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Some animals have horns. Humans do not.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "hot",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "The stone is hot (warm) under the sun.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "house",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "His house is at the edge of the village.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "how",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "How do you make fire?",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "hunt",
+    "tooltip": "The verb '(to) hunt', not the noun '(a) hunt'.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He is hunting animals in the forest.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "I",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "ice",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "kill",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "They started fighting. He killed him.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "knee",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He put his hand on his knee.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "know",
+    "tooltip": "Know a fact, *not* a person.  Be aware of not be acquainted with.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "They know that we are coming.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "lake",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Her house is beside the lake.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "laugh",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "When I saw him, he was laughing.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "leaf",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He picked a leaf from the tree.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "left",
+    "tooltip": "The opposite of 'right (hand side)'.  Ajdective, not adverb.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He is blind in his left eye.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "leg",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He fell and broke his leg.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "lie",
+    "tooltip": "Stative verb, i.e. 'be lying (down).  *Not* the English homonym 'tell untruths'. ",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "She was lying on the ground.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "live",
+    "tooltip": "Verb 'be alive'. *Not* 'dwell' in a place.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "How many years can people live for?",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "liver",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "long",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "This is a long rope; that is a short rope.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "louse",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I picked a louse from his hair.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "man",
+    "tooltip": "Specifically an adult male, not the generic sense of 'person' or 'humankind'.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I saw a man and a woman.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "meat",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "What animal does this meat come from?",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "moon",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I saw the moon in the sky.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "mother",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Everyone has a father and a mother.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "mountain",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He started to climb the mountain.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "mouth",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He put his fingers in his mouth.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "nail",
+    "tooltip": "Nail of a finger/toe, not for hammering.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He had very long nails on his fingers.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "name",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "What is your name?",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "narrow",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Here the river is narrow; further down it is wide.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "navel",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "One could see his navel.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "near",
+    "tooltip": "----",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "You can walk there in one day; it's near.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "neck",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He put his hand on his neck.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "new",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He lives in the new house; not in the old house.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "night",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Night and day.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "nose",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "While fighting, he hit him in the nose. (Kassian)",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "not",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "I do not understand.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "old",
+    "tooltip": "----",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He lives in the old house, not in the new house.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "one",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "One plus one is two.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "person",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Only one person at a time can pass through the gate.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "play",
+    "tooltip": "Transitive verb, 'playing' a game for amusement.  *Not* 'playing' a musical instrument.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "They are playing a game outside.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "pull",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He was pushing and pulling the furniture around the room.  ",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "push",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He was pushing and pulling the furniture around the room.  ",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "rain",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I saw him standing in the rain.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "red",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Blood is red.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "right",
+    "tooltip": "Opposite of 'left'.  *Not* 'correct'.  Adjective form, not adverb.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He is blind in his right eye.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "river",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He lives beside the river.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "root",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "You could see some of the roots of the tree above the ground.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "rotten",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "That (insert name of local fruit) is rotten.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "round",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "That table is round.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "run",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Can you run fast?",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "salt",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "sand",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "She let the sand fall through her hands.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "say",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "She said that she would be late.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "scratch",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "She scratched her head.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "sea",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Her house is beside the sea.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "see",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I see him every day on the road.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "seed",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "You can eat the seeds of (insert name of local fruit).",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "sew",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He sewed the two pieces of cloth together.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "shadow",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He could see his shadow on the ground.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "sharp",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "A sharp knife cuts better than a blunt one.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "short",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "This is a short rope; that is a long rope.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "sing",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I heard him yesterday. He was singing.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "sit",
+    "tooltip": "Stative verb, 'be sitting', *not* change of state 'sit down'.. ",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He is sitting over there.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "skin",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "His skin was old and hard.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "sky",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "There were white clouds in the blue sky.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "sleep",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He is sleeping in the house.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "small",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "This is a small stone. That is a big stone.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "smell",
+    "tooltip": "Verb for a person *perceiving* an odour.  *Not* emit a odour (intransitive).  ",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I (can) smell smoke.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "smoke",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I could see the smoke from the fire.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "smooth",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He picked a smooth stone from the river.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "snake",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He jumped when he saw the snake.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "snow",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "There was snow on the ground.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "spit",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He spat on the ground.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "stand",
+    "tooltip": "Stative verb, 'be standing', *not* change of state 'get up, stand up'. ",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He is standing over there.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "star",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "There were many stars in the night sky.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "stick",
+    "tooltip": "The noun '(a) stick' (e.g. of wood), not the verb for to adhere., ",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He carried a stick under his arm.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "stone",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He held the stone in his hand",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "straight",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "This stick is straight, but that one is bent.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "sun",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "During the day, the sun is in the sky; at night, it's not.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "sweet",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "This apple is ripe now, it tastes sweet.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "swell",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "His arm swelled after he was injured.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "swim",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He is swimming in the lake.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "tail",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "The dog wagged its tail.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "take",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Take the money when you go.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "that",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "I used that knife.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "there",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "The knife is (over) there.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "they",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "thick",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "That tree trunk is thick; it would take a long time cut through.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "thigh",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He slapped his thigh.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "thin",
+    "tooltip": "'Thin' of an object, not a person.  Opposite of 'thick', not of 'fat'.",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "This piece of wood is thin, and that one is thick.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "think",
+    "tooltip": "Verb for the mental activity, process of thinking; the generic term for 'cogitate, be thinking abour something'.  *Not* have an opinion.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "What are you doing?  I'm just thinking.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "this",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "I used this knife.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "three",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Three plus one is four.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "throw",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He threw a stick into the water.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "tie",
+    "tooltip": "The verb '(to) tie', not the noun.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He tied the two sticks together.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "tongue",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He stuck his tongue out.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "tooth",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "You can break a tooth while eating hard food. (Kassian)",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "tree",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "There is a tree beside the house.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "true",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "The story he is telling is true.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "turn",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "It was heavy so it was hard to turn it.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "two",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "One plus one is two.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "vomit",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "He ate something bad and threw up (vomited).",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "walk",
+    "tooltip": "The verb '(to) walk', not the noun '(a) walk'.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "People can walk but fish cannot.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "wash",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "She washed her hands.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "water",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "She was thirsty, so she drank some water.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "we",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "wet",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Is it wet or dry?",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "what",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "What are you eating?",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "when",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "When will we meet again?",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "where",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "Where is the knife?",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "white",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "There is a white cloud in the sky.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "who",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "Who killed this dog? (Kassian)",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "wide",
+    "tooltip": "Of a gap, opposite of 'narrow'.  *Not* of an object, *not* opposite of 'thick'. ",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "The canyon is wide here, but further down it's narrow.",
+    "doubleCheck": true
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "wind",
+    "tooltip": "The noun '(a) wind', /wind/, not the verb /waind/.",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "She felt the wind in her face.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "wing",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "Birds have wings; people do not.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "with",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "woman",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I saw a man and a woman.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "worm",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "There is a worm in this (insert name of local fruit).",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "year",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "The year is almost over.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "yellow",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "The natural color of egg yolk. (midday sun?)",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "yesterday",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": false,
+    "exampleContext": "I haven't seen him today but I saw him yesterday.",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "you_pl.",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "",
+    "doubleCheck": false
+}, {
+    "meaningSetMember": 0,
+    "description": "",
+    "notes": "",
+    "gloss": "you_sg.",
+    "tooltip": "",
+    "meaningSetIx": 0,
+    "exclude": true,
+    "exampleContext": "",
+    "doubleCheck": false
+}]
