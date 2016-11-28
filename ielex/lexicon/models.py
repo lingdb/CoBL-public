@@ -411,60 +411,6 @@ class Source(models.Model):
         return bibtex_dictionary
 
     @property
-<<<<<<< HEAD
-=======
-    def DC_Metadata(self):
-        bibtex_DC = {
-            'book': {
-                'title': 'title',
-                'author': 'creator',
-                'year': 'issued',
-                'publisher': 'publisher',
-                'ENTRYTYPE': 'type',
-                'series': 'series',
-                'editor': 'editor',
-                'edition': 'edition',
-                'isbn': 'isbn',
-            },
-            'article': {
-                'title': 'title',
-                'author': 'creator',
-                'year': 'issued',
-                'publisher': 'publisher',
-                'ENTRYTYPE': 'type',
-                'number': 'issue',
-                'series': 'series',
-                'volume': 'volume',
-                'journaltitle': 'jtitle',
-                'booktitle': 'booktitle',
-                'editor': 'editor',
-                'edition': 'edition',
-                'isbn': 'isbn',
-                'pages': 'spage',
-            },
-        }
-
-        try:
-            type_dict = bibtex_DC[self.ENTRYTYPE]
-            meta_lst = []
-            if bibtex_DC[self.ENTRYTYPE] == 'book':
-                meta_lst = ['info:ofi/fmt:kev:mtx:book']
-            if bibtex_DC[self.ENTRYTYPE] == 'article':
-                meta_lst = ['info:ofi/fmt:kev:mtx:journal']
-            for key in type_dict.keys():
-                if getattr(self, key):
-                    meta_lst.append('rft.%s=%s' % (
-                        type_dict[key],
-                        getattr(self, key)))
-            meta_lst.append('rft.identifier=%s' % (self.pk))
-            return '<meta name="DCTERMS.bibliographicCitation"' \
-                   'scheme="KEV.ctx"' \
-                   'content="&ctx_ver=Z39.88-2004&%s" />' % (
-                       '&'.join(meta_lst))
-        except KeyError:
-            return ''
-
-    @property
     def COinS(self):
         bibtex_rft_dict = {'ENTRYTYPE': 'genre', 'title': 'title',
                            'year': 'date', 'author': 'au',
