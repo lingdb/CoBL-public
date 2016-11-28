@@ -266,6 +266,7 @@ class AbstractDistribution(models.Model):
                     'logNormalStDev', 'normalMean', 'normalStDev',
                     'uniformUpper', 'uniformLower'])
 
+from django.utils.http import urlquote
 
 @reversion.register
 class Source(models.Model):
@@ -408,27 +409,88 @@ class Source(models.Model):
                 bibtex_dictionary[key] = unicode(getattr(self, key))
         return bibtex_dictionary
 
-#     @property
-#     def COinS(self):
-#         bibtex_rft_dict = {'ENTRYTYPE':'genre', 'title':'title',
-#                            'year':'date','author':'au',
-#                            'booktitle':'btitle','publisher':'pub',
-#                            'journaltitle':'jtitle','location':'place',
-#                            'chapter':'atitle','pages':'pages',
-#                            'series':'series', 'volume':'volume',
-#                            'institution':'aucorp', 'isbn':'isbn',
-#                            'number':'issue', 'part':'part',
-#                            'edition':'edition'}
-#           bibtex_attr_lst = ['booksubtitle', 'bookauthor', 'editor',
-#                              'editortype', 'editora','link','note',
-#                              'howpublished', 'shorthand']
-#         rft_attrs_lst = []
-#         for key in self.bibtex_attr_lst:
-#             if key == 'link':
-#                 'rft_id'
-#         return '<span class="Z3988" '
-#                'title="ctx_ver=Z39.88-2004&amp%s>%</span>' %
-#                ('&amp;'.join(rft_attrs_lst))
+    @property
+    def DC_Metadata(self):
+        bibtex_DC = {
+            'book': {
+                'title': 'title',
+                'author' : 'creator',
+                'year' : 'issued',
+                'publisher' : 'publisher',
+                'ENTRYTYPE' : 'type',
+                'series' : 'series',
+                'editor' : 'editor',
+                'edition' : 'edition',
+                'isbn' : 'isbn',
+            },
+            'article': {
+                'title': 'title',
+                'author' : 'creator',
+                'year' : 'issued',
+                'publisher' : 'publisher',
+                'ENTRYTYPE' : 'type',
+                'number' : 'issue',
+                'series' : 'series',
+                'volume' : 'volume',
+                'journaltitle' : 'jtitle',
+                'booktitle' : 'booktitle',
+                'editor' : 'editor',
+                'edition' : 'edition',
+                'isbn' : 'isbn',
+                'pages' : 'spage',
+            },
+            }
+
+        try:
+            type_dict = bibtex_DC[self.ENTRYTYPE]
+            meta_lst=[]
+            if bibtex_DC[self.ENTRYTYPE] == 'book':
+                meta_lst=['info:ofi/fmt:kev:mtx:book']
+            if bibtex_DC[self.ENTRYTYPE] == 'article':
+                meta_lst=['info:ofi/fmt:kev:mtx:journal']
+            for key in type_dict.keys():
+                if getattr(self, key):
+                    meta_lst.append('rft.%s=%s'%(
+                        type_dict[key],
+                        getattr(self, key)))
+            meta_lst.append('rft.identifier=%s' %(self.pk))
+            return '<meta name="DCTERMS.bibliographicCitation"' \
+                   'scheme="KEV.ctx"' \
+                   'content="&ctx_ver=Z39.88-2004&%s" />' %('&'.join(meta_lst))
+        except KeyError:
+            return ''
+
+    @property
+    def COinS(self):
+        bibtex_rft_dict = {'ENTRYTYPE':'genre', 'title':'title',
+                           'year':'date','author':'au',
+                           'booktitle':'btitle','publisher':'pub',
+                           'journaltitle':'jtitle','location':'place',
+                           'chapter':'atitle','pages':'pages',
+                           'series':'series', 'volume':'volume',
+                           'institution':'aucorp', 'isbn':'isbn',
+                           'number':'issue', 'part':'part',
+                           'edition':'edition', 'editor':'editor',}
+        
+        rft_attrs_lst = []
+        rft_val_dict = {'book':'book', 'article':'journal',
+                        'expert':'expert', 'online':'online'}
+        for key in bibtex_rft_dict:
+            rft_attrs_lst.append('rft_val_fmt=info:ofi/fmt:kev:mtx:%s'
+                                 %(self.ENTRYTYPE))
+            rft_attrs_lst.append('rfr_id=%s' %(self.pk))
+            rft_attrs_lst.append('rft.identifier=%s' \
+                                 %(self.get_absolute_url()))
+
+            if getattr(self, key):
+                rft_attrs_lst.append('rft.%s=%s' %(
+                    bibtex_rft_dict[key],
+                    urlquote(getattr(self, key))
+                    ))
+
+        return '<span class="Z3988" ' \
+               'title="ctx_ver=Z39.88-2004&%s" />' \
+               %('&'.join(rft_attrs_lst))
 
     def populate_from_bibtex(self, bibtex_dict):
         for key in bibtex_dict.keys():

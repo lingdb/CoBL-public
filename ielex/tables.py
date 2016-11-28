@@ -111,7 +111,7 @@ class SourcesTable(tables.Table):
 
     def render_details(self, value, record):
         details_button = '<button class="details_button show_d" '  \
-            'id="%s">More</button>' % (record.pk)
+            'id="%s">More</button>%s' % (record.pk, record.COinS)
         return mark_safe(details_button)
 
     def render_edit(self, value, record):

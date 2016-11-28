@@ -2009,7 +2009,7 @@ def source_list(request):
             request, paginate={'per_page': 1000}).configure(sources_table)
         return render_template(request, "source_list.html",
                                {"sources": sources_table,
-                                "perms": source_perms_check(request.user)
+                                "perms": source_perms_check(request.user),
                                 })
 
 
