@@ -1753,10 +1753,11 @@ class CognateJudgementInlineForm(OrderableInlineModelForm):
 class CognateClassInlineForm(OrderableInlineModelForm):
 
     cognate_class = forms.CharField()
+    root_form = forms.CharField(label='Root form')
 
     class Meta:
         model = CognateClassCitation
-        fields = ('cognate_class', 'comment')
+        fields = ('cognate_class', 'root_form', 'comment')
         readonly_fields = fields
 
     def __init__(self, *args, **kwargs):
@@ -1764,8 +1765,15 @@ class CognateClassInlineForm(OrderableInlineModelForm):
         cognate_class = self.instance.cognate_class
         self.fields['cognate_class'].initial = \
             '<a href=%s>%s</a>' % \
-            (cognate_class.get_absolute_url(), cognate_class)
-        self.order_fields(['cognate_class', 'comment'])
+            (cognate_class.get_absolute_url(), self.alias(cognate_class))
+        self.fields['root_form'].initial = cognate_class.root_form
+        self.order_fields(['cognate_class', 'root_form', 'comment'])
+
+    def alias(self, cognate_class):
+        if cognate_class.alias:
+            return "%s (%s)" % (cognate_class.id, cognate_class.alias)
+        else:
+            return "%s" % cognate_class.id
 
 
 CognateJudgementFormSet = inlineformset_factory(

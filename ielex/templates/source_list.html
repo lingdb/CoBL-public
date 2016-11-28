@@ -8,19 +8,23 @@
 
 {% block meta %}
 {{ block.super }}
+{{ DC_metadata|safe }}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script>
 $(document).ready(function () {
-
-	$('input:checked[name="deprecated"]').parent().parent().toggleClass('deprecated');
-	$('input:checked[name="TRS"]').parent().parent().toggleClass('TRS');
-	{% if perms %}{% else %}
-		$('th.deprecated, td.deprecated').hide();
-		$('th.TRS, td.TRS').hide();
-		$('th.edit, td.edit').hide();
-		$('button#import').hide();
-		$('.filter-header th').slice(-3).hide()
-	{% endif %}
+	
+	function format_table() {
+		$('input:checked[name="deprecated"]').parent().parent().toggleClass('deprecated');
+		$('input:checked[name="TRS"]').parent().parent().toggleClass('TRS');
+		{% if perms %}{% else %}
+			$('th.deprecated, td.deprecated').hide();
+			$('th.TRS, td.TRS').hide();
+			$('th.edit, td.edit').hide();
+			$('button#import').hide();
+			$('.filter-header th').slice(-3).hide()
+		{% endif %}
+	};
+	format_table();
 	
 	/**** DETAILS *****/
 	$(document.body).on('click', '.details_button.show_d', function() {
@@ -87,6 +91,7 @@ $(document).ready(function () {
 			var $data = $( data );
 			$('tbody').replaceWith($data.find('tbody'));
 			$('ul.pagination').replaceWith($data.find('ul.pagination'));
+			format_table();
 		});
 	};
 	
