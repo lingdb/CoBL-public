@@ -701,6 +701,8 @@ class Language(AbstractTimestamped, AbstractDistribution):
         null=True, max_digits=19, decimal_places=10)
     longitude = models.DecimalField(
         null=True, max_digits=19, decimal_places=10)
+    # Added for #217:
+    exampleLanguage = models.BooleanField(default=0)
     # author = models.ForeignKey(author, related_name="author", null=True)
     # reviewer = models.ForeignKey(author, related_name="reviewer", null=True)
 
@@ -869,7 +871,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
                   'rfcWebPath1', 'rfcWebPath2', 'author', 'reviewer',
                   'earliestTimeDepthBound', 'latestTimeDepthBound',
                   'progress', 'sortRankInClade', 'entryTimeframe',
-                  'historical', 'notInExport'])
+                  'historical', 'notInExport', 'exampleLanguage'])
         return fs | AbstractDistribution.timestampedFields(self)
 
     def deltaReport(self, **kwargs):

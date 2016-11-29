@@ -413,6 +413,8 @@ class LanguageListRowForm(AbstractTimestampedForm, AbstractDistributionForm):
                               validators=[InputRequired()])
     rfcWebPath2 = StringField('This Lg lex rfc web path 2',
                               validators=[InputRequired()])
+    exampleLanguage = BooleanField(
+        'Example Language?', validators=[InputRequired()])
 
     def validate_historical(form, field):
         # Assumes that field.data :: True | False
