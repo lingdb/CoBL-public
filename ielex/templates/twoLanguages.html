@@ -69,7 +69,7 @@
               {# sourceform_title.html #}
               <th>Orthographic</th>
               {# viewcopy_title.html #}
-              <th colspan="3"></th>
+              <th></th>
               {# transliteration_title.html #}
               <th>Transliteration</th>
               {# notswadesh_title.html #}
@@ -164,13 +164,6 @@
               </th>
               {# notes_title.html #}
               <th>Notes</th>
-              {# weblookup_title.html #}
-              <th></th>
-              <th>Dict ID 1</th>
-              <!--
-              <th></th>
-              <th>Dict ID 2</th>
-              -->
               {# dubious_title.html #}
               <th alt="Dubious">
                 <div class="vertical-text">
@@ -215,7 +208,7 @@
                 {% endif %}
               </td>
               {# viewcopy_filter.html #}
-              <td colspan="3"></td>
+              <td></td>
               {# transliteration_filter.html #}
               <td>
                 {% if user.is_authenticated %}
@@ -267,9 +260,6 @@
                      data-selector=".cognateClassId">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
-              </td>
-              {# cognateclassview_filter.html #}
-              <td>
               </td>
               {# cognateclasses_filter.html #}
               <td>
@@ -399,33 +389,6 @@
                   </div>
                 {% endif %}
               </td>
-              {# weblookup_filter.html #}
-              <td></td>
-              <td>
-                {% if user.is_authenticated %}
-                  <input type="text"
-                         class="filterInput form-control"
-                         data-selector=".lexemeRfcWebLookup1 input">
-                {% else %}
-                  <input type="text"
-                         class="filterText form-control"
-                         data-selector=".lexemeRfcWebLookup1">
-                {% endif %}
-              </td>
-              <!--
-              <td></td>
-              <td>
-                {% if user.is_authenticated %}
-                  <input type="text"
-                         class="filterInput form-control"
-                         data-selector=".lexemeRfcWebLookup2 input">
-                {% else %}
-                  <input type="text"
-                         class="filterText form-control"
-                         data-selector=".lexemeRfcWebLookup2">
-                {% endif %}
-              </td>
-              -->
               {# dubious_filter.html #}
               <td>
                 <button type="button" class="filterBool btn btn-xs btn-default"
@@ -444,6 +407,8 @@
                   {{ lexeme.id }}
                   {{ lexeme.lastTouched }}
                   {{ lexeme.lastEditedBy }}
+                  {% form_field lexeme.rfcWebLookup1 class="form-control" %}
+                  {% form_field lexeme.rfcWebLookup2 class="form-control" %}
                 </td>
                 {# warnings_data.html #}
                 <td>
@@ -505,24 +470,6 @@
                   <a href="{% url 'view-lexeme' lexeme.object_data.id %}" title="View detailed information on lexeme">
                     <span class="glyphicon glyphicon-search"></span>
                   </a>
-                </td>
-                <td>
-                  {% if user.is_authenticated %}
-                    <button class="leftcheckarrow btn btn-xs" type="button"
-                            id="translit2src#{{lexeme.transliteration.name}}#{{lexeme.source_form.name}}"
-                            onclick="CopyAcross(this)">
-                      <span class="glyphicon glyphicon-step-backward"></span>
-                    </button>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if user.is_authenticated %}
-                    <button class="rightcheckarrow btn btn-xs" type="button"
-                            id="src2translit#{{lexeme.source_form.name}}#{{lexeme.transliteration.name}}"
-                            onclick="CopyAcross(this)">
-                      <span class="glyphicon glyphicon-step-forward"></span>
-                    </button>
-                  {% endif %}
                 </td>
                 {# transliteration_data.html #}
                 <td class="lexemeTransliteration">
@@ -692,41 +639,6 @@
                     {{ lexeme.object_data.notes }}
                   {% endif %}
                 </td>
-                {# weblookup_data.html #}
-                <td>
-                  {% if user.is_authenticated %}
-                    <button class="rightcheckarrow btn btn-xs"
-                            type="button"
-                            id="src2root#{{lexeme.source_form.name}}#{{lexeme.rfcWebLookup1.name}}"
-                            onclick="CopyAcross(this)">
-                      <span class="glyphicon glyphicon-fast-forward"></span>
-                    </button>
-                  {% endif %}
-                </td>
-                <td class="lexemeRfcWebLookup1">
-                  {% if user.is_authenticated %}
-                    {% form_field lexeme.rfcWebLookup1 class="form-control" %}
-                  {% elif lexeme.object_data.rfcWebLookup1 %}
-                    {{ lexeme.object_data.rfcWebLookup1 }}
-                  {% endif %}
-                </td>
-                <td class="hide">
-                  {% if user.is_authenticated %}
-                    <button class="rightcheckarrow btn btn-xs"
-                            type="button"
-                            id="src2root#{{lexeme.source_form.name}}#{{lexeme.rfcWebLookup2.name}}"
-                            onclick="CopyAcross(this)">
-                      <span class="glyphicon glyphicon-fast-forward"></span>
-                    </button>
-                  {% endif %}
-                </td>
-                <td class="lexemeRfcWebLookup2 hide">
-                  {% if user.is_authenticated %}
-                    {% form_field lexeme.rfcWebLookup2 class="form-control" %}
-                  {% elif lexeme.object_data.rfcWebLookup2 %}
-                    {{ lexeme.object_data.rfcWebLookup2 }}
-                  {% endif %}
-                </td>
                 {# dubious_data.html #}
                 <td class="lexemeDubious">
                   {% if user.is_authenticated %}
@@ -764,28 +676,12 @@
                        {% endif %}>
                       {{ lexeme.object_data.original.meaning }}
                     </a>
-                    {% if lexeme.object_data.original.language.rfcWebPath1 and lexeme.object_data.original.rfcWebLookup1 %}
-                      <a href="{{ lexeme.object_data.original.language.rfcWebPath1 }}{{ lexeme.object_data.original.rfcWebLookup1 }}"
-                         target="_blank"
-                         class="pull-right">
-                        <span class="glyphicon glyphicon-link"></span>
-                      </a>
-                    {% endif %}
-                    {% if lexeme.object_data.original.language.rfcWebPath2 and lexeme.object_data.original.rfcWebLookup2 %}
-                      <a href="{{ lexeme.object_data.original.language.rfcWebPath2 }}{{ lexeme.object_data.original.rfcWebLookup2 }}"
-                         target="_blank"
-                         class="pull-right">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                      </a>
-                    {% endif %}
                   </td>
                   {# sourceform_original.html #}
                   <td class="lexemeSourceForm">
                     {{ lexeme.object_data.original.source_form }}
                   </td>
                   {# viewcopy_original.html #}
-                  <td></td>
-                  <td></td>
                   <td></td>
                   {# transliteration_original.html #}
                   <td class="lexemeTransliteration">
@@ -908,15 +804,6 @@
                   {# notes_original.html #}
                   <td class="lexemeNotes">
                     {{ lexeme.object_data.original.notes }}
-                  </td>
-                  {# weblookup_original.html #}
-                  <td></td>
-                  <td class="lexemeRfcWebLookup1">
-                    {{ lexeme.object_data.original.rfcWebLookup1 }}
-                  </td>
-                  <td class="hide"></td>
-                  <td class="lexemeRfcWebLookup2 hide">
-                    {{ lexeme.object_data.original.rfcWebLookup2 }}
                   </td>
                   {# dubious_original.html #}
                   <td class="lexemeDubious">

@@ -1966,7 +1966,7 @@ def source_list(request):
         return response
     elif request.POST.get("postType") == 'update' and \
             source_perms_check(request.user):
-        print request.POST.get("action")
+        print(request.POST.get("action"))
         source_data = QueryDict(request.POST['source_data'].encode('ASCII'))
         if request.POST.get("action") == 'Delete':
             source_obj = Source.objects.get(pk=request.POST.get("id"))
