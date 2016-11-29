@@ -239,8 +239,12 @@
     */
     module.filterInput = mkStringFilter('filterInput', function(selector, re){
       return function(row){
-        var text = row.find(selector).val().trim();
-        return text.match(re) === null;
+        var $input = row.find(selector);
+        if($input){
+          var text = $input.val().trim();
+          return text.match(re) === null;
+        }
+        return true;
       };
     });
     /**
