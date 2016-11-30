@@ -16,7 +16,7 @@
     var module = {
       inputClasses: ['filterText', 'filterInput',
                      'filterBool', 'filterDistinct'],
-      btnClasses: ['sortInput', 'sortText', 'sortIntText'],
+      btnClasses: ['sortInput', 'sortIntInput', 'sortText', 'sortIntText'],
       callbacks: {} // :: Identifier -> IO ()
     };
     /**
@@ -150,7 +150,7 @@
     /**
       @param btn   :: $ ∧ .btn
       @param table :: $ ∧ table
-      Function to sort rows of a table by text in a column
+      Function to sort rows of a table by text in a column.
     */
     module.sortText = sortTableBy(function(selector){
       return function(row){
@@ -160,7 +160,7 @@
     /**
       @param btn   :: $ ∧ .btn
       @param table :: $ ∧ table
-      Function to sort rows of a table by text parsed as int in a column
+      Function to sort rows of a table by text parsed as int in a column.
     */
     module.sortIntText = sortTableBy(function(selector){
       return function(row){
@@ -170,11 +170,21 @@
     /**
       @param btn   :: $ ∧ .btn
       @param table :: $ ∧ table
-      Function to sort rows of a table by text parsed as int in a column
+      Function to sort rows of a table by lowercase text from an input in a column.
     */
     module.sortInput = sortTableBy(function(selector){
       return function(row){
-        return row.find(selector).val();
+        return row.find(selector).val().toLowerCase();
+      };
+    });
+    /**
+      @param btn   :: $ ∧ .btn
+      @param table :: $ ∧ table
+      Function to sort rows of a table by input value parsed as int in a column.
+    */
+    module.sortIntInput = sortTableBy(function(selector){
+      return function(row){
+        return parseFloat(row.find(selector).val());
       };
     });
     /**
