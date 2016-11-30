@@ -285,10 +285,10 @@ urlpatterns = patterns(
         view_cognateclasses, name="edit-cogclasses"),
 
     # About pages:
-    url(r'about/(.+)/' % R, viewAbout),
+    url(r'about/(.+)/' % R, viewAbout, name="viewAbout"),
 
     # Authors:
-    url(r'^authors/$' % R, viewAuthors),
+    url(r'^authors/$' % R, viewAuthors, name='viewAuthors'),
 
     # Changing defaults:
     url(r'^changeDefaults/$' % R, changeDefaults),

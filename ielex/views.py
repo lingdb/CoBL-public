@@ -29,6 +29,7 @@ from ielex.forms import AddCitationForm, \
     AuthorCreationForm, \
     AuthorDeletionForm, \
     AuthorTableForm, \
+    AuthorRowForm, \
     ChooseCognateClassForm, \
     CladeCreationForm, \
     CladeDeletionForm, \
@@ -2367,24 +2368,7 @@ def viewAuthors(request):
             authorData = AuthorTableForm(request.POST)
             try:
                 authorData.validate()
-                for entry in authorData.elements:
-                    data = entry.data
-                    try:
-                        with transaction.atomic():
-                            author = Author.objects.get(
-                                id=int(data['idField']))
-                            if author.isChanged(**data):
-                                problem = author.setDelta(request, **data)
-                                if problem is None:
-                                    author.save()
-                                else:
-                                    messages.error(
-                                        request, author.deltaReport(**problem))
-                    except Exception:
-                        logging.exception('Problem while saving '
-                                          'author in viewAuthors.')
-                        messages.error(
-                            request, 'Problem saving author data: %s' % data)
+                authorData.handle(request)
             except Exception:
                 logging.exception('Problem updating authors in viewAuthors.')
                 messages.error(request, 'Sorry, the server had problems '
@@ -2393,32 +2377,45 @@ def viewAuthors(request):
             deleteAuthor = AuthorDeletionForm(request.POST)
             try:
                 deleteAuthor.validate()
-                with transaction.atomic():
-                    # Making sure the author exists:
-                    author = Author.objects.get(
-                        initials=deleteAuthor.data['initials'])
-                    # Make sure to update things referencing the author here!
-                    # Deleting the author:
-                    Author.objects.filter(id=author.id).delete()
+                deleteAuthor.handle(request)
             except Exception:
                 logging.exception('Problem deleting author in viewAuthors.')
                 messages.error(request, 'Sorry, the server had problems '
                                'deleting the requested author.')
+        elif 'currentAuthorForm' in request.POST:
+            currentAuthorForm = AuthorRowForm(request.POST)
+            try:
+                currentAuthorForm.validate()
+                currentAuthorForm.handle(request)
+            except Exception as e:
+                logging.exception('Problem updating current author.', e)
+                messages.error(request, 'Sorry, the server had problems '
+                               'updating the requested author.')
         else:
             logging.error('Unexpected POST request in viewAuthors.')
             messages.error(request, 'Sorry, the server did not '
                            'understand the request.')
+        return HttpResponseRedirect(
+            reverse("viewAuthors", args=[]))
 
     authors = Author.objects.all()
     form = AuthorTableForm()
     for author in authors:
 
         author.idField = author.id
-        author.displayEmail = " [ AT ] ".join(author.email.split("@"))
         form.elements.append_entry(author)
 
+    currentAuthorForm = None
+    if request.user.is_authenticated:
+        query = Author.objects.filter(user_id=request.user.id)
+        if Author.objects.filter(user_id=request.user.id).exists():
+            currentAuthor = query.all()[0]
+            currentAuthor.idField = currentAuthor.id
+            currentAuthorForm = AuthorRowForm(obj=currentAuthor)
+
     return render_template(
-        request, "authors.html", {'authors': form})
+        request, "authors.html", {'authors': form,
+                                  'currentAuthorForm': currentAuthorForm})
 
 
 @logExceptions

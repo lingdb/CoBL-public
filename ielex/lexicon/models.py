@@ -17,7 +17,7 @@ from django.http import HttpResponse
 from django.utils.html import format_html
 from django.db.utils import DataError
 from django.utils import timezone
-from django.utils.http import urlquote
+from django.contrib.auth.models import User
 
 # ielex specific imports:
 from ielex.utilities import two_by_two
@@ -1866,19 +1866,14 @@ models.signals.post_delete.connect(
 @reversion.register
 class Author(AbstractTimestamped):
     # See https://github.com/lingdb/CoBL/issues/106
-    # We leave out the ix field in favour
-    # of the id field provided by reversion.
 
-    # Author Surname
     surname = models.TextField(blank=True)
-    # Author First names
     firstNames = models.TextField(blank=True)
-    # Initials
     initials = models.TextField(blank=True, unique=True)
-    # Email address
     email = models.TextField(blank=True, unique=True)
-    # Personal website URL
     website = models.TextField(blank=True)
+    # An Author may relate to a database user:
+    user = models.ForeignKey(User, null=True)
 
     def timestampedFields(self):
         return set(['surname', 'firstNames', 'email', 'website', 'initials'])
@@ -1912,6 +1907,10 @@ class Author(AbstractTimestamped):
                              self.surname.encode('utf-8') + extension)
             if os.path.isfile(p):
                 return p
+
+    @property
+    def displayEmail(self):
+        return " [ AT ] ".join(self.email.split("@"))
 
 
 @reversion.register
