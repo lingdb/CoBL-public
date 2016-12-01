@@ -187,3 +187,11 @@ table.floatThead-table {
   z-index: 1004;
   overflow-y: scroll;
 }
+
+/* Overflow style for #356 */
+.viewTableFilter td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}

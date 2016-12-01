@@ -3,7 +3,7 @@
   return define(['jquery','lodash',
                  'js/cladeFilter',
                  'js/viewTableFilter/settings',
-                 'floatThead'],
+                 'floatThead', 'bootstrap'],
     function($, _, mkCladeFilter, settings){
     /*
       This view can be used to filter and sort tables.
@@ -42,6 +42,19 @@
       //Actual init work:
       el.each(function(){
         var table = $(this);
+        //Fix overflow for #356:
+        table.find('td').each(function(){
+          if(this.offsetWidth < this.scrollWidth){
+            //https://stackoverflow.com/a/10017343/448591
+            var $td = $(this);
+            $td.tooltip({
+              title: $td.text(),
+              placement: 'top',
+              container: 'body',
+              trigger: 'hover'
+            });
+          }
+        });
         //Restoring buttons before initial filtering.
         settings.restoreButtonInputs();
         //Attaching inputClasses:
