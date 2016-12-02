@@ -66,6 +66,8 @@
               <th></th>
               {# meaning_title.html #}
               <th colspan="2">Meaning</th>
+              {# copyCognateClass_title.html #}
+              <th></th>
               {# sourceform_title.html #}
               <th>Orthographic</th>
               {# viewcopy_title.html #}
@@ -100,8 +102,6 @@
                   </div>
                 </div>
               </th>
-              {# copyCognateClass_title.html #}
-              <th></th>
               {# cognateclassids_title.html #}
               <th style="width: 45px;">
                 Cog.<br>IDs
@@ -187,6 +187,15 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
+              {# copyCognateClass_filter.html #}
+              <td></td>
+              {# cognateclassids_filter.html #}
+              <td style="width: 45px;" colspan="2">
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".cognateClassId">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               {# sourceform_filter.html #}
               <td>
                 {% if user.is_authenticated %}
@@ -249,15 +258,6 @@
                        data-selector=".lexemeNumCogCoded" style="width: 1.5em;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".lexemeNumCogCoded">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </td>
-              {# copyCognateClass_filter.html #}
-              <td></td>
-              {# cognateclassids_filter.html #}
-              <td style="width: 45px;" colspan="2">
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".cognateClassId">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
@@ -457,6 +457,19 @@
                     </a>
                   {% endif %}
                 </td>
+                {# copyCognateClass_data.html #}
+                <td>
+                  {% if lexeme.object_data.original %}
+                    <a class="btn btn-default btn-xs pull-right"
+                       data-toggle="tooltip"
+                       data-placement="bottom"
+                       title="Copy over cognate set assignment from the reference language selected here (in grey)."
+                       data-assigncognatesfromlexeme="{{ lexeme.object_data.original.id }}"
+                       data-assigncognatestolexeme="{{ lexeme.object_data.id }}">
+                      <span class="glyphicon glyphicon-share-alt"></span>
+                    </a>
+                  {% endif %}
+                </td>
                 {# sourceform_data.html #}
                 <td class="lexemeSourceForm">
                   {% if user.is_authenticated %}
@@ -504,19 +517,6 @@
                       {{ lexeme.object_data.number_cognate_coded }}
                     </span>
                   </center>
-                </td>
-                {# copyCognateClass_data.html #}
-                <td>
-                  {% if lexeme.object_data.original %}
-                    <a class="btn btn-default btn-xs pull-right"
-                       data-toggle="tooltip"
-                       data-placement="bottom"
-                       title="Copy over cognate set assignment from the reference language selected here (in grey)."
-                       data-assigncognatesfromlexeme="{{ lexeme.object_data.original.id }}"
-                       data-assigncognatestolexeme="{{ lexeme.object_data.id }}">
-                      <span class="glyphicon glyphicon-share-alt"></span>
-                    </a>
-                  {% endif %}
                 </td>
                 {# cognateclassids_data.html #}
                 <td class="cognateClassId" style="text-align: center; width: 45px;">
@@ -677,6 +677,8 @@
                       {{ lexeme.object_data.original.meaning }}
                     </a>
                   </td>
+                  {# copyCognateClass_original.html #}
+                  <td></td>
                   {# sourceform_original.html #}
                   <td class="lexemeSourceForm">
                     {{ lexeme.object_data.original.source_form }}
@@ -714,8 +716,6 @@
                       </span>
                     </center>
                   </td>
-                  {# copyCognateClass_original.html #}
-                  <td></td>
                   {# cognateclassids_original.html #}
                   <td class="cognateClassId" style="text-align: center; width: 45px;">
                     {% for c in lexeme.object_data.original.allCognateClasses %}
