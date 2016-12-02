@@ -90,12 +90,14 @@ from ielex.lexicon.defaultModels import getDefaultLanguage, \
     getDefaultMeaning, \
     getDefaultMeaningId, \
     getDefaultWordlist, \
+    getDefaultSourceLanguage, \
     setDefaultLanguage, \
     setDefaultLanguageId, \
     setDefaultLanguagelist, \
     setDefaultMeaning, \
     setDefaultMeaningId, \
-    setDefaultWordlist
+    setDefaultWordlist, \
+    setDefaultSourceLanguage
 from ielex.shortcuts import render_template
 from ielex.utilities import next_alias, \
     anchored, oneline, logExceptions
@@ -2503,6 +2505,8 @@ def view_two_languages_wordlist(request,
     # Setting defaults if possible:
     if targetLang is not None:
         setDefaultLanguage(request, targetLang)
+    if sourceLang is not None:
+        setDefaultSourceLanguage(request, sourceLang)
     if wordlist is not None:
         setDefaultWordlist(request, wordlist)
     # Fetching targetLang to operate on:
@@ -2514,17 +2518,12 @@ def view_two_languages_wordlist(request,
         raise Http404("Language '%s' does not exist" % targetLang)
     # Fetching sourceLang to operate on:
     if sourceLang is None:
-        try:
-            sourceLang = Language.objects.exclude(
-                id=targetLang.id).filter(
-                languagelist__name=getDefaultLanguagelist(request))[0]
-        except IndexError:
-            sourceLang = targetLang
-    else:
+        sourceLang = getDefaultSourceLanguage(request)
+    if sourceLang is not None:
         try:
             sourceLang = Language.objects.get(ascii_name=sourceLang)
         except Language.DoesNotExist:
-            raise Http404("Language '%s' does not exist" % targetLang)
+            raise Http404("Language '%s' does not exist" % sourceLang)
     # Fetching wordlist to operate on:
     if wordlist is None:
         wordlist = getDefaultWordlist(request)
@@ -2552,7 +2551,7 @@ def view_two_languages_wordlist(request,
             return HttpResponseRedirect(
                 reverse("view-two-languages",
                         args=[targetLang.ascii_name,
-                              sourceLang.ascii_name,
+                              sourceLang.ascii_name if sourceLang else None,
                               wordlist.name]))
 
     def getLexemes(lang):
@@ -2568,8 +2567,9 @@ def view_two_languages_wordlist(request,
 
     # collect data:
     mIdOrigLexDict = defaultdict(deque)  # Meaning.id -> [Lexeme]
-    for l in getLexemes(sourceLang):
-        mIdOrigLexDict[l.meaning.id].append(l)
+    if sourceLang:
+        for l in getLexemes(sourceLang):
+            mIdOrigLexDict[l.meaning.id].append(l)
 
     lexemes = getLexemes(targetLang)
     for l in lexemes:
@@ -2587,7 +2587,9 @@ def view_two_languages_wordlist(request,
         name=getDefaultLanguagelist(request))
     typeahead1 = json.dumps({l.utf8_name: reverse(
         "view-two-languages",
-        args=[l.ascii_name, sourceLang.ascii_name, wordlist.name])
+        args=[l.ascii_name,
+              sourceLang.ascii_name if sourceLang else None,
+              wordlist.name])
         for l in languageList.languages.all()})
     typeahead2 = json.dumps({l.utf8_name: reverse(
         "view-two-languages",

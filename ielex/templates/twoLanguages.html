@@ -4,7 +4,7 @@
 {% load wtforms %}
 
 {% block title %}
-  2-Lgs: {{ targetLang.utf8_name }} + {{ sourceLang.utf8_name }}
+  2-Lgs: {{ targetLang.utf8_name }} + {% if sourceLang %}{{ sourceLang.utf8_name }}{% else %}Choose second language{% endif %}
 {% endblock %}
 
 {% block top %}

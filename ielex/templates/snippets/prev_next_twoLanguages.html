@@ -29,10 +29,18 @@
             data-toggle="tooltip"
             data-placement="right"
             data-container="body"
+            {% if sourceLang %}
             title="{{ sourceLang.description }}"
+            {% else %}
+            title="Type here to select language 2"
+            {% endif %}
           {% endif %}>
         <input class="typeaheadText"
+               {% if sourceLang %}
                value="{{ sourceLang.utf8_name }}"
+               {% else %}
+               value="Select language 2"
+               {% endif %}
                type="text"
                data-typeahead="{{ typeahead2 | escapejs }}">
       </h1>
