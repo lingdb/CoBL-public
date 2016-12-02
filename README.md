@@ -88,24 +88,24 @@ This makes it easy to upgrade dependencies to newer versions in the future and k
 
 1. Install [node](https://nodejs.org/en/download/) together with `npm`.
 2. Install `grunt` and `bower` using `npm`:
-   ```shell
-   npm install -g bower
-   npm install -g grunt-cli
-   ```
+```shell
+npm install -g bower
+npm install -g grunt-cli
+```
 3. Install project specific `npm` dependencies:
-   ```shell
-   # In CoBL/static:
-   npm install
-   ```
+```shell
+# In CoBL/static:
+npm install
+```
 4. Install project specific `bower` dependencies:
-   ```shell
-   # In CoBL/static:
-   bower install
-   ```
+```shell
+# In CoBL/static:
+bower install
+```
 5. Check and minify JavaScript with `grunt`:
-   ```shell
-   # In CoBL/static:
-   grunt
-   ```
-   You can also instruct `grunt` to continuously watch files for changes
-   using `grunt watch` or to only use `jshint` using `grunt jshint`.
+```shell
+# In CoBL/static:
+grunt
+```
+You can also instruct `grunt` to continuously watch files for changes
+using `grunt watch` or to only use `jshint` using `grunt jshint`.
