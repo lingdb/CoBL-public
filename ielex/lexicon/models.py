@@ -990,12 +990,18 @@ class Meaning(AbstractTimestamped):
             cog_count = len(ccs)
             cogRootFormCount = 0
             cogRootLanguageCount = 0
+            cogLoanCount = 0
+            cogParallelLoanCount = 0
             # Iterating ccs to calculate counts:
             for cc in ccs:
                 if cc.root_form != '':
                     cogRootFormCount += 1
                 if cc.root_language != '':
                     cogRootLanguageCount += 1
+                if cc.loanword:
+                    cogLoanCount += 1
+                if cc.parallelLoanEvent:
+                    cogParallelLoanCount += 1
             # Computing percentages:
             cogRootFormPercentage = cogRootFormCount / cog_count \
                 if cog_count > 0 else float('nan')
@@ -1007,7 +1013,9 @@ class Meaning(AbstractTimestamped):
                 'cogRootFormCount': cogRootFormCount,
                 'cogRootFormPercentage': cogRootFormPercentage,
                 'cogRootLanguageCount': cogRootLanguageCount,
-                'cogRootLanguagePercentage': cogRootLanguagePercentage}
+                'cogRootLanguagePercentage': cogRootLanguagePercentage,
+                'cogLoanCount': 'FIXME IMPLEMENT',
+                'cogParallelLoanCount': 'FIXME IMPLEMENT'}
         return self._computeCounts
 
     @property
@@ -1037,6 +1045,14 @@ class Meaning(AbstractTimestamped):
     @property
     def cogRootLanguagePercentage(self):
         return '%.2f' % self.computeCounts()['cogRootLanguagePercentage']
+
+    @property
+    def cogLoanCount(self):
+        return self.computeCounts()['cogLoanCount']
+
+    @property
+    def cogParallelLoanCount(self):
+        return self.computeCounts()['cogParallelLoanCount']
 
 
 @reversion.register
