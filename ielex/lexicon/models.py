@@ -1014,8 +1014,8 @@ class Meaning(AbstractTimestamped):
                 'cogRootFormPercentage': cogRootFormPercentage,
                 'cogRootLanguageCount': cogRootLanguageCount,
                 'cogRootLanguagePercentage': cogRootLanguagePercentage,
-                'cogLoanCount': 'FIXME IMPLEMENT',
-                'cogParallelLoanCount': 'FIXME IMPLEMENT'}
+                'cogLoanCount': cogLoanCount,
+                'cogParallelLoanCount': cogParallelLoanCount}
         return self._computeCounts
 
     @property

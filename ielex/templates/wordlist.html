@@ -100,6 +100,26 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
+                  title="Number of cognate classes marked as loanword">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. Loan
+                  </div>
+                </div>
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of cognate classes marked as parallel loan event">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. Pll Loan
+                  </div>
+                </div>
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
                   title="Number of cognate classes that have a root form.">
                 Root form count
               </th>
@@ -259,6 +279,18 @@
               </td>
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".meaningCogLoanCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".meaningCogParallelLoanCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogRootFormCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
@@ -402,6 +434,16 @@
                 <td class="meaningCogCount">
                   <span class="badge">
                     {{ meaning.object_data.cog_count }}
+                  </span>
+                </td>
+                <td class="meaningCogLoanCount">
+                  <span class="badge">
+                    {{ meaning.object_data.cogLoanCount }}
+                  </span>
+                </td>
+                <td class="meaningCogParallelLoanCount">
+                  <span class="badge">
+                    {{ meaning.object_data.cogParallelLoanCount }}
                   </span>
                 </td>
                 <td class="meaningCogRootFormCount">
