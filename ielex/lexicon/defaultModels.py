@@ -23,7 +23,7 @@ def setDefaultLanguage(request, language):
     @return success :: bool
     """
     if type(language) == Language:
-        language = language.utf8_name
+        language = language.ascii_name
     if type(language) == str or type(language) == unicode:
         request.session['defaultLanguage'] = language
         return True
@@ -37,7 +37,7 @@ def getDefaultLanguageId(request):
     """
     languageName = getDefaultLanguage(request)
     id = Language.objects.values_list(
-        'id', flat=True).filter(utf8_name=languageName).all()
+        'id', flat=True).filter(ascii_namelanguageName).all()
     if len(id) == 1:
         return id[0]
     return None
@@ -52,7 +52,7 @@ def setDefaultLanguageId(request, language):
         return setDefaultLanguage(request, language)
     if type(language) == int:
         languageName = Language.objects.values_list(
-            'utf8_name', flat=True).filter(id=language).all()
+            'ascii_name', flat=True).filter(id=language).all()
         if len(languageName) == 1:
             return setDefaultLanguage(request, languageName[0])
     return False
@@ -188,8 +188,8 @@ def getDefaultDict(request):
         }
     defaults['otherLanguages'] = \
         Language.objects.exclude(
-            utf8_name=defaults['defaultLanguage']).values_list(
-            'utf8_name', flat=True)
+            ascii_name=defaults['defaultLanguage']).values_list(
+            'ascii_name', flat=True)
     defaults['otherMeanings'] = \
         Meaning.objects.exclude(
             gloss=defaults['defaultMeaning']).values_list(
@@ -203,3 +203,16 @@ def getDefaultDict(request):
             name=defaults['defaultLanguagelist']).values_list(
             'name', flat=True)
     return defaults
+
+
+def getDefaultSourceLanguage(request):
+    return request.session.get('defaultSourceLanguage', None)
+
+
+def setDefaultSourceLanguage(request, language):
+    if type(language) == Language:
+        language = language.ascii_name
+    if type(language) == str or type(language) == unicode:
+        request.session['defaultSourceLanguage'] = language
+        return True
+    return False
