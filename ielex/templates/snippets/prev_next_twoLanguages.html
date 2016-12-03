@@ -5,14 +5,14 @@
     </div>
     <div class="col-md-4">
       <h1 class="inline"
-          {% if lang1.description %}
+          {% if targetLang.description %}
             data-toggle="tooltip"
             data-placement="right"
             data-container="body"
-            title="{{ lang1.description }}"
+            title="{{ targetLang.description }}"
           {% endif %}>
         <input class="typeaheadText"
-               value="{{ lang1.utf8_name }}"
+               value="{{ targetLang.utf8_name }}"
                type="text"
                data-typeahead="{{ typeahead1 | escapejs }}">
       </h1>
@@ -25,14 +25,22 @@
     </div>
     <div class="col-md-4">
       <h1 class="inline"
-          {% if lang2.description %}
+          {% if sourceLang.description %}
             data-toggle="tooltip"
             data-placement="right"
             data-container="body"
-            title="{{ lang2.description }}"
+            {% if sourceLang %}
+            title="{{ sourceLang.description }}"
+            {% else %}
+            title="Type here to select language 2"
+            {% endif %}
           {% endif %}>
         <input class="typeaheadText"
-               value="{{ lang2.utf8_name }}"
+               {% if sourceLang %}
+               value="{{ sourceLang.utf8_name }}"
+               {% else %}
+               value="Select language 2"
+               {% endif %}
                type="text"
                data-typeahead="{{ typeahead2 | escapejs }}">
       </h1>

@@ -28,7 +28,8 @@ from ielex.lexicon.models import CognateClass, \
     MeaningListOrder, \
     LexemeCitation, \
     CognateJudgementCitation, \
-    PROPOSED_AS_COGNATE_TO_SCALE
+    PROPOSED_AS_COGNATE_TO_SCALE, \
+    Author
 from ielex.lexicon.validators import suitable_for_url, suitable_for_url_wtforms
 from wtforms import StringField, \
     IntegerField, \
@@ -413,6 +414,8 @@ class LanguageListRowForm(AbstractTimestampedForm, AbstractDistributionForm):
                               validators=[InputRequired()])
     rfcWebPath2 = StringField('This Lg lex rfc web path 2',
                               validators=[InputRequired()])
+    exampleLanguage = BooleanField(
+        'Example Language?', validators=[InputRequired()])
 
     def validate_historical(form, field):
         # Assumes that field.data :: True | False
@@ -1618,10 +1621,36 @@ class AuthorRowForm(AbstractTimestampedForm):
                              validators=[InputRequired()])
     email = StringField('Email address', validators=[InputRequired(), Email()])
     website = StringField('Personal website URL', validators=[InputRequired()])
+    user_id = IntegerField('User Id', validators=[InputRequired()])
+
+    def handle(self, request):
+        data = self.data
+        try:
+            with transaction.atomic():
+                author = Author.objects.get(
+                    id=data['idField'])
+                userChanged = data['user_id'] != author.user_id
+                if author.isChanged(**data) or userChanged:
+                    problem = author.setDelta(request, **data)
+                    if problem is None:
+                        if userChanged and request.user.is_staff:
+                            author.user_id = data['user_id']
+                        author.save()
+                    else:
+                        messages.error(
+                            request, author.deltaReport(**problem))
+        except Exception as e:
+            logging.exception('Problem while updating author.', e)
+            messages.error(
+                request, 'Problem saving author data: %s' % data)
 
 
 class AuthorTableForm(WTForm):
     elements = FieldList(FormField(AuthorRowForm))
+
+    def handle(self, request):
+        for entry in self.elements:
+            entry.handle(request)
 
 
 class AuthorCreationForm(WTForm):
@@ -1631,10 +1660,22 @@ class AuthorCreationForm(WTForm):
                              validators=[InputRequired()])
     email = StringField('Email address', validators=[InputRequired(), Email()])
     website = StringField('Personal website URL', validators=[InputRequired()])
+    user_id = IntegerField('UserId', validators=[InputRequired()])
 
 
 class AuthorDeletionForm(WTForm):
     initials = StringField('Initials', validators=[InputRequired()])
+
+    def handle(self, request):
+        data = self.data
+        if Author.objects.filter(initials=data['initials']).exists():
+            Author.objects.filter(initials=data['initials']).delete()
+            messages.info(
+                request, 'Deleted Author with initials %s.' % data['initials'])
+        else:
+            messages.error(
+                request,
+                'No Author with initials %s in database.' % data['initials'])
 
 
 # -- /source/ -------------------------------------------------------------

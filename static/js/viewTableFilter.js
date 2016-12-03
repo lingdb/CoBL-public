@@ -3,7 +3,7 @@
   return define(['jquery','lodash',
                  'js/cladeFilter',
                  'js/viewTableFilter/settings',
-                 'floatThead'],
+                 'floatThead', 'bootstrap'],
     function($, _, mkCladeFilter, settings){
     /*
       This view can be used to filter and sort tables.
@@ -16,7 +16,7 @@
     var module = {
       inputClasses: ['filterText', 'filterInput',
                      'filterBool', 'filterDistinct'],
-      btnClasses: ['sortInput', 'sortText', 'sortIntText'],
+      btnClasses: ['sortInput', 'sortIntInput', 'sortText', 'sortIntText'],
       callbacks: {} // :: Identifier -> IO ()
     };
     /**
@@ -42,6 +42,19 @@
       //Actual init work:
       el.each(function(){
         var table = $(this);
+        //Fix overflow for #356:
+        table.find('td').each(function(){
+          if(this.offsetWidth < this.scrollWidth){
+            //https://stackoverflow.com/a/10017343/448591
+            var $td = $(this);
+            $td.tooltip({
+              title: $td.text(),
+              placement: 'top',
+              container: 'body',
+              trigger: 'hover'
+            });
+          }
+        });
         //Restoring buttons before initial filtering.
         settings.restoreButtonInputs();
         //Attaching inputClasses:
@@ -150,7 +163,7 @@
     /**
       @param btn   :: $ ∧ .btn
       @param table :: $ ∧ table
-      Function to sort rows of a table by text in a column
+      Function to sort rows of a table by text in a column.
     */
     module.sortText = sortTableBy(function(selector){
       return function(row){
@@ -160,7 +173,7 @@
     /**
       @param btn   :: $ ∧ .btn
       @param table :: $ ∧ table
-      Function to sort rows of a table by text parsed as int in a column
+      Function to sort rows of a table by text parsed as int in a column.
     */
     module.sortIntText = sortTableBy(function(selector){
       return function(row){
@@ -170,11 +183,21 @@
     /**
       @param btn   :: $ ∧ .btn
       @param table :: $ ∧ table
-      Function to sort rows of a table by text parsed as int in a column
+      Function to sort rows of a table by lowercase text from an input in a column.
     */
     module.sortInput = sortTableBy(function(selector){
       return function(row){
-        return row.find(selector).val();
+        return row.find(selector).val().toLowerCase();
+      };
+    });
+    /**
+      @param btn   :: $ ∧ .btn
+      @param table :: $ ∧ table
+      Function to sort rows of a table by input value parsed as int in a column.
+    */
+    module.sortIntInput = sortTableBy(function(selector){
+      return function(row){
+        return parseFloat(row.find(selector).val());
       };
     });
     /**
@@ -239,8 +262,12 @@
     */
     module.filterInput = mkStringFilter('filterInput', function(selector, re){
       return function(row){
-        var text = row.find(selector).val().trim();
-        return text.match(re) === null;
+        var $input = row.find(selector);
+        if($input){
+          var text = $input.val().trim();
+          return text.match(re) === null;
+        }
+        return true;
       };
     });
     /**

@@ -14,8 +14,6 @@ To install CoBL yourself, the following dependencies must be provided:
 * [Bower](http://bower.io/) to install JavaScript dependencies and bootstrap.
 * [Grunt](http://gruntjs.com/) to minify JavaScript.
   * To install Grunt you'll likely need to have [node](https://nodejs.org/en/) and [npm](https://www.npmjs.com/).
-  * The Grunt dependency can be omitted if you're running with `DEBUG=True`,
-    because minified JavaScript will only be used when `DEBUG=False` is set.
 * [git](https://git-scm.com/) to clone the repo.
 
 To install follow these steps:
@@ -36,8 +34,6 @@ To install follow these steps:
 4. If you're using `virtualenvwrapper`, a command like this may be helpful:
    `mkvirtualenv -p `which python2.7` -r REQUIREMENTS CoBL`
    Basically make sure you've got the `REQUIREMENTS` installed and are using `python2.7`.
-   To take advantage of development tools like the [DjDT](https://django-debug-toolbar.readthedocs.org/en/1.4/) make sure to also run
-   `pip install -r REQUIREMENTS-DEV`
 5. Install bower dependencies:
    Inside the `CoBL/static` directory, run: `bower install`
 6. Use grunt to create minified JavaScript:
@@ -71,3 +67,45 @@ To install follow these steps:
    * `python2.7 manage.py migrate`
 9. Run the site from `CoBL`:
    * `python2.7 manage.py runserver`
+
+## Handling JavaScript
+
+CoBL uses [AMD](https://en.wikipedia.org/wiki/Asynchronous_module_definition)
+with [RequireJS](http://requirejs.org/) to keep the JavaScript code organized.
+
+For deployment the JavaScript code gets [minified](https://en.wikipedia.org/wiki/Minification_(programming)) to keep the filesize small.
+We use a [hash function](https://en.wikipedia.org/wiki/Hash_function) to derive the name of the minified file.
+The resulting file will have a name like `minified.af9b00f5.js` which will be specific enough so that
+future changes will likely have different names and outdated browser caches won't be problematic.
+
+Stylewise we make sure that our JavaScript code fits the expectations of [JSHint](https://en.wikipedia.org/wiki/JSHint)
+to the extent that deployment will fail when code isn't formatted correctly.
+
+Instead of tracking all our dependencies trough git directly or downloading them manually we use popular tools like [npm](https://www.npmjs.com/) and [Bower](http://bower.io/).
+This makes it easy to upgrade dependencies to newer versions in the future and keeps the repository slim.
+
+### Getting started
+
+1. Install [node](https://nodejs.org/en/download/) together with `npm`.
+2. Install `grunt` and `bower` using `npm`:
+```shell
+npm install -g bower
+npm install -g grunt-cli
+```
+3. Install project specific `npm` dependencies:
+```shell
+# In CoBL/static:
+npm install
+```
+4. Install project specific `bower` dependencies:
+```shell
+# In CoBL/static:
+bower install
+```
+5. Check and minify JavaScript with `grunt`:
+```shell
+# In CoBL/static:
+grunt
+```
+You can also instruct `grunt` to continuously watch files for changes
+using `grunt watch` or to only use `jshint` using `grunt jshint`.

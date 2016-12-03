@@ -5,7 +5,7 @@
 {% load wtforms %}
 
 {% block title %}
-  Meaning list
+  Meaning list: {{ wordlist }}
 {% endblock %}
 
 {% block top %}
@@ -80,8 +80,7 @@
               <th>MeaningSetIx</th>
               {# exampleContext_title.html #}
               <th>Example Context</th>
-              <th>Show<br>Languages</th>
-              <th>Show<br>Cog. Sets</th>
+              <th colspan="2"></th>
               {% if user.is_authenticated %}
               <th>Edit<br>metadata</th>
               {% endif %}
@@ -97,6 +96,26 @@
                   data-container="body"
                   title="Number of cognate classes">
                 Cog.
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of cognate classes marked as loanword">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. Loan
+                  </div>
+                </div>
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of cognate classes marked as parallel loan event">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. Pll Loan
+                  </div>
+                </div>
               </th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -144,7 +163,7 @@
                 <input type="text" class="filterInput form-control"
                        data-selector=".meaningId input.meaningId"
                        style="width: 1.5em;">
-                <div class="btn btn-xs btn-default sortInput"
+                <div class="btn btn-xs btn-default sortIntInput"
                      data-selector=".meaningId input.meaningId">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
@@ -255,6 +274,18 @@
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".meaningCogLoanCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".meaningCogParallelLoanCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
@@ -403,6 +434,16 @@
                 <td class="meaningCogCount">
                   <span class="badge">
                     {{ meaning.object_data.cog_count }}
+                  </span>
+                </td>
+                <td class="meaningCogLoanCount">
+                  <span class="badge">
+                    {{ meaning.object_data.cogLoanCount }}
+                  </span>
+                </td>
+                <td class="meaningCogParallelLoanCount">
+                  <span class="badge">
+                    {{ meaning.object_data.cogParallelLoanCount }}
                   </span>
                 </td>
                 <td class="meaningCogRootFormCount">

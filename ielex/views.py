@@ -29,6 +29,7 @@ from ielex.forms import AddCitationForm, \
     AuthorCreationForm, \
     AuthorDeletionForm, \
     AuthorTableForm, \
+    AuthorRowForm, \
     ChooseCognateClassForm, \
     CladeCreationForm, \
     CladeDeletionForm, \
@@ -89,12 +90,14 @@ from ielex.lexicon.defaultModels import getDefaultLanguage, \
     getDefaultMeaning, \
     getDefaultMeaningId, \
     getDefaultWordlist, \
+    getDefaultSourceLanguage, \
     setDefaultLanguage, \
     setDefaultLanguageId, \
     setDefaultLanguagelist, \
     setDefaultMeaning, \
     setDefaultMeaningId, \
-    setDefaultWordlist
+    setDefaultWordlist, \
+    setDefaultSourceLanguage
 from ielex.shortcuts import render_template
 from ielex.utilities import next_alias, \
     anchored, oneline, logExceptions
@@ -2365,24 +2368,7 @@ def viewAuthors(request):
             authorData = AuthorTableForm(request.POST)
             try:
                 authorData.validate()
-                for entry in authorData.elements:
-                    data = entry.data
-                    try:
-                        with transaction.atomic():
-                            author = Author.objects.get(
-                                id=int(data['idField']))
-                            if author.isChanged(**data):
-                                problem = author.setDelta(request, **data)
-                                if problem is None:
-                                    author.save()
-                                else:
-                                    messages.error(
-                                        request, author.deltaReport(**problem))
-                    except Exception:
-                        logging.exception('Problem while saving '
-                                          'author in viewAuthors.')
-                        messages.error(
-                            request, 'Problem saving author data: %s' % data)
+                authorData.handle(request)
             except Exception:
                 logging.exception('Problem updating authors in viewAuthors.')
                 messages.error(request, 'Sorry, the server had problems '
@@ -2391,32 +2377,45 @@ def viewAuthors(request):
             deleteAuthor = AuthorDeletionForm(request.POST)
             try:
                 deleteAuthor.validate()
-                with transaction.atomic():
-                    # Making sure the author exists:
-                    author = Author.objects.get(
-                        initials=deleteAuthor.data['initials'])
-                    # Make sure to update things referencing the author here!
-                    # Deleting the author:
-                    Author.objects.filter(id=author.id).delete()
+                deleteAuthor.handle(request)
             except Exception:
                 logging.exception('Problem deleting author in viewAuthors.')
                 messages.error(request, 'Sorry, the server had problems '
                                'deleting the requested author.')
+        elif 'currentAuthorForm' in request.POST:
+            currentAuthorForm = AuthorRowForm(request.POST)
+            try:
+                currentAuthorForm.validate()
+                currentAuthorForm.handle(request)
+            except Exception as e:
+                logging.exception('Problem updating current author.', e)
+                messages.error(request, 'Sorry, the server had problems '
+                               'updating the requested author.')
         else:
             logging.error('Unexpected POST request in viewAuthors.')
             messages.error(request, 'Sorry, the server did not '
                            'understand the request.')
+        return HttpResponseRedirect(
+            reverse("viewAuthors", args=[]))
 
     authors = Author.objects.all()
     form = AuthorTableForm()
     for author in authors:
 
         author.idField = author.id
-        author.displayEmail = " [ AT ] ".join(author.email.split("@"))
         form.elements.append_entry(author)
 
+    currentAuthorForm = None
+    if request.user.is_authenticated:
+        query = Author.objects.filter(user_id=request.user.id)
+        if Author.objects.filter(user_id=request.user.id).exists():
+            currentAuthor = query.all()[0]
+            currentAuthor.idField = currentAuthor.id
+            currentAuthorForm = AuthorRowForm(obj=currentAuthor)
+
     return render_template(
-        request, "authors.html", {'authors': form})
+        request, "authors.html", {'authors': form,
+                                  'currentAuthorForm': currentAuthorForm})
 
 
 @logExceptions
@@ -2491,41 +2490,38 @@ def view_nexus_export(request, exportId=None):
 @csrf_protect
 @logExceptions
 def view_two_languages_wordlist(request,
-                                lang1=None,
-                                lang2=None,
+                                targetLang=None,
+                                sourceLang=None,
                                 wordlist=None):
     '''
     Implements two languages * all meanings view for #256
-    lang1 :: str | None
-    lang2 :: str | None
+    targetLang :: str | None
+    sourceLang :: str | None
     wordlist :: str | None
-    If lang1 is given it will be treated as the default language.
+    If targetLang is given it will be treated as the default language.
     '''
     # Setting defaults if possible:
-    if lang1 is not None:
-        setDefaultLanguage(request, lang1)
+    if targetLang is not None:
+        setDefaultLanguage(request, targetLang)
+    if sourceLang is not None:
+        setDefaultSourceLanguage(request, sourceLang)
     if wordlist is not None:
         setDefaultWordlist(request, wordlist)
-    # Fetching lang1 to operate on:
-    if lang1 is None:
-        lang1 = getDefaultLanguage(request)
+    # Fetching targetLang to operate on:
+    if targetLang is None:
+        targetLang = getDefaultLanguage(request)
     try:
-        lang1 = Language.objects.get(ascii_name=lang1)
+        targetLang = Language.objects.get(ascii_name=targetLang)
     except Language.DoesNotExist:
-        raise Http404("Language '%s' does not exist" % lang1)
-    # Fetching lang2 to operate on:
-    if lang2 is None:
+        raise Http404("Language '%s' does not exist" % targetLang)
+    # Fetching sourceLang to operate on:
+    if sourceLang is None:
+        sourceLang = getDefaultSourceLanguage(request)
+    if sourceLang is not None:
         try:
-            lang2 = Language.objects.exclude(
-                id=lang1.id).filter(
-                languagelist__name=getDefaultLanguagelist(request))[0]
-        except IndexError:
-            lang2 = lang1
-    else:
-        try:
-            lang2 = Language.objects.get(ascii_name=lang2)
+            sourceLang = Language.objects.get(ascii_name=sourceLang)
         except Language.DoesNotExist:
-            raise Http404("Language '%s' does not exist" % lang1)
+            raise Http404("Language '%s' does not exist" % sourceLang)
     # Fetching wordlist to operate on:
     if wordlist is None:
         wordlist = getDefaultWordlist(request)
@@ -2552,8 +2548,8 @@ def view_two_languages_wordlist(request,
                                'updating at least one lexeme.')
             return HttpResponseRedirect(
                 reverse("view-two-languages",
-                        args=[lang1.ascii_name,
-                              lang2.ascii_name,
+                        args=[targetLang.ascii_name,
+                              sourceLang.ascii_name if sourceLang else None,
                               wordlist.name]))
 
     def getLexemes(lang):
@@ -2569,10 +2565,11 @@ def view_two_languages_wordlist(request,
 
     # collect data:
     mIdOrigLexDict = defaultdict(deque)  # Meaning.id -> [Lexeme]
-    for l in getLexemes(lang2):
-        mIdOrigLexDict[l.meaning.id].append(l)
+    if sourceLang:
+        for l in getLexemes(sourceLang):
+            mIdOrigLexDict[l.meaning.id].append(l)
 
-    lexemes = getLexemes(lang1)
+    lexemes = getLexemes(targetLang)
     for l in lexemes:
         if l.meaning.id in mIdOrigLexDict:
             try:
@@ -2588,16 +2585,18 @@ def view_two_languages_wordlist(request,
         name=getDefaultLanguagelist(request))
     typeahead1 = json.dumps({l.utf8_name: reverse(
         "view-two-languages",
-        args=[l.ascii_name, lang2.ascii_name, wordlist.name])
+        args=[l.ascii_name,
+              sourceLang.ascii_name if sourceLang else None,
+              wordlist.name])
         for l in languageList.languages.all()})
     typeahead2 = json.dumps({l.utf8_name: reverse(
         "view-two-languages",
-        args=[lang1.ascii_name, l.ascii_name, wordlist.name])
+        args=[targetLang.ascii_name, l.ascii_name, wordlist.name])
         for l in languageList.languages.all()})
 
     return render_template(request, "twoLanguages.html",
-                           {"lang1": lang1,
-                            "lang2": lang2,
+                           {"targetLang": targetLang,
+                            "sourceLang": sourceLang,
                             "wordlist": wordlist,
                             "otherMeaningLists": otherMeaningLists,
                             "lex_ed_form": lexemeTable,

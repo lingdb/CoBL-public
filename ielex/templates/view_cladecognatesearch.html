@@ -5,7 +5,11 @@
 {% load wtforms %}
 
 {% block title %}
-  Clade cognate set search :: {{ cladeTitle }}
+  {% if cladeTitle %}
+    Clade cognate set search: {{ cladeTitle }}
+  {% else %}
+    Clade cognate set search
+  {% endif %}
 {% endblock %}
 
 {% block top %}

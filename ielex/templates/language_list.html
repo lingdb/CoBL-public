@@ -297,6 +297,17 @@
                   </div>
                 </div>
               </th>
+              {# exampleLanguage_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Example Language?">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Ex. Lg?
+                  </div>
+                </div>
+              </th>
               {# fossstat_title.html #}
               <th>
                 <div class="vertical-text">
@@ -655,6 +666,14 @@
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </td>
+              {# exampleLanguage_filter.html #}
+              <td>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".languageExampleLanguage input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
               {# fossstat_filter.html #}
               <td>
                 <button type="button"
@@ -806,7 +825,7 @@
                   <a href="{% url 'view-language-wordlist' language.object_data.ascii_name wordlist %}"
                      alt="view lexeme list"
                      title="View wordlist list for {{ language.object_data.utf8_name }}">
-                    <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+                     <img src="{% static '1l.png' %}">
                   </a>
                 </td>
                 {# name_data.html #}
@@ -983,6 +1002,14 @@
                       {% form_field language.representative class="form-control" disabled="disabled" %}
                     {% endif %}
                   </div>
+                </td>
+                {# exampleLanguage_data.html #}
+                <td>
+                    {% if user.is_authenticated and user.is_staff %}
+                      {% form_field language.exampleLanguage class="form-control" %}
+                    {% else %}
+                      {% form_field language.exampleLanguage class="form-control" disabled="disabled" %}
+                    {% endif %}
                 </td>
                 {# fossstat_data.html #}
                 <td class="languageFossStat">

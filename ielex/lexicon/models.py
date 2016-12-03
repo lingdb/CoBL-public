@@ -17,7 +17,7 @@ from django.http import HttpResponse
 from django.utils.html import format_html
 from django.db.utils import DataError
 from django.utils import timezone
-from django.utils.http import urlquote
+from django.contrib.auth.models import User
 
 # ielex specific imports:
 from ielex.utilities import two_by_two
@@ -701,6 +701,8 @@ class Language(AbstractTimestamped, AbstractDistribution):
         null=True, max_digits=19, decimal_places=10)
     longitude = models.DecimalField(
         null=True, max_digits=19, decimal_places=10)
+    # Added for #217:
+    exampleLanguage = models.BooleanField(default=0)
     # author = models.ForeignKey(author, related_name="author", null=True)
     # reviewer = models.ForeignKey(author, related_name="reviewer", null=True)
 
@@ -869,7 +871,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
                   'rfcWebPath1', 'rfcWebPath2', 'author', 'reviewer',
                   'earliestTimeDepthBound', 'latestTimeDepthBound',
                   'progress', 'sortRankInClade', 'entryTimeframe',
-                  'historical', 'notInExport'])
+                  'historical', 'notInExport', 'exampleLanguage'])
         return fs | AbstractDistribution.timestampedFields(self)
 
     def deltaReport(self, **kwargs):
@@ -988,12 +990,18 @@ class Meaning(AbstractTimestamped):
             cog_count = len(ccs)
             cogRootFormCount = 0
             cogRootLanguageCount = 0
+            cogLoanCount = 0
+            cogParallelLoanCount = 0
             # Iterating ccs to calculate counts:
             for cc in ccs:
                 if cc.root_form != '':
                     cogRootFormCount += 1
                 if cc.root_language != '':
                     cogRootLanguageCount += 1
+                if cc.loanword:
+                    cogLoanCount += 1
+                if cc.parallelLoanEvent:
+                    cogParallelLoanCount += 1
             # Computing percentages:
             cogRootFormPercentage = cogRootFormCount / cog_count \
                 if cog_count > 0 else float('nan')
@@ -1005,7 +1013,9 @@ class Meaning(AbstractTimestamped):
                 'cogRootFormCount': cogRootFormCount,
                 'cogRootFormPercentage': cogRootFormPercentage,
                 'cogRootLanguageCount': cogRootLanguageCount,
-                'cogRootLanguagePercentage': cogRootLanguagePercentage}
+                'cogRootLanguagePercentage': cogRootLanguagePercentage,
+                'cogLoanCount': cogLoanCount,
+                'cogParallelLoanCount': cogParallelLoanCount}
         return self._computeCounts
 
     @property
@@ -1035,6 +1045,14 @@ class Meaning(AbstractTimestamped):
     @property
     def cogRootLanguagePercentage(self):
         return '%.2f' % self.computeCounts()['cogRootLanguagePercentage']
+
+    @property
+    def cogLoanCount(self):
+        return self.computeCounts()['cogLoanCount']
+
+    @property
+    def cogParallelLoanCount(self):
+        return self.computeCounts()['cogParallelLoanCount']
 
 
 @reversion.register
@@ -1864,19 +1882,14 @@ models.signals.post_delete.connect(
 @reversion.register
 class Author(AbstractTimestamped):
     # See https://github.com/lingdb/CoBL/issues/106
-    # We leave out the ix field in favour
-    # of the id field provided by reversion.
 
-    # Author Surname
     surname = models.TextField(blank=True)
-    # Author First names
     firstNames = models.TextField(blank=True)
-    # Initials
     initials = models.TextField(blank=True, unique=True)
-    # Email address
     email = models.TextField(blank=True, unique=True)
-    # Personal website URL
     website = models.TextField(blank=True)
+    # An Author may relate to a database user:
+    user = models.ForeignKey(User, null=True)
 
     def timestampedFields(self):
         return set(['surname', 'firstNames', 'email', 'website', 'initials'])
@@ -1910,6 +1923,10 @@ class Author(AbstractTimestamped):
                              self.surname.encode('utf-8') + extension)
             if os.path.isfile(p):
                 return p
+
+    @property
+    def displayEmail(self):
+        return " [ AT ] ".join(self.email.split("@"))
 
 
 @reversion.register
