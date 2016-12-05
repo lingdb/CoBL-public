@@ -1842,8 +1842,8 @@ LexemeFormSet = inlineformset_factory(
 
 CognateClassCitationFormSet = inlineformset_factory(
     CognateClass, CognateClassCitation,
-    form = EditCognateClassCitationInlineForm,
-    can_delete=False, fields=('source','pages','comment',), extra=0)
+    form=EditCognateClassCitationInlineForm,
+    can_delete=False, fields=('source', 'pages', 'comment',), extra=0)
 
 
 class AssignCognateClassesFromLexemeForm(WTForm):

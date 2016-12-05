@@ -2059,7 +2059,6 @@ def source_list(request):
 def get_sources_table(queryset=''):
     if queryset == '':
         queryset = Source.objects.all()
-    current_languagelist = get_canonical_language_list()
     queryset = queryset.extra({'cognacy_count':
                                'SELECT COUNT(*) '
                                'FROM lexicon_cognatejudgementcitation '

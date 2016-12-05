@@ -7,7 +7,7 @@ from django.core.management import BaseCommand
 from django.contrib.auth.models import User
 
 from ielex.lexicon.models import LanguageList, \
-    MeaningList, Language, Meaning, Lexeme, CognateClass, CognateJudgement
+    MeaningList, Language, Meaning, Lexeme
 
 
 class Command(BaseCommand):
