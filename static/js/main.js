@@ -18,7 +18,8 @@
       'dal-init': 'bower_components/django-autocomplete-light/src/dal/static/autocomplete_light/autocomplete.init',
       'dal-forward': 'bower_components/django-autocomplete-light/src/dal/static/autocomplete_light/forward',
       'dal-select2': 'bower_components/django-autocomplete-light/src/dal_select2/static/autocomplete_light/select2',
-      'select2': 'bower_components/select2/dist/js/select2.full.min'
+      'select2': 'bower_components/select2/dist/js/select2.full.min',
+	  'django-dynamic-formset': 'bower_components/django-dynamic-formset/src/jquery.formset'
     },
     shim: {
       'bootstrap': {deps: ['jquery']},
@@ -35,7 +36,8 @@
       'dal-forward': {deps: ['jquery'], exports: 'get_forwards'},
       'dal-select2': {deps: ['dal-init2', 'dal-forward', 'select2']},
       'dal-init': {deps: ['dal-init2', 'dal-forward', 'dal-select2']},
-      'select2': {deps: ['jquery']}
+      'select2': {deps: ['jquery']},
+	  'django-dynamic-formset': {deps: ['jquery']}
     }
   });
   requirejs(['require','jquery','lodash',
