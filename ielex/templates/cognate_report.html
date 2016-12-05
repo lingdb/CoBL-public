@@ -147,6 +147,7 @@
             {% endif %}
             <th>Language</th>
             <th>Lexeme</th>
+            <th>Not Swh</th>
             <th>Phonological</th>
             <th>Meaning</th>
             <th>Notes</th>
@@ -180,6 +181,14 @@
                 </a>
               </td>
               <td>{{ cj.object_data.lexeme.source_form }}</td>
+              <td>
+                <input type="checkbox"
+                       {% if cj.object_data.lexeme.not_swadesh_term %}
+                       checked="checked"
+                       {% endif %}
+                       disabled="disabled"
+                       class="form-control">
+              </td>
               <td>{{ cj.object_data.lexeme.phon_form }}</td>
               <td class="nowrap">
                 <div class="inline"

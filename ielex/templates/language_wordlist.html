@@ -593,7 +593,13 @@
                   {% endif %}
                 </td>
                 {# loanevent_data.html #}
-                <td class="lexemeLoanEvent">
+                <td class="lexemeLoanEvent"
+                    {% if lexeme.object_data.show_loan_event%}
+                    data-toggle="tooltip"
+                    data-container="body"
+                    data-placement="top"
+                    title="{{ lexeme.object_data.loanEventSourceTitle }}"
+                    {% endif %}>
                   {% if lexeme.object_data.show_loan_event %}
                     <input type="checkbox"
                       {% if lexeme.object_data.loan_event %}
