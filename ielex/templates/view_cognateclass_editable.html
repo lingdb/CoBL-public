@@ -7,7 +7,57 @@
 {% block title %}
   Cogs in Mg: {{ meaning }}
 {% endblock %}
+{% block meta %}
+{{ block.super }}
+<style>
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
 
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 1020px;
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.openModal {
+	background-color: blue;
+	cursor: pointer;
+}
+
+.openModal.selected{
+	background-color: red;
+}
+</style>
+{% endblock %}
 {% block top %}
 {% endblock %}
 
@@ -105,6 +155,14 @@
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Cog. Alias
+                  </div>
+                </div>
+              </th>
+              {# citation_title.html #}
+              <th style="width: 40px;">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Citations
                   </div>
                 </div>
               </th>
@@ -627,6 +685,12 @@
                     {{ cc.alias.data }}
                   </a>
                 </td>
+                <td class="cogClassCit"
+                    style="text-align: center; width: 40px;">
+                  <span class="badge openModal">
+					{{ cc.object_data.citCount }}
+				  </span>
+                </td>
                 {# merge_data.html #}
                 <td>
                   <input type="checkbox"
@@ -822,5 +886,56 @@
       {% endif %}
     </div>
   </div>
+<!-- view Citations -->
+<div id="viewCit" class="modal">
+  <!-- Content -->
+  <div class="modal-content">
+    <span class="close">x</span>
+	<div id="viewCitContainer"></div>
+  </div>
+</div>
+{% endblock %}
+{% block footerScripts%}
+<script>
+$(document).ready(function () {
+
+	/**** BUILD CITATIONS FORM *****/	
+	
+		function build_cit_form(data){
+		$('#viewCitContainer').append($(data));
+		$('#viewCit')[0].style.display = "block";
+		$('#citations tbody tr').formset();
+        //$('#citations tbody tr').formset({
+           // prefix: 'citations' //'{{ formset.prefix }}'
+        //});
+		return false
+	};
+	
+	/**** VIEW CITATIONS *****/	
+	
+	$(document.body).on('click', '.openModal', function() {
+		$(this).toggleClass('selected');
+		$('#viewCitContainer').empty();
+		var cogClassId = $(this).parent().siblings('.cogClassId').text().trim();
+		var postdata = {
+			'postType': 'viewCit',
+			'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value'),
+			'cogClassId' : cogClassId
+		};
+		$.post("/cognateclasslist/", postdata, function (data) {
+			build_cit_form(data);
+		});
+		return false
+	});
+	
+	/**** CLOSE CITATIONS VIEW *****/	
+	
+	$(document.body).on('click', '.close', function() {
+		$('.openModal.selected').removeClass('selected');
+		$('#viewCit')[0].style.display = "none";
+		return false
+	});
+});
+</script>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

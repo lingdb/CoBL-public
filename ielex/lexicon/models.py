@@ -424,7 +424,7 @@ class Source(models.Model):
         rft_attrs_lst = []
         rft_val_dict = {'book': 'book', 'article': 'journal',
                         'expert': 'expert', 'online': 'online',
-                        'inbook': 'inbook'}
+                        'inbook': 'inbook', '':''}
         for key in bibtex_rft_dict:
             rft_attrs_lst.append('rft_val_fmt=info:ofi/fmt:kev:mtx:%s'
                                  % (rft_val_dict[self.ENTRYTYPE]))
@@ -1757,7 +1757,6 @@ class CognateJudgementCitation(AbstractBaseCitation):
         return u"CJC src=%s cit=%s" % (self.source.id, self.id)
 
     class Meta:
-
         unique_together = (("cognate_judgement", "source"),)
 
 

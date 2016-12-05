@@ -1539,6 +1539,11 @@ class EditCognateClassCitationForm(forms.ModelForm):
         }
 
 
+class EditCognateClassCitationInlineForm(EditCognateClassCitationForm):
+    comment = forms.CharField(
+        widget=forms.Textarea(attrs={'cols': 60, 'rows': 2}), required=False)
+
+
 class AddCitationForm(forms.Form):
     source = ChooseOneSourceField(
         queryset=Source.objects.all().filter(deprecated=False),
@@ -1723,7 +1728,7 @@ class SourceEditForm(forms.ModelForm):
             if field not in ['year', 'pages', 'number', 'edition',
                              'part', 'volume', 'ENTRYTYPE']:
                 self.fields[field].widget = forms.Textarea(
-                    attrs={'cols': 30, 'rows': 3})
+                    attrs={'cols': 22, 'rows': 1})
 
 
 class UploadBiBTeXFileForm(forms.Form):
@@ -1833,6 +1838,12 @@ LexemeFormSet = inlineformset_factory(
     Source, LexemeCitation,
     form=LexemeCitationInlineForm,
     can_delete=False, fields=('comment',), extra=0)
+
+
+CognateClassCitationFormSet = inlineformset_factory(
+    CognateClass, CognateClassCitation,
+    form = EditCognateClassCitationInlineForm,
+    can_delete=False, fields=('source','pages','comment',), extra=0)
 
 
 class AssignCognateClassesFromLexemeForm(WTForm):
