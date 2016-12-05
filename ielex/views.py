@@ -65,6 +65,7 @@ from ielex.forms import AddCitationForm, \
     UploadBiBTeXFileForm, \
     CognateJudgementFormSet, \
     CognateClassFormSet, \
+    CognateClassCitationFormSet, \
     LexemeFormSet, \
     AssignCognateClassesFromLexemeForm
 from ielex.lexicon.models import Author, \
@@ -103,19 +104,18 @@ from ielex.utilities import next_alias, \
     anchored, oneline, logExceptions
 from ielex.languageCladeLogic import updateLanguageCladeRelations
 from ielex.tables import SourcesTable, SourcesUpdateTable
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import FormView
 from django.utils.decorators import method_decorator
-
+from django.template.loader import render_to_string
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
-
 from django_tables2 import RequestConfig
 from dal import autocomplete
+
 
 # -- Database input, output and maintenance functions ------------------------
 
@@ -1230,9 +1230,27 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
          "clades": Clade.objects.all()})
 
 
+def view_cognateclasscitations(request):
+    cognateclass_obj = CognateClass.objects.get(
+        id=request.POST.get("cogClassId"))
+    response = HttpResponse()
+    response.write(
+        render_to_string('snippets/citation_inline_form.html',
+                         context={'formset':
+                                  CognateClassCitationFormSet(
+                                      instance=cognateclass_obj,
+                                      prefix='citations')
+                                  },
+                         request=request)
+        )
+    return response
+
+
 @csrf_protect
 @logExceptions
 def view_cognateclasses(request, meaning):
+    if request.POST.get("postType") == 'viewCit':
+        return view_cognateclasscitations(request)
     setDefaultMeaning(request, meaning)
     # Handle POST of AddCogClassTableForm:
     if request.method == 'POST':
@@ -1283,6 +1301,15 @@ def view_cognateclasses(request, meaning):
         cognatejudgement__lexeme__meaning__gloss=meaning,
         cognatejudgement__lexeme__language_id__in=languageIds
     ).prefetch_related('lexeme_set').order_by('alias').distinct()
+    # Citations count
+    ccl_ordered = ccl_ordered.extra({'citCount':
+                                     'SELECT COUNT(*) '
+                                     'FROM lexicon_cognateclasscitation '
+                                     'WHERE '
+                                     'lexicon_cognateclasscitation.'
+                                     'cognate_class_id '
+                                     '= lexicon_cognateclass.id',
+                                     })
     # Computing counts for ccs:
     for cc in ccl_ordered:
         cc.computeCounts(languageList=languageList)
@@ -1329,7 +1356,6 @@ def view_cognateclasses(request, meaning):
                             "cogclass_editable_form":
                                 cogclass_editabletable_form,
                             "typeahead": typeahead})
-
 
 ##################################################################
 
@@ -1969,11 +1995,9 @@ def source_list(request):
         return response
     elif request.POST.get("postType") == 'update' and \
             source_perms_check(request.user):
-        print(request.POST.get("action"))
         source_data = QueryDict(request.POST['source_data'].encode('ASCII'))
         if request.POST.get("action") == 'Delete':
             source_obj = Source.objects.get(pk=request.POST.get("id"))
-            print '!!!!!!', source_obj.pk
             source_obj.delete()
         elif request.POST.get("action") == 'Update':
             source_obj = Source.objects.get(pk=request.POST.get("id"))
@@ -2035,6 +2059,7 @@ def source_list(request):
 def get_sources_table(queryset=''):
     if queryset == '':
         queryset = Source.objects.all()
+    current_languagelist = get_canonical_language_list()
     queryset = queryset.extra({'cognacy_count':
                                'SELECT COUNT(*) '
                                'FROM lexicon_cognatejudgementcitation '
@@ -2164,6 +2189,11 @@ class source_import(FormView):
         comparison_dict['pk'] = entry['ID']
         for key in [key for key in entry.keys()
                     if key not in ['ID', 'date', 'type']]:
+            if key in ['trs', 'deprecated']:
+                entry[key] = json.loads(entry[key].lower())
+            if key in ['trs']:
+                entry[key.upper()] = entry[key]
+                key = key.upper()
             if getattr(source_obj, key) == entry[key]:
                 comparison_dict[key] = [entry[key], 'same']
             else:

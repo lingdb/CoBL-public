@@ -241,6 +241,7 @@
       <script src="{% static 'bower_components/requirejs/require.js' %}"
               data-main="{% static 'js/main.js' %}"></script>
     {% endif %}
+	{% block footerScripts%}{% endblock %}
   </body>
 </html>
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
