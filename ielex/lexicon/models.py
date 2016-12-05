@@ -1488,6 +1488,19 @@ class Lexeme(AbstractTimestamped):
         # Added for #219
         return ', '.join([c.alias for c in self.allCognateClasses])
 
+    @property
+    def loanEventSourceTitle(self):
+        parts = []
+        for ccd in self.getCognateClassData():
+            if 'root_form' in ccd and 'root_language' in ccd:
+                parts.append('(%s) < (%s)' %
+                             (ccd['root_form'], ccd['root_language']))
+            elif 'root_form' in ccd:
+                parts.append('(%s) < (?)' % ccd['root_form'])
+            elif 'root_language' in ccd:
+                parts.append('(?) < (%s)' % ccd['root_language'])
+        return '\n'.join(parts)
+
 
 @reversion.register
 class CognateJudgement(AbstractTimestamped):
