@@ -424,10 +424,14 @@ class Source(models.Model):
         rft_attrs_lst = []
         rft_val_dict = {'book': 'book', 'article': 'journal',
                         'expert': 'expert', 'online': 'online',
-                        'inbook': 'inbook', '': ''}
+                        'inbook': 'inbook', 'misc': 'misc', '': ''}
         for key in bibtex_rft_dict:
+            try:
+                typ = rft_val_dict[self.ENTRYTYPE]
+            except KeyError:
+                typ = self.ENTRYTYPE
             rft_attrs_lst.append('rft_val_fmt=info:ofi/fmt:kev:mtx:%s'
-                                 % (rft_val_dict[self.ENTRYTYPE]))
+                                 % (typ))
             rft_attrs_lst.append('rfr_id=%s' % (self.pk))
             rft_attrs_lst.append('rft.identifier=%s'
                                  % (self.get_absolute_url()))
