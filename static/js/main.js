@@ -63,7 +63,9 @@
              'js/updatePercentages',
              'js/confirmSubmit',
              'js/copyCognateClass',
-             'js/djangoAutocompleteInclusion'],
+             'js/djangoAutocompleteInclusion',
+			 'bower_components/django-dynamic-formset/src/jquery.formset',
+			 ],
             function(require, $, _){
     //Initializing viewTableFilter:
     require('js/viewTableFilter').init('table.viewTableFilter');

@@ -1,6 +1,6 @@
 <form id="citations" method="post" action="">
 {{ formset.non_form_errors.as_ul }}
-<table id="formset" class="form">
+<table id="formset" class="form" prefix="{{ formset.prefix }}">
 {% for form in formset.forms %}
   {% if forloop.first %}
   <thead><tr>
@@ -27,4 +27,23 @@
 {% endfor %}
 </table>
 {{ formset.management_form }}
+{% include "buttons/submit-cancel.html" %}
 </form>
+<div id="formTemplateContainer" style="display: none">
+<table>
+	<tr class="">
+	{% for field in formset.forms.0.visible_fields %}
+    <td>
+    {# Include the hidden fields in the form #}
+    {% if forloop.first %}
+      {% for hidden in form.hidden_fields %}
+      {{ hidden }}
+      {% endfor %}
+    {% endif %}
+      {{ field.errors.as_ul }}
+      {{ field }}
+    </td>
+  {% endfor %}
+	</tr>
+</table>
+</div>

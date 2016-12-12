@@ -15,7 +15,8 @@ from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 from django.forms import ValidationError
-from django.http import HttpResponse, HttpResponseRedirect, Http404, QueryDict
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, \
+     Http404, QueryDict
 from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template import Template
@@ -67,6 +68,7 @@ from ielex.forms import AddCitationForm, \
     CognateClassFormSet, \
     CognateClassCitationFormSet, \
     LexemeFormSet, \
+    LexemeCitationFormSet, \
     AssignCognateClassesFromLexemeForm
 from ielex.lexicon.models import Author, \
     Clade, \
@@ -1117,9 +1119,68 @@ def edit_meaning(request, meaning):
                             "form": form})
 
 
+@logExceptions
+def view_citations_inline_form(request, model, formset):
+    model_obj = model.objects.get(
+        id=request.POST.get("id"))
+    response = HttpResponse()
+    response.write(
+        render_to_string('snippets/citation_inline_form.html',
+                         context={'formset':
+                                  formset(
+                                      instance=model_obj,
+                                      prefix='citations')
+                                  },
+                         request=request)
+        )
+    return response
+
+
+@logExceptions
+def submit_citations_inline_form(request, model, formset):
+    rel_cit_field_dict = {'CognateClass': 'cognate_class','Lexeme': 'lexeme'}
+    modelcit = eval(request.POST.get("model")+'Citation')
+    rel_cit_field = rel_cit_field_dict[request.POST.get("model")]
+    model_obj = model.objects.get(
+        id=request.POST.get("id"))
+    formset = formset(
+        QueryDict(request.POST['source_data'].encode('ASCII')),
+        instance=model_obj,
+        prefix='citations'
+        )
+    if formset.is_valid():
+        formset.save()
+        filter_kwgrs = {rel_cit_field: model_obj.pk}
+        return JsonResponse({'id': request.POST.get("id"),
+                             'model': request.POST.get("model"),
+                             'badgeUpdate':
+                             modelcit.objects.filter(**filter_kwgrs).count()
+                             },
+                            )
+    else:
+        print(formset.errors())
+    return JsonResponse({})
+
+
+@login_required
+@logExceptions
+def citation_form_event(request):
+    if not request.POST.get("model"):
+        return None
+    model = eval(request.POST.get("model"))
+    formset = eval(request.POST.get("model")+'CitationFormSet')
+    if request.POST.get("postType") == 'viewCit':
+        return view_citations_inline_form(request, model, formset)
+    elif request.POST.get("action") == 'Submit':
+        return submit_citations_inline_form(request, model, formset)
+
+
 @csrf_protect
 @logExceptions
 def view_meaning(request, meaning, language_list, lexeme_id=None):
+    cit_form_response = citation_form_event(request)
+    if cit_form_response:
+        return cit_form_response
     setDefaultMeaning(request, meaning)
     if language_list is None:
         language_list = getDefaultLanguagelist(request)
@@ -1191,7 +1252,14 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         "lexemecitation_set",
         "cognate_class",
         "language__languageclade_set",
-        "language__clades")
+        "language__clades").extra({'LexCitCount':
+                                   'SELECT COUNT(*) '
+                                   'FROM lexicon_lexemecitation '
+                                   'WHERE '
+                                   'lexicon_lexemecitation.'
+                                   'lexeme_id '
+                                   '= lexicon_lexeme.id',
+                                   })
     # Gather cognate classes and provide form:
     cognateClasses = CognateClass.objects.filter(lexeme__in=lexemes).distinct()
     cognate_form = ChooseCognateClassForm()
@@ -1230,27 +1298,12 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
          "clades": Clade.objects.all()})
 
 
-def view_cognateclasscitations(request):
-    cognateclass_obj = CognateClass.objects.get(
-        id=request.POST.get("cogClassId"))
-    response = HttpResponse()
-    response.write(
-        render_to_string('snippets/citation_inline_form.html',
-                         context={'formset':
-                                  CognateClassCitationFormSet(
-                                      instance=cognateclass_obj,
-                                      prefix='citations')
-                                  },
-                         request=request)
-        )
-    return response
-
-
 @csrf_protect
 @logExceptions
 def view_cognateclasses(request, meaning):
-    if request.POST.get("postType") == 'viewCit':
-        return view_cognateclasscitations(request)
+    cit_form_response = citation_form_event(request)
+    if cit_form_response:
+        return cit_form_response
     setDefaultMeaning(request, meaning)
     # Handle POST of AddCogClassTableForm:
     if request.method == 'POST':
@@ -2059,7 +2112,7 @@ def source_list(request):
 def get_sources_table(queryset=''):
     if queryset == '':
         queryset = Source.objects.all()
-    current_languagelist = get_canonical_language_list()
+    #current_languagelist = get_canonical_language_list()
     queryset = queryset.extra({'cognacy_count':
                                'SELECT COUNT(*) '
                                'FROM lexicon_cognatejudgementcitation '

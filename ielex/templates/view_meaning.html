@@ -7,7 +7,57 @@
 {% block title %}
   Mg: {{ meaning.gloss }}
 {% endblock %}
+{% block meta %}
+{{ block.super }}
+<style>
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
 
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 1020px;
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.openModal {
+	background-color: blue;
+	cursor: pointer;
+}
+
+.openModal.selected{
+	background-color: red;
+}
+</style>
+{% endblock %}
 {% block top %}
 {% endblock %}
 
@@ -68,7 +118,15 @@
             <th colspan="3"></th>
             {# transliteration_title.html #}
             <th>Translit.</th>
-            {# swadesh_title.html #}
+            {# citations_title.html #}
+            <th>
+              <div class="vertical-text">
+                <div class="vertical-text__inner">
+                  Lex. Citat
+                </div>
+              </div>
+            </th>
+			 {# swadesh_title.html #}
             <th>
               <div class="vertical-text">
                 <div class="vertical-text__inner">
@@ -111,6 +169,14 @@
             {% endif %}
             {# cognateclassids_title.html #}
             <th>Cog.<br>ID</th>
+            {# cognateclasscitations_title.html #}
+            <th>
+              <div class="vertical-text">
+                <div class="vertical-text__inner">
+                  Cog. Citat
+                </div>
+              </div>
+            </th>
             {# cognateclasses_title.html #}
             <th>
               Cog.<br>Alias
@@ -225,6 +291,9 @@
                 </div>
               {% endif %}
             </td>
+            {# citations_filter.html #}
+            <td>
+            </td>
             {# swadesh_filter.html #}
             <td>
               <button type="button"
@@ -267,6 +336,8 @@
                 <span class="glyphicon glyphicon-sort"></span>
               </div>
             </td>
+            {# cognateclasscitations_filter.html #}
+            <td></td>
             {# cognateclasses_filter.html #}
             <td>
               {% if user.is_authenticated %}
@@ -516,6 +587,12 @@
                   {{ lexeme.transliteration.data }}
                 {% endif %}
               </td>
+              {# citations_data.html #}
+              <td class="lexemeCit">
+					<span class="badge openModal" model="Lexeme" id="{{ lexeme.object_data.id }}">
+					{{ lexeme.object_data.LexCitCount }}
+					</span>
+			  </td>
               {# swadesh_data.html #}
               <td class="lexemeSwadeshTerm">
                 {% if user.is_authenticated %}
@@ -561,6 +638,14 @@
                      title="New tab to view details of this cognate set and all member lexemes.">
                     {{ c.id }}
                   </a>
+                {% endfor %}
+              </td>
+              {# cognateclasscitations_data.html #}
+              <td class="cognateClassCitation" style="text-align: center;">
+                {% for c in lexeme.object_data.allCognateClasses %}
+                  <span class="badge openModal" model="CognateClass" id="{{ c.id }}">
+				  {{ c.lexemeCount }}
+                  </span>
                 {% endfor %}
               </td>
               {# cognateclasses_data.html #}
@@ -714,5 +799,16 @@
       {% endif %}
     </div>
   </div>
+<!-- view Citations -->
+<div id="viewCit" class="modal">
+  <!-- Content -->
+  <div class="modal-content">
+    <span class="close">x</span>
+	<div id="viewCitContainer"></div>
+  </div>
+</div>
+{% endblock %}
+{% block footerScripts%}
+{% include "snippets/sourcePopUpScript.html" %}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
