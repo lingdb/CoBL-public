@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 import logging
-from string import uppercase, lowercase
-from itertools import izip
+from string import ascii_uppercase, ascii_lowercase
 # from ielex.lexicon.models import Language
 try:
     from functools import wraps
@@ -11,9 +10,10 @@ except ImportError:
 from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 
-codes = list(uppercase) + [i+j for i in uppercase for j in lowercase]
+codes = list(ascii_uppercase) + [
+    i+j for i in ascii_uppercase for j in ascii_lowercase]
 
 
 def logExceptions(func):
@@ -61,7 +61,7 @@ def two_by_two(I):
     This is used in formatting the denormalized [id, alias] field of
     the Lexeme model"""
     args = [iter(I)] * 2
-    return izip(*args)
+    return zip(*args)
 
 
 def confirm_required(template_name, context_creator, key='__confirm__'):
@@ -118,7 +118,7 @@ def anchored(url):
     return "%s#active" % url
 
 
-class LexDBManagementCommand(NoArgsCommand):
+class LexDBManagementCommand(BaseCommand):
     """Suppress Django default options from Management commands"""
 
     def run_from_argv(self, argv):
@@ -138,7 +138,7 @@ class LexDBManagementCommand(NoArgsCommand):
 
 if __name__ == "__main__":
     snip_flag = True
-    for i in xrange(1, 703):
+    for i in range(1, 703):
         s = int2alpha(i)
         if i < 11 or i > 692:
             print(i, s)

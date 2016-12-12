@@ -2,11 +2,10 @@
 from __future__ import division
 import json
 import os.path
-import reversion
 import zlib
 import datetime
 from collections import defaultdict
-from string import uppercase, lowercase
+from string import ascii_uppercase, ascii_lowercase
 from django.db import models, transaction
 from django.db.models import Max
 from django.core.urlresolvers import reverse
@@ -269,7 +268,6 @@ class AbstractDistribution(models.Model):
                     'uniformUpper', 'uniformLower'])
 
 
-@reversion.register
 class Source(models.Model):
 
     '''
@@ -406,8 +404,8 @@ class Source(models.Model):
         bibtex_dictionary = {}
         bibtex_dictionary['ID'] = str(self.pk)
         for key in self.bibtex_attr_lst:
-            if unicode(getattr(self, key)) != u'':
-                bibtex_dictionary[key] = unicode(getattr(self, key))
+            if str(getattr(self, key)) != u'':
+                bibtex_dictionary[key] = str(getattr(self, key))
         return bibtex_dictionary
 
     @property
@@ -479,7 +477,6 @@ class Source(models.Model):
         obj.delete()
 
 
-@reversion.register
 class SndComp(AbstractTimestamped):
     '''
     Introduced for #153.
@@ -508,7 +505,7 @@ class SndComp(AbstractTimestamped):
                   ('cladeLevel2', self.cladeLevel2),
                   ('cladeLevel3', self.cladeLevel3)]
 
-        for i in xrange(len(wanted), 0, -1):
+        for i in range(len(wanted), 0, -1):
             try:
                 d = dict(wanted[:i])
                 return Clade.objects.get(**d)
@@ -531,7 +528,6 @@ class SndComp(AbstractTimestamped):
             (self.id, kwargs, self.lastEditedBy, self.lastTouched)
 
 
-@reversion.register
 class Clade(AbstractTimestamped, AbstractDistribution):
     '''
     This model was added for #153
@@ -655,7 +651,6 @@ def getCladeFromLanguageIds(languageIds):
     return None
 
 
-@reversion.register
 class Language(AbstractTimestamped, AbstractDistribution):
     DEFAULT = 'AncientGreek'
 
@@ -910,7 +905,6 @@ class Language(AbstractTimestamped, AbstractDistribution):
         return percentages[self.progress]
 
 
-@reversion.register
 class LanguageClade(models.Model):
     language = models.ForeignKey(Language)
     clade = models.ForeignKey(Clade)
@@ -921,7 +915,6 @@ class LanguageClade(models.Model):
         ordering = ['cladesOrder']
 
 
-@reversion.register
 class Meaning(AbstractTimestamped):
     DEFAULT = 'ash'
 
@@ -1059,7 +1052,6 @@ class Meaning(AbstractTimestamped):
         return self.computeCounts()['cogParallelLoanCount']
 
 
-@reversion.register
 @python_2_unicode_compatible
 class CognateClass(AbstractTimestamped):
     """
@@ -1107,8 +1099,8 @@ class CognateClass(AbstractTimestamped):
 
     def update_alias(self, save=True):
         """Reset alias to the first unused letter"""
-        codes = set(uppercase) | \
-            set([i + j for i in uppercase for j in lowercase])
+        codes = set(ascii_uppercase) | \
+            set([i + j for i in ascii_uppercase for j in ascii_lowercase])
         meanings = Meaning.objects.filter(
             lexeme__cognate_class=self).distinct()
         current_aliases = CognateClass.objects.filter(
@@ -1339,7 +1331,6 @@ class DyenCognateSet(models.Model):
         return "%s%s" % (self.name, qmark)
 
 
-@reversion.register
 class Lexeme(AbstractTimestamped):
     language = models.ForeignKey(Language)
     meaning = models.ForeignKey(Meaning)
@@ -1538,7 +1529,6 @@ class Lexeme(AbstractTimestamped):
         return '\n'.join(parts)
 
 
-@reversion.register
 class CognateJudgement(AbstractTimestamped):
     lexeme = models.ForeignKey(Lexeme)
     cognate_class = models.ForeignKey(CognateClass)
@@ -1576,7 +1566,6 @@ class CognateJudgement(AbstractTimestamped):
                               self.cognate_class.alias, self.id)
 
 
-@reversion.register
 class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A
     default list, named 'all' is (re)created on save/delete of the Language
@@ -1678,7 +1667,6 @@ class LanguageListOrder(models.Model):
                            ("language_list", "order"))
 
 
-@reversion.register
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
     DEFAULT = "Jena200"
@@ -1793,7 +1781,6 @@ class AbstractBaseCitation(models.Model):
         abstract = True
 
 
-@reversion.register
 class CognateJudgementCitation(AbstractBaseCitation):
     cognate_judgement = models.ForeignKey(CognateJudgement)
     source = models.ForeignKey(Source)
@@ -1809,7 +1796,6 @@ class CognateJudgementCitation(AbstractBaseCitation):
         unique_together = (("cognate_judgement", "source"),)
 
 
-@reversion.register
 class LexemeCitation(AbstractBaseCitation):
     lexeme = models.ForeignKey(Lexeme)
     source = models.ForeignKey(Source)
@@ -1829,7 +1815,6 @@ class LexemeCitation(AbstractBaseCitation):
         unique_together = (("lexeme", "source"),)
 
 
-@reversion.register
 class CognateClassCitation(AbstractBaseCitation):
     cognate_class = models.ForeignKey(CognateClass)
     source = models.ForeignKey(Source)
@@ -1927,7 +1912,6 @@ models.signals.post_delete.connect(
     update_meaning_percent_coded, sender=CognateJudgement)
 
 
-@reversion.register
 class Author(AbstractTimestamped):
     # See https://github.com/lingdb/CoBL/issues/106
 
@@ -1977,7 +1961,6 @@ class Author(AbstractTimestamped):
         return " [ AT ] ".join(self.email.split("@"))
 
 
-@reversion.register
 class NexusExport(AbstractTimestamped):
     # Methods for compressed fields:
 

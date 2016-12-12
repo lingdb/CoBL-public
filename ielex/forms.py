@@ -10,7 +10,6 @@ from django.db.utils import ProgrammingError
 from django.forms import ValidationError
 from django.http import HttpResponse
 from django.utils.encoding import python_2_unicode_compatible
-from itertools import izip
 from django.forms import inlineformset_factory
 from ielex.lexicon.defaultModels import getDefaultWordlist
 from ielex.lexicon.models import CognateClass, \
@@ -44,7 +43,7 @@ from wtforms import StringField, \
 from wtforms.validators import Email, InputRequired
 from wtforms.form import Form as WTForm
 from wtforms.ext.django.orm import model_form
-from lexicon.models import Lexeme
+from ielex.lexicon.models import Lexeme
 from operator import itemgetter
 from ielex.formHelpers import WTFormToFormgroup
 from dal import autocomplete
@@ -1400,7 +1399,7 @@ class CloneLanguageForm(WTForm):
                     'id').values_list('id', flat=True)
                 # Cloning LexemeCitations:
                 newLexemeCitations = []
-                for newId, lexeme in izip(newLexemeIds, sourceLexemes):
+                for newId, lexeme in zip(newLexemeIds, sourceLexemes):
                     for lc in lexeme.lexemecitation_set.all():
                         newLexemeCitations.append(LexemeCitation(
                             lexeme_id=newId,
@@ -1416,7 +1415,7 @@ class CloneLanguageForm(WTForm):
                     CognateJudgement.objects.values_list('id', flat=True))
                 newCognateJudgements = []
                 sourceCJs = []
-                for newId, lexeme in izip(newLexemeIds, sourceLexemes):
+                for newId, lexeme in zip(newLexemeIds, sourceLexemes):
                     cjs = CognateJudgement.objects.filter(
                         lexeme_id=lexeme.id).prefetch_related(
                         'cognatejudgementcitation_set').all()
@@ -1436,7 +1435,7 @@ class CloneLanguageForm(WTForm):
                     'id').values_list(
                     'id', flat=True)
                 newCognateJudgementCitations = []
-                for newId, cj in izip(newCognateJudgementIds, sourceCJs):
+                for newId, cj in zip(newCognateJudgementIds, sourceCJs):
                     for cjc in cj.cognatejudgementcitation_set.all():
                         newCognateJudgementCitations.append(
                             CognateJudgementCitation(

@@ -1,7 +1,9 @@
-from django.conf.urls import url, patterns, include
+from django.conf.urls import url, include
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, logout
 from django.views.generic import DetailView, \
         ListView, RedirectView
+from django.views.static import serve as serveStatic
 from ielex.views import add_language_list, \
                         changeDefaults, \
                         cognate_report, \
@@ -69,6 +71,7 @@ from ielex.lexicon.models import CognateClassCitation, \
                                  MeaningList
 from django.contrib.staticfiles.urls \
     import staticfiles_urlpatterns
+from ielex.profiles.views import view_profile, alter_profile, change_password
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -93,8 +96,7 @@ R = {
     "identifier": r"[a-zA-Z_][a-zA-Z0-9_]*",
     }
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     # Front Page
     url(r'^$', view_frontpage, name="view-frontpage"),
     url(r'^changes/$', view_changes, name="view-changes"),
@@ -350,56 +352,46 @@ urlpatterns = patterns(
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    )
+    ]
 
 # urls to include iff the extensional semantic module is activated
 if settings.semantic_domains:
-    urlpatterns += patterns(
-        '', ('', include('ielex.extensional_semantics.urls')))
+    urlpatterns += [('', include('ielex.extensional_semantics.urls'))]
 
-urlpatterns += patterns(
-    '',
+urlpatterns += [
     url(r'^nexus/$', login_required(NexusExportView.as_view()), name="nexus"),
     url(r'^nexus/export/(?P<exportId>\d+)/$',
         view_nexus_export,
         name="view_nexus_export"),
     url(r'^nexus/export/$', view_nexus_export, name="view_nexus_export_base"),
-    url(r'^dump/$', login_required(DumpRawDataView.as_view()), name="dump"))
+    url(r'^dump/$', login_required(DumpRawDataView.as_view()), name="dump")]
 
-urlpatterns += patterns(
-    'django.contrib.auth',
-    url(r'^login/$', 'views.login',
+urlpatterns += [
+    url(r'^login/$', login,
         {'template_name': 'profiles/login.html'},
         name="login"),
-    url(r'^logout/$', 'views.logout', {'template_name':
-        'profiles/logout.html'}, name="logout"))
+    url(r'^logout/$', logout, {'template_name':
+        'profiles/logout.html'}, name="logout")]
 
-urlpatterns += patterns(
-    '',
-    url(r'^admin/viewCsvImport', viewCsvImport, name="viewCsvImport"))
+urlpatterns += [
+    url(r'^admin/viewCsvImport', viewCsvImport, name="viewCsvImport")]
 
-urlpatterns += patterns(
-    '',
-    (r'^admin/', include(admin.site.urls)),
-    url(r'^user/$', 'ielex.profiles.views.view_profile',
-        name="view-profile"),
-    url(r'^user/alter/$', 'ielex.profiles.views.alter_profile',
-        name='alter-profile'),
-    url(r'^user/change-password/$', 'ielex.profiles.views.change_password',
-        name='change-password'),
+urlpatterns += [
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^user/$', view_profile, name="view-profile"),
+    url(r'^user/alter/$', alter_profile, name='alter-profile'),
+    url(r'^user/change-password/$', change_password, name='change-password'),
     # public profile
-    url(r'^user/%(USERNAME)s/$' % R,
-        'ielex.profiles.views.view_profile', name="view-profile-user"),
-    )
+    url(r'^user/%(USERNAME)s/$' % R, view_profile, name="view-profile-user"),
+    ]
 
 urlpatterns += staticfiles_urlpatterns()
 
 if settings.DEBUG:  # additional urls for testing purposes
-    urlpatterns += patterns(
-        '',
+    urlpatterns += [
         # this is needed for running the development server
-        url(r'^static/(?P<path>.*)$', 'django.views.static.serve',
+        url(r'^static/(?P<path>.*)$', serveStatic,
             {'document_root': settings.STATIC_ROOT}),
-    )
+    ]
 
 # vim:nowrap

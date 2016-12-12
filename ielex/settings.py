@@ -132,7 +132,7 @@ if not os.path.exists(local_settings_path):
     print(settings_template.replace("<++>", secret_key),
           file=file(local_settings_path, "w"))
 
-from local_settings import *
+from ielex.local_settings import *
 
 # Overwrite settings from env:
 if os.getenv('DEBUG'):
