@@ -1,7 +1,7 @@
 import debug_toolbar
 from django.conf.urls import url, include
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login, logout
+from django.contrib.auth.views import login, logout
 from django.views.generic import DetailView, \
         ListView, RedirectView
 from django.views.static import serve as serveStatic
