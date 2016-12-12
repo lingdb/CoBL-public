@@ -30,7 +30,7 @@ def forwards_func(apps, schema_editor):
                      'std_deviation_timedepth_BP_years'])
     print('Copying JSON data to dedicated columns.')
     for l in Language.objects.all():
-        for k, v in fieldMap.iteritems():
+        for k, v in fieldMap.items():
             if k in l.altname:
                 e = l.altname[k]
                 if v in intFields:

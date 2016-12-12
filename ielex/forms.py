@@ -878,12 +878,12 @@ class MergeCognateClassesForm(WTForm):
                            'loan_source': set(),
                            'loan_notes': set()}
                 for cc in ccs:
-                    for k, v in cc.toDict().iteritems():
+                    for k, v in cc.toDict().items():
                         if k in setDict:
                             setDict[k].add(v)
                 delta = {k: '{' + ', '.join(v) + '}'
-                         for k, v in setDict.iteritems()}
-                for k, v in delta.iteritems():
+                         for k, v in setDict.items()}
+                for k, v in delta.items():
                     setattr(newC, k, v)
                 newC.bump(request)
                 newC.save()
@@ -908,7 +908,7 @@ class MergeCognateClassesForm(WTForm):
                 simpleCCCs = set()
                 newCCCs = []
                 oldCCCs = set()
-                for k, v in sourceCCCMap.iteritems():
+                for k, v in sourceCCCMap.items():
                     if len(v) == 1:
                         simpleCCCs.add(v[0].id)
                     else:
@@ -991,7 +991,7 @@ class CognateJudgementSplitTable(WTForm):
         # Bumping judgements:
         bumped = True
         try:
-            for id, t in idTMap.iteritems():
+            for id, t in idTMap.items():
                 idCjMap[id].bump(request, t)
         except Exception:
             logging.exception('Problem splitting cognate judgements '
@@ -1005,7 +1005,7 @@ class CognateJudgementSplitTable(WTForm):
             cc = CognateClass()
             try:
                 cc.save()
-                for _, cj in idCjMap.iteritems():
+                for _, cj in idCjMap.items():
                     cj.cognate_class = cc
                     cj.save()
                 cc.update_alias()
@@ -1127,7 +1127,7 @@ class LexemeTableEditCognateClassesForm(WTForm):
         # Validating data:
         cIdSet = set()
         # Gathering IDs allowing other keywords:
-        for k, v in data.iteritems():
+        for k, v in data.items():
             if k != 'new':
                 cIdSet.add(int(k))
                 k = int(k)
@@ -1152,7 +1152,7 @@ class LexemeTableEditCognateClassesForm(WTForm):
         '''
         data = self.getValidated()
         with transaction.atomic():
-            for k, v in data['cognateClassAssignments'].iteritems():
+            for k, v in data['cognateClassAssignments'].items():
                 # Ignoring don't care cases:
                 if k == 'new':
                     if v == 'delete':

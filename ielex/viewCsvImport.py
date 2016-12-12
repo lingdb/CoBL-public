@@ -125,7 +125,7 @@ def sanitizeEntry(entry, fieldConversions):
     if set(fieldConversions.keys()) != set(entry.keys()):
         return (None, ('Incorrect fields', entry))
     # Sanitizing fields:
-    for k, f in fieldConversions.iteritems():
+    for k, f in fieldConversions.items():
         try:
             entry[k] = f(entry[k])
         except:
@@ -155,7 +155,7 @@ def saveEntry(entry,
     if instance is None:  # Create new model
         return model(**entry)
     else:  # Merge with existing model
-        delta = {k: v for k, v in entry.iteritems()
+        delta = {k: v for k, v in entry.items()
                  if k not in ignoreMergeFields}
         delta['lastTouched'] = datetime.now()
         delta['lastEditedBy'] = ' '.join([request.user.first_name,

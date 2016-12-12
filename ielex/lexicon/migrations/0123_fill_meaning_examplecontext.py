@@ -219,7 +219,7 @@ data = {'nose': 'While fighting, he hit him in the nose. (Kassian)',
 def forwards_func(apps, schema_editor):
     Meaning = apps.get_model("lexicon", "Meaning")
 
-    for gloss, exampleContext in data.iteritems():
+    for gloss, exampleContext in data.items():
         try:
             entry = Meaning.objects.get(gloss=gloss)
             entry.exampleContext = exampleContext

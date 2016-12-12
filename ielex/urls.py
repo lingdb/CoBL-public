@@ -1,3 +1,4 @@
+import debug_toolbar
 from django.conf.urls import url, include
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
@@ -392,6 +393,7 @@ if settings.DEBUG:  # additional urls for testing purposes
         # this is needed for running the development server
         url(r'^static/(?P<path>.*)$', serveStatic,
             {'document_root': settings.STATIC_ROOT}),
+        url(r'^__debug__/', include(debug_toolbar.urls))
     ]
 
 # vim:nowrap

@@ -2,6 +2,7 @@
 from __future__ import print_function
 import os
 import logging
+from django.conf.urls import include, url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -51,7 +52,6 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.request',
                 # required by django_tables2 for sorting
-                'django.core.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'ielex.context_processors.configuration',
@@ -125,12 +125,12 @@ local_settings_path = os.path.join(BASE_DIR, "ielex/local_settings.py")
 if not os.path.exists(local_settings_path):
     # create default local settings
     import random
-    settings_template = file(os.path.join(
+    settings_template = open(os.path.join(
         BASE_DIR, "ielex/local_settings.py")).read()
     key_chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
-    secret_key = "".join([random.choice(key_chars) for i in xrange(50)])
+    secret_key = "".join([random.choice(key_chars) for i in range(50)])
     print(settings_template.replace("<++>", secret_key),
-          file=file(local_settings_path, "w"))
+          file=open(local_settings_path, "w"))
 
 from ielex.local_settings import *
 

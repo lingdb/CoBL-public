@@ -638,10 +638,10 @@ def getCladeFromLanguageIds(languageIds):
         if cladeIdOrderMap is None:
             cladeIdOrderMap = newcIdOrderMap
         else:
-            intersection = newcIdOrderMap.viewkeys() & \
-                cladeIdOrderMap.viewkeys()
+            intersection = newcIdOrderMap.keys() & \
+                cladeIdOrderMap.keys()
             cladeIdOrderMap.update(newcIdOrderMap)
-            cladeIdOrderMap = {k: v for k, v in cladeIdOrderMap.iteritems()
+            cladeIdOrderMap = {k: v for k, v in cladeIdOrderMap.items()
                                if k in intersection}
     # Retrieving the Clade:
     if len(cladeIdOrderMap) > 0:

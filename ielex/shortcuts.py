@@ -1,20 +1,19 @@
 import glob
 import os.path as path
 
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 
 from ielex.lexicon.defaultModels import getDefaultDict
 
 
 def render_template(request, template_path, extra_context={}):
     """Wrapper around render_to_response that fills in context_instance"""
-    c = RequestContext(request)
+    c = {}
     c.update(getDefaultDict(request))
     c.update(extra_context)
     if minifiedJs is not None and 'minifiedJs' not in c:
         c['minifiedJs'] = minifiedJs
-    return render_to_response(template_path, context_instance=c)
+    return render(request, template_path, c)
 
 
 # When we're not in DEBUG mode, we search for the minified.js file:

@@ -1,10 +1,10 @@
 from os import linesep
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 
 
 def strip_blank_lines(value):
     return linesep.join(
-        [s for s in force_unicode(value).splitlines() if s.strip()])
+        [s for s in force_text(value).splitlines() if s.strip()])
 
 
 class NoBlankLinesMiddleware(object):

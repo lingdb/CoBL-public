@@ -809,7 +809,7 @@
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.historical class="form-control" data-dependencyfor-tr="historical" %}
                   {% else %}
-                    {% form_field language.historical class="form-control" disabled=disabled %}
+                    {% form_field language.historical class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
                 {# notInExport_data.html #}
@@ -817,7 +817,7 @@
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.notInExport class="form-control" %}
                   {% else %}
-                    {% form_field language.notInExport class="form-control" disabled=disabled %}
+                    {% form_field language.notInExport class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
                 {# name_link.html #}

@@ -153,7 +153,7 @@ def view_changes(request, username=None, revision_id=None, object_id=None):
                            for user_id in Revision.objects.values_list(
                                "user", flat=True).distinct()
                            if user_id is not None],
-                          lambda x, y: y[1] - x[1])
+                          key=lambda x: -x[1])
     # reverse sort by second element in tuple
     # TODO user_id should never be None
 
@@ -242,7 +242,7 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
     if language_list is None:
         language_list = LanguageList.objects.get(
             name=getDefaultLanguagelist(request))
-    elif type(language_list) == str or type(language_list) == unicode:
+    elif type(language_list) == str:
         language_list = LanguageList.objects.get(name=language_list)
 
     ids = list(language_list.languages.exclude(
@@ -274,7 +274,7 @@ def get_prev_and_next_meanings(request, current_meaning, meaning_list=None):
     if meaning_list is None:
         meaning_list = MeaningList.objects.get(
             name=getDefaultWordlist(request))
-    elif type(meaning_list) == str or type(meaning_list) == unicode:
+    elif type(meaning_list) == str:
         meaning_list = MeaningList.objects.get(name=meaning_list)
     meanings = list(meaning_list.meanings.all().order_by("meaninglistorder"))
 
@@ -766,8 +766,8 @@ def view_language_check(request, language=None, wordlist=None):
     for a given language against a given wordlist.
     If language or wordlist are omitted they are inferred vie defaultModels.
     This function is a result of #159.
-    @param language :: str | unicode | None
-    @param wordlist :: str | unicode | None
+    @param language :: str | None
+    @param wordlist :: str | None
     '''
     # Infer defaultModels where neccessary:
     if language is None:
@@ -1314,15 +1314,9 @@ def view_cognateclasses(request, meaning):
     for cc in ccl_ordered:
         cc.computeCounts(languageList=languageList)
 
-    def cmpLen(x, y):
-        # Sort order for #242:
-        if x.cladeCount != y.cladeCount:
-            return y.cladeCount - x.cladeCount
-        if x.lexemeCount != y.lexemeCount:
-            return y.lexemeCount - x.lexemeCount
-        # Sort order for #98:
-        return len(x.alias) - len(y.alias)
-    ccl_ordered = sorted(ccl_ordered, cmp=cmpLen)
+    def cmpKey(x):
+        return [-x.cladeCount, -x.lexemeCount, len(x.alias)]
+    ccl_ordered = sorted(ccl_ordered, key=cmpKey)
     # Clades to use for #112:
     clades = Clade.objects.filter(
         id__in=LanguageClade.objects.filter(
@@ -2458,7 +2452,7 @@ def changeDefaults(request):
         'wordlist': getDefaultWordlist,
         'languagelist': getDefaultLanguagelist}
     # Current defaults:
-    defaults = {k: v(request) for (k, v) in getDefaults.iteritems()}
+    defaults = {k: v(request) for (k, v) in getDefaults.items()}
     # Defaults that can be changed:
     actions = {
         'language': setDefaultLanguage,
@@ -2466,19 +2460,19 @@ def changeDefaults(request):
         'wordlist': setDefaultWordlist,
         'languagelist': setDefaultLanguagelist}
     # Changing defaults for given parameters:
-    for k, v in actions.iteritems():
+    for k, v in actions.items():
         if k in request.GET:
             v(request, request.GET[k])
     # Find changed defaults to substitute in url:
     substitutes = {}
-    for k, v in getDefaults.iteritems():
+    for k, v in getDefaults.items():
         default = v(request)
         if defaults[k] != default:
             substitutes[defaults[k]] = default
     # Url to redirect clients to:
     url = request.GET['url'] if 'url' in request.GET else '/'
     # Substitute defaults in url:
-    for k, v in substitutes.iteritems():
+    for k, v in substitutes.items():
         url = url.replace(k, v)
     # Redirect to target url:
     return redirect(url)

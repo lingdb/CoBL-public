@@ -54,7 +54,7 @@ def merge_and_delete_sources(dic):
 
 def sourcesExist(sources_changes, model):
     sIds = set()
-    for k, v in sources_changes['merge'].iteritems():
+    for k, v in sources_changes['merge'].items():
         sIds.add(k)
         sIds.update(v)
     sIds.update(sources_changes['delete'])

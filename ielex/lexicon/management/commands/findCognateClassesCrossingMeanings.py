@@ -22,7 +22,7 @@ class Command(BaseCommand):
         for cogId, lexId in cogLexTuples:
             cogMeaningMap[cogId].add(lexemeMeaningMap[lexId])
 
-        for cogId, mIdSet in cogMeaningMap.iteritems():
+        for cogId, mIdSet in cogMeaningMap.items():
             if len(mIdSet) > 1:
                 print("Cognate class %s has multiple meanings: %s." %
                       (cogId, mIdSet))

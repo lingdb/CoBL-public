@@ -646,7 +646,7 @@
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.notInExport class="form-control" %}
                   {% else %}
-                    {% form_field language.notInExport class="form-control" disabled=disabled %}
+                    {% form_field language.notInExport class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
                 {# name_link.html #}

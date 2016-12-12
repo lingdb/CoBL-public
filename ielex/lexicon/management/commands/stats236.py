@@ -59,7 +59,7 @@ class Command(BaseCommand):
             cIdcladeMap = {c.id: c for c in Clade.objects.exclude(
                 cladeLevel0=0).all()}
             # Computing ._cognateClasses for each clade:
-            for _, clade in cIdcladeMap.iteritems():
+            for _, clade in cIdcladeMap.items():
                 inCladeLanguageIds = set(LanguageClade.objects.filter(
                     clade=clade).values_list('language_id', flat=True))
                 lexemes = Lexeme.objects.filter(
@@ -73,7 +73,7 @@ class Command(BaseCommand):
                     id__in=cognateClassIds - unwantedCognateClassIds,
                     root_form='').order_by('id').values_list('id', flat=True))
             # Removing cognate class IDs we don't want:
-            for _, clade in cIdcladeMap.iteritems():
+            for _, clade in cIdcladeMap.items():
                 cogIdCounts = {cId: 0 for cId in clade._cognateClassIds}
                 childIds = clade.queryChildren().values_list('id', flat=True)
                 for childId in childIds:
@@ -83,17 +83,17 @@ class Command(BaseCommand):
                             cogIdCounts[cId] += 1
                 # Setting ._cognateClassIds for current clade:
                 clade._cognateClassIds = set([cId for cId, count
-                                              in cogIdCounts.iteritems()
+                                              in cogIdCounts.items()
                                               if count != 1])
                 # Updating children:
                 for childId in childIds:
                     child = cIdcladeMap[childId]
                     child._cognateClassIds = child._cognateClassIds & \
                         set([cId for cId, count
-                             in cogIdCounts.iteritems()
+                             in cogIdCounts.items()
                              if count == 1])
             # Creating .txt files:
-            for _, clade in cIdcladeMap.iteritems():
+            for _, clade in cIdcladeMap.items():
                 # Grouping by meaning:
                 meaningMarkdowns = {}
                 for c in clade._cognateClassIds:
