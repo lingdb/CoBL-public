@@ -14,8 +14,8 @@ class SemanticRelation(models.Model):
     def get_absolute_url(self):
         return "/relation/%s/" % self.relation_code
 
-    def __unicode__(self):
-        return unicode("%s (%s)" % (self.relation_code, self.long_name))
+    def __str__(self):
+        return str("%s (%s)" % (self.relation_code, self.long_name))
 
 
 @reversion.register
@@ -34,7 +34,7 @@ class SemanticExtension(models.Model):
     def get_absolute_url(self):
         return "/extension/%s/" % self.id
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s" % (self.id)
 
 
@@ -46,7 +46,7 @@ class SemanticExtensionCitation(AbstractBaseCitation):
     def get_absolute_url(self):
         return "/citation/extension/%s/" % self.id
 
-    def __unicode__(self):
+    def __str__(self):
         return u"<SEC %s src=%s sec=%s>" % \
             (self.id, self.extension.id, self.source.id)
 
@@ -79,7 +79,7 @@ class SemanticDomain(models.Model):
 
     relation_id_list = property(_get_list, _set_list)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:

@@ -348,7 +348,7 @@ class Source(models.Model):
     class Meta:
         ordering = ['shorthand']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.shorthand
 
     @property
@@ -556,7 +556,7 @@ class Clade(AbstractTimestamped, AbstractDistribution):
     # Earliest plausible date divergence could have begun by:
     atLeast = models.IntegerField(null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.cladeName
 
     class Meta:
@@ -708,7 +708,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
 
-    def __unicode__(self):
+    def __str__(self):
         return self.utf8_name
 
     class Meta:
@@ -948,7 +948,7 @@ class Meaning(AbstractTimestamped):
         if self.percent_coded != old_value:
             self.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.gloss.upper()
 
     class Meta:
@@ -1129,7 +1129,7 @@ class CognateClass(AbstractTimestamped):
     def get_absolute_url(self):
         return "/cognate/%s/" % self.id
 
-    def __unicode__(self):
+    def __str__(self):
         if self.alias:
             return "%s (%s)" % (self.id, self.alias)
         else:
@@ -1323,7 +1323,7 @@ class DyenCognateSet(models.Model):
     name = models.CharField(max_length=8)
     doubtful = models.BooleanField(default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.doubtful:
             qmark = " ?"
         else:
@@ -1375,7 +1375,7 @@ class Lexeme(AbstractTimestamped):
         else:
             return "/lexeme/%s/" % self.id
 
-    def __unicode__(self):
+    def __str__(self):
         return self.phon_form or self.source_form or ("Lexeme %s" % self.id)
 
     class Meta:
@@ -1561,7 +1561,7 @@ class CognateJudgement(AbstractTimestamped):
     def is_excluded(self):
         return bool(set(["X", "L"]).intersection(self.reliability_ratings))
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s-%s-%s" % (self.lexeme.meaning.gloss,
                               self.cognate_class.alias, self.id)
 
@@ -1643,7 +1643,7 @@ class LanguageList(models.Model):
     def get_absolute_url(self):
         return "/languages/%s/" % self.name
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -1656,7 +1656,7 @@ class LanguageListOrder(models.Model):
     language_list = models.ForeignKey(LanguageList)
     order = models.FloatField()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s:%s(%s)" % (self.language_list.name,
                                self.order,
                                self.language.ascii_name)
@@ -1737,7 +1737,7 @@ class MeaningList(models.Model):
     def get_absolute_url(self):
         return "/meanings/%s/" % self.name
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -1750,7 +1750,7 @@ class MeaningListOrder(models.Model):
     meaning_list = models.ForeignKey(MeaningList)
     order = models.FloatField()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s:%s(%s)" % (self.meaning_list.name,
                                self.order,
                                self.meaning.gloss)
@@ -1789,7 +1789,7 @@ class CognateJudgementCitation(AbstractBaseCitation):
         anchor = "cognatejudgementcitation_%s" % self.id
         return self.cognate_judgement.lexeme.get_absolute_url(anchor)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"CJC src=%s cit=%s" % (self.source.id, self.id)
 
     class Meta:
@@ -1807,7 +1807,7 @@ class LexemeCitation(AbstractBaseCitation):
         anchor = "lexemecitation_%s" % self.id
         return self.lexeme.get_absolute_url(anchor)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s %s src:%s" % \
             (self.id, self.lexeme.source_form, self.source.id)
 
@@ -1819,7 +1819,7 @@ class CognateClassCitation(AbstractBaseCitation):
     cognate_class = models.ForeignKey(CognateClass)
     source = models.ForeignKey(Source)
 
-    def __unicode__(self):
+    def __str__(self):
         try:
             cog = self.cognate_class.id
         except CognateClass.DoesNotExist:
@@ -1935,7 +1935,7 @@ class Author(AbstractTimestamped):
     class Meta:
         ordering = ["surname", "firstNames"]
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s, %s' % (self.surname, self.firstNames)
 
     @property
