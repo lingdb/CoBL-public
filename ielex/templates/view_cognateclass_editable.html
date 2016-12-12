@@ -96,7 +96,7 @@
                   title="Visible / Total rows">
               {{ cogclass_editable_form.cogclass|length }}
             </span>
-            <a href="{% url 'edit-cogclasses' meaning %}" class="btn btn-default">undo</a>
+            <a href="{% url 'edit-cogclasses' meaning.gloss %}" class="btn btn-default">undo</a>
             <input type="submit" value="Save" name="cogclass_form" class="btn btn-danger">
           </div>
         {% endif %}
@@ -899,8 +899,8 @@
 <script>
 $(document).ready(function () {
 
-	/**** BUILD CITATIONS FORM *****/	
-	
+	/**** BUILD CITATIONS FORM *****/
+
 		function build_cit_form(data){
 		$('#viewCitContainer').append($(data));
 		$('#viewCit')[0].style.display = "block";
@@ -910,9 +910,9 @@ $(document).ready(function () {
         //});
 		return false
 	};
-	
-	/**** VIEW CITATIONS *****/	
-	
+
+	/**** VIEW CITATIONS *****/
+
 	$(document.body).on('click', '.openModal', function() {
 		$(this).toggleClass('selected');
 		$('#viewCitContainer').empty();
@@ -927,9 +927,9 @@ $(document).ready(function () {
 		});
 		return false
 	});
-	
-	/**** CLOSE CITATIONS VIEW *****/	
-	
+
+	/**** CLOSE CITATIONS VIEW *****/
+
 	$(document.body).on('click', '.close', function() {
 		$('.openModal.selected').removeClass('selected');
 		$('#viewCit')[0].style.display = "none";
