@@ -121,6 +121,8 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
+DATA_UPLOAD_MAX_NUMBER_FIELDS = None
+
 local_settings_path = os.path.join(BASE_DIR, "ielex/local_settings.py")
 if not os.path.exists(local_settings_path):
     # create default local settings
