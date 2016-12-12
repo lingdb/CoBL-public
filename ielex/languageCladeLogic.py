@@ -70,7 +70,7 @@ def mkUpdateLanguageCladeRelations(Language, Clade, LanguageClade):
             # Gathering newRels to see if LanguageClade changed:
             newRels = []
             order = 0  # inc by for
-            for i in xrange(len(wanted), 0, -1):
+            for i in range(len(wanted), 0, -1):
                 sliceD = dict(wanted[:i])
                 sig = cladeSignature(**dict(zeroLevels, **sliceD))
                 if sig in levelCladeMap:

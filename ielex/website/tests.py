@@ -324,7 +324,7 @@ class SearchTests(TestCase):
 
     def setUp(self):
         self.db = make_basic_objects()
-        for i in xrange(9):
+        for i in range(9):
             Lexeme.objects.create(
                     source_form="a{}".format(i),
                     language=self.db[Language],
