@@ -1241,17 +1241,49 @@ class CognateClass(AbstractTimestamped):
 
     @property
     def rootFormOrPlaceholder(self):
-        # Added for #246
-        # If we have a root_form, we see if we can enrich it:
         if self.root_form != '':
             return self.root_form
-        # No root_form or loanword, maybe only one lexeme in cognate class:
+        # If single lexeme in cognate class, use source_form:
         if self.lexeme_set.count() == 1:
             return self.lexeme_set.get().source_form
         # Do we have a loanword?
         if self.loanword:
             if self.sourceFormInLoanLanguage != '':
                 return "(%s)" % self.sourceFormInLoanLanguage
+        # Branch lookup for #364:
+        affectedLanguageIds = set(Lexeme.objects.filter(
+            cognate_class=self).values_list('language_id', flat=True))
+        commonCladeIds = Clade.objects.filter(
+            language__id__in=affectedLanguageIds
+            ).distinct().order_by(
+            'languageclade__cladesOrder'
+            ).values_list('id', flat=True)
+        if len(commonCladeIds):
+            findQuery = Language.objects.filter(
+                id__in=affectedLanguageIds,
+                languageclade__clade__id=commonCladeIds[0])
+
+            def getOrthographics(cognateClass, languageIds):
+                return Lexeme.objects.filter(
+                    language__id__in=languageIds,
+                    cognate_class=cognateClass).exclude(
+                    phoneMic='').values_list(
+                    'phoneMic', flat=True)
+
+            idFinders = [lambda: findQuery.filter(
+                         representative=True).values_list(
+                         'id', flat=True),
+                         lambda: findQuery.filter(
+                         exampleLanguage=True).values_list(
+                         'id', flat=True),
+                         lambda: affectedLanguageIds]
+
+            for idFinder in idFinders:
+                languageIds = idFinder()
+                if len(languageIds):
+                    orthographics = getOrthographics(self, languageIds)
+                    if len(orthographics):
+                        return orthographics[0]
         # Nothing left to try:
         return ''
 
@@ -1496,6 +1528,19 @@ class Lexeme(AbstractTimestamped):
     def combinedCognateClassAssignment(self):
         # Added for #219
         return ', '.join([c.alias for c in self.allCognateClasses])
+
+    @property
+    def loanEventSourceTitle(self):
+        parts = []
+        for ccd in self.getCognateClassData():
+            if 'root_form' in ccd and 'root_language' in ccd:
+                parts.append('(%s) < (%s)' %
+                             (ccd['root_form'], ccd['root_language']))
+            elif 'root_form' in ccd:
+                parts.append('(%s) < (?)' % ccd['root_form'])
+            elif 'root_language' in ccd:
+                parts.append('(?) < (%s)' % ccd['root_language'])
+        return '\n'.join(parts)
 
 
 @reversion.register

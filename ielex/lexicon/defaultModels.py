@@ -37,7 +37,7 @@ def getDefaultLanguageId(request):
     """
     languageName = getDefaultLanguage(request)
     id = Language.objects.values_list(
-        'id', flat=True).filter(ascii_namelanguageName).all()
+        'id', flat=True).filter(ascii_name=languageName).all()
     if len(id) == 1:
         return id[0]
     return None
