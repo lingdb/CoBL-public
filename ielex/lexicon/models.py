@@ -1975,7 +1975,7 @@ class NexusExport(AbstractTimestamped):
             return zlib.decompress(data)
 
         def fset(self, value):
-            setattr(self, field, zlib.compress(value))
+            setattr(self, field, zlib.compress(value.encode()))
 
         def fdel(self):
             delattr(self, field)

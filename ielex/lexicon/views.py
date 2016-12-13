@@ -483,7 +483,8 @@ def construct_matrix(languages,                # [Language]
                     col_num += 1
                     start_range = col_num
                     cognate_class_names.append("%s_group" % meaning.gloss)
-            for cc in sorted(data[meaning.gloss]):
+            for cc in sorted(data[meaning.gloss],
+                             key=lambda x: (str(x),) if type(x) == int else x):
                 if ascertainment_marker and make_header:
                     col_num += 1
                     cognate_class_names.append(
@@ -617,6 +618,8 @@ def computeCalibrations(language_list, excludeMarkedLanguages):
     def getDistribution(abstractDistribution):
 
         def yearToFloat(year):
+            if year is None:
+                return 0.0
             return round(float(year) / 1000, 3)
 
         if abstractDistribution.distribution == 'U':
@@ -629,11 +632,11 @@ def computeCalibrations(language_list, excludeMarkedLanguages):
             return "normal(%.3f,%.3f)" % (mean, stDev)
         if abstractDistribution.distribution == 'L':
             mean = yearToFloat(abstractDistribution.logNormalMean)
-            stDev = abstractDistribution.logNormalStDev
+            stDev = abstractDistribution.logNormalStDev or 0.0
             return "lognormal(%.3f,%.3f)" % (mean, stDev)
         if abstractDistribution.distribution == 'O':
             mean = yearToFloat(abstractDistribution.logNormalMean)
-            stDev = abstractDistribution.logNormalStDev
+            stDev = abstractDistribution.logNormalStDev or 0.0
             offset = yearToFloat(abstractDistribution.logNormalOffset)
             return "offsetlognormal(%.3f,%.3f,%.3f)" % (offset, mean, stDev)
         return None
