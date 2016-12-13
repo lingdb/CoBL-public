@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import validate_comma_separated_integer_list
 import reversion
 from ielex.lexicon.models import AbstractBaseCitation
 
@@ -64,8 +65,10 @@ class SemanticDomain(models.Model):
 
     name = models.CharField(max_length=999, unique=True)
     description = models.TextField(blank=True, null=True)
-    relation_ids = models.CommaSeparatedIntegerField(
-        blank=True, max_length=999)
+    relation_ids = models.CharField(
+        blank=True,
+        max_length=999,
+        validators=[validate_comma_separated_integer_list])
     modified = models.DateTimeField(auto_now=True)
 
     def _get_list(self):
