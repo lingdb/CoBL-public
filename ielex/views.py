@@ -1138,8 +1138,11 @@ def view_citations_inline_form(request, model, formset):
 
 @logExceptions
 def submit_citations_inline_form(request, model, formset):
-    rel_cit_field_dict = {'CognateClass': 'cognate_class','Lexeme': 'lexeme'}
-    modelcit = eval(request.POST.get("model")+'Citation')
+    modelcit_dict = {'CognateClass': CognateClassCitation,
+                     'Lexeme': LexemeCitation
+                     }
+    rel_cit_field_dict = {'CognateClass': 'cognate_class', 'Lexeme': 'lexeme'}
+    modelcit = modelcit_dict[request.POST.get("model")]
     rel_cit_field = rel_cit_field_dict[request.POST.get("model")]
     model_obj = model.objects.get(
         id=request.POST.get("id"))
@@ -1165,10 +1168,13 @@ def submit_citations_inline_form(request, model, formset):
 @login_required
 @logExceptions
 def citation_form_event(request):
+    model_formset_dict = {'CognateClass': (CognateClass,
+                                           CognateClassCitationFormSet),
+                          'Lexeme': (Lexeme, LexemeCitationFormSet)
+                          }
     if not request.POST.get("model"):
         return None
-    model = eval(request.POST.get("model"))
-    formset = eval(request.POST.get("model")+'CitationFormSet')
+    model, formset = model_formset_dict[request.POST.get("model")]
     if request.POST.get("postType") == 'viewCit':
         return view_citations_inline_form(request, model, formset)
     elif request.POST.get("action") == 'Submit':
