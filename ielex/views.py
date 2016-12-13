@@ -2606,7 +2606,7 @@ def view_two_languages_wordlist(request,
         try:
             sourceLang = Language.objects.get(ascii_name=sourceLang)
         except Language.DoesNotExist:
-            raise Http404("Language '%s' does not exist" % sourceLang)
+            sourceLang = None
     # Fetching wordlist to operate on:
     if wordlist is None:
         wordlist = getDefaultWordlist(request)
