@@ -420,9 +420,9 @@ class Source(models.Model):
                            'number': 'issue', 'part': 'part',
                            'edition': 'edition', 'editor': 'editor'}
         rft_attrs_lst = []
-        rft_val_dict = {'book': 'book', 'article': 'journal',
-                        'expert': 'expert', 'online': 'online',
-                        'inbook': 'inbook', 'misc': 'misc', '': ''}
+        rft_val_dict = {'book': 'book', 'article': 'article',
+                        'expert': 'document', 'online': 'webpage',
+                        'inbook': 'bookitem', 'misc': 'document'}
         for key in bibtex_rft_dict:
             try:
                 typ = rft_val_dict[self.ENTRYTYPE]
@@ -1211,6 +1211,11 @@ class CognateClass(AbstractTimestamped):
 
     @property
     def lexemeCount(self):
+        return CognateClassCitation.objects.filter(cognate_class=self).\
+               count()
+
+    @property
+    def citationCount(self):
         return self.computeCounts()['lexemeCount']
 
     @property

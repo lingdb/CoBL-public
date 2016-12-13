@@ -158,7 +158,7 @@
                   </div>
                 </div>
               </th>
-              {# citation_title.html #}
+              {# citations_title.html #}
               <th style="width: 40px;">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
@@ -351,6 +351,8 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
+			  {# citations_filter.html #}
+			  <td></td>
               {# merge_filter.html #}
               <td>
                 <button type="button"
@@ -685,9 +687,10 @@
                     {{ cc.alias.data }}
                   </a>
                 </td>
+				{# citations_data.html #}
                 <td class="cogClassCit"
                     style="text-align: center; width: 40px;">
-                  <span class="badge openModal">
+				  <span class="badge openModal" model="CognateClass" id="{{ cc.idField.data }}">
 					{{ cc.object_data.citCount }}
 				  </span>
                 </td>
@@ -896,46 +899,6 @@
 </div>
 {% endblock %}
 {% block footerScripts%}
-<script>
-$(document).ready(function () {
-
-	/**** BUILD CITATIONS FORM *****/
-
-		function build_cit_form(data){
-		$('#viewCitContainer').append($(data));
-		$('#viewCit')[0].style.display = "block";
-		$('#citations tbody tr').formset();
-        //$('#citations tbody tr').formset({
-           // prefix: 'citations' //'{{ formset.prefix }}'
-        //});
-		return false
-	};
-
-	/**** VIEW CITATIONS *****/
-
-	$(document.body).on('click', '.openModal', function() {
-		$(this).toggleClass('selected');
-		$('#viewCitContainer').empty();
-		var cogClassId = $(this).parent().siblings('.cogClassId').text().trim();
-		var postdata = {
-			'postType': 'viewCit',
-			'csrfmiddlewaretoken': $("{% csrf_token %}").attr('value'),
-			'cogClassId' : cogClassId
-		};
-		$.post("/cognateclasslist/", postdata, function (data) {
-			build_cit_form(data);
-		});
-		return false
-	});
-
-	/**** CLOSE CITATIONS VIEW *****/
-
-	$(document.body).on('click', '.close', function() {
-		$('.openModal.selected').removeClass('selected');
-		$('#viewCit')[0].style.display = "none";
-		return false
-	});
-});
-</script>
+{% include "snippets/sourcePopUpScript.html" %}
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

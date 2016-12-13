@@ -1524,7 +1524,8 @@ class EditCognateClassCitationForm(forms.ModelForm):
         """
         exclude = self._get_validation_exclusions()
         # remove our previously excluded field from the list.
-        exclude.remove("cognate_class")
+        if 'cognate_class' in exclude:
+            exclude.remove("cognate_class")
         try:
             self.instance.validate_unique(exclude=exclude)
         except ValidationError as e:
@@ -1541,6 +1542,18 @@ class EditCognateClassCitationForm(forms.ModelForm):
 class EditCognateClassCitationInlineForm(EditCognateClassCitationForm):
     comment = forms.CharField(
         widget=forms.Textarea(attrs={'cols': 60, 'rows': 2}), required=False)
+
+
+class EditLexemeCitationInlineForm(forms.ModelForm):
+    comment = forms.CharField(
+        widget=forms.Textarea(attrs={'cols': 60, 'rows': 2}), required=False)
+
+    class Meta:
+        model = LexemeCitation
+        fields = ["source", "pages", "comment"]
+        widgets = {
+            'source': autocomplete.ModelSelect2(url='source-autocomplete')
+        }
 
 
 class AddCitationForm(forms.Form):
@@ -1842,7 +1855,22 @@ LexemeFormSet = inlineformset_factory(
 CognateClassCitationFormSet = inlineformset_factory(
     CognateClass, CognateClassCitation,
     form=EditCognateClassCitationInlineForm,
-    can_delete=False, fields=('source', 'pages', 'comment',), extra=0)
+    can_delete=True, fields=('source', 'pages', 'comment',), extra=1)
+
+# IMPORTANT:
+# extra>=1 is required here by the js override that fixes
+# django-dynamic-formsets & django-autocomplete-light
+# incorrect behaviour, when used together.
+
+LexemeCitationFormSet = inlineformset_factory(
+    Lexeme, LexemeCitation,
+    form=EditLexemeCitationInlineForm,
+    can_delete=True, fields=('source', 'pages', 'comment',), extra=1)
+
+# IMPORTANT:
+# extra>=1 is required here by the js override that fixes
+# django-dynamic-formsets & django-autocomplete-light
+# incorrect behaviour, when used together.
 
 
 class AssignCognateClassesFromLexemeForm(WTForm):
