@@ -66,9 +66,7 @@ from ielex.forms import AddCitationForm, \
     UploadBiBTeXFileForm, \
     CognateJudgementFormSet, \
     CognateClassFormSet, \
-    CognateClassCitationFormSet, \
     LexemeFormSet, \
-    LexemeCitationFormSet, \
     AssignCognateClassesFromLexemeForm
 from ielex.lexicon.models import Author, \
     Clade, \
@@ -1138,7 +1136,7 @@ def view_citations_inline_form(request, model, formset):
 
 @logExceptions
 def submit_citations_inline_form(request, model, formset):
-    rel_cit_field_dict = {'CognateClass': 'cognate_class','Lexeme': 'lexeme'}
+    rel_cit_field_dict = {'CognateClass': 'cognate_class', 'Lexeme': 'lexeme'}
     modelcit = eval(request.POST.get("model")+'Citation')
     rel_cit_field = rel_cit_field_dict[request.POST.get("model")]
     model_obj = model.objects.get(
@@ -2112,7 +2110,7 @@ def source_list(request):
 def get_sources_table(queryset=''):
     if queryset == '':
         queryset = Source.objects.all()
-    #current_languagelist = get_canonical_language_list()
+    # current_languagelist = get_canonical_language_list()
     queryset = queryset.extra({'cognacy_count':
                                'SELECT COUNT(*) '
                                'FROM lexicon_cognatejudgementcitation '
