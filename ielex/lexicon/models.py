@@ -1094,9 +1094,6 @@ class CognateClass(AbstractTimestamped):
     proposedAsCognateToScale = models.IntegerField(
         default=0, choices=PROPOSED_AS_COGNATE_TO_SCALE)
 
-    def __str__(self):
-        return self.root_form
-
     def update_alias(self, save=True):
         """Reset alias to the first unused letter"""
         codes = set(ascii_uppercase) | \

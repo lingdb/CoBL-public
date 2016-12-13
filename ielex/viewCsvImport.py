@@ -226,7 +226,7 @@ def strNonEmpty(s):
 
 def strOrEmpty(s):
     try:
-        return unicode(s)
+        return str(s)
     except:
         return u''
 

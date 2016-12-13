@@ -12,19 +12,19 @@ that requires us to know which language,.. a client last visited.
 
 def getDefaultLanguage(request):
     """
-    @return defaultLanguage :: str | unicode
+    @return defaultLanguage :: str
     """
     return request.session.get('defaultLanguage', Language.DEFAULT)
 
 
 def setDefaultLanguage(request, language):
     """
-    @param language :: Language | str | unicode
+    @param language :: Language | str
     @return success :: bool
     """
     if type(language) == Language:
         language = language.ascii_name
-    if type(language) == str or type(language) == unicode:
+    if type(language) == str:
         request.session['defaultLanguage'] = language
         return True
     return False
@@ -60,19 +60,19 @@ def setDefaultLanguageId(request, language):
 
 def getDefaultMeaning(request):
     """
-    @return defaultMeaning :: str | unicode
+    @return defaultMeaning :: str
     """
     return request.session.get('defaultMeaning', Meaning.DEFAULT)
 
 
 def setDefaultMeaning(request, meaning):
     """
-    @param meaning :: Meaning | str | unicode
+    @param meaning :: Meaning | str
     @return success :: bool
     """
     if type(meaning) == Meaning:
         meaning = meaning.gloss
-    if type(meaning) == str or type(meaning) == unicode:
+    if type(meaning) == str:
         request.session['defaultMeaning'] = meaning
         return True
     return False
@@ -107,7 +107,7 @@ def setDefaultMeaningId(request, meaning):
 
 def getDefaultWordlist(request):
     """
-    @return defaultWordlist :: str | unicode
+    @return defaultWordlist :: str
     """
     return request.session.get('defaultWordlist', MeaningList.DEFAULT)
 
@@ -129,12 +129,12 @@ def getDefaultWordlistId(request):
 
 def setDefaultWordlist(request, wordlist):
     """
-    @param wordlist :: MeaningList | str | unicode
+    @param wordlist :: MeaningList | str
     @return success :: bool
     """
     if type(wordlist) == MeaningList:
         wordlist = wordlist.name
-    if type(wordlist) == str or type(wordlist) == unicode:
+    if type(wordlist) == str:
         request.session['defaultWordlist'] = wordlist
         return True
     return False
@@ -142,7 +142,7 @@ def setDefaultWordlist(request, wordlist):
 
 def getDefaultLanguagelist(request):
     """
-    @return defaultLanguagelist :: str | unicode
+    @return defaultLanguagelist :: str
     """
     return request.session.get('defaultLanguagelist', LanguageList.DEFAULT)
 
@@ -164,12 +164,12 @@ def getDefaultLanguagelistId(request):
 
 def setDefaultLanguagelist(request, languagelist):
     """
-    @param languagelist :: LanguageList | str | unicode
+    @param languagelist :: LanguageList | str
     @return success :: bool
     """
     if type(languagelist) == LanguageList:
         languagelist = languagelist.name
-    if type(languagelist) == str or type(languagelist) == unicode:
+    if type(languagelist) == str:
         request.session['defaultLanguagelist'] = languagelist
         return True
     return False
@@ -212,7 +212,7 @@ def getDefaultSourceLanguage(request):
 def setDefaultSourceLanguage(request, language):
     if type(language) == Language:
         language = language.ascii_name
-    if type(language) == str or type(language) == unicode:
+    if type(language) == str:
         request.session['defaultSourceLanguage'] = language
         return True
     return False
