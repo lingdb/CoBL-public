@@ -2,7 +2,6 @@
 from __future__ import print_function
 import os
 import logging
-from django.conf.urls import include, url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
