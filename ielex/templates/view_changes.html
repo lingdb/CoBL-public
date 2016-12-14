@@ -46,7 +46,7 @@
         {% for revision in changes.object_list %}
           {% if revision.interesting_versions %}
             <tr>
-              <th>{{ revision.date_created|date:"d-M-Y G:i"  }}</td>
+              <th>{{ revision.date_created|date:"d-M-Y G:i" }}</td>
               <th>{{ revision.user.username }}</td>
               <td>{{ revision.comment|wikilink|truncatewords_html:1 }}</td>
             </tr>

@@ -138,7 +138,7 @@ def view_changes(request, username=None, revision_id=None, object_id=None):
     else:
         recent_changes = Revision.objects.filter(
             user__username=username).order_by("-id")
-    paginator = Paginator(recent_changes, 50)  # was 200
+    paginator = Paginator(recent_changes, 50)
 
     try:  # Make sure page request is an int. If not, deliver first page.
         page = int(request.GET.get('page', '1'))
@@ -150,14 +150,12 @@ def view_changes(request, username=None, revision_id=None, object_id=None):
     except (EmptyPage, InvalidPage):
         changes = paginator.page(paginator.num_pages)
 
+    userIds = set(Revision.objects.values_list("user", flat=True).distinct())
     contributors = sorted([(User.objects.get(id=user_id),
                             Revision.objects.filter(user=user_id).count())
-                           for user_id in Revision.objects.values_list(
-                               "user", flat=True).distinct()
+                           for user_id in userIds
                            if user_id is not None],
                           key=lambda x: -x[1])
-    # reverse sort by second element in tuple
-    # TODO user_id should never be None
 
     return render_template(request, "view_changes.html",
                            {"changes": changes,
