@@ -55,6 +55,7 @@ from ielex.views import add_language_list, \
                         view_nexus_export, \
                         view_two_languages_wordlist, \
                         view_language_progress, \
+                        view_language_distributions, \
                         json_cognateClass_placeholders, \
                         view_cladecognatesearch
 from ielex.viewCsvImport import viewCsvImport
@@ -127,6 +128,11 @@ urlpatterns = [
     # Language progress (#311):
     url(r'^languageprogress/%(LANGUAGELIST)s/$' % R, view_language_progress,
         name="view-language-progress"),
+
+    # Language distributions:
+    url(r'^languagedistributions/%(LANGUAGELIST)s/$' % R,
+        view_language_distributions,
+        name="view-language-distributions"),
 
     # Language check (#159):
     url(r'^language/check$' % R, view_language_check),

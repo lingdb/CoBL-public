@@ -69,7 +69,8 @@ from ielex.forms import AddCitationForm, \
     LexemeFormSet, \
     AssignCognateClassesFromLexemeForm, \
     CognateClassCitationFormSet, \
-    LexemeCitationFormSet
+    LexemeCitationFormSet, \
+    LanguageDistributionTableForm
 from ielex.lexicon.models import Author, \
     Clade, \
     CognateClass, \
@@ -2728,6 +2729,50 @@ def view_language_progress(request, language_list=None):
     return render_template(request, "language_progress.html",
                            {"languages": languages,
                             'form': form,
+                            "current_list": current_list,
+                            "otherLanguageLists": otherLanguageLists,
+                            "wordlist": getDefaultWordlist(request),
+                            "clades": Clade.objects.all()})
+
+
+@csrf_protect
+@logExceptions
+def view_language_distributions(request, language_list=None):
+    current_list = get_canonical_language_list(language_list, request)
+    setDefaultLanguagelist(request, current_list.name)
+    languages = current_list.languages.all().prefetch_related(
+        "lexeme_set", "lexeme_set__meaning",
+        "languageclade_set", "clades")
+
+    if (request.method == 'POST') and ('langlist_form' in request.POST):
+        form = LanguageDistributionTableForm(request.POST)
+        try:
+            form.validate()
+            form.handle(request)
+        except Exception:
+            logging.exception(
+                'Exception in POST validation for view_language_distributions')
+            messages.error(request, 'Sorry, the form data sent '
+                           'did not pass server side validation.')
+            return HttpResponseRedirect(
+                reverse("view_language_distributions",
+                        args=[current_list.name]))
+        # Redirecting so that UA makes a GET.
+        return HttpResponseRedirect(
+            reverse("view-language-distributions", args=[current_list.name]))
+
+    meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
+    languages_editabletable_form = LanguageDistributionTableForm()
+    for lang in languages:
+        lang.idField = lang.id
+        lang.computeCounts(meaningList)
+        languages_editabletable_form.langlist.append_entry(lang)
+
+    otherLanguageLists = LanguageList.objects.exclude(name=current_list).all()
+
+    return render_template(request, "language_distributions.html",
+                           {"languages": languages,
+                            'lang_ed_form': languages_editabletable_form,
                             "current_list": current_list,
                             "otherLanguageLists": otherLanguageLists,
                             "wordlist": getDefaultWordlist(request),

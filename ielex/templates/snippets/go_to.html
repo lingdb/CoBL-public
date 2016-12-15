@@ -45,6 +45,14 @@
       <span class="glyphicon glyphicon-scale"></span>
     </a>
   </li>
+  <li>
+    <a href={% url 'view-language-distributions' current_language_list_name %}
+       title="View language distributions"
+       data-toggle="tooltip"
+       data-placement="bottom">
+      <span class="glyphicon glyphicon-stats"></span>
+    </a>
+  </li>
 {% endif %}
 <li>
   <a href={% url 'view-language-list' current_language_list_name %}

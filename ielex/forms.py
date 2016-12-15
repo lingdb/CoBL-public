@@ -386,7 +386,7 @@ class AbstractCognateClassAssignmentForm(WTForm):
             cognate_class_id__in=removeCCs).delete()
 
 
-class LanguageListRowForm(AbstractTimestampedForm, AbstractDistributionForm):
+class LanguageListRowForm(AbstractTimestampedForm):
     idField = IntegerField('Language id', validators=[InputRequired()])
     level0 = IntegerField('Clade level 0', validators=[InputRequired()])
     level1 = IntegerField('Clade level 1', validators=[InputRequired()])
@@ -401,10 +401,6 @@ class LanguageListRowForm(AbstractTimestampedForm, AbstractDistributionForm):
     glottocode = StringField('Glottocode', validators=[InputRequired()])
     latitude = DecimalField('Latitude', validators=[InputRequired()])
     longitude = DecimalField('Longitude', validators=[InputRequired()])
-    earliestTimeDepthBound = IntegerField('Earliest Time-Depth Bound',
-                                          validators=[InputRequired()])
-    latestTimeDepthBound = IntegerField('Latest Time-Depth Bound',
-                                        validators=[InputRequired()])
     representative = BooleanField('Representative',
                                   validators=[InputRequired()])
     foss_stat = BooleanField('Fossilised Status', validators=[InputRequired()])
@@ -415,14 +411,6 @@ class LanguageListRowForm(AbstractTimestampedForm, AbstractDistributionForm):
                               validators=[InputRequired()])
     exampleLanguage = BooleanField(
         'Example Language?', validators=[InputRequired()])
-
-    def validate_historical(form, field):
-        # Assumes that field.data :: True | False
-        if field.data:
-            distribution = form.data['distribution']
-            if distribution is None or distribution == '_':
-                raise ValidationError('distribution is None '
-                                      'but historical is True.')
 
 
 class AddLanguageListTableForm(WTForm):
@@ -451,6 +439,55 @@ class AddLanguageListTableForm(WTForm):
                 messages.error(request, 'Sorry, the server had problems '
                                'saving at least one language entry.')
         return updateClades
+
+
+class LanguageDistributionRowForm(AbstractTimestampedForm,
+                                  AbstractDistributionForm):
+    idField = IntegerField('Language id', validators=[InputRequired()])
+    level0 = IntegerField('Clade level 0', validators=[InputRequired()])
+    level1 = IntegerField('Clade level 1', validators=[InputRequired()])
+    level2 = IntegerField('Clade level 2', validators=[InputRequired()])
+    level3 = IntegerField('Clade level 3', validators=[InputRequired()])
+    sortRankInClade = IntegerField(
+        'Sort rank in clade', validators=[InputRequired()])
+    historical = BooleanField('Historical', validators=[InputRequired()])
+    utf8_name = StringField('Display name', validators=[InputRequired()])
+    earliestTimeDepthBound = IntegerField('Earliest Time-Depth Bound',
+                                          validators=[InputRequired()])
+    latestTimeDepthBound = IntegerField('Latest Time-Depth Bound',
+                                        validators=[InputRequired()])
+
+    def validate_historical(form, field):
+        # Assumes that field.data :: True | False
+        if field.data:
+            distribution = form.data['distribution']
+            if distribution is None or distribution == '_':
+                raise ValidationError('distribution is None '
+                                      'but historical is True.')
+
+
+class LanguageDistributionTableForm(WTForm):
+    langlist = FieldList(FormField(LanguageDistributionRowForm))
+
+    def handle(self, request):
+        # Iterating form to update languages:
+        for entry in self.langlist:
+            try:
+                with transaction.atomic():
+                    lang = Language.objects.get(id=entry.data['idField'])
+                    if lang.isChanged(**entry.data):
+                        problem = lang.setDelta(request, **entry.data)
+                        if problem is None:
+                            lang.save()
+                        else:
+                            messages.error(request,
+                                           lang.deltaReport(**problem))
+            except Exception:
+                logging.exception(
+                    'Exception in LanguageDistributionTableForm.handle().',
+                    extra=entry.data)
+                messages.error(request, 'Sorry, the server had problems '
+                               'saving at least one language entry.')
 
 
 class EditSingleLanguageForm(LanguageListRowForm, WTFormToFormgroup):
