@@ -38,14 +38,6 @@
       <div class="fixedContainer">
         {% if user.is_authenticated and user.is_staff %}
           <div class="form-group pull-right">
-            <a href="/clades/?plot"
-               class="btn btn-default"
-               target="_blank"
-               data-toggle="tooltip"
-               data-placement="bottom"
-               title="View language distributions.">
-               <span class="glyphicon glyphicon-stats"></span>
-            </a>
             <a href="{% url 'language-add-new' current_language_list_name %}"
                class="btn btn-default"
                data-toggle="tooltip" data-placement="bottom"

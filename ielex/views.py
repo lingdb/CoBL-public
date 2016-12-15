@@ -70,7 +70,8 @@ from ielex.forms import AddCitationForm, \
     AssignCognateClassesFromLexemeForm, \
     CognateClassCitationFormSet, \
     LexemeCitationFormSet, \
-    LanguageDistributionTableForm
+    LanguageDistributionTableForm, \
+    TwoLanguageWordlistTableForm
 from ielex.lexicon.models import Author, \
     Clade, \
     CognateClass, \
@@ -2622,7 +2623,7 @@ def view_two_languages_wordlist(request,
         # Updating lexeme table data:
         elif 'lex_form' in request.POST:
             try:
-                form = LexemeTableLanguageWordlistForm(request.POST)
+                form = TwoLanguageWordlistTableForm(request.POST)
                 form.validate()
                 form.handle(request)
             except Exception:
@@ -2661,7 +2662,7 @@ def view_two_languages_wordlist(request,
             except IndexError:
                 pass
 
-    lexemeTable = LexemeTableLanguageWordlistForm(lexemes=lexemes)
+    lexemeTable = TwoLanguageWordlistTableForm(lexemes=lexemes)
 
     otherMeaningLists = MeaningList.objects.exclude(id=wordlist.id).all()
 

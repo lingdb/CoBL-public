@@ -1311,6 +1311,33 @@ class LexemeTableLanguageWordlistForm(WTForm):
             entry.handle(request, lex)
 
 
+class TwoLanguageWordlistRowForm(AbstractTimestampedForm,
+                                 AbstractCognateClassAssignmentForm):
+    id = IntegerField('Lexeme Id', validators=[InputRequired()])
+    language_id = StringField('Language Id', validators=[InputRequired()])
+    language = StringField('Language', validators=[InputRequired()])
+    language_asciiname = StringField('Language Ascii Name',
+                                     validators=[InputRequired()])
+    language_utf8name = StringField('Language Utf8 Name',
+                                    validators=[InputRequired()])
+    cognate_class_links = StringField('Cognate Class',
+                                      validators=[InputRequired()])
+    meaning_id = IntegerField('Meaning Id', validators=[InputRequired()])
+    meaning = IntegerField('Meaning', validators=[InputRequired()])
+    source_form = StringField('Source Form', validators=[InputRequired()])
+    transliteration = StringField('Transliteration',
+                                  validators=[InputRequired()])
+    not_swadesh_term = BooleanField('Not Swadesh Term',
+                                    validators=[InputRequired()])
+    gloss = StringField('Gloss', validators=[InputRequired()])
+    notes = TextField('Notes', validators=[InputRequired()])
+    cogclass_link = TextField('CogClass Links', validators=[InputRequired()])
+
+
+class TwoLanguageWordlistTableForm(LexemeTableLanguageWordlistForm):
+    lexemes = FieldList(FormField(TwoLanguageWordlistRowForm))
+
+
 class AddMissingLexemsForLanguageForm(WTForm):
     '''
     Added for #304, this form adds lexeme entries for each meaning that

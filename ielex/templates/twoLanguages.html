@@ -82,14 +82,6 @@
                   </div>
                 </div>
               </th>
-              {# isexcluded_lexeme_title.html #}
-              <th>
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Lex. excl
-                  </div>
-                </div>
-              </th>
               {# ncog_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -126,35 +118,13 @@
                 Root ref. language
               </th>
               {# loanevent_title.html #}
-              <th>
+              <th style="border-right: 2px solid #dddddd;">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Loan Evt
                   </div>
                 </div>
               </th>
-              {# isloan_cognate_title.html #}
-              <th>
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Cog. loan
-                  </div>
-                </div>
-              </th>
-              {# isexcluded_cognate_title.html #}
-              <th style="border-right: 2px solid #dddddd;">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Cog. excl
-                  </div>
-                </div>
-              </th>
-              {# phonemic_title.html #}
-              <th>PhoneMic</th>
-              {# phonecopy_title.html #}
-              <th colspan="2"></th>
-              {# phonetic_title.html #}
-              <th>PhoneTic</th>
               {# gloss_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -164,14 +134,6 @@
               </th>
               {# notes_title.html #}
               <th>Notes</th>
-              {# dubious_title.html #}
-              <th alt="Dubious">
-                <div class="vertical-text">
-                  <div class="vertical-text__inner">
-                    Dub?
-                  </div>
-                </div>
-              </th>
             </tr>
             <tr class="filterBar">
               {# id_filter.html #}
@@ -245,13 +207,6 @@
                   <span class="glyphicon glyphicon-remove-sign"></span>
                 </button>
               </td>
-              {# isexcluded_lexeme_filter.html #}
-              <td>
-                <button type="button" class="filterBool btn btn-xs btn-default"
-                        data-selector=".lexemeIsExcludedLexeme input">
-                  <span class="glyphicon glyphicon-question-sign"></span>
-                </button>
-              </td>
               {# ncog_filter.html #}
               <td style="width: 50px; border-left: 2px solid #dddddd;">
                 <input type="text" class="filterText form-control narrow"
@@ -298,66 +253,11 @@
                 </div>
               </td>
               {# loanevent_filter.html #}
-              <td>
+              <td style="border-right: 2px solid #dddddd;">
                 <button type="button" class="filterBool btn btn-xs btn-default"
                         data-selector=".lexemeLoanEvent input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
-              </td>
-              {# isloan_cognate_filter.html #}
-              <td>
-                <button type="button" class="filterBool btn btn-xs btn-default"
-                        data-selector=".lexemeIsLoanCognate input">
-                  <span class="glyphicon glyphicon-question-sign"></span>
-                </button>
-              </td>
-              {# isexcluded_cognate_filter.html #}
-              <td style="border-right: 2px solid #dddddd;">
-                <button type="button" class="filterBool btn btn-xs btn-default"
-                        data-selector=".lexemeIsExcludedCognate input">
-                  <span class="glyphicon glyphicon-question-sign"></span>
-                </button>
-              </td>
-              {# phonemic_filter.html #}
-              <td>
-                {% if user.is_authenticated %}
-                  <input type="text"
-                         class="filterInput form-control narrow"
-                         data-selector=".lexemePhoneMic input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".lexemePhoneMic input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% else %}
-                  <input type="text"
-                         class="filterText form-control narrow"
-                         data-selector=".lexemePhoneMic">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".lexemePhoneMic">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% endif %}
-              </td>
-              {# phonecopy_filter.html #}
-              <td colspan="2"></td>
-              {# phonetic_filter.html #}
-              <td>
-                {% if user.is_authenticated %}
-                  <input type="text" class="filterInput form-control narrow"
-                         data-selector=".lexemePhonForm input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".lexemePhonForm input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% else %}
-                  <input type="text"
-                         class="filterText form-control narrow"
-                         data-selector=".lexemePhonForm">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".lexemePhonForm">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% endif %}
               </td>
               {# gloss_filter.html #}
               <td>
@@ -389,13 +289,6 @@
                   </div>
                 {% endif %}
               </td>
-              {# dubious_filter.html #}
-              <td>
-                <button type="button" class="filterBool btn btn-xs btn-default"
-                        data-selector=".lexemeDubious input">
-                  <span class="glyphicon glyphicon-question-sign"></span>
-                </button>
-              </td>
             </tr>
           </thead>
           <tbody>
@@ -407,8 +300,6 @@
                   {{ lexeme.id }}
                   {{ lexeme.lastTouched }}
                   {{ lexeme.lastEditedBy }}
-                  {% form_field lexeme.rfcWebLookup1 class="form-control" %}
-                  {% form_field lexeme.rfcWebLookup2 class="form-control" %}
                 </td>
                 {# warnings_data.html #}
                 <td>
@@ -500,15 +391,6 @@
                     {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
-                {# isexcluded_lexeme_data.html #}
-                <td class="lexemeIsExcludedLexeme">
-                  <input type="checkbox"
-                    {% if lexeme.object_data.is_excluded_lexeme %}
-                      checked="checked"
-                    {% endif %}
-                    class="form-control"
-                    disabled="disabled">
-                </td>
                 {# ncog_data.html #}
                 <td class="lexemeNumCogCoded"
                     style="width: 50px; border-left: 2px solid #dddddd;">
@@ -557,7 +439,7 @@
                   {% endif %}
                 </td>
                 {# loanevent_data.html #}
-                <td class="lexemeLoanEvent">
+                <td class="lexemeLoanEvent" style="border-right: 2px solid #dddddd;">
                   {% if lexeme.object_data.show_loan_event %}
                     <input type="checkbox"
                       {% if lexeme.object_data.loan_event %}
@@ -565,62 +447,6 @@
                       {% endif %}
                       class="form-control"
                       disabled="disabled">
-                  {% endif %}
-                </td>
-                {# isloan_cognate_data.html #}
-                <td class="lexemeIsLoanCognate">
-                  <input type="checkbox"
-                    {% if lexeme.object_data.is_loan_cognate %}
-                      checked="checked"
-                    {% endif %}
-                    class="form-control"
-                    disabled="disabled">
-                </td>
-                {# isexcluded_cognate_data.html #}
-                <td class="lexemeIsExcludedCognate"
-                    style="border-right: 2px solid #dddddd;">
-                  <input type="checkbox"
-                    {% if lexeme.object_data.is_excluded_cognate %}
-                      checked="checked"
-                    {% endif %}
-                    class="form-control"
-                    disabled="disabled">
-                </td>
-                {# phonemic_data.html #}
-                <td class="lexemePhoneMic">
-                  {% if user.is_authenticated %}
-                    {% form_field lexeme.phoneMic id="phoneMic" size="8" class="form-control" %}
-                  {% elif lexeme.object_data.phoneMic %}
-                    {{ lexeme.object_data.phoneMic }}
-                  {% endif %}
-                </td>
-                {# phonecopy_data.html #}
-                <td>
-                  {% if user.is_authenticated %}
-                    <button class="leftcheckarrow btn btn-xs inline"
-                            type="button"
-                            id="phoneTic2phoneMic#{{lexeme.phon_form.name}}#{{lexeme.phoneMic.name}}"
-                            onclick="CopyAcross(this)">
-                      <span class="glyphicon glyphicon-step-backward"></span>
-                    </button>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if user.is_authenticated %}
-                    <button class="rightcheckarrow btn btn-xs inline"
-                            type="button"
-                            id="phoneMic2phoneTic#{{lexeme.phoneMic.name}}#{{lexeme.phon_form.name}}"
-                            onclick="CopyAcross(this)">
-                      <span class="glyphicon glyphicon-step-forward"></span>
-                    </button>
-                  {% endif %}
-                </td>
-                {# phonetic_data.html #}
-                <td class="lexemePhonForm">
-                  {% if user.is_authenticated %}
-                    {% form_field lexeme.phon_form id="phoneTic" size="8" class="form-control" %}
-                  {% elif lexeme.object_data.phon_form %}
-                    {{ lexeme.object_data.phon_form }}
                   {% endif %}
                 </td>
                 {# gloss_data.html #}
@@ -637,14 +463,6 @@
                     {% form_field lexeme.notes class="form-control" %}
                   {% elif lexeme.object_data.notes %}
                     {{ lexeme.object_data.notes }}
-                  {% endif %}
-                </td>
-                {# dubious_data.html #}
-                <td class="lexemeDubious">
-                  {% if user.is_authenticated %}
-                    {% form_field lexeme.dubious class="form-control" %}
-                  {% else %}
-                    {% form_field lexeme.dubious class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
               </tr>
@@ -698,15 +516,6 @@
                            class="form-control"
                            disabled="disabled">
                   </td>
-                  {# isexcluded_lexeme_original.html #}
-                  <td class="lexemeIsExcludedLexeme">
-                    <input type="checkbox"
-                      {% if lexeme.object_data.original.is_excluded_lexeme %}
-                        checked="checked"
-                      {% endif %}
-                      class="form-control"
-                      disabled="disabled">
-                  </td>
                   {# ncog_original.html #}
                   <td class="lexemeNumCogCoded"
                       style="width: 50px; border-left: 2px solid #dddddd;">
@@ -757,7 +566,7 @@
                     {% endif %}
                   </td>
                   {# loanevent_original.html #}
-                  <td class="lexemeLoanEvent">
+                  <td class="lexemeLoanEvent" style="border-right: 2px solid #dddddd;">
                     {% if lexeme.object_data.original.show_loan_event %}
                       <input type="checkbox"
                         {% if lexeme.object_data.original.loan_event %}
@@ -767,36 +576,6 @@
                         disabled="disabled">
                     {% endif %}
                   </td>
-                  {# isloan_cognate_original.html #}
-                  <td class="lexemeIsLoanCognate">
-                    <input type="checkbox"
-                      {% if lexeme.object_data.original.is_loan_cognate %}
-                        checked="checked"
-                      {% endif %}
-                      class="form-control"
-                      disabled="disabled">
-                  </td>
-                  {# isexcluded_cognate_original.html #}
-                  <td class="lexemeIsExcludedCognate"
-                      style="border-right: 2px solid #dddddd;">
-                    <input type="checkbox"
-                      {% if lexeme.object_data.original.is_excluded_cognate %}
-                        checked="checked"
-                      {% endif %}
-                      class="form-control"
-                      disabled="disabled">
-                  </td>
-                  {# phonemic_original.html #}
-                  <td class="lexemePhoneMic">
-                    {{ lexeme.object_data.original.phoneMic }}
-                  </td>
-                  {# phonecopy_original.html #}
-                  <td></td>
-                  <td></td>
-                  {# phonetic_original.html #}
-                  <td class="lexemePhonForm">
-                    {{ lexeme.object_data.original.phon_form }}
-                  </td>
                   {# gloss_original.html #}
                   <td class="lexemeGloss">
                     {{ lexeme.object_data.original.gloss }}
@@ -804,15 +583,6 @@
                   {# notes_original.html #}
                   <td class="lexemeNotes">
                     {{ lexeme.object_data.original.notes }}
-                  </td>
-                  {# dubious_original.html #}
-                  <td class="lexemeDubious">
-                    <input type="checkbox"
-                           {% if lexeme.object_data.original.dubious %}
-                             checked="checked"
-                           {% endif %}
-                           class="form-control"
-                           disabled="disabled">
                   </td>
                 </tr>
               {% endif %}
