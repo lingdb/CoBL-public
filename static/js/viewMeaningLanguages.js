@@ -11,6 +11,6 @@
     //Colorize it!
     colors.colorize(colors.findToColor(
       table.find('tbody > tr'),
-      function(el){return $('.cognateClasses', el).text().trim();}));
+      function(el){return $('.cognateClassId', el).text().trim();}));
   });
 })();
