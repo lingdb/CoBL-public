@@ -72,6 +72,20 @@ class ChooseNexusOutputForm(ChooseOutputBaseForm):
         help_text="Exclude languages marked [Not for Export]"
     )
 
+    field_order = ["language_list",
+                   "excludeMarkedLanguages",
+                   "meaning_list",
+                   "excludeMarkedMeanings",
+                   "dialect",
+                   "ascertainment_marker",
+                   "excludeNotSwadesh",
+                   "excludePllDerivation",
+                   "excludeIdeophonic",
+                   "excludeDubious",
+                   "excludeLoanword",
+                   "excludePllLoan",
+                   "includePllLoan"]
+
     def clean(self):
         # Making sure excludePllLoan and includePllLoan are never both True:
         cleaned_data = super(ChooseNexusOutputForm, self).clean()

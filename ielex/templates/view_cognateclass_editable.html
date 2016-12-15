@@ -205,7 +205,7 @@
               <th>Root<br>Notes</th>
               {# proposedAs_title.html #}
               <th colspan="2">
-                Proposed as cognate to:
+                Proposed cognate:
               </th>
               {# ideophonic_title.html #}
               <th style="border-left: 2px solid #dddddd;"
@@ -414,18 +414,10 @@
                   <input type="text"
                          class="filterInput form-control"
                          data-selector=".cogGlossInRootLang input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".cogGlossInRootLang input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
                 {% else %}
                   <input type="text"
                          class="filterText form-control"
                          data-selector=".cogGlossInRootLang">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".cogGlossInRootLang">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
                 {% endif %}
               </td>
               {# notes_filter.html #}
@@ -434,18 +426,10 @@
                   <input type="text"
                          class="filterInput form-control"
                          data-selector=".cogNotes input">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".cogNotes input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
                 {% else %}
                   <input type="text"
                          class="filterText form-control"
                          data-selector=".cogNotes">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".cogNotes">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
                 {% endif %}
               </td>
               {# proposedAs_filter.html #}
@@ -453,7 +437,8 @@
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
-                         data-selector=".proposedAsCognateToCell input">
+                         data-selector=".proposedAsCognateToCell input"
+                         style="max-width: 3em;">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".proposedAsCognateToCell input">
                     <span class="glyphicon glyphicon-sort"></span>

@@ -203,7 +203,13 @@
               <th>Author</th>
               {# entryTimeframe_title.html #}
               {% if user.is_authenticated and user.is_staff %}
-                <th>Timeframe</th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Timeframe
+                  </div>
+                </div>
+              </th>
               {% endif %}
               {# reviewer_title.html #}
               <th>
@@ -417,7 +423,7 @@
                 <input type="text"
                        class="filterInput form-control"
                        data-selector=".entryTimeframe input"
-                       style="width: 100%;">
+                       style="max-width: 5em;">
               </td>
               {% endif %}
               {# reviewer_filter.html #}
@@ -633,7 +639,7 @@
                 {# author_data.html #}
                 <td class="languageAuthor">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.author class="form-control" %}
+                    {% form_field language.author class="form-control" style="min-width: 30em;" %}
                   {% else %}
                     {{ language.author.data }}
                   {% endif %}
@@ -641,7 +647,7 @@
                 {# entryTimeframe_data.html #}
                 {% if user.is_authenticated and user.is_staff %}
                 <td class="entryTimeframe">
-                  {% form_field language.entryTimeframe class="form-control" %}
+                  {% form_field language.entryTimeframe class="form-control" style="max-width: 5em;" %}
                 </td>
                 {% endif %}
                 {# reviewer_data.html #}
@@ -715,7 +721,7 @@
                   <a class="btn btn-default bootboxHtmlSnippet"
                      data-toggle="tooltip"
                      data-placement="bottom"
-                     data-htmlsource="/language/{{ language.ascii_name.data }}/check"
+                     data-htmlsource="/language/{{ language.object_data.ascii_name }}/check"
                      title="Check this language.">
                     <span class="glyphicon glyphicon-list"></span>
                   </a>

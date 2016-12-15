@@ -52,7 +52,7 @@
           </span>
         </div>
         <table class="table table-striped viewTableFilter"
-               data-floatheadtop="45">
+               data-floatheadtop="51">
           <thead>
             <tr>
               <th>
@@ -76,13 +76,11 @@
               <th>Id</th>
               <th>Meaning</th>
               <th>Meaning specification tooltip</th>
-              <th>MeaningSetMember</th>
-              <th>MeaningSetIx</th>
               {# exampleContext_title.html #}
               <th>Example Context</th>
               <th colspan="2"></th>
               {% if user.is_authenticated %}
-              <th>Edit<br>metadata</th>
+              <th></th>
               {% endif %}
               <th>% Cog.<br>coded</th>
               <th data-toggle="tooltip"
@@ -120,26 +118,56 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Number of cognate classes that have a root form.">
-                Root form count
-              </th>
-              <th data-toggle="tooltip"
-                  data-placement="bottom"
-                  data-container="body"
                   title="Percentage of cognate classes that have a root form.">
-                Root form %
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Root form %
+                  </div>
+                </div>
               </th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Number of cognate classes that have a root language.">
-                Root language count
+                  title="Number of cognate classes that have a root form.">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Count
+                  </div>
+                </div>
               </th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
                   title="Percentage of cognate classes that have a root language.">
-                Root language %
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Root lg %
+                  </div>
+                </div>
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of cognate classes that have a root language.">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Count
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Set Ix
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Member Ix
+                  </div>
+                </div>
               </th>
             </tr>
             <tr class="filterBar">
@@ -206,44 +234,6 @@
                   </div>
                 {% endif %}
               </td>
-              <td>
-                {% if user.is_authenticated %}
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".meaningSetMember input"
-                         style="width: 6em;">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".meaningSetMember input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% else %}
-                  <input type="text" class="filterText form-control"
-                         data-selector=".meaningSetMember"
-                         style="width: 6em;">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".meaningSetMember">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% endif %}
-              </td>
-              <td>
-                {% if user.is_authenticated %}
-                  <input type="text" class="filterInput form-control"
-                         data-selector=".meaningSetIx input"
-                         style="width: 6em;">
-                  <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".meaningSetIx input">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% else %}
-                  <input type="text" class="filterText form-control"
-                         data-selector=".meaningSetIx"
-                         style="width: 6em;">
-                  <div class="btn btn-xs btn-default sortText"
-                       data-selector=".meaningSetIx">
-                    <span class="glyphicon glyphicon-sort"></span>
-                  </div>
-                {% endif %}
-              </td>
               {# exampleContext_filter.html #}
               <td>
                 {% if user.is_authenticated and user.is_staff %}
@@ -291,19 +281,13 @@
               </td>
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".meaningCogRootFormCount">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </td>
-              <td>
-                <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogRootFormPercentage">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
               <td>
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".meaningCogRootLanguageCount">
+                <div class="btn btn-xs btn-default sortIntText pull-right"
+                     data-selector=".meaningCogRootFormCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
@@ -312,6 +296,50 @@
                      data-selector=".meaningCogRootLanguagePercentage">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
+              </td>
+              <td>
+                <div class="btn btn-xs btn-default sortIntText pull-right"
+                     data-selector=".meaningCogRootLanguageCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              <td>
+                {% if user.is_authenticated %}
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".meaningSetIx input"
+                         style="width: 2em;">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".meaningSetIx input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control"
+                         data-selector=".meaningSetIx"
+                         style="width: 2em;">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".meaningSetIx">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% if user.is_authenticated %}
+                  <input type="text" class="filterInput form-control"
+                         data-selector=".meaningSetMember input"
+                         style="width: 2em;">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".meaningSetMember input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text" class="filterText form-control"
+                         data-selector=".meaningSetMember"
+                         style="width: 2em;">
+                  <div class="btn btn-xs btn-default sortText"
+                       data-selector=".meaningSetMember">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
               </td>
             </tr>
           </thead>
@@ -379,20 +407,6 @@
                   {{ meaning.object_data.tooltip }}
                 {% endif %}
                 </td>
-                <td class="meaningSetMember">
-                {% if user.is_authenticated and user.is_staff %}
-                  {% form_field meaning.meaningSetMember class="form-control numberField" %}
-                {% else %}
-                  {{ meaning.object_data.meaningSetMember }}
-                {% endif %}
-                </td>
-                <td class="meaningSetIx">
-                {% if user.is_authenticated and user.is_staff %}
-                  {% form_field meaning.meaningSetIx class="form-control numberField" %}
-                {% else %}
-                  {{ meaning.object_data.meaningSetIx }}
-                {% endif %}
-                </td>
                 {# exampleContext_data.html #}
                 <td class="exampleContext">
                 {% if user.is_authenticated and user.is_staff %}
@@ -446,25 +460,39 @@
                     {{ meaning.object_data.cogParallelLoanCount }}
                   </span>
                 </td>
-                <td class="meaningCogRootFormCount">
-                  <span class="badge">
-                    {{ meaning.object_data.cogRootFormCount }}
-                  </span>
-                </td>
                 <td class="meaningCogRootFormPercentage">
-                  <span class="badge">
+                  <span class="badge pull-right">
                     {{ meaning.object_data.cogRootFormPercentage }}
                   </span>
                 </td>
-                <td class="meaningCogRootLanguageCount">
-                  <span class="badge">
-                    {{ meaning.object_data.cogRootLanguageCount }}
+                <td class="meaningCogRootFormCount">
+                  <span class="badge pull-right">
+                    {{ meaning.object_data.cogRootFormCount }}
                   </span>
                 </td>
                 <td class="meaningCogRootLanguagePercentage">
-                  <span class="badge">
+                  <span class="badge pull-right">
                     {{ meaning.object_data.cogRootLanguagePercentage }}
                   </span>
+                </td>
+                <td class="meaningCogRootLanguageCount">
+                  <span class="badge pull-right">
+                    {{ meaning.object_data.cogRootLanguageCount }}
+                  </span>
+                </td>
+                <td class="meaningSetIx">
+                {% if user.is_authenticated and user.is_staff %}
+                  {% form_field meaning.meaningSetIx class="form-control numberField" %}
+                {% else %}
+                  {{ meaning.object_data.meaningSetIx }}
+                {% endif %}
+                </td>
+                <td class="meaningSetMember">
+                {% if user.is_authenticated and user.is_staff %}
+                  {% form_field meaning.meaningSetMember class="form-control numberField" %}
+                {% else %}
+                  {{ meaning.object_data.meaningSetMember }}
+                {% endif %}
                 </td>
               </tr>
             {% endfor %}

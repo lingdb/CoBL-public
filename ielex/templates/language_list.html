@@ -833,7 +833,7 @@
                 {# latitude_data.html #}
                 <td>
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.latitude class="form-control" %}
+                    {% form_field language.latitude class="form-control" style="min-width: 4em;" %}
                   {% else %}
                     {{ language.object_data.latitude }}
                   {% endif %}
@@ -841,7 +841,7 @@
                 {# longitude_data.html #}
                 <td>
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.longitude class="form-control" %}
+                    {% form_field language.longitude class="form-control" style="min-width: 4em;" %}
                   {% else %}
                     {{ language.object_data.longitude }}
                   {% endif %}
