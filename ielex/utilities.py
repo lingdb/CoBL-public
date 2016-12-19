@@ -136,6 +136,17 @@ class LexDBManagementCommand(BaseCommand):
         self.execute(*args, **options.__dict__)
 
 
+def memoizeSelf(f):
+    # Memoization for a function with only self parameter
+    results = {}
+
+    def helper(self):
+        if 'computed' not in results:
+            results['computed'] = f(self)
+        return results['computed']
+    return helper
+
+
 if __name__ == "__main__":
     snip_flag = True
     for i in range(1, 703):
