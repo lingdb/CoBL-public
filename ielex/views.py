@@ -304,7 +304,7 @@ def get_prev_and_next_lexemes(request, current_lexeme):
     by meaning and then alphabetically by form"""
     lexemes = list(Lexeme.objects.filter(
         language=current_lexeme.language).order_by(
-            "meaning", "phon_form", "source_form", "id"))
+            "meaning", "phon_form", "romanised", "id"))
     ids = [l.id for l in lexemes]
     try:
         current_idx = ids.index(current_lexeme.id)
@@ -1638,7 +1638,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
             redirect_url = reverse('view-lexeme', args=[lexeme_id])
             if action == "edit":
                 form = EditLexemeForm(instance=lexeme)
-                # initial={"source_form":lexeme.source_form,
+                # initial={"romanised":lexeme.romanised,
                 # "phon_form":lexeme.phon_form,
                 # "notes":lexeme.notes,
                 # "meaning":lexeme.meaning})
@@ -1756,12 +1756,12 @@ def lexeme_duplicate(request, lexeme_id):
     SPLIT_RE = re.compile("[,;]")   # split on these characters
     done_split = False
 
-    if SPLIT_RE.search(original_lexeme.source_form):
-        original_source_form, new_source_form = [
-            e.strip() for e in SPLIT_RE.split(original_lexeme.source_form, 1)]
+    if SPLIT_RE.search(original_lexeme.romanised):
+        original_romanised, new_romanised = [
+            e.strip() for e in SPLIT_RE.split(original_lexeme.romanised, 1)]
         done_split = True
     else:
-        original_source_form, new_source_form = original_lexeme.source_form, ""
+        original_romanised, new_romanised = original_lexeme.romanised, ""
 
     if SPLIT_RE.search(original_lexeme.phon_form):
         original_phon_form, new_phon_form = [
@@ -1774,7 +1774,7 @@ def lexeme_duplicate(request, lexeme_id):
         new_lexeme = Lexeme.objects.create(
             language=original_lexeme.language,
             meaning=original_lexeme.meaning,
-            source_form=new_source_form,
+            romanised=new_romanised,
             phon_form=new_phon_form,
             notes=original_lexeme.notes)
         for lc in original_lexeme.lexemecitation_set.all():
@@ -1794,7 +1794,7 @@ def lexeme_duplicate(request, lexeme_id):
                     pages=cjc.pages,
                     reliability=cjc.reliability)
 
-        original_lexeme.source_form = original_source_form
+        original_lexeme.romanised = original_romanised
         original_lexeme.phon_form = original_phon_form
         original_lexeme.save()
     redirect_to = "%s#lexeme_%s" % (
@@ -2337,7 +2337,7 @@ def lexeme_search(request):
                 # Search language fields
                 lexemes = Lexeme.objects.filter(
                     Q(phon_form__regex=regex) |
-                    Q(source_form__regex=regex),
+                    Q(romanised__regex=regex),
                     language__in=languages)[:LIMIT_TO]
             else:
                 # Search English fields

@@ -68,8 +68,8 @@
               <th colspan="2">Meaning</th>
               {# copyCognateClass_title.html #}
               <th></th>
-              {# sourceform_title.html #}
-              <th>Orthographic</th>
+              {# romanised_title.html #}
+              <th>Roman(ised)</th>
               {# viewcopy_title.html #}
               <th></th>
               {# nativeScript_title.html #}
@@ -158,22 +158,22 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
-              {# sourceform_filter.html #}
+              {# romanised_filter.html #}
               <td>
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control narrow"
-                         data-selector=".lexemeSourceForm input">
+                         data-selector=".lexemeRomanised input">
                   <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".lexemeSourceForm input">
+                       data-selector=".lexemeRomanised input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% else %}
                   <input type="text"
                          class="filterText form-control narrow"
-                         data-selector=".lexemeSourceForm">
+                         data-selector=".lexemeRomanised">
                   <div class="btn btn-xs btn-default sortText"
-                       data-selector=".lexemeSourceForm">
+                       data-selector=".lexemeRomanised">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
@@ -361,12 +361,12 @@
                     </a>
                   {% endif %}
                 </td>
-                {# sourceform_data.html #}
-                <td class="lexemeSourceForm">
+                {# romanised_data.html #}
+                <td class="lexemeRomanised">
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.source_form id="source_form" class="form-control" style="font-size: 15px;" %}
-                  {% elif lexeme.object_data.source_form %}
-                    {{ lexeme.object_data.source_form }}
+                    {% form_field lexeme.romanised id="romanised" class="form-control" style="font-size: 15px;" %}
+                  {% elif lexeme.object_data.romanised %}
+                    {{ lexeme.object_data.romanised }}
                   {% endif %}
                 </td>
                 {# viewcopy_data.html #}
@@ -497,9 +497,9 @@
                   </td>
                   {# copyCognateClass_original.html #}
                   <td></td>
-                  {# sourceform_original.html #}
-                  <td class="lexemeSourceForm">
-                    {{ lexeme.object_data.original.source_form }}
+                  {# romanised_original.html #}
+                  <td class="lexemeRomanised">
+                    {{ lexeme.object_data.original.romanised }}
                   </td>
                   {# viewcopy_original.html #}
                   <td></td>

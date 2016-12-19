@@ -326,14 +326,14 @@ class SearchTests(TestCase):
         self.db = make_basic_objects()
         for i in range(9):
             Lexeme.objects.create(
-                    source_form="a{}".format(i),
+                    romanised="a{}".format(i),
                     language=self.db[Language],
                     meaning=self.db[Meaning])
 
     def test_setup_objects_exist(self):
         "Test that nine 'a*' lexemes have been created"
         self.assertTrue(Lexeme.objects.filter(
-                source_form__regex="^a").count(), 9)
+                romanised__regex="^a").count(), 9)
 
     def test_search_limit(self):
         "Test LIMIT_TO constraint exists and is respected"

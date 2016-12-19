@@ -143,7 +143,7 @@ class ChooseOneSourceField(forms.ModelChoiceField):
 class AddLexemeForm(WTForm):
     language_id = IntegerField('Language:', validators=[InputRequired()])
     meaning_id = IntegerField('Meaning:', validators=[InputRequired()])
-    source_form = StringField('Orthographic:', validators=[InputRequired()])
+    romanised = StringField('Roman(ised):', validators=[InputRequired()])
     nativeScript = StringField('Native Script:',
                                validators=[InputRequired()])
     phon_form = StringField('PhoneTic:', validators=[InputRequired()])
@@ -1077,7 +1077,7 @@ class LexemeRowViewMeaningsForm(AbstractTimestampedForm,
                                      validators=[InputRequired()])
     language_utf8name = StringField('Language Utf8 Name',
                                     validators=[InputRequired()])
-    source_form = StringField('Source Form', validators=[InputRequired()])
+    romanised = StringField('Source Form', validators=[InputRequired()])
     phon_form = StringField('PhoNetic Form', validators=[InputRequired()])
     phoneMic = StringField('PhoneMic Form', validators=[InputRequired()])
     nativeScript = StringField('Native Script',
@@ -1262,7 +1262,7 @@ class LexemeRowLanguageWordlistForm(AbstractTimestampedForm,
                                       validators=[InputRequired()])
     meaning_id = IntegerField('Meaning Id', validators=[InputRequired()])
     meaning = IntegerField('Meaning', validators=[InputRequired()])
-    source_form = StringField('Source Form', validators=[InputRequired()])
+    romanised = StringField('Source Form', validators=[InputRequired()])
     phon_form = StringField('PhoNetic Form', validators=[InputRequired()])
     phoneMic = StringField('PhoneMic Form', validators=[InputRequired()])
     nativeScript = StringField('Native Script',
@@ -1324,7 +1324,7 @@ class TwoLanguageWordlistRowForm(AbstractTimestampedForm,
                                       validators=[InputRequired()])
     meaning_id = IntegerField('Meaning Id', validators=[InputRequired()])
     meaning = IntegerField('Meaning', validators=[InputRequired()])
-    source_form = StringField('Source Form', validators=[InputRequired()])
+    romanised = StringField('Source Form', validators=[InputRequired()])
     nativeScript = StringField('Native Script',
                                validators=[InputRequired()])
     not_swadesh_term = BooleanField('Not Swadesh Term',
@@ -1378,7 +1378,7 @@ class RemoveEmptyLexemsForLanguageForm(WTForm):
     def handle(self, request):
         language = Language.objects.get(ascii_name=self.data['language'])
         with transaction.atomic():
-            wanted = Lexeme.objects.filter(source_form='', language=language)
+            wanted = Lexeme.objects.filter(romanised='', language=language)
             meanings = wanted.values_list('meaning__gloss', flat=True)
             if len(meanings) > 0:
                 wanted.delete()
@@ -1842,7 +1842,7 @@ class LexemeCitationInlineForm(OrderableInlineModelForm):
         self.fields['language'].initial = self.instance.lexeme.language
         self.fields['lexeme'].initial = '<a href=%s>%s</a>' % \
                                         (lexeme.get_absolute_url(),
-                                         lexeme.source_form)
+                                         lexeme.romanised)
         self.order_fields(['lexeme', 'language', 'comment'])
 
 
@@ -1864,7 +1864,7 @@ class CognateJudgementInlineForm(OrderableInlineModelForm):
         self.fields['language'].initial = lexeme.language
         self.fields['lexeme'].initial = '<a href=%s>%s</a>' % \
                                         (lexeme.get_absolute_url(),
-                                         lexeme.source_form)
+                                         lexeme.romanised)
         self.fields['cognate_judgement'].initial = \
             '<a href=%s>%s</a>' % \
             (cognate_judgement.get_absolute_url(), cognate_judgement)

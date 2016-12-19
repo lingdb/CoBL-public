@@ -47,7 +47,7 @@ def handleMeaningsLanguageImport(fileDicts, request):
         'id': intOrNone,
         'language_id': int,
         'meaning_id': int,
-        'source_form': strOrEmpty,
+        'romanised': strOrEmpty,
         'phon_form': strOrEmpty,
         'gloss': strOrEmpty,
         'notes': strOrEmpty,

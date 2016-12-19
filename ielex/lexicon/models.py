@@ -1245,9 +1245,9 @@ class CognateClass(AbstractTimestamped):
     def rootFormOrPlaceholder(self):
         if self.root_form != '':
             return self.root_form
-        # If single lexeme in cognate class, use source_form:
+        # If single lexeme in cognate class, use romanised:
         if self.lexeme_set.count() == 1:
-            return self.lexeme_set.get().source_form
+            return self.lexeme_set.get().romanised
         # Do we have a loanword?
         if self.loanword:
             if self.sourceFormInLoanLanguage != '':
@@ -1353,13 +1353,12 @@ class Lexeme(AbstractTimestamped):
     meaning = models.ForeignKey(Meaning)
     cognate_class = models.ManyToManyField(
         CognateClass, through="CognateJudgement", blank=True)
-    source_form = models.CharField(max_length=128)
+    romanised = models.CharField(max_length=128)
     phon_form = models.CharField(max_length=128, blank=True)
     gloss = models.CharField(max_length=128, blank=True)
     notes = models.TextField(blank=True)
     source = models.ManyToManyField(
         Source, through="LexemeCitation", blank=True)
-    # Former JSON fields:
     phoneMic = models.TextField(blank=True)
     nativeScript = models.TextField(blank=True)
     not_swadesh_term = models.BooleanField(default=0)
@@ -1393,7 +1392,7 @@ class Lexeme(AbstractTimestamped):
             return "/lexeme/%s/" % self.id
 
     def __str__(self):
-        return self.phon_form or self.source_form or ("Lexeme %s" % self.id)
+        return self.phon_form or self.romanised or ("Lexeme %s" % self.id)
 
     class Meta:
         order_with_respect_to = "language"
@@ -1428,7 +1427,7 @@ class Lexeme(AbstractTimestamped):
             'root_language': ','.join(rls)}
 
     def timestampedFields(self):
-        return set(['source_form', 'phon_form', 'gloss', 'notes', 'phoneMic',
+        return set(['romanised', 'phon_form', 'gloss', 'notes', 'phoneMic',
                     'nativeScript', 'not_swadesh_term',
                     'rfcWebLookup1', 'rfcWebLookup2', 'dubious'])
 
@@ -1436,7 +1435,7 @@ class Lexeme(AbstractTimestamped):
         return 'Could not update Lexeme entry: ' \
             '"%s" with values %s. ' \
             'It was last touched by "%s" %s.' % \
-            (self.source_form, kwargs, self.lastEditedBy, self.lastTouched)
+            (self.romanised, kwargs, self.lastEditedBy, self.lastTouched)
 
     @property
     def denormalized_cognate_classes(self):
@@ -1831,7 +1830,7 @@ class LexemeCitation(AbstractBaseCitation):
 
     def __str__(self):
         return u"%s %s src:%s" % \
-            (self.id, self.lexeme.source_form, self.source.id)
+            (self.id, self.lexeme.romanised, self.source.id)
 
     class Meta:
         unique_together = (("lexeme", "source"),)

@@ -550,7 +550,7 @@ def dump_cognate_data(
             cj.cognate_class.id,
             cj.lexeme.language.ascii_name,
             str(cj.lexeme.phon_form.strip() or
-                cj.lexeme.source_form.strip()),
+                cj.lexeme.romanised.strip()),
             cj.lexeme.id,
             loanword_flag]))
     lexemes = Lexeme.objects.filter(
@@ -573,7 +573,7 @@ def dump_cognate_data(
             "",
             lexeme.language.ascii_name,
             str(lexeme.phon_form.strip() or
-                lexeme.source_form.strip()),
+                lexeme.romanised.strip()),
             lexeme.id,
             loanword_flag]))
 

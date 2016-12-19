@@ -34,7 +34,7 @@
         <thead>
           <tr>
             <th>Language</th>
-            <th>Source Form</th>
+            <th>Roman(ised)</th>
             <th>Phonological Form</th>
             <th>Meaning set</th>
             <th>Gloss</th>
@@ -45,7 +45,7 @@
           {% for lexeme in lexemes %}
             <tr class="{% cycle 'odd' 'even' %}">
               <td><a href="{% url 'language-report' lexeme.language.ascii_name %}">{{ lexeme.language.utf8_name }}</a></td>
-              <td>{{ lexeme.source_form }}</td>
+              <td>{{ lexeme.romanised }}</td>
               <td>{{ lexeme.phon_form }}</td>
               <td>{{ lexeme.meaning.gloss }}</td>
               <td>{{ lexeme.gloss }}</td>

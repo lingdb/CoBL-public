@@ -31,7 +31,7 @@ def make_basic_objects():
         ascii_name="LANGUAGE", utf8_name="LANGUAGE")
     meaning = Meaning.objects.create(gloss="MEANING")
     lexeme = Lexeme.objects.create(
-        source_form="LEXEME", language=language, meaning=meaning)
+        romanised="LEXEME", language=language, meaning=meaning)
     cogclass = CognateClass.objects.create(alias="X")
     cogjudge = CognateJudgement.objects.create(
         lexeme=lexeme, cognate_class=cogclass)
@@ -127,7 +127,7 @@ class SignalsTests(TestCase):
     def test_update_denormalized_from_lexeme(self):
         self.meaning.percent_coded = 999
         Lexeme.objects.create(
-            source_form="a",
+            romanised="a",
             meaning=self.meaning,
             language=self.language)
         self.assertEqual(self.meaning.percent_coded, 0)
@@ -136,7 +136,7 @@ class SignalsTests(TestCase):
         # i.e. that saving a CognateJudgement also triggers
         # the signal to update_denormalized_from_lexeme
         lexeme = Lexeme.objects.create(
-            source_form="a",
+            romanised="a",
             meaning=self.meaning,
             language=self.language)
         self.meaning.percent_coded = 999
@@ -239,7 +239,7 @@ class CognateCitationValidityTests(TestCase):
         self.source = Source.objects.create(citation_text="a")
         self.cognate_class = CognateClass.objects.create(alias="A")
         self.lexeme = Lexeme.objects.create(
-            source_form="a",
+            romanised="a",
             meaning=self.meaning,
             language=self.language)
         self.delete = lambda obj: obj.delete()
@@ -301,7 +301,7 @@ class LexemeCitationValidityTests(TestCase):
 
     def test_cant_delete_final_citation(self):
         lexeme = Lexeme.objects.create(
-            source_form="a",
+            romanised="a",
             meaning=self.meaning,
             language=self.language)
         citation = LexemeCitation.objects.create(
@@ -313,7 +313,7 @@ class LexemeCitationValidityTests(TestCase):
 
     def test_can_delete_penultimate_citation(self):
         lexeme = Lexeme.objects.create(
-            source_form="a",
+            romanised="a",
             meaning=self.meaning,
             language=self.language)
         citation_1 = LexemeCitation.objects.create(
@@ -331,7 +331,7 @@ class LexemeCitationValidityTests(TestCase):
 
     def test_can_still_delete_on_cascade(self):
         lexeme = Lexeme.objects.create(
-                source_form="a",
+                romanised="a",
                 meaning=self.meaning,
                 language=self.language)
         citation = LexemeCitation.objects.create(
@@ -358,21 +358,21 @@ class CleanLexemeFormTests(TestCase):
         from ielex.forms import AddLexemeForm
         self.AddLexemeForm = AddLexemeForm
 
-    def test_required_source_form(self):
+    def test_required_romanised(self):
         form = self.AddLexemeForm({
-            "source_form": "AAA",
+            "romanised": "AAA",
             "language": self.db[Language].id,
             "meaning": self.db[Meaning].id})
         self.assertTrue(form.is_valid())
 
     def test_stripped_whitespace(self):
         form = self.AddLexemeForm({
-            "source_form": "\tAAA\n",
+            "romanised": "\tAAA\n",
             "phon_form": " BBB\t",
             "language": self.db[Language].id,
             "meaning": self.db[Meaning].id})
         self.assertTrue(form.is_valid())
-        self.assertEqual(form.cleaned_data["source_form"], "AAA")
+        self.assertEqual(form.cleaned_data["romanised"], "AAA")
         self.assertEqual(form.cleaned_data["phon_form"], "BBB")
 
 

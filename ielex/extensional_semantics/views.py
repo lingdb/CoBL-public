@@ -219,7 +219,7 @@ def language_domain_view(request, language, domain=SemanticDomain.DEFAULT):
             lexeme__language=language).order_by(
                 "relation__relation_code",
                 "lexeme__phon_form",
-                "lexeme__source_form")
+                "lexeme__romanised")
 
     # change language
     redirect, form = goto_language_domain_form(request, domain)
