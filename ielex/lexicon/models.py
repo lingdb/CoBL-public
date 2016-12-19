@@ -1361,7 +1361,7 @@ class Lexeme(AbstractTimestamped):
         Source, through="LexemeCitation", blank=True)
     # Former JSON fields:
     phoneMic = models.TextField(blank=True)
-    transliteration = models.TextField(blank=True)
+    nativeScript = models.TextField(blank=True)
     not_swadesh_term = models.BooleanField(default=0)
     rfcWebLookup1 = models.TextField(blank=True)
     rfcWebLookup2 = models.TextField(blank=True)
@@ -1429,7 +1429,7 @@ class Lexeme(AbstractTimestamped):
 
     def timestampedFields(self):
         return set(['source_form', 'phon_form', 'gloss', 'notes', 'phoneMic',
-                    'transliteration', 'not_swadesh_term',
+                    'nativeScript', 'not_swadesh_term',
                     'rfcWebLookup1', 'rfcWebLookup2', 'dubious'])
 
     def deltaReport(self, **kwargs):

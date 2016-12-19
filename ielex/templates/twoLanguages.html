@@ -72,8 +72,8 @@
               <th>Orthographic</th>
               {# viewcopy_title.html #}
               <th></th>
-              {# transliteration_title.html #}
-              <th>Transliteration</th>
+              {# nativeScript_title.html #}
+              <th>Native Script</th>
               {# notswadesh_title.html #}
               <th>
                 <div class="vertical-text">
@@ -180,22 +180,22 @@
               </td>
               {# viewcopy_filter.html #}
               <td></td>
-              {# transliteration_filter.html #}
+              {# nativeScript_filter.html #}
               <td>
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control narrow"
-                         data-selector=".lexemeTransliteration input">
+                         data-selector=".lexemeNativeScript input">
                   <div class="btn btn-xs btn-default sortInput"
-                       data-selector=".lexemeTransliteration input">
+                       data-selector=".lexemeNativeScript input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% else %}
                   <input type="text"
                          class="filterText form-control narrow"
-                         data-selector=".lexemeTransliteration">
+                         data-selector=".lexemeNativeScript">
                   <div class="btn btn-xs btn-default sortText"
-                       data-selector=".lexemeTransliteration">
+                       data-selector=".lexemeNativeScript">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
@@ -375,12 +375,12 @@
                     <span class="glyphicon glyphicon-search"></span>
                   </a>
                 </td>
-                {# transliteration_data.html #}
-                <td class="lexemeTransliteration">
+                {# nativeScript_data.html #}
+                <td class="lexemeNativeScript">
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.transliteration id="transliteration" class="form-control" %}
-                  {% elif lexeme.object_data.transliteration %}
-                    {{ lexeme.object_data.transliteration }}
+                    {% form_field lexeme.nativeScript id="nativeScript" class="form-control" %}
+                  {% elif lexeme.object_data.nativeScript %}
+                    {{ lexeme.object_data.nativeScript }}
                   {% endif %}
                 </td>
                 {# notswadesh_data.html #}
@@ -503,9 +503,9 @@
                   </td>
                   {# viewcopy_original.html #}
                   <td></td>
-                  {# transliteration_original.html #}
-                  <td class="lexemeTransliteration">
-                    {{ lexeme.object_data.original.transliteration }}
+                  {# nativeScript_original.html #}
+                  <td class="lexemeNativeScript">
+                    {{ lexeme.object_data.original.nativeScript }}
                   </td>
                   {# notswadesh_original.html #}
                   <td class="lexemeNotSwadeshTerm">

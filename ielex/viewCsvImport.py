@@ -57,7 +57,7 @@ def handleMeaningsLanguageImport(fileDicts, request):
         'phoneMic': strOrEmpty,
         'rfcWebLookup1': strOrEmpty,
         'rfcWebLookup2': strOrEmpty,
-        'transliteration': strOrEmpty,
+        'nativeScript': strOrEmpty,
         'lastEditedBy': strNonEmpty,
         'lastTouched': strToDatetime
     }

@@ -116,8 +116,8 @@
             <th>Orthog.</th>
             {# lexemeeditcopy_title.html #}
             <th colspan="3"></th>
-            {# transliteration_title.html #}
-            <th>Translit.</th>
+            {# nativeScript_title.html #}
+            <th>Native Script</th>
             {# citations_title.html #}
             <th>
               <div class="vertical-text">
@@ -247,22 +247,22 @@
             </td>
             {# lexemeeditcopy_filter.html #}
             <td colspan="3"></td>
-            {# transliteration_filter.html #}
+            {# nativeScript_filter.html #}
             <td>
               {% if user.is_authenticated %}
                 <input type="text"
                        class="filterInput form-control"
-                       data-selector=".lexemeTransliteration input">
+                       data-selector=".lexemeNativeScript input">
                 <div class="btn btn-xs btn-default sortInput"
-                     data-selector=".lexemeTransliteration input">
+                     data-selector=".lexemeNativeScript input">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               {% else %}
                 <input type="text"
                        class="filterText form-control"
-                       data-selector=".lexemeTransliteration">
+                       data-selector=".lexemeNativeScript">
                 <div class="btn btn-xs btn-default sortText"
-                     data-selector=".lexemeTransliteration">
+                     data-selector=".lexemeNativeScript">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               {% endif %}
@@ -515,7 +515,7 @@
                 {% if user.is_authenticated %}
                   <button class="leftcheckarrow btn btn-xs"
                           type="button"
-                          id="translit2src#{{lexeme.transliteration.name}}#{{lexeme.source_form.name}}"
+                          id="translit2src#{{lexeme.nativeScript.name}}#{{lexeme.source_form.name}}"
                           onclick="CopyAcross(this)">
                     <span class="glyphicon glyphicon-step-backward"></span>
                   </button>
@@ -525,18 +525,18 @@
                 {% if user.is_authenticated %}
                   <button class="rightcheckarrow btn btn-xs"
                           type="button"
-                          id="src2translit#{{lexeme.source_form.name}}#{{lexeme.transliteration.name}}"
+                          id="src2translit#{{lexeme.source_form.name}}#{{lexeme.nativeScript.name}}"
                           onclick="CopyAcross(this)">
                     <span class="glyphicon glyphicon-step-forward"></span>
                   </button>
                 {% endif %}
               </td>
-              {# transliteration_data.html #}
-              <td class="lexemeTransliteration">
+              {# nativeScript_data.html #}
+              <td class="lexemeNativeScript">
                 {% if user.is_authenticated %}
-                  {% form_field lexeme.transliteration id="transliteration" size="8" class="form-control" %}
-                {% elif lexeme.transliteration.data %}
-                  {{ lexeme.transliteration.data }}
+                  {% form_field lexeme.nativeScript id="nativeScript" size="8" class="form-control" %}
+                {% elif lexeme.object_data.nativeScript %}
+                  {{ lexeme.object_data.nativeScript }}
                 {% endif %}
               </td>
               {# citations_data.html #}

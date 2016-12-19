@@ -144,8 +144,8 @@ class AddLexemeForm(WTForm):
     language_id = IntegerField('Language:', validators=[InputRequired()])
     meaning_id = IntegerField('Meaning:', validators=[InputRequired()])
     source_form = StringField('Orthographic:', validators=[InputRequired()])
-    transliteration = StringField('Transliteration:',
-                                  validators=[InputRequired()])
+    nativeScript = StringField('Native Script:',
+                               validators=[InputRequired()])
     phon_form = StringField('PhoneTic:', validators=[InputRequired()])
     phoneMic = StringField('phoneMic:', validators=[InputRequired()])
 
@@ -1080,8 +1080,8 @@ class LexemeRowViewMeaningsForm(AbstractTimestampedForm,
     source_form = StringField('Source Form', validators=[InputRequired()])
     phon_form = StringField('PhoNetic Form', validators=[InputRequired()])
     phoneMic = StringField('PhoneMic Form', validators=[InputRequired()])
-    transliteration = StringField('Transliteration',
-                                  validators=[InputRequired()])
+    nativeScript = StringField('Native Script',
+                               validators=[InputRequired()])
     not_swadesh_term = BooleanField('Not Swadesh Term',
                                     validators=[InputRequired()])
     gloss = StringField('Gloss', validators=[InputRequired()])
@@ -1265,8 +1265,8 @@ class LexemeRowLanguageWordlistForm(AbstractTimestampedForm,
     source_form = StringField('Source Form', validators=[InputRequired()])
     phon_form = StringField('PhoNetic Form', validators=[InputRequired()])
     phoneMic = StringField('PhoneMic Form', validators=[InputRequired()])
-    transliteration = StringField('Transliteration',
-                                  validators=[InputRequired()])
+    nativeScript = StringField('Native Script',
+                               validators=[InputRequired()])
     not_swadesh_term = BooleanField('Not Swadesh Term',
                                     validators=[InputRequired()])
     gloss = StringField('Gloss', validators=[InputRequired()])
@@ -1325,8 +1325,8 @@ class TwoLanguageWordlistRowForm(AbstractTimestampedForm,
     meaning_id = IntegerField('Meaning Id', validators=[InputRequired()])
     meaning = IntegerField('Meaning', validators=[InputRequired()])
     source_form = StringField('Source Form', validators=[InputRequired()])
-    transliteration = StringField('Transliteration',
-                                  validators=[InputRequired()])
+    nativeScript = StringField('Native Script',
+                               validators=[InputRequired()])
     not_swadesh_term = BooleanField('Not Swadesh Term',
                                     validators=[InputRequired()])
     gloss = StringField('Gloss', validators=[InputRequired()])
