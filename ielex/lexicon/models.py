@@ -633,12 +633,14 @@ def getCladeFromLanguageIds(languageIds):
     If no such clade can be found returns None.
     '''
     # Calculating clade
+    lIdToCladeOrders = defaultdict(dict)  # lId -> cId -> cladesOrder
+    for lId, cladeId, cladesOrder in LanguageClade.objects.filter(
+            language_id__in=languageIds).values_list(
+            'language_id', 'clade_id', 'cladesOrder'):
+        lIdToCladeOrders[lId][cladeId] = cladesOrder
+    # Intersecting clades:
     cladeIdOrderMap = None
-    for languageId in languageIds:
-        newcIdOrderMap = dict(
-            LanguageClade.objects.filter(
-                language_id=languageId
-            ).values_list('clade_id', 'cladesOrder'))
+    for _, newcIdOrderMap in lIdToCladeOrders.items():
         if cladeIdOrderMap is None:
             cladeIdOrderMap = newcIdOrderMap
         else:
