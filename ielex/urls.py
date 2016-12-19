@@ -57,7 +57,8 @@ from ielex.views import add_language_list, \
                         view_language_progress, \
                         view_language_distributions, \
                         json_cognateClass_placeholders, \
-                        view_cladecognatesearch
+                        view_cladecognatesearch, \
+                        view_csvExport
 from ielex.viewCsvImport import viewCsvImport
 from ielex import settings
 from ielex.lexicon.views import CognateClassCitationCreateView, \
@@ -104,6 +105,9 @@ urlpatterns = [
     url(r'^changes/$', view_changes, name="view-changes"),
     url(r'^changes/%(USERNAME)s/$' % R, view_changes,
         name="view-changes-user"),
+
+    # csv Exports
+    url(r'^csvExport/$', view_csvExport, name="view-csvExport"),
 
     # Language list
     url(r'^languages/$', view_language_list),

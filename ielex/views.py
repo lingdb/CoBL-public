@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
+import csv
 import datetime
 import logging
+import io
 import json
 import re
 import requests
 import time
+import zipfile
 from collections import defaultdict, deque
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -20,6 +23,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, \
 from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template import Template
+from django.db.models.query_utils import DeferredAttribute
 from reversion.models import Revision, Version
 from ielex.settings import LIMIT_TO, META_TAGS
 from ielex.forms import AddCitationForm, \
@@ -88,7 +92,8 @@ from ielex.lexicon.models import Author, \
     MeaningList, \
     SndComp, \
     Source, \
-    NexusExport
+    NexusExport, \
+    MeaningListOrder
 from ielex.lexicon.defaultModels import getDefaultLanguage, \
     getDefaultLanguageId, \
     getDefaultLanguagelist, \
@@ -2902,3 +2907,54 @@ def view_cladecognatesearch(request):
          "cladeLinks": cladeLinks,
          "allClades": allClades,
          "AddCogClassTableForm": form})
+
+
+@user_passes_test(lambda u: u.is_staff)
+@logExceptions
+def view_csvExport(request):
+
+    def modelToFieldnames(model):
+        def isWantedField(field):
+            if field.startswith('_'):
+                return False
+            return isinstance(getattr(model, field), DeferredAttribute)
+        return [f for f in dir(model) if isWantedField(f)]
+
+    def modelToDicts(model, fieldnames):
+        return [{field: getattr(entry, field) for field in fieldnames}
+                for entry in model.objects.all()]
+
+    models = [Author,
+              Clade,
+              CognateClass,
+              CognateClassCitation,
+              CognateJudgement,
+              CognateJudgementCitation,
+              Language,
+              LanguageClade,
+              LanguageList,
+              LanguageListOrder,
+              Lexeme,
+              LexemeCitation,
+              Meaning,
+              MeaningList,
+              MeaningListOrder,
+              SndComp,
+              Source]
+
+    zipBuffer = io.BytesIO()
+    zipFile = zipfile.ZipFile(zipBuffer, 'w')
+    for model in models:
+        filename = 'export/%s.csv' % model.__name__
+        fieldnames = modelToFieldnames(model)
+        modelBuffer = io.StringIO()
+        writer = csv.DictWriter(modelBuffer, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(modelToDicts(model, fieldnames))
+        zipFile.writestr(filename, modelBuffer.getvalue())
+    zipFile.close()
+
+    resp = HttpResponse(zipBuffer.getvalue(),
+                        content_type='application/x-zip-compressed')
+    resp['Content-Disposition'] = 'attachment; filename=export.zip'
+    return resp
