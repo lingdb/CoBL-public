@@ -20,7 +20,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 # ielex specific imports:
-from ielex.utilities import two_by_two
+from ielex.utilities import two_by_two, memoizeSelf
 from ielex.lexicon.validators import suitable_for_url, standard_reserved_names
 
 import inspect
@@ -1241,6 +1241,7 @@ class CognateClass(AbstractTimestamped):
         return ' '.join([cc.alias, cc.root_form, cc.root_language])
 
     @property
+    @memoizeSelf
     def rootFormOrPlaceholder(self):
         if self.root_form != '':
             return self.root_form
@@ -1289,6 +1290,7 @@ class CognateClass(AbstractTimestamped):
         return ''
 
     @property
+    @memoizeSelf
     def rootLanguageOrPlaceholder(self):
         # Added for #246
         # If we have a root_language, we try to enrich it:
