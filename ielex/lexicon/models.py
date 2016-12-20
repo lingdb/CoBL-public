@@ -105,6 +105,11 @@ PROPOSED_AS_COGNATE_TO_SCALE = (  # Used by CognateClass
     (3, '4/6=small majority view'),
     (4, '5/6=large majority view'))
 
+NEXUS_DIALECT_CHOICES = (
+    ("BP", "BayesPhylogenies"),
+    ("NN", "NeighborNet"),
+    ("MB", "MrBayes"))
+
 # http://south.aeracode.org/docs/customfields.html#extending-introspection
 # add_introspection_rules([], ["^ielex\.lexicon\.models\.CharNullField"])
 
@@ -1994,9 +1999,8 @@ class Author(AbstractTimestamped):
 
 @reversion.register
 class NexusExport(AbstractTimestamped):
-    # Methods for compressed fields:
-
     def compressed(field):
+        # Decorator for compressed fields:
 
         def fget(self):
             data = getattr(self, field)
@@ -2015,8 +2019,37 @@ class NexusExport(AbstractTimestamped):
                 'fdel': fdel}
     # Name of .nex file:
     exportName = models.CharField(max_length=256, blank=True)
-    # Settings to compute data:
-    exportSettings = models.TextField(blank=True)
+    # Settings:
+    language_list_name = models.CharField(max_length=128, blank=True)
+    meaning_list_name = models.CharField(max_length=128, blank=True)
+    dialect = models.CharField(
+        max_length=128, choices=NEXUS_DIALECT_CHOICES, default="NN")
+    label_cognate_sets = models.BooleanField(default=True)
+    ascertainment_marker = models.BooleanField(default=True)
+    excludeNotSwadesh = models.BooleanField(default=True)
+    excludePllDerivation = models.BooleanField(default=True)
+    excludeIdeophonic = models.BooleanField(default=True)
+    excludeDubious = models.BooleanField(default=True)
+    excludeLoanword = models.BooleanField(default=False)
+    excludePllLoan = models.BooleanField(default=True)
+    includePllLoan = models.BooleanField(default=False)
+    excludeMarkedMeanings = models.BooleanField(default=True)
+    excludeMarkedLanguages = models.BooleanField(default=True)
+    # List of setting fields:
+    settingFields = ['language_list_name',
+                     'meaning_list_name',
+                     'dialect',
+                     'label_cognate_sets',
+                     'ascertainment_marker',
+                     'excludeNotSwadesh',
+                     'excludePllDerivation',
+                     'excludeIdeophonic',
+                     'excludeDubious',
+                     'excludeLoanword',
+                     'excludePllLoan',
+                     'includePllLoan',
+                     'excludeMarkedMeanings',
+                     'excludeMarkedLanguages']
     # Compressed data of nexus file:
     _exportData = models.BinaryField(null=True)
     exportData = property(**compressed('_exportData'))
@@ -2070,42 +2103,13 @@ class NexusExport(AbstractTimestamped):
             'label_cognate_sets': True,
         }
         # Copying `simple` fields:
-        for f in ['dialect',
-                  'ascertainment_marker',
-                  'excludeNotSwadesh',
-                  'excludePllDerivation',
-                  'excludeIdeophonic',
-                  'excludeDubious',
-                  'excludeLoanword',
-                  'excludePllLoan',
-                  'includePllLoan',
-                  'excludeMarkedMeanings',
-                  'excludeMarkedLanguages']:
+        for f in set(self.settingFields) - set(settings.keys()):
             settings[f] = form.cleaned_data[f]
-        # Finish:
-        self.exportSettings = json.dumps(settings)
+        for k, v in settings.items():
+            setattr(self, k, v)
 
     def getSettings(self):
-        '''
-        settings :: {
-            language_list_name :: LanguageList
-            meaning_list_name :: MeaningList
-            dialect :: "BP" | "NN" | "MB"
-            label_cognate_sets :: Bool
-            ascertainment_marker :: Bool
-            excludeNotSwadesh :: Bool
-            excludePllDerivation :: Bool
-            excludeIdeophonic :: Bool
-            excludeDubious :: Bool
-            excludeLoanword :: Bool
-            excludePllLoan :: Bool
-            includePllLoan :: Bool
-            excludeMarkedMeanings :: Bool
-            excludeMarkedLanguages :: Bool
-        }
-        '''
-        # settings :: {}
-        settings = json.loads(self.exportSettings)
+        settings = {f: getattr(self, f) for f in self.settingFields}
         settings['language_list_name'] = LanguageList.objects.get(
             name=settings['language_list_name'])
         settings['meaning_list_name'] = MeaningList.objects.get(

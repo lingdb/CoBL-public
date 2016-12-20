@@ -1,7 +1,9 @@
 # encoding: utf-8
 from django import forms
 from ielex.forms import ChooseLanguageListField, ChooseMeaningListField
-from ielex.lexicon.models import LanguageList, MeaningList
+from ielex.lexicon.models import LanguageList, \
+                                 MeaningList, \
+                                 NEXUS_DIALECT_CHOICES
 
 
 class ChooseOutputBaseForm(forms.Form):
@@ -16,11 +18,8 @@ class ChooseOutputBaseForm(forms.Form):
 
 
 class ChooseNexusOutputForm(ChooseOutputBaseForm):
-    DIALECT = (("BP", "BayesPhylogenies"),
-               ("NN", "NeighborNet"),
-               ("MB", "MrBayes"))
     dialect = forms.ChoiceField(
-        choices=DIALECT,
+        choices=NEXUS_DIALECT_CHOICES,
         widget=forms.RadioSelect,
         label="NEXUS dialect",
         help_text=u"""BayesPhylogenies uses a ‘data’ block rather than ‘taxa’
