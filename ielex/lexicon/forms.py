@@ -70,6 +70,12 @@ class ChooseNexusOutputForm(ChooseOutputBaseForm):
         label=u"Exclude languages?",
         help_text="Exclude languages marked [Not for Export]"
     )
+    description = forms.CharField(
+        label="Export description",
+        help_text="Please give a short description of the export.",
+        max_length=256,
+        required=True,
+        widget=forms.Textarea)
 
     field_order = ["language_list",
                    "excludeMarkedLanguages",
@@ -83,7 +89,8 @@ class ChooseNexusOutputForm(ChooseOutputBaseForm):
                    "excludeDubious",
                    "excludeLoanword",
                    "excludePllLoan",
-                   "includePllLoan"]
+                   "includePllLoan",
+                   "descriptio n"]
 
     def clean(self):
         # Making sure excludePllLoan and includePllLoan are never both True:

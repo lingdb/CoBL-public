@@ -2019,6 +2019,7 @@ class NexusExport(AbstractTimestamped):
                 'fdel': fdel}
     # Name of .nex file:
     exportName = models.CharField(max_length=256, blank=True)
+    description = models.CharField(max_length=256, blank=True)
     # Settings:
     language_list_name = models.CharField(max_length=128, blank=True)
     meaning_list_name = models.CharField(max_length=128, blank=True)

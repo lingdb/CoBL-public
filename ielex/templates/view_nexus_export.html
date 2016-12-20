@@ -32,6 +32,13 @@
                   data-placement="top">
                 Add. files
               </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Description
+                  </div>
+                </div>
+              </th>
               <th title="Language list"
                   data-toggle="tooltip"
                   data-container="body"
@@ -164,9 +171,13 @@
                   {% endif %}
                 </td>
                 <td>
-                  <a href="/nexus/export/{{ export.id }}">
+                  {% if export.pending %}
                     {{ export.exportName }}
-                  </a>
+                  {% else %}
+                    <a href="/nexus/export/{{ export.id }}">
+                      {{ export.exportName }}
+                    </a>
+                  {% endif %}
                 </td>
                 <td class="nowrap">
                   {% if export.constraintsData %}
@@ -183,6 +194,15 @@
                     </a>
                   {% elif export.pending %}
                       [ BEAUti ]
+                  {% endif %}
+                </td>
+                <td>
+                  {% if export.description %}
+                  <span class="glyphicon glyphicon-info-sign"
+                        title="{{ export.description }}"
+                        data-toggle="tooltip"
+                        data-container="body"
+                        data-placement="top"></span>
                   {% endif %}
                 </td>
                 <td>{{ export.language_list_name }}</td>

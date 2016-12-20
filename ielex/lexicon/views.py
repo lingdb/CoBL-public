@@ -119,7 +119,9 @@ class NexusExportView(TemplateView):
     def post(self, request):
         form = ChooseNexusOutputForm(request.POST)
         if form.is_valid():
-            export = NexusExport(exportName=self.fileNameForForm(form))
+            export = NexusExport(
+                exportName=self.fileNameForForm(form),
+                description=form.cleaned_data["description"])
             export.setSettings(form)
             export.bump(request)
             export.save()
