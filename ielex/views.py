@@ -2623,9 +2623,28 @@ def view_nexus_export(request, exportId=None):
             NexusExport.objects.filter(id=exportId).delete()
             messages.info(request, "Deleted export %s." % exportId)
             return HttpResponseRedirect(reverse("view_nexus_export_base"))
+
+    exports = NexusExport.objects.order_by('-id').all()
+    languageListNames = set([e.language_list_name for e in exports])
+    meaningListNames = set([e.meaning_list_name for e in exports])
+
+    def lCount(languageListName):
+        return LanguageListOrder.objects.filter(
+            language_list__name=languageListName).count()
+
+    def mCount(meaningListName):
+        return MeaningListOrder.objects.filter(
+            meaning_list__name=meaningListName).count()
+
+    languageListCounts = {l: lCount(l) for l in languageListNames}
+    meaningListCounts = {m: mCount(m) for m in meaningListNames}
+    for e in exports:
+        e.languageListCount = languageListCounts[e.language_list_name]
+        e.meaningListCount = meaningListCounts[e.meaning_list_name]
+
     return render_template(
         request, "view_nexus_export.html",
-        {'exports': NexusExport.objects.order_by('-id').all()})
+        {'exports': exports})
 
 
 @csrf_protect

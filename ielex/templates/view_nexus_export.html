@@ -38,11 +38,23 @@
                   data-placement="top">
                 L. list
               </th>
+              <th title="Number of languages in language list"
+                  data-toggle="tooltip"
+                  data-container="body"
+                  data-placement="top">
+                L. #
+              </th>
               <th title="Meaning list"
                   data-toggle="tooltip"
                   data-container="body"
                   data-placement="top">
                 M. list
+              </th>
+              <th title="Number of meanings in meaning list"
+                  data-toggle="tooltip"
+                  data-container="body"
+                  data-placement="top">
+                M. #
               </th>
               <th>
                 <div class="vertical-text">
@@ -174,7 +186,13 @@
                   {% endif %}
                 </td>
                 <td>{{ export.language_list_name }}</td>
+                <td class="numberField">
+                  <span class="badge">{{ export.languageListCount }}</span>
+                </td>
                 <td>{{ export.meaning_list_name }}</td>
+                <td class="numberField">
+                  <span class="badge">{{ export.meaningListCount }}</span>
+                </td>
                 <td>{{ export.dialect }}</td>
                 <td>
                   <input type="checkbox" disabled="disabled" class="form-control" {% if export.label_cognate_sets %}checked="checked"{% endif %}>
