@@ -97,9 +97,11 @@ from ielex.lexicon.models import Author, \
 from ielex.lexicon.defaultModels import getDefaultLanguage, \
     getDefaultLanguageId, \
     getDefaultLanguagelist, \
+    getDefaultLanguagelistId, \
     getDefaultMeaning, \
     getDefaultMeaningId, \
     getDefaultWordlist, \
+    getDefaultWordlistId, \
     getDefaultSourceLanguage, \
     setDefaultLanguage, \
     setDefaultLanguageId, \
@@ -2098,14 +2100,14 @@ def source_list(request):
             queryset = Source.objects.filter(**kwargs)
         else:
             queryset = Source.objects.all()
-        sources_table = get_sources_table(queryset)
+        sources_table = get_sources_table(request, queryset)
         response = HttpResponse()
         RequestConfig(
             request, paginate={'per_page': 1000}).configure(sources_table)
         response.write(sources_table.as_html(request))
         return response
     else:
-        sources_table = get_sources_table()
+        sources_table = get_sources_table(request)
         RequestConfig(
             request, paginate={'per_page': 1000}).configure(sources_table)
         return render_template(request, "source_list.html",
@@ -2114,28 +2116,81 @@ def source_list(request):
                                 })
 
 
-def get_sources_table(queryset=''):
+def get_language_list_obj(request):
+    languageList = LanguageList.objects.get(
+        id=getDefaultLanguagelistId(request))
+    return languageList
+
+
+def get_meaning_list_obj(request):
+    meaningList = MeaningList.objects.get(
+        id=getDefaultWordlistId(request))
+    return meaningList
+
+
+def get_default_lexemes(request):
+    lexemes = Lexeme.objects.all().filter(language_id__in=
+                                          get_language_list_obj(request)
+                                          .languages.all(),
+                                          meaning_id__in=
+                                          get_meaning_list_obj(request)
+                                          .meanings.all())
+    return lexemes
+
+
+def get_default_cognatejudgements(request):
+    cognatejudgements = CognateJudgement.objects.all()\
+                        .filter(lexeme__in=get_default_lexemes(request))
+    return cognatejudgements
+
+
+def get_default_cognateclasses(request):
+    ids_lst = get_default_cognatejudgements(request)\
+              .values_list('cognate_class_id', flat=True)
+    cognateclasses = CognateClass.objects.all()\
+                     .filter(id__in=ids_lst)
+    return cognateclasses
+
+
+def get_sources_table(request, queryset=''):
     if queryset == '':
         queryset = Source.objects.all()
-    # current_languagelist = get_canonical_language_list()
+    lexeme_ids = list(get_default_lexemes(request).values_list('id',
+                                                               flat=True))
+    cognatejudgement_ids = list(get_default_cognatejudgements(request)
+                                .values_list('id', flat=True))
+    cognateclass_ids = list(get_default_cognateclasses(request)
+                            .values_list('id', flat=True))
     queryset = queryset.extra({'cognacy_count':
                                'SELECT COUNT(*) '
                                'FROM lexicon_cognatejudgementcitation '
                                'WHERE '
                                'lexicon_cognatejudgementcitation.source_id '
-                               '= lexicon_source.id',
+                               '= lexicon_source.id AND '
+                               'lexicon_cognatejudgementcitation.'
+                               'cognate_judgement_id IN (%s)'
+                               % (', '.join(str(v)
+                                            for v in cognatejudgement_ids)),
                                'cogset_count':
                                'SELECT COUNT(*) '
                                'FROM lexicon_cognateclasscitation '
                                'WHERE '
                                'lexicon_cognateclasscitation.source_id '
-                               '= lexicon_source.id',
+                               '= lexicon_source.id AND '
+                               'lexicon_cognateclasscitation.'
+                               'cognate_class_id IN (%s)'
+                               % (', '.join(str(v)
+                                            for v in cognateclass_ids)),
                                'lexeme_count':
                                'SELECT COUNT(*) '
                                'FROM lexicon_lexemecitation '
                                'WHERE '
                                'lexicon_lexemecitation.source_id '
-                               '= lexicon_source.id'
+                               '= lexicon_source.id AND '
+                               'lexicon_lexemecitation.'
+                               'lexeme_id IN (%s)'
+                               % (', '.join(str(v)
+                                            for v in lexeme_ids))
                                })
     return SourcesTable(queryset)
 

@@ -70,6 +70,14 @@ LANGUAGE_PROGRESS = (  # used by Languages
     (4, 'Revision complete'),
     (5, 'Second review complete'))
 
+ENTRYTYPE_CHOICES = (  # used by Sources
+    ('book', 'book'),
+    ('article', 'article'),
+    ('expert', 'expert'),
+    ('online', 'online'),
+    ('inbook', 'inbook'),
+    ('misc', 'misc'))
+
 YEAR_CHOICES = []  # used by Source
 for r in reversed(range(1800, (datetime.datetime.now().year + 1))):
     YEAR_CHOICES.append((r, r))
@@ -282,7 +290,7 @@ class Source(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     # NEW FIELDS:
-    ENTRYTYPE = models.CharField(max_length=32, blank=True)
+    ENTRYTYPE = models.CharField(max_length=32, choices=ENTRYTYPE_CHOICES)
     author = models.CharField(max_length=128, blank=True)
     authortype = models.CharField(max_length=16, blank=True)
     year = models.CharField(max_length=16, blank=True,
