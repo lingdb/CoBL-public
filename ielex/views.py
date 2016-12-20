@@ -2129,26 +2129,22 @@ def get_meaning_list_obj(request):
 
 
 def get_default_lexemes(request):
-    lexemes = Lexeme.objects.all().filter(language_id__in=
-                                          get_language_list_obj(request)
-                                          .languages.all(),
-                                          meaning_id__in=
-                                          get_meaning_list_obj(request)
-                                          .meanings.all())
+    lexemes = Lexeme.objects.all().filter(
+        language_id__in=get_language_list_obj(request).languages.all(),
+        meaning_id__in=get_meaning_list_obj(request).meanings.all())
     return lexemes
 
 
 def get_default_cognatejudgements(request):
-    cognatejudgements = CognateJudgement.objects.all()\
-                        .filter(lexeme__in=get_default_lexemes(request))
+    cognatejudgements = CognateJudgement.objects.all().filter(
+        lexeme__in=get_default_lexemes(request))
     return cognatejudgements
 
 
 def get_default_cognateclasses(request):
-    ids_lst = get_default_cognatejudgements(request)\
-              .values_list('cognate_class_id', flat=True)
-    cognateclasses = CognateClass.objects.all()\
-                     .filter(id__in=ids_lst)
+    ids_lst = get_default_cognatejudgements(request).values_list(
+        'cognate_class_id', flat=True)
+    cognateclasses = CognateClass.objects.all().filter(id__in=ids_lst)
     return cognateclasses
 
 
