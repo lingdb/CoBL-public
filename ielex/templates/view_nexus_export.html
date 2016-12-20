@@ -23,14 +23,119 @@
         <table class="table table-bordered">
           <thead>
             <tr>
-              <td>Export ID</td>
-              <td>Done?</td>
-              <td>Name</td>
-              <td>Additional files</td>
-              <td>Settings</td>
-              <td>Date</td>
-              <td>Triggered by</td>
-              <td>Del?</td>
+              <th>ID</th>
+              <th>Done?</th>
+              <th>Name</th>
+              <th title="Additional files"
+                  data-toggle="tooltip"
+                  data-container="body"
+                  data-placement="top">
+                Add. files
+              </th>
+              <th title="Language list"
+                  data-toggle="tooltip"
+                  data-container="body"
+                  data-placement="top">
+                L. list
+              </th>
+              <th title="Meaning list"
+                  data-toggle="tooltip"
+                  data-container="body"
+                  data-placement="top">
+                M. list
+              </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Dialect
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    label cognate sets
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    ascertainment marker
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    excl. NotSwadesh
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    excl. PllDerivation
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    excl. Ideophonic
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    excl. Dubious
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    excl. Loanword
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    excl. PllLoan
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    incl. PllLoan
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    excl. MarkedMeanings
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    excl. MarkedLanguages
+                  </div>
+                </div>
+              </th>
+              <th>Date</th>
+              <th title="Triggered by"
+                  data-toggle="tooltip"
+                  data-container="body"
+                  data-placement="top">
+                by
+              </th>
+              <th>Del?</th>
             </tr>
           </thead>
           <tbody>
@@ -68,7 +173,42 @@
                       [ BEAUti ]
                   {% endif %}
                 </td>
-                <td>{{ export.exportSettings }}</td>
+                <td>{{ export.language_list_name }}</td>
+                <td>{{ export.meaning_list_name }}</td>
+                <td>{{ export.dialect }}</td>
+                <td>
+                  <input type="checkbox" disabled="disabled" class="form-control" {% if export.label_cognate_sets %}checked="checked"{% endif %}>
+                </td>
+                <td>
+                  <input type="checkbox" disabled="disabled" class="form-control" {% if export.ascertainment_marker %}checked="checked"{% endif %}>
+                </td>
+                <td>
+                  <input type="checkbox" disabled="disabled" class="form-control" {% if export.excludeNotSwadesh %}checked="checked"{% endif %}>
+                </td>
+                <td>
+                  <input type="checkbox" disabled="disabled" class="form-control" {% if export.excludePllDerivation %}checked="checked"{% endif %}>
+                </td>
+                <td>
+                  <input type="checkbox" disabled="disabled" class="form-control" {% if export.excludeIdeophonic %}checked="checked"{% endif %}>
+                </td>
+                <td>
+                  <input type="checkbox" disabled="disabled" class="form-control" {% if export.excludeDubious %}checked="checked"{% endif %}>
+                </td>
+                <td>
+                  <input type="checkbox" disabled="disabled" class="form-control" {% if export.excludeLoanword %}checked="checked"{% endif %}>
+                </td>
+                <td>
+                  <input type="checkbox" disabled="disabled" class="form-control" {% if export.excludePllLoan %}checked="checked"{% endif %}>
+                </td>
+                <td>
+                  <input type="checkbox" disabled="disabled" class="form-control" {% if export.includePllLoan %}checked="checked"{% endif %}>
+                </td>
+                <td>
+                  <input type="checkbox" disabled="disabled" class="form-control" {% if export.excludeMarkedMeanings %}checked="checked"{% endif %}>
+                </td>
+                <td>
+                  <input type="checkbox" disabled="disabled" class="form-control" {% if export.excludeMarkedLanguages %}checked="checked"{% endif %}>
+                </td>
                 <td>{{ export.lastTouched }}</td>
                 <td>{{ export.lastEditedBy }}</td>
                 <td>
