@@ -1974,8 +1974,6 @@ class AssignCognateClassesFromLexemeForm(WTForm):
                 content_type='text/plain; charset=utf-8',
                 status=400)
 
-# OLDER:
-
 
 class EditSourceForm(forms.ModelForm):
 
