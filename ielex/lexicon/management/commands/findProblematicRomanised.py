@@ -16,9 +16,9 @@ class Command(BaseCommand):
         lexemes = Lexeme.objects.filter(
             language__in=languageList.languages.all(),
             meaning__in=meaningList.meanings.all())
-        problematic = set("ſƕǝǣǧǫǰǵșțȳɑɔəɛɜɡɣɨɪɫʁʈʉʊʌʒγδεηθικλμνορςστυφχ"
-                          "ωόύώадеийкмнопрстхшъыьяӕաեզըթիլխկհղմյնշոպջռս"
-                          "վտրցւքآابتجدرسفوپھधपभरलᴵḁẖẛὐή‑—‘’′″ⁱ₂√")
+        problematic = set("سθκպ‑ηаجնհղдրύآχթتپմھलμυӕլցώшнὐभσтп’εप—"
+                          "φեᴵρ₂տدⁱվτыյշիջधռωоςмوйո‘रόοխеяاզ″ըкſδι"
+                          "иλքաւγս√хсبرẛفήνկр′")
         for lexeme in lexemes.all():
             if len(problematic & (set(lexeme.romanised))):
                 print('"%s","%s","%s","%s"' % (lexeme.id,
