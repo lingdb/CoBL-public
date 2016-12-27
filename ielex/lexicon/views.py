@@ -75,15 +75,6 @@ class CognateClassCitationCreateView(CreateView):
             CognateClassCitationCreateView, self).get_form_kwargs()
         return kwargs
 
-    def dispatch(self, request, *args, **kwargs):
-        cc_id = int(self.kwargs["cognate_id"])
-        if request.POST.get('cancel'):
-            return HttpResponseRedirect(reverse("cognate-set",
-                                                kwargs={"cognate_id": cc_id}))
-        return super(CognateClassCitationCreateView, self).dispatch(request,
-                                                                    *args,
-                                                                    **kwargs)
-
 
 @login_required
 def cognate_class_citation_delete(request, pk):

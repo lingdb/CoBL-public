@@ -2335,35 +2335,42 @@ class source_import(FormView):
         return {'status': 'new', 'dictionary': comparison_dict}
 
 
+def source_related(request, formset, name, source_obj):
+    return render_template(request, "source_related_inline.html",
+                           {"formset": formset,
+                            "name": name,
+                            "source": source_obj.shorthand
+                            })
+
+
 def source_cognacy(request, source_id):
     source_obj = Source.objects.get(pk=source_id)
     formset = CognateJudgementFormSet(
-        instance=source_obj)
-    return render_template(request, "source_related_inline.html",
-                           {"formset": formset,
-                            "name": "Cognacy",
-                            "source": source_obj.shorthand
-                            })
+        instance=source_obj,
+        queryset=CognateJudgementCitation.objects.filter(
+            cognate_judgement__in=get_default_cognatejudgements(request)))
+    name = "Cognacy"
+    return source_related(request, formset, name, source_obj)
 
 
 def source_cogset(request, source_id):
     source_obj = Source.objects.get(pk=source_id)
-    formset = CognateClassFormSet(instance=source_obj)
-    return render_template(request, "source_related_inline.html",
-                           {"formset": formset,
-                            "name": "Cognate Sets",
-                            "source": source_obj.shorthand
-                            })
+    formset = CognateClassFormSet(
+        instance=source_obj,
+        queryset=CognateClassCitation.objects.filter(
+            cognate_class__in=get_default_cognateclasses(request)))
+    name = "Cognate Sets"
+    return source_related(request, formset, name, source_obj)
 
 
 def source_lexeme(request, source_id):
     source_obj = Source.objects.get(pk=source_id)
-    formset = LexemeFormSet(instance=source_obj)
-    return render_template(request, "source_related_inline.html",
-                           {"formset": formset,
-                            "name": "Lexemes",
-                            "source": source_obj.shorthand
-                            })
+    formset = LexemeFormSet(
+        instance=source_obj,
+        queryset=LexemeCitation.objects.filter(
+            lexeme__in=get_default_lexemes(request)))
+    name = "Lexemes"
+    return source_related(request, formset, name, source_obj)
 
 
 class SourceAutocomplete(autocomplete.Select2QuerySetView):

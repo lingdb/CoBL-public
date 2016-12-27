@@ -1818,32 +1818,35 @@ class UploadBiBTeXFileForm(forms.Form):
 class OrderableInlineModelForm(forms.ModelForm):
 
     def order_fields(self, ordered_fields):
-        fields = OrderedDict()
-        for key in ordered_fields:
-            fields[key] = self.fields.pop(key)
-        for key, value in self.fields.items():
-            fields[key] = value
-        self.fields = fields
+        if ordered_fields:
+            fields = OrderedDict()
+            for key in ordered_fields:
+                fields[key] = self.fields.pop(key)
+            for key, value in self.fields.items():
+                fields[key] = value
+            self.fields = fields
 
 
 class LexemeCitationInlineForm(OrderableInlineModelForm):
 
     language = forms.CharField()
     lexeme = forms.CharField()
+    Id = forms.CharField()
 
     class Meta:
         model = LexemeCitation
-        fields = ('lexeme', 'language', 'comment',)
+        fields = ('Id', 'lexeme', 'language', 'comment',)
         readonly_fields = fields
 
     def __init__(self, *args, **kwargs):
         super(LexemeCitationInlineForm, self).__init__(*args, **kwargs)
         lexeme = self.instance.lexeme
         self.fields['language'].initial = self.instance.lexeme.language
-        self.fields['lexeme'].initial = '<a href=%s>%s</a>' % \
-                                        (lexeme.get_absolute_url(),
-                                         lexeme.romanised)
-        self.order_fields(['lexeme', 'language', 'comment'])
+        self.fields['lexeme'].initial = lexeme.romanised
+        self.fields['Id'].initial = '<a href=%s>%s</a>' % \
+                                    (lexeme.get_absolute_url(),
+                                     lexeme.pk)
+        self.order_fields(['Id', 'lexeme', 'language', 'comment'])
 
 
 class CognateJudgementInlineForm(OrderableInlineModelForm):

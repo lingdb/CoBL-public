@@ -21,7 +21,7 @@ td, th {
   <h1>
     {% if action %}
       {{ action|title }}
-    {% endif %} {{ name }} in {{ source }}
+    {% endif %} {{ name }} in {{ source }} ({{ formset.total_form_count }})
   </h1>
 {% endblock %}
 
@@ -35,14 +35,14 @@ td, th {
     <thead>
         {% for form in formset.forms %}
             {% if forloop.first %}
-                {% for field in form %}
+                {% for field in form.visible_fields %}
                     <th>{{ field.label_tag }}</th>
                 {% endfor %}
             {% endif %}
     </thead>
     <tbody>
             <tr>
-                {% for field in form %}
+                {% for field in form.visible_fields %}
                     <td>{{ field.value | safe }}</td>
                 {% endfor %}
             </tr>

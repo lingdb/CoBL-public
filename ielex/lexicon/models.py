@@ -310,7 +310,7 @@ class Source(models.Model):
     editortype = models.CharField(max_length=16, blank=True)
     editoratype = models.CharField(max_length=16, blank=True)
     pages = models.CharField(max_length=32, blank=True)
-    part = models.CharField(max_length=32, blank=True)
+    part = models.CharField(max_length=128, blank=True)
     edition = models.CharField(max_length=128, blank=True)
     journaltitle = models.CharField(max_length=128, blank=True)
     location = models.CharField(max_length=128, blank=True)
