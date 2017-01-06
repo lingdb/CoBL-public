@@ -2454,14 +2454,14 @@ def viewAbout(request, page):
         '## Error', '',
         'Sorry, we could not deliver the requested content.',
         'Maybe you have more luck consulting the ' +
-        '[wiki](https://github.com/lingdb/CoBL/wiki).'
+        '[wiki](https://github.com/lingdb/CoBL-public/wiki).'
     ])
     pageTitleMap = {
         'contact': 'Contact',
         'furtherInfo': 'Further Info',
         'home': 'Home'
     }
-    baseUrl = 'https://raw.githubusercontent.com/wiki/lingdb/CoBL/'
+    baseUrl = 'https://raw.githubusercontent.com/wiki/lingdb/CoBL-public/'
     pageUrlMap = {
         'contact': baseUrl + 'About-Page:-Contact.md',
         'furtherInfo': baseUrl + 'About-Page:-Further-Info.md',
