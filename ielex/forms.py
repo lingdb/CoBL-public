@@ -1768,7 +1768,8 @@ def validate_bibtex_extension(value):
 
 
 class SourceDetailsForm(forms.ModelForm):
-
+    citation_text = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'citation_text'}))
     class Meta:
         model = Source
         fields = ['citation_text']
@@ -1776,6 +1777,9 @@ class SourceDetailsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SourceDetailsForm, self).__init__(*args, **kwargs)
         instance = getattr(self, 'instance', None)
+        self.fields['bibtex'] = forms.CharField(
+            widget=forms.Textarea(attrs={'class': 'bibtex'}))
+        self.fields['bibtex'].initial = instance.bibtex
         for field in self.fields:
             self.fields[field].widget.attrs['readonly'] = True
             if instance:

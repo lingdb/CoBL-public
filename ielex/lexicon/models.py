@@ -18,6 +18,8 @@ from django.utils.html import format_html
 from django.db.utils import DataError
 from django.utils import timezone
 from django.contrib.auth.models import User
+import bibtexparser
+from bibtexparser.bibdatabase import BibDatabase
 
 # ielex specific imports:
 from ielex.utilities import two_by_two
@@ -406,7 +408,7 @@ class Source(models.Model):
         return u'%s%s' % (name, siglum)
 
     def get_absolute_url(self):
-        return "/source/%s/" % self.id
+        return "/sources/%s/" % self.id
 
     @property
     def edit_link(self):
@@ -422,6 +424,12 @@ class Source(models.Model):
             if str(getattr(self, key)) != u'':
                 bibtex_dictionary[key] = str(getattr(self, key))
         return bibtex_dictionary
+
+    @property
+    def bibtex(self):
+        db = BibDatabase()
+        db.entries.append(self.bibtex_dictionary)
+        return bibtexparser.dumps(db)
 
     @property
     def COinS(self):

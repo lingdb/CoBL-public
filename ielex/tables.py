@@ -100,9 +100,11 @@ class SourcesTable(tables.Table):
     def render_author(self, value, record):
         if value == u'' and record.editor:
             if len(record.editor.split(' and ')) > 1:
-                return '%s (eds.)' % (record.editor)
-            return '%s (ed.)' % (record.editor)
-        return value
+                return mark_safe('%s (eds.)' % (self.smart_personal_names(
+                    record.editor)))
+            return mark_safe('%s (ed.)' % (self.smart_personal_names(
+                record.editor)))
+        return self.smart_personal_names(value)
 
     def render_cognacy(self, value, record):
         return self.queryset_link(value, record, 'cognacy')
@@ -124,6 +126,23 @@ class SourcesTable(tables.Table):
                       'show_e btn btn-warning btn-xs" ' \
                       'id="%s">Edit</button>' % (record.pk)
         return mark_safe(edit_button)
+
+    def smart_personal_names(self, value):
+        names_lst = []
+        for pn in value.split(' and '):
+            try:
+                last_name, first_name = pn.split(', ')
+                name = "<span class='name'><span class='lastName'>%s</span>" \
+                       ", <span class='firstName'>%s</span></span>" \
+                       % (last_name, first_name)
+                names_lst.append(name)
+            except ValueError:
+                names_lst.append(pn)
+        if len(names_lst) > 2:
+            return mark_safe('%s and %s' %
+                             (', '.join(names_lst[:-1]),
+                              names_lst[-1]))
+        return mark_safe(' and '.join(names_lst))
 
     def queryset_link(self, value, record, name):
         if value != 0:

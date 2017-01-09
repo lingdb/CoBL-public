@@ -45,6 +45,7 @@ $(document).ready(function () {
 			$(data).children('th').appendTo(details_table.find('table.details_table')).wrapAll('<thead class="_details"/>');
 			$(data).children('td').appendTo(details_table.find('table.details_table')).wrapAll('<tbody><tr class="_details"/></tbody>');
 			details_table.find('input, textarea').each(function() {
+				$(this).parent('td').attr('class', $(this).attr('class'));
 				$(this).replaceWith("<p>" + this.value + "</p>");
 			});
 		});
@@ -227,11 +228,11 @@ div.table-container, div.table-container table {
 	min-width: 100%;
 }
 
-tr.TRS td, tr.TRS + tr td .details_table  {
+tr.TRS td, .TRS span.lastName, .TRS span.firstName, tr.TRS + tr td .details_table  {
 	color: #d2ae8f;
 }
 
-tr.deprecated td, tr.deprecated + tr td .details_table  {
+tr.deprecated td, .deprecated span.lastName, .deprecated span.firstName, tr.deprecated + tr td .details_table  {
 	color: lightgrey;
 }
 
@@ -302,10 +303,18 @@ table#edit_modal tbody td, table#edit_modal tbody td * {
 #buttons_block {
 	padding-bottom: 10px;
 }
+
 #buttons_block button {
 	margin-right: 5px;
 }
 
+span.lastName {
+    color: #394d75;
+}
+
+span.firstName {
+    color: rgb(131, 80, 38);
+}
 </style>
 {% endblock %}
 {% block top %}
