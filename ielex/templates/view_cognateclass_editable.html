@@ -318,7 +318,7 @@
               {# cladeCount_filter.html #}
               <td>
                 <input type="text"
-                       class="filterText form-control"
+                       class="filterNumber form-control"
                        data-selector=".cladeCount"
                        style="width: 2em;">
                 <div class="btn btn-xs btn-default sortIntText"
@@ -492,7 +492,7 @@
               <td style="width: 5em;">
                 {% if user.is_authenticated %}
                   <input type="text"
-                         class="filterInput form-control"
+                         class="filterNumberInput form-control"
                          data-selector=".loanSourceCognateClass input"
                          style="width: 2em;">
                   <div class="btn btn-xs btn-default sortInput"
@@ -501,7 +501,7 @@
                   </div>
                 {% else %}
                   <input type="text"
-                         class="filterText form-control"
+                         class="filterNumber form-control"
                          data-selector=".loanSourceCognateClass"
                          style="width: 2em;">
                   <div class="btn btn-xs btn-default sortText"

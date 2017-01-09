@@ -315,12 +315,12 @@
               <td>
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text"
-                         class="filterInput form-control"
+                         class="filterNumberInput form-control"
                          data-selector=".languageLevel0 input"
                          style="width: 1.5em;">
                 {% else %}
                   <input type="text"
-                         class="filterText form-control"
+                         class="filterNumber form-control"
                          data-selector=".languageLevel0"
                          style="width: 1.5em;">
                 {% endif %}
@@ -334,7 +334,7 @@
               {% if user.is_staff %}
                 <td>
                   <input type="text"
-                         class="filterInput form-control"
+                         class="filterNumberInput form-control"
                          data-selector=".languageLevel1 input"
                          style="width: 1.5em;">
                 </td>
@@ -346,7 +346,7 @@
                 </td>
                 <td>
                   <input type="text"
-                         class="filterInput form-control"
+                         class="filterNumberInput form-control"
                          data-selector=".languageLevel2 input"
                          style="width: 1.5em;">
                 </td>
@@ -358,7 +358,7 @@
                 </td>
                 <td class="hide">
                     <input type="text"
-                           class="filterInput form-control"
+                           class="filterNumberInput form-control"
                            data-selector=".languageLevel3 input"
                            style="width: 1.5em;">
                 </td>

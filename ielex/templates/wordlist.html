@@ -188,7 +188,7 @@
               {% endif %}
               <td colspan="2"></td>
               <td>
-                <input type="text" class="filterInput form-control"
+                <input type="text" class="filterNumberInput form-control"
                        data-selector=".meaningId input.meaningId"
                        style="width: 1.5em;">
                 <div class="btn btn-xs btn-default sortIntInput"
@@ -305,7 +305,7 @@
               </td>
               <td>
                 {% if user.is_authenticated %}
-                  <input type="text" class="filterInput form-control"
+                  <input type="text" class="filterNumberInput form-control"
                          data-selector=".meaningSetIx input"
                          style="width: 2em;">
                   <div class="btn btn-xs btn-default sortInput"
@@ -313,7 +313,7 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% else %}
-                  <input type="text" class="filterText form-control"
+                  <input type="text" class="filterNumber form-control"
                          data-selector=".meaningSetIx"
                          style="width: 2em;">
                   <div class="btn btn-xs btn-default sortText"
@@ -324,7 +324,7 @@
               </td>
               <td>
                 {% if user.is_authenticated %}
-                  <input type="text" class="filterInput form-control"
+                  <input type="text" class="filterNumberInput form-control"
                          data-selector=".meaningSetMember input"
                          style="width: 2em;">
                   <div class="btn btn-xs btn-default sortInput"
@@ -332,7 +332,7 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% else %}
-                  <input type="text" class="filterText form-control"
+                  <input type="text" class="filterNumber form-control"
                          data-selector=".meaningSetMember"
                          style="width: 2em;">
                   <div class="btn btn-xs btn-default sortText"

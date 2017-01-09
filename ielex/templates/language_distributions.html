@@ -253,12 +253,12 @@
               <td>
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text"
-                         class="filterInput form-control"
+                         class="filterNumberInput form-control"
                          data-selector=".languageLevel0 input"
                          style="width: 1.5em;">
                 {% else %}
                   <input type="text"
-                         class="filterText form-control"
+                         class="filterNumber form-control"
                          data-selector=".languageLevel0"
                          style="width: 1.5em;">
                 {% endif %}
@@ -272,7 +272,7 @@
               {% if user.is_staff %}
                 <td>
                   <input type="text"
-                         class="filterInput form-control"
+                         class="filterNumberInput form-control"
                          data-selector=".languageLevel1 input"
                          style="width: 1.5em;">
                 </td>
@@ -284,7 +284,7 @@
                 </td>
                 <td>
                   <input type="text"
-                         class="filterInput form-control"
+                         class="filterNumberInput form-control"
                          data-selector=".languageLevel2 input"
                          style="width: 1.5em;">
                 </td>
@@ -296,7 +296,7 @@
                 </td>
                 <td class="hide">
                     <input type="text"
-                           class="filterInput form-control"
+                           class="filterNumberInput form-control"
                            data-selector=".languageLevel3 input"
                            style="width: 1.5em;">
                 </td>
@@ -309,7 +309,7 @@
                 {# sortRankInClade_filter.html #}
                 <td>
                   <input type="text"
-                         class="filterInput form-control"
+                         class="filterNumberInput form-control"
                          data-selector=".sortRankInClade input"
                          style="width: 1.5em;">
                 </td>
@@ -340,14 +340,14 @@
               </td>
               <td>
                 {% if user.is_authenticated and user.is_staff %}
-                  <input type="text" class="filterInput form-control narrow"
+                  <input type="text" class="filterNumberInput form-control narrow"
                          data-selector=".normalMean input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".normalMean input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% else %}
-                  <input type="text" class="filterText form-control narrow"
+                  <input type="text" class="filterNumber form-control narrow"
                          data-selector=".normalMean">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".normalMean">
@@ -357,14 +357,14 @@
               </td>
               <td>
                 {% if user.is_authenticated and user.is_staff %}
-                  <input type="text" class="filterInput form-control narrow"
+                  <input type="text" class="filterNumberInput form-control narrow"
                          data-selector=".normalStDev input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".normalStDev input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% else %}
-                  <input type="text" class="filterText form-control narrow"
+                  <input type="text" class="filterNumber form-control narrow"
                          data-selector=".normalStDev">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".normalStDev">
@@ -374,14 +374,14 @@
               </td>
               <td>
                 {% if user.is_authenticated and user.is_staff %}
-                  <input type="text" class="filterInput form-control narrow"
+                  <input type="text" class="filterNumberInput form-control narrow"
                          data-selector=".logNormalOffset input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".logNormalOffset input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% else %}
-                  <input type="text" class="filterText form-control narrow"
+                  <input type="text" class="filterNumber form-control narrow"
                          data-selector=".logNormalOffset">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".logNormalOffset">
@@ -391,14 +391,14 @@
               </td>
               <td>
                 {% if user.is_authenticated and user.is_staff %}
-                  <input type="text" class="filterInput form-control narrow"
+                  <input type="text" class="filterNumberInput form-control narrow"
                          data-selector=".logNormalMean input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".logNormalMean input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% else %}
-                  <input type="text" class="filterText form-control narrow"
+                  <input type="text" class="filterNumber form-control narrow"
                          data-selector=".logNormalMean">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".logNormalMean">
@@ -408,14 +408,14 @@
               </td>
               <td>
                 {% if user.is_authenticated and user.is_staff %}
-                  <input type="text" class="filterInput form-control narrow"
+                  <input type="text" class="filterNumberInput form-control narrow"
                          data-selector=".logNormalStDev input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".logNormalStDev input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% else %}
-                  <input type="text" class="filterText form-control narrow"
+                  <input type="text" class="filterNumber form-control narrow"
                          data-selector=".logNormalStDev">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".logNormalStDev">
@@ -426,7 +426,7 @@
               <td>
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text"
-                         class="filterInput form-control narrow"
+                         class="filterNumberInput form-control narrow"
                          data-selector=".uniformLower input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".uniformLower input">
@@ -434,7 +434,7 @@
                   </div>
                 {% else %}
                   <input type="text"
-                         class="filterText form-control narrow"
+                         class="filterNumber form-control narrow"
                          data-selector=".uniformLower">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".uniformLower">
@@ -444,14 +444,14 @@
               </td>
               <td>
                 {% if user.is_authenticated and user.is_staff %}
-                  <input type="text" class="filterInput form-control narrow"
+                  <input type="text" class="filterNumberInput form-control narrow"
                          data-selector=".uniformUpper input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".uniformUpper input">
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% else %}
-                  <input type="text" class="filterText form-control narrow"
+                  <input type="text" class="filterNumber form-control narrow"
                          data-selector=".uniformUpper">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".uniformUpper">
@@ -463,12 +463,12 @@
               <td>
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text"
-                         class="filterInput form-control"
+                         class="filterNumberInput form-control"
                          data-selector=".languageEarliestTimeDepthBound input"
                          style="width: 3.4em;">
                 {% else %}
                   <input type="text"
-                         class="filterText form-control"
+                         class="filterNumber form-control"
                          data-selector=".languageEarliestTimeDepthBound"
                          style="width: 3.4em;">
                 {% endif %}
@@ -477,12 +477,12 @@
               <td>
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text"
-                         class="filterInput form-control"
+                         class="filterNumberInput form-control"
                          data-selector=".languageLatestTimeDepthBound input"
                          style="width: 3.4em;">
                 {% else %}
                   <input type="text"
-                         class="filterText form-control"
+                         class="filterNumber form-control"
                          data-selector=".languageLatestTimeDepthBound"
                          style="width: 3.4em;">
                 {% endif %}

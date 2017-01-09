@@ -15,7 +15,8 @@
     */
     var module = {
       inputClasses: ['filterText', 'filterInput',
-                     'filterBool', 'filterDistinct'],
+                     'filterBool', 'filterDistinct',
+                     'filterNumber', 'filterNumberInput'],
       btnClasses: ['sortInput', 'sortIntInput', 'sortText', 'sortIntText'],
       callbacks: {} // :: Identifier -> IO ()
     };
@@ -247,6 +248,22 @@
       };
     };
     /**
+      @param prefix :: string
+      @param mkPredicate :: (selector string, RegExp) -> $ ∧ row -> Bool
+    */
+    var mkSimpleFilter = function(prefix, mkPredicate){
+      return function(input, table){
+        var selector = input.data('selector');
+        var id = prefix+selector;
+        if(input.val() === ''){
+          delete filterPredicates[id];
+        }else{
+          filterPredicates[id] = mkPredicate(selector, input.val());
+        }
+        filter(table);
+      };
+    };
+    /**
       @param input :: $ ∧ input.filterText
       @param table :: $ ∧ table
     */
@@ -379,6 +396,54 @@
       //Filtering
       filter(table);
     };
+    /**
+      mkNumberFilter :: (re :: String) -> (text :: String) -> Bool
+    */
+    var mkNumberPredicate = function(filterVal){
+      filterVal = filterVal.trim().replace(/[^\d.-=<>]*/g, '');
+      var match = filterVal.match(/^([<>]?=?)(\-?[\d.]+)$/);
+      if(match){
+        var number = parseFloat(match[2], 10);
+        switch (match[1]) {
+          case '>':
+            return function(t){return parseFloat(t, 10) <= number;};
+          case '<':
+            return function(t){return parseFloat(t, 10) >= number;};
+          case '>=':
+            return function(t){return parseFloat(t, 10) < number;};
+          case '<=':
+            return function(t){return parseFloat(t, 10) > number;};
+          case '=':
+          /* falls through */
+          default:
+            return function(t){return parseFloat(t, 10) !== number;};
+        }
+      }else{
+        console.log('Invalid filter string:', filterVal);
+        return function(){return false;};
+      }
+    };
+    /**
+      @param input :: $ ∧ input.filterText
+      @param table :: $ ∧ table
+    */
+    module.filterNumber = mkSimpleFilter('filterText', function(selector, filterVal){
+      var predicate = mkNumberPredicate(filterVal);
+      return function(row){
+        return predicate(row.find(selector).text());
+      };
+    });
+    /**
+      @param input :: $ ∧ input.filterText
+      @param table :: $ ∧ table
+    */
+    module.filterNumberInput = mkSimpleFilter('filterInput', function(selector, filterVal){
+      var predicate = mkNumberPredicate(filterVal);
+      return function(row){
+        var $input = row.find(selector);
+        return $input ? predicate($input.val()) : true;
+      };
+    });
     //Finished module:
     return module;
   });
