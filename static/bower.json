@@ -1,15 +1,15 @@
 {
-  "name": "ielex2_static",
+  "name": "CoBLstatic",
   "authors": [
-    "Jakob Runge <mam09crm@studserv.uni-leipzig.de>"
+    "Jakob Runge <sicarius@g4t3.de>"
   ],
-  "description": "Static files for ielex2 maintained via bower",
+  "description": "Static files for CoBL maintained via bower",
   "main": "",
   "moduleType": [
     "amd"
   ],
   "license": "BSD2",
-  "homepage": "https://github.com/lingdb/IELex2-CognaC",
+  "homepage": "https://github.com/lingdb/CoBL-public",
   "private": true,
   "ignore": [
     "**/.*",

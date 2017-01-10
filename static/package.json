@@ -1,13 +1,13 @@
 {
-  "name": "ielex2static",
+  "name": "CoBLstatic",
   "version": "1.0.0",
-  "description": "Static files for ielex2 maintained via npm",
-  "repository": "https://github.com/lingdb/IELex2-CognaC",
+  "description": "Static files for CoBL maintained via npm",
+  "repository": "https://github.com/lingdb/CoBL-public",
   "main": "Gruntfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Jakob Runge <mam09crm@studserv.uni-leipzig.de>",
+  "author": "Jakob Runge <sicarius@g4t3.de>",
   "license": "BSD-2-Clause",
   "dependencies": {
     "grunt": "^0.4.5",
