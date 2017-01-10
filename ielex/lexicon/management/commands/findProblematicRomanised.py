@@ -16,7 +16,7 @@ class Command(BaseCommand):
         lexemes = Lexeme.objects.filter(
             language__in=languageList.languages.all(),
             meaning__in=meaningList.meanings.all())
-        problematic = set("իल″յցप’яθջкхجոήبھفτա‘ύմرиدρռسधتὐթ′ᴵκλآاղμε"
+        problematic = set("իल″յցप’яθջкхجոήبھفτա‘ύմرиدρռسधتὐթᴵκλآاղμε"
                           "йсսքլ₂рυըӕوδ√տկеրχόιպնоыφνдώтվηշнरап—զभοեپς"
                           "σհւխшγм")
         for lexeme in lexemes.all():
