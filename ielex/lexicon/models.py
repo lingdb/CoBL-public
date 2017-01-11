@@ -1247,8 +1247,7 @@ class CognateClass(AbstractTimestamped):
 
     @property
     def citationCount(self):
-        return CognateClassCitation.objects.filter(cognate_class=self).\
-               count()
+        return self.cognateclasscitation_set.count()
 
     @property
     def hasOnlyNotSwadesh(self):
