@@ -1265,14 +1265,7 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         "lexemecitation_set",
         "cognate_class",
         "language__languageclade_set",
-        "language__clades").extra({'LexCitCount':
-                                   'SELECT COUNT(*) '
-                                   'FROM lexicon_lexemecitation '
-                                   'WHERE '
-                                   'lexicon_lexemecitation.'
-                                   'lexeme_id '
-                                   '= lexicon_lexeme.id',
-                                   })
+        "language__clades")
     # Gather cognate classes and provide form:
     cognateClasses = CognateClass.objects.filter(lexeme__in=lexemes).distinct()
     cognate_form = ChooseCognateClassForm()

@@ -1568,6 +1568,10 @@ class Lexeme(AbstractTimestamped):
                 parts.append('(?) < (%s)' % ccd['root_language'])
         return '\n'.join(parts)
 
+    @property
+    def lexCitCount(self):
+        return self.lexemecitation_set.count()
+
 
 @reversion.register
 class CognateJudgement(AbstractTimestamped):

@@ -541,10 +541,10 @@
               </td>
               {# citations_data.html #}
               <td class="lexemeCit">
-					<span class="badge openModal" model="Lexeme" id="{{ lexeme.object_data.id }}">
-					{{ lexeme.object_data.LexCitCount }}
-					</span>
-			  </td>
+      					<span class="badge openModal" model="Lexeme" id="{{ lexeme.object_data.id }}">
+      					{{ lexeme.object_data.lexCitCount }}
+      					</span>
+      			  </td>
               {# swadesh_data.html #}
               <td class="lexemeSwadeshTerm">
                 {% if user.is_authenticated %}
