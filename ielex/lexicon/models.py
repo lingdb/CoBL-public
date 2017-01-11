@@ -1197,6 +1197,8 @@ class CognateClass(AbstractTimestamped):
             if languageList is not None:
                 lSet = set(llo.language_id for llo in
                            languageList.languagelistorder_set.all())
+            else:
+                lSet = set()
             # Gather counts:
             lexemeCount = 0
             onlyNotSwh = True  # True iff all lexemes are not_swadesh_term.
@@ -1241,12 +1243,12 @@ class CognateClass(AbstractTimestamped):
 
     @property
     def lexemeCount(self):
-        return CognateClassCitation.objects.filter(cognate_class=self).\
-               count()
+        return self.computeCounts()['lexemeCount']
 
     @property
     def citationCount(self):
-        return self.computeCounts()['lexemeCount']
+        return CognateClassCitation.objects.filter(cognate_class=self).\
+               count()
 
     @property
     def hasOnlyNotSwadesh(self):
