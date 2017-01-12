@@ -490,7 +490,9 @@ class LanguageDistributionTableForm(WTForm):
                                'saving at least one language entry.')
 
 
-class EditSingleLanguageForm(LanguageListRowForm, WTFormToFormgroup):
+class EditSingleLanguageForm(LanguageListRowForm,
+                             AbstractDistributionForm,
+                             WTFormToFormgroup):
     ascii_name = StringField('URL Name', validators=[InputRequired()])
     description = TextAreaField('Description', validators=[InputRequired()])
     progress = IntegerField('Progress',
@@ -513,6 +515,10 @@ class EditSingleLanguageForm(LanguageListRowForm, WTFormToFormgroup):
                                     validators=[InputRequired()])
     latitude = DecimalField('Latitude', validators=[InputRequired()])
     longitude = DecimalField('Longitude', validators=[InputRequired()])
+    earliestTimeDepthBound = IntegerField('Earliest Time-Depth Bound',
+                                          validators=[InputRequired()])
+    latestTimeDepthBound = IntegerField('Latest Time-Depth Bound',
+                                        validators=[InputRequired()])
 
     fieldsWithoutLabel = [
         ('idField', {'required': 'required', 'class': 'hide'}),
