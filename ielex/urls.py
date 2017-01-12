@@ -15,6 +15,7 @@ from ielex.views import add_language_list, \
                         edit_language_list, \
                         edit_meaning, \
                         edit_wordlist, \
+                        overview_language, \
                         language_add_new, \
                         lexeme_add, \
                         lexeme_duplicate, \
@@ -153,6 +154,8 @@ urlpatterns = [
         view_language_wordlist, name="view-language-wordlist"),
     url(r'^language/%(LANGUAGE)s/edit/$' % R, edit_language,
         name="language-edit"),
+    url(r'^language/%(LANGUAGE)s/overview/$' % R, overview_language,
+        name="language-overview"),
     url(r'^language/%(LANGUAGE)s/delete/$' % R, delete_language,
         name="language-delete"),
     url(r'^language/%(LANGUAGE)s/add-lexeme/' % R,

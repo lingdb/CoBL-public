@@ -956,6 +956,19 @@ def edit_language(request, language):
                             "form": form})
 
 
+@logExceptions
+def overview_language(request, language):
+    try:
+        language = Language.objects.get(ascii_name=language)
+    except Language.DoesNotExist:
+        language = get_canonical_language(language, request)
+        return HttpResponseRedirect(reverse("language-overview",
+                                            args=[language.ascii_name]))
+
+    return render_template(
+        request, "language_overview.html", {"language": language})
+
+
 @login_required
 @logExceptions
 def delete_language(request, language):

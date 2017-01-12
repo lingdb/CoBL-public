@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% load wtforms %}
+
+{% block title %}{{ language.utf8_name }}{% endblock %}
+
+{% block top %}
+  <h1>{{ language.utf8_name }}</h1>
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-3">
+      {% if language.description %}
+      <div class="panel panel-default">
+        <div class="panel-heading">Description</div>
+        <div class="panel-body">
+          {{ language.description }}
+        </div>
+      </div>
+      {% endif %}
+      <table class="table">
+        <tbody>
+          <tr>
+            <th>ISO</th>
+            <td>
+              {% if language.iso_code %}
+              <a href="http://en.wikipedia.org/wiki/ISO_639:{{ language.iso_code }}"
+                 target="_blank">
+                {{ language.iso_code }}
+              </a>
+              {% endif %}
+            </td>
+          </tr><tr>
+            <th>Glotto</th>
+            <td>
+              {% if language.glottocode %}
+              <a href="http://glottolog.org/resource/languoid/id/{{ language.glottocode }}"
+                 target="_blank">
+                {{ language.glottocode }}
+              </a>
+              {% endif %}
+            </td>
+          </tr><tr>
+            <th>Historical</th>
+            <td>
+              {% if language.historical %}
+              <span class="glyphicon glyphicon-ok"></span>
+              {% else %}
+              <span class="glyphicon glyphicon-remove"></span>
+              {% endif %}
+            </td>
+          </tr><tr>
+            <th>Not in Exp.</th>
+            <td>
+              {% if language.notInExport %}
+              <span class="glyphicon glyphicon-ok"></span>
+              {% else %}
+              <span class="glyphicon glyphicon-remove"></span>
+              {% endif %}
+            </td>
+          </tr><tr>
+            <th>Ref.Lg.</th>
+            <td>
+              {% if language.representative %}
+              <span class="glyphicon glyphicon-ok"></span>
+              {% else %}
+              <span class="glyphicon glyphicon-remove"></span>
+              {% endif %}
+            </td>
+          </tr><tr>
+            <th>Ex.Lg?</th>
+            <td>
+              {% if language.exampleLanguage %}
+              <span class="glyphicon glyphicon-ok"></span>
+              {% else %}
+              <span class="glyphicon glyphicon-remove"></span>
+              {% endif %}
+            </td>
+          </tr><tr>
+            <th>Foss.Stat.</th>
+            <td>
+              {% if language.foss_stat %}
+              <span class="glyphicon glyphicon-ok"></span>
+              {% else %}
+              <span class="glyphicon glyphicon-remove"></span>
+              {% endif %}
+            </td>
+          </tr><tr>
+            <th>Low.Stat.</th>
+            <td>
+              {% if language.low_stat %}
+              <span class="glyphicon glyphicon-ok"></span>
+              {% else %}
+              <span class="glyphicon glyphicon-remove"></span>
+              {% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-9">
+      WIKI CONTENT GOES HERE
+    </div>
+  </div>
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/defaultSelections.html" %}
+  {% include "snippets/go_to.html" %}
+{% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
