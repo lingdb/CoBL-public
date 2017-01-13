@@ -578,10 +578,10 @@
                 </td>
                 {# iso_data.html #}
                 <td class="languageIsoCode" style="padding-left: 0.5em;">
-                  {% if language.iso_code.data %}
-                    <a href="http://en.wikipedia.org/wiki/ISO_639:{{ language.iso_code.data }}"
+                  {% if language.object_data.iso_code %}
+                    <a href="http://en.wikipedia.org/wiki/ISO_639:{{ language.object_data.iso_code }}"
                        target="_blank">
-                      {{ language.iso_code.data }}
+                      {{ language.object_data.iso_code }}
                     </a>
                     {% form_field language.iso_code class="hide" %}
                   {% elif user.is_authenticated and user.is_staff %}
@@ -590,10 +590,10 @@
                 </td>
                 {# glotto_data.html #}
                 <td class="languageGlottocode">
-                  {% if language.data.glottocode %}
-                    <a href="http://glottolog.org/resource/languoid/id/{{ language.data.glottocode }}"
+                  {% if language.object_data.glottocode %}
+                    <a href="http://glottolog.org/resource/languoid/id/{{ language.object_data.glottocode }}"
                        target="_blank">
-                      {{ language.data.glottocode }}
+                      {{ language.object_data.glottocode }}
                     </a>
                     {% form_field language.glottocode class="hide" %}
                   {% elif user.is_authenticated and user.is_staff %}
