@@ -965,7 +965,10 @@ def overview_language(request, language):
                                             args=[language.ascii_name]))
 
     return render_template(
-        request, "language_overview.html", {"language": language})
+        request, "language_overview.html",
+        {"language": language,
+         "content": fetchMarkdown(
+            "Language-Chapter:-%s.md" % (language.ascii_name))})
 
 
 @login_required
