@@ -553,6 +553,13 @@
                 </td>
                 {# edit_data.html #}
                 <td class="nowrap">
+                  <a href="{% url 'language-overview' language.object_data.ascii_name %}"
+                     title="View {{ language.object_data.utf8_name }} details"
+                     data-toggle="tooltip"
+                     data-placement="top"
+                     class="inline">
+                    <span class="glyphicon glyphicon-picture"></span>
+                  </a>
                   {% if user.is_authenticated and user.is_staff %}
                     <a href="{% url 'language-edit' language.object_data.ascii_name %}"
                        title="Edit {{ language.object_data.utf8_name }} metadata"
