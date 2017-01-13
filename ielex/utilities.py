@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 import logging
+import requests
 from string import ascii_uppercase, ascii_lowercase
 # from ielex.lexicon.models import Language
 try:
@@ -134,6 +135,28 @@ class LexDBManagementCommand(BaseCommand):
         assert not hasattr(options, "settings")
         assert not hasattr(options, "pythonpath")
         self.execute(*args, **options.__dict__)
+
+
+def fetchMarkdown(fileName):
+    """
+    @param fileName :: str
+    This function fetches some markdown content from GitHub if possible.
+    Error markdown content is returned in case of failure.
+    """
+    baseUrl = 'https://raw.githubusercontent.com/wiki/lingdb/CoBL-public'
+    page = '/'.join([baseUrl, fileName])
+    try:
+        r = requests.get(page)
+        if r.status_code == requests.codes.ok:
+            return r.content
+    except:
+        pass
+    return '\n'.join([
+        '## Error', '',
+        'Sorry, we could not deliver the requested content.',
+        'Maybe you have more luck consulting the ' +
+        '[wiki](https://github.com/lingdb/CoBL-public/wiki).'
+    ])
 
 
 if __name__ == "__main__":

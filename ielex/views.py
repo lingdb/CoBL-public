@@ -5,7 +5,6 @@ import logging
 import io
 import json
 import re
-import requests
 import time
 import zipfile
 from collections import defaultdict, deque
@@ -112,7 +111,7 @@ from ielex.lexicon.defaultModels import getDefaultLanguage, \
     setDefaultSourceLanguage
 from ielex.shortcuts import render_template
 from ielex.utilities import next_alias, \
-    anchored, oneline, logExceptions
+    anchored, oneline, logExceptions, fetchMarkdown
 from ielex.languageCladeLogic import updateLanguageCladeRelations
 from ielex.tables import SourcesTable, SourcesUpdateTable
 from django.core.exceptions import ObjectDoesNotExist
@@ -2456,12 +2455,6 @@ def viewAbout(request, page):
     """
     if page == 'statistics':
         return viewStatistics(request)
-    content = '\n'.join([
-        '## Error', '',
-        'Sorry, we could not deliver the requested content.',
-        'Maybe you have more luck consulting the ' +
-        '[wiki](https://github.com/lingdb/CoBL-public/wiki).'
-    ])
     pageTitleMap = {
         'contact': 'Contact',
         'furtherInfo': 'Further Info',
@@ -2473,16 +2466,9 @@ def viewAbout(request, page):
         'furtherInfo': baseUrl + 'About-Page:-Further-Info.md',
         'home': baseUrl + 'About-Page:-Home.md'
     }
-    if page in pageUrlMap:
-        try:
-            r = requests.get(pageUrlMap[page])
-            if r.status_code == requests.codes.ok:
-                content = r.content
-        except:
-            pass
     return render_template(request, "about.html",
                            {'title': pageTitleMap.get(page, 'Error'),
-                            'content': content})
+                            'content': fetchMarkdown(pageUrlMap[page])})
 
 
 @logExceptions
