@@ -106,7 +106,7 @@
               {# warnings_title.html #}
               <th></th>
               {# meaning_title.html #}
-              <th colspan="3">Meaning</th>
+              <th colspan="2">Meaning</th>
               {# romanised_title.html #}
               <th>Roman(ised)</th>
               {# viewcopy_title.html #}
@@ -203,7 +203,7 @@
               {# warnings_filter.html #}
               <td></td>
               {# meaning_filter.html #}
-              <td colspan="3">
+              <td colspan="2">
                 <input type="text" class="filterText form-control narrow"
                        data-selector=".lexemeMeaning">
                 <div class="btn btn-xs btn-default sortText"
@@ -459,6 +459,15 @@
                      style="color: #006400;">
                     <span class="glyphicon glyphicon-info-sign"></span>
                   </a>
+                  {% if lexeme.object_data.meaning.exampleContext %}
+                  <span class="badge"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        data-container="body"
+                        title="{{ lexeme.object_data.meaning.exampleContext }}">
+                    eg
+                  </span>
+                  {% endif %}
                 </td>
                 <td class="lexemeMeaning">
                   <a href="{% url 'meaning-report' lexeme.meaning_id.data %}"
@@ -484,17 +493,6 @@
                        class="pull-right">
                       <span class="glyphicon glyphicon-info-sign"></span>
                     </a>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if lexeme.object_data.meaning.exampleContext %}
-                  <span class="badge"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        data-container="body"
-                        title="{{ lexeme.object_data.meaning.exampleContext }}">
-                    e.g.
-                  </span>
                   {% endif %}
                 </td>
                 {# romanised_data.html #}
