@@ -27,9 +27,11 @@
     };
     $('.datetooltip').each(function(){
       var $datetooltip = $(this);
-      $datetooltip.attr('data-toggle', 'tooltip')
-                  .attr("data-placement", "bottom")
-                  .attr("data-container", "body");
+      $datetooltip.attr({
+        'data-toggle': 'tooltip',
+        "data-placement": "bottom",
+        "data-container": "body"
+      });
       withInput($datetooltip, function($input){
         $input.change(function(){
           $datetooltip.tooltip('hide')

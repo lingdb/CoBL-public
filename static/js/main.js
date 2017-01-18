@@ -59,6 +59,7 @@
              'js/plotDistributions',
              'js/nexus',
              'js/datetooltip',
+             'js/longInput',
              'js/updateCounts',
              'js/updatePercentages',
              'js/confirmSubmit',
