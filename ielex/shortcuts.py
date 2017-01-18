@@ -4,6 +4,7 @@ import os.path as path
 from django.shortcuts import render
 
 from ielex.lexicon.defaultModels import getDefaultDict
+from ielex.local_settings import DEBUG
 
 
 def render_template(request, template_path, extra_context={}):
@@ -18,6 +19,8 @@ def render_template(request, template_path, extra_context={}):
 
 # When we're not in DEBUG mode, we search for the minified.js file:
 def minifiedJs():
+    if DEBUG:
+        return None
     files = glob.glob('./static/minified.*.js')
     for file in files:
         return path.basename(file)
