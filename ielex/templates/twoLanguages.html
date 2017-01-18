@@ -452,7 +452,7 @@
                 {# gloss_data.html #}
                 <td class="lexemeGloss">
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.gloss size="8" class="form-control" %}
+                    {% form_field lexeme.gloss size="8" class="form-control" data-longinput="24" %}
                   {% elif lexeme.object_data.gloss %}
                     {{ lexeme.object_data.gloss }}
                   {% endif %}
@@ -460,7 +460,7 @@
                 {# notes_data.html #}
                 <td class="lexemeNotes">
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.notes class="form-control" %}
+                    {% form_field lexeme.notes class="form-control" data-longinput="25" %}
                   {% elif lexeme.object_data.notes %}
                     {{ lexeme.object_data.notes }}
                   {% endif %}

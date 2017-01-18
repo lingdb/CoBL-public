@@ -114,7 +114,7 @@
                   </td>
                   <td class="website">
                     {% if user.is_authenticated and user.is_staff %}
-                      {% form_field author.website class="form-control inline" style="width: 90%;" %}
+                      {% form_field author.website class="form-control inline" style="width: 90%;" data-longinput="37" %}
                     {% endif %}
                     {% if author.website.data %}
                       <a href="{{ author.website.data }}" target="_blank">

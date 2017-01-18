@@ -639,7 +639,7 @@
                 {# author_data.html #}
                 <td class="languageAuthor">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.author class="form-control" style="min-width: 30em;" %}
+                    {% form_field language.author class="form-control" style="min-width: 30em;" data-longinput="25" %}
                   {% else %}
                     {{ language.author.data }}
                   {% endif %}

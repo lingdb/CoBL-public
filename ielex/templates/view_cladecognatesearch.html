@@ -648,7 +648,7 @@
             {# glossinrootlang_data.html #}
             <td class="cogGlossInRootLang">
               {% if user.is_authenticated %}
-                {% form_field cc.gloss_in_root_lang class="form-control" %}
+                {% form_field cc.gloss_in_root_lang class="form-control" data-longinput="16" %}
               {% elif cc.gloss_in_root_lang.data %}
                 {{ cc.gloss_in_root_lang.data }}
               {% endif %}
@@ -656,7 +656,7 @@
             {# notes_data.html #}
             <td class="cogNotes">
               {% if user.is_authenticated %}
-                {% form_field cc.notes class="form-control" %}
+                {% form_field cc.notes class="form-control" data-longinput="15" %}
               {% elif cc.object_data.notes %}
                 {{ cc.object_data.notes }}
               {% endif %}

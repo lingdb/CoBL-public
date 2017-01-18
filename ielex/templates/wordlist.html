@@ -402,7 +402,7 @@
                 </td>
                 <td class="meaningTooltip">
                 {% if user.is_authenticated and user.is_staff %}
-                  {% form_field meaning.tooltip class="form-control" %}
+                  {% form_field meaning.tooltip class="form-control" data-longinput="15" %}
                 {% else %}
                   {{ meaning.object_data.tooltip }}
                 {% endif %}
@@ -410,7 +410,7 @@
                 {# exampleContext_data.html #}
                 <td class="exampleContext">
                 {% if user.is_authenticated and user.is_staff %}
-                  {% form_field meaning.exampleContext class="form-control" %}
+                  {% form_field meaning.exampleContext class="form-control" data-longinput="11" %}
                 {% else %}
                   {{ meaning.object_data.exampleContext }}
                 {% endif %}
