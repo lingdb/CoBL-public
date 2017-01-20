@@ -1142,20 +1142,38 @@ def edit_meaning(request, meaning):
 
 
 @logExceptions
-def view_citations_inline_form(request, model, formset):
-    model_obj = model.objects.get(
+def view_citations_inline_form(request, model):
+    assert model == Lexeme or model == CognateClass, "Unexpected model"
+    instance = model.objects.get(
         id=request.POST.get("id"))
-    response = HttpResponse()
-    response.write(
-        render_to_string('snippets/citation_inline_form.html',
-                         context={'formset':
-                                  formset(
-                                      instance=model_obj,
-                                      prefix='citations')
-                                  },
-                         request=request)
-        )
-    return response
+
+    def getEntries(query):
+        entries = []
+        for citation in query:
+            entries.append({
+                'id': citation.id,
+                'source_id': citation.source_id,
+                'source_name': citation.source.shorthand,
+                'pages': citation.pages,
+                'comment': citation.comment})
+        return entries
+
+    if model == Lexeme:
+        entries = getEntries(
+            instance.lexemecitation_set.all().select_related('source'))
+        return JsonResponse({
+            'id': instance.id,
+            'model': 'Lexeme',
+            'entries': entries
+        })
+    elif model == CognateClass:
+        entries = getEntries(
+            instance.cognateclasscitation_set.all().select_related('source'))
+        return JsonResponse({
+            'id': instance.id,
+            'model': 'CognateClass',
+            'entries': entries
+        })
 
 
 @logExceptions
@@ -1198,7 +1216,7 @@ def citation_form_event(request):
         return None
     model, formset = model_formset_dict[request.POST.get("model")]
     if request.POST.get("postType") == 'viewCit':
-        return view_citations_inline_form(request, model, formset)
+        return view_citations_inline_form(request, model)
     elif request.POST.get("action") == 'Submit':
         return submit_citations_inline_form(request, model, formset)
 
