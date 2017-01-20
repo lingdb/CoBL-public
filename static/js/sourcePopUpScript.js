@@ -2,10 +2,10 @@
   "use strict";
   return define(["jquery", "django-dynamic-formset"], function($) {
     var active = window.location.pathname.match(/^\/(cognateclasslist|meaning)\//);
-	console.log('Popup script '+active);
+
     if(active){
       $(document).ready(function() {
-        /***** BUILD CITATIONS FORM *****/
+
         function build_cit_form(data) {
 
           $('#viewCitContainer').append(data);
