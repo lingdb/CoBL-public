@@ -650,7 +650,7 @@
                 {# rootform_data.html #}
                 <td class="cogRootForm">
                   {% if user.is_authenticated %}
-                    {% form_field cc.root_form class="form-control" style="width: 12em;" placeholder=cc.object_data.rootFormOrPlaceholder %}
+                    {% form_field cc.root_form class="form-control" style="width: 12em;" placeholder=cc.object_data.rootFormOrPlaceholder data-longinput="25" %}
                   {% else %}
                     {{ cc.object_data.rootFormOrPlaceholder }}
                   {% endif %}
@@ -674,7 +674,7 @@
                 {# glossinrootlang_data.html #}
                 <td class="cogGlossInRootLang">
                   {% if user.is_authenticated %}
-                    {% form_field cc.gloss_in_root_lang class="form-control" %}
+                    {% form_field cc.gloss_in_root_lang class="form-control" data-longinput="10" %}
                   {% elif cc.gloss_in_root_lang.data %}
                     {{ cc.gloss_in_root_lang.data }}
                   {% endif %}
@@ -682,7 +682,7 @@
                 {# notes_data.html #}
                 <td class="cogNotes">
                   {% if user.is_authenticated %}
-                    {% form_field cc.notes class="form-control" %}
+                    {% form_field cc.notes class="form-control" data-longinput="8" %}
                   {% elif cc.object_data.notes %}
                     {{ cc.object_data.notes }}
                   {% endif %}

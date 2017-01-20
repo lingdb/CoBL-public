@@ -587,7 +587,7 @@
                       {{ lexeme.allCognateClasses.0.lastTouched }}
                       {{ lexeme.allCognateClasses.0.lastEditedBy }}
                     </span>
-                    {% form_field lexeme.allCognateClasses.0.root_form class="form-control" placeholder=lexeme.allCognateClasses.0.object_data.rootFormOrPlaceholder %}
+                    {% form_field lexeme.allCognateClasses.0.root_form class="form-control" placeholder=lexeme.allCognateClasses.0.object_data.rootFormOrPlaceholder data-longinput="13" %}
                   {% else %}
                     {{ lexeme.object_data.allCognateClasses.0.rootFormOrPlaceholder }}
                   {% endif %}
@@ -662,7 +662,7 @@
               {# notes_data.html #}
               <td class="lexemeNotes">
                 {% if user.is_authenticated %}
-                  {% form_field lexeme.notes class="form-control" %}
+                  {% form_field lexeme.notes class="form-control" data-longinput="25" %}
                 {% elif lexeme.notes.data %}
                   {{ lexeme.notes.data }}
                 {% endif %}
