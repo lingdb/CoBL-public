@@ -1,87 +1,90 @@
 (function() {
   "use strict";
-  return define(["jquery", "django-dynamic-formset"], function($) {
+  return define(["jquery", "bootbox", "lodash", "django-dynamic-formset"], function($, bootbox, _){
     var active = window.location.pathname.match(/^\/(cognateclasslist|meaning)\//);
-
     if(active){
       $(document).ready(function() {
+        var mkRow = function(entry){
+          var idInput = entry.id ? '<input class="hide" type="text" data-key="id" value="' + entry.id + '">' : '';
+          var select = '<select data-autocomplete-light-function="select2" data-autocomplete-light-url="/source-autocomplete/" data-key="source_id">' +
+              '<option value="">---------</option>' +
+              '<option value="' + entry.source_id + '" selected="selected">' + entry.source_name + '</option>' +
+            '</select>';
+          return '<tr data-id="' + entry.id + '">' +
+            '<td>' + select + '</td>' +
+            '<td><input class="form-control" style="width: 3em;" type="text" data-key="pages" value="' + entry.pages + '"></td>' +
+            '<td><textarea data-key="comment">' + entry.comment + '</textarea></td>' +
+            '<td><a class="btn btn-xs removeRow">remove</a>' + idInput + '</td>' +
+            '</tr>';
+        };
 
-        function build_cit_form(data) {
+        var mkTable = function(entries){
+          return '<table class="table table-bordered">' +
+            "<thead><tr>" +
+              "<th>Source</th>" +
+              "<th>Pages</th>" +
+              "<th>Comment</th>" +
+              "<th>Delete</th>" +
+              "</tr></thead><tbody>" +
+              _.map(entries, mkRow).join('') +
+            "</tbody></table>";
+        };
 
-          $('#viewCitContainer').append(data);
-          var formTemplate = $('#formTemplateContainer tr');
-          formTemplate.find('input:hidden[id $= "-DELETE"]').remove();
-          // Clear all cloned fields, except those the user wants to keep
-          formTemplate.find('input,select,textarea,label,div').each(function() {
-            var elem = $(this);
-            if (elem.is('input:checkbox') || elem.is('input:radio')) {
-              elem.attr('checked', false);
-              // consider forking django-dynamic-templates and adding this fix to clear autocomplete forms
-            } else if (elem.is('select[data-autocomplete-light-function="select2"]')) {
-              elem.parent().html('<select data-autocomplete-light-function="select2" data-autocomplete-light-url="/source-autocomplete/" id="id_citations-0-source" name="citations-0-source"/>');
-            } else {
-              elem.val('');
-            }
+        var removeHandler = function(){
+          $(this).closest('tr').remove();
+        };
+
+        var build_cit_form = function(data) {
+          var modal = bootbox.dialog({
+            title: 'Edit sources',
+            message: mkTable(data.entries) +
+              '<a class="btn btn-info addRow">Add row</a>' +
+              '<a class="btn btn-primary saveTable">Submit</a>'
           });
-          $('#citations tbody tr').formset({
-            prefix: 'citations',
-            formTemplate: formTemplate,
+          modal.find('.removeRow').click(removeHandler);
+          modal.find('.addRow').click(function(){
+            modal.find('table tbody').append(mkRow({
+              'source_name': '', pages: '', comment: ''}));
+            modal.find('table tbody tr:last .removeRow').click(removeHandler);
           });
-          $('#viewCitContainer form tr:last .delete-row').trigger("click");
-          $('#viewCit')[0].style.display = "block";
-          return false;
-        }
-
-        /***** VIEW CITATIONS *****/
-        $(document.body).on('click', '.openModal', function() {
-          $(this).toggleClass('selected');
-          $('#viewCitContainer').empty();
-          var postdata = {
+          modal.find('.saveTable').click(function(){
+            var entries = [];
+            modal.find('tbody tr').each(function(){
+              var entry = {};
+              $(this).find('[data-key]').each(function(){
+                var $this = $(this);
+                entry[$this.data('key')] = $this.val();
+              });
+              entries.push(entry);
+            });
+            var query = {
+               postType: 'update',
+               csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+               source_data: entries,
+               action: 'Submit',
+               id: data.id,
+               model: data.model,
+            };
+            $.post("/cognateclasslist/", query, function(data){
+              //FIXME IMPLEMENT
+              /*
+                var id = response.id;
+                var model = response.model;
+                var badgeUpdate = response.badgeUpdate;
+                $('.openModal[id="' + id + '"][model="' + model + '"]').text(badgeUpdate);
+              */
+            });
+          });
+        };
+        $('.openModal').click(function(){
+          var $this = $(this);
+          var query = {
             'postType': 'viewCit',
             'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
-            'id': $(this).attr('id'),
-            'model': $(this).attr('model'),
+            'id': $this.data('id'),
+            'model': $this.data('model')
           };
-          $.post("/cognateclasslist/", postdata, function(data) {
-            build_cit_form(data);
-          });
-          return false;
-        });
-
-        /**** CLOSE CITATIONS VIEW *****/
-        $(document.body).on('click', '.close', function() {
-          close_modal();
-          return false;
-        });
-
-        function close_modal() {
-          $('.openModal.selected').removeClass('selected');
-          $('#viewCit')[0].style.display = "none";
-        }
-
-        /***** SUBMIT FORM *****/
-        $(document).on("click", "#viewCitContainer :submit", function(e) { // catch the form's submit event
-          var postdata = {
-            'postType': 'update',
-            'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
-            'source_data': $('form#citations').serialize(),
-            'action': $(this).val(),
-            'id': $('.openModal.selected').attr('id'),
-            'model': $('.openModal.selected').attr('model'),
-          };
-          $.ajax({ // create an AJAX call...
-            data: postdata, // get the form data
-            type: $(this).parent().attr('method'), // GET or POST
-            url: $(this).parent().attr('action'), // the file to call
-            success: function(response) { // on success..
-              var id = response.id;
-              var model = response.model;
-              var badgeUpdate = response.badgeUpdate;
-              $('.openModal[id="' + id + '"][model="' + model + '"]').text(badgeUpdate);
-            }
-          });
-          close_modal();
-          return false;
+          $.post("/cognateclasslist/", query, build_cit_form);
         });
       });
     }
