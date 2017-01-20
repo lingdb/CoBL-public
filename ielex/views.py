@@ -71,8 +71,6 @@ from ielex.forms import AddCitationForm, \
     CognateClassFormSet, \
     LexemeFormSet, \
     AssignCognateClassesFromLexemeForm, \
-    CognateClassCitationFormSet, \
-    LexemeCitationFormSet, \
     LanguageDistributionTableForm, \
     TwoLanguageWordlistTableForm
 from ielex.lexicon.models import Author, \
@@ -118,7 +116,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import FormView
 from django.utils.decorators import method_decorator
-from django.template.loader import render_to_string
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
@@ -1144,8 +1141,7 @@ def edit_meaning(request, meaning):
 @logExceptions
 def view_citations_inline_form(request, model):
     assert model == Lexeme or model == CognateClass, "Unexpected model"
-    instance = model.objects.get(
-        id=request.POST.get("id"))
+    instance = model.objects.get(id=request.POST.get("id"))
 
     def getEntries(query):
         entries = []
@@ -1177,48 +1173,58 @@ def view_citations_inline_form(request, model):
 
 
 @logExceptions
-def submit_citations_inline_form(request, model, formset):
-    modelcit_dict = {'CognateClass': CognateClassCitation,
-                     'Lexeme': LexemeCitation
-                     }
-    rel_cit_field_dict = {'CognateClass': 'cognate_class', 'Lexeme': 'lexeme'}
-    modelcit = modelcit_dict[request.POST.get("model")]
-    rel_cit_field = rel_cit_field_dict[request.POST.get("model")]
-    model_obj = model.objects.get(
-        id=request.POST.get("id"))
-    formset = formset(
-        QueryDict(request.POST['source_data'].encode('ASCII')),
-        instance=model_obj,
-        prefix='citations'
-        )
-    if formset.is_valid():
-        formset.save()
-        filter_kwgrs = {rel_cit_field: model_obj.pk}
-        return JsonResponse({'id': request.POST.get("id"),
-                             'model': request.POST.get("model"),
-                             'badgeUpdate':
-                             modelcit.objects.filter(**filter_kwgrs).count()
-                             },
-                            )
-    else:
-        print(formset.errors())
-    return JsonResponse({})
+def submit_citations_inline_form(request, model):
+    assert model == Lexeme or model == CognateClass, "Unexpected model"
+    instance = model.objects.get(id=request.POST.get("id"))
+
+    if model == Lexeme:
+        citationModel = LexemeCitation
+        querySet = instance.lexemecitation_set
+    elif model == CognateClass:
+        citationModel = CognateClassCitation
+        querySet = instance.cognateclasscitation_set
+
+    citations = {str(citation.id): citation for citation in querySet.all()}
+
+    for entry in json.loads(request.POST.get("source_data")):
+        if 'id' in entry and entry['id'] in citations:
+            citation = citations.pop(entry['id'])
+            citation.source_id = int(entry['source_id'])
+            citation.pages = entry['pages']
+            citation.comment = entry['comment']
+            citation.save()
+        elif model == Lexeme:
+            LexemeCitation.objects.create(
+                lexeme_id=instance.id,
+                source_id=int(entry['source_id']),
+                pages=entry['pages'],
+                comment=entry['comment'])
+        elif model == CognateClass:
+            CognateClassCitation.objects.create(
+                cognate_class_id=instance.id,
+                source_id=int(entry['source_id']),
+                pages=entry['pages'],
+                comment=entry['comment'])
+    citationModel.objects.filter(id__in=citations.keys()).delete()
+
+    return JsonResponse({
+        'id': instance.id,
+        'model': request.POST.get("model"),
+        'badgeUpdate': querySet.count()})
 
 
 @login_required
 @logExceptions
 def citation_form_event(request):
-    model_formset_dict = {'CognateClass': (CognateClass,
-                                           CognateClassCitationFormSet),
-                          'Lexeme': (Lexeme, LexemeCitationFormSet)
-                          }
-    if not request.POST.get("model"):
+    model_dict = {'CognateClass': CognateClass,
+                  'Lexeme': Lexeme}
+    handlerDict = {'viewCit': view_citations_inline_form,
+                   'Submit': submit_citations_inline_form}
+    if request.POST.get("model") not in model_dict or\
+            request.POST.get("action") not in handlerDict:
         return None
-    model, formset = model_formset_dict[request.POST.get("model")]
-    if request.POST.get("postType") == 'viewCit':
-        return view_citations_inline_form(request, model)
-    elif request.POST.get("action") == 'Submit':
-        return submit_citations_inline_form(request, model, formset)
+    model = model_dict[request.POST.get("model")]
+    return handlerDict[request.POST.get("action")](request, model)
 
 
 @csrf_protect

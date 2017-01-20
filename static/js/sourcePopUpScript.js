@@ -58,28 +58,23 @@
               entries.push(entry);
             });
             var query = {
-               postType: 'update',
                csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
-               source_data: entries,
+               source_data: JSON.stringify(entries),
                action: 'Submit',
                id: data.id,
                model: data.model,
             };
             $.post("/cognateclasslist/", query, function(data){
-              //FIXME IMPLEMENT
-              /*
-                var id = response.id;
-                var model = response.model;
-                var badgeUpdate = response.badgeUpdate;
-                $('.openModal[id="' + id + '"][model="' + model + '"]').text(badgeUpdate);
-              */
+              var search = '[data-id="' + data.id + '"][data-model="' + data.model + '"]';
+              $(search).text(data.badgeUpdate);
+              modal.modal('hide');
             });
           });
         };
         $('.openModal').click(function(){
           var $this = $(this);
           var query = {
-            'postType': 'viewCit',
+            'action': 'viewCit',
             'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
             'id': $this.data('id'),
             'model': $this.data('model')

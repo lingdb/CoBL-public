@@ -1267,9 +1267,9 @@ class CognateClass(AbstractTimestamped):
         if self.root_form != '':
             return self.root_form
         # If single lexeme in cognate class, use romanised:
-        lexemeSet = self.lexeme_set.filter(
-            language__languagelistorder__language_list__name=
-            LanguageList.DEFAULT)
+        fDict = {'language__languagelistorder__language_list__name':
+                 LanguageList.DEFAULT}
+        lexemeSet = self.lexeme_set.filter(**fDict)
         if lexemeSet.count() == 1:
             return lexemeSet.get().romanised
         # Do we have a loanword?

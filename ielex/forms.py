@@ -1930,21 +1930,6 @@ LexemeFormSet = inlineformset_factory(
     can_delete=False, fields=('comment',), extra=0)
 
 
-CognateClassCitationFormSet = inlineformset_factory(
-    CognateClass, CognateClassCitation,
-    form=EditCognateClassCitationInlineForm,
-    can_delete=True, fields=('source', 'pages', 'comment',), extra=1)
-
-# IMPORTANT:
-# extra>=1 is required here by the js override that fixes
-# django-dynamic-formsets & django-autocomplete-light
-# incorrect behaviour, when used together.
-
-LexemeCitationFormSet = inlineformset_factory(
-    Lexeme, LexemeCitation,
-    form=EditLexemeCitationInlineForm,
-    can_delete=True, fields=('source', 'pages', 'comment',), extra=1)
-
 # IMPORTANT:
 # extra>=1 is required here by the js override that fixes
 # django-dynamic-formsets & django-autocomplete-light
