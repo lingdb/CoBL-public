@@ -2,11 +2,12 @@
 from __future__ import division
 import json
 import os.path
-import reversion
-import zlib
 import datetime
 from collections import defaultdict
 from string import ascii_uppercase, ascii_lowercase
+import inspect
+
+import reversion
 from django.db import models, transaction
 from django.db.models import Max
 from django.core.urlresolvers import reverse
@@ -15,18 +16,14 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.http import urlquote
 from django.http import HttpResponse
 from django.utils.html import format_html
-from django.db.utils import DataError
+from django.db.utils import DataError, IntegrityError
 from django.utils import timezone
 from django.contrib.auth.models import User
 import bibtexparser
 from bibtexparser.bibdatabase import BibDatabase
 
-# ielex specific imports:
-from ielex.utilities import two_by_two
+from ielex.utilities import two_by_two, compressedField
 from ielex.lexicon.validators import suitable_for_url, standard_reserved_names
-
-import inspect
-from django.db.utils import IntegrityError
 
 
 def disable_for_loaddata(signal_handler):
@@ -39,10 +36,6 @@ def disable_for_loaddata(signal_handler):
         signal_handler(*args, **kwargs)
     return wrapper
 # end
-
-# TODO: reinstate the cache stuff, but using a site specific key prefix (maybe
-# the short name of the database
-
 
 TYPE_CHOICES = (
     ("P", "Publication"),
@@ -128,23 +121,21 @@ class CharNullField(models.CharField):
             return value
         if value is None:
             return ""
-        else:
-            return value
+        return value
 
     def get_prep_value(self, value):
         # this was get_db_prep_value, but that is for database specific things
         if value == "":
             return None
-        else:
-            return value
+        return value
 
 
 class AbstractTimestamped(models.Model):
-    '''
+    """
     This model is created as a mixin that adds
     fields and functionality to other models.
     It aims to solve the problems observed in #111.
-    '''
+    """
     lastTouched = models.DateTimeField(auto_now=True, blank=True)
     lastEditedBy = models.CharField(max_length=32, default="unknown")
 
@@ -152,21 +143,21 @@ class AbstractTimestamped(models.Model):
         abstract = True
 
     def timestampedFields(self):
-        '''
+        """
         timestampedFields shall be overwritten by children
         and return a set of field names that are
         allowed to be considered by the AbstractTimestamped
         {isChanged,setDelta} methods.
-        '''
+        """
         return set()
 
     def isChanged(self, **vdict):
-        '''
+        """
         Returns True iff any of the fields in vdict
         that are also specified in timestampedFields
         and are one of the models fields stored in the db
         has changed. Returns False otherwise.
-        '''
+        """
         tFields = self.timestampedFields()
 
         for f in self._meta.fields:
@@ -176,7 +167,7 @@ class AbstractTimestamped(models.Model):
         return False
 
     def setDelta(self, request=None, **vdict):
-        '''
+        """
         setDelta allows to alter a model with a dict of field names.
         vdict must have a lastTouched field
         that is the same as the current lastTouched.
@@ -190,7 +181,7 @@ class AbstractTimestamped(models.Model):
         The request parameter is used to update lastEditedBy.
         It's possible to omit the request so that setDelta
         can be used independent of it.
-        '''
+        """
         # Guarding for correct lastTouched:
         if 'lastTouched' not in vdict:
             return self.getDelta(**vdict)
@@ -205,23 +196,23 @@ class AbstractTimestamped(models.Model):
                 setattr(self, f.name, vdict[f.name])
 
     def getDelta(self, **vdict):
-        '''
+        """
         Produces a dict that lists all the fields of vdict
         that are valid fields for self in the sense that
         they are mentioned in timestampedFields and
         that are different than the current entries.
-        '''
+        """
         tFields = self.timestampedFields()
         return {k: vdict[k] for k in vdict
                 if k in tFields and
                 vdict[k] != getattr(self, k)}
 
     def checkTime(self, t):
-        '''
+        """
         Returns true if the given datetime t is
         less then a second different from the current
         lastTouched value.
-        '''
+        """
         if self.lastTouched is None:
             return True
 
@@ -236,10 +227,10 @@ class AbstractTimestamped(models.Model):
         return abs(t - self.lastTouched).seconds == 0
 
     def bump(self, request, t=None):
-        '''
+        """
         Updates the lastEditedBy field of an AbstractTimestamped.
         If a t :: datetime is given, bump uses checkTime on that.
-        '''
+        """
         if t is not None and not self.checkTime(t):
             raise Exception('Refusing bump because of failed checkTime.')
         if request is not None:
@@ -249,17 +240,17 @@ class AbstractTimestamped(models.Model):
                                           request.user.last_name])
 
     def toDict(self):
-        '''
+        """
         Returns a dict carrying the timestampedFields.
-        '''
+        """
         return {k: getattr(self, k) for k in self.timestampedFields()}
 
 
 class AbstractDistribution(models.Model):
-    '''
+    """
     This model describes the types of distributions
     we use for clades and languages.
-    '''
+    """
     # Distribution type used:
     distribution = models.CharField(
         max_length=1, choices=DISTRIBUTION_CHOICES, default="_")
@@ -287,9 +278,9 @@ class AbstractDistribution(models.Model):
 @reversion.register
 class Source(models.Model):
 
-    '''
+    """
     Used for bibliographical references.
-    '''
+    """
     # OLD FIELDS:
     citation_text = models.TextField()
     description = models.TextField(blank=True)  # keep for now
@@ -331,18 +322,18 @@ class Source(models.Model):
     # status:
     deprecated = models.BooleanField(default=False)
 
-    '''
+    """
     Traditional reference source (dated).
     S. https://github.com/lingdb/CoBL/issues/332#issuecomment-255142824
-    '''
+    """
     TRS = models.BooleanField(
         default=False, help_text="""Traditional reference source (dated).""")
 
-    '''
+    """
     A brief summary of the nature of the source and how its utility
     (or otherwise) is general perceived nowadays within Indo-European studies.
     S. https://github.com/lingdb/CoBL/issues/332#issuecomment-255142824
-    '''
+    """
     respect = models.TextField(
         blank=True,
         help_text="""A brief summary of the nature """
@@ -357,7 +348,7 @@ class Source(models.Model):
                        'note', 'number', 'series', 'volume',
                        'publisher', 'institution', 'chapter',
                        'howpublished', 'shorthand', 'isbn',
-                       ]
+                      ]
     cobl_attr_lst = ['authortype', 'editortype', 'editoratype',
                      'deprecated', 'TRS', 'respect']
     source_attr_lst = bibtex_attr_lst + cobl_attr_lst
@@ -502,10 +493,10 @@ class Source(models.Model):
 
 @reversion.register
 class SndComp(AbstractTimestamped):
-    '''
+    """
     Introduced for #153.
     This model tracks the correspondence of clades to sndComp sets.
-    '''
+    """
     lgSetName = models.TextField(blank=True, unique=True)
     # Corresponding to SndComp fields:
     lv0 = models.IntegerField(default=0, null=False)
@@ -519,10 +510,10 @@ class SndComp(AbstractTimestamped):
     cladeLevel3 = models.IntegerField(default=0)
 
     def getClade(self):
-        '''
+        """
         This method tries to find the clade closest to a SndComp.
         @return clade :: Clade | None
-        '''
+        """
 
         wanted = [('cladeLevel0', self.cladeLevel0),
                   ('cladeLevel1', self.cladeLevel1),
@@ -554,10 +545,10 @@ class SndComp(AbstractTimestamped):
 
 @reversion.register
 class Clade(AbstractTimestamped, AbstractDistribution):
-    '''
+    """
     This model was added for #153
     and shall be used to track clade constraints.
-    '''
+    """
     cladeLevel0 = models.IntegerField(default=0, null=False)
     cladeLevel1 = models.IntegerField(default=0, null=False)
     cladeLevel2 = models.IntegerField(default=0, null=False)
@@ -621,12 +612,12 @@ class Clade(AbstractTimestamped, AbstractDistribution):
         for cc in cognateclasses:
             lIds = set(cc.lexeme_set.filter(
                 not_swadesh_term=False).values_list(
-                'language_id', flat=True))
+                    'language_id', flat=True))
             self._cognateClassConnections.append(bool(clIds & lIds))
 
     def connectsToNextCognateClass(self):
         # :: self._cognateClassConnections[0] | False
-        if len(self._cognateClassConnections):
+        if self._cognateClassConnections:
             return self._cognateClassConnections.pop(0)
         return False
 
@@ -657,7 +648,7 @@ def getCladeFromLanguageIds(languageIds):
     lIdToCladeOrders = defaultdict(dict)  # lId -> cId -> cladesOrder
     for lId, cladeId, cladesOrder in LanguageClade.objects.filter(
             language_id__in=languageIds).values_list(
-            'language_id', 'clade_id', 'cladesOrder'):
+                'language_id', 'clade_id', 'cladesOrder'):
         lIdToCladeOrders[lId][cladeId] = cladesOrder
     # Intersecting clades:
     cladeIdOrderMap = None
@@ -671,7 +662,7 @@ def getCladeFromLanguageIds(languageIds):
             cladeIdOrderMap = {k: v for k, v in cladeIdOrderMap.items()
                                if k in intersection}
     # Retrieving the Clade:
-    if len(cladeIdOrderMap) > 0:
+    if cladeIdOrderMap:
         # https://stackoverflow.com/a/3282904/448591
         cId = min(cladeIdOrderMap, key=cladeIdOrderMap.get)
         return Clade.objects.get(id=cId)
@@ -747,9 +738,9 @@ class Language(AbstractTimestamped, AbstractDistribution):
                     'sortRankInClade']
 
     def getCsvRow(self, *fields):
-        '''
+        """
         @return row :: [str]
-        '''
+        """
         fieldSet = self.timestampedFields()
 
         row = []
@@ -761,11 +752,11 @@ class Language(AbstractTimestamped, AbstractDistribution):
     _computeCounts = {}  # Memo for computeCounts
 
     def computeCounts(self, meaningList=None):
-        '''
+        """
         computeCounts calculates some of the properties of this model.
         It uses self._computeCounts for memoization.
-        '''
-        if len(self._computeCounts) == 0:
+        """
+        if not self._computeCounts:
             # Making sure we've got a meaningList:
             if meaningList is None:
                 meaningList = MeaningList.objects.get(name=MeaningList.ALL)
@@ -998,11 +989,11 @@ class Meaning(AbstractTimestamped):
     _computeCounts = {}  # Memo for computeCounts
 
     def computeCounts(self, languageList=None):
-        '''
+        """
         computeCounts calculates some of the properties of this model.
         It uses self._computeCounts for memoization.
-        '''
-        if len(self._computeCounts) == 0:
+        """
+        if not self._computeCounts:
             # Making sure we have a languageList:
             if languageList is None:
                 languageList = LanguageList.objects.get(name='all')
@@ -1012,7 +1003,7 @@ class Meaning(AbstractTimestamped):
             ccs = CognateClass.objects.filter(
                 lexeme__meaning_id=self.id,
                 lexeme__language_id__in=lIds).order_by(
-                'id').distinct('id').all()
+                    'id').distinct('id').all()
             # Setup to count stuff:
             cog_count = len(ccs)
             cogRootFormCount = 0
@@ -1135,7 +1126,7 @@ class CognateClass(AbstractTimestamped):
             lexeme__cognate_class=self).distinct()
         current_aliases = CognateClass.objects.filter(
             lexeme__meaning__in=meanings).distinct().exclude(
-            id=self.id).values_list("alias", flat=True)
+                id=self.id).values_list("alias", flat=True)
         codes -= set(current_aliases)
         self.alias = sorted(codes, key=lambda i: (len(i), i))[0]
         if save:
@@ -1162,8 +1153,7 @@ class CognateClass(AbstractTimestamped):
     def __str__(self):
         if self.alias:
             return "%s (%s)" % (self.id, self.alias)
-        else:
-            return "%s" % self.id
+        return "%s" % self.id
 
     class Meta:
         ordering = ["alias"]
@@ -1187,11 +1177,11 @@ class CognateClass(AbstractTimestamped):
     _computeCounts = {}  # Memo for computeCounts
 
     def computeCounts(self, languageList=None):
-        '''
+        """
         computeCounts calculates the lexeme* properties.
         It uses self._computeCounts for memoization.
-        '''
-        if len(self._computeCounts) == 0:
+        """
+        if not self._computeCounts:
             # Use languageList to build lSet to filter lexemes:
             lSet = None
             if languageList is not None:
@@ -1216,12 +1206,12 @@ class CognateClass(AbstractTimestamped):
             languageIds = self.lexeme_set.filter(
                 language_id__in=lSet,
                 not_swadesh_term=False).exclude(
-                language__level0=0).values_list(
-                'language_id', flat=True)
+                    language__level0=0).values_list(
+                        'language_id', flat=True)
             cladeCount = Clade.objects.filter(
                 languageclade__language__id__in=languageIds).exclude(
-                hexColor='').exclude(
-                shortName='').distinct().count()
+                    hexColor='').exclude(
+                        shortName='').distinct().count()
             # Filling memo with data:
             self._computeCounts = {
                 'lexemeCount': lexemeCount,
@@ -1282,9 +1272,9 @@ class CognateClass(AbstractTimestamped):
         commonCladeIds = Clade.objects.filter(
             language__id__in=affectedLanguageIds
             ).distinct().order_by(
-            'languageclade__cladesOrder'
-            ).values_list('id', flat=True)
-        if len(commonCladeIds):
+                'languageclade__cladesOrder'
+                ).values_list('id', flat=True)
+        if commonCladeIds:
             findQuery = Language.objects.filter(
                 id__in=affectedLanguageIds,
                 languageclade__clade__id=commonCladeIds[0])
@@ -1293,22 +1283,21 @@ class CognateClass(AbstractTimestamped):
                 return Lexeme.objects.filter(
                     language__id__in=languageIds,
                     cognate_class=cognateClass).exclude(
-                    phoneMic='').values_list(
-                    'phoneMic', flat=True)
+                        phoneMic='').values_list(
+                            'phoneMic', flat=True)
 
             idFinders = [lambda: findQuery.filter(
-                         representative=True).values_list(
-                         'id', flat=True),
+                representative=True).values_list('id', flat=True),
                          lambda: findQuery.filter(
-                         exampleLanguage=True).values_list(
-                         'id', flat=True),
+                             exampleLanguage=True).values_list(
+                                 'id', flat=True),
                          lambda: affectedLanguageIds]
 
             for idFinder in idFinders:
                 languageIds = idFinder()
-                if len(languageIds):
+                if languageIds:
                     orthographics = getOrthographics(self, languageIds)
-                    if len(orthographics):
+                    if orthographics:
                         return orthographics[0]
         # Nothing left to try:
         return ''
@@ -1338,9 +1327,10 @@ class CognateClass(AbstractTimestamped):
     def combinedRootPlaceholder(self):
         # Added for #246
         # Calculating part 1:
-        p1 = ' IN '.join([s for s in [
-            self.rootFormOrPlaceholder, self.rootLanguageOrPlaceholder]
-            if s != ''])
+        p1 = ' IN '.join(
+            [s for s in [self.rootFormOrPlaceholder,
+                         self.rootLanguageOrPlaceholder]
+             if s != ''])
         # Calculating part 2:
         p2 = ''
         if self.loanword:
@@ -1433,8 +1423,7 @@ class Lexeme(AbstractTimestamped):
         """
         if anchor:
             return "/lexeme/%s/#%s" % (self.id, anchor.strip("#"))
-        else:
-            return "/lexeme/%s/" % self.id
+        return "/lexeme/%s/" % self.id
 
     def __str__(self):
         return self.phon_form or self.romanised or ("Lexeme %s" % self.id)
@@ -1464,7 +1453,7 @@ class Lexeme(AbstractTimestamped):
         ids = [str(cc.id) for cc in ccs]
         rfs = [cc.root_form for cc in ccs]
         rls = [cc.root_language for cc in ccs]
-        if len(ids) == 0:
+        if not ids:
             return None
         return {
             'id': ','.join(ids),
@@ -1506,7 +1495,7 @@ class Lexeme(AbstractTimestamped):
     @property
     def is_excluded_lexeme(self):
         # Tests is_exc for #88
-        return ('X' in self.reliability_ratings)
+        return 'X' in self.reliability_ratings
 
     @property
     def is_excluded_cognate(self):
@@ -2012,11 +2001,11 @@ class Author(AbstractTimestamped):
 
     @property
     def getAvatar(self):
-        '''
+        """
         Tries to infer the avatar of an Author by seaching for pictures that
         are named after the surname of an Author.
         @return path :: str | None
-        '''
+        """
         # Guard to make sure we've got a surname:
         if self.surname is None or self.surname == '':
             return None
@@ -2035,24 +2024,6 @@ class Author(AbstractTimestamped):
 
 @reversion.register
 class NexusExport(AbstractTimestamped):
-    def compressed(field):
-        # Decorator for compressed fields:
-
-        def fget(self):
-            data = getattr(self, field)
-            if data is None:
-                return None
-            return zlib.decompress(data)
-
-        def fset(self, value):
-            setattr(self, field, zlib.compress(value.encode()))
-
-        def fdel(self):
-            delattr(self, field)
-        return {'doc': "The compression property for %s." % field,
-                'fget': fget,
-                'fset': fset,
-                'fdel': fdel}
     # Name of .nex file:
     exportName = models.CharField(max_length=256, blank=True)
     description = models.CharField(max_length=256, blank=True)
@@ -2089,13 +2060,13 @@ class NexusExport(AbstractTimestamped):
                      'excludeMarkedLanguages']
     # Compressed data of nexus file:
     _exportData = models.BinaryField(null=True)
-    exportData = property(**compressed('_exportData'))
+    exportData = property(**compressedField('_exportData'))
     # Compressed data of BEAUti nexus file:
     _exportBEAUti = models.BinaryField(null=True)
-    exportBEAUti = property(**compressed('_exportBEAUti'))
+    exportBEAUti = property(**compressedField('_exportBEAUti'))
     # Compressed data of constraints file:
     _constraintsData = models.BinaryField(null=True)
-    constraintsData = property(**compressed('_constraintsData'))
+    constraintsData = property(**compressedField('_constraintsData'))
 
     @property
     def pending(self):
@@ -2103,12 +2074,12 @@ class NexusExport(AbstractTimestamped):
         return self._exportData is None
 
     def generateResponse(self, constraints=False, beauti=False):
-        '''
+        """
         If constraints == True response shall carry the constraintsData
         rather than the exportData.
         If beauti == True response shall carry exportBEAUti
         rather than exportData.
-        '''
+        """
         assert not self.pending, "NexusExport.generateResponse " \
                                  "impossible for pending exports."
         # name for the export file:

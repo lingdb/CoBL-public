@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 import logging
-import requests
+import zlib
 from string import ascii_uppercase, ascii_lowercase
+import requests
 # from ielex.lexicon.models import Language
 try:
     from functools import wraps
@@ -25,7 +26,7 @@ def logExceptions(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            if type(e) != Http404:
+            if isinstance(e, Http404):
                 logging.exception('Exception found by logExceptions.')
             raise e
     return f
@@ -106,11 +107,11 @@ def confirm_required(template_name, context_creator, key='__confirm__'):
         def inner(request, *args, **kwargs):
             if key in request.POST:
                 return func(request, *args, **kwargs)
-            else:
-                context = context_creator \
-                    and context_creator(request, *args, **kwargs) \
-                    or RequestContext(request)
-                return render_to_response(template_name, context)
+
+            context = context_creator \
+                and context_creator(request, *args, **kwargs) \
+                or RequestContext(request)
+            return render_to_response(template_name, context)
         return wraps(func)(inner)
     return decorator
 
@@ -157,6 +158,26 @@ def fetchMarkdown(fileName):
         'Maybe you have more luck consulting the ' +
         '[wiki](https://github.com/lingdb/CoBL-public/wiki).'
     ])
+
+
+def compressedField(field):
+    # Decorator for compressed fields:
+
+    def fget(self):
+        data = getattr(self, field)
+        if data is None:
+            return None
+        return zlib.decompress(data)
+
+    def fset(self, value):
+        setattr(self, field, zlib.compress(value.encode()))
+
+    def fdel(self):
+        delattr(self, field)
+    return {'doc': "The compression property for %s." % field,
+            'fget': fget,
+            'fset': fset,
+            'fdel': fdel}
 
 
 if __name__ == "__main__":
