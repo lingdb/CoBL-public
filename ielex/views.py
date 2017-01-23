@@ -367,11 +367,11 @@ def view_language_list(request, language_list=None):
         languageListTableForm = AddLanguageListTableForm(request.POST)
         try:
             languageListTableForm.validate()
-        except Exception:
+        except Exception as e:
             logging.exception(
                 'Exception in POST validation for view_language_list')
             messages.error(request, 'Sorry, the form data sent '
-                           'did not pass server side validation.')
+                           'did not pass server side validation: %s' % e)
             return HttpResponseRedirect(
                 reverse("view-language-list", args=[current_list.name]))
         # Updating languages and gathering clades to update:
@@ -392,10 +392,10 @@ def view_language_list(request, language_list=None):
             messages.success(request, 'Language cloned.')
             return HttpResponseRedirect(
                 reverse("view-language-list", args=[current_list.name]))
-        except Exception:
+        except Exception as e:
             logging.exception('Problem cloning Language in view_language_list')
             messages.error(request, 'Sorry, a problem occured '
-                           'when cloning the language.')
+                           'when cloning the language: %s' % e)
             return HttpResponseRedirect(
                 reverse("view-language-list", args=[current_list.name]))
     elif (request.method == 'GET') and ('exportCsv' in request.GET):
@@ -458,10 +458,10 @@ def view_clades(request):
             try:
                 cladeTableForm.validate()
                 cladeChanged = cladeTableForm.handle(request)
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem updating clades in view_clades.')
                 messages.error(request, 'Sorry, the server had problems '
-                               'updating at least on clade.')
+                               'updating at least on clade: %s' % e)
             # Updating language clade relations for changed clades:
             if cladeChanged:
                 updateLanguageCladeRelations()
@@ -473,10 +473,10 @@ def view_clades(request):
                 newClade = Clade(**cladeCreationForm.data)
                 with transaction.atomic():
                     newClade.save(force_insert=True)
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem creating clade in view_clades.')
                 messages.error(request, 'Sorry, the server had problems '
-                               'creating the clade.')
+                               'creating the clade: %s' % e)
         # Deleting an existing clade:
         elif 'deleteClade' in request.POST:
             cladeDeletionForm = CladeDeletionForm(request.POST)
@@ -491,10 +491,10 @@ def view_clades(request):
                     # Write message about clade deletion:
                     messages.success(request, 'Deleted clade "%s".' %
                                      clade.cladeName)
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem deleting clade in view_clades.')
                 messages.error(request, 'Sorry, the server had problems '
-                               'deleting the clade.')
+                               'deleting the clade: %s' % e)
         return HttpResponseRedirect('/clades/')
 
     # Extra handling for graphs. See #145.
@@ -538,12 +538,12 @@ def view_sndComp(request):
                                 messages.error(request, 'The server had '
                                                'problems saving the change '
                                                'to "%s".' % sndComp.lgSetName)
-                except Exception:
+                except Exception as e:
                     logging.exception('Exception while accessing '
                                       'entry in view_sndComp.',
                                       extra=data)
                     messages.error(request, 'Sorry, the server had problems '
-                                   'saving at least one SndComp entry.')
+                                   'saving at least one SndComp entry: %s' % e)
         # Adding a new SndComp:
         elif 'addSndComp' in request.POST:
             sndCompCreationForm = SndCompCreationForm(request.POST)
@@ -552,10 +552,10 @@ def view_sndComp(request):
                 newSndComp = SndComp(**sndCompCreationForm.data)
                 with transaction.atomic():
                     newSndComp.save(force_insert=True)
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem creating entry in view_sndComp.')
                 messages.error(request, 'Sorry, the server had problems '
-                               'creating the SndComp language set.')
+                               'creating the SndComp language set: %s' % e)
         # Deleting an existing SndComp:
         elif 'deleteSndComp' in request.POST:
             sndCompDeletionForm = SndCompDeletionForm(request.POST)
@@ -570,10 +570,10 @@ def view_sndComp(request):
                     # Write message about SndComp deletion:
                     messages.success(request,
                                      'Deleted set "%s"' % sndComp.lgSetName)
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem deleting entry in view_sndComp.')
                 messages.error(request, 'Sorry, the server had problems '
-                               'deleting the SndComp language set.')
+                               'deleting the SndComp language set: %s' % e)
 
     form = SndCompTableForm()
 
@@ -675,11 +675,11 @@ def view_language_wordlist(request, language, wordlist):
                 form = LexemeTableLanguageWordlistForm(request.POST)
                 form.validate()
                 form.handle(request)
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem updating lexemes '
                                   'in view_language_wordlist.')
                 messages.error(request, 'Sorry, the server had problems '
-                               'updating at least one lexeme.')
+                               'updating at least one lexeme: %s' % e)
         elif 'editCognateClass' in request.POST:
             try:
                 form = LexemeTableEditCognateClassesForm(request.POST)
@@ -692,23 +692,23 @@ def view_language_wordlist(request, language, wordlist):
                 form = AddMissingLexemsForLanguageForm(request.POST)
                 form.validate()
                 form.handle(request)
-            except Exception:
+            except Exception as e:
                 logging.exception(
                     'Problem with AddMissingLexemsForLanguageForm '
                     'in view_language_wordlist')
                 messages.error(request, 'Sorry, the server had problems '
-                                        'adding missing lexemes.')
+                                        'adding missing lexemes: %s' % e)
         elif 'removeEmptyLexemes' in request.POST:
             try:
                 form = RemoveEmptyLexemsForLanguageForm(request.POST)
                 form.validate()
                 form.handle(request)
-            except Exception:
+            except Exception as e:
                 logging.exception(
                     'Problem with RemoveEmptyLexemsForLanguageForm '
                     'in view_language_wordlist')
                 messages.error(request, 'Sorry, the server had problems '
-                                        'removing empty lexemes.')
+                                        'removing empty lexemes: %s' % e)
 
         return HttpResponseRedirect(
             reverse("view-language-wordlist",
@@ -1258,10 +1258,10 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
                 lexemesTableForm = LexemeTableViewMeaningsForm(request.POST)
                 lexemesTableForm.validate()
                 lexemesTableForm.handle(request)
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem updating lexemes in view_meaning.')
                 messages.error(request, "Sorry, the server had problems "
-                                        "updating at least one lexeme.")
+                                        "updating at least one lexeme: %s" % e)
 
             return HttpResponseRedirect(
                 reverse("view-meaning-languages",
@@ -1361,22 +1361,22 @@ def view_cognateclasses(request, meaning):
                 logging.exception(
                     'Validation did not work in view_cognateclasses.')
                 messages.error(request, ' '.join(e.messages))
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem updating CognateClasses '
                                   'in view_cognateclasses.')
                 messages.error(request, 'Sorry, the server had problems '
-                               'updating at least one entry.')
+                               'updating at least one entry: %s' % e)
         elif 'mergeCognateClasses' in request.POST:
             try:
                 # Parsing and validating data:
                 mergeCCForm = MergeCognateClassesForm(request.POST)
                 mergeCCForm.validate()
                 mergeCCForm.handle(request)
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem merging CognateClasses '
                                   'in view_cognateclasses.')
                 messages.error(request, 'Sorry, the server had problems '
-                               'merging cognate classes.')
+                               'merging cognate classes: %s' % e)
         else:
             logging.error('Unexpected POST request in view_cognateclasses.')
             messages.error(request, 'Sorry, the server did '
@@ -1860,10 +1860,10 @@ def lexeme_add(request, meaning=None, language=None):
                 reverse("view-language-wordlist",
                         args=[l.language.ascii_name,
                               getDefaultWordlist(request)]))
-        except Exception:
+        except Exception as e:
             logging.exception('Problem adding Lexeme in lexeme_add.')
             messages.error(request, 'Sorry, the server could not '
-                           'add the requested lexeme.')
+                           'add the requested lexeme: %s' % e)
 
     data = {}
     if language:
@@ -1936,11 +1936,11 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
             try:
                 form.validate()
                 form.handle(request)
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem when splitting CognateClasses '
                                   'in cognate_report.')
                 messages.error(request, 'Sorry, the server had trouble '
-                               'understanding the request.')
+                               'understanding the request: %s' % e)
         elif 'deleteCognateClass' in request.POST:
             try:
                 cognate_class.delete()
@@ -1968,11 +1968,12 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                 form = CognateClassEditForm(request.POST)
                 form.validate()
                 form.handle(request)
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem handling CognateClassEditForm.')
                 messages.error(
                     request,
-                    'Sorry, the server had trouble understanding the request.')
+                    'Sorry, the server had trouble understanding '
+                    'the request: %s' % e)
         return HttpResponseRedirect(reverse(
             'cognate-set', args=[cognate_id]))
 
@@ -2527,37 +2528,37 @@ def viewAuthors(request):
                 newAuthor = Author(**authorCreationForm.data)
                 with transaction.atomic():
                     newAuthor.save(force_insert=True)
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem creating author in viewAuthors.')
                 messages.error(request, 'Sorry, the server could not '
-                               'create new author as requested.')
+                               'create new author as requested: %s' % e)
         elif 'authors' in request.POST:
             authorData = AuthorTableForm(request.POST)
             try:
                 authorData.validate()
                 authorData.handle(request)
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem updating authors in viewAuthors.')
                 messages.error(request, 'Sorry, the server had problems '
-                               'updating at least one author.')
+                               'updating at least one author: %s' % e)
         elif 'deleteAuthor' in request.POST:
             deleteAuthor = AuthorDeletionForm(request.POST)
             try:
                 deleteAuthor.validate()
                 deleteAuthor.handle(request)
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem deleting author in viewAuthors.')
                 messages.error(request, 'Sorry, the server had problems '
-                               'deleting the requested author.')
+                               'deleting the requested author: %s' % e)
         elif 'currentAuthorForm' in request.POST:
             currentAuthorForm = AuthorRowForm(request.POST)
             try:
                 currentAuthorForm.validate()
                 currentAuthorForm.handle(request)
             except Exception as e:
-                logging.exception('Problem updating current author.', e)
+                logging.exception('Problem updating current author.')
                 messages.error(request, 'Sorry, the server had problems '
-                               'updating the requested author.')
+                               'updating the requested author: %s' % e)
         else:
             logging.error('Unexpected POST request in viewAuthors.')
             messages.error(request, 'Sorry, the server did not '
@@ -2727,11 +2728,11 @@ def view_two_languages_wordlist(request,
                 form = TwoLanguageWordlistTableForm(request.POST)
                 form.validate()
                 form.handle(request)
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem updating lexemes '
                                   'in view_two_languages_wordlist.')
                 messages.error(request, 'Sorry, the server had problems '
-                               'updating at least one lexeme.')
+                               'updating at least one lexeme: %s' % e)
             return HttpResponseRedirect(
                 reverse("view-two-languages",
                         args=[targetLang.ascii_name,
@@ -2800,11 +2801,11 @@ def view_language_progress(request, language_list=None):
         form = LanguageListProgressForm(request.POST)
         try:
             form.validate()
-        except Exception:
+        except Exception as e:
             logging.exception(
                 'Exception in POST validation for view_language_list')
             messages.error(request, 'Sorry, the form data sent '
-                           'did not pass server side validation.')
+                           'did not pass server side validation: %s' % e)
             return HttpResponseRedirect(
                 reverse("view-language-progress", args=[current_list.name]))
         # Updating languages and gathering clades to update:
@@ -2851,11 +2852,11 @@ def view_language_distributions(request, language_list=None):
         try:
             form.validate()
             form.handle(request)
-        except Exception:
+        except Exception as e:
             logging.exception(
                 'Exception in POST validation for view_language_distributions')
             messages.error(request, 'Sorry, the form data sent '
-                           'did not pass server side validation.')
+                           'did not pass server side validation: %s' % e)
             return HttpResponseRedirect(
                 reverse("view_language_distributions",
                         args=[current_list.name]))
@@ -2915,11 +2916,11 @@ def view_cladecognatesearch(request):
                 logging.exception(
                     'Validation did not work in view_cladecognatesearch.')
                 messages.error(request, ' '.join(e.messages))
-            except Exception:
+            except Exception as e:
                 logging.exception('Problem updating CognateClasses '
                                   'in view_cladecognatesearch.')
                 messages.error(request, 'Sorry, the server had problems '
-                               'updating at least one entry.')
+                               'updating at least one entry: %s' % e)
         redirect_url = request.path
         if request.GET and 'clades' in request.GET:
             redirect_url += '?clades=%s' % request.GET['clades']
