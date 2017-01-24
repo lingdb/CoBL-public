@@ -62,7 +62,8 @@ from ielex.views import add_language_list, \
                         view_language_distributions, \
                         json_cognateClass_placeholders, \
                         view_cladecognatesearch, \
-                        view_csvExport
+                        view_csvExport, \
+                        viewProblematicRomanised
 from ielex.viewCsvImport import viewCsvImport
 from ielex import settings
 from ielex.lexicon.views import CognateClassCitationCreateView, \
@@ -368,6 +369,11 @@ urlpatterns += [
         name="view_nexus_export"),
     url(r'^nexus/export/$', view_nexus_export, name="view_nexus_export_base"),
     url(r'^dump/$', login_required(DumpRawDataView.as_view()), name="dump")]
+
+urlpatterns += [
+    url(r'^problematicRomanised/$',
+        viewProblematicRomanised,
+        name="viewProblematicRomanised")]
 
 urlpatterns += [
     url(r'^login/$', login,

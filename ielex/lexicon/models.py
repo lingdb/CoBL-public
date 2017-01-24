@@ -2117,3 +2117,7 @@ class NexusExport(AbstractTimestamped):
 class RomanisedSymbol(AbstractTimestamped):
     # Contains allowed symbols for Lexeme.romanised entries.
     symbol = models.CharField(max_length=8, blank=False)
+
+    @property
+    def escapedSymbol(self):
+        return self.symbol.encode('unicode_escape')

@@ -94,7 +94,8 @@ from ielex.lexicon.models import Author, \
     SndComp, \
     Source, \
     NexusExport, \
-    MeaningListOrder
+    MeaningListOrder, \
+    RomanisedSymbol
 from ielex.lexicon.defaultModels import getDefaultLanguage, \
     getDefaultLanguageId, \
     getDefaultLanguagelist, \
@@ -3075,3 +3076,26 @@ def view_csvExport(request):
                         content_type='application/x-zip-compressed')
     resp['Content-Disposition'] = 'attachment; filename=export.zip'
     return resp
+
+
+@user_passes_test(lambda u: u.is_staff)
+@logExceptions
+def viewProblematicRomanised(request):
+    languageList = LanguageList.objects.get(name=getDefaultLanguagelist(request))
+    meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
+    lexemes = Lexeme.objects.filter(
+        language__in=languageList.languages.all(),
+        meaning__in=meaningList.meanings.all())
+    allowedSymbols = RomanisedSymbol.objects.all()
+    okSet = set([allowed.symbol for allowed in allowedSymbols])
+
+    offendingLexemes = []
+    for lexeme in lexemes:
+        offendingSymbols = set(lexeme.romanised) - okSet
+        if offendingSymbols:
+            lexeme.offendingSymbols = offendingSymbols
+            offendingLexemes.append(lexeme)
+
+    return render_template(request, "problematicRomanised.html",
+                           {"allowedSymbols": allowedSymbols,
+                            "offendingLexemes": offendingLexemes})
