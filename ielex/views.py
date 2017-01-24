@@ -23,6 +23,10 @@ from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template import Template
 from django.db.models.query_utils import DeferredAttribute
+from django.core.exceptions import ObjectDoesNotExist
+from django.views.decorators.csrf import csrf_protect
+from django.views.generic.edit import FormView
+from django.utils.decorators import method_decorator
 from reversion.models import Revision, Version
 from ielex.settings import LIMIT_TO, META_TAGS
 from ielex.forms import AddCitationForm, \
@@ -112,10 +116,6 @@ from ielex.utilities import next_alias, \
     anchored, oneline, logExceptions, fetchMarkdown
 from ielex.languageCladeLogic import updateLanguageCladeRelations
 from ielex.tables import SourcesTable, SourcesUpdateTable
-from django.core.exceptions import ObjectDoesNotExist
-from django.views.decorators.csrf import csrf_protect
-from django.views.generic.edit import FormView
-from django.utils.decorators import method_decorator
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
@@ -171,9 +171,6 @@ def view_changes(request, username=None, revision_id=None, object_id=None):
 @logExceptions
 def revert_version(request, revision_id):
     """Roll back the object saved in a Version to the previous Version"""
-    # TODO
-    # - redirect this to somewhere more useful
-    # - get the rollback revision and add a useful comment
     referer = request.META.get("HTTP_REFERER", "/")
     revision_obj = Revision.objects.get(pk=revision_id)
     revision_obj.revert()  # revert all associated objects too
@@ -247,7 +244,7 @@ def get_prev_and_next_languages(request, current_language, language_list=None):
     if language_list is None:
         language_list = LanguageList.objects.get(
             name=getDefaultLanguagelist(request))
-    elif type(language_list) == str:
+    elif isinstance(language_list, str):
         language_list = LanguageList.objects.get(name=language_list)
 
     ids = list(language_list.languages.exclude(
@@ -279,7 +276,7 @@ def get_prev_and_next_meanings(request, current_meaning, meaning_list=None):
     if meaning_list is None:
         meaning_list = MeaningList.objects.get(
             name=getDefaultWordlist(request))
-    elif type(meaning_list) == str:
+    elif isinstance(meaning_list, str):
         meaning_list = MeaningList.objects.get(name=meaning_list)
     meanings = list(meaning_list.meanings.all().order_by("meaninglistorder"))
 
@@ -288,7 +285,7 @@ def get_prev_and_next_meanings(request, current_meaning, meaning_list=None):
         current_idx = ids.index(current_meaning.id)
     except ValueError:
         current_idx = 0
-    if len(meanings) == 0:
+    if meanings:
         return (current_meaning, current_meaning)
     try:
         prev_meaning = meanings[current_idx - 1]
@@ -324,9 +321,6 @@ def get_prev_and_next_lexemes(request, current_lexeme):
 @logExceptions
 def update_object_from_form(model_object, form):
     """Update an object with data from a form."""
-    # XXX This is only neccessary when not using a model form: otherwise
-    # form.save() does all this automatically
-    # TODO Refactor this function away
     assert set(form.cleaned_data).issubset(set(model_object.__dict__))
     model_object.__dict__.update(form.cleaned_data)
     model_object.save()
@@ -377,7 +371,7 @@ def view_language_list(request, language_list=None):
         # Updating languages and gathering clades to update:
         updateClades = languageListTableForm.handle(request)
         # Updating clade relations for changes languages:
-        if len(updateClades) > 0:
+        if updateClades:
             updateLanguageCladeRelations(languages=updateClades)
         # Redirecting so that UA makes a GET.
         return HttpResponseRedirect(
@@ -621,8 +615,6 @@ def reorder_language_list(request, language_list):
                     reverse("reorder-language-list",
                             args=[language_list.name]))
         else:  # pressed Finish without submitting changes
-            # TODO might be good to zap the session variable once finished
-            # request.session["current_meaning_id"] = None
             return HttpResponseRedirect(
                 reverse("view-language-list",
                         args=[language_list.name]))
@@ -718,13 +710,13 @@ def view_language_wordlist(request, language, wordlist):
     lexemes = Lexeme.objects.filter(
         language=language,
         meaning__in=wordlist.meanings.all()
-    ).select_related(
-        "meaning", "language").order_by(
-        "meaning__gloss").prefetch_related(
-        "cognatejudgement_set",
-        "cognatejudgement_set__cognatejudgementcitation_set",
-        "cognate_class",
-        "lexemecitation_set")
+        ).select_related(
+            "meaning", "language").order_by(
+                "meaning__gloss").prefetch_related(
+                    "cognatejudgement_set",
+                    "cognatejudgement_set__cognatejudgementcitation_set",
+                    "cognate_class",
+                    "lexemecitation_set")
 
     # Used for #219:
     cIdCognateClassMap = {}  # :: CognateClass.id -> CognateClass
@@ -740,8 +732,9 @@ def view_language_wordlist(request, language, wordlist):
 
     languageList = LanguageList.objects.prefetch_related('languages').get(
         name=getDefaultLanguagelist(request))
-    typeahead = json.dumps({l.utf8_name: reverse(
-        "view-language-wordlist", args=[l.ascii_name, wordlist.name])
+    typeahead = json.dumps({
+        l.utf8_name: reverse(
+            "view-language-wordlist", args=[l.ascii_name, wordlist.name])
         for l in languageList.languages.all()})
 
     prev_language, next_language = \
@@ -789,7 +782,7 @@ def view_language_check(request, language=None, wordlist=None):
         language=language,
         meaning__in=meanings,
         not_swadesh_term=0).values_list(
-        "meaning_id", flat=True)
+            "meaning_id", flat=True)
     for mId in mIds:
         meaningCountDict[mId] += 1
     meaningCounts = [{'count': meaningCountDict[m.id],
@@ -864,11 +857,11 @@ def edit_language_list(request, language_list=None):
                 name_form.save()
                 return HttpResponseRedirect(
                     reverse('edit-language-list', args=[language_list.name]))
-            else:  # changed name
-                name_form.save()
-                return HttpResponseRedirect(
-                    reverse('view-language-list',
-                            args=[name_form.cleaned_data["name"]]))
+            # changed name
+            name_form.save()
+            return HttpResponseRedirect(
+                reverse('view-language-list',
+                        args=[name_form.cleaned_data["name"]]))
     else:
         name_form = EditLanguageListForm(instance=language_list)
         list_form = EditLanguageListMembersForm()
@@ -965,7 +958,7 @@ def overview_language(request, language):
         request, "language_overview.html",
         {"language": language,
          "content": fetchMarkdown(
-            "Language-Chapter:-%s.md" % (language.ascii_name))})
+             "Language-Chapter:-%s.md" % (language.ascii_name))})
 
 
 @login_required
@@ -1072,8 +1065,6 @@ def reorder_wordlist(request, wordlist):
                 return HttpResponseRedirect(reverse("reorder-wordlist",
                                                     args=[wordlist.name]))
         else:  # pressed Finish without submitting changes
-            # TODO might be good to zap the session variable once finished
-            # request.session["current_meaning_id"] = None
             return HttpResponseRedirect(reverse("view-wordlist",
                                                 args=[wordlist.name]))
     else:  # first visit
@@ -1294,17 +1285,17 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
         meaning=meaning,
         language__in=current_language_list.languages.exclude(level0=0).all(),
         language__languagelistorder__language_list=current_language_list
-    ).order_by(
-        "language"
-    ).select_related(
-        "language",
-        "meaning").prefetch_related(
-        "cognatejudgement_set",
-        "cognatejudgement_set__cognatejudgementcitation_set",
-        "lexemecitation_set",
-        "cognate_class",
-        "language__languageclade_set",
-        "language__clades")
+        ).order_by(
+            "language"
+            ).select_related(
+                "language",
+                "meaning").prefetch_related(
+                    "cognatejudgement_set",
+                    "cognatejudgement_set__cognatejudgementcitation_set",
+                    "lexemecitation_set",
+                    "cognate_class",
+                    "language__languageclade_set",
+                    "language__clades")
     # Gather cognate classes and provide form:
     cognateClasses = CognateClass.objects.filter(lexeme__in=lexemes).distinct()
     cognate_form = ChooseCognateClassForm()
@@ -1318,8 +1309,9 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
     meaningList = MeaningList.objects.prefetch_related("meanings").get(
         name=getDefaultWordlist(request))
     # Compute typeahead:
-    typeahead = json.dumps({m.gloss: reverse(
-        "view-meaning-languages", args=[m.gloss, current_language_list.name])
+    typeahead = json.dumps({
+        m.gloss: reverse(
+            "view-meaning-languages", args=[m.gloss, current_language_list.name])
         for m in meaningList.meanings.all()})
     # Calculate prev/next meanings:
     prev_meaning, next_meaning = get_prev_and_next_meanings(
@@ -1393,7 +1385,7 @@ def view_cognateclasses(request, meaning):
     # languageIds implicated:
     languageIds = languageList.languagelistorder_set.exclude(
         language__level0=0).values_list(
-        'language_id', flat=True)
+            'language_id', flat=True)
     # Cognate classes to use:
     ccl_ordered = CognateClass.objects.filter(
         cognatejudgement__lexeme__meaning__gloss=meaning,
@@ -1407,7 +1399,7 @@ def view_cognateclasses(request, meaning):
                                      'lexicon_cognateclasscitation.'
                                      'cognate_class_id '
                                      '= lexicon_cognateclass.id',
-                                     })
+                                    })
     # Computing counts for ccs:
     for cc in ccl_ordered:
         cc.computeCounts(languageList=languageList)
@@ -1420,7 +1412,7 @@ def view_cognateclasses(request, meaning):
         id__in=LanguageClade.objects.filter(
             language__languagelistorder__language_list=languageList
         ).values_list('clade_id', flat=True)).exclude(
-        hexColor='').exclude(shortName='').all()
+            hexColor='').exclude(shortName='').all()
     # Compute clade <-> cc connections:
     for c in clades:
         c.computeCognateClassConnections(ccl_ordered, languageList)
@@ -1641,7 +1633,7 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                 if form.is_valid():
                     citation = CognateJudgementCitation.objects.get(
                         id=citation_id)
-                    update_object_from_form(citation, form)  # XXX refactor
+                    update_object_from_form(citation, form)
                     request.session[
                         "previous_cognate_citation_id"] = citation.id
                     return HttpResponseRedirect(
@@ -1697,11 +1689,8 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                         initial={"source": citation.source.id,
                                  "pages": citation.pages,
                                  "reliability": citation.reliability})
-                    # "comment":citation.comment})
                 except LexemeCitation.DoesNotExist:
                     form = AddCitationForm()
-            # elif action == "add-new-citation":# XXX
-            #     form = AddCitationForm()
             elif action == "edit-cognate-citation":
                 citation = CognateJudgementCitation.objects.get(id=citation_id)
                 form = EditCitationForm(
@@ -1948,7 +1937,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                 return HttpResponseRedirect('/cognateclasslist/')
             except Exception:
                 logging.exception('Failed to delete CognateClass %s '
-                                  'in cognate_report.' % cognate_class.id)
+                                  'in cognate_report.', cognate_class.id)
                 messages.error(request, 'Sorry, the server could not delete '
                                'the requested cognate class %s.'
                                % cognate_class.id)
@@ -2146,7 +2135,7 @@ def source_list(request):
         return render_template(request, "source_list.html",
                                {"sources": sources_table,
                                 "perms": source_perms_check(request.user),
-                                })
+                               })
 
 
 def get_language_list_obj(request):
@@ -2220,7 +2209,7 @@ def get_sources_table(request, queryset=''):
                                'lexeme_id IN (%s)'
                                % (', '.join(str(v)
                                             for v in lexeme_ids))
-                               })
+                              })
     return SourcesTable(queryset)
 
 
@@ -2282,10 +2271,10 @@ class source_import(FormView):
                     update_sources_dict_lst += result['update']
                     new_sources_dict_lst += result['new']
                 update_sources_table = new_sources_table = ''
-                if len(update_sources_dict_lst) > 0:
+                if update_sources_dict_lst:
                     update_sources_table = SourcesUpdateTable(
                         update_sources_dict_lst)
-                if len(new_sources_dict_lst) > 0:
+                if new_sources_dict_lst:
                     new_sources_table = SourcesUpdateTable(
                         new_sources_dict_lst)
                 RequestConfig(
@@ -2321,7 +2310,7 @@ class source_import(FormView):
             try:
                 source_obj = Source.objects.get(pk=entry['ID'])
                 return self.get_update_dict(entry, source_obj)
-            except (ValueError, ObjectDoesNotExist) as e:
+            except (ValueError, ObjectDoesNotExist):
                 return self.get_new_dict(entry)
         return self.get_new_dict(entry)
 
@@ -2373,7 +2362,7 @@ def source_related(request, formset, name, source_obj):
                            {"formset": formset,
                             "name": name,
                             "source": source_obj.shorthand
-                            })
+                           })
 
 
 def source_cognacy(request, source_id):
@@ -2448,7 +2437,7 @@ def lexeme_search(request):
                                    {"regex": regex,
                                     "language_names": language_names,
                                     "lexemes": lexemes,
-                                    })
+                                   })
     else:
         form = SearchLexemeForm()
     return render_template(request, "lexeme_search.html",
@@ -2770,15 +2759,17 @@ def view_two_languages_wordlist(request,
 
     languageList = LanguageList.objects.prefetch_related('languages').get(
         name=getDefaultLanguagelist(request))
-    typeahead1 = json.dumps({l.utf8_name: reverse(
-        "view-two-languages",
-        args=[l.ascii_name,
-              sourceLang.ascii_name if sourceLang else None,
-              wordlist.name])
+    typeahead1 = json.dumps({
+        l.utf8_name: reverse(
+            "view-two-languages",
+            args=[l.ascii_name,
+                  sourceLang.ascii_name if sourceLang else None,
+                  wordlist.name])
         for l in languageList.languages.all()})
-    typeahead2 = json.dumps({l.utf8_name: reverse(
-        "view-two-languages",
-        args=[targetLang.ascii_name, l.ascii_name, wordlist.name])
+    typeahead2 = json.dumps({
+        l.utf8_name: reverse(
+            "view-two-languages",
+            args=[targetLang.ascii_name, l.ascii_name, wordlist.name])
         for l in languageList.languages.all()})
 
     return render_template(request, "twoLanguages.html",
@@ -2811,7 +2802,7 @@ def view_language_progress(request, language_list=None):
         # Updating languages and gathering clades to update:
         updateClades = form.handle(request)
         # Updating clade relations for changes languages:
-        if len(updateClades) > 0:
+        if updateClades:
             updateLanguageCladeRelations(languages=updateClades)
         # Redirecting so that UA makes a GET.
         return HttpResponseRedirect(
@@ -2887,7 +2878,7 @@ def json_cognateClass_placeholders(request):
     if request.method == 'GET' and 'lexemeid' in request.GET:
         meaningIds = Lexeme.objects.filter(
             id=int(request.GET['lexemeid'])).values_list(
-            'meaning_id', flat=True)
+                'meaning_id', flat=True)
         cognateClasses = CognateClass.objects.filter(
             lexeme__meaning_id__in=meaningIds).distinct()
         # lexemes = [int(s) for s in request.GET['lexemes'].split(',')]
@@ -2955,13 +2946,13 @@ def view_cladecognatesearch(request):
             lexeme__language__in=languageList.languages.all(),
             lexeme__meaning__in=meaningList.meanings.all()
         ).values_list('id', flat=True)
-        if len(cognateClassIds) == 0:
+        if cognateClassIds:
             cognateClassIds = set(newIds)
         else:
             cognateClassIds &= set(newIds)
 
     # Removing unwanted entries from cognateClassIds:
-    if len(currentClades) > 0:
+    if currentClades:
         unwantedLanguages = languageList.languages.exclude(
             languageclade__clade__in=currentClades
         ).exclude(level0=0).values_list('id', flat=True)

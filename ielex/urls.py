@@ -1,7 +1,9 @@
 import debug_toolbar
 from django.conf.urls import url, include
+from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import login, logout
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import DetailView, \
         ListView, RedirectView
 from django.views.static import serve as serveStatic
@@ -73,12 +75,8 @@ from ielex.lexicon.models import CognateClassCitation, \
                                  LanguageList, \
                                  LexemeCitation, \
                                  MeaningList
-from django.contrib.staticfiles.urls \
-    import staticfiles_urlpatterns
 from ielex.profiles.views import view_profile, alter_profile, change_password
 
-# Uncomment the next two lines to enable the admin:
-from django.contrib import admin
 admin.autodiscover()
 
 # standard regexes for urls
@@ -160,11 +158,8 @@ urlpatterns = [
         name="language-delete"),
     url(r'^language/%(LANGUAGE)s/add-lexeme/' % R,
         lexeme_add, name="language-add-lexeme"),
-    # this should be
-    # url(r'^language/%(LANGUAGE)s/meaning/%(MEANING)s/add/' % R,
     url(r'^language/%(LANGUAGE)s/meaning/%(MEANING)s/add-lexeme/' % R,
         lexeme_add, name="language-meaning-add-lexeme"),
-    # add new language to a language list # XXX do we need this?
     url(r'^languagelist/%(LANGUAGELIST)s/add-new/$' % R, language_add_new,
         name="language-add-new"),
 
@@ -189,8 +184,6 @@ urlpatterns = [
         name="edit-meaning"),
 
     # Meaning
-    # TODO
-    # - refactor out remaining report_meaning calls
     url(r'^meaning/%(MEANING)s/add-lexeme/$' % R, lexeme_add,
         name="meaning-add-lexeme"),
     url(r'^meaning/%(MEANING)s/languagelist/%(LANGUAGELIST)s/$' % R,
@@ -202,7 +195,7 @@ urlpatterns = [
     url(r'^meaning/%(MEANING)s/$' % R, view_meaning, {"language_list": None},
         name="meaning-report"),
     url(r'^meaning/%(MEANING)s/delete/$' % R, delete_meaning,
-        name="delete-meaning"),  # XXX needs confirm dialog
+        name="delete-meaning"),
     url(r'^meaning/%(MEANING)s/language/%(LANGUAGE)s/add-lexeme/' % R,
         lexeme_add, name="meaning-language-add-lexeme"),
     url(r'^meaning/$' % R, viewDefaultMeaning),
@@ -233,11 +226,11 @@ urlpatterns = [
         lexeme_edit, {"action": "delink-cognate"},
         name="lexeme-delink-cognate"),
     url(r'^lexeme/%(LEXEME_ID)s/edit-cognate-citation/'
-        '(?P<citation_id>\d+)/$' % R,
+        r'(?P<citation_id>\d+)/$' % R,
         lexeme_edit, {"action": "edit-cognate-citation"},
         name="lexeme-edit-cognate-citation"),  # just use <cogjudge_id>
     url(r'^lexeme/%(LEXEME_ID)s/delink-cognate-citation/'
-        '(?P<citation_id>\d+)/$' % R,
+        r'(?P<citation_id>\d+)/$' % R,
         lexeme_edit, {"action": "delink-cognate-citation"},
         name="lexeme-delink-cognate-citation"),
     url(r'^lexeme/%(LEXEME_ID)s/add-cognate-citation/%(COGJUDGE_ID)s/$' % R,
@@ -338,7 +331,6 @@ urlpatterns = [
         login_required(cognate_class_citation_delete),
         name="cognate-citation-delete"),
 
-
     # Cognate judgement :: detail
     url(r'^cognate/judgement/(?P<pk>\d+)/$',
         DetailView.as_view(model=CognateJudgement,
@@ -350,7 +342,6 @@ urlpatterns = [
                            context_object_name="citation"),
         name="cognate-judgement-citation-detail"),
 
-    # Added for #256:
     url(r'^twoLanguages/$', view_two_languages_wordlist),
     url(r'^twoLanguages/([^\/]+)/$', view_two_languages_wordlist),
     url(r'^twoLanguages/([^\/]+)/([^\/]+)/$', view_two_languages_wordlist),
@@ -358,14 +349,10 @@ urlpatterns = [
         view_two_languages_wordlist,
         name="view-two-languages"),
 
-    # Added for #51:
     url(r'^json/cognateClassPlaceholders/$', json_cognateClass_placeholders),
 
     url(r'^revert/(?P<revision_id>\d+)/$', revert_version, name="revert-item"),
     url(r'^object-history/(?P<version_id>\d+)/$', view_object_history),
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
-    # to INSTALLED_APPS to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     ]
 
 # urls to include iff the extensional semantic module is activated
@@ -384,8 +371,8 @@ urlpatterns += [
     url(r'^login/$', login,
         {'template_name': 'profiles/login.html'},
         name="login"),
-    url(r'^logout/$', logout, {'template_name':
-        'profiles/logout.html'}, name="logout")]
+    url(r'^logout/$', logout, {'template_name': 'profiles/logout.html'},
+        name="logout")]
 
 urlpatterns += [
     url(r'^admin/viewCsvImport', viewCsvImport, name="viewCsvImport")]
