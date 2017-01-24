@@ -139,19 +139,10 @@ class ChooseOneSourceField(forms.ModelChoiceField):
         return super(ChooseOneSourceField, self).label_from_instance(label)
 
 
-def validate_romanised(form, field):
-    for symbol in field.data:
-        if not symbol in Lexeme.ALLOWEDROMANISED:
-            raise ValidationError(
-                "Illegal symbol in Lexeme.romanised field: '%s', "
-                "Symbol '%s' is not alloed." % (field.data, symbol))
-
-
 class AddLexemeForm(WTForm):
     language_id = IntegerField('Language:', validators=[InputRequired()])
     meaning_id = IntegerField('Meaning:', validators=[InputRequired()])
-    romanised = StringField('Roman(ised):', validators=[
-        InputRequired(), validate_romanised])
+    romanised = StringField('Roman(ised):', validators=[InputRequired()])
     nativeScript = StringField('Native Script:',
                                validators=[InputRequired()])
     phon_form = StringField('PhoneTic:', validators=[InputRequired()])
@@ -1091,8 +1082,7 @@ class LexemeRowViewMeaningsForm(AbstractTimestampedForm,
                                      validators=[InputRequired()])
     language_utf8name = StringField('Language Utf8 Name',
                                     validators=[InputRequired()])
-    romanised = StringField('Source Form', validators=[
-        InputRequired(), validate_romanised])
+    romanised = StringField('Source Form', validators=[InputRequired()])
     phon_form = StringField('PhoNetic Form', validators=[InputRequired()])
     phoneMic = StringField('PhoneMic Form', validators=[InputRequired()])
     nativeScript = StringField('Native Script',
@@ -1277,8 +1267,7 @@ class LexemeRowLanguageWordlistForm(AbstractTimestampedForm,
                                       validators=[InputRequired()])
     meaning_id = IntegerField('Meaning Id', validators=[InputRequired()])
     meaning = IntegerField('Meaning', validators=[InputRequired()])
-    romanised = StringField('Source Form', validators=[
-        InputRequired(), validate_romanised])
+    romanised = StringField('Source Form', validators=[ InputRequired()])
     phon_form = StringField('PhoNetic Form', validators=[InputRequired()])
     phoneMic = StringField('PhoneMic Form', validators=[InputRequired()])
     nativeScript = StringField('Native Script',
@@ -1340,8 +1329,7 @@ class TwoLanguageWordlistRowForm(AbstractTimestampedForm,
                                       validators=[InputRequired()])
     meaning_id = IntegerField('Meaning Id', validators=[InputRequired()])
     meaning = IntegerField('Meaning', validators=[InputRequired()])
-    romanised = StringField('Source Form', validators=[
-        InputRequired(), validate_romanised])
+    romanised = StringField('Source Form', validators=[InputRequired()])
     nativeScript = StringField('Native Script',
                                validators=[InputRequired()])
     not_swadesh_term = BooleanField('Not Swadesh Term',
