@@ -176,3 +176,9 @@ table.floatThead-table {
   text-overflow: ellipsis;
   max-width: 160px;
 }
+
+table input[type="checkbox"],
+button.filterBool {
+  margin-left: auto;
+  margin-right: auto;
+}
