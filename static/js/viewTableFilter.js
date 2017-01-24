@@ -3,8 +3,9 @@
   return define(['jquery','lodash',
                  'js/cladeFilter',
                  'js/viewTableFilter/settings',
+                 'js/viewTableFilter/phoneticData',
                  'floatThead', 'bootstrap'],
-    function($, _, mkCladeFilter, settings){
+    function($, _, mkCladeFilter, settings, phoneticData){
     /*
       This view can be used to filter and sort tables.
       The table is expected to contain input elements
@@ -16,7 +17,8 @@
     var module = {
       inputClasses: ['filterText', 'filterInput',
                      'filterBool', 'filterDistinct',
-                     'filterNumber', 'filterNumberInput'],
+                     'filterNumber', 'filterNumberInput',
+                     'filterPhonetic', 'filterPhoneticInput'],
       btnClasses: ['sortInput', 'sortIntInput', 'sortText', 'sortIntText'],
       callbacks: {} // :: Identifier -> IO ()
     };
@@ -442,6 +444,25 @@
       return function(row){
         var $input = row.find(selector);
         return $input ? predicate($input.val()) : true;
+      };
+    });
+    /**
+      @param input :: $ ∧ input.filterText
+      @param table :: $ ∧ table
+    */
+    module.filterPhonetic = mkSimpleFilter('filterText', function(selector, filterVal){
+      return function(row){
+        return phoneticData.matches(filterVal, row.find(selector).text());
+      };
+    });
+    /**
+      @param input :: $ ∧ input.filterText
+      @param table :: $ ∧ table
+    */
+    module.filterPhoneticInput = mkSimpleFilter('filterInput', function(selector, filterVal){
+      return function(row){
+        var $input = row.find(selector);
+        return $input ? phoneticData.matches(filterVal, $input.val()) : true;
       };
     });
     //Finished module:
