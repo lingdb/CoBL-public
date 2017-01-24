@@ -1974,8 +1974,6 @@ models.signals.post_delete.connect(
 
 @reversion.register
 class Author(AbstractTimestamped):
-    # See https://github.com/lingdb/CoBL/issues/106
-
     surname = models.TextField(blank=True)
     firstNames = models.TextField(blank=True)
     initials = models.TextField(blank=True, unique=True)
@@ -2006,16 +2004,15 @@ class Author(AbstractTimestamped):
         are named after the surname of an Author.
         @return path :: str | None
         """
-        # Guard to make sure we've got a surname:
         if self.surname is None or self.surname == '':
             return None
         basePath = 'static/contributors/'
         extensions = ['.jpg', '.jpeg', '.png', '.gif']
         for extension in extensions:
             p = os.path.join(basePath,
-                             self.surname.encode('utf-8') + extension)
+                             self.surname + extension)
             if os.path.isfile(p):
-                return p
+                return os.path.join('/ielex', p)
 
     @property
     def displayEmail(self):
