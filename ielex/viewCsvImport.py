@@ -52,8 +52,8 @@ def handleMeaningsLanguageImport(fileDicts, request):
         'gloss': strOrEmpty,
         'notes': strOrEmpty,
         '_order': intOrZero,
-        'dubious': boolOrNone,
-        'not_swadesh_term': boolOrNone,
+        'dubious': boolOrFalse,
+        'not_swadesh_term': boolOrFalse,
         'phoneMic': strOrEmpty,
         'rfcWebLookup1': strOrEmpty,
         'rfcWebLookup2': strOrEmpty,
@@ -210,12 +210,12 @@ def intOrZero(s):
         return 0
 
 
-def boolOrNone(s):
+def boolOrFalse(s):
     if s == 't':
         return True
     if s == 'f':
         return False
-    return None
+    return False
 
 
 def strNonEmpty(s):
