@@ -161,6 +161,16 @@
                     <span class="glyphicon glyphicon-filter"></span> Reset filter
                   </a>
                 </li>
+                {% if user.is_authenticated and user.is_staff %}
+                <li>
+                  <a href="{% url 'viewProblematicRomanised' %}"
+                     data-toggle="tooltip"
+                     data-placement="bottom"
+                     title="View problematic romanised fields">
+                    Problematic romanised
+                  </a>
+                </li>
+                {% endif %}
               </ul>
             </li>
             {% if user.is_authenticated %}
