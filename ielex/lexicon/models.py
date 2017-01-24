@@ -2018,6 +2018,10 @@ class Author(AbstractTimestamped):
     def displayEmail(self):
         return " [ AT ] ".join(self.email.split("@"))
 
+    @property
+    def fullName(self):
+        return ' '.join([self.firstNames, self.surname])
+
 
 @reversion.register
 class NexusExport(AbstractTimestamped):

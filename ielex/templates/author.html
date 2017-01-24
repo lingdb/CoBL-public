@@ -1,0 +1,81 @@
+{% extends "base.html"%}
+
+{% load staticfiles %}
+{% load wtforms %}
+
+{% block title %}
+  Author: {{ author.fullName }}
+{% endblock %}
+
+{% block top %}
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/defaultSelections.html" %}
+  {% include "snippets/go_to.html" %}
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-3">
+      <table class="table">
+        <tbody>
+          <tr>
+            <th colspan="2">
+              {% if author.getAvatar %}
+              <img src="{{ author.getAvatar }}" class="thumbnail"/>
+              {% endif %}
+              <h1>{{ author.fullName }}</h1>
+            </th>
+          </tr>
+          {% if author.website %}
+          <tr>
+            <th>Website</th>
+            <td>
+              <a href="{{ author.website }}" target="_blank">{{ author.website }}</a>
+            </td>
+          </tr>
+          {% endif %}
+          {% if author.email %}
+          <tr>
+            <th>Email</th>
+            <td>{{ author.displayEmail }}</td>
+          </tr>
+          {% endif %}
+          {% if authored %}
+          <tr>
+            <th>Author of</th>
+            <td>
+              <ul>
+                {% for a, u in authored %}
+                <li>
+                  <a href="{% url 'view-language-wordlist' a wordlist %}">{{ u }}</a>
+                </li>
+                {% endfor %}
+              </ul>
+            </td>
+          </tr>
+          {% endif %}
+          {% if reviewed %}
+          <tr>
+            <th>Reviewer of</th>
+            <td>
+              <ul>
+                {% for a, u in reviewed %}
+                <li>
+                  <a href="{% url 'view-language-wordlist' a wordlist %}">{{ u }}</a>
+                </li>
+                {% endfor %}
+              </ul>
+            </td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-9 markdown">
+      {{ content }}
+    </div>
+  </div>
+{% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

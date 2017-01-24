@@ -39,6 +39,7 @@ from ielex.views import add_language_list, \
                         export_bibtex, \
                         viewAbout, \
                         viewAuthors, \
+                        viewAuthor, \
                         view_changes, \
                         view_clades, \
                         view_cognateclasses, \
@@ -298,6 +299,7 @@ urlpatterns = [
 
     # Authors:
     url(r'^authors/$' % R, viewAuthors, name='viewAuthors'),
+    url(r'^authors/(.+)/$' % R, viewAuthor, name='viewAuthor'),
 
     # Changing defaults:
     url(r'^changeDefaults/$' % R, changeDefaults),

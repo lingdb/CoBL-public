@@ -2575,6 +2575,35 @@ def viewAuthors(request):
                                   'currentAuthorForm': currentAuthorForm})
 
 
+@csrf_protect
+@logExceptions
+def viewAuthor(request, initials):
+    try:
+        author = Author.objects.get(initials=initials)
+    except Author.DoesNotExist:
+        messages.error(request, "Unknown Author initials: %s." % initials)
+        return HttpResponseRedirect(reverse("viewAuthors"))
+    languageList = LanguageList.objects.get(
+        name=getDefaultLanguagelist(request))
+    languageData = languageList.languages.values_list(
+        'ascii_name', 'utf8_name', 'author', 'reviewer')
+    authored = []
+    reviewed = []
+    for aName, uName, aString, rString in languageData:
+        if author.fullName in set(aString.split(' and ')):
+            authored.append((aName, uName))
+        if author.fullName in set(rString.split(' and ')):
+            reviewed.append((aName, uName))
+    return render_template(
+        request, "author.html", {
+            'author': author,
+            'authored': authored,
+            'reviewed': reviewed,
+            'wordlist': getDefaultWordlist(request),
+            'content': fetchMarkdown(
+                "Author-description:-%s.md" % author.initials)})
+
+
 @logExceptions
 def changeDefaults(request):
     # Functions to get defaults:
