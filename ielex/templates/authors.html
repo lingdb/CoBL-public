@@ -61,6 +61,7 @@
               <tr>
                 <th>Avatar</th>
                 <th>Initials</th>
+                <th>{# authorLink #}</th>
                 <th>Surname</th>
                 <th>First names</th>
                 <th>Email</th>
@@ -88,21 +89,28 @@
                     {% if user.is_authenticated and user.is_staff %}
                       {% form_field author.initials class="form-control" required="required" style="width: 4em;" %}
                     {% else %}
-                      {{ author.initials.data }}
+                      {{ author.object_data.initials }}
+                    {% endif %}
+                  </td>
+                  <td class="authorLink">
+                    {% if author.object_data.initials %}
+                    <a href="{% url 'viewAuthor' author.object_data.initials %}">
+                      <span class="glyphicon glyphicon-user"></span>
+                    </a>
                     {% endif %}
                   </td>
                   <td class="surname">
                     {% if user.is_authenticated and user.is_staff %}
                       {% form_field author.surname class="form-control" required="required" %}
                     {% else %}
-                      {{ author.surname.data }}
+                      {{ author.object_data.surname }}
                     {% endif %}
                   </td>
                   <td class="firstNames">
                     {% if user.is_authenticated and user.is_staff %}
                       {% form_field author.firstNames class="form-control" required="required" %}
                     {% else %}
-                      {{ author.firstNames.data }}
+                      {{ author.object_data.firstNames }}
                     {% endif %}
                   </td>
                   <td class="email">
@@ -116,8 +124,8 @@
                     {% if user.is_authenticated and user.is_staff %}
                       {% form_field author.website class="form-control inline" style="width: 90%;" data-longinput="37" %}
                     {% endif %}
-                    {% if author.website.data %}
-                      <a href="{{ author.website.data }}" target="_blank">
+                    {% if author.object_data.website %}
+                      <a href="{{ author.object_data.website }}" target="_blank">
                         <span class="glyphicon glyphicon-link"></span>
                       </a>
                     {% endif %}
