@@ -1362,7 +1362,6 @@ class DyenCognateSet(models.Model):
 
 @reversion.register
 class Lexeme(AbstractTimestamped):
-
     language = models.ForeignKey(Language)
     meaning = models.ForeignKey(Meaning)
     cognate_class = models.ManyToManyField(
@@ -2113,3 +2112,8 @@ class NexusExport(AbstractTimestamped):
     def beautiName(self):
         # Replaces the /\.nex$/ in exportName with _BEAUti.nex
         return self.exportName[:-4] + "_BEAUti.nex"
+
+
+class RomanisedSymbol(AbstractTimestamped):
+    # Contains allowed symbols for Lexeme.romanised entries.
+    symbol = models.CharField(max_length=8, blank=False)
