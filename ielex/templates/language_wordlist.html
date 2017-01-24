@@ -215,7 +215,7 @@
               <td>
                 {% if user.is_authenticated %}
                   <input type="text"
-                         class="filterInput form-control narrow"
+                         class="filterPhoneticInput form-control narrow"
                          data-selector=".lexemeRomanised input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".lexemeRomanised input">
@@ -223,7 +223,7 @@
                   </div>
                 {% else %}
                   <input type="text"
-                         class="filterText form-control narrow"
+                         class="filterPhonetic form-control narrow"
                          data-selector=".lexemeRomanised">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".lexemeRomanised">
@@ -237,7 +237,7 @@
               <td>
                 {% if user.is_authenticated %}
                   <input type="text"
-                         class="filterInput form-control narrow"
+                         class="filterPhoneticInput form-control narrow"
                          data-selector=".lexemeNativeScript input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".lexemeNativeScript input">
@@ -245,7 +245,7 @@
                   </div>
                 {% else %}
                   <input type="text"
-                         class="filterText form-control narrow"
+                         class="filterPhonetic form-control narrow"
                          data-selector=".lexemeNativeScript">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".lexemeNativeScript">
@@ -326,7 +326,7 @@
               <td style="border-left: 2px solid #dddddd;">
                 {% if user.is_authenticated %}
                   <input type="text"
-                         class="filterInput form-control narrow"
+                         class="filterPhoneticInput form-control narrow"
                          data-selector=".lexemePhoneMic input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".lexemePhoneMic input">
@@ -334,7 +334,7 @@
                   </div>
                 {% else %}
                   <input type="text"
-                         class="filterText form-control narrow"
+                         class="filterPhonetic form-control narrow"
                          data-selector=".lexemePhoneMic">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".lexemePhoneMic">
@@ -347,7 +347,7 @@
               {# phonetic_filter.html #}
               <td>
                 {% if user.is_authenticated %}
-                  <input type="text" class="filterInput form-control narrow"
+                  <input type="text" class="filterPhoneticInput form-control narrow"
                          data-selector=".lexemePhonForm input">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".lexemePhonForm input">
@@ -355,7 +355,7 @@
                   </div>
                 {% else %}
                   <input type="text"
-                         class="filterText form-control narrow"
+                         class="filterPhonetic form-control narrow"
                          data-selector=".lexemePhonForm">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".lexemePhonForm">
