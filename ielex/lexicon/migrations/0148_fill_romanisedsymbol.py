@@ -33,7 +33,7 @@ def forwards_func(apps, schema_editor):
 
 def reverse_func(apps, schema_editor):
     RomanisedSymbol = apps.get_model("lexicon", "RomanisedSymbol")
-    RomanisedSymbol.objects.delete()
+    RomanisedSymbol.objects.all().delete()
 
 
 class Migration(migrations.Migration):
