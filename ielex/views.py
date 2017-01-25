@@ -3079,8 +3079,17 @@ def view_csvExport(request):
 
 
 @user_passes_test(lambda u: u.is_staff)
+@csrf_protect
 @logExceptions
 def viewProblematicRomanised(request):
+    if request.method == 'POST':
+        symbol = bytes(request.POST['symbol'], 'utf-8').decode('unicode_escape')
+        if request.POST['action'] == 'add':
+            rSymbol = RomanisedSymbol.objects.create(symbol=symbol)
+            rSymbol.bump(request)
+        elif request.POST['action'] == 'remove':
+            RomanisedSymbol.objects.filter(symbol=symbol).delete()
+
     languageList = LanguageList.objects.get(name=getDefaultLanguagelist(request))
     meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
     lexemes = Lexeme.objects.filter(
@@ -3093,7 +3102,8 @@ def viewProblematicRomanised(request):
     for lexeme in lexemes:
         offendingSymbols = set(lexeme.romanised) - okSet
         if offendingSymbols:
-            lexeme.offendingSymbols = offendingSymbols
+            lexeme.offendingSymbols = [
+                RomanisedSymbol(symbol=o) for o in offendingSymbols]
             offendingLexemes.append(lexeme)
 
     return render_template(request, "problematicRomanised.html",

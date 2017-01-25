@@ -43,8 +43,13 @@
             <td>{{ lexeme.meaning }}</td>
             <td>{{ lexeme.romanised }}</td>
             <td>{{ lexeme.nativeScript }}</td>
-            <td>{{ lexeme.offendingSymbols }}</td>
-          </tr>
+            <td>
+              {% for offending in lexeme.offendingSymbols %}
+              <span class="badge" data-addallowedsymbol="{{ offending.escapedSymbol }}">
+                <span class="glyphicon glyphicon-plus"></span>
+                {'{{ offending.symbol }}'}, {{ offending.escapedSymbol }}
+              </span>
+              {% endfor %}
           {% endfor %}
         </tbody>
       </table>
@@ -56,16 +61,21 @@
         <thead>
           <tr>
             <th>Symbol</th>
+            <th>Remove?</th>
             <th>Added when</th>
-            <th>Added by</th>
           </tr>
         </thead>
         <tbody>
           {% for allowed in allowedSymbols %}
           <tr>
-            <td style="white-space: pre;">{'{{ allowed.symbol }}'}, {{ allowed.escapedSymbol }}</td>
+            <td style="white-space: pre;">{'{{ allowed.symbol }}'}</td>
+            <td>
+              <span class="badge" data-removeallowedsymbol="{{ allowed.escapedSymbol }}">
+                <span class="glyphicon glyphicon-trash"></span>
+                {{ allowed.escapedSymbol }}
+              </span>
+            </td>
             <td>{{ allowed.lastTouched }}</td>
-            <td>{{ allowed.lastEditedBy }}</td>
           </tr>
           {% endfor %}
         </tbody>

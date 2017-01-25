@@ -66,7 +66,8 @@
              'js/copyCognateClass',
              'js/djangoAutocompleteInclusion',
              'js/sourcePopUpScript',
-             'js/source_list'
+             'js/source_list',
+             'js/problematicRomanised'
 			      ], function(require, $, _){
     //Initializing viewTableFilter:
     require('js/viewTableFilter').init('table.viewTableFilter');
