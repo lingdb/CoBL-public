@@ -2,7 +2,9 @@
 import json
 import logging
 import re
+import unicodedata
 from collections import defaultdict, OrderedDict
+from operator import itemgetter
 from django import forms
 from django.contrib import messages
 from django.db import transaction
@@ -11,6 +13,22 @@ from django.forms import ValidationError
 from django.http import HttpResponse
 from django.utils.encoding import python_2_unicode_compatible
 from django.forms import inlineformset_factory
+from wtforms.validators import Email, InputRequired
+from wtforms.form import Form as WTForm
+from wtforms.ext.django.orm import model_form
+from wtforms import StringField, \
+    IntegerField, \
+    FieldList, \
+    FormField, \
+    TextField, \
+    BooleanField, \
+    DateTimeField, \
+    TextAreaField, \
+    SelectField, \
+    DecimalField
+from dal import autocomplete
+from ielex.lexicon.models import Lexeme
+from ielex.formHelpers import WTFormToFormgroup
 from ielex.lexicon.defaultModels import getDefaultWordlist
 from ielex.lexicon.models import CognateClass, \
     CognateClassCitation, \
@@ -30,30 +48,12 @@ from ielex.lexicon.models import CognateClass, \
     PROPOSED_AS_COGNATE_TO_SCALE, \
     Author
 from ielex.lexicon.validators import suitable_for_url, suitable_for_url_wtforms
-from wtforms import StringField, \
-    IntegerField, \
-    FieldList, \
-    FormField, \
-    TextField, \
-    BooleanField, \
-    DateTimeField, \
-    TextAreaField, \
-    SelectField, \
-    DecimalField
-from wtforms.validators import Email, InputRequired
-from wtforms.form import Form as WTForm
-from wtforms.ext.django.orm import model_form
-from ielex.lexicon.models import Lexeme
-from operator import itemgetter
-from ielex.formHelpers import WTFormToFormgroup
-from dal import autocomplete
 
 LexemeForm = model_form(Lexeme)
 
 
 def clean_value_for_url(instance, field_label):
     """Check that a string in a form field is suitable to be part of a url"""
-    # TODO compare the suitable_for_url validator
     data = instance.cleaned_data[field_label]
     data = data.strip()
     suitable_for_url(data)
@@ -81,7 +81,7 @@ class ChooseLanguagesField(forms.ModelMultipleChoiceField):
     def sizeAttr():
         try:
             return min(40, Language.objects.count())
-        except ProgrammingError as e:
+        except ProgrammingError:
             # If the database has not tables this would break otherwise
             return 40
 
@@ -139,10 +139,17 @@ class ChooseOneSourceField(forms.ModelChoiceField):
         return super(ChooseOneSourceField, self).label_from_instance(label)
 
 
+class NormalizedStringField(StringField):
+    def process_formdata(self, valuelist):
+        super(NormalizedStringField, self).process_formdata(valuelist)
+        self.data = unicodedata.normalize("NFC", self.data.strip())
+
+
 class AddLexemeForm(WTForm):
     language_id = IntegerField('Language:', validators=[InputRequired()])
     meaning_id = IntegerField('Meaning:', validators=[InputRequired()])
-    romanised = StringField('Roman(ised):', validators=[InputRequired()])
+    romanised = NormalizedStringField(
+        'Roman(ised):', validators=[InputRequired()])
     nativeScript = StringField('Native Script:',
                                validators=[InputRequired()])
     phon_form = StringField('PhoneTic:', validators=[InputRequired()])
@@ -304,7 +311,7 @@ class AbstractCognateClassAssignmentForm(WTForm):
                 we want to enhance alias validation.
                 '''
                 continue
-            elif re.match('^([a-zA-Z]+|\d+)$', t) is not None:
+            elif re.match(r'^([a-zA-Z]+|\d+)$', t) is not None:
                 continue  # Token is number or alias
             else:
                 raise ValidationError("Unacceptable token: %s" % t)
@@ -330,7 +337,7 @@ class AbstractCognateClassAssignmentForm(WTForm):
             in data['combinedCognateClassAssignment'].split(',')]
         for t in tokens:
             toAdd -= 1  # Decrement toAdd:
-            if toAdd <= 0 and len(currentCCs) > 0 \
+            if toAdd <= 0 and currentCCs \
                     and not request.user.is_staff:
                 messages.error(
                     request,
@@ -360,12 +367,12 @@ class AbstractCognateClassAssignmentForm(WTForm):
                 try:
                     ccWithSameMeaning = CognateClass.objects.filter(
                         lexeme__meaning__id=lexeme.meaning_id).distinct()
-                    if re.match('^\d+$', t) is not None:
+                    if re.match(r'^\d+$', t) is not None:
                         cc = ccWithSameMeaning.get(id=int(t))
                     else:
                         cc = ccWithSameMeaning.get(alias=t)
                 except Exception:
-                    logging.exception("Problem handling token %s" % t)
+                    logging.exception("Problem handling token %s", t)
                     messages.error(
                         request,
                         "Sorry, the server didn't understand "
@@ -531,15 +538,15 @@ class EditSingleLanguageForm(LanguageListRowForm,
         ('description', {'class': 'form-control'}),
         ('iso_code', {'class': 'form-control', 'pattern': '(^$|...)'}),
         ('glottocode', {'class': 'form-control',
-                        'pattern': '(^$|[a-z]{4}\d{4})'}),
+                        'pattern': r'(^$|[a-z]{4}\d{4})'}),
         ('variety', {'class': 'form-control'}),
         ('foss_stat', {}),
         ('low_stat', {}),
         ('soundcompcode', {'class': 'form-control'}),
-        ('level0', {'class': 'form-control', 'pattern': '\d*'}),
-        ('level1', {'class': 'form-control', 'pattern': '\d*'}),
-        ('level2', {'class': 'form-control', 'pattern': '\d*'}),
-        ('level3', {'class': 'form-control', 'pattern': '\d*'}),
+        ('level0', {'class': 'form-control', 'pattern': r'\d*'}),
+        ('level1', {'class': 'form-control', 'pattern': r'\d*'}),
+        ('level2', {'class': 'form-control', 'pattern': r'\d*'}),
+        ('level3', {'class': 'form-control', 'pattern': r'\d*'}),
         ('representative', {}),
         ('distribution', {'class': 'form-control distributionSelection',
                           'data-inputdepends': 'historical',
@@ -597,9 +604,9 @@ class EditSingleLanguageForm(LanguageListRowForm,
         ('entryTimeframe', {'class': 'form-control'}),
         ('reviewer', {'class': 'form-control'}),
         ('progress', {'class': 'form-control',
-                      'pattern': '^\d$',
+                      'pattern': r'^\d$',
                       'required': 'required'}),
-        ('sortRankInClade', {'class': 'form-control', 'pattern': '\d*'}),
+        ('sortRankInClade', {'class': 'form-control', 'pattern': r'\d*'}),
     ]
 
 
@@ -774,7 +781,6 @@ class CognateClassField(IntegerField):
             self.data = data.id
 
 
-# TODO: return to this if/when moving to Python 3
 @python_2_unicode_compatible
 class CogClassRowForm(AbstractTimestampedForm):
     idField = IntegerField('Id', validators=[InputRequired()])
@@ -841,7 +847,7 @@ class CogClassRowForm(AbstractTimestampedForm):
             for fieldName in fieldList:
                 if fieldName in form.data:
                     fieldData = form.data[fieldName]
-                    if fieldData or type(fieldData) == bool:
+                    if fieldData or isinstance(fieldData, bool):
                         break
             else:
                 raise ValidationError(
@@ -900,8 +906,8 @@ class MergeCognateClassesForm(WTForm):
         # Fetching classes to merge:
         ccs = CognateClass.objects.filter(
             id__in=ids).prefetch_related(
-            "cognatejudgement_set",
-            "cognateclasscitation_set").all()
+                "cognatejudgement_set",
+                "cognateclasscitation_set").all()
         # Checking ccs length:
         if len(ccs) <= 1:
             logging.warning('Not enough cognateclasses to merge.',
@@ -936,7 +942,7 @@ class MergeCognateClassesForm(WTForm):
                                   in cc.cognatejudgement_set.all()])
                 CognateJudgement.objects.filter(
                     id__in=cjIds).update(
-                    cognate_class_id=newC.id)
+                        cognate_class_id=newC.id)
                 '''
                 Retargeting CCCs:
                 This needs a bit of extra handling
@@ -958,17 +964,17 @@ class MergeCognateClassesForm(WTForm):
                             cognate_class_id=newC.id,
                             source_id=k,
                             pages='{' +
-                                  ', '.join([x.pages for x in v]) +
-                                  '}',
+                            ', '.join([x.pages for x in v]) +
+                            '}',
                             reliability='A',
                             comment='{' +
-                                    ', '.join([x.comment for x in v]) +
-                                    '}'))
+                            ', '.join([x.comment for x in v]) +
+                            '}'))
                         oldCCCs.update([x.id for x in v])
                 # Retargeting simple cases:
                 CognateClassCitation.objects.filter(
                     id__in=simpleCCCs).update(
-                    cognate_class_id=newC.id)
+                        cognate_class_id=newC.id)
                 # Creating new CCCs:
                 CognateClassCitation.objects.bulk_create(newCCCs)
                 # Removing old CCCs:
@@ -1033,8 +1039,8 @@ class CognateJudgementSplitTable(WTForm):
         # Bumping judgements:
         bumped = True
         try:
-            for id, t in idTMap.items():
-                idCjMap[id].bump(request, t)
+            for idField, t in idTMap.items():
+                idCjMap[idField].bump(request, t)
         except Exception:
             logging.exception('Problem splitting cognate judgements '
                               'in cognate_report.')
@@ -1082,7 +1088,8 @@ class LexemeRowViewMeaningsForm(AbstractTimestampedForm,
                                      validators=[InputRequired()])
     language_utf8name = StringField('Language Utf8 Name',
                                     validators=[InputRequired()])
-    romanised = StringField('Source Form', validators=[InputRequired()])
+    romanised = NormalizedStringField(
+        'Source Form', validators=[InputRequired()])
     phon_form = StringField('PhoNetic Form', validators=[InputRequired()])
     phoneMic = StringField('PhoneMic Form', validators=[InputRequired()])
     nativeScript = StringField('Native Script',
@@ -1161,7 +1168,7 @@ class LexemeTableEditCognateClassesForm(WTForm):
     def validate_cognateClassAssignments(form, field):
         # Make sure field.data is a json dict:
         data = json.loads(field.data)
-        if type(data) != dict:
+        if isinstance(data, dict):
             raise ValidationError('Data for cognateClassAssignments '
                                   'is not a JSON object.')
         # Dict to put into _validated:
@@ -1247,7 +1254,7 @@ class LexemeTableEditCognateClassesForm(WTForm):
                         cognate_class_id=k).count()
                     if remaining == 0:
                         logging.info('Removed last lexemes '
-                                     'from cognate class %s.' % k)
+                                     'from cognate class %s.', k)
                         messages.warning(
                             request,
                             'Cognate class %s has no lexemes '
@@ -1267,7 +1274,8 @@ class LexemeRowLanguageWordlistForm(AbstractTimestampedForm,
                                       validators=[InputRequired()])
     meaning_id = IntegerField('Meaning Id', validators=[InputRequired()])
     meaning = IntegerField('Meaning', validators=[InputRequired()])
-    romanised = StringField('Source Form', validators=[ InputRequired()])
+    romanised = NormalizedStringField(
+        'Source Form', validators=[InputRequired()])
     phon_form = StringField('PhoNetic Form', validators=[InputRequired()])
     phoneMic = StringField('PhoneMic Form', validators=[InputRequired()])
     nativeScript = StringField('Native Script',
@@ -1329,7 +1337,8 @@ class TwoLanguageWordlistRowForm(AbstractTimestampedForm,
                                       validators=[InputRequired()])
     meaning_id = IntegerField('Meaning Id', validators=[InputRequired()])
     meaning = IntegerField('Meaning', validators=[InputRequired()])
-    romanised = StringField('Source Form', validators=[InputRequired()])
+    romanised = NormalizedStringField(
+        'Source Form', validators=[InputRequired()])
     nativeScript = StringField('Native Script',
                                validators=[InputRequired()])
     not_swadesh_term = BooleanField('Not Swadesh Term',
@@ -1355,9 +1364,9 @@ class AddMissingLexemsForLanguageForm(WTForm):
         language = Language.objects.get(ascii_name=self.data['language'])
         meanings = Meaning.objects.exclude(
             id__in=set(Lexeme.objects.filter(
-                       language=language).values_list(
-                       'meaning_id', flat=True))).all()
-        if len(meanings) > 0:
+                language=language).values_list(
+                    'meaning_id', flat=True))).all()
+        if meanings:
             with transaction.atomic():
                 for m in meanings:
                     Lexeme.objects.create(language=language, meaning=m)
@@ -1385,7 +1394,7 @@ class RemoveEmptyLexemsForLanguageForm(WTForm):
         with transaction.atomic():
             wanted = Lexeme.objects.filter(romanised='', language=language)
             meanings = wanted.values_list('meaning__gloss', flat=True)
-            if len(meanings) > 0:
+            if meanings:
                 wanted.delete()
                 messages.info(
                     request,
@@ -1436,7 +1445,7 @@ class CloneLanguageForm(WTForm):
             sourceLexemes = Lexeme.objects.filter(
                 language__ascii_name=self.data['sourceLanguageName'],
                 meaning__in=meaningIds).all(
-            ).prefetch_related('meaning')
+                    ).prefetch_related('meaning')
             # Editor for AbstractTimestamped:
             lastEditedBy = ' '.join([request.user.first_name,
                                      request.user.last_name])
@@ -1465,7 +1474,7 @@ class CloneLanguageForm(WTForm):
             if not self.data['emptyLexemes']:
                 newLexemeIds = Lexeme.objects.exclude(
                     id__in=currentLexemeIds).order_by(
-                    'id').values_list('id', flat=True)
+                        'id').values_list('id', flat=True)
                 # Cloning LexemeCitations:
                 newLexemeCitations = []
                 for newId, lexeme in zip(newLexemeIds, sourceLexemes):
@@ -1487,7 +1496,7 @@ class CloneLanguageForm(WTForm):
                 for newId, lexeme in zip(newLexemeIds, sourceLexemes):
                     cjs = CognateJudgement.objects.filter(
                         lexeme_id=lexeme.id).prefetch_related(
-                        'cognatejudgementcitation_set').all()
+                            'cognatejudgementcitation_set').all()
                     sourceCJs += cjs
                     for cj in cjs:
                         newCognateJudgement = CognateJudgement(
@@ -1501,8 +1510,8 @@ class CloneLanguageForm(WTForm):
                 # for newCognateJudgements:
                 newCognateJudgementIds = CognateJudgement.objects.exclude(
                     id__in=currentCognateJudgementIds).order_by(
-                    'id').values_list(
-                    'id', flat=True)
+                        'id').values_list(
+                            'id', flat=True)
                 newCognateJudgementCitations = []
                 for newId, cj in zip(newCognateJudgementIds, sourceCJs):
                     for cjc in cj.cognatejudgementcitation_set.all():
@@ -1657,12 +1666,9 @@ class ChooseCognateClassForm(forms.Form):
         lexeme = Lexeme.objects.get(id=lexeme_id)
         if cognate_class not in lexeme.cognate_class.all():
             return CognateJudgement.objects.create(
-                lexeme=lexeme,
-                cognate_class=cognate_class)
-        else:
-            return CognateJudgement.objects.get(
-                lexeme=lexeme,
-                cognate_class=cognate_class)
+                lexeme=lexeme, cognate_class=cognate_class)
+        return CognateJudgement.objects.get(
+            lexeme=lexeme, cognate_class=cognate_class)
 
 
 def make_reorder_languagelist_form(objlist):
@@ -1725,8 +1731,8 @@ class AuthorRowForm(AbstractTimestampedForm):
                     else:
                         messages.error(
                             request, author.deltaReport(**problem))
-        except Exception as e:
-            logging.exception('Problem while updating author.', e)
+        except Exception:
+            logging.exception('Problem while updating author.')
             messages.error(
                 request, 'Problem saving author data: %s' % data)
 
@@ -1907,8 +1913,7 @@ class CognateClassInlineForm(OrderableInlineModelForm):
     def alias(self, cognate_class):
         if cognate_class.alias:
             return "%s (%s)" % (cognate_class.id, cognate_class.alias)
-        else:
-            return "%s" % cognate_class.id
+        return "%s" % cognate_class.id
 
 
 CognateJudgementFormSet = inlineformset_factory(
@@ -1958,13 +1963,13 @@ class AssignCognateClassesFromLexemeForm(WTForm):
 
             currentClasses = CognateClass.objects.filter(
                 cognatejudgement__lexeme__id=toLexeme.id).values_list(
-                'id', 'alias')
+                    'id', 'alias')
             response = {'idList': [id for id, _ in currentClasses],
                         'aliasList': [alias for _, alias in currentClasses]}
             return HttpResponse(
                 json.dumps(response),
                 content_type="application/json")
-        except Exception as e:
+        except Exception:
             logging.exception(
                 'Problem in AssignCognateClassesFromLexemeForm.handle()')
             return HttpResponse(
