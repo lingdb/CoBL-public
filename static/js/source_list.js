@@ -1,20 +1,8 @@
 (function() {
   "use strict";
-  return define(["jquery", "lodash", "bootstrap"], function($, _){
+  return define(["jquery", "lodash", "js/csrfToken", "bootstrap"], function($, _, csrfToken){
     var active = window.location.pathname.match(/^\/(sources)\//);
     if(active){
-      var csrf_token = (function(cookies){
-        cookies = cookies || "";
-        var token = "";
-        _.forEach(cookies.split(';'), function(cookie){
-          var matches = cookie.match(/^.*csrftoken=(.+)$/);
-          if(matches){
-            token = matches[1];
-            return false;
-          }
-        });
-        return token;
-      })(document.cookie);
       var permitted = $('.permissionDiv').data('permitted') || false;
       $(document).ready(function() {
       	/* Enable tooltips */
@@ -40,11 +28,10 @@
       		$(this).text('Hide');
       		var row = $(this).parent().parent();
       		row.addClass('highlighted');
-      		var postdata = {
+      		var postdata = _.extend({
       			'postType': 'details',
-      			'id': $(this).attr('id'),
-      			'csrfmiddlewaretoken': csrf_token
-      		};
+      			'id': $(this).attr('id')
+      		}, csrfToken);
       		$.post("/sources/", postdata, function (data) {
       			var details_table = $('<tr><td colspan="12"><table class="details_table"/></td></tr>').insertAfter(row);
       			$(data).children('th').appendTo(details_table.find('table.details_table')).wrapAll('<thead class="_details"/>');
@@ -91,11 +78,10 @@
       			filter_dict[key] = value;
       		});
       		filter_dict = [JSON.stringify(filter_dict)];
-      		var postdata = {
+      		var postdata = _.extend({
       			'postType': 'filter',
-      			'filter_dict': filter_dict,
-      			'csrfmiddlewaretoken': csrf_token
-      		};
+      			'filter_dict': filter_dict
+      		}, csrfToken);
       		$.post("/sources/", postdata, function (data) {
       			var $data = $( data );
       			$('tbody').replaceWith($data.find('tbody'));
@@ -135,10 +121,7 @@
       	/**** ADD *****/
       	$(document.body).on('click', 'button[id="add"]', function() {
       		$('#editSourceContainer').empty();
-      		var postdata = {
-      			'postType': 'add',
-      			'csrfmiddlewaretoken': csrf_token
-      		};
+      		var postdata = _.extend({'postType': 'add'}, csrfToken);
       		$.post("/sources/", postdata, function (data) {
       			build_edit_form(data, 'add');
       		});
@@ -148,11 +131,10 @@
       	$(document.body).on('click', '.edit_button.show_e', function() {
       		$('#editSourceContainer').empty();
       		$('#editSource').attr('source_id', $(this).attr('id'));
-      		var postdata = {
+      		var postdata = _.extend({
       			'postType': 'edit',
-      			'id': $(this).attr('id'),
-      			'csrfmiddlewaretoken': csrf_token
-      		};
+      			'id': $(this).attr('id')
+      		}, csrfToken);
       		$.post("/sources/", postdata, function (data) {
       			build_edit_form(data, 'edit');
       		});
@@ -161,13 +143,12 @@
       	/**** SUBMIT FORM *****/
       	$(document).on("click", ":submit", function(e){ // catch the form's submit event
       		//$('#editSource').submit(function() {
-      		var postdata = {
+      		var postdata = _.extend({
             'postType': 'update',
       			'id':$('#editSource').attr('source_id'),
-      			'csrfmiddlewaretoken': csrf_token,
       			'source_data': $(this).parent().serialize(),
       			'action': $(this).val()
-          };
+          }, csrfToken);
       		$.ajax({ // create an AJAX call...
       			data: postdata, // get the form data
       			type: $(this).parent().attr('method'), // GET or POST
@@ -183,24 +164,22 @@
       	/**** CHANGE DEPRECATED STATUS *****/
       	$(document.body).on('click', 'input[name="deprecated"]', function() {
       		$(this).parent().parent().toggleClass('deprecated');
-      		var postdata = {
+      		var postdata = _.extend({
       			'postType': 'deprecated-change',
       			'id': $(this).parent().siblings('.details').children().attr('id'),
-      			'csrfmiddlewaretoken': csrf_token,
       			'status': $(this).is(':checked'),
-      		};
+      		}, csrfToken);
       		$.post("/sources/", postdata, function(data){});
       	});
 
       	/**** CHANGE TRS STATUS *****/
       	$(document.body).on('click', 'input[name="TRS"]', function() {
       		$(this).parent().parent().toggleClass('TRS');
-      		var postdata = {
+      		var postdata = _.extend({
       			'postType': 'TRS-change',
       			'id': $(this).parent().siblings('.details').children().attr('id'),
-      			'csrfmiddlewaretoken': csrf_token,
       			'status': $(this).is(':checked'),
-      		};
+      		}, csrfToken);
       		$.post("/sources/", postdata, function(data){});
       	});
 
