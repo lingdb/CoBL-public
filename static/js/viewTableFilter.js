@@ -1,5 +1,6 @@
 (function(){
   "use strict";
+  /* eslint-disable no-console */
   return define(['jquery','lodash',
                  'js/cladeFilter',
                  'js/viewTableFilter/settings',

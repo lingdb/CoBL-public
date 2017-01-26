@@ -1,5 +1,6 @@
 (function(){
   "use strict";
+  /* eslint-disable no-console */
   return define(['lodash','jquery','bootbox'], function(_, $, bootbox){
     $('.bootboxHtmlSnippet[data-htmlsource]').click(function(){
       var source = $(this).data('htmlsource');

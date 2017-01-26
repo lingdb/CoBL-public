@@ -23,8 +23,6 @@
                                         data :: [Int]}
     */
     var nameDistributionMap = {};
-    //Chart to work with:
-    var chart = null; // Initialized towards the end.
     /**
     Function to compute distribution data.
       $el :: $('select'), expected length === 1

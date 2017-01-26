@@ -1,6 +1,6 @@
 (function(){
   "use strict";
-  return define(['jquery','lodash'], function($, _){
+  return define(['jquery'], function($){
     var modal = $('#cloneLanguageModal');
     if(modal.length === 1){
       $('button[data-toggle="cloneLanguageModal"]').each(function(){

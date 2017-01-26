@@ -1,5 +1,4 @@
 (function(){
   "use strict";
-  return define(['django-dynamic-formset','jquery'], function(_, $){
-  });  
+  return define(['django-dynamic-formset','jquery'], function(){});  
 })();

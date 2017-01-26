@@ -28,7 +28,6 @@
           inputs = findClosest($el).find('.reflectDistribution'),
           handler = function(){
           var wanted = $el.val();
-          console.log('DEBUG handler', wanted, inputs, inputs.get(0).tagName); // FIXME DEBUG
           inputs.each(function(){
             var $i = $(this), allowed = $i.data('allowed');
             var isWanted = allowed.indexOf(wanted) >= 0;

@@ -4,7 +4,7 @@
     if(!intercom) intercom = window.Intercom;
     var spaceport = intercom.getInstance();
     //Making sure we clean up afterwards:
-    window.addEventListener("beforeunload", function(e){
+    window.addEventListener("beforeunload", function(){
       intercom.destroy();
     }, false);
     //Return module API:

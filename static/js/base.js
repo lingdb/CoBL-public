@@ -4,9 +4,9 @@
     $(function(){$('[data-toggle="tooltip"]').tooltip();});
     $(function(){
       if(window.addEventListener){
-        window.addEventListener('DOMContentLoaded', CopyAcross, false);
+        window.addEventListener('DOMContentLoaded', window.CopyAcross, false);
       }else{
-        window.attachEvent('onclick', CopyAcross);
+        window.attachEvent('onclick', window.CopyAcross);
       }
     });
   });

@@ -44,7 +44,6 @@
     module.fetchFor = function($input){
       var query = {lexemeid: $input.data('lexemeid')};
       $.getJSON(apiRoutes.cognatePlaceholders, query, function(data){
-        console.log('Fetched something:', data);
         module.display(module.renderTable(data));
       });
     };

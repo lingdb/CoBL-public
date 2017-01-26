@@ -1,5 +1,6 @@
 (function(){
   "use strict";
+  /* eslint-disable no-console */
   /**
     See if there is a table.distributionPlot on the site,
     and perform the necessary setup.

@@ -1,5 +1,6 @@
 (function(){
   "use strict";
+  /* eslint-disable no-new */
   return define(['lodash', 'jquery', 'awesomplete'], function(_, $, Awesomplete){
     // parseDataTypeahead :: jQuery -> {} | []
     var parseDataTypeahead = function(input){
@@ -33,7 +34,7 @@
     $('.typeaheadText').each(function(){
       var input = selectOnClick($(this));
       var data = parseDataTypeahead(input);
-      var awesomplete = new Awesomplete(input.get(0), mkOptions(_.keys(data)));
+      new Awesomplete(input.get(0), mkOptions(_.keys(data)));
       //Handling selection event:
       input.on('awesomplete-selectcomplete', function(){
         var v = input.val();
@@ -52,7 +53,7 @@
         return input.closest('form').find(tgt);
       })();
       //Init awesomplete:
-      var awesomplete = new Awesomplete(input.get(0), mkOptions(_.keys(data)));
+      new Awesomplete(input.get(0), mkOptions(_.keys(data)));
       //Handling selection event:
       input.on('awesomplete-selectcomplete', function(){
         var v = input.val();
