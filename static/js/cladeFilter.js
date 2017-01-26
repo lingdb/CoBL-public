@@ -40,8 +40,9 @@
         var representative = li.data('cladefilter-representative');
         var cladepath = li.data('cladefilter-cladepath');
         var toggleall = li.data('cladefilter-toggleall');
+        var startActive = li.data('cladefilter-startactive');
         //Alter settings:
-        if(initial === false){
+        if(!initial || startActive){
           if(!_.isUndefined(representative)){
             settings.representative = !settings.representative;
           }else if(!_.isUndefined(cladepath)){
