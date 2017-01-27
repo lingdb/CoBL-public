@@ -3042,37 +3042,64 @@ def view_csvExport(request):
             return isinstance(getattr(model, field), DeferredAttribute)
         return [f for f in dir(model) if isWantedField(f)]
 
-    def modelToDicts(model, fieldnames):
+    def modelToDicts(querySet, fieldnames):
         return [{field: getattr(entry, field) for field in fieldnames}
-                for entry in model.objects.all()]
+                for entry in querySet.all()]
 
-    models = [Author,
-              Clade,
-              CognateClass,
-              CognateClassCitation,
-              CognateJudgement,
-              CognateJudgementCitation,
-              Language,
-              LanguageClade,
-              LanguageList,
-              LanguageListOrder,
-              Lexeme,
-              LexemeCitation,
-              Meaning,
-              MeaningList,
-              MeaningListOrder,
-              SndComp,
-              Source]
+    if 'full' in request.GET:
+        models = {Author: Author.objects,
+                  Clade: Clade.objects,
+                  CognateClass: CognateClass.objects,
+                  CognateClassCitation: CognateClassCitation.objects,
+                  CognateJudgement: CognateJudgement.objects,
+                  CognateJudgementCitation: CognateJudgementCitation.objects,
+                  Language: Language.objects,
+                  LanguageClade: LanguageClade.objects,
+                  LanguageList: LanguageList.objects,
+                  LanguageListOrder: LanguageListOrder.objects,
+                  Lexeme: Lexeme.objects,
+                  LexemeCitation: LexemeCitation.objects,
+                  Meaning: Meaning.objects,
+                  MeaningList: MeaningList.objects,
+                  MeaningListOrder: MeaningListOrder.objects,
+                  SndComp: SndComp.objects,
+                  Source: Source.objects}
+    else:
+        meaningList = getDefaultWordlist(request)
+        languageList = getDefaultLanguagelist(request)
+        models = {
+            Author: Author.objects,
+            Clade: Clade.objects,
+            CognateClass: CognateClass.objects,
+            CognateClassCitation: CognateClassCitation.objects,
+            CognateJudgement: CognateJudgement.objects,
+            CognateJudgementCitation: CognateJudgementCitation.objects,
+            Language: Language.objects.filter(
+                languagelist__name=languageList),
+            LanguageClade: LanguageClade.objects,
+            LanguageList: LanguageList.objects.filter(name=languageList),
+            LanguageListOrder: LanguageListOrder.objects.filter(
+                language_list__name=languageList),
+            Lexeme: Lexeme.objects.filter(
+                language__languagelist__name=languageList,
+                meaning__meaninglist__name=meaningList),
+            LexemeCitation: LexemeCitation.objects,
+            Meaning: Meaning.objects.filter(meaninglist__name=meaningList),
+            MeaningList: MeaningList.objects.filter(name=meaningList),
+            MeaningListOrder: MeaningListOrder.objects.filter(
+              meaning_list__name=meaningList),
+            SndComp: SndComp.objects,
+            Source: Source.objects}
 
     zipBuffer = io.BytesIO()
     zipFile = zipfile.ZipFile(zipBuffer, 'w')
-    for model in models:
+    for model, querySet in models.items():
         filename = 'export/%s.csv' % model.__name__
         fieldnames = modelToFieldnames(model)
         modelBuffer = io.StringIO()
         writer = csv.DictWriter(modelBuffer, fieldnames=fieldnames)
         writer.writeheader()
-        writer.writerows(modelToDicts(model, fieldnames))
+        writer.writerows(modelToDicts(querySet, fieldnames))
         zipFile.writestr(filename, modelBuffer.getvalue())
     zipFile.close()
 
