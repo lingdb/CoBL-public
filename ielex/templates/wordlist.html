@@ -74,6 +74,13 @@
               {% endif %}
               <th colspan="2"></th>
               <th>Id</th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Elic. Ix
+                  </div>
+                </div>
+              </th>
               <th>Meaning</th>
               <th>Meaning specification tooltip</th>
               {# exampleContext_title.html #}
@@ -193,6 +200,15 @@
                        style="width: 1.5em;">
                 <div class="btn btn-xs btn-default sortIntInput"
                      data-selector=".meaningId input.meaningId">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              <td>
+                <input type="text" class="filterNumberInput form-control"
+                       data-selector=".ixElicitation input.ixElicitation"
+                       style="width: 1.5em;">
+                <div class="btn btn-xs btn-default sortIntInput"
+                     data-selector=".ixElicitation input.ixElicitation">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
@@ -392,6 +408,13 @@
                          value="{{ meaning.object_data.id }}"
                          class="meaningId numberField form-control"
                          style="width: 3em;">
+                </td>
+                <td class="ixElicitation">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field meaning.ixElicitation class="ixElicitation form-control numberField" style="width: 3em;" %}
+                  {% else %}
+                    {% form_field meaning.ixElicitation disabled="disabled" class="ixElicitation form-control numberField" style="width: 3em;" %}
+                  {% endif %}
                 </td>
                 <td class="meaningGloss">
                 {% if user.is_authenticated and user.is_staff %}

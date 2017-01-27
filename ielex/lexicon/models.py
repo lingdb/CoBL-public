@@ -944,15 +944,13 @@ class Meaning(AbstractTimestamped):
     description = models.CharField(max_length=64, blank=True)
     notes = models.TextField(blank=True)
     percent_coded = models.FloatField(editable=False, default=0)
-    # Added when mobbing 2016-08-04:
     doubleCheck = models.BooleanField(default=0)
     exclude = models.BooleanField(default=0)
-    # Added for #313:
     tooltip = models.TextField(blank=True)
     meaningSetMember = models.IntegerField(default=0, null=False)
     meaningSetIx = models.IntegerField(default=0, null=False)
-    # Added for #334:
     exampleContext = models.CharField(max_length=128, blank=True)
+    ixElicitation = models.IntegerField(default=0, null=False)
 
     def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
@@ -976,9 +974,11 @@ class Meaning(AbstractTimestamped):
         ordering = ["gloss"]
 
     def timestampedFields(self):
-        return set(['gloss', 'description', 'notes', 'doubleCheck',
+        return set(['gloss', 'description',
+                    'notes', 'doubleCheck',
                     'exclude', 'tooltip',
-                    'meaningSetMember', 'meaningSetIx', 'exampleContext'])
+                    'meaningSetMember', 'meaningSetIx',
+                    'exampleContext', 'ixElicitation'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update meaning: ' \
