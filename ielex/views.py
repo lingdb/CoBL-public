@@ -3069,27 +3069,36 @@ def view_csvExport(request):
         languageList = getDefaultLanguagelist(request)
         models = {
             Author: Author.objects,
-            Clade: Clade.objects,
-            CognateClass: CognateClass.objects,
-            CognateClassCitation: CognateClassCitation.objects,
-            CognateJudgement: CognateJudgement.objects,
-            CognateJudgementCitation: CognateJudgementCitation.objects,
             Language: Language.objects.filter(
                 languagelist__name=languageList),
-            LanguageClade: LanguageClade.objects,
             LanguageList: LanguageList.objects.filter(name=languageList),
             LanguageListOrder: LanguageListOrder.objects.filter(
                 language_list__name=languageList),
-            Lexeme: Lexeme.objects.filter(
-                language__languagelist__name=languageList,
-                meaning__meaninglist__name=meaningList),
-            LexemeCitation: LexemeCitation.objects,
             Meaning: Meaning.objects.filter(meaninglist__name=meaningList),
             MeaningList: MeaningList.objects.filter(name=meaningList),
             MeaningListOrder: MeaningListOrder.objects.filter(
-              meaning_list__name=meaningList),
+                meaning_list__name=meaningList),
             SndComp: SndComp.objects,
             Source: Source.objects}
+        models[Lexeme] = Lexeme.objects.filter(
+            language__in=models[Language],
+            meaning__in=models[Meaning])
+        models[CognateJudgement] = CognateJudgement.objects.filter(
+            lexeme__in=models[Lexeme])
+        models[CognateClass] = CognateClass.objects.filter(
+            lexeme__in=models[Lexeme])
+        models[LexemeCitation] = LexemeCitation.objects.filter(
+            lexeme__in=models[Lexeme])
+        models[CognateJudgementCitation] = \
+            CognateJudgementCitation.objects.filter(
+                cognate_judgement__in=models[CognateJudgement])
+        models[CognateClassCitation] = \
+            CognateClassCitation.objects.filter(
+                cognate_class__in=models[CognateClass])
+        models[LanguageClade] = LanguageClade.objects.filter(
+            language__in=models[Language])
+        models[Clade] = Clade.objects.filter(
+            languageclade__in=models[LanguageClade])
 
     zipBuffer = io.BytesIO()
     zipFile = zipfile.ZipFile(zipBuffer, 'w')
@@ -3105,7 +3114,8 @@ def view_csvExport(request):
 
     resp = HttpResponse(zipBuffer.getvalue(),
                         content_type='application/x-zip-compressed')
-    resp['Content-Disposition'] = 'attachment; filename=export.zip'
+    cdHeader = "attachment; filename=%s.export.zip" % time.strftime("%Y-%m-%d")
+    resp['Content-Disposition'] = cdHeader
     return resp
 
 
