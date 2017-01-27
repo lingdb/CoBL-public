@@ -21,7 +21,7 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-md-5">
+    <div class="col-md-12">
       <form action="" method="post">
         {% if user.is_authenticated and user.is_staff %}
           {% csrf_token %}
@@ -402,7 +402,7 @@
                 </td>
                 <td class="meaningTooltip">
                 {% if user.is_authenticated and user.is_staff %}
-                  {% form_field meaning.tooltip class="form-control" data-longinput="15" %}
+                  {% form_field meaning.tooltip class="form-control" data-longinput="38" %}
                 {% else %}
                   {{ meaning.object_data.tooltip }}
                 {% endif %}
@@ -410,7 +410,7 @@
                 {# exampleContext_data.html #}
                 <td class="exampleContext">
                 {% if user.is_authenticated and user.is_staff %}
-                  {% form_field meaning.exampleContext class="form-control" data-longinput="11" %}
+                  {% form_field meaning.exampleContext class="form-control" data-longinput="25" %}
                 {% else %}
                   {{ meaning.object_data.exampleContext }}
                 {% endif %}
@@ -482,14 +482,14 @@
                 </td>
                 <td class="meaningSetIx">
                 {% if user.is_authenticated and user.is_staff %}
-                  {% form_field meaning.meaningSetIx class="form-control numberField" %}
+                  {% form_field meaning.meaningSetIx class="form-control numberField" style="width: 2em;" %}
                 {% else %}
                   {{ meaning.object_data.meaningSetIx }}
                 {% endif %}
                 </td>
                 <td class="meaningSetMember">
                 {% if user.is_authenticated and user.is_staff %}
-                  {% form_field meaning.meaningSetMember class="form-control numberField" %}
+                  {% form_field meaning.meaningSetMember class="form-control numberField" style="width: 2em;" %}
                 {% else %}
                   {{ meaning.object_data.meaningSetMember }}
                 {% endif %}
