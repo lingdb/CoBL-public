@@ -3098,7 +3098,7 @@ def viewProblematicRomanised(request):
     meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
     lexemes = Lexeme.objects.filter(
         language__in=languageList.languages.all(),
-        meaning__in=meaningList.meanings.all())
+        meaning__in=meaningList.meanings.all()).select_related('meaning')
     allowedSymbols = RomanisedSymbol.objects.all()
     okSet = set([allowed.symbol for allowed in allowedSymbols])
 
