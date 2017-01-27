@@ -1206,6 +1206,7 @@ def submit_citations_inline_form(request, model):
 
 
 @login_required
+@csrf_protect
 @logExceptions
 def citation_form_event(request):
     model_dict = {'CognateClass': CognateClass,
@@ -1222,9 +1223,11 @@ def citation_form_event(request):
 @csrf_protect
 @logExceptions
 def view_meaning(request, meaning, language_list, lexeme_id=None):
-    cit_form_response = citation_form_event(request)
-    if cit_form_response:
-        return cit_form_response
+    if request.user.is_authenticated:
+        cit_form_response = citation_form_event(request)
+        if cit_form_response:
+            return cit_form_response
+
     setDefaultMeaning(request, meaning)
     if language_list is None:
         language_list = getDefaultLanguagelist(request)
@@ -1339,9 +1342,10 @@ def view_meaning(request, meaning, language_list, lexeme_id=None):
 @csrf_protect
 @logExceptions
 def view_cognateclasses(request, meaning):
-    cit_form_response = citation_form_event(request)
-    if cit_form_response:
-        return cit_form_response
+    if request.user.is_authenticated:
+        cit_form_response = citation_form_event(request)
+        if cit_form_response:
+            return cit_form_response
     setDefaultMeaning(request, meaning)
     # Handle POST of AddCogClassTableForm:
     if request.method == 'POST':
