@@ -3,15 +3,12 @@
 The CoBL project builds on top of the [LexDB](https://bitbucket.org/evoling/lexdb)
 that is used to serve [http://ielex.mpi.nl/](http://ielex.mpi.nl/).
 
-Deployment is currently realized with [docker](https://www.docker.com/)
-as documented in [container](https://github.com/lingdb/container) repository.
-
 ## Installation
 
 To install CoBL yourself, the following dependencies must be provided:
 * A running instance of [PostgreSQL](http://www.postgresql.org/) complete with a database to use.
-* Python 2.7 and pip to install the `REQUIREMENTS`.
-* [Bower](http://bower.io/) to install JavaScript dependencies and bootstrap.
+* Python 3 and pip to install the `REQUIREMENTS`.
+* [npm](https://www.npmjs.com/) and [Bower](http://bower.io/) to install JavaScript dependencies and bootstrap.
 * [Grunt](http://gruntjs.com/) to minify JavaScript.
   * To install Grunt you'll likely need to have [node](https://nodejs.org/en/) and [npm](https://www.npmjs.com/).
 * [git](https://git-scm.com/) to clone the repo.
@@ -109,3 +106,27 @@ grunt
 ```
 You can also instruct `grunt` to continuously watch files for changes
 using `grunt watch` or to only use `jshint` using `grunt jshint`.
+
+### Server deployment
+
+1. This repo was checked out to /srv/cobl
+2. A `cobl` user was created using these commands:
+```bash
+useradd -M cobl  # -M: no homedirectory created
+usermod -L cobl  # -L: no login allowed for user
+chown -R cobl.cobl /srv/cobl
+```
+By editing `/etc/passwd` home of `cobl` was set to `/srv/cobl`.
+3. `postgresql` was installed, and a user `cobl` owning a database `cobl` was created.
+4. A virtualenv was created and cobl was setup using these commands:
+```shell
+su cobl
+pwd  # should be /srv/cobl
+virtualenv -p `which python3` venv  # Creates virtualenv for the project
+./venv/bin/pip install --upgrade pip
+./venv/bin/pip install -r REQUIREMENTS
+cd static
+npm install
+nodejs ./node_modules/bower/bin/bower install
+nodejs ./node_modules/grunt-cli/bin/grunt
+```

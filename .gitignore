@@ -9,3 +9,9 @@ ielex/local_settings.py
 unittest.log
 htmlcov
 _DB/
+.cache/
+.config/
+.npm/
+.vim/
+.viminfo
+venv/
