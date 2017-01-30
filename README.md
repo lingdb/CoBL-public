@@ -130,3 +130,7 @@ npm install
 nodejs ./node_modules/bower/bin/bower install
 nodejs ./node_modules/grunt-cli/bin/grunt
 ```
+5. Nginx is installed and configured using the config in `deployment/nginx/sites-available/cobl`.
+6. The unit files found in `deployment` are installed using `deployment/placeUnitFiles.sh`.
+7. Updates to this setup are expected to be processed using the `deployment/update.sh` script,
+which should be executed as user `cobl`.
