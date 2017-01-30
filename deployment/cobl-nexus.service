@@ -1,0 +1,11 @@
+[Unit]
+Description=Executing computeNexusExport for cobl.
+Requires=postgresql.service
+
+[Service]
+User=cobl
+Group=cobl
+ExecStart=/bin/bash /srv/cobl/deployment/computeNexusExport.sh
+
+[Install]
+WantedBy=multi-user.target
