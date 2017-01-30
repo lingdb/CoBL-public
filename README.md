@@ -111,6 +111,7 @@ using `grunt watch` or to only use `jshint` using `grunt jshint`.
 
 1. This repo was checked out to /srv/cobl
 2. A `cobl` user was created using these commands:
+
    ```bash
    useradd -M cobl  # -M: no homedirectory created
    usermod -L cobl  # -L: no login allowed for user
@@ -119,6 +120,7 @@ using `grunt watch` or to only use `jshint` using `grunt jshint`.
    By editing `/etc/passwd` home of `cobl` was set to `/srv/cobl`.
 3. `postgresql` was installed, and a user `cobl` owning a database `cobl` was created.
 4. A virtualenv was created and cobl was setup using these commands:
+
    ```shell
    su cobl
    pwd  # should be /srv/cobl
