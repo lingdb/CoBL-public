@@ -1,0 +1,11 @@
+[Unit]
+Description=Running the gunicorn portion of cobl.
+Requires=postgresql.service
+
+[Service]
+User=cobl
+Group=cobl
+ExecStart=/bin/bash /srv/cobl/deployment/entrypoint.sh
+
+[Install]
+WantedBy=multi-user.target
