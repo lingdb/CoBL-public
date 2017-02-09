@@ -286,8 +286,6 @@ def get_prev_and_next_meanings(request, current_meaning, meaning_list=None):
         current_idx = ids.index(current_meaning.id)
     except ValueError:
         current_idx = 0
-    if meanings:
-        return (current_meaning, current_meaning)
     try:
         prev_meaning = meanings[current_idx - 1]
     except IndexError:
