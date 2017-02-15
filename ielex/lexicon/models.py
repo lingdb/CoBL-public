@@ -1621,7 +1621,7 @@ class LanguageList(models.Model):
 
     def append(self, language):
         """Add another language to the end of a LanguageList ordering"""
-        N = self.languagelistorder_set.aggregate(Max("order")).values()[0]
+        N = list(self.languagelistorder_set.aggregate(Max("order")).values())[0]
         try:
             N += 1
         except TypeError:
@@ -1716,7 +1716,7 @@ class MeaningList(models.Model):
 
     def append(self, meaning):
         """Add another meaning to the end of a MeaningList ordering"""
-        N = self.meaninglistorder_set.aggregate(Max("order")).values()[0]
+        N = list(self.meaninglistorder_set.aggregate(Max("order")).values())[0]
         try:
             N += 1
         except TypeError:
