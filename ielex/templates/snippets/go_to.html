@@ -8,8 +8,9 @@
     </a>
   </li>
 {% endif %}
+<li><a>&nbsp;||&nbsp;</a></li>
 <li class="navbar-text">
-  Rfc.:
+  <i>Rfc.:</i>
 </li>
 <li>
   <a href="/clades/"
@@ -36,6 +37,15 @@
     <span class="glyphicon glyphicon-search"></span>
   </a>
 </li>
+<li><a>&nbsp;&nbsp;|&nbsp;&nbsp;</a></li>
+<li>
+  <a href={% url 'view-language-list' current_language_list_name %}
+     title="View list of languages"
+     data-toggle="tooltip"
+     data-placement="bottom">
+    Languages
+  </a>
+</li>
 {% if user.is_authenticated %}
   <li>
     <a href={% url 'view-language-progress' current_language_list_name %}
@@ -54,14 +64,7 @@
     </a>
   </li>
 {% endif %}
-<li>
-  <a href={% url 'view-language-list' current_language_list_name %}
-     title="View list of languages"
-     data-toggle="tooltip"
-     data-placement="bottom">
-    Languages
-  </a>
-</li>
+<li><a>&nbsp;&nbsp;|&nbsp;&nbsp;</a></li>
 <li>
   <a href={% url 'view-wordlist' current_wordlist_name %}
      title="View list of meanings"
@@ -75,6 +78,7 @@
     <a href={% url 'view-domains' %}>View domains</a>
   </li>
 {% endif %}
+<li><a>&nbsp;&nbsp;|&nbsp;&nbsp;</a></li>
 <li>
   <a href={% url 'view-sources' %}
      title="View list of sources"
@@ -83,4 +87,5 @@
     Sources
   </a>
 </li>
+<li><a>&nbsp;&nbsp;|&nbsp;&nbsp;</a></li>
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
