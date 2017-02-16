@@ -2999,9 +2999,9 @@ def view_cladecognatesearch(request):
             lexeme__meaning__in=meaningList.meanings.all()
         ).values_list('id', flat=True)
         if cognateClassIds:
-            cognateClassIds = set(newIds)
-        else:
             cognateClassIds &= set(newIds)
+        else:
+            cognateClassIds = set(newIds)
 
     # Removing unwanted entries from cognateClassIds:
     if currentClades:
