@@ -138,7 +138,7 @@ class LexDBManagementCommand(BaseCommand):
         self.execute(*args, **options.__dict__)
 
 
-def fetchMarkdown(fileName):
+def fetchMarkdown(fileName, admin_notes=''):
     """
     @param fileName :: str
     This function fetches some markdown content from GitHub if possible.
@@ -153,10 +153,10 @@ def fetchMarkdown(fileName):
     except:
         pass
     return '\n'.join([
-        '## Error', '',
+        'Wiki-site is still missing', '--',
         'Sorry, we could not deliver the requested content.',
         'Maybe you have more luck consulting the ' +
-        '[wiki](https://github.com/lingdb/CoBL-public/wiki).'
+        '[wiki](https://github.com/lingdb/CoBL-public/wiki).  ' + admin_notes
     ])
 
 

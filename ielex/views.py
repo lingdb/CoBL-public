@@ -953,11 +953,31 @@ def overview_language(request, language):
         return HttpResponseRedirect(reverse("language-overview",
                                             args=[language.ascii_name]))
 
+    fileName = "Language-Chapter:-%s.md" % (language.ascii_name)
+    admin_notes = ''
+    if request.user.is_authenticated:
+        admin_notes = """
+  _For contributors copy the beneath mentioned first template text and follow the link to [create a new page](https://github.com/lingdb/CoBL/wiki/%s)_
+```
+#### Notes on Orthography
+To be written soon.
+
+#### Notes on Transliteration (if appropriate)
+To be written soon.
+
+#### Problematic Meanings
+To be written soon.
+```
+  _and follow this link to [create a new public page](https://github.com/lingdb/CoBL-public/wiki/Language-Chapter:-%s) with the following template:_
+
+```
+Content comming soon. This article is currently worked on in [private](https://github.com/lingdb/CoBL/wiki/Language-Chapter:-%s).
+```
+    """ % (fileName, fileName, fileName)
+
     return render_template(
         request, "language_overview.html",
-        {"language": language,
-         "content": fetchMarkdown(
-             "Language-Chapter:-%s.md" % (language.ascii_name))})
+        {"language": language, "content": fetchMarkdown(fileName, admin_notes)})
 
 
 @login_required
