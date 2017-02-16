@@ -899,7 +899,7 @@ def language_add_new(request, language_list):
                     language_list.append(language)
                 except IntegrityError:
                     pass  # automatically inserted into LanguageList.DEFAULT
-            return HttpResponseRedirect(reverse("language-report",
+            return HttpResponseRedirect(reverse("language-edit",
                                                 args=[language.ascii_name]))
     else:  # first visit
         form = AddLanguageForm()
