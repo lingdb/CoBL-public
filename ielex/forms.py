@@ -72,6 +72,12 @@ class ChooseLanguageField(forms.ModelChoiceField):
         return obj.utf8_name or obj.ascii_name
 
 
+class ChooseMeaningField(forms.ModelChoiceField):
+
+    def label_from_instance(self, obj):
+        return obj.gloss
+
+
 class ChooseLanguagesField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
@@ -97,6 +103,14 @@ class ChooseIncludedLanguagesField(ChooseLanguageField):
 
 
 class ChooseExcludedLanguagesField(ChooseLanguageField):
+    pass
+
+
+class ChooseIncludedMeaningsField(ChooseMeaningField):
+    pass
+
+
+class ChooseExcludedMeaningsField(ChooseMeaningField):
     pass
 
 
@@ -196,6 +210,20 @@ class AddLanguageForm(forms.ModelForm):
         }
 
 
+class AddMeaningListForm(forms.ModelForm):
+    help_text = "The new meaning list will start as a clone of this one"
+    meaning_list = ChooseMeaningListField(
+        queryset=MeaningList.objects.all(),
+        empty_label='new empty list',
+        required=False,
+        widget=forms.Select(),
+        help_text=help_text)
+
+    class Meta:
+        model = MeaningList
+        exclude = ["meanings"]
+
+
 class EditMeaningForm(forms.ModelForm):
 
     def clean_gloss(self):
@@ -247,6 +275,16 @@ class EditLanguageListForm(forms.ModelForm):
         exclude = ["languages"]
 
 
+class EditMeaningListForm(forms.ModelForm):
+
+    def clean_name(self):
+        return clean_value_for_url(self, "name")
+
+    class Meta:
+        model = MeaningList
+        exclude = ["meanings"]
+
+
 class EditLanguageListMembersForm(forms.Form):
     included_languages = ChooseIncludedLanguagesField(
         required=False, empty_label=None,
@@ -256,6 +294,19 @@ class EditLanguageListMembersForm(forms.Form):
     excluded_languages = ChooseExcludedLanguagesField(
         required=False, empty_label=None,
         queryset=Language.objects.all(),
+        widget=forms.Select(
+            attrs={"size": 20, "onchange": "this.form.submit()"}))
+
+
+class EditMeaningListMembersForm(forms.Form):
+    included_meanings = ChooseIncludedMeaningsField(
+        required=False, empty_label=None,
+        queryset=Meaning.objects.none(),
+        widget=forms.Select(
+            attrs={"size": 20, "onchange": "this.form.submit()"}))
+    excluded_meanings = ChooseExcludedMeaningsField(
+        required=False, empty_label=None,
+        queryset=Meaning.objects.all(),
         widget=forms.Select(
             attrs={"size": 20, "onchange": "this.form.submit()"}))
 

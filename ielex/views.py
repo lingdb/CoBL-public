@@ -33,6 +33,7 @@ from ielex.forms import AddCitationForm, \
     AddCogClassTableForm, \
     AddLanguageListForm, \
     AddLanguageListTableForm, \
+    AddMeaningListForm, \
     AddLexemeForm, \
     AuthorCreationForm, \
     AuthorDeletionForm, \
@@ -51,6 +52,7 @@ from ielex.forms import AddCitationForm, \
     EditLexemeForm, \
     EditMeaningForm, \
     EditMeaningListForm, \
+    EditMeaningListMembersForm, \
     EditSourceForm, \
     LanguageListProgressForm, \
     EditSingleLanguageForm, \
@@ -347,6 +349,26 @@ def get_canonical_language_list(language_list=None, request=None):
     return language_list
 
 
+@logExceptions
+def get_canonical_meaning_list(meaning_list=None, request=None):
+    """Returns a MeaningList object"""
+    try:
+        if meaning_list is None:
+            meaning_list = MeaningList.objects.get(name=MeaningList.DEFAULT)
+        elif meaning_list.isdigit():
+            meaning_list = MeaningList.objects.get(id=meaning_list)
+        else:
+            meaning_list = MeaningList.objects.get(name=meaning_list)
+    except MeaningList.DoesNotExist:
+        if request:
+            messages.info(
+                request,
+                "There is no meaning list matching"
+                " '%s' in the database" % meaning_list)
+        raise Http404
+    return meaning_list
+
+
 @csrf_protect
 @logExceptions
 def view_language_list(request, language_list=None):
@@ -625,6 +647,43 @@ def reorder_language_list(request, language_list):
 
 
 @logExceptions
+def reorder_meaning_list(request, meaning_list):
+    meaning_id = getDefaultLanguageId(request)
+    meaning_list = MeaningList.objects.get(name=meaning_list)
+    meanings = meaning_list.meanings.all().order_by("meaninglistorder")
+    ReorderForm = make_reorder_meaninglist_form(meanings)
+    if request.method == "POST":
+        form = ReorderForm(request.POST, initial={"meaning": meaning_id})
+        if form.is_valid():
+            meaning_id = int(form.cleaned_data["meaning"])
+            setDefaultMeaningId(request, meaning_id)
+            meaning = Meaning.objects.get(id=meaning_id)
+            if form.data["submit"] == "Finish":
+                meaning_list.sequentialize()
+                return HttpResponseRedirect(
+                    reverse("view-wordlist", args=[meaning_list.name]))
+            else:
+                if form.data["submit"] == "Move up":
+                    move_meaning(meaning, meaning_list, -1)
+                elif form.data["submit"] == "Move down":
+                    move_meaning(meaning, meaning_list, 1)
+                else:
+                    assert False, "This shouldn't be able to happen"
+                return HttpResponseRedirect(
+                    reverse("reorder-meaning-list",
+                            args=[meaning_list.name]))
+        else:  # pressed Finish without submitting changes
+            return HttpResponseRedirect(
+                reverse("view-wordlist",
+                        args=[meaning_list.name]))
+    else:  # first visit
+        form = ReorderForm(initial={"meaning": meaning_id})
+    return render_template(
+        request, "reorder_meaning_list.html",
+        {"meaning_list": meaning_list, "form": form})
+
+
+@logExceptions
 def move_language(language, language_list, direction):
     assert direction in (-1, 1)
     languages = list(language_list.languages.order_by("languagelistorder"))
@@ -638,6 +697,22 @@ def move_language(language, language_list, direction):
             language_list.swap(language, neighbour)
         except IndexError:
             language_list.insert(0, language)
+
+
+@logExceptions
+def move_meaning(meaning, meaning_list, direction):
+    assert direction in (-1, 1)
+    meanings = list(meaning_list.meanings.order_by("meaninglistorder"))
+    index = meanings.index(meaning)
+    if index == 0 and direction == -1:
+        meaning_list.remove(meaning)
+        meaning_list.append(meaning)
+    else:
+        try:
+            neighbour = meanings[index + direction]
+            meaning_list.swap(meaning, neighbour)
+        except IndexError:
+            meaning_list.insert(0, meaning)
 
 
 @csrf_protect
@@ -1106,6 +1181,88 @@ def move_meaning(meaning, wordlist, direction):
             wordlist.swap(meaning, neighbour)
         except IndexError:
             wordlist.insert(0, meaning)
+
+
+@login_required
+@logExceptions
+def add_meaning_list(request):
+    """Start a new meaning list by cloning an old one if desired"""
+    if request.method == "POST":
+        form = AddMeaningListForm(request.POST)
+        if "cancel" in form.data:  # has to be tested before data is cleaned
+            return HttpResponseRedirect(reverse("view-all-meanings"))
+        if form.is_valid():
+            form.save()
+            new_list = MeaningList.objects.get(name=form.cleaned_data["name"])
+            """check if user wants a clone"""
+            try:
+                other_list = MeaningList.objects.get(
+                    name=form.cleaned_data["meaning_list"])
+                otherMeanings = other_list.meanings.all().order_by(
+                    "meaninglistorder")
+                for m in otherMeanings:
+                    new_list.append(m)
+            except ObjectDoesNotExist:
+                """create only a new empty meaning list"""
+                pass
+            return HttpResponseRedirect(reverse(
+                "edit-meaning-list", args=[form.cleaned_data["name"]]))
+    else:
+        form = AddMeaningListForm()
+    return render_template(request, "add_meaning_list.html",
+                           {"form": form})
+
+
+@login_required
+@logExceptions
+def edit_meaning_list(request, meaning_list=None):
+    meaning_list = get_canonical_meaning_list(
+        meaning_list, request)  # a meaning list object
+    meaning_list_all = MeaningList.objects.get(name=MeaningList.ALL)
+    included_meanings = meaning_list.meanings.all().order_by(
+        "meaninglistorder")
+    excluded_meanings = meaning_list_all.meanings.exclude(
+        id__in=meaning_list.meanings.values_list(
+            "id", flat=True)).order_by("meaninglistorder")
+    if request.method == "POST":
+        name_form = EditMeaningListForm(request.POST, instance=meaning_list)
+        if "cancel" in name_form.data:
+            # has to be tested before data is cleaned
+            return HttpResponseRedirect(
+                reverse('view-wordlist', args=[meaning_list.name]))
+        list_form = EditMeaningListMembersForm(request.POST)
+        list_form.fields["included_meanings"].queryset = included_meanings
+        list_form.fields["excluded_meanings"].queryset = excluded_meanings
+        if name_form.is_valid() and list_form.is_valid():
+            changed_members = False
+            exclude = list_form.cleaned_data["excluded_meanings"]
+            include = list_form.cleaned_data["included_meanings"]
+            if include:
+                meaning_list.remove(include)
+                changed_members = True
+            if exclude:
+                meaning_list.append(exclude)
+                changed_members = True
+            if changed_members:
+                meaning_list.save()
+                name_form.save()
+                return HttpResponseRedirect(
+                    reverse('edit-meaning-list', args=[meaning_list.name]))
+            # changed name
+            name_form.save()
+            return HttpResponseRedirect(
+                reverse('view-wordlist',
+                        args=[name_form.cleaned_data["name"]]))
+    else:
+        name_form = EditMeaningListForm(instance=meaning_list)
+        list_form = EditMeaningListMembersForm()
+        list_form.fields["included_meanings"].queryset = included_meanings
+        list_form.fields["excluded_meanings"].queryset = excluded_meanings
+    return render_template(request, "edit_meaning_list.html",
+                           {"name_form": name_form,
+                            "list_form": list_form,
+                            "n_included": included_meanings.count(),
+                            "n_excluded": excluded_meanings.count()})
 
 
 @login_required

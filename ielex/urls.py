@@ -8,6 +8,7 @@ from django.views.generic import DetailView, \
         ListView, RedirectView
 from django.views.static import serve as serveStatic
 from ielex.views import add_language_list, \
+                        add_meaning_list, \
                         changeDefaults, \
                         cognate_report, \
                         delete_language, \
@@ -15,6 +16,7 @@ from ielex.views import add_language_list, \
                         delete_meaning, \
                         edit_language, \
                         edit_language_list, \
+                        edit_meaning_list, \
                         edit_meaning, \
                         edit_wordlist, \
                         overview_language, \
@@ -26,6 +28,7 @@ from ielex.views import add_language_list, \
                         meaning_add_new, \
                         redirect_lexeme_citation, \
                         reorder_language_list, \
+                        reorder_meaning_list, \
                         reorder_wordlist, \
                         revert_version, \
                         source_edit, \
@@ -91,6 +94,7 @@ R = {
     "DOMAIN": r"(?P<domain>[{0}]+)".format(url_char),
     "LANGUAGE": r"(?P<language>[{0}]+)".format(url_char),
     "LANGUAGELIST": r"(?P<language_list>[{0}]+)".format(url_char),
+    "MEANINGLIST": r"(?P<meaning_list>[{0}]+)".format(url_char),
     "LEXEME_ID": r"(?P<lexeme_id>\d+)",
     "MEANING_ID": r"(?P<meaning_id>\d+)",
     "MEANING": r"(?P<meaning>[{0}]+)".format(url_char),
@@ -173,6 +177,13 @@ urlpatterns = [
     url(r'^cladecognatesearch/$' % R, view_cladecognatesearch),
 
     # Meanings (aka wordlist)
+    url(r'^meaninglist/add-new/$', add_meaning_list,
+        name="add-meaning-list"),
+    url(r'^meaninglist/%(MEANINGLIST)s/edit/$' % R, edit_meaning_list,
+        name="edit-meaning-list"),
+    url(r'^meaninglist/%(MEANINGLIST)s/reorder/$' % R, reorder_meaning_list,
+        name="reorder-meaning-list"),
+
     url(r'^wordlists/$', view_wordlists, name="view-wordlists"),
     url(r'^wordlist/%(WORDLIST)s/$' % R, view_wordlist, name="view-wordlist"),
     url(r'^wordlist/%(WORDLIST)s/edit/$' % R, edit_wordlist,
