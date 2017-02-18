@@ -1205,6 +1205,7 @@ def add_meaning_list(request):
             except ObjectDoesNotExist:
                 """create only a new empty meaning list"""
                 pass
+            setDefaultWordlist(request, form.cleaned_data["name"])
             return HttpResponseRedirect(reverse(
                 "edit-meaning-list", args=[form.cleaned_data["name"]]))
     else:
@@ -1230,6 +1231,33 @@ def edit_meaning_list(request, meaning_list=None):
             # has to be tested before data is cleaned
             return HttpResponseRedirect(
                 reverse('view-wordlist', args=[meaning_list.name]))
+        if "delete" in name_form.data:
+            mname = meaning_list.name
+            try:
+                ml = MeaningListOrder.objects.filter(
+                    meaning_list_id=meaning_list.id)
+                ml.delete()
+            except:
+                setDefaultWordlist(request, MeaningList.DEFAULT)
+                messages.error(request, 'Error while deleting "' + mname +
+                    '": meanings in meaninglistorder could not be deleted!')
+                return HttpResponseRedirect(
+                    reverse('view-frontpage'))
+            try:
+                ml = MeaningList.objects.filter(
+                    name=mname)
+                ml.delete()
+            except:
+                setDefaultWordlist(request, MeaningList.DEFAULT)
+                messages.error(request, 'Error while deleting "'+ mname +
+                    '": meaninglist "' + mname + '" does not exist!')
+                return HttpResponseRedirect(
+                    reverse('view-frontpage'))
+            setDefaultWordlist(request, MeaningList.DEFAULT)
+            messages.success(request, 'The meaning list "' + mname +
+                '" was successfully deleted.')
+            return HttpResponseRedirect(
+                reverse('edit-meaning-list', args=[MeaningList.DEFAULT]))
         list_form = EditMeaningListMembersForm(request.POST)
         list_form.fields["included_meanings"].queryset = included_meanings
         list_form.fields["excluded_meanings"].queryset = excluded_meanings

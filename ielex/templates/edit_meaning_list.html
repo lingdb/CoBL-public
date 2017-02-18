@@ -18,6 +18,12 @@
         </td>
       </tr>
     </table>
+    <br /><br /><br />
+    <div>
+        <label>Delete the meaning list {{ defaultWordlist }}</label><br />
+        <input class="btn" style="background-color:red;color:white" type="submit" name="delete" value="Delete" onclick="return confirm('Are you sure to delete {{ defaultWordlist }}?')">
+    </div>
+    <br /><br />
     </div>
     <div class="pull-left">
     <h3>Manage meanings of the meaning list<br /><i><small>by clicking on items &mdash; <font color='red'>changes will be stored immediately</font></small></i></h3>
