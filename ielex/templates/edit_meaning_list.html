@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Rename/edit meaning list{% endblock %}
+{% block title %}Meaning list {{ defaultWordlist }}{% endblock %}
 
-{% block top %}<h1>Rename/edit meaning list</h1>{% endblock %}
+{% block top %}<h1>Meaning list {{ defaultWordlist }}</h1>{% endblock %}
 
 {% block content %}
   <form action="" method="POST">{% csrf_token %}
-    <table>
+    <div class="pull-left" style="margin-right:100px !important">
+    <h3>Edit meta data of the meaning list</h3>
+    <table style="margin:10px;">
       {{ name_form.as_table }}
       <tr>
         <td></td>
@@ -16,30 +18,38 @@
         </td>
       </tr>
     </table>
-    <table>
+    </div>
+    <div class="pull-left">
+    <h3>Manage meanings of the meaning list<br /><i><small>by clicking on items &mdash; <font color='red'>changes will be stored immediately</font></small></i></h3>
+    <table style="margin:10px;">
       <tr>
         <th>Excluded ({{ n_excluded }})</th>
+        <th></th>
         <th>Included ({{ n_included }})</th>
       </tr>
       <tr>
         <td>{{ list_form.excluded_meanings }}</td>
+        <td><span class="glyphicon glyphicon-resize-horizontal"></td>
         <td>{{ list_form.included_meanings }}</td>
+        <td style="vertical-align:bottom;padding:0px 50px;"><input type="submit" name="cancel" value="Finish"></td>
       </tr>
-      <tr>
+      <!-- <tr>
         <td><input type="submit" name="cancel" value="Cancel"></td>
         <td>
-          <!-- <a class="button" href="{% url 'reorder-meaning-list' current_wordlist_name %}">
+          <a class="button" href="{% url 'reorder-meaning-list' current_wordlist_name %}">
             <input type="button" name="sort" value="Change Sort Order">
-          </a> -->
+          </a>
         </td>
-      </tr>
-      <tr>
+      </tr> -->
+      <!-- <tr>
         <td>
           <input type="submit" name="cancel" value="Finish">
         </td>
-      </tr>
+      </tr> -->
     </table>
+    </div>
   </form>
+  <br />
 {% endblock %}
 
 {% block controls %}
