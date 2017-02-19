@@ -179,6 +179,8 @@ urlpatterns = [
     # Meanings (aka wordlist)
     url(r'^meaninglist/add-new/$', add_meaning_list,
         name="add-meaning-list"),
+    url(r'^meaninglist/edit/$', edit_meaning_list,
+        name="edit-meaning-list"),
     url(r'^meaninglist/%(MEANINGLIST)s/edit/$' % R, edit_meaning_list,
         name="edit-meaning-list"),
     url(r'^meaninglist/%(MEANINGLIST)s/reorder/$' % R, reorder_meaning_list,

@@ -1217,6 +1217,8 @@ def add_meaning_list(request):
 @login_required
 @logExceptions
 def edit_meaning_list(request, meaning_list=None):
+    if meaning_list == None:
+        meaning_list = getDefaultWordlist(request)
     meaning_list = get_canonical_meaning_list(
         meaning_list, request)  # a meaning list object
     meaning_list_all = MeaningList.objects.get(name=MeaningList.ALL)

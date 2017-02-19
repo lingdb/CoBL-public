@@ -211,7 +211,7 @@ class AddLanguageForm(forms.ModelForm):
 
 
 class AddMeaningListForm(forms.ModelForm):
-    help_text = "The new meaning list will start as a clone of this one"
+    help_text = "<i><small>The new meaning list will start as a clone of this one</small></i>"
     meaning_list = ChooseMeaningListField(
         queryset=MeaningList.objects.all(),
         empty_label='new empty list',

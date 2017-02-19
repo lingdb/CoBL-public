@@ -8,12 +8,19 @@
 
 {% block content %}
   <form action="" method="POST">{% csrf_token %}
-    <table>
+    <table style="margin:10px;">
       {{ form.as_table }}
+      <tr><td>&nbsp;</td></tr>
+      <tr>
+        <td><span style="margin-right:100px">&nbsp;</td>
+        <td>
+          <input type="submit" name="submit" value="Submit">
+          <input type="submit" name="cancel" value="Cancel">
+        </td>
+      </tr>
     </table>
-    <input type="submit" name="submit" value="Submit">
-    <input type="submit" name="cancel" value="Cancel">
   </form>
+  <br />
 {% endblock %}
 
 {% block controls %}
