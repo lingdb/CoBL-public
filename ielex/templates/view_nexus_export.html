@@ -247,7 +247,7 @@
                 <td>
                   <input type="checkbox" disabled="disabled" class="form-control" {% if export.excludeMarkedLanguages %}checked="checked"{% endif %}>
                 </td>
-                <td>{{ export.lastTouched }}</td>
+                <td>{{ export.formattedDate }}</td>
                 <td>{{ export.lastEditedBy }}</td>
                 <td>
                   <form action="/nexus/export/{{ export.id }}/" method="post">

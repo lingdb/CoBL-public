@@ -2885,17 +2885,19 @@ def view_nexus_export(request, exportId=None):
 
     def lCount(languageListName):
         return LanguageListOrder.objects.filter(
-            language_list__name=languageListName).count()
+            language_list__name=languageListName, language__notInExport=False).count()
 
     def mCount(meaningListName):
         return MeaningListOrder.objects.filter(
-            meaning_list__name=meaningListName).count()
+            meaning_list__name=meaningListName, meaning__exclude=False).count()
 
     languageListCounts = {l: lCount(l) for l in languageListNames}
     meaningListCounts = {m: mCount(m) for m in meaningListNames}
+
     for e in exports:
         e.languageListCount = languageListCounts[e.language_list_name]
         e.meaningListCount = meaningListCounts[e.meaning_list_name]
+        e.formattedDate = e.lastTouched.strftime("%Y/%m/%d %H:%M:%S")
 
     return render_template(
         request, "view_nexus_export.html",
