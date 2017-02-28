@@ -552,11 +552,11 @@ def dump_cognate_data(
 
         lines.append("\t".join([
             cj.lexeme.meaning.gloss + "-" + cj.cognate_class.alias,
-            cj.cognate_class.id,
+            str(cj.cognate_class.id),
             cj.lexeme.language.ascii_name,
             str(cj.lexeme.phon_form.strip() or
                 cj.lexeme.romanised.strip()),
-            cj.lexeme.id,
+            str(cj.lexeme.id),
             loanword_flag]))
     lexemes = Lexeme.objects.filter(
         language__in=languages,
@@ -579,7 +579,7 @@ def dump_cognate_data(
             lexeme.language.ascii_name,
             str(lexeme.phon_form.strip() or
                 lexeme.romanised.strip()),
-            lexeme.id,
+            str(lexeme.id),
             loanword_flag]))
 
     return "\n".join(lines) + "\n"
