@@ -16,6 +16,7 @@ from ielex.lexicon.models import CognateClass, \
     Lexeme, \
     MeaningList, \
     NexusExport, \
+    NEXUS_DIALECT_CHOICES, \
     Clade
 from ielex.forms import EditCognateClassCitationForm
 from ielex.shortcuts import minifiedJs
@@ -192,7 +193,7 @@ def write_nexus(language_list_name,       # str
      computeCalibrations :: str}
     '''
     start_time = time.time()
-    dialect_full_name = dict(ChooseNexusOutputForm.DIALECT)[dialect]
+    dialect_full_name = dict(NEXUS_DIALECT_CHOICES)[dialect]
 
     # get data together
     language_list = LanguageList.objects.get(name=language_list_name)
@@ -465,9 +466,9 @@ def construct_matrix(languages,                # [Language]
         # gloss = cognate_class_dict[cc]
         if isinstance(cc, int):
             return "%s_cognate_%s" % (gloss, cc)
-        else:
-            assert isinstance(cc, tuple)
+        if isinstance(cc, (list, tuple)):
             return "%s_lexeme_%s" % (gloss, cc[1])
+        return "%s_ERROR_%s" % (gloss, str(cc))
 
     # make matrix
     matrix, cognate_class_names, assumptions = list(), list(), list()
@@ -485,18 +486,20 @@ def construct_matrix(languages,                # [Language]
                     col_num += 1
                     start_range = col_num
                     cognate_class_names.append("%s_group" % meaning.gloss)
-            for cc in sorted(data[meaning.gloss],
-                             key=lambda x: (str(x),) if type(x) == int else x):
-                if ascertainment_marker and make_header:
-                    col_num += 1
-                    cognate_class_names.append(
-                        cognate_class_name_formatter(cc, meaning.gloss))
-                if language in data[meaning.gloss][cc]:
-                    row.append("1")
-                elif language in languages_missing_meaning[meaning.gloss]:
-                    row.append("?")
-                else:
-                    row.append("0")
+
+            if meaning.gloss in data:
+                for cc in sorted(data[meaning.gloss],
+                                 key=lambda x: (str(x),) if type(x) == int else x):
+                    if ascertainment_marker and make_header:
+                        col_num += 1
+                        cognate_class_names.append(
+                            cognate_class_name_formatter(cc, meaning.gloss))
+                    if language in data[meaning.gloss][cc]:
+                        row.append("1")
+                    elif language in languages_missing_meaning[meaning.gloss]:
+                        row.append("?")
+                    else:
+                        row.append("0")
             if ascertainment_marker and make_header:
                 end_range = col_num
                 assumptions.append(
