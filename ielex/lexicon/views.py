@@ -4,6 +4,7 @@ import re
 import sys
 import time
 from collections import defaultdict
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -118,6 +119,7 @@ class NexusExportView(TemplateView):
             export.bump(request)
             export.save()
             return HttpResponseRedirect('/nexus/export/')
+        messages.error(request,"Please provide a short description.")
         return self.render_to_response({"form": form})
 
     def fileNameForForm(self, form):
