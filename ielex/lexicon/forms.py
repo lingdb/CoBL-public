@@ -90,7 +90,7 @@ class ChooseNexusOutputForm(ChooseOutputBaseForm):
                    "excludeLoanword",
                    "excludePllLoan",
                    "includePllLoan",
-                   "descriptio n"]
+                   "description"]
 
     def clean(self):
         # Making sure excludePllLoan and includePllLoan are never both True:
