@@ -508,6 +508,7 @@ class LanguageDistributionRowForm(AbstractTimestampedForm,
     sortRankInClade = IntegerField(
         'Sort rank in clade', validators=[InputRequired()])
     historical = BooleanField('Historical', validators=[InputRequired()])
+    notInExport = BooleanField('Not in Export', validators=[InputRequired()])
     utf8_name = StringField('Display name', validators=[InputRequired()])
     earliestTimeDepthBound = IntegerField('Earliest Time-Depth Bound',
                                           validators=[InputRequired()])
