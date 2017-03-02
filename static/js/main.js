@@ -2,6 +2,7 @@
   "use strict";
   /* global requirejs */
   requirejs.config({
+    waitSeconds: 0,
     baseUrl: '/ielex/static/',
     paths: {
       'jquery': 'bower_components/jquery/dist/jquery.min',
@@ -29,14 +30,14 @@
       'jquery': {exports: '$'},
       'markdown-it': {deps: ['jquery']},
       'awesomplete': {exports: 'Awesomplete'},
-      'bootbox': {deps: ['bootstrap']},
+      'bootbox': {deps: ['jquery', 'bootstrap']},
       'intercom': {exports: 'intercom'},
       //Stiched together by djanoAutocompleteInclusion:
       'dal-init1': {deps: ['jquery'], exports: 'django'},
-      'dal-init2': {deps: ['dal-init1'], exports: 'yl'},
+      'dal-init2': {deps: ['jquery', 'dal-init1'], exports: 'yl'},
       'dal-forward': {deps: ['jquery'], exports: 'get_forwards'},
-      'dal-select2': {deps: ['dal-init2', 'dal-forward', 'select2']},
-      'dal-init': {deps: ['dal-init2', 'dal-forward', 'dal-select2']},
+      'dal-select2': {deps: ['jquery', 'dal-init2', 'dal-forward', 'select2']},
+      'dal-init': {deps: ['jquery', 'dal-init2', 'dal-forward', 'dal-select2']},
       'select2': {deps: ['jquery']},
       'django-dynamic-formset': {deps: ['jquery']}
     }
