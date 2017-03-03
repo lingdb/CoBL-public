@@ -4,7 +4,7 @@
 {% load wtforms %}
 
 {% block title %}
-  Language Branches
+  Clades Rfc
 {% endblock %}
 
 {% block top %}
@@ -30,7 +30,7 @@
           {% csrf_token %}
       {% endif %}
       <div class="fixedContainer">
-        <h3 class="inline">Clades:</h3>
+        <h2 class="inline">Clades Reference</h2>
         {% if user.is_authenticated and user.is_staff %}
           <div class="form-group pull-right">
             <a href="./?plot"

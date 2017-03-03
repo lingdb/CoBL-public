@@ -98,8 +98,8 @@
               <th style="width: 45px;">
                 Cog.<br>IDs
               </th>
-              {# cognateclassview_title.html #}
-              <th></th>
+              <!-- {# cognateclassview_title.html #}
+              <th></th> -->
               {# cognateclasses_title.html #}
               <th>Cog.<br>Alias</th>
               {# rootform_title.html #}
@@ -118,7 +118,7 @@
                 Root ref. language
               </th>
               {# loanevent_title.html #}
-              <th style="border-right: 2px solid #dddddd;">
+              <th colspan="2" style="border-right: 2px solid #dddddd;">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Loan Evt
@@ -151,13 +151,6 @@
               </td>
               {# copyCognateClass_filter.html #}
               <td></td>
-              {# cognateclassids_filter.html #}
-              <td style="width: 45px;" colspan="2">
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".cognateClassId">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </td>
               {# romanised_filter.html #}
               <td>
                 {% if user.is_authenticated %}
@@ -213,6 +206,13 @@
                        data-selector=".lexemeNumCogCoded" style="width: 1.5em;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".lexemeNumCogCoded">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# cognateclassids_filter.html #}
+              <td style="width: 45px;" colspan="2">
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".cognateClassId">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>

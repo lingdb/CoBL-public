@@ -4,7 +4,7 @@
 {% load wtforms %}
 
 {% block title %}
-  Lg Rfc: Overview [{{ current_language_list_name }}]
+  Lgs Rfc: Dating [{{ current_language_list_name }}]
 {% endblock %}
 
 {% block top %}
@@ -42,7 +42,7 @@
                target="_blank"
                data-toggle="tooltip"
                data-placement="bottom"
-               title="View language distributions.">
+               title="Plot Language Distribution">
                <span class="glyphicon glyphicon-stats"></span>
             </a>
             <a href="{% url 'edit-language-list' current_language_list_name %}"
@@ -71,7 +71,7 @@
             <input type="submit" value="Save" name="langlist_form" class="btn btn-danger">
           </div>
           <h1 class="inline">
-            Lg Rfc: Overview <small>[{{ current_language_list_name }}]</small>
+            Languages Reference: Date Calibrations
           </h1>
           {% endif %}
           {% include "snippets/cladeFilter.html" %}

@@ -5,13 +5,7 @@
 {% load wtforms %}
 
 {% block title %}
-  Meaning list: {{ wordlist }}
-{% endblock %}
-
-{% block top %}
-  {% if not user.is_authenticated %}
-    <h1>Meaning list ‘{{ wordlist }}’</h1>
-  {% endif %}
+  Mgs Rfc: Overview [{{ wordlist }}]
 {% endblock %}
 
 {% block controls %}
@@ -32,22 +26,23 @@
               <a href="." class="btn btn-default">undo</a>
               <input type="submit" value="Save" name="wordlist" class="btn btn-danger">
             </div>
-            <h1 class="inline">
-              Meaning list ‘{{ wordlist }}’
-              <a href="/meanings/add-new/"
-                 class="btn btn-default btn-xs"
-                 data-toggle="tooltip" data-placement="bottom"
-                 title="add meaning">
-                <span class="glyphicon glyphicon-plus-sign"></span>
-              </a>
-            </h1>
           {% endif %}
+          <h1 class="inline">
+            Meanings Reference: Overview
+            <a href="/meanings/add-new/"
+               class="btn btn-default btn-xs"
+               data-toggle="tooltip" data-placement="bottom"
+               title="add meaning">
+              <span class="glyphicon glyphicon-plus-sign"></span>
+            </a>
+          </h1>
           <span class="badge important updateCounts"
                 data-countformat="countVisible initial"
                 data-toggle="tooltip"
                 data-placement="bottom"
                 data-container="body"
-                title="Visible / Total rows">
+                title="Visible / Total rows"
+                style="margin-top:-12px">
             {{ mltf.meanings | length}}
           </span>
         </div>
@@ -55,7 +50,7 @@
                data-floatheadtop="51">
           <thead>
             <tr>
-              <th>
+              <th style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Dbl check
@@ -64,7 +59,7 @@
               </th>
               {# exclude_title.html #}
               {% if user.is_authenticated and user.is_staff %}
-                <th>
+                <th style="width:25px !important">
                   <div class="vertical-text">
                     <div class="vertical-text__inner">
                       Not for Export
@@ -379,7 +374,7 @@
                     {% endif %}
                   </td>
                 {% endif %}
-                <td>
+                <td style="width:30px !important">
                   {% if meaning.data.gloss %}
                     <a href="https://github.com/lingdb/CoBL-public/wiki/{{ meaning.data.gloss }}"
                        title="View wiki page." target="_blank">
@@ -387,7 +382,7 @@
                     </a>
                   {% endif %}
                 </td>
-                <td>
+                <td style="width:30px !important">
                   {% if meaning.object_data.exampleContext %}
                   <span class="badge"
                         data-toggle="tooltip"

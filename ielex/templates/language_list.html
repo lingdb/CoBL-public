@@ -4,7 +4,7 @@
 {% load wtforms %}
 
 {% block title %}
-  Language list: {{ current_language_list_name }}
+  Lgs Rfc: Overview [{{ current_language_list_name }}]
 {% endblock %}
 
 {% block top %}
@@ -77,10 +77,10 @@
             <a href="{% url 'view-language-list' current_list.name %}" class="btn btn-default"> undo</a>
             <input type="submit" value="Save" name="langlist_form" class="btn btn-danger">
           </div>
-          <h1 class="inline">
-            Language list: {{ current_language_list_name }}
-          </h1>
           {% endif %}
+          <h1 class="inline">
+            Languages Reference: Overview
+          </h1>
           {% include "snippets/cladeFilter.html" %}
         </div>{# .fixedContainer #}
         <table class="table table-striped viewTableFilter
@@ -163,7 +163,7 @@
                 </th>
               {% endif %}
               {# historical_title.html #}
-              <th>
+              <th style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Historical
@@ -171,7 +171,7 @@
                 </div>
               </th>
               {# notInExport_title.html #}
-              <th>
+              <th style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Not in Exp.
@@ -207,7 +207,8 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Reference">
+                  title="Reference"
+                  style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Ref. Lg.
@@ -218,7 +219,8 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Example Language?">
+                  title="Example Language?"
+                  style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Ex. Lg?
@@ -226,7 +228,7 @@
                 </div>
               </th>
               {# fossstat_title.html #}
-              <th>
+              <th style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Foss. Stat.
@@ -234,7 +236,7 @@
                 </div>
               </th>
               {# lowstat_title.html #}
-              <th>
+              <th style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Low. Stat.
