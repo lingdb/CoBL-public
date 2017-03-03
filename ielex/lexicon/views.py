@@ -438,10 +438,16 @@ def construct_matrix(languages,                # [Language]
         '''
     data = dict()
     for meaning in meanings:
-        languages_missing_meaning[meaning.gloss] = [
-            language for language in
-            languages if not
-            language.lexeme_set.filter(meaning=meaning).exists()]
+        if excludeNotSwadesh:
+            languages_missing_meaning[meaning.gloss] = [
+                language for language in
+                languages if not
+                language.lexeme_set.filter(not_swadesh_term=False).filter(meaning=meaning).exists()]
+        else:
+            languages_missing_meaning[meaning.gloss] = [
+                language for language in
+                languages if not
+                language.lexeme_set.filter(meaning=meaning).exists()]
         for cc in cognate_classes[meaning.gloss]:
             matches = [
                 cj.lexeme.language for cj in
