@@ -100,6 +100,10 @@
                {% endif %}>
           <thead>
             <tr>
+              {# delete_lexeme_title.html #}
+              {% if user.is_authenticated and user.is_superuser %}
+              <th></th>
+              {% endif %}
               {# id_title.html #}
               <th class="hide"></th>
               {# FIXME warning label for Dbl check ones #}
@@ -198,6 +202,10 @@
               </th>
             </tr>
             <tr class="filterBar">
+              {# delete_lexeme_filter.html#}
+              {% if user.is_authenticated and user.is_superuser %}
+              <td></td>
+              {% endif %}
               {# id_filter.html #}
               <td class="hide"></td>
               {# warnings_filter.html #}
@@ -431,8 +439,19 @@
           </thead>
           <tbody>
             {% for lexeme in lex_ed_form.lexemes %}
-              <tr class="content_row"
-                  data-meaningid="{{ lexeme.data.meaning_id }}">
+              <tr class="content_row" data-meaningid="{{ lexeme.data.meaning_id }}">
+                {# delete_lexeme_data.html #}
+                {% if user.is_authenticated and user.is_superuser %}
+                <td>
+                  <!-- <a href="{% url 'view-lexeme' lexeme.id.data %}" title="View detailed information on lexeme">
+                    <span class="glyphicon glyphicon-remove-sign"></span>
+                  </a> -->
+                  <div class="btn btn-xs btn-danger" title="" 
+                    data-toggle="tooltip" data-placement="bottom" data-original-title="Delete lexeme" onclick="return confirm('Are you really sure to delete lexeme {{ lexeme.data.meaning }} for language {{ language.utf8_name }}? Please think twice before you press the OK button!!')">
+                    <a style="text-decoration:none;color:#FFFFFF;" href="{% url 'view-lexeme' lexeme.id.data %}delete/"><span class="glyphicon glyphicon-remove-sign"></span></a>
+                  </div>
+                </td>
+                {% endif %}
                 {# id_data.html #}
                 <td class="hide">
                   {{ lexeme.id }}
