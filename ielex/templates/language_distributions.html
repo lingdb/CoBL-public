@@ -4,7 +4,7 @@
 {% load wtforms %}
 
 {% block title %}
-  Language distribution table: {{ current_language_list_name }}
+  Lg Rfc: Overview [{{ current_language_list_name }}]
 {% endblock %}
 
 {% block top %}
@@ -71,7 +71,7 @@
             <input type="submit" value="Save" name="langlist_form" class="btn btn-danger">
           </div>
           <h1 class="inline">
-            Language list: {{ current_language_list_name }}
+            Lg Rfc: Overview <small>[{{ current_language_list_name }}]</small>
           </h1>
           {% endif %}
           {% include "snippets/cladeFilter.html" %}
@@ -90,12 +90,13 @@
               {# branchcolor_title.html #}
               <th colspan="2"></th>
               {# entryno_title.html #}
-              <th></th>
+              <th style="width:50px !important"></th>
               {# lv_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Clade level 0">
+                  title="Clade level 0"
+                  style="width:40px !important">
                 Cl 0
               </th>
               <th data-toggle="tooltip"
@@ -108,7 +109,8 @@
                 <th data-toggle="tooltip"
                     data-placement="bottom"
                     data-container="body"
-                    title="Clade level 1">
+                    title="Clade level 1"
+                    style="width:40px !important">
                   Cl 1
                 </th>
                 <th data-toggle="tooltip"
@@ -120,7 +122,8 @@
                 <th data-toggle="tooltip"
                     data-placement="bottom"
                     data-container="body"
-                    title="Clade level 2">
+                    title="Clade level 2"
+                    style="width:40px !important">
                   Cl 2
                 </th>
                 <th data-toggle="tooltip"
@@ -133,6 +136,7 @@
                     data-placement="bottom"
                     data-container="body"
                     title="Clade level 3"
+                    style="width:40px !important"
                     class="hide">
                   Cl 3
                 </th>
@@ -147,7 +151,8 @@
                 <th data-toggle="tooltip"
                     data-placement="bottom"
                     data-container="body"
-                    title="Sort rank in clade">
+                    title="Sort rank in clade"
+                    style="width:40px !important">
                   <div class="vertical-text">
                     <div class="vertical-text__inner">
                       Sort Ix
@@ -156,7 +161,7 @@
                 </th>
               {% endif %}
               {# historical_title.html #}
-              <th>
+              <th style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Historical
@@ -164,7 +169,7 @@
                 </div>
               </th>
               {# notInExport_title.html #}
-              <th>
+              <th style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Not in Export
@@ -175,7 +180,7 @@
               <th></th>
               {# name_title.html #}
               <th>Display name</th>
-              <th></th>{# title for edit #}
+              <th style="width:25px !important"></th>{# title for edit #}
               {# iso_title.html #}
               {# distribution_title.html #}
               <th>Distribution type</th>
@@ -184,7 +189,7 @@
                   data-placement="bottom"
                   data-container="body"
                   title="Mean for normal distribution"
-                  style="width:65px !important">
+                  style="width:55px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Norm Mean
@@ -195,7 +200,7 @@
                   data-placement="bottom"
                   data-container="body"
                   title="StDev for normal distribution"
-                  style="width:65px !important">
+                  style="width:55px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Norm StDev
@@ -207,7 +212,7 @@
                   data-placement="bottom"
                   data-container="body"
                   title="Offset for log normal distribution"
-                  style="width:65px !important">
+                  style="width:55px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     [Offset]
@@ -218,7 +223,7 @@
                   data-placement="bottom"
                   data-container="body"
                   title="Mean for log normal distribution"
-                  style="width:65px !important">
+                  style="width:55px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     LogN Mean
@@ -229,7 +234,7 @@
                   data-placement="bottom"
                   data-container="body"
                   title="StDev for log normal distribution"
-                  style="width:65px !important">
+                  style="width:55px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     LogN StDev
@@ -241,7 +246,7 @@
                   data-placement="bottom"
                   data-container="body"
                   title="Lower bound for uniform distribution type"
-                  style="width:65px !important">
+                  style="width:55px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Unif Lower
@@ -252,7 +257,7 @@
                   data-placement="bottom"
                   data-container="body"
                   title="Upper bound for uniform distribution type"
-                  style="width:65px !important">
+                  style="width:55px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Unif Upper
@@ -263,7 +268,8 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Earliest Time-Depth Bound">
+                  title="Earliest Time-Depth Bound"
+                  style="width:55px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Earliest
@@ -274,7 +280,8 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Latest Time-Depth Bound">
+                  title="Latest Time-Depth Bound"
+                  style="width:55px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Latest
@@ -354,7 +361,11 @@
                   <input type="text"
                          class="filterNumberInput form-control"
                          data-selector=".sortRankInClade input"
-                         style="width: 1.5em;">
+                         style="width: 2em;">
+                         <div class="btn btn-xs btn-default sortInput"
+                              data-selector=".sortRankInClade input">
+                           <span class="glyphicon glyphicon-sort"></span>
+                         </div>
                 </td>
               {% endif %}
               {# historical_filter.html #}
@@ -564,7 +575,7 @@
                   >
                   <center>
                     {% if user.is_authenticated and user.is_staff %}
-                      {% form_field language.level0 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level0 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 2em;" pattern="^[0-9]{1,2}$" %}
                     {% elif language.level0.data %}
                       {{ language.level0.data }}
                     {% endif %}
@@ -587,7 +598,7 @@
                     {% endif %}
                     >
                     <center>
-                      {% form_field language.level1 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level1 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 2em;" pattern="^[0-9]{1,2}$" %}
                     </center>
                   </td>
                   <td class="languageLevel1Abbr">
@@ -606,7 +617,7 @@
                     {% endif %}
                     >
                     <center>
-                      {% form_field language.level2 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level2 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 2em;" pattern="^[0-9]{1,2}$" %}
                     </center>
                   </td>
                   <td class="languageLevel2Abbr">
@@ -625,7 +636,7 @@
                     {% endif %}
                     >
                     <center>
-                      {% form_field language.level3 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level3 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 2em;" pattern="^[0-9]{1,2}$" %}
                     </center>
                   </td>
                   <td class="languageLevel3Abbr hide">
@@ -688,7 +699,7 @@
                 {# distribution_data.html #}
                 <td class="distribution">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.distribution class="form-control distributionSelection" data-inputdepends="historical" %}
+                    {% form_field language.distribution class="form-control distributionSelection" style="max-width:145px !important" data-inputdepends="historical" %}
                   {% elif language.distribution.data %}
                     {{ language.distribution.data }}
                   {% endif %}
