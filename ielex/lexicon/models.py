@@ -2055,7 +2055,7 @@ class NexusExport(AbstractTimestamped):
         # True if calculation for export is not finished
         return self._exportData is None
 
-    def generateResponse(self, constraints=False, beauti=False):
+    def generateResponse(self, constraints=False, beauti=False, tabledata=False):
         """
         If constraints == True response shall carry the constraintsData
         rather than the exportData.
@@ -2069,6 +2069,8 @@ class NexusExport(AbstractTimestamped):
             name = self.constraintsName
         elif beauti:
             name = self.beautiName
+        elif tabledata:
+            name = self.tabledataName
         else:
             name = self.exportName
         # data for the export file:
@@ -2076,6 +2078,8 @@ class NexusExport(AbstractTimestamped):
             data = self.constraintsData
         elif beauti:
             data = self.exportBEAUti
+        elif tabledata:
+            data = self.exportTableData
         else:
             data = self.exportData
         # The response itself:
@@ -2115,6 +2119,11 @@ class NexusExport(AbstractTimestamped):
     def beautiName(self):
         # Replaces the /\.nex$/ in exportName with _BEAUti.nex
         return self.exportName[:-4] + "_BEAUti.nex"
+
+    @property
+    def tabledataName(self):
+        # Replaces the /\.nex$/ in exportName _TableData.csv
+        return self.exportName[:-4] + "_TableData.csv"
 
 
 class RomanisedSymbol(AbstractTimestamped):

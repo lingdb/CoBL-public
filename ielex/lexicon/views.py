@@ -191,6 +191,7 @@ def write_nexus(language_list_name,       # str
     Returns:
     {exportData :: str,
      exportBEAUti :: str,
+     exportTableData :: str,
      cladeMemberships :: str,
      computeCalibrations :: str}
     '''
@@ -213,12 +214,13 @@ def write_nexus(language_list_name,       # str
         meanings = meaning_list.meanings.all().order_by("meaninglistorder")
     max_len = max([len(l) for l in language_names])
 
-    matrix, cognate_class_names, assumptions = construct_matrix(
+    matrix, cognate_class_names, assumptions, dataTable = construct_matrix(
         languages, meanings, **kwargs)
 
     # Export data to compose:
     exportData = []
     exportBEAUti = []
+    exportTableData = []
 
     def appendExports(s):
         exportData.append(s)
@@ -288,6 +290,9 @@ def write_nexus(language_list_name,       # str
                    len(cognate_class_names),
                    " ".join(language_names))))
 
+    # write CSV header "Meaning","Cognate Set" + all language ascii names
+    exportTableData.append("\"Meaning\",\"Cognate Set\",%s" % ",".join(map(lambda x : '\"%s\"' % x, language_names)))
+
     if kwargs['label_cognate_sets']:
         row = [" " * 9] + [
             str(i).ljust(10) for i in
@@ -300,6 +305,16 @@ def write_nexus(language_list_name,       # str
     matrixComments = getMatrixCommentsFromCognateNames(
         cognate_class_names, padding=max_len + 4)
     appendExports(matrixComments + "\n")
+
+    # write exportTableData
+    current_m = ""
+    for row in sorted(dataTable):
+        m, cc_cnt, cc = row.split("___")
+        if current_m != m:
+            exportTableData.append("," * (len(language_names)+1))
+        # exportTableData.append("\"%s\",\"%i\",%s" % (m, int(cc), ",".join(map(lambda x : '\"%s\"' % x, dataTable[row]))))
+        exportTableData.append("%s,%i,%s" % (m, int(cc), ",".join(map(lambda x : '%s' % x, dataTable[row]))))
+        current_m = m
 
     # write matrix
     for row in matrix:
@@ -372,6 +387,7 @@ def write_nexus(language_list_name,       # str
     return {
         'exportData': "\n".join(exportData),      # Requested export
         'exportBEAUti': "\n".join(exportBEAUti),  # BEAUti specific export
+        'exportTableData': "\n".join(exportTableData),  # exportTableData = matrix as CSV table
         'cladeMemberships': memberships,
         'computeCalibrations': calibrations
     }
@@ -389,7 +405,7 @@ def construct_matrix(languages,                # [Language]
                      includePllLoan,           # bool
                      **kwargs):                # don't care
 
-        # Specifying cognate classes we're interested in:
+    # Specifying cognate classes we're interested in:
     cognateJudgementFilter = {
         'lexeme__language__in': languages,
         'lexeme__meaning__in': meanings
@@ -437,7 +453,7 @@ def construct_matrix(languages,                # [Language]
         data :: meaning.gloss -> cognate_classes[meaning.gloss] -> [language]
         '''
     data = dict()
-    for meaning in meanings:
+    for meaning in meanings: #@TODO speed optimation
         if excludeNotSwadesh:
             languages_missing_meaning[meaning.gloss] = [
                 language for language in
@@ -478,11 +494,21 @@ def construct_matrix(languages,                # [Language]
             return "%s_lexeme_%s" % (gloss, cc[1])
         return "%s_ERROR_%s" % (gloss, str(cc))
 
+    def get_cognate_class_id_for_dataTable(cnt, cc):
+        # is used for the later sorting of dict keys and preserving
+        # the order of passed cognate set IDs
+        if isinstance(cc, int):
+            return "%s___%s" % (str(cnt).zfill(3), str(cc))
+        if isinstance(cc, (list, tuple)):
+            return "%s___%s" % (str(cnt).zfill(3), str(cc[1]))
+        return "000___0"
+
     # make matrix
     matrix, cognate_class_names, assumptions = list(), list(), list()
     make_header = True
     col_num = 0
-    for language in languages:
+    dataTableDict = defaultdict(list)
+    for language in languages: #@TODO speed optimation
         row = [language.ascii_name]
         for meaning in meanings:
             if ascertainment_marker:
@@ -496,6 +522,7 @@ def construct_matrix(languages,                # [Language]
                     cognate_class_names.append("%s_group" % meaning.gloss)
 
             if meaning.gloss in data:
+                cnt = 0 # needed for preserving the cc order after sorting meaning keys in dict
                 for cc in sorted(data[meaning.gloss],
                                  key=lambda x: (str(x),) if type(x) == int else x):
                     if ascertainment_marker and make_header:
@@ -504,10 +531,14 @@ def construct_matrix(languages,                # [Language]
                             cognate_class_name_formatter(cc, meaning.gloss))
                     if language in data[meaning.gloss][cc]:
                         row.append("1")
+                        dataTableDict["%s___%s" % (meaning.gloss, get_cognate_class_id_for_dataTable(cnt, cc))].append("1")
                     elif language in languages_missing_meaning[meaning.gloss]:
                         row.append("?")
+                        dataTableDict["%s___%s" % (meaning.gloss, get_cognate_class_id_for_dataTable(cnt, cc))].append("?")
                     else:
                         row.append("0")
+                        dataTableDict["%s___%s" % (meaning.gloss, get_cognate_class_id_for_dataTable(cnt, cc))].append("0")
+                    cnt += 1
             if ascertainment_marker and make_header:
                 end_range = col_num
                 assumptions.append(
@@ -517,7 +548,7 @@ def construct_matrix(languages,                # [Language]
         matrix.append(row)
         make_header = False
 
-    return matrix, cognate_class_names, assumptions
+    return matrix, cognate_class_names, assumptions, dataTableDict
 
 
 def dump_cognate_data(

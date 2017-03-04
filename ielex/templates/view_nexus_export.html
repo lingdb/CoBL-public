@@ -195,6 +195,14 @@
                   {% elif export.pending %}
                       [ BEAUti ]
                   {% endif %}
+                  <br>
+                  {% if export.exportTableData %}
+                    <a href="/nexus/export/{{ export.id }}?tabledata">
+                      [ TableData ]
+                    </a>
+                  {% elif export.pending %}
+                      [ TableData ]
+                  {% endif %}
                 </td>
                 <td>
                   {% if export.description %}
