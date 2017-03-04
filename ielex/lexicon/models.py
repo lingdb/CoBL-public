@@ -2046,6 +2046,9 @@ class NexusExport(AbstractTimestamped):
     # Compressed data of constraints file:
     _constraintsData = models.BinaryField(null=True)
     constraintsData = property(**compressedField('_constraintsData'))
+    # Compressed data of nexus table data CSV file:
+    _exportTableData = models.BinaryField(null=True)
+    exportTableData = property(**compressedField('_exportTableData'))
 
     @property
     def pending(self):
