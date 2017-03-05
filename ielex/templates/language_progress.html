@@ -731,7 +731,11 @@
                 {# orphans_data.html #}
                 <td class="languageOrphansCount">
                   <center>
+                    {% if language.object_data.orphansCount > 0 %}
+                    <span title="{{ language.object_data.orphansList }}" class="badge" style="background-color:#FFA500">{{ language.object_data.orphansCount }}</span>
+                    {% else %}
                     <span title="{{ language.object_data.orphansList }}" class="badge">{{ language.object_data.orphansCount }}</span>
+                    {% endif %}
                   </center>
                 </td>
                 {# unassigned_data.html #}
