@@ -433,12 +433,12 @@ def construct_matrix(languages,                # [Language]
     # synonymous cognate classes (i.e. cognate reflexes representing
     # a single Swadesh meaning)
     cognate_classes = defaultdict(list)
-    for cc, meaning in wantedCJs.order_by(
+    for cc, meaning_id in wantedCJs.order_by(
         "lexeme__meaning",
         "cognate_class").values_list(
         "cognate_class__id",
-            "lexeme__meaning__gloss").distinct():
-        cognate_classes[meaning].append(cc)
+            "lexeme__meaning__id").distinct():
+        cognate_classes[meaning_id].append(cc)
 
     # Lexemes which shall be excluded:
     exclude_lexemes = set()  # :: set(lexeme.id)
@@ -446,33 +446,20 @@ def construct_matrix(languages,                # [Language]
         exclude_lexemes |= set(Lexeme.objects.filter(
             not_swadesh_term=True).values_list("id", flat=True))
 
-    # languages lacking any lexeme for a meaning
-    languages_missing_meaning = dict()
     # languages having a reflex for a cognate set
     '''
-        data :: meaning.gloss -> cognate_classes[meaning.gloss] -> [language]
+        data :: meaning.gloss -> cognate_classes[meaning.id] -> [language]
         '''
     data = dict()
     for meaning in meanings: #@TODO speed optimation
-        if excludeNotSwadesh:
-            languages_missing_meaning[meaning.gloss] = [
-                language for language in
-                languages if not
-                language.lexeme_set.filter(not_swadesh_term=False).filter(meaning=meaning).exists()]
-        else:
-            languages_missing_meaning[meaning.gloss] = [
-                language for language in
-                languages if not
-                language.lexeme_set.filter(meaning=meaning).exists()]
-        for cc in cognate_classes[meaning.gloss]:
+        cj_for_current_meaning = CognateJudgement.objects.filter(lexeme__meaning_id=meaning.id)
+        for cc in cognate_classes[meaning.id]:
             matches = [
-                cj.lexeme.language for cj in
-                CognateJudgement.objects.filter(
-                    cognate_class=cc,
-                    lexeme__meaning=meaning) if cj.lexeme.language in
+                cj.lexeme.language.id for cj in
+                cj_for_current_meaning.filter(cognate_class=cc) if cj.lexeme.language in
                 languages and cj.lexeme.id not in exclude_lexemes]
             if matches:
-                data.setdefault(meaning.gloss, dict())[cc] = matches
+                data.setdefault(meaning.id, dict())[cc] = matches
 
     # adds a cc code for all singletons
     # (lexemes which are not registered as
@@ -483,8 +470,8 @@ def construct_matrix(languages,                # [Language]
             cognate_class__isnull=True):
         if lexeme.id not in exclude_lexemes:
             cc = ("U", lexeme.id)  # use tuple for sorting
-            data[lexeme.meaning.gloss].setdefault(
-                cc, list()).append(lexeme.language)
+            data[lexeme.meaning.id].setdefault(
+                cc, list()).append(lexeme.language.id)
 
     def cognate_class_name_formatter(cc, gloss):
         # gloss = cognate_class_dict[cc]
@@ -508,11 +495,17 @@ def construct_matrix(languages,                # [Language]
     make_header = True
     col_num = 0
     dataTableDict = defaultdict(list)
+
     for language in languages: #@TODO speed optimation
         row = [language.ascii_name]
+        lg_lex_set = language.lexeme_set
         for meaning in meanings:
+            if excludeNotSwadesh:
+                is_lg_missing_mng = not lg_lex_set.filter(not_swadesh_term=False, meaning_id=meaning.id).exists()
+            else:
+                is_lg_missing_mng = not lg_lex_set.filter(meaning_id=meaning.id).exists()
             if ascertainment_marker:
-                if language in languages_missing_meaning[meaning.gloss]:
+                if is_lg_missing_mng:
                     row.append("?")
                 else:
                     row.append("0")
@@ -521,20 +514,22 @@ def construct_matrix(languages,                # [Language]
                     start_range = col_num
                     cognate_class_names.append("%s_group" % meaning.gloss)
 
-            if meaning.gloss in data:
+            if meaning.id in data:
                 cnt = 0 # needed for preserving the cc order after sorting meaning keys in dict
-                for cc in sorted(data[meaning.gloss],
+                data_mng_id = data[meaning.id]
+                lg_id = language.id
+                for cc in sorted(data_mng_id,
                                  key=lambda x: (str(x),) if type(x) == int else x):
                     if ascertainment_marker and make_header:
                         col_num += 1
                         cognate_class_names.append(
                             cognate_class_name_formatter(cc, meaning.gloss))
-                    if language in data[meaning.gloss][cc]:
-                        row.append("1")
-                        dataTableDict["%s___%s" % (meaning.gloss, get_cognate_class_id_for_dataTable(cnt, cc))].append("1")
-                    elif language in languages_missing_meaning[meaning.gloss]:
+                    if is_lg_missing_mng:
                         row.append("?")
                         dataTableDict["%s___%s" % (meaning.gloss, get_cognate_class_id_for_dataTable(cnt, cc))].append("?")
+                    elif lg_id in data_mng_id[cc]:
+                        row.append("1")
+                        dataTableDict["%s___%s" % (meaning.gloss, get_cognate_class_id_for_dataTable(cnt, cc))].append("1")
                     else:
                         row.append("0")
                         dataTableDict["%s___%s" % (meaning.gloss, get_cognate_class_id_for_dataTable(cnt, cc))].append("0")
