@@ -784,6 +784,23 @@ class Language(AbstractTimestamped, AbstractDistribution):
                 not_swadesh_term=False,
                 meaning__in=meaningIdSet,
                 cognate_class=None).count()
+
+            orphansCount = -1
+            orphansList = ''
+            try:
+                orphans = Lexeme.objects.raw("""
+                    select 1 as id, count(*) as c, string_agg(gloss, ', ') m from lexicon_meaning where id in (
+                    select l.meaning_id from lexicon_lexeme as l
+                    join lexicon_language on l.language_id = lexicon_language.id
+                    join lexicon_meaning on l.meaning_id = lexicon_meaning.id
+                    where ascii_name=%s group by l.meaning_id
+                    having (count(*)-count(CASE WHEN l.not_swadesh_term THEN 1 END))=0)
+                """, [self.ascii_name])[0]
+                orphansCount = orphans.c
+                orphansList = orphans.m
+            except:
+                orphansCount = -1
+
             # Setting counts:
             self._computeCounts = {
                 'meaningCount': meaningCount,
@@ -791,7 +808,9 @@ class Language(AbstractTimestamped, AbstractDistribution):
                 'nonLexCount': nonLexCount,
                 'lexCount': lexCount,
                 'excessCount': excessCount,
-                'unassignedCount': unassignedCount}
+                'unassignedCount': unassignedCount,
+                'orphansCount': orphansCount,
+                'orphansList': orphansList}
         return self._computeCounts
 
     def cladeByOrder(self, order):
@@ -814,6 +833,14 @@ class Language(AbstractTimestamped, AbstractDistribution):
     @property
     def meaningCount(self):
         return self.computeCounts()['meaningCount']
+
+    @property
+    def orphansCount(self):
+        return self.computeCounts()['orphansCount']
+
+    @property
+    def orphansList(self):
+        return self.computeCounts()['orphansList']
 
     @property
     def entryCount(self):

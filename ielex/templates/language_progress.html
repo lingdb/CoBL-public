@@ -274,6 +274,17 @@
                   </div>
                 </div>
               </th>
+              {# orphans_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="The number of meanings and the meanings as tooltip for which that language does have one or more lexemes, but ALL of those lexemes are marked as 'Not Swadesh'.">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Orphan Mgs
+                  </div>
+                </div>
+              </th>
               {# unassigned_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -484,6 +495,13 @@
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".languageExcessCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# orphans_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageOrphansCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
@@ -708,6 +726,12 @@
                 <td class="languageExcessCount">
                   <center>
                     <span class="badge">{{ language.object_data.excessCount }}</span>
+                  </center>
+                </td>
+                {# orphans_data.html #}
+                <td class="languageOrphansCount">
+                  <center>
+                    <span title="{{ language.object_data.orphansList }}" class="badge">{{ language.object_data.orphansCount }}</span>
                   </center>
                 </td>
                 {# unassigned_data.html #}
