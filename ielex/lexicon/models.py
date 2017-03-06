@@ -784,6 +784,21 @@ class Language(AbstractTimestamped, AbstractDistribution):
                 meaning__in=meaningIdSet,
                 cognate_class=None).count()
 
+            # Cognate classes to iterate:
+            ccs = CognateClass.objects.filter(
+                lexeme__language_id=self.id,
+                lexeme__meaning_id__in=meaningIdSet).order_by(
+                    'id').distinct('id').all()
+            # Setup to count stuff:
+            cogLoanCount = 0
+            cogParallelLoanCount = 0
+            # Iterating ccs to calculate counts:
+            for cc in ccs:
+                if cc.loanword:
+                    cogLoanCount += 1
+                if cc.parallelLoanEvent:
+                    cogParallelLoanCount += 1
+
             # Computing number of orphan meanings
             # (all lexems for a meaning are set to not_swadesh_term)
             orphansCount = -1
@@ -812,7 +827,9 @@ class Language(AbstractTimestamped, AbstractDistribution):
                 'excessCount': excessCount,
                 'unassignedCount': unassignedCount,
                 'orphansCount': orphansCount,
-                'orphansList': orphansList}
+                'orphansList': orphansList,
+                'cogLoanCount': cogLoanCount,
+                'cogParallelLoanCount': cogParallelLoanCount}
         return self._computeCounts
 
     def cladeByOrder(self, order):
@@ -839,6 +856,14 @@ class Language(AbstractTimestamped, AbstractDistribution):
     @property
     def orphansCount(self):
         return self.computeCounts()['orphansCount']
+
+    @property
+    def cogLoanCount(self):
+        return self.computeCounts()['cogLoanCount']
+
+    @property
+    def cogParallelLoanCount(self):
+        return self.computeCounts()['cogParallelLoanCount']
 
     @property
     def orphansList(self):

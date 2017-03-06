@@ -125,7 +125,8 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Clade level 0 abbreviation">
+                  title="Clade level 0 abbreviation"
+                  style="width:5em">
                 Cl 0 abbr.
               </th>
               {% if user.is_staff %}
@@ -138,7 +139,8 @@
                 <th data-toggle="tooltip"
                     data-placement="bottom"
                     data-container="body"
-                    title="Clade level 1 abbreviation">
+                    title="Clade level 1 abbreviation"
+                    style="width:5em">
                   Cl 1 abbr.
                 </th>
                 <th data-toggle="tooltip"
@@ -150,7 +152,8 @@
                 <th data-toggle="tooltip"
                     data-placement="bottom"
                     data-container="body"
-                    title="Clade level 2 abbreviation">
+                    title="Clade level 2 abbreviation"
+                    style="width:5em">
                   Cl 2 abbr.
                 </th>
                 <th data-toggle="tooltip"
@@ -164,7 +167,8 @@
                     data-placement="bottom"
                     data-container="body"
                     title="Clade level 3 abbreviation"
-                    class="hide">
+                    class="hide"
+                    style="width:5em">
                   Cl 3 abbr.
                 </th>
                 {# sortRankInClade_title.html #}
@@ -180,7 +184,7 @@
                 </th>
               {% endif %}
               {# historical_title.html #}
-              <th>
+              <th style="width:35px">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Historical
@@ -188,7 +192,7 @@
                 </div>
               </th>
               {# notInExport_title.html #}
-              <th>
+              <th style="width:35px">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Not in Exp.
@@ -271,6 +275,28 @@
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Too many{# Lex.-Mgs #}
+                  </div>
+                </div>
+              </th>
+              {# cogLoan_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of cognate classes marked as loanword per language">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. Loan/Lg
+                  </div>
+                </div>
+              </th>
+              {# cogLoanPll_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of cognate classes marked as parallel loan event per language">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. Pll/Lg
                   </div>
                 </div>
               </th>
@@ -420,12 +446,12 @@
                   <input type="text"
                          class="filterInput form-control"
                          data-selector=".languageAuthor input"
-                         style="width: 100%;">
+                         style="width:8em;">
                 {% else %}
                   <input type="text"
                          class="filterText form-control"
                          data-selector=".languageAuthor"
-                         style="width: 100%;">
+                         style="width:8em%;">
                 {% endif %}
               </td>
               {# entryTimeframe_filter.html #}
@@ -434,7 +460,7 @@
                 <input type="text"
                        class="filterInput form-control"
                        data-selector=".entryTimeframe input"
-                       style="max-width: 5em;">
+                       style="width:5em;">
               </td>
               {% endif %}
               {# reviewer_filter.html #}
@@ -498,6 +524,20 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
+              {# cogLoan_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageCogLoanCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# cogLoanPll_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageCogParallelLoanCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               {# orphans_filter.html #}
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
@@ -544,7 +584,7 @@
                   >
                   <center>
                     {% if user.is_authenticated and user.is_staff %}
-                      {% form_field language.level0 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level0 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 2em;" pattern="^[0-9]{1,2}$" %}
                     {% elif language.level0.data %}
                       {{ language.level0.data }}
                     {% endif %}
@@ -567,7 +607,7 @@
                     {% endif %}
                     >
                     <center>
-                      {% form_field language.level1 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level1 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 2em;" pattern="^[0-9]{1,2}$" %}
                     </center>
                   </td>
                   <td class="languageLevel1Abbr">
@@ -586,7 +626,7 @@
                     {% endif %}
                     >
                     <center>
-                      {% form_field language.level2 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level2 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 2em;" pattern="^[0-9]{1,2}$" %}
                     </center>
                   </td>
                   <td class="languageLevel2Abbr">
@@ -605,7 +645,7 @@
                     {% endif %}
                     >
                     <center>
-                      {% form_field language.level3 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level3 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 2em;" pattern="^[0-9]{1,2}$" %}
                     </center>
                   </td>
                   <td class="languageLevel3Abbr hide">
@@ -657,7 +697,7 @@
                 {# author_data.html #}
                 <td class="languageAuthor">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.author class="form-control" style="min-width: 30em;" data-longinput="25" %}
+                    {% form_field language.author class="form-control" style="width:8em" data-longinput="25" %}
                   {% else %}
                     {{ language.author.data }}
                   {% endif %}
@@ -665,7 +705,7 @@
                 {# entryTimeframe_data.html #}
                 {% if user.is_authenticated and user.is_staff %}
                 <td class="entryTimeframe">
-                  {% form_field language.entryTimeframe class="form-control" style="max-width: 5em;" %}
+                  {% form_field language.entryTimeframe class="form-control" style="width:5em" %}
                 </td>
                 {% endif %}
                 {# reviewer_data.html #}
@@ -726,6 +766,18 @@
                 <td class="languageExcessCount">
                   <center>
                     <span class="badge">{{ language.object_data.excessCount }}</span>
+                  </center>
+                </td>
+                {# cogLoan_data.html #}
+                <td class="languageCogLoanCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.cogLoanCount }}</span>
+                  </center>
+                </td>
+                {# cogLoanPll_data.html #}
+                <td class="languageCogParallelLoanCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.cogParallelLoanCount }}</span>
                   </center>
                 </td>
                 {# orphans_data.html #}
