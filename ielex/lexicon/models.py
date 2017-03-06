@@ -768,13 +768,35 @@ class Language(AbstractTimestamped, AbstractDistribution):
                 setattr(meaningList, '_language__computeCounts', meaningIdSet)
             lexemeMeaningIdSet = set([l.meaning_id for l
                                       in self.lexeme_set.all()])
+            lexemeMeaningIdSetOnlySwadesh = set([l.meaning_id for l
+                                      in self.lexeme_set.filter(not_swadesh_term=False)])
             # Computing base counts:
-            meaningCount = len(meaningIdSet & lexemeMeaningIdSet)
+            mergedIdSet = meaningIdSet & lexemeMeaningIdSet
+            meaningCount = len(mergedIdSet)
+            mergedIdOnlySwadeshSet = meaningIdSet & lexemeMeaningIdSetOnlySwadesh
+            meaningCountNotSwadeshTerm = meaningCount-len(mergedIdSet & mergedIdOnlySwadeshSet)
+
+            meaningsMarkedAsNotSwadeshList = ''
+
+            if meaningCountNotSwadeshTerm == 1:
+                meaningsMarkedAsNotSwadeshList = Meaning.objects.get(
+                    id=list(mergedIdSet ^ mergedIdOnlySwadeshSet)[0]).gloss
+            elif meaningCountNotSwadeshTerm > 1 and meaningCountNotSwadeshTerm < 21:
+                meaningsMarkedAsNotSwadeshList = ", ".join(Meaning.objects.filter(
+                    id__in=tuple(mergedIdSet ^ mergedIdOnlySwadeshSet)).order_by(
+                        'gloss').values_list('gloss', flat=True))
+            elif meaningCountNotSwadeshTerm > 20:
+                meaningsMarkedAsNotSwadeshList = ", ".join(Meaning.objects.filter(
+                    id__in=tuple(mergedIdSet ^ mergedIdOnlySwadeshSet)).order_by(
+                        'gloss')[:20].values_list('gloss', flat=True))
+                meaningsMarkedAsNotSwadeshList += ", ..."
+
             entryCount = len([l for l in self.lexeme_set.all()
                               if l.meaning_id in meaningIdSet])
             nonLexCount = len([l for l in self.lexeme_set.all()
                                if l.meaning_id in meaningIdSet and
                                l.not_swadesh_term])
+
             # Computing dependant counts:
             lexCount = entryCount - nonLexCount
             excessCount = lexCount - meaningCount
@@ -821,6 +843,8 @@ class Language(AbstractTimestamped, AbstractDistribution):
             # Setting counts:
             self._computeCounts = {
                 'meaningCount': meaningCount,
+                'meaningCountNotSwadeshTerm': meaningCountNotSwadeshTerm,
+                'meaningsMarkedAsNotSwadeshList': meaningsMarkedAsNotSwadeshList,
                 'entryCount': entryCount,
                 'nonLexCount': nonLexCount,
                 'lexCount': lexCount,
@@ -868,6 +892,14 @@ class Language(AbstractTimestamped, AbstractDistribution):
     @property
     def orphansList(self):
         return self.computeCounts()['orphansList']
+
+    @property
+    def meaningsMarkedAsNotSwadeshList(self):
+        return self.computeCounts()['meaningsMarkedAsNotSwadeshList']
+
+    @property
+    def meaningCountNotSwadeshTerm(self):
+        return self.computeCounts()['meaningCountNotSwadeshTerm']
 
     @property
     def entryCount(self):

@@ -234,6 +234,17 @@
                   </div>
                 </div>
               </th>
+              {# mgsNotSwd_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of meanings (one lexeme only) marked as not_swadesh_term and the list of these meanings as tooltip per language">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    MngNotSwd
+                  </div>
+                </div>
+              </th>
               {# entd_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -496,6 +507,13 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
+              {# mgsNotSwd_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageMgsNotSwd">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               {# entd_filter.html #}
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
@@ -742,6 +760,12 @@
                 <td class="languageMgsCount">
                   <center>
                     <span class="badge">{{ language.object_data.meaningCount }}</span>
+                  </center>
+                </td>
+                {# mgsNotSwd_data.html #}
+                <td class="languageMgsNotSwd">
+                  <center>
+                    <span title="{{ language.object_data.meaningsMarkedAsNotSwadeshList }}" class="badge">{{ language.object_data.meaningCountNotSwadeshTerm }}</span>
                   </center>
                 </td>
                 {# entd_data.html #}
