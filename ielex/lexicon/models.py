@@ -814,12 +814,21 @@ class Language(AbstractTimestamped, AbstractDistribution):
             # Setup to count stuff:
             cogLoanCount = 0
             cogParallelLoanCount = 0
+            cogIdeophonicCount = 0
+            cogPllDerivationCount = 0
+            cogDubSetCount = 0
             # Iterating ccs to calculate counts:
             for cc in ccs:
                 if cc.loanword:
                     cogLoanCount += 1
                 if cc.parallelLoanEvent:
                     cogParallelLoanCount += 1
+                if cc.ideophonic:
+                    cogIdeophonicCount += 1
+                if cc.parallelDerivation:
+                    cogPllDerivationCount += 1
+                if cc.dubiousSet:
+                    cogDubSetCount += 1
 
             # Computing number of orphan meanings
             # (all lexems for a meaning are set to not_swadesh_term)
@@ -853,6 +862,9 @@ class Language(AbstractTimestamped, AbstractDistribution):
                 'orphansCount': orphansCount,
                 'orphansList': orphansList,
                 'cogLoanCount': cogLoanCount,
+                'cogIdeophonicCount': cogIdeophonicCount,
+                'cogPllDerivationCount': cogPllDerivationCount,
+                'cogDubSetCount': cogDubSetCount,
                 'cogParallelLoanCount': cogParallelLoanCount}
         return self._computeCounts
 
@@ -888,6 +900,18 @@ class Language(AbstractTimestamped, AbstractDistribution):
     @property
     def cogParallelLoanCount(self):
         return self.computeCounts()['cogParallelLoanCount']
+
+    @property
+    def cogIdeophonicCount(self):
+        return self.computeCounts()['cogIdeophonicCount']
+
+    @property
+    def cogPllDerivationCount(self):
+        return self.computeCounts()['cogPllDerivationCount']
+
+    @property
+    def cogDubSetCount(self):
+        return self.computeCounts()['cogDubSetCount']
 
     @property
     def orphansList(self):

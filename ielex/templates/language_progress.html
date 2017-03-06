@@ -311,6 +311,39 @@
                   </div>
                 </div>
               </th>
+              {# cogIdeophonic_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of cognate classes marked as being ideophonic">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. Ideoph/Lg
+                  </div>
+                </div>
+              </th>
+              {# cogPllDerv_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of cognate classes marked as being a parallel derivation">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. PllDrv/Lg
+                  </div>
+                </div>
+              </th>
+              {# cogDub_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of cognate classes marked as being a dubious set">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. Dub/Lg
+                  </div>
+                </div>
+              </th>
               {# orphans_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -553,6 +586,27 @@
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".languageCogParallelLoanCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# cogIdeophonic_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageCogIdeophonic">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# cogPllDerv_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageCogPllDerv">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# cogDub__filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageCogDub">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
@@ -802,6 +856,24 @@
                 <td class="languageCogParallelLoanCount">
                   <center>
                     <span class="badge">{{ language.object_data.cogParallelLoanCount }}</span>
+                  </center>
+                </td>
+                {# cogIdeophonic_data.html #}
+                <td class="languageCogIdeophonic">
+                  <center>
+                    <span class="badge">{{ language.object_data.cogIdeophonicCount }}</span>
+                  </center>
+                </td>
+                {# cogPllDerv_data.html #}
+                <td class="languageCogPllDerv">
+                  <center>
+                    <span class="badge">{{ language.object_data.cogPllDerivationCount }}</span>
+                  </center>
+                </td>
+                {# cogDub_data.html #}
+                <td class="languageCogDub">
+                  <center>
+                    <span class="badge">{{ language.object_data.cogDubSetCount }}</span>
                   </center>
                 </td>
                 {# orphans_data.html #}
