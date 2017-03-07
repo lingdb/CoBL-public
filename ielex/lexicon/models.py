@@ -799,7 +799,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
 
             # Computing dependant counts:
             lexCount = entryCount - nonLexCount
-            excessCount = lexCount - meaningCount
+            excessCount = lexCount - meaningCount + meaningCountNotSwadeshTerm
             # Computing unassigned count (#255):
             unassignedCount = self.lexeme_set.filter(
                 not_swadesh_term=False,
