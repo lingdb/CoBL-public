@@ -830,37 +830,16 @@ class Language(AbstractTimestamped, AbstractDistribution):
                 if cc.dubiousSet:
                     cogDubSetCount += 1
 
-            # Computing number of orphan meanings
-            # (all lexems for a meaning are set to not_swadesh_term)
-            orphansCount = -1
-            orphansList = ''
-            try:
-                orphans = Lexeme.objects.raw("""
-                    select 1 as id, count(*) as c, string_agg(gloss, ', ') m from lexicon_meaning where id in (
-                    select l.meaning_id from lexicon_lexeme as l
-                    join lexicon_language on l.language_id = lexicon_language.id
-                    join lexicon_meaning on l.meaning_id = lexicon_meaning.id
-                    join lexicon_meaninglistorder on lexicon_meaninglistorder.id = lexicon_meaning.id
-                    where lexicon_language.id=%s and lexicon_meaninglistorder.meaning_list_id = %s group by l.meaning_id
-                    having (count(*)-count(CASE WHEN l.not_swadesh_term THEN 1 END))=0);
-                """, [self.id, meaningList.id])[0]
-                orphansCount = orphans.c
-                orphansList = orphans.m
-            except:
-                orphansCount = -1
-
             # Setting counts:
             self._computeCounts = {
                 'meaningCount': meaningCount,
-                'meaningCountNotSwadeshTerm': meaningCountNotSwadeshTerm,
-                'meaningsMarkedAsNotSwadeshList': meaningsMarkedAsNotSwadeshList,
                 'entryCount': entryCount,
                 'nonLexCount': nonLexCount,
                 'lexCount': lexCount,
                 'excessCount': excessCount,
                 'unassignedCount': unassignedCount,
-                'orphansCount': orphansCount,
-                'orphansList': orphansList,
+                'orphansCount': meaningCountNotSwadeshTerm,
+                'orphansList': meaningsMarkedAsNotSwadeshList,
                 'cogLoanCount': cogLoanCount,
                 'cogIdeophonicCount': cogIdeophonicCount,
                 'cogPllDerivationCount': cogPllDerivationCount,
@@ -916,14 +895,6 @@ class Language(AbstractTimestamped, AbstractDistribution):
     @property
     def orphansList(self):
         return self.computeCounts()['orphansList']
-
-    @property
-    def meaningsMarkedAsNotSwadeshList(self):
-        return self.computeCounts()['meaningsMarkedAsNotSwadeshList']
-
-    @property
-    def meaningCountNotSwadeshTerm(self):
-        return self.computeCounts()['meaningCountNotSwadeshTerm']
 
     @property
     def entryCount(self):
