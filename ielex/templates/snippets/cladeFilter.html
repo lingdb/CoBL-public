@@ -35,4 +35,14 @@
     {% endfor %}
   </ul>
 {% endif %}
+<div class="pull-right">
+  <span>{{noexportbutton.note}} &mdash; to change click button:</span>
+  <button type="button"
+          class="btn btn-xs btn-default"
+          title="{{ noexportbutton.tooltip }}"
+          onclick="window.location.href='{{ noexportbutton.url }}'">
+    <span class="glyphicon {{ noexportbutton.icon }}"></span>
+  </button>
+</div>
+
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

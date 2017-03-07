@@ -750,7 +750,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
 
     _computeCounts = {}  # Memo for computeCounts
 
-    def computeCounts(self, meaningList=None):
+    def computeCounts(self, meaningList=None, request=None):
         """
         computeCounts calculates some of the properties of this model.
         It uses self._computeCounts for memoization.
@@ -759,13 +759,17 @@ class Language(AbstractTimestamped, AbstractDistribution):
             # Making sure we've got a meaningList:
             if meaningList is None:
                 meaningList = MeaningList.objects.get(name=MeaningList.ALL)
-            # Setting up sets to aid computations:
-            meaningIdSet = getattr(meaningList,
-                                   '_language__computeCounts',
-                                   None)
-            if meaningIdSet is None:
+
+            if request is not None and request.method == 'GET':
+                if 'onlyexport' in request.path.split('/'):
+                    meaningIdSet = set([m.id for m in meaningList.meanings.filter(exclude=False)])
+                else:
+                    meaningIdSet = set([m.id for m in meaningList.meanings.all()])
+            else:
                 meaningIdSet = set([m.id for m in meaningList.meanings.all()])
-                setattr(meaningList, '_language__computeCounts', meaningIdSet)
+
+            setattr(meaningList, '_language__computeCounts', meaningIdSet)
+
             lexemeMeaningIdSet = set([l.meaning_id for l
                                       in self.lexeme_set.all()])
             lexemeMeaningIdSetOnlySwadesh = set([l.meaning_id for l

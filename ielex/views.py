@@ -421,7 +421,7 @@ def view_language_list(request, language_list=None):
     languages_editabletable_form = AddLanguageListTableForm()
     for lang in languages:
         lang.idField = lang.id
-        lang.computeCounts(meaningList)
+        lang.computeCounts(meaningList, request)
         languages_editabletable_form.langlist.append_entry(lang)
 
     otherLanguageLists = LanguageList.objects.exclude(name=current_list).all()
@@ -3057,16 +3057,33 @@ def view_language_progress(request, language_list=None):
     form = LanguageListProgressForm()
     for lang in languages:
         lang.idField = lang.id
-        lang.computeCounts(meaningList)
+        lang.computeCounts(meaningList, request)
         form.langlist.append_entry(lang)
 
     otherLanguageLists = LanguageList.objects.exclude(name=current_list).all()
+
+    noexportbutton = {}
+
+    if request.method == 'GET':
+        if 'onlyexport' in request.path.split('/'):
+            noexportbutton = {
+                "note": "based on only those meanings marked for 'export'",
+                "url": "/".join(request.path.split('/')[0:-1]), 
+                "tooltip": "Show statistics based on all meanings including those which are marked for 'not export'", 
+                "icon": "glyphicon-import"}
+        else:
+            noexportbutton = {
+                "note": "based on all meanings including those marked for 'not for export'",
+                "url": request.path + "onlyexport", 
+                "tooltip": "Show statistics based on only those meanings which are marked for 'export'", 
+                "icon": "glyphicon-export"}
 
     return render_template(request, "language_progress.html",
                            {"languages": languages,
                             'form': form,
                             "current_list": current_list,
                             "otherLanguageLists": otherLanguageLists,
+                            "noexportbutton": noexportbutton,
                             "wordlist": getDefaultWordlist(request),
                             "clades": Clade.objects.all()})
 
@@ -3101,7 +3118,7 @@ def view_language_distributions(request, language_list=None):
     languages_editabletable_form = LanguageDistributionTableForm()
     for lang in languages:
         lang.idField = lang.id
-        lang.computeCounts(meaningList)
+        lang.computeCounts(meaningList, request)
         languages_editabletable_form.langlist.append_entry(lang)
 
     otherLanguageLists = LanguageList.objects.exclude(name=current_list).all()
