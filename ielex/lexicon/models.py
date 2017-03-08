@@ -712,6 +712,8 @@ class Language(AbstractTimestamped, AbstractDistribution):
     originalAsciiName = models.CharField(
         max_length=128, validators=[suitable_for_url])
     historical = models.BooleanField(default=0)
+    # Added for #401
+    fragmentary = models.BooleanField(default=0)
     # Added for #300:
     notInExport = models.BooleanField(default=0)
     # Lat/Lon:
