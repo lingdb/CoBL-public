@@ -6,6 +6,7 @@ import datetime
 from collections import defaultdict
 from string import ascii_uppercase, ascii_lowercase
 import inspect
+import codecs
 
 import reversion
 from django.db import models, transaction
@@ -750,7 +751,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
 
     _computeCounts = {}  # Memo for computeCounts
 
-    def computeCounts(self, meaningList=None, request=None):
+    def computeCounts(self, meaningList=None, onlyExportData=False):
         """
         computeCounts calculates some of the properties of this model.
         It uses self._computeCounts for memoization.
@@ -760,11 +761,8 @@ class Language(AbstractTimestamped, AbstractDistribution):
             if meaningList is None:
                 meaningList = MeaningList.objects.get(name=MeaningList.ALL)
 
-            if request is not None and request.method == 'GET':
-                if 'onlyexport' in request.path.split('/'):
-                    meaningIdSet = set([m.id for m in meaningList.meanings.filter(exclude=False)])
-                else:
-                    meaningIdSet = set([m.id for m in meaningList.meanings.all()])
+            if onlyExportData:
+                meaningIdSet = set([m.id for m in meaningList.meanings.filter(exclude=False)])
             else:
                 meaningIdSet = set([m.id for m in meaningList.meanings.all()])
 
@@ -2149,6 +2147,7 @@ class NexusExport(AbstractTimestamped):
         """
         assert not self.pending, "NexusExport.generateResponse " \
                                  "impossible for pending exports."
+
         # name for the export file:
         if constraints:
             name = self.constraintsName
@@ -2158,19 +2157,24 @@ class NexusExport(AbstractTimestamped):
             name = self.tabledataName
         else:
             name = self.exportName
+
+        # The response itself:
+        response = HttpResponse(content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=%s' % \
+            name.replace(" ", "_")
+
         # data for the export file:
         if constraints:
             data = self.constraintsData
         elif beauti:
             data = self.exportBEAUti
         elif tabledata:
+            # for csv files write the UTF-8 BOM, mainly for Excel
+            response.write(codecs.BOM_UTF8)
             data = self.exportTableData
         else:
             data = self.exportData
-        # The response itself:
-        response = HttpResponse(content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename=%s' % \
-            name.replace(" ", "_")
+
         response.write(data)
         return response
 

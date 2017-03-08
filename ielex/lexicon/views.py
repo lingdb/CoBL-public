@@ -14,6 +14,7 @@ from ielex.lexicon.models import CognateClass, \
     CognateClassCitation, \
     CognateJudgement, \
     LanguageList, \
+    LanguageClade, \
     Lexeme, \
     MeaningList, \
     NexusExport, \
@@ -123,13 +124,19 @@ class NexusExportView(TemplateView):
         return self.render_to_response({"form": form})
 
     def fileNameForForm(self, form):
+        meanings = form.cleaned_data["meaning_list"].meanings
+        languages = form.cleaned_data["language_list"].languages
+
+        if form.cleaned_data["excludeMarkedMeanings"]:
+            meanings = meanings.exclude(exclude=True)
+        if form.cleaned_data["excludeMarkedLanguages"]:
+            languages = languages.exclude(notInExport=True)
+
         return "%s_CoBL-IE_Lgs%03d_Mgs%03d_%s_%s.nex" % (
             time.strftime("%Y-%m-%d"),
             # settings.project_short_name,
-            form.cleaned_data["language_list"].languages.filter(
-                notInExport=False).count(),
-            form.cleaned_data["meaning_list"].meanings.filter(
-                exclude=False).count(),
+            languages.count(),
+            meanings.count(),
             form.cleaned_data["language_list"].name,
             form.cleaned_data["meaning_list"].name)
 
@@ -290,8 +297,53 @@ def write_nexus(language_list_name,       # str
                    len(cognate_class_names),
                    " ".join(language_names))))
 
-    # write CSV header "Meaning","Cognate Set" + all language ascii names
-    exportTableData.append("\"Meaning\",\"Cognate Set\",%s" % ",".join(map(lambda x : '\"%s\"' % x, language_names)))
+    # get stats for each language for csv header data table
+    langStats = {}
+    for l in languages:
+        langStats[l.id] = l.computeCounts(meaning_list, True)
+
+    # write CSV header
+    # add header Excess Synonyms
+    exportTableData.append("\"Excess Synonyms\",,%s" % ",".join(
+        map(lambda x : '%s' % x, [langStats[l.id]['excessCount'] for l in languages])))
+    # add header Orphan Meanings
+    exportTableData.append("\"Orphan Meanings\",,%s" % ",".join(
+        map(lambda x : '%s' % x, [langStats[l.id]['orphansCount'] for l in languages])))
+    # add header Loan Events
+    exportTableData.append("\"Loan Events\",,%s" % ",".join(
+        map(lambda x : '%s' % x, [langStats[l.id]['cogLoanCount'] for l in languages])))
+    # add header Parallel Loans
+    exportTableData.append("\"Parallel Loans\",,%s" % ",".join(
+        map(lambda x : '%s' % x, [langStats[l.id]['cogParallelLoanCount'] for l in languages])))
+    # add header Ideophonic
+    exportTableData.append("\"Ideophonic\",,%s" % ",".join(
+        map(lambda x : '%s' % x, [langStats[l.id]['cogIdeophonicCount'] for l in languages])))
+    # add header Parallel Derivation
+    exportTableData.append("\"Parallel Derivation\",,%s" % ",".join(
+        map(lambda x : '%s' % x, [langStats[l.id]['cogPllDerivationCount'] for l in languages])))
+    # add header Dubious
+    exportTableData.append("\"Dubious\",,%s" % ",".join(
+        map(lambda x : '%s' % x, [langStats[l.id]['cogDubSetCount'] for l in languages])))
+    # add header language URL Names
+    exportTableData.append("\"Language URL Name\",,%s" % ",".join(
+        map(lambda x : '\"%s\"' % x, language_names)))
+    # add header language Display Names
+    exportTableData.append("\"Language Display Name\",,%s" % ",".join(
+        map(lambda x : '\"%s\"' % x, [l.utf8_name for l in languages])))
+    # add header language Cl 0
+    exportTableData.append("\"Cl 0\",,%s" % ",".join(
+        map(lambda x : '%s' % x, [l.level0 for l in languages])))
+    # add header language Cl 1
+    exportTableData.append("\"Cl 1\",,%s" % ",".join(
+        map(lambda x : '%s' % x, [l.level1 for l in languages])))
+    # add header language Cl 0 hex colour
+    exportTableData.append("\"Language clade colour hex code\",,%s" % ",".join(
+        map(lambda x : '\"#%s\"' % x, [l.level0Color for l in languages])))
+    # add header Historical
+    exportTableData.append("\"Historical\",,%s" % ",".join(
+        map(lambda x : '%s' % x, [int(l.historical) for l in languages])))
+    # add header Fragmentary? - empty @TODO 
+    exportTableData.append("\"Fragmentary?\",,%s" % ("," * (len(language_names)-1)))
 
     if kwargs['label_cognate_sets']:
         row = [" " * 9] + [
@@ -312,7 +364,6 @@ def write_nexus(language_list_name,       # str
         m, cc_cnt, cc = row.split("___")
         if current_m != m:
             exportTableData.append("," * (len(language_names)+1))
-        # exportTableData.append("\"%s\",\"%i\",%s" % (m, int(cc), ",".join(map(lambda x : '\"%s\"' % x, dataTable[row]))))
         exportTableData.append("%s,%i,%s" % (m, int(cc), ",".join(map(lambda x : '%s' % x, dataTable[row]))))
         current_m = m
 

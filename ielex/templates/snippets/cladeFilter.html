@@ -35,8 +35,9 @@
     {% endfor %}
   </ul>
 {% endif %}
+{% if noexportbutton %}
 <div class="pull-right">
-  <span>{{noexportbutton.note}} &mdash; to change click button:</span>
+  <span>{{noexportbutton.note}}</span>
   <button type="button"
           class="btn btn-xs btn-default"
           title="{{ noexportbutton.tooltip }}"
@@ -44,5 +45,6 @@
     <span class="glyphicon {{ noexportbutton.icon }}"></span>
   </button>
 </div>
+{% endif %}
 
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}
