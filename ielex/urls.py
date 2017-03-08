@@ -135,7 +135,7 @@ urlpatterns = [
         name="view-language-lists"),
 
     # Language progress (#311):
-    url(r'^languageprogress/%(LANGUAGELIST)s/(onlyexport)?$' % R, view_language_progress,
+    url(r'^languageprogress/%(LANGUAGELIST)s/(onlyexport|onlynotexport)?$' % R, view_language_progress,
         name="view-language-progress"),
 
     # Language distributions:

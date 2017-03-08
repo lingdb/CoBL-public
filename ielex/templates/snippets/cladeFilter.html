@@ -1,4 +1,6 @@
 {% if clades %}
+<div class="row">
+<div class="pull-left" style="margin-left:20px;margin-top:-10px">
   <ul id="cladeFilter"
       style="padding-left: 0px;
              padding-top: 15px;">
@@ -34,16 +36,18 @@
       {% endif %}
     {% endfor %}
   </ul>
+</div>
 {% endif %}
 {% if noexportbutton %}
-<div class="pull-right">
+<div class="pull-right" style="margin-right:10px;margin-top:5px">
   <span>{{noexportbutton.note}}</span>
   <button type="button"
-          class="btn btn-xs btn-default"
+          class="btn btn-xs {{ noexportbutton.state }}"
           title="{{ noexportbutton.tooltip }}"
           onclick="window.location.href='{{ noexportbutton.url }}'">
-    <span class="glyphicon {{ noexportbutton.icon }}"></span>
+      <span class="glyphicon {{ noexportbutton.icon }}"></span>
   </button>
+</div>
 </div>
 {% endif %}
 

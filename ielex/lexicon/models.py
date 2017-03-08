@@ -751,7 +751,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
 
     _computeCounts = {}  # Memo for computeCounts
 
-    def computeCounts(self, meaningList=None, onlyExportData=False):
+    def computeCounts(self, meaningList=None, exportMethod=''):
         """
         computeCounts calculates some of the properties of this model.
         It uses self._computeCounts for memoization.
@@ -761,8 +761,10 @@ class Language(AbstractTimestamped, AbstractDistribution):
             if meaningList is None:
                 meaningList = MeaningList.objects.get(name=MeaningList.ALL)
 
-            if onlyExportData:
+            if exportMethod=='onlyexport':
                 meaningIdSet = set([m.id for m in meaningList.meanings.filter(exclude=False)])
+            elif exportMethod=='onlynotexport':
+                meaningIdSet = set([m.id for m in meaningList.meanings.filter(exclude=True)])
             else:
                 meaningIdSet = set([m.id for m in meaningList.meanings.all()])
 

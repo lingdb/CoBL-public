@@ -419,9 +419,15 @@ def view_language_list(request, language_list=None):
 
     meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
     languages_editabletable_form = AddLanguageListTableForm()
+    exportMethod = ''
+    if request.method == 'GET':
+        if 'onlyexport' in request.path.split('/'):
+            exportMethod = 'onlyexport'
+        elif 'onlynotexport' in request.path.split('/'):
+            exportMethod = 'onlynotexport'
     for lang in languages:
         lang.idField = lang.id
-        lang.computeCounts(meaningList, ((request.method == 'GET') and ('onlyexport' in request.path.split('/'))))
+        lang.computeCounts(meaningList, exportMethod)
         languages_editabletable_form.langlist.append_entry(lang)
 
     otherLanguageLists = LanguageList.objects.exclude(name=current_list).all()
@@ -3055,9 +3061,15 @@ def view_language_progress(request, language_list=None):
         "languageclade_set", "clades")
     meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
     form = LanguageListProgressForm()
+    exportMethod = ''
+    if request.method == 'GET':
+        if 'onlyexport' in request.path.split('/'):
+            exportMethod = 'onlyexport'
+        elif 'onlynotexport' in request.path.split('/'):
+            exportMethod = 'onlynotexport'
     for lang in languages:
         lang.idField = lang.id
-        lang.computeCounts(meaningList, ((request.method == 'GET') and ('onlyexport' in request.path.split('/'))))
+        lang.computeCounts(meaningList, exportMethod)
         form.langlist.append_entry(lang)
 
     otherLanguageLists = LanguageList.objects.exclude(name=current_list).all()
@@ -3067,16 +3079,25 @@ def view_language_progress(request, language_list=None):
     if request.method == 'GET':
         if 'onlyexport' in request.path.split('/'):
             noexportbutton = {
-                "note": "based on only those meanings marked for 'export' — to change click button:",
+                "note": "based on only those meanings marked for 'export'",
+                "url": "/".join(request.path.split('/')[0:-1]) + "/onlynotexport", 
+                "tooltip": "Show statistics based on all meanings which are marked only for 'not export'", 
+                "state": "btn-success", 
+                "icon": "glyphicon glyphicon-ok"}
+        elif 'onlynotexport' in request.path.split('/'):
+            noexportbutton = {
+                "note": "based on only those meanings marked for 'not for export'",
                 "url": "/".join(request.path.split('/')[0:-1]), 
                 "tooltip": "Show statistics based on all meanings including those which are marked for 'not export'", 
-                "icon": "glyphicon-import"}
+                "state": "btn-danger", 
+                "icon": "glyphicon glyphicon-remove"}
         else:
             noexportbutton = {
-                "note": "based on all meanings including those marked for 'not for export' — to change click button:",
+                "note": "based on all meanings including those marked for 'not for export'",
                 "url": request.path + "onlyexport", 
                 "tooltip": "Show statistics based on only those meanings which are marked for 'export'", 
-                "icon": "glyphicon-export"}
+                "state": "btn-default", 
+                "icon": "glyphicon-question-sign"}
 
     return render_template(request, "language_progress.html",
                            {"languages": languages,
@@ -3116,9 +3137,15 @@ def view_language_distributions(request, language_list=None):
 
     meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
     languages_editabletable_form = LanguageDistributionTableForm()
+    exportMethod = ''
+    if request.method == 'GET':
+        if 'onlyexport' in request.path.split('/'):
+            exportMethod = 'onlyexport'
+        elif 'onlynotexport' in request.path.split('/'):
+            exportMethod = 'onlynotexport'
     for lang in languages:
         lang.idField = lang.id
-        lang.computeCounts(meaningList, ((request.method == 'GET') and ('onlyexport' in request.path.split('/'))))
+        lang.computeCounts(meaningList, exportMethod)
         languages_editabletable_form.langlist.append_entry(lang)
 
     otherLanguageLists = LanguageList.objects.exclude(name=current_list).all()

@@ -300,7 +300,7 @@ def write_nexus(language_list_name,       # str
     # get stats for each language for csv header data table
     langStats = {}
     for l in languages:
-        langStats[l.id] = l.computeCounts(meaning_list, True)
+        langStats[l.id] = l.computeCounts(meaning_list, 'onlyexport')
 
     # write CSV header
     # add header Excess Synonyms
