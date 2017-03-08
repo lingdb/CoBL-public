@@ -3053,8 +3053,13 @@ def view_language_progress(request, language_list=None):
         if updateClades:
             updateLanguageCladeRelations(languages=updateClades)
         # Redirecting so that UA makes a GET.
+        exportMethod = ''
+        if 'onlyexport' in request.path.split('/'):
+            exportMethod = 'onlyexport'
+        elif 'onlynotexport' in request.path.split('/'):
+            exportMethod = 'onlynotexport'
         return HttpResponseRedirect(
-            reverse("view-language-progress", args=[current_list.name]))
+            reverse("view-language-progress", args=[current_list.name,exportMethod]))
 
     languages = current_list.languages.all().prefetch_related(
         "lexeme_set", "lexeme_set__meaning",

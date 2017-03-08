@@ -452,6 +452,7 @@ class LanguageListRowForm(AbstractTimestampedForm):
     sortRankInClade = IntegerField(
         'Sort rank in clade', validators=[InputRequired()])
     historical = BooleanField('Historical', validators=[InputRequired()])
+    fragmentary = BooleanField('Fragmentary', validators=[InputRequired()])
     notInExport = BooleanField('Not in Export', validators=[InputRequired()])
     utf8_name = StringField('Display name', validators=[InputRequired()])
     iso_code = StringField('ISO code', validators=[InputRequired()])
@@ -508,6 +509,7 @@ class LanguageDistributionRowForm(AbstractTimestampedForm,
     sortRankInClade = IntegerField(
         'Sort rank in clade', validators=[InputRequired()])
     historical = BooleanField('Historical', validators=[InputRequired()])
+    fragmentary = BooleanField('Fragmentary', validators=[InputRequired()])
     notInExport = BooleanField('Not in Export', validators=[InputRequired()])
     utf8_name = StringField('Display name', validators=[InputRequired()])
     earliestTimeDepthBound = IntegerField('Earliest Time-Depth Bound',
@@ -585,6 +587,7 @@ class EditSingleLanguageForm(LanguageListRowForm,
     ]
     fieldsWithLabel = [
         ('historical', {'data-dependencyfor-tr': 'historical'}),
+        ('fragmentary', {'data-dependencyfor-tr': 'fragmentary'}),
         ('utf8_name', {'required': 'required', 'class': 'form-control'}),
         ('ascii_name', {'required': 'required', 'class': 'form-control'}),
         ('description', {'class': 'form-control'}),
@@ -671,6 +674,7 @@ class LanguageListProgressRowForm(AbstractTimestampedForm):
     sortRankInClade = IntegerField(
         'Sort rank in clade', validators=[InputRequired()])
     notInExport = BooleanField('Not in Export', validators=[InputRequired()])
+    fragmentary = BooleanField('Fragmentary', validators=[InputRequired()])
     utf8_name = StringField('Display name', validators=[InputRequired()])
     author = StringField('Author', validators=[InputRequired()])
     entryTimeframe = StringField('Entry timeframe',

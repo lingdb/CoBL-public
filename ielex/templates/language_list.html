@@ -170,6 +170,14 @@
                   </div>
                 </div>
               </th>
+              {# fragmentary_title.html #}
+              <th style="width:25px !important">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Fragmentary
+                  </div>
+                </div>
+              </th>
               {# notInExport_title.html #}
               <th style="width:25px !important">
                 <div class="vertical-text">
@@ -334,6 +342,14 @@
                 <button type="button"
                         class="filterBool btn btn-xs btn-default"
                         data-selector=".languageHistorical input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# fragmentary_filter.html #}
+              <td>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".languageFragmentary input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </td>
@@ -526,6 +542,14 @@
                     {% form_field language.historical class="form-control" data-dependencyfor-tr="historical" %}
                   {% else %}
                     {% form_field language.historical class="form-control" disabled="disabled" %}
+                  {% endif %}
+                </td>
+                {# fragmentary_data.html #}
+                <td class="languageFragmentary">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.fragmentary class="form-control" data-dependencyfor-tr="fragmentary" %}
+                  {% else %}
+                    {% form_field language.fragmentary class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
                 {# notInExport_data.html #}

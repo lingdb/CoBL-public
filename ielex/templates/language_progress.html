@@ -95,9 +95,9 @@
             <a href="{% url 'view-language-progress' current_list.name %}" class="btn btn-default"> undo</a>
             <input type="submit" value="Save" name="progress_form" class="btn btn-danger">
           </div>
-          <h1 class="inline">
+          <h2 class="inline">
             Languages Reference: Statistics
-          </h1>
+          </h2>
           {% endif %}
           {% include "snippets/cladeFilter.html" %}
         </div>{# .fixedContainer #}
@@ -188,6 +188,14 @@
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Historical
+                  </div>
+                </div>
+              </th>
+              {# fragmentary_title.html #}
+              <th style="width:25px !important">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Fragmentary
                   </div>
                 </div>
               </th>
@@ -451,6 +459,14 @@
                 <button type="button"
                         class="filterBool btn btn-xs btn-default"
                         data-selector=".languageHistorical input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# fragmentary_filter.html #}
+              <td>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".languageFragmentary input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </td>
@@ -722,6 +738,14 @@
                          {% if language.object_data.historical %}
                          checked="checked"
                          {% endif %}>
+                </td>
+                {# fragmentary_data.html #}
+                <td class="languageFragmentary">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.fragmentary class="form-control" data-dependencyfor-tr="fragmentary" %}
+                  {% else %}
+                    {% form_field language.fragmentary class="form-control" disabled="disabled" %}
+                  {% endif %}
                 </td>
                 {# notInExport_data.html #}
                 <td class="notInExport">

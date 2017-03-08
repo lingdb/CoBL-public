@@ -976,7 +976,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
                   'rfcWebPath1', 'rfcWebPath2', 'author', 'reviewer',
                   'earliestTimeDepthBound', 'latestTimeDepthBound',
                   'progress', 'sortRankInClade', 'entryTimeframe',
-                  'historical', 'notInExport', 'exampleLanguage'])
+                  'historical', 'fragmentary', 'notInExport', 'exampleLanguage'])
         return fs | AbstractDistribution.timestampedFields(self)
 
     def deltaReport(self, **kwargs):

@@ -343,7 +343,8 @@ def write_nexus(language_list_name,       # str
     exportTableData.append("\"Historical\",,%s" % ",".join(
         map(lambda x : '%s' % x, [int(l.historical) for l in languages])))
     # add header Fragmentary? - empty @TODO 
-    exportTableData.append("\"Fragmentary?\",,%s" % ("," * (len(language_names)-1)))
+    exportTableData.append("\"Fragmentary?\",,%s" % ",".join(
+        map(lambda x : '%s' % x, [int(l.fragmentary) for l in languages])))
 
     if kwargs['label_cognate_sets']:
         row = [" " * 9] + [
