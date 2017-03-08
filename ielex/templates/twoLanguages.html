@@ -95,13 +95,13 @@
                 </div>
               </th>
               {# cognateclassids_title.html #}
-              <th style="width: 45px;">
+              <th style="text-align: center;">
                 Cog.<br>IDs
               </th>
-              <!-- {# cognateclassview_title.html #}
-              <th></th> -->
+              {# cognateclassview_title.html #}
+              <th style="width: 50px;"></th>
               {# cognateclasses_title.html #}
-              <th>Cog.<br>Alias</th>
+              <th style="width: 45px;">Cog.<br>Alias</th>
               {# rootform_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -118,7 +118,7 @@
                 Root ref. language
               </th>
               {# loanevent_title.html #}
-              <th colspan="2" style="border-right: 2px solid #dddddd;">
+              <th style="border-right: 2px solid #dddddd;">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Loan Evt
@@ -210,12 +210,13 @@
                 </div>
               </td>
               {# cognateclassids_filter.html #}
-              <td style="width: 45px;" colspan="2">
-                <div class="btn btn-xs btn-default sortIntText"
+              <td style="text-align: center;">
+                <div class="btn btn-xs btn-default sortIntText" style="width:30px"
                      data-selector=".cognateClassId">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
+              <td></td>
               {# cognateclasses_filter.html #}
               <td>
                 {% if user.is_authenticated %}
@@ -401,7 +402,7 @@
                   </center>
                 </td>
                 {# cognateclassids_data.html #}
-                <td class="cognateClassId" style="text-align: center; width: 45px;">
+                <td class="cognateClassId" style="text-align: center;">
                   {% for c in lexeme.object_data.allCognateClasses %}
                     <a href="/cognate/{{ c.id }}/"
                        target="_blank"
@@ -411,13 +412,13 @@
                   {% endfor %}
                 </td>
                 {# cognateclassview_data.html #}
-                <td style="padding-left: 4px; padding-right: 4px;">
+                <td style="">
                   <a href="/meaning/{{ lexeme.object_data.meaning.gloss }}/cognateclasslist/">
                     <img src="{% static '1c.png' %}">
                   </a>
                 </td>
                 {# cognateclasses_data.html #}
-                <td style="text-align: center; color: #8B4510;">
+                <td style="text-align: left; color: #8B4510;">
                   <div class="cognateClasses">
                     {% if user.is_authenticated %}
                       {% form_field lexeme.combinedCognateClassAssignment class="form-control" %}
@@ -526,7 +527,7 @@
                     </center>
                   </td>
                   {# cognateclassids_original.html #}
-                  <td class="cognateClassId" style="text-align: center; width: 45px;">
+                  <td class="cognateClassId" style="text-align: center;">
                     {% for c in lexeme.object_data.original.allCognateClasses %}
                       <a href="/cognate/{{ c.id }}/"
                          target="_blank"
@@ -536,13 +537,13 @@
                     {% endfor %}
                   </td>
                   {# cognateclassview_original.html #}
-                  <td style="padding-left: 4px; padding-right: 4px;">
+                  <td style="">
                     <a href="/meaning/{{ lexeme.object_data.original.meaning.gloss }}/cognateclasslist/">
                       <img src="{% static '1c.png' %}">
                     </a>
                   </td>
                   {# cognateclasses_original.html #}
-                  <td style="text-align: center; color: #8B4510;">
+                  <td style="text-align: left; color: #8B4510;">
                     <div class="cognateClasses">
                     {% for c in lexeme.object_data.original.allCognateClasses %}
                       <a href="/cognate/{{ c.id }}/"
