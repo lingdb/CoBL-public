@@ -2208,7 +2208,7 @@ class NexusExport(AbstractTimestamped):
     @property
     def tabledataName(self):
         # Replaces the /\.nex$/ in exportName _TableData.csv
-        return self.exportName[:-4] + "_TableData.csv"
+        return self.exportName[:-4] + "_DataTable.csv"
 
 
 class RomanisedSymbol(AbstractTimestamped):

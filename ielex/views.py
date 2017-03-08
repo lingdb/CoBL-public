@@ -2866,7 +2866,7 @@ def view_nexus_export(request, exportId=None):
                     return export.generateResponse(
                         constraints='constraints' in request.GET,
                         beauti='beauti' in request.GET,
-                        tabledata='tabledata' in request.GET)
+                        tabledata='datatable' in request.GET)
                 # Message if pending:
                 messages.info(request,
                               "Sorry, the server is still "
