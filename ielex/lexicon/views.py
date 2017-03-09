@@ -361,10 +361,15 @@ def write_nexus(language_list_name,       # str
 
     # write exportTableData
     current_m = ""
+    empty_line = "," * (len(language_names)+1)
     for row in sorted(dataTable):
         m, cc_cnt, cc = row.split("___")
         if current_m != m:
-            exportTableData.append("," * (len(language_names)+1))
+            exportTableData.append(empty_line)
+            exportTableData.append(empty_line)
+            exportTableData.append(empty_line)
+            exportTableData.append(empty_line)
+            exportTableData.append(empty_line)
         exportTableData.append("%s,%i,%s" % (m, int(cc), ",".join(map(lambda x : '%s' % x, dataTable[row]))))
         current_m = m
 
