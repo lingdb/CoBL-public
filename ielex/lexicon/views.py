@@ -370,6 +370,7 @@ def write_nexus(language_list_name,       # str
             exportTableData.append(empty_line)
             exportTableData.append(empty_line)
             exportTableData.append(empty_line)
+            exportTableData.append(empty_line)
         exportTableData.append("%s,%i,%s" % (m, int(cc), ",".join(map(lambda x : '%s' % x, dataTable[row]))))
         current_m = m
 
