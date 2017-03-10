@@ -554,10 +554,9 @@ def construct_matrix(languages,                # [Language]
     col_num = 0
     dataTableDict = defaultdict(list)
 
-    langIDs = languages.values_list('id')
     # get for all languages the clade ids for sorting cognate classes
     allInvolvedClades = Clade.objects.filter(
-                languageclade__language__id__in=langIDs).exclude(
+                languageclade__language__id__in=languages).exclude(
                 hexColor='').exclude(shortName='').values_list('id', 'languageclade__language__id')
     languageClades = {}
     for clade_id, lg_id in allInvolvedClades:
@@ -566,11 +565,11 @@ def construct_matrix(languages,                # [Language]
     for language in languages:
         row = [language.ascii_name]
         if excludeNotSwadesh:
-            lg_lex_set = language.lexeme_set.filter(not_swadesh_term=False)
+            meaningIDsForLanguage = set(language.lexeme_set.filter(not_swadesh_term=False).values_list('meaning_id', flat=True))
         else:
-            lg_lex_set = language.lexeme_set
+            meaningIDsForLanguage = set(language.lexeme_set.values_list('meaning_id', flat=True))
         for meaning in meanings:
-            is_lg_missing_mng = not lg_lex_set.filter(meaning_id=meaning.id).exists()
+            is_lg_missing_mng = not meaning.id in meaningIDsForLanguage
             if ascertainment_marker:
                 if is_lg_missing_mng:
                     row.append("?")
