@@ -554,14 +554,23 @@ def construct_matrix(languages,                # [Language]
     col_num = 0
     dataTableDict = defaultdict(list)
 
-    for language in languages: #@TODO speed optimation
+    langIDs = languages.values_list('id')
+    # get for all languages the clade ids for sorting cognate classes
+    allInvolvedClades = Clade.objects.filter(
+                languageclade__language__id__in=langIDs).exclude(
+                hexColor='').exclude(shortName='').values_list('id', 'languageclade__language__id')
+    languageClades = {}
+    for clade_id, lg_id in allInvolvedClades:
+        languageClades[lg_id]=clade_id
+
+    for language in languages:
         row = [language.ascii_name]
-        lg_lex_set = language.lexeme_set
+        if excludeNotSwadesh:
+            lg_lex_set = language.lexeme_set.filter(not_swadesh_term=False)
+        else:
+            lg_lex_set = language.lexeme_set
         for meaning in meanings:
-            if excludeNotSwadesh:
-                is_lg_missing_mng = not lg_lex_set.filter(not_swadesh_term=False, meaning_id=meaning.id).exists()
-            else:
-                is_lg_missing_mng = not lg_lex_set.filter(meaning_id=meaning.id).exists()
+            is_lg_missing_mng = not lg_lex_set.filter(meaning_id=meaning.id).exists()
             if ascertainment_marker:
                 if is_lg_missing_mng:
                     row.append("?")
@@ -575,17 +584,32 @@ def construct_matrix(languages,                # [Language]
             if meaning.id in data:
                 cnt = 0 # needed for preserving the cc order after sorting meaning keys in dict
                 data_mng_id = data[meaning.id]
-                lg_id = language.id
-                for cc in sorted(data_mng_id,
-                                 key=lambda x: (str(x),) if type(x) == int else x):
-                    if ascertainment_marker and make_header:
+
+                # generate sort order for cognate class ids = order by (cladeCount, lexCount)
+                cc_sortorder = {}
+                for cc0 in data_mng_id.keys():
+                    cc = cc0
+                    if isinstance(cc0, (list, tuple)):
+                        cc = int(cc0[1])
+                    lexCount = len(data_mng_id[cc0])
+                    if lexCount == 1 :
+                        cc_sortorder["%04d_%06d_%06d" % (1, 1, cc)] = cc0
+                    else:
+                        clds = set()
+                        for l in data_mng_id[cc0]:
+                            clds.add(languageClades[l])
+                        cc_sortorder["%04d_%06d_%06d" % (len(clds), lexCount, cc)] = cc0
+
+                for cc0 in sorted(cc_sortorder, reverse=True):
+                    cc = cc_sortorder[cc0]
+                    if make_header and ascertainment_marker:
                         col_num += 1
                         cognate_class_names.append(
                             cognate_class_name_formatter(cc, meaning.gloss))
                     if is_lg_missing_mng:
                         row.append("?")
                         dataTableDict["%s___%s" % (meaning.gloss, get_cognate_class_id_for_dataTable(cnt, cc))].append("?")
-                    elif lg_id in data_mng_id[cc]:
+                    elif language.id in data_mng_id[cc]:
                         row.append("1")
                         dataTableDict["%s___%s" % (meaning.gloss, get_cognate_class_id_for_dataTable(cnt, cc))].append("1")
                     else:
