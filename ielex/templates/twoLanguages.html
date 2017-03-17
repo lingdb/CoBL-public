@@ -51,6 +51,7 @@
         {% endif %}
         {% include "snippets/prev_next_twoLanguages.html" %}
       </div>
+      <div>
         <table class="table table-condensed viewTableFilter"
                id="viewTwoLanguages"
                {% if user.is_authenticated %}
@@ -592,6 +593,7 @@
             {% endfor %}
           </tbody>
         </table>
+      </div>
       {% if user.is_authenticated %}
         </form>
       {% endif %}

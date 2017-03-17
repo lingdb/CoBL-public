@@ -1,4 +1,4 @@
-<div class="container pull-left" 
+<div class="container" 
     {% if user.is_authenticated %}
     style="margin-top:-50px"
     {% endif %}>
@@ -6,8 +6,8 @@
     <div class="col-md-4">
       <h4>Target lg.:</h4>
     </div>
-    <div class="col-md-4">
-      <h1 class="inline"
+    <div class="col-md-4" style="margin-left:-20px">
+      <h2 class="inline"
           {% if targetLang.description %}
             data-toggle="tooltip"
             data-placement="right"
@@ -21,13 +21,12 @@
       </h1>
     </div>
   </div>
-  <div class="row"
-       style="background-color: #E0E0E0;">
-    <div class="col-md-4">
+  <div class="row">
+    <div class="col-md-4" style="background-color: #E0E0E0;">
       <h4>Source Reference lg.:</h4>
     </div>
-    <div class="col-md-4">
-      <h1 class="inline"
+    <div class="col-md-4" style="margin-left:-20px">
+      <h2 class="inline"
           {% if sourceLang.description %}
             data-toggle="tooltip"
             data-placement="right"
