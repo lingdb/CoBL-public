@@ -46,6 +46,12 @@
       //Actual init work:
       el.each(function(){
         var table = $(this);
+        // try to place thead fixed based on wrapped element
+        table.floatThead({
+            scrollContainer: function(table){
+                return table.closest('.wrapper');
+            }
+        });
         //Fix overflow for #356:
         table.find('td').each(function(){
           if(this.offsetWidth < this.scrollWidth){
