@@ -1,4 +1,7 @@
-<div class="container pull-left" style="margin-top:-50px">
+<div class="container pull-left" 
+    {% if user.is_authenticated %}
+    style="margin-top:-50px"
+    {% endif %}>
   <div class="row">
     <div class="col-md-4">
       <h4>Target lg.:</h4>
