@@ -65,6 +65,7 @@
             <tr>
               {# id_title.html #}
               <th class="hide"></th>
+              <th class="languageBranchColor" colspan="2" style="width:10px"></th>
               {# warnings_title.html #}
               <th></th>
               {# meaning_title.html #}
@@ -141,6 +142,7 @@
             <tr class="filterBar">
               {# id_filter.html #}
               <td class="hide"></td>
+              <td class="languageBranchColor" colspan="2"></td>
               {# warnings_filter.html #}
               <td></td>
               {# meaning_filter.html #}
@@ -305,6 +307,7 @@
                   {{ lexeme.lastTouched }}
                   {{ lexeme.lastEditedBy }}
                 </td>
+                <td class="languageBranchColor" colspan="2"></td>
                 {# warnings_data.html #}
                 <td>
                   {% if lexeme.object_data.meaning.doubleCheck %}
@@ -405,7 +408,14 @@
                   </center>
                 </td>
                 {# cognateclassids_data.html #}
-                <td class="cognateClassId" style="text-align: center;">
+                <td class="cognateClassId" style="text-align: center;
+                  {% for cc in lexeme.object_data.original.allCognateClasses %}
+                    {% if cc in lexeme.object_data.allCognateClasses %}
+                      background-color:{% cycle '#FFCCCB' '#FFDD22' %}
+                    {% endif %}
+                  {% endfor %}
+                  ">
+
                   {% for c in lexeme.object_data.allCognateClasses %}
                     <a href="/cognate/{{ c.id }}/"
                        target="_blank"
@@ -413,6 +423,7 @@
                       {{ c.id }}
                     </a>
                   {% endfor %}
+
                 </td>
                 {# cognateclassview_data.html #}
                 <td style="">
@@ -472,14 +483,14 @@
               </tr>
               {% if lexeme.object_data.original %}
                 <tr class="original_row"
-                    id="original_row_lexeme{{ lexeme.object_data.original.id }}"
-                    style="background-color: #E0E0E0;">
+                    id="original_row_lexeme{{ lexeme.object_data.original.id }}">
                   {# id_original.html #}
                   <td class="hide"></td>
+                  <td class="languageBranchColor" style="background-color: #E0E0E0;" colspan="2"></td>
                   {# warnings_original.html #}
-                  <td></td>
+                  <td style="background-color: #E0E0E0;"></td>
                   {# meaning_original.html #}
-                  <td>
+                  <td style="background-color: #E0E0E0;">
                     <a href="https://github.com/lingdb/CoBL-public/wiki/{{ lexeme.object_data.original.meaning.gloss }}"
                        title="View wiki page."
                        target="_blank"
@@ -487,7 +498,7 @@
                       <span class="glyphicon glyphicon-info-sign"></span>
                     </a>
                   </td>
-                  <td class="lexemeMeaning">
+                  <td class="lexemeMeaning" style="background-color: #E0E0E0;">
                     <a href="/meaning/{{ lexeme.object_data.original.meaning.id }}/"
                        style="font-size: 15px; color: #006400;"
                        {% if lexeme.object_data.meaning.tooltip %}
@@ -530,7 +541,13 @@
                     </center>
                   </td>
                   {# cognateclassids_original.html #}
-                  <td class="cognateClassId" style="text-align: center;">
+                  <td class="cognateClassId" style="text-align: center;
+                  {% for cc in lexeme.object_data.original.allCognateClasses %}
+                    {% if cc in lexeme.object_data.allCognateClasses %}
+                      background-color:{% cycle '#FFCCCB' '#FFDD22' %}
+                    {% endif %}
+                  {% endfor %}
+                  ">
                     {% for c in lexeme.object_data.original.allCognateClasses %}
                       <a href="/cognate/{{ c.id }}/"
                          target="_blank"
