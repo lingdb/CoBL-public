@@ -405,7 +405,11 @@
                 </td>
                 {# notswadesh_data.html #}
                 <td class="lexemeNotSwadeshTerm {{ lexeme.object_data.startNewMeaning }}">
-                  {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" %}
+                  {% if user.is_authenticated %}
+                    {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" %}
+                  {% else %}
+                    {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" disabled="disabled" %}
+                  {% endif %}
                 </td>
                 {# ncog_data.html #}
                 <td class="lexemeNumCogCoded {{ lexeme.object_data.startNewMeaning }}"
