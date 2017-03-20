@@ -310,7 +310,7 @@
                     style="background-color:#E0E0E0;"
                   {% endif %}>
                   {% if lexeme.object_data.meaning.doubleCheck %}
-                  <div style="color: #ff0000;"
+                  <div style="color: #ff0000;width:16px !important"
                        data-toggle="tooltip"
                        data-placement="top"
                        data-container="body"
@@ -322,7 +322,9 @@
                 {# meaning_data.html #}
                 <td class="{{ lexeme.object_data.startNewMeaning }}"
                 {% if lexeme.object_data.sourceLg %}
-                  style="background-color:#E0E0E0;"
+                  style="background-color:#E0E0E0;width:16px !important"
+                {% else %}
+                  style="width:16px !important"
                 {% endif %}>
                   <a href="https://github.com/lingdb/CoBL-public/wiki/{{ lexeme.object_data.meaning.gloss }}"
                      title="View wiki page."
