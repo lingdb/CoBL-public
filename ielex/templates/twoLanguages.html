@@ -43,7 +43,7 @@
                Undo
             </a>
             <input type="submit" value="Save"
-                   name="lex_form" class="btn btn-danger" disabled="disabled">
+                   name="lex_form" class="btn btn-danger">
           </div>
         {% endif %}
         {% include "snippets/prev_next_twoLanguages.html" %}
@@ -381,10 +381,10 @@
                 </td>
                 {# romanised_data.html #}
                 <td class="lexemeRomanised {{ lexeme.object_data.startNewMeaning }}">
-                  {% if lexeme.object_data.sourceLg or not user.is_authenticated %}
-                    {{ lexeme.object_data.romanised }}
-                  {% else %}
+                  {% if user.is_authenticated %}
                     {% form_field lexeme.romanised id="romanised" class="form-control" style="font-size: 15px;" %}
+                  {% else %}
+                    {{ lexeme.object_data.romanised }}
                   {% endif %}
                 </td>
                 {# viewcopy_data.html #}
@@ -397,19 +397,15 @@
                 </td>
                 {# nativeScript_data.html #}
                 <td class="lexemeNativeScript {{ lexeme.object_data.startNewMeaning }}">
-                  {% if lexeme.object_data.sourceLg or not user.is_authenticated %}
-                    {{ lexeme.object_data.nativeScript }}
-                  {% elif lexeme.object_data.nativeScript %}
+                  {% if user.is_authenticated %}
                     {% form_field lexeme.nativeScript id="nativeScript" class="form-control" %}
+                  {% elif lexeme.object_data.nativeScript %}
+                    {{ lexeme.object_data.nativeScript }}
                   {% endif %}
                 </td>
                 {# notswadesh_data.html #}
                 <td class="lexemeNotSwadeshTerm {{ lexeme.object_data.startNewMeaning }}">
-                  {% if lexeme.object_data.sourceLg or not user.is_authenticated %}
-                    {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" disabled="disabled" %}
-                  {% else %}
-                    {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" %}
-                  {% endif %}
+                  {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" %}
                 </td>
                 {# ncog_data.html #}
                 <td class="lexemeNumCogCoded {{ lexeme.object_data.startNewMeaning }}"
@@ -440,7 +436,7 @@
                 </td>
                 {# cognateclassview_data.html #}
                 <td class="{{ lexeme.object_data.startNewMeaning }}">
-                  <a href="/meaning/{{ lexeme.object_data.meaning.gloss }}/cognateclasslist/">
+                  <a href="/meaning/{{ lexeme.object_data.meaning.gloss }}/cognateclasslist/" target="_blank">
                     <img src="{% static '1c.png' %}">
                   </a>
                 </td>
