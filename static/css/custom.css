@@ -34,7 +34,7 @@ table .form-control {
 }
 
 .badge.important {
-  font-size: 25px;
+  font-size: 20px;
 }
 
 .space-right {
@@ -181,4 +181,7 @@ table input[type="checkbox"],
 button.filterBool {
   margin-left: auto;
   margin-right: auto;
+}
+.startNewMeaning {
+  border-top:4pt solid #444444 !important;
 }

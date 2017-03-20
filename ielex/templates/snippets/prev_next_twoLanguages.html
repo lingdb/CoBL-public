@@ -1,13 +1,13 @@
-<div class="container" 
-    {% if user.is_authenticated %}
-    style="margin-top:-50px"
-    {% endif %}>
+<div class="container">
   <div class="row">
-    <div class="col-md-4">
-      <h4>Target lg.:</h4>
+
+    <div class="col-md-3" style="margin-left:-100px !important;margin-right:-40px !important">
+      <h2>Cognate&nbsp;Sets</h2>
     </div>
-    <div class="col-md-4" style="margin-left:-20px">
-      <h2 class="inline"
+
+    <div class="col-md-3" style="margin-left:-20px">
+      <b>Target lg.:</b><br/>
+      <h3 class="inline"
           {% if targetLang.description %}
             data-toggle="tooltip"
             data-placement="right"
@@ -16,35 +16,34 @@
           {% endif %}>
         <input class="typeaheadText"
                value="{{ targetLang.utf8_name }}"
-               type="text"
-               data-typeahead="{{ typeahead1 | escapejs }}">
-      </h1>
+               type="text" data-typeahead="{{ typeahead1 | escapejs }}">
+      </h3>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-4" style="background-color: #E0E0E0;">
-      <h4>Source Reference lg.:</h4>
+
+    <div class="col-md-1">
+      <h3>&harr;</h2>
     </div>
-    <div class="col-md-4" style="margin-left:-20px">
-      <h2 class="inline"
+
+    <div class="col-md-3" style="margin-left:-20px;background-color: #E0E0E0;">
+      <b>Source Reference lg.:</b><br/>
+      <h3 class="inline"
           {% if sourceLang.description %}
             data-toggle="tooltip"
             data-placement="right"
             data-container="body"
             {% if sourceLang %}
-            title="{{ sourceLang.description }}"
+              title="{{ sourceLang.description }}"
             {% else %}
-            title="Type here to select language 2"
+              title="Type here to select language 2"
             {% endif %}
           {% endif %}>
         <input class="typeaheadText"
                {% if sourceLang %}
-               value="{{ sourceLang.utf8_name }}"
+                 value="{{ sourceLang.utf8_name }}"
                {% else %}
-               value="Select language 2"
+                 value="Select language 2"
                {% endif %}
-               type="text"
-               data-typeahead="{{ typeahead2 | escapejs }}">
+               type="text" data-typeahead="{{ typeahead2 | escapejs }}">
       </h1>
     </div>
   </div>

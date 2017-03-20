@@ -16,6 +16,7 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
 from django.db.models import Q
+from django.db.models.expressions import RawSQL
 from django.forms import ValidationError
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, \
      Http404, QueryDict
@@ -2976,32 +2977,84 @@ def view_two_languages_wordlist(request,
                               sourceLang.ascii_name if sourceLang else None,
                               wordlist.name]))
 
-    def getLexemes(lang):
+    def getLexemesForBothLanguages(targetLang, sourceLang):
         # Helper function to fetch lexemes
+        # sourceLang will marked via column sourceLg by 1 for sorting and identifying
         return Lexeme.objects.filter(
-            language=lang,
+            language__in=[targetLang, sourceLang],
             meaning__meaninglist=wordlist
+        ).annotate(sourceLg=RawSQL("select (CASE WHEN language_id = %s THEN 1 ELSE 0 END)", (sourceLang,))
         ).select_related("meaning", "language").prefetch_related(
             "cognatejudgement_set",
             "cognatejudgement_set__cognatejudgementcitation_set",
             "cognate_class",
-            "lexemecitation_set").order_by("meaning__gloss")
+            "lexemecitation_set").order_by("meaning__gloss", "sourceLg", "romanised")
 
     # collect data:
-    mIdOrigLexDict = defaultdict(deque)  # Meaning.id -> [Lexeme]
+    mIdOrigLexDict = defaultdict(list)  # Meaning.id -> [Lexeme]
     if sourceLang:
-        for l in getLexemes(sourceLang):
-            mIdOrigLexDict[l.meaning.id].append(l)
+        mergedLexemes = getLexemesForBothLanguages(targetLang.id, sourceLang.id)
+        for l in mergedLexemes.filter(language=sourceLang):
+            mIdOrigLexDict[l.meaning_id].append(l)
+    else:
+        mergedLexemes = getLexemesForBothLanguages(targetLang, -1)
 
-    lexemes = getLexemes(targetLang)
-    for l in lexemes:
-        if l.meaning.id in mIdOrigLexDict:
-            try:
-                l.original = mIdOrigLexDict[l.meaning.id].popleft()
-            except IndexError:
-                pass
+    # define colours for highlighting shared cognate sets
+    # colours will be rotated
+    ccColors = deque(['#FFCCCB','#FFCC00'])
 
-    lexemeTable = TwoLanguageWordlistTableForm(lexemes=lexemes)
+    # init some stats counter helpers
+    numOfSwadeshMeaningsSharedCC = set()
+    numOfSwadeshMeanings = set()
+
+    # - highlight same cognate classes per meaning
+    # - detect start of new meaning blocks
+    # - calculating some stats
+    matchedCC = False
+    matchedSwadeshCC = False
+    currentId = -1
+    for l in mergedLexemes:
+        # detect start of new meaning blocks
+        if currentId == -1:
+            currentId = l.meaning.id
+        if l.meaning.id != currentId:
+            l.startNewMeaning = " startNewMeaning"
+            currentId = l.meaning.id
+        else:
+            l.startNewMeaning = ""
+
+        # find shared cognate classes
+        l.ccBackgroundColor = "#FFFFFF" # default background color for cognate set
+        if l.meaning_id in mIdOrigLexDict:
+            if l.sourceLg:
+                # since targetLang will be detected first
+                # check via matchedCC (set of lexeme ids) whether there's a possible match
+                if matchedCC and matchedCC in l.allCognateClasses:
+                    l.ccBackgroundColor = ccColors[0]
+                    ccColors.rotate(1)
+            else:
+                m = mIdOrigLexDict[l.meaning.id]
+                # store source info for merging
+                l.originalIds = [{'id':s.id, 'romanised':s.romanised} for s in m]
+                # iterate through all lexemes of both languages for given meaning
+                for cc in l.allCognateClasses:
+                    for cc1 in m:
+                        if cc in cc1.allCognateClasses:
+                            l.ccBackgroundColor = ccColors[0]
+                            matchedCC = cc
+                            # counter for shared Swadesh only cognate classes
+                            if not cc1.not_swadesh_term and not l.not_swadesh_term:
+                                numOfSwadeshMeaningsSharedCC.add(l.meaning_id)
+                        # counter for Swadesh only meaning sets
+                        if not cc1.not_swadesh_term and not l.not_swadesh_term:
+                            numOfSwadeshMeanings.add(l.meaning_id)
+
+    # add new boolean data for filtering shared cognate classes
+    # column will be hidden in HTML
+    for l in mergedLexemes:
+        l.ccSwdKind = (l.meaning_id in numOfSwadeshMeaningsSharedCC)
+
+    lexemeTable = TwoLanguageWordlistTableForm(lexemes=mergedLexemes)
 
     otherMeaningLists = MeaningList.objects.exclude(id=wordlist.id).all()
 
@@ -3020,12 +3073,21 @@ def view_two_languages_wordlist(request,
             args=[targetLang.ascii_name, l.ascii_name, wordlist.name])
         for l in languageList.languages.all()})
 
+    if len(numOfSwadeshMeanings) != 0:
+        numOfSharedCCPerSwadeshMeanings = "%.1f%%" % float(
+                                    len(numOfSwadeshMeaningsSharedCC)/len(numOfSwadeshMeanings)*100)
+    else:
+        numOfSharedCCPerSwadeshMeanings = ""
+
     return render_template(request, "twoLanguages.html",
                            {"targetLang": targetLang,
                             "sourceLang": sourceLang,
                             "wordlist": wordlist,
                             "otherMeaningLists": otherMeaningLists,
                             "lex_ed_form": lexemeTable,
+                            "numOfSwadeshMeaningsSharedCC": len(numOfSwadeshMeaningsSharedCC),
+                            "numOfSwadeshMeanings": len(numOfSwadeshMeanings),
+                            "numOfSharedCCPerSwadeshMeanings": numOfSharedCCPerSwadeshMeanings,
                             "typeahead1": typeahead1,
                             "typeahead2": typeahead2})
 
