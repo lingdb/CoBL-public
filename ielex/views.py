@@ -1974,8 +1974,9 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     reverse('lexeme-add-cognate-citation',
                             args=[lexeme_id, cj.id])))
             elif action == "delete":
-                redirect_url = reverse("meaning-report",
-                                       args=[lexeme.meaning.gloss])
+                redirect_url = reverse("view-language-wordlist",
+                                       args=[lexeme.language.ascii_name,
+                                               getDefaultWordlist(request)])
                 lexeme.delete()
                 return HttpResponseRedirect(redirect_url)
             else:
