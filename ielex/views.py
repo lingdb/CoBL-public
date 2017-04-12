@@ -1575,7 +1575,11 @@ def view_cognateclasses(request, meaning):
                                   'in view_cognateclasses.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least one entry: %s' % e)
-        elif 'mergeCognateClasses' in request.POST:
+        else:
+            logging.error('Unexpected POST request in view_cognateclasses.')
+            messages.error(request, 'Sorry, the server did '
+                           'not understand your request.')
+        if 'mergeCognateClasses[]' in request.POST:
             try:
                 # Parsing and validating data:
                 mergeCCForm = MergeCognateClassesForm(request.POST)
@@ -1586,10 +1590,6 @@ def view_cognateclasses(request, meaning):
                                   'in view_cognateclasses.')
                 messages.error(request, 'Sorry, the server had problems '
                                'merging cognate classes: %s' % e)
-        else:
-            logging.error('Unexpected POST request in view_cognateclasses.')
-            messages.error(request, 'Sorry, the server did '
-                           'not understand your request.')
         return HttpResponseRedirect(reverse("edit-cogclasses",
                                             args=[meaning]))
     # Acquiring languageList:

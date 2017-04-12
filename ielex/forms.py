@@ -953,21 +953,17 @@ class AddCogClassTableForm(WTForm):
 
 
 class MergeCognateClassesForm(WTForm):
-    mergeIds = StringField('merge ids', validators=[InputRequired()])
-
     def handle(self, request):
         # Extract ids from form:
         ids = set([int(i) for i in
-                   self.data['mergeIds'].split(',')])
+                   request.POST.getlist('mergeCognateClasses[]')])
         # Fetching classes to merge:
         ccs = CognateClass.objects.filter(
             id__in=ids).prefetch_related(
                 "cognatejudgement_set",
                 "cognateclasscitation_set").all()
         # Checking ccs length:
-        if len(ccs) <= 1:
-            logging.warning('Not enough cognateclasses to merge.',
-                            extra=ccs)
+        if ccs is None or len(ccs) <= 1:
             messages.error(request, 'Sorry, the server needs '
                            '2 or more cognateclasses to merge.')
         else:
