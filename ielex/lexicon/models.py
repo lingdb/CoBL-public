@@ -2225,5 +2225,9 @@ class RomanisedSymbol(AbstractTimestamped):
     symbol = models.CharField(max_length=8, blank=False)
 
     @property
+    def formattedLastTouchedDate(self):
+        return self.lastTouched.strftime("%Y/%m/%d %H:%M:%S")
+
+    @property
     def escapedSymbol(self):
         return self.symbol.encode('unicode_escape')

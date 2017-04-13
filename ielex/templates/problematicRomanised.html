@@ -19,16 +19,44 @@
   {% include "snippets/addAuthorModal.html" %}
   {% include "snippets/deleteAuthorModal.html" %}
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-9">
       <h1>Problematic lexemes:</h1>
-      <table class="table table-striped">
+      <table class="table table-striped viewTableFilter">
         <thead>
           <tr>
             <th>Id</th>
+            <th>
+              <div class="vertical-text">
+                <div class="vertical-text__inner">
+                  Not Swh
+                </div>
+              </div>
+            </th>
             <th>Meaning</th>
             <th>Romanised</th>
             <th>Native Script</th>
-            <th>Offending Symbols</th>
+            <th style="width:60%">Offending Symbols</th>
+          </tr>
+          <tr class="filterBar">
+            <td></td>
+            <td>
+              <button type="button" class="filterBool btn btn-xs btn-danger"
+                      data-selector=".lexemeNotSwadeshTerm input">
+              <span class="glyphicon glyphicon-remove-sign"></span>
+              </button>
+            </td>
+            <td>
+                <input type="text"
+                       class="filterText form-control narrow"
+                       data-selector=".lexemeMeaning">
+                <div class="btn btn-xs btn-default sortText"
+                     data-selector=".lexemeMeaning">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
           </tr>
         </thead>
         <tbody>
@@ -39,7 +67,15 @@
               {{ lexeme.id }}
               </a>
             </td>
-            <td>{{ lexeme.meaning }}</td>
+            <td class="lexemeNotSwadeshTerm" style="width:10px">
+                <input type="checkbox"
+                       {% if lexeme.not_swadesh_term %}
+                       checked="checked"
+                       {% endif %}
+                       disabled="disabled"
+                       class="form-control">
+            </td>
+            <td class="lexemeMeaning">{{ lexeme.meaning }}</td>
             <td>{{ lexeme.romanised }}</td>
             <td>{{ lexeme.nativeScript }}</td>
             <td>
@@ -53,7 +89,7 @@
         </tbody>
       </table>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-3 pull-right">
       <h1>Approved Symbols:</h1>
       <table class="table table-striped">
         <thead>
@@ -73,7 +109,7 @@
                 {{ allowed.escapedSymbol }}
               </span>
             </td>
-            <td>{{ allowed.lastTouched }}</td>
+            <td>{{ allowed.formattedLastTouchedDate }}</td>
           </tr>
           {% endfor %}
         </tbody>
