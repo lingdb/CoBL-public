@@ -21,7 +21,7 @@
   <div class="row">
     <div class="col-md-9">
       <h1>Problematic lexemes:</h1>
-      <table class="table table-striped viewTableFilter">
+      <table id="problematicRomanisedTable" class="table table-striped viewTableFilter">
         <thead>
           <tr>
             <th>Id</th>
@@ -54,7 +54,16 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
             </td>
-            <td></td>
+            <td>
+                <input id="searchRomanised" type="text"
+                       class="filterText form-control narrow"
+                       data-selector=".lexemeRomanised">
+                <div class="btn btn-xs btn-default sortText"
+                     data-selector=".lexemeRomanised">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+
+            </td>
             <td></td>
             <td></td>
           </tr>
@@ -76,14 +85,14 @@
                        class="form-control">
             </td>
             <td class="lexemeMeaning">{{ lexeme.meaning }}</td>
-            <td>{{ lexeme.romanised }}</td>
+            <td class="lexemeRomanised">{{ lexeme.romanised }}</td>
             <td>{{ lexeme.nativeScript }}</td>
             <td>
               {% for offending in lexeme.offendingSymbols %}
               <span class="badge" data-addallowedsymbol="{{ offending.escapedSymbol }}">
                 <span class="glyphicon glyphicon-plus"></span>
                 {'{{ offending.symbol }}'}, {{ offending.escapedSymbol }}
-              </span>
+              </span><sup><span title="Copy symbol to romanised search field" style="font-size:80%;cursor:pointer" class="glyphicon glyphicon-search" onclick="$('#searchRomanised').val('{{ offending.symbol }}').change();$('#searchRomanised').focus();"></span></sup>
               {% endfor %}
           {% endfor %}
         </tbody>
