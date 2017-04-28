@@ -1848,10 +1848,10 @@ class SourceDetailsForm(forms.ModelForm):
         self.fields['bibtex'].initial = instance.bibtex
         for field in self.fields:
             self.fields[field].widget.attrs['readonly'] = True
-            if instance:
-                value = getattr(instance, field)
-                if value in ['', None]:
-                    del self.fields[field]
+            # if instance:
+            #     value = getattr(instance, field)
+            #     if value in ['', None]:
+            #         del self.fields[field]
 
 
 class SourceEditForm(forms.ModelForm):
