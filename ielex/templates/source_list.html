@@ -116,11 +116,13 @@ span.firstName {
 {% endblock %}
 
 {% block content %}
+{% if user.is_authenticated %}
 <div id="buttons_block">
 <button class='btn btn-warning' id='import'>Import</button>
 <button class='btn btn-warning' id='add'>Add</button>
 <button class='btn btn-primary' id='export'>Export</button>
 </div>
+{% endif %}
 <!-- Edit modal -->
 <div id="editModal" class="modal">
   <!-- Edit modal content -->
