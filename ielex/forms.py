@@ -1875,6 +1875,10 @@ class SourceEditForm(forms.ModelForm):
                              'part', 'volume', 'ENTRYTYPE']:
                 self.fields[field].widget = forms.Textarea(
                     attrs={'cols': 22, 'rows': 1})
+        self.fields['citation_text'].label = 'Citation Text (required)'
+        self.fields['citation_text'].required = True
+        self.fields['shorthand'].label = 'Shorthand (required)'
+        self.fields['shorthand'].required = True
 
 
 class UploadBiBTeXFileForm(forms.Form):
