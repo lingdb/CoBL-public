@@ -1466,6 +1466,7 @@ class Lexeme(AbstractTimestamped):
     rfcWebLookup1 = models.TextField(blank=True)
     rfcWebLookup2 = models.TextField(blank=True)
     dubious = models.BooleanField(default=0)
+    concepticon_id = models.IntegerField(default=0, null=False)
 
     def get_cognate_class_links(self):
         def format_link(cc_id, alias):
