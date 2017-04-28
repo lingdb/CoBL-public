@@ -76,6 +76,13 @@
                   </div>
                 </div>
               </th>
+              <th colspan="2" title="Concepticon ID">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    CcptID
+                  </div>
+                </div>
+              </th>
               <th>Meaning</th>
               <th>Meaning specification tooltip</th>
               {# exampleContext_title.html #}
@@ -204,6 +211,15 @@
                        style="width: 1.5em;">
                 <div class="btn btn-xs btn-default sortIntInput"
                      data-selector=".ixElicitation input.ixElicitation">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              <td colspan="2">
+                <input type="text" class="filterNumberInput form-control"
+                       data-selector=".concepticon_id input.concepticon_id"
+                       style="width: 1.5em;">
+                <div class="btn btn-xs btn-default sortIntInput"
+                     data-selector=".concepticon_id input.concepticon_id">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
@@ -410,6 +426,21 @@
                   {% else %}
                     {% form_field meaning.ixElicitation disabled="disabled" class="ixElicitation form-control numberField" style="width: 3em;" %}
                   {% endif %}
+                </td>
+                <td class="concepticon_id">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field meaning.concepticon_id class="concepticon_id form-control numberField" style="width: 3em;" %}
+                  {% else %}
+                    {% form_field meaning.concepticon_id disabled="disabled" class="concepticon_id form-control numberField" style="width: 3em;" %}
+                  {% endif %}
+                  <td>
+                  {% if meaning.data.concepticon_id %}
+                    <a href="http://concepticon.clld.org/parameters/{{ meaning.data.concepticon_id }}"
+                       title="Go to Concepticon" target="_blank">
+                      <span class="glyphicon glyphicon-link"></span>
+                    </a>
+                  {% endif %}
+                  </td>
                 </td>
                 <td class="meaningGloss">
                 {% if user.is_authenticated and user.is_staff %}

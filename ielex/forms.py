@@ -1596,6 +1596,8 @@ class MeaningListRowForm(AbstractTimestampedForm):
         'Example Context', validators=[InputRequired()])
     ixElicitation = IntegerField(
         'Ix Elicitation', validators=[InputRequired()])
+    concepticon_id = IntegerField('Concepticon ID',
+                          validators=[InputRequired()])
 
 
 class MeaningListTableForm(WTForm):

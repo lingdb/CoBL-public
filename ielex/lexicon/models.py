@@ -1039,6 +1039,7 @@ class Meaning(AbstractTimestamped):
     meaningSetIx = models.IntegerField(default=0, null=False)
     exampleContext = models.CharField(max_length=128, blank=True)
     ixElicitation = models.IntegerField(default=0, null=False)
+    concepticon_id = models.IntegerField(default=0, null=False)
 
     def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
@@ -1066,7 +1067,7 @@ class Meaning(AbstractTimestamped):
                     'notes', 'doubleCheck',
                     'exclude', 'tooltip',
                     'meaningSetMember', 'meaningSetIx',
-                    'exampleContext', 'ixElicitation'])
+                    'exampleContext', 'ixElicitation', 'concepticon_id'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update meaning: ' \
@@ -1466,7 +1467,6 @@ class Lexeme(AbstractTimestamped):
     rfcWebLookup1 = models.TextField(blank=True)
     rfcWebLookup2 = models.TextField(blank=True)
     dubious = models.BooleanField(default=0)
-    concepticon_id = models.IntegerField(default=0, null=False)
 
     def get_cognate_class_links(self):
         def format_link(cc_id, alias):
