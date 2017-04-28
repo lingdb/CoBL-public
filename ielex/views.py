@@ -7,6 +7,7 @@ import json
 import re
 import time
 import zipfile
+import codecs
 from collections import defaultdict, deque
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -2492,13 +2493,17 @@ class source_import(FormView):
                 if update_sources_dict_lst:
                     update_sources_table = SourcesUpdateTable(
                         update_sources_dict_lst)
+                    RequestConfig(
+                        request,
+                        paginate={'per_page': 1000}
+                    ).configure(update_sources_table)
                 if new_sources_dict_lst:
                     new_sources_table = SourcesUpdateTable(
                         new_sources_dict_lst)
-                RequestConfig(
-                    request,
-                    paginate={'per_page': 1000}
-                ).configure(update_sources_table)
+                    RequestConfig(
+                        request,
+                        paginate={'per_page': 1000}
+                    ).configure(new_sources_table)
                 return render_template(request, self.template_name, {
                     'form': self.form_class(),
                     'update_sources_table': update_sources_table,
@@ -2511,7 +2516,7 @@ class source_import(FormView):
 
         parser = BibTexParser()
         parser.ignore_nonstandard_types = False
-        bib_database = bibtexparser.loads(f.read(), parser)
+        bib_database = bibtexparser.loads(f.read().decode('utf-8'), parser)
         update_sources_dict_lst = []
         new_sources_dict_lst = []
         for entry in bib_database.entries:
