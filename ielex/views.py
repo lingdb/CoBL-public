@@ -1576,7 +1576,7 @@ def view_cognateclasses(request, meaning):
                                   'in view_cognateclasses.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least one entry: %s' % e)
-        elif 'mergeCognateClasses[]' in request.POST:
+        elif 'mergeCognateClasses' in request.POST:
             try:
                 # Parsing and validating data:
                 mergeCCForm = MergeCognateClassesForm(request.POST)
