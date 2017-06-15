@@ -421,7 +421,7 @@
                          style="width: 3em;">
                 </td>
                 <td class="ixElicitation">
-                  {% if user.is_authenticated and user.is_staff %}
+                  {% if user.is_authenticated and user.is_superuser %}
                     {% form_field meaning.ixElicitation class="ixElicitation form-control numberField" style="width: 3em;" %}
                   {% else %}
                     {% form_field meaning.ixElicitation disabled="disabled" class="ixElicitation form-control numberField" style="width: 3em;" %}
