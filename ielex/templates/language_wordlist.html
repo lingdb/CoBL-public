@@ -109,6 +109,13 @@
               {# FIXME warning label for Dbl check ones #}
               {# warnings_title.html #}
               <th></th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    <span style="color:#aaa;font-size:80%">Elic. Ix.</span>
+                  </div>
+                </div>
+              </th>
               {# meaning_title.html #}
               <th colspan="2">Meaning</th>
               {# romanised_title.html #}
@@ -210,6 +217,17 @@
               <td class="hide"></td>
               {# warnings_filter.html #}
               <td></td>
+              {# Elic Ix #}
+              <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".lexemeIxElicitation"
+                       style="width: 2em;">
+                  <div class="btn btn-xs btn-default sortIntText"
+                       data-selector=".lexemeIxElicitation">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+              </td>
               {# meaning_filter.html #}
               <td colspan="2">
                 <input type="text" class="filterText form-control narrow"
@@ -487,6 +505,9 @@
                     eg
                   </span>
                   {% endif %}
+                </td>
+                <td class="lexemeIxElicitation" align="right">
+                  <span style="color:#aaa;font-size:60%;">{{ lexeme.object_data.meaning.ixElicitation }}</span>
                 </td>
                 <td class="lexemeMeaning">
                   {% if lexeme.object_data.language.rfcWebPath1 and lexeme.object_data.rfcWebLookup1 %}
