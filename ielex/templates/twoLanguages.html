@@ -26,7 +26,7 @@
       <div class="fixedContainer">
         {% if user.is_authenticated %}
           <div class="form-group pull-right">
-            <span title="Number of menaings with shared Swadesh cognate classes per Swadesh meanings" 
+            <span title="Proportion of meanings in which these two languages have lexemes that are cognate." 
                 class="badge important">{{ numOfSharedCCPerSwadeshMeanings }} {{ numOfSwadeshMeaningsSharedCC }}/{{ numOfSwadeshMeanings }}</span>
             <span title="Duplicate meanings" 
                 class="badge important">{{ lex_ed_form.lexemes|length }}</span>
