@@ -380,15 +380,25 @@
         delete filterPredicates[id];
       }else{
         var idCountMap = {};
+        var idCountMapTargetLg = {};
+        var idCountMapSourceLg = {};
         var getRowId = function(row){return row.data(dataAttr);};
         table.find('tbody > tr').each(function(){
           var row = $(this);
           if(row.is(':visible')){
             var rId = getRowId(row);
-            if(rId in idCountMap){
-              idCountMap[rId] += 1;
+            if(row.data('issourcelg')){
+              if(rId in idCountMapTargetLg){
+                idCountMap[rId] = 1;
+              }else{
+                idCountMapSourceLg[rId] = 1;
+              }
             }else{
-              idCountMap[rId] = 1;
+              if(rId in idCountMapSourceLg){
+                idCountMap[rId] = 1;
+              }else{
+                idCountMapTargetLg[rId] = 1;
+              }
             }
           }
         });
@@ -399,7 +409,7 @@
         */
         filterPredicates[id] = function(row){
           var rId = getRowId(row);
-          return ((idCountMap[rId] > 1) !== wanted);
+          return ((idCountMap[rId]==1) !== wanted);
         };
       }
       //Filtering

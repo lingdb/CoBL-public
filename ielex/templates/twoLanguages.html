@@ -315,7 +315,7 @@
           <tbody>
             {% for lexeme in lex_ed_form.lexemes %}
               <tr class="content_row"
-                  data-meaningid="{{ lexeme.object_data.meaning_id }}">
+                  data-meaningid="{{ lexeme.object_data.meaning_id }}" data-issourcelg="{{ lexeme.object_data.sourceLg }}">
                 {# id_data.html #}
                 <td class="lexemeIxElicitation" align="right">
                   <span style="color:#aaa;font-size:60%;">{{ lexeme.object_data.meaning.ixElicitation }}</span>
