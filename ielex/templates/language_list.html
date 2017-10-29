@@ -211,6 +211,8 @@
                   </div>
                 </div>
               </th>
+              {# author_title #}
+              <th>Author(s)</th>
               {# reference_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -394,6 +396,16 @@
               <td></td>
               {# longitude_filter.html #}
               <td></td>
+              {# author_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterText form-control narrow"
+                       data-selector=".languageAuthor">
+                <div class="btn btn-xs btn-default sortText"
+                     data-selector=".languageAuthor">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               {# reference_filter.html #}
               <td>
                 <button type="button"
@@ -638,7 +650,7 @@
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.latitude class="form-control" style="max-width: 5em;" %}
                   {% else %}
-                    {{ language.object_data.latitude }}
+                    {{ language.object_data.latitude|floatformat:-2 }}
                   {% endif %}
                 </td>
                 {# longitude_data.html #}
@@ -646,8 +658,12 @@
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.longitude class="form-control" style="max-width: 5em;" %}
                   {% else %}
-                    {{ language.object_data.longitude }}
+                    {{ language.object_data.longitude|floatformat:-2 }}
                   {% endif %}
+                </td>
+                {# author_data #}
+                <td class="languageAuthor">
+                  {{ language.object_data.author }}
                 </td>
                 {# reference_data.html #}
                 <td class="languageRepresentative">

@@ -2778,12 +2778,25 @@ def viewAuthors(request):
         return HttpResponseRedirect(
             reverse("viewAuthors", args=[]))
 
+    languageList = LanguageList.objects.get(
+        name=getDefaultLanguagelist(request))
+    languageData = languageList.languages.values_list(
+        'utf8_name', 'author')
+
     authors = Author.objects.all()
     form = AuthorTableForm()
     for author in authors:
 
         author.idField = author.id
         form.elements.append_entry(author)
+        authored = 0
+        namesOfLanguages = []
+        for aName, aString in languageData:
+            if author.fullName in set(aString.split(' and ')):
+                authored += 1
+                namesOfLanguages.append(aName)
+        author.nol = str(authored)
+        author.nolgs = ', '.join(namesOfLanguages)
 
     currentAuthorForm = None
     if request.user.is_authenticated:
