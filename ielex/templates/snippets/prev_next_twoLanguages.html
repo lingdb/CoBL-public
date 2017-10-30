@@ -21,7 +21,11 @@
     </div>
 
     <div class="col-md-1">
-      <h3>&harr;</h2>
+      {% if sourceLang %}
+        <h3><a href="/twoLanguages/{{sourceLang.ascii_name}}/{{targetLang.ascii_name}}/{{wordlist.name}}/" title="swap source and target language and reload the page"><span class="glyphicon glyphicon-resize-horizontal"></span></a></h3>
+      {% else %}
+        <h3><span class="glyphicon glyphicon-resize-horizontal"></span></h3>
+      {% endif %}
     </div>
 
     <div class="col-md-3" style="margin-left:-20px;background-color: #E0E0E0;">
