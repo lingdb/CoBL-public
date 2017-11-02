@@ -1116,9 +1116,11 @@ class Meaning(AbstractTimestamped):
             cogRootLanguagePercentage = cogRootLanguageCount / cog_count \
                 if cog_count > 0 else float('nan')
             cogRootLanguagePercentage *= 100
+            cog_truecount = cog_count - cogLoanCount - cogParallelLoanCount
             # Filling memo with data:
             self._computeCounts = {
                 'cog_count': cog_count,
+                'cog_truecount': cog_truecount,
                 'cogRootFormCount': cogRootFormCount,
                 'cogRootFormPercentage': cogRootFormPercentage,
                 'cogRootLanguageCount': cogRootLanguageCount,
@@ -1138,6 +1140,10 @@ class Meaning(AbstractTimestamped):
     @property
     def cog_count(self):
         return self.computeCounts()['cog_count']
+
+    @property
+    def cog_truecount(self):
+        return self.computeCounts()['cog_truecount']
 
     @property
     def cogRootFormCount(self):

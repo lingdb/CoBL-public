@@ -107,6 +107,16 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
+                  title="Number of true cognate classes (excluding loanwords)">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    True Cog.
+                  </div>
+                </div>
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
                   title="Number of cognate classes marked as loanword">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
@@ -291,6 +301,12 @@
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".meaningTrueCogCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
@@ -497,6 +513,11 @@
                 <td class="meaningCogCount">
                   <span class="badge">
                     {{ meaning.object_data.cog_count }}
+                  </span>
+                </td>
+                <td class="meaningTrueCogCount">
+                  <span class="badge">
+                    {{ meaning.object_data.cog_truecount }}
                   </span>
                 </td>
                 <td class="meaningCogLoanCount">
