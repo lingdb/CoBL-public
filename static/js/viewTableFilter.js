@@ -352,7 +352,8 @@
     */
     var markNewMeanings = function(){
       var table = $('.markNewMeaning');
-      var markNewMeanings = (table !== undefined);
+      var markNewMeanings = true;
+      if(typeof table === "undefined"){markNewMeanings = false;}
       if(markNewMeanings){
         var curKey = "";
         table.find('tbody > tr').each(function(){
@@ -366,7 +367,7 @@
           }
         });
       }
-    }
+    };
     /**
       @param input :: $ ∧ button.filterBool
       @param table :: $ ∧ table
@@ -438,10 +439,9 @@
             var rId = getRowId(row);
             return ((idCountMap[rId]==1) !== wanted);
           };
-        }
-        else {
-          var idCountMap = {};
-          var getRowId = function(row){return row.data(dataAttr);};
+        }else{
+          idCountMap = {};
+          getRowId = function(row){return row.data(dataAttr);};
           table.find('tbody > tr').each(function(){
             var row = $(this);
             if(row.is(':visible')){
@@ -535,7 +535,6 @@
       };
     });
     //Finished module:
-    filter()
     return module;
   });
 })();
