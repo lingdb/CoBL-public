@@ -49,7 +49,7 @@
         {% include "snippets/prev_next_twoLanguages.html" %}
       </div>
       <div>
-        <table class="table table-condensed viewTableFilter"
+        <table class="table table-condensed viewTableFilter markNewMeaning"
                id="viewTwoLanguages" data-floatheadtop="54" style="margin-top:38px">
           <thead>
             <tr>
@@ -326,7 +326,7 @@
                   {{ lexeme.lastEditedBy }}
                 </td>
                 {# warnings_data.html #}
-                <td class="{{ lexeme.object_data.startNewMeaning }}"
+                <td 
                   {% if lexeme.object_data.sourceLg %}
                     style="background-color:#E0E0E0;"
                   {% endif %}>
@@ -341,7 +341,7 @@
                   {% endif %}
                 </td>
                 {# meaning_data.html #}
-                <td class="{{ lexeme.object_data.startNewMeaning }}"
+                <td 
                 {% if lexeme.object_data.sourceLg %}
                   style="background-color:#E0E0E0;width:16px !important"
                 {% else %}
@@ -354,7 +354,7 @@
                     <span class="glyphicon glyphicon-info-sign"></span>
                   </a>
                 </td>
-                <td class="lexemeMeaning{{ lexeme.object_data.startNewMeaning }}"
+                <td class="lexemeMeaning"
                   {% if lexeme.object_data.sourceLg %}
                 style="background-color:#E0E0E0;"
                 {% endif %}>
@@ -384,7 +384,7 @@
                   {% endif %}
                 </td>
                 {# copyCognateClass_data.html #}
-                <td class="{{ lexeme.object_data.startNewMeaning }}">
+                <td>
                   {% if user.is_authenticated %}
                     {% if not lexeme.object_data.sourceLg %}
                       {% for lexId in lexeme.object_data.originalIds %}
@@ -401,7 +401,7 @@
                   {% endif %}
                 </td>
                 {# romanised_data.html #}
-                <td class="lexemeRomanised {{ lexeme.object_data.startNewMeaning }}">
+                <td class="lexemeRomanised">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.romanised id="romanised" class="form-control" style="font-size: 15px;" %}
                   {% else %}
@@ -409,7 +409,7 @@
                   {% endif %}
                 </td>
                 {# viewcopy_data.html #}
-                <td class="{{ lexeme.object_data.startNewMeaning }}">
+                <td>
                   {% if not lexeme.object_data.sourceLg %}
                   <a href="{% url 'view-lexeme' lexeme.object_data.id %}" title="View detailed information on lexeme">
                     <span class="glyphicon glyphicon-search"></span>
@@ -417,7 +417,7 @@
                   {% endif %}
                 </td>
                 {# nativeScript_data.html #}
-                <td class="lexemeNativeScript {{ lexeme.object_data.startNewMeaning }}">
+                <td class="lexemeNativeScript">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.nativeScript id="nativeScript" class="form-control" %}
                   {% elif lexeme.object_data.nativeScript %}
@@ -425,7 +425,7 @@
                   {% endif %}
                 </td>
                 {# notswadesh_data.html #}
-                <td class="lexemeNotSwadeshTerm {{ lexeme.object_data.startNewMeaning }}">
+                <td class="lexemeNotSwadeshTerm">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" %}
                   {% else %}
@@ -433,7 +433,7 @@
                   {% endif %}
                 </td>
                 {# ncog_data.html #}
-                <td class="lexemeNumCogCoded {{ lexeme.object_data.startNewMeaning }}"
+                <td class="lexemeNumCogCoded"
                     style="width: 50px; border-left: 2px solid #dddddd;">
                   <center>
                     <span class="badge">
@@ -442,7 +442,7 @@
                   </center>
                 </td>
                 {# cognateclassids_data.html #}
-                <td class="cognateClassId {{ lexeme.object_data.startNewMeaning }}" 
+                <td class="cognateClassId" 
                     style="text-align: center;background-color:{{lexeme.object_data.ccBackgroundColor}};">
                   {% for c in lexeme.object_data.allCognateClasses %}
                     <a href="/cognate/{{ c.id }}/"
@@ -453,20 +453,20 @@
                   {% endfor %}
                 </td>
                 {# ccSwdKind_data.html #}
-                <td class="hide lexemeCcSwdKind {{ lexeme.object_data.startNewMeaning }}">
+                <td class="hide lexemeCcSwdKind">
                   <input {% if lexeme.object_data.ccSwdKind %}checked{% endif %}
                     class="ccSwdKind_checkbox form-control" 
                     disabled="disabled" id="lexemes-1-ccSwdKind" 
                     name="lexemes-1-ccSwdKind" type="checkbox" value="y">
                 </td>
                 {# cognateclassview_data.html #}
-                <td class="{{ lexeme.object_data.startNewMeaning }}">
+                <td>
                   <a href="/meaning/{{ lexeme.object_data.meaning.gloss }}/cognateclasslist/" target="_blank">
                     <img src="{% static '1c.png' %}">
                   </a>
                 </td>
                 {# cognateclasses_data.html #}
-                <td class="{{ lexeme.object_data.startNewMeaning }}" style="text-align: left; color: #8B4510;">
+                <td style="text-align: left; color: #8B4510;">
                   <div class="cognateClasses">
                     {% if user.is_authenticated %}
                       {% form_field lexeme.combinedCognateClassAssignment class="form-control" %}
@@ -476,19 +476,19 @@
                   </div>
                 </td>
                 {# rootform_data.html #}
-                <td class="lexemeRootForm{{ lexeme.object_data.startNewMeaning }}" style="color: #8B4510;">
+                <td class="lexemeRootForm" style="color: #8B4510;">
                   {% if lexeme.object_data.allCognateClasses|length == 1 %}
                     {{ lexeme.object_data.allCognateClasses.0.rootFormOrPlaceholder }}
                   {% endif %}
                 </td>
                 {# rootlanguage_data.html #}
-                <td class="lexemeRootLanguage nowrap{{ lexeme.object_data.startNewMeaning }}" style="color: #8B4510; width: 155px;">
+                <td class="lexemeRootLanguage nowrap" style="color: #8B4510; width: 155px;">
                   {% if lexeme.object_data.allCognateClasses|length == 1 %}
                     {{ lexeme.object_data.allCognateClasses.0.rootLanguageOrPlaceholder }}
                   {% endif %}
                 </td>
                 {# loanevent_data.html #}
-                <td class="lexemeLoanEvent{{ lexeme.object_data.startNewMeaning }}" style="border-right: 2px solid #dddddd;">
+                <td class="lexemeLoanEvent" style="border-right: 2px solid #dddddd;">
                   {% if lexeme.object_data.show_loan_event %}
                     <input type="checkbox"
                       {% if lexeme.object_data.loan_event %}
@@ -499,7 +499,7 @@
                   {% endif %}
                 </td>
                 {# gloss_data.html #}
-                <td class="lexemeGloss{{ lexeme.object_data.startNewMeaning }}">
+                <td class="lexemeGloss">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.gloss size="8" class="form-control" data-longinput="24" %}
                   {% elif lexeme.object_data.gloss %}
@@ -507,7 +507,7 @@
                   {% endif %}
                 </td>
                 {# notes_data.html #}
-                <td class="lexemeNotes{{ lexeme.object_data.startNewMeaning }}">
+                <td class="lexemeNotes">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.notes class="form-control" data-longinput="25" %}
                   {% elif lexeme.object_data.notes %}

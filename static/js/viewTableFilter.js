@@ -75,6 +75,7 @@
               $input.keyup(function(){
                 module[inputClass]($input, table);
                 settings.storeKeyupInput($input, inputClass);
+                markNewMeanings();
               });
             });
             $('button.'+inputClass).each(function(){
@@ -82,6 +83,7 @@
               $button.click(function(){
                 module[inputClass]($button, table);
                 settings.storeButtonInput($button, inputClass);
+                markNewMeanings();
               });
               //Initial filtering for buttons:
               module[inputClass]($button, table, true);
@@ -98,6 +100,7 @@
               $btn.click(function(){
                 module[btnClass]($btn, table);
                 settings.storeSortInput($btn, btnClass);
+                markNewMeanings();
               });
             });
           }else{
@@ -115,6 +118,7 @@
       });
       //Load previous settings:
       settings.restoreKeyupInputs();
+      markNewMeanings();
     };
     /**
       @param table    :: $ ∧ table
@@ -342,6 +346,28 @@
       return wanted;
     };
     /**
+      markNewMeanings
+      If table has class 'markNewMeaning' the change from one meaning to
+      a new one will be marked via adding class 'startNewMeaning'
+    */
+    var markNewMeanings = function(){
+      var table = $('.markNewMeaning');
+      var markNewMeanings = (table !== undefined);
+      if(markNewMeanings){
+        var curKey = "";
+        table.find('tbody > tr').each(function(){
+          $(this).removeClass('startNewMeaning');
+          if(!$(this).hasClass('hide')){
+            var cText = $(this).data('meaningid');
+            if(cText !== curKey){
+              $(this).addClass('startNewMeaning');
+              curKey = cText;
+            }
+          }
+        });
+      }
+    }
+    /**
       @param input :: $ ∧ button.filterBool
       @param table :: $ ∧ table
       @param initial :: Bool
@@ -383,34 +409,60 @@
         var idCountMapTargetLg = {};
         var idCountMapSourceLg = {};
         var getRowId = function(row){return row.data(dataAttr);};
-        table.find('tbody > tr').each(function(){
-          var row = $(this);
-          if(row.is(':visible')){
-            var rId = getRowId(row);
-            if(row.data('issourcelg')){
-              if(rId in idCountMapTargetLg){
-                idCountMap[rId] = 1;
+        if(table.attr('id') === 'viewTwoLanguages'){
+          table.find('tbody > tr').each(function(){
+            var row = $(this);
+            if(!row.hasClass('hide')){
+              var rId = getRowId(row);
+              if(row.data('issourcelg')){
+                if(rId in idCountMapTargetLg){
+                  idCountMap[rId] = 1;
+                }else{
+                  idCountMapSourceLg[rId] = 1;
+                }
               }else{
-                idCountMapSourceLg[rId] = 1;
-              }
-            }else{
-              if(rId in idCountMapSourceLg){
-                idCountMap[rId] = 1;
-              }else{
-                idCountMapTargetLg[rId] = 1;
+                if(rId in idCountMapSourceLg){
+                  idCountMap[rId] = 1;
+                }else{
+                  idCountMapTargetLg[rId] = 1;
+                }
               }
             }
-          }
-        });
-        /*
-          We implement wanted as:
-          true -> Only display lexemes where the same meaning was found twice.
-          false -> Only display lexemes where the meaning was found just once.
-        */
-        filterPredicates[id] = function(row){
-          var rId = getRowId(row);
-          return ((idCountMap[rId]==1) !== wanted);
-        };
+          });
+          /*
+            We implement wanted as:
+            true -> Only display lexemes where the same meaning was found twice.
+            false -> Only display lexemes where the meaning was found just once.
+          */
+          filterPredicates[id] = function(row){
+            var rId = getRowId(row);
+            return ((idCountMap[rId]==1) !== wanted);
+          };
+        }
+        else {
+          var idCountMap = {};
+          var getRowId = function(row){return row.data(dataAttr);};
+          table.find('tbody > tr').each(function(){
+            var row = $(this);
+            if(row.is(':visible')){
+              var rId = getRowId(row);
+              if(rId in idCountMap){
+                idCountMap[rId] += 1;
+              }else{
+                idCountMap[rId] = 1;
+              }
+            }
+          });
+          /*
+            We implement wanted as:
+            true -> Only display lexemes where the same meaning was found twice.
+            false -> Only display lexemes where the meaning was found just once.
+          */
+          filterPredicates[id] = function(row){
+            var rId = getRowId(row);
+            return ((idCountMap[rId] > 1) !== wanted);
+          };
+        }
       }
       //Filtering
       filter(table);
@@ -483,6 +535,7 @@
       };
     });
     //Finished module:
+    filter()
     return module;
   });
 })();

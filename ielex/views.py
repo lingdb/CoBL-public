@@ -3027,20 +3027,10 @@ def view_two_languages_wordlist(request,
     numOfSwadeshMeanings = set()
 
     # - highlight same cognate classes per meaning
-    # - detect start of new meaning blocks
     # - calculating some stats
     matchedCC = False
     matchedSwadeshCC = False
-    currentId = -1
     for l in mergedLexemes:
-        # detect start of new meaning blocks
-        if currentId == -1:
-            currentId = l.meaning.id
-        if l.meaning.id != currentId:
-            l.startNewMeaning = " startNewMeaning"
-            currentId = l.meaning.id
-        else:
-            l.startNewMeaning = ""
 
         # find shared cognate classes
         l.ccBackgroundColor = "#FFFFFF" # default background color for cognate set
