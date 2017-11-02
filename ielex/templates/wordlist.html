@@ -20,7 +20,7 @@
         {% if user.is_authenticated and user.is_staff %}
           {% csrf_token %}
         {% endif %}
-        <div class="fixedContainer">
+        <div class="fixedContainer" style="height:52px">
           {% if user.is_authenticated and user.is_staff %}
             <div class="form-group pull-right">
               <a href="." class="btn btn-default">undo</a>
@@ -303,9 +303,7 @@
                 {% endif %}
               </td>
               {% if user.is_authenticated %}
-                <td colspan="3"></td>
-              {% else %}
-                <td colspan="2"></td>
+                <td></td>
               {% endif %}
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
