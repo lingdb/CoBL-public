@@ -91,18 +91,32 @@
               {% if user.is_authenticated %}
               <th></th>
               {% endif %}
-              <th>% Cog.<br>coded</th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    % Cog. coded
+                  </div>
+                </div>
+              </th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
                   title="Number of lexemes">
-                Lex.
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Lex.
+                  </div>
+                </div>
               </th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
                   title="Number of cognate classes">
-                Cog.
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog.
+                  </div>
+                </div>
               </th>
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -171,6 +185,13 @@
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Count
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    % Revised
                   </div>
                 </div>
               </th>
@@ -329,7 +350,7 @@
                 </div>
               </td>
               <td>
-                <div class="btn btn-xs btn-default sortIntText pull-right"
+                <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogRootFormCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
@@ -341,8 +362,14 @@
                 </div>
               </td>
               <td>
-                <div class="btn btn-xs btn-default sortIntText pull-right"
+                <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogRootLanguageCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".meaningCogRevisedPercentage">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
@@ -531,23 +558,28 @@
                   </span>
                 </td>
                 <td class="meaningCogRootFormPercentage">
-                  <span class="badge pull-right">
+                  <span class="badge">
                     {{ meaning.object_data.cogRootFormPercentage }}
                   </span>
                 </td>
                 <td class="meaningCogRootFormCount">
-                  <span class="badge pull-right">
+                  <span class="badge">
                     {{ meaning.object_data.cogRootFormCount }}
                   </span>
                 </td>
                 <td class="meaningCogRootLanguagePercentage">
-                  <span class="badge pull-right">
+                  <span class="badge">
                     {{ meaning.object_data.cogRootLanguagePercentage }}
                   </span>
                 </td>
                 <td class="meaningCogRootLanguageCount">
-                  <span class="badge pull-right">
+                  <span class="badge">
                     {{ meaning.object_data.cogRootLanguageCount }}
+                  </span>
+                </td>
+                <td class="meaningCogRevisedPercentage">
+                  <span class="badge">
+                    {{ meaning.object_data.cogRevisedPercentage|floatformat:1 }}
                   </span>
                 </td>
                 <td class="meaningSetIx">

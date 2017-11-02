@@ -1099,6 +1099,7 @@ class Meaning(AbstractTimestamped):
             cogRootLanguageCount = 0
             cogLoanCount = 0
             cogParallelLoanCount = 0
+            cogRevised = 0
             # Iterating ccs to calculate counts:
             for cc in ccs:
                 if cc.root_form != '':
@@ -1109,6 +1110,8 @@ class Meaning(AbstractTimestamped):
                     cogLoanCount += 1
                 if cc.parallelLoanEvent:
                     cogParallelLoanCount += 1
+                if cc.revisedYet:
+                    cogRevised += 1
             # Computing percentages:
             cogRootFormPercentage = cogRootFormCount / cog_count \
                 if cog_count > 0 else float('nan')
@@ -1117,10 +1120,15 @@ class Meaning(AbstractTimestamped):
                 if cog_count > 0 else float('nan')
             cogRootLanguagePercentage *= 100
             cog_truecount = cog_count - cogLoanCount - cogParallelLoanCount
+            if cog_count > 0:
+                cogRevisedPercentage = cogRevised / cog_count * 100
+            else:
+                cogRevisedPercentage = 0
             # Filling memo with data:
             self._computeCounts = {
                 'cog_count': cog_count,
                 'cog_truecount': cog_truecount,
+                'cogRevisedPercentage': cogRevisedPercentage,
                 'cogRootFormCount': cogRootFormCount,
                 'cogRootFormPercentage': cogRootFormPercentage,
                 'cogRootLanguageCount': cogRootLanguageCount,
@@ -1144,6 +1152,10 @@ class Meaning(AbstractTimestamped):
     @property
     def cog_truecount(self):
         return self.computeCounts()['cog_truecount']
+
+    @property
+    def cogRevisedPercentage(self):
+        return self.computeCounts()['cogRevisedPercentage']
 
     @property
     def cogRootFormCount(self):
