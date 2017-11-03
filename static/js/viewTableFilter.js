@@ -78,15 +78,19 @@
                 markNewMeanings();
               });
             });
-            $('button.'+inputClass).each(function(){
+            var btnClasses = $('button.'+inputClass);
+            var numOfClasses = btnClasses.length;
+            var cnt = 0;
+            btnClasses.each(function(){
               var $button = $(this);
+              cnt += 1;
               $button.click(function(){
                 module[inputClass]($button, table);
                 settings.storeButtonInput($button, inputClass);
                 markNewMeanings();
               });
-              //Initial filtering for buttons:
-              module[inputClass]($button, table, true);
+              //Initial filtering for the last element of a given class:
+              module[inputClass]($button, table, true, (cnt == numOfClasses));
             });
           }else{
             console.log('inputClass not implemented:', inputClass);
@@ -115,10 +119,11 @@
           filterPredicates.cladeFilter = cladeFilter;
           λ();
         }
+        //Mark group of meanings if desired via class 'markNewMeanings'
+        markNewMeanings();
       });
       //Load previous settings:
       settings.restoreKeyupInputs();
-      markNewMeanings();
     };
     /**
       @param table    :: $ ∧ table
@@ -374,7 +379,7 @@
       @param initial :: Bool
       If initial is set filterBool shall not change the buttons content.
     */
-    module.filterBool = function(btn, table, initial){
+    module.filterBool = function(btn, table, initial, last){
       //Find wanted kind of filter:
       var wanted = filterBoolButtton(btn, initial);
       //Un-/Registering filter function:
@@ -388,8 +393,11 @@
           return checked !== wanted;
         };
       }
-      //Filtering
-      filter(table);
+      //Filtering - while initializing only for last element
+      //   of a given inputClass to avoid multiple filtering
+      if(!initial || (initial && last)){
+        filter(table);
+      }
     };
     /**
       @param input :: $ ∧ button.filterBool
