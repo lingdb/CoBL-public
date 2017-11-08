@@ -1043,6 +1043,37 @@ class CognateClassEditForm(AbstractTimestampedForm):
     name = StringField('Name', validators=[InputRequired()])
     notes = TextField('Notes', validators=[InputRequired()])
     root_form = StringField('Root form', validators=[InputRequired()])
+    # Added for #424 4)
+    root_language = StringField('Root Language', validators=[InputRequired()])
+    gloss_in_root_lang = StringField('Gloss in Root Language',
+                                     validators=[InputRequired()])
+    loanword = BooleanField('Loanword', validators=[InputRequired()])
+    notes = TextField('Notes', validators=[InputRequired()])
+    loan_source = TextField('Loan Source', validators=[InputRequired()])
+    loan_notes = TextField('Loan Notes', validators=[InputRequired()])
+    loanSourceCognateClass = CognateClassField(
+        'Id of related cc', validators=[InputRequired()])
+    loanEventTimeDepthBP = StringField(
+        'Time depth of loan event', validators=[InputRequired()])
+    sourceFormInLoanLanguage = TextField(
+        'Source form in loan language', validators=[InputRequired()])
+    parallelLoanEvent = BooleanField(
+        'Parallel Loan Event', validators=[InputRequired()])
+    notProtoIndoEuropean = BooleanField(
+        'Not Proto-Indo-European?', validators=[InputRequired()])
+    ideophonic = BooleanField('Idiophonic', validators=[InputRequired()])
+    parallelDerivation = BooleanField('Parallel Derivation',
+                                      validators=[InputRequired()])
+    dubiousSet = BooleanField('Dubious set', validators=[InputRequired()])
+    revisedYet = BooleanField('Revised Yet?', validators=[InputRequired()])
+    revisedBy = TextField('Revised by', validators=[InputRequired()])
+    proposedAsCognateTo = CognateClassField(
+        'Proposed as cognate to:', validators=[])
+    proposedAsCognateToScale = SelectField(
+        'Proposed as cognate to:',
+        default=0,
+        choices=PROPOSED_AS_COGNATE_TO_SCALE,
+        validators=[])
 
     def handle(self, request):
         try:
