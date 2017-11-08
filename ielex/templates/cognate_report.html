@@ -90,7 +90,9 @@
         </form>
       </div>
     {% else %}
-      <div class="col-md-4">
+      <div class="col-md-9">
+        <table>
+        <tr valign="top"><td>
         <table class="table table-bordered">
           <tbody>
             {% if cognate_class.name %}
@@ -113,6 +115,22 @@
             </tr>
             <tr>
               <th>
+                Root language
+              </th>
+              <td>
+                {{ cognate_class.root_language }}
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Gloss in root language
+              </th>
+              <td>
+                {{ cognate_class.gloss_in_root_lang }}
+              </td>
+            </tr>
+            <tr>
+              <th>
                 Notes
               </th>
               <td>
@@ -121,6 +139,159 @@
             </tr>
           </tbody>
         </table>
+      </td>
+      {% if cognate_class.loanword %}
+      <td>
+        <table class="table table-bordered">
+          <tbody>
+            <tr>
+              <th>
+                Loanword
+              </th>
+              <td>
+                <input type="checkbox"
+                       {% if cognate_class.loanword %}
+                       checked="checked"
+                       {% endif %}
+                       disabled="disabled"
+                       class="form-control" style="height:100%">
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Loan source
+              </th>
+              <td>
+                {{ cognate_class.loan_source }}
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Loan notes
+              </th>
+              <td>
+                {{ cognate_class.loan_notes }}
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Loan event time depth (BP)
+              </th>
+              <td>
+                {{ cognate_class.loanEventTimeDepthBP }}
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Source form in loan language
+              </th>
+              <td>
+                {{ cognate_class.sourceFormInLoanLanguage }}
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Loan source cognate class
+              </th>
+              <td>
+                {% if cognate_class.loanSourceCognateClass_id %}
+                <a href="/cognate/{{ cognate_class.loanSourceCognateClass_id }}">{{ cognate_class.loanSourceCognateClass_id }}</a>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Parallel loan event
+              </th>
+              <td>
+                <input type="checkbox"
+                       {% if cognate_class.parallelLoanEvent %}
+                       checked="checked"
+                       {% endif %}
+                       disabled="disabled"
+                       class="form-control" style="height:100%">
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Not Proto-Indo-European
+              </th>
+              <td>
+                <input type="checkbox"
+                       {% if cognate_class.notProtoIndoEuropean %}
+                       checked="checked"
+                       {% endif %}
+                       disabled="disabled"
+                       class="form-control" style="height:100%">
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Parallel derivation
+              </th>
+              <td>
+                <input type="checkbox"
+                       {% if cognate_class.parallelDerivation %}
+                       checked="checked"
+                       {% endif %}
+                       disabled="disabled"
+                       class="form-control" style="height:100%">
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Ideophonic
+              </th>
+              <td>
+                <input type="checkbox"
+                       {% if cognate_class.ideophonic %}
+                       checked="checked"
+                       {% endif %}
+                       disabled="disabled"
+                       class="form-control" style="height:100%">
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Dubious set
+              </th>
+              <td>
+                <input type="checkbox"
+                       {% if cognate_class.dubiousSet %}
+                       checked="checked"
+                       {% endif %}
+                       disabled="disabled"
+                       class="form-control" style="height:100%">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        </td>
+        {% endif %}
+        {% if cognate_class.proposedAsCognateTo_id %}
+        <td>
+          <table class="table table-bordered">
+            <tr>
+              <th>
+                Proposed as cognate to
+              </th>
+              <td>
+                <a href="/cognate/{{ cognate_class.proposedAsCognateTo_id }}">{{ cognate_class.proposedAsCognateTo_id }}</a>
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Proposed as cognate to scale
+              </th>
+              <td>
+                {{ cognate_class.proposedAsCognateToScale }}
+              </td>
+            </tr>
+          </table>
+        </td>
+        {% endif %}
+      </tr>
+      </table>
       </div>
     {% endif %}
     <div class="col-md-12">
