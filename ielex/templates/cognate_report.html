@@ -251,19 +251,19 @@
                        class="form-control" style="height:100%">
               </td>
             </tr>
+            {% if cognate_class.dubiousSet %}
             <tr>
               <th>
                 Dubious set
               </th>
               <td>
                 <input type="checkbox"
-                       {% if cognate_class.dubiousSet %}
                        checked="checked"
-                       {% endif %}
                        disabled="disabled"
                        class="form-control" style="height:100%">
               </td>
             </tr>
+            {% endif %}
           </tbody>
         </table>
         </td>
