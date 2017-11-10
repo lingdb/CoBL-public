@@ -803,8 +803,20 @@ def view_language_wordlist(request, language, wordlist):
     # Used for #219:
     cIdCognateClassMap = {}  # :: CognateClass.id -> CognateClass
 
+    notTargetCountPerMeaning = {}
+    for lex in lexemes:
+        if lex.meaning in notTargetCountPerMeaning:
+            if lex.not_swadesh_term:
+                notTargetCountPerMeaning[lex.meaning] += 1
+        else:
+            if lex.not_swadesh_term:
+                notTargetCountPerMeaning[lex.meaning] = 1
+            else:
+                notTargetCountPerMeaning[lex.meaning] = 0
+
     lexemes_editabletable_form = LexemeTableLanguageWordlistForm()
     for lex in lexemes:
+        lex.notTargetCountPerMeaning = notTargetCountPerMeaning[lex.meaning]
         lexemes_editabletable_form.lexemes.append_entry(lex)
         ccs = lex.cognate_class.all()
         for cc in ccs:
@@ -835,6 +847,7 @@ def view_language_wordlist(request, language, wordlist):
                             "otherMeaningLists": otherMeaningLists,
                             "lex_ed_form": lexemes_editabletable_form,
                             "cognateClasses": cognateClasses,
+                            "notTargetCountPerMeaning": notTargetCountPerMeaning,
                             "typeahead": typeahead})
 
 
