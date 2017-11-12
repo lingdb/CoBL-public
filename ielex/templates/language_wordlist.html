@@ -124,11 +124,12 @@
               <th colspan="3"></th>
               {# nativeScript_title.html #}
               <th>Native Script</th>
+              <th style="width:6px"></th>
               {# notswadesh_title.html #}
               <th>
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
-                    Not Swh
+                    Not Target
                   </div>
                 </div>
               </th>
@@ -279,6 +280,7 @@
                   </div>
                 {% endif %}
               </td>
+              <td></td>
               {# notswadesh_filter.html #}
               <td>
                 <button type="button" class="filterBool btn btn-xs btn-danger"
@@ -575,12 +577,14 @@
                     {{ lexeme.object_data.nativeScript }}
                   {% endif %}
                 </td>
-                {# notswadesh_data.html #}
-                <td class="lexemeNotSwadeshTerm">
+                <td>
                   {% if lexeme.object_data.notTargetCountPerMeaning %}
-                    <span class="glyphicon glyphicon-plus-sign pull-right" 
+                    <span class="glyphicon glyphicon-plus-sign pull-right" style="margin-top:4px"
                           title="The meaning '{{lexeme.data.meaning}}' has {{lexeme.object_data.notTargetCountPerMeaning}} further not target lexeme(s)."></span>
                   {% endif %}
+                </td>
+                {# notswadesh_data.html #}
+                <td class="lexemeNotSwadeshTerm">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" %}
                   {% else %}
