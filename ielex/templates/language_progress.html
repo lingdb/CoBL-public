@@ -214,7 +214,7 @@
               {# author_title.html #}
               <th>Author</th>
               {# entryTimeframe_title.html #}
-              {% if user.is_authenticated and user.is_staff %}
+              <!-- {% if user.is_authenticated and user.is_staff %}
               <th>
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
@@ -226,7 +226,7 @@
               {# reviewer_title.html #}
               <th>
                 Reviewer
-              </th>
+              </th> -->
               {# progress_title.html #}
               <th colspan="2">
                 Progress
@@ -503,7 +503,7 @@
                          style="width:8em%;">
                 {% endif %}
               </td>
-              {# entryTimeframe_filter.html #}
+              <!-- {# entryTimeframe_filter.html #}
               {% if user.is_authenticated and user.is_staff %}
               <td>
                 <input type="text"
@@ -525,7 +525,7 @@
                          data-selector=".languageReviewer"
                          style="width: 100%;">
                 {% endif %}
-              </td>
+              </td> -->
               {# progress_filter.html #}
               <td class="nowrap"
                   colspan="2">
@@ -780,7 +780,7 @@
                     {{ language.author.data }}
                   {% endif %}
                 </td>
-                {# entryTimeframe_data.html #}
+                <!-- {# entryTimeframe_data.html #}
                 {% if user.is_authenticated and user.is_staff %}
                 <td class="entryTimeframe">
                   {% form_field language.entryTimeframe class="form-control" style="width:5em" %}
@@ -793,7 +793,7 @@
                   {% elif language.reviewer.data %}
                     {{ language.reviewer.data }}
                   {% endif %}
-                </td>
+                </td> -->
                 {# progress_data.html #}
                 <td class="progressData">
                   {% if user.is_authenticated and user.is_staff %}
