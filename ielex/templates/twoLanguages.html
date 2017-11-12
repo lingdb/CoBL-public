@@ -426,6 +426,16 @@
                 </td>
                 {# notswadesh_data.html #}
                 <td class="lexemeNotSwadeshTerm">
+                  {% if lexeme.object_data.hasNotTargets %}
+                    <span class="glyphicon glyphicon-plus-sign pull-right" 
+                      {% if lexeme.object_data.notTargetCC %}
+                      style="color:#ff1a1a" 
+                      title="The meaning has further not target lexeme(s) and at least one is cognate to this lexeme."
+                      {% else %}
+                      title="The meaning has further not target lexeme(s)."
+                      {% endif %}
+                      ></span>
+                  {% endif %}
                   {% if user.is_authenticated %}
                     {% form_field lexeme.not_swadesh_term class="notswad_checkbox form-control" %}
                   {% else %}

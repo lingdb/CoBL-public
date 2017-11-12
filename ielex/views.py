@@ -3037,17 +3037,20 @@ def view_two_languages_wordlist(request,
 
     # init some stats counter helpers
     numOfSwadeshMeaningsSharedCC = set()
+    numOfSwadeshMeaningsNotTargetSharedCC = set()
     numOfSwadeshMeanings = set()
+    hasNotTargets = set()
 
     # - highlight same cognate classes per meaning
     # - calculating some stats
     matchedCC = False
     matchedSwadeshCC = False
     for l in mergedLexemes:
-
         # find shared cognate classes
         l.ccBackgroundColor = "#FFFFFF" # default background color for cognate set
         if l.meaning_id in mIdOrigLexDict:
+            if l.not_swadesh_term:
+                hasNotTargets.add(l.meaning_id)
             if l.sourceLg:
                 # since targetLang will be detected first
                 # check via matchedCC (set of lexeme ids) whether there's a possible match
@@ -3067,6 +3070,8 @@ def view_two_languages_wordlist(request,
                             # counter for shared Swadesh only cognate classes
                             if not cc1.not_swadesh_term and not l.not_swadesh_term:
                                 numOfSwadeshMeaningsSharedCC.add(l.meaning_id)
+                            else:
+                                numOfSwadeshMeaningsNotTargetSharedCC.add(l.meaning_id)
                         # counter for Swadesh only meaning sets
                         if not cc1.not_swadesh_term and not l.not_swadesh_term:
                             numOfSwadeshMeanings.add(l.meaning_id)
@@ -3075,6 +3080,12 @@ def view_two_languages_wordlist(request,
     # column will be hidden in HTML
     for l in mergedLexemes:
         l.ccSwdKind = (l.meaning_id in numOfSwadeshMeaningsSharedCC)
+        if l.meaning_id in numOfSwadeshMeaningsNotTargetSharedCC and l.meaning_id in numOfSwadeshMeanings and l.ccBackgroundColor != "#FFFFFF":
+            l.notTargetCC = True
+            l.ccBackgroundColor = "#FFFFFF"
+        else:
+            l.notTargetCC = False
+        l.hasNotTargets = (l.meaning_id in hasNotTargets)
 
     lexemeTable = TwoLanguageWordlistTableForm(lexemes=mergedLexemes)
 
