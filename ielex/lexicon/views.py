@@ -193,12 +193,14 @@ def write_nexus(language_list_name,       # str
     excludeLoanword :: bool
     excludePllLoan :: bool
     includePllLoan :: bool
+    calculateMatrix :: bool
     excludeMarkedLanguages :: bool | missing in older settings
     excludeMarkedMeanings :: bool | missing in older settings
     Returns:
     {exportData :: str,
      exportBEAUti :: str,
      exportTableData :: str,
+     exportMatrix :: str,
      cladeMemberships :: str,
      computeCalibrations :: str}
     '''
@@ -228,6 +230,7 @@ def write_nexus(language_list_name,       # str
     exportData = []
     exportBEAUti = []
     exportTableData = []
+    exportMatrix = []
 
     def appendExports(s):
         exportData.append(s)
@@ -436,16 +439,86 @@ def write_nexus(language_list_name,       # str
         language_list, kwargs.get('excludeMarkedLanguages', True))
     exportBEAUti.append(memberships)
     exportBEAUti.append(calibrations)
+
+    if kwargs.get('calculateMatrix', True):
+        # calculate data matrix
+        if kwargs.get('excludeMarkedLanguages', True):
+            allLgs = [l for l in language_list.languages.all() if not l.notInExport]
+        else:
+            allLgs = [l for l in language_list.languages.all()]
+        seenLgs = {}
+
+        # write header
+        line = []
+        line.append('')
+        line.extend(allLgs)
+        exportMatrix.append(",".join(str(x) for x in line))
+
+        # calculate the distance matrix
+        relevantLexemes = Lexeme.objects.filter(meaning__meaninglist=meaning_list)
+        for l1 in allLgs:
+            line = []
+            line.append(l1)
+            for l2 in allLgs:
+                if l1.ascii_name == l2.ascii_name:
+                    line.append("100")
+                    continue
+                if "%s%s" % (l2.ascii_name, l1.ascii_name) in seenLgs:
+                    line.append(seenLgs["%s%s" % (l2.ascii_name, l1.ascii_name)])
+                    continue
+                if "%s%s" % (l1.ascii_name, l2.ascii_name) in seenLgs:
+                    line.append(seenLgs["%s%s" % (l1.ascii_name, l2.ascii_name)])
+                    continue
+
+                # collect data:
+                mIdOrigLexDict = defaultdict(list)  # Meaning.id -> [Lexeme]
+                # get shared lexemes
+                mergedLexemes = relevantLexemes.filter(language__in=[l1.id, l2.id]
+                    ).select_related("meaning", "language").prefetch_related("cognate_class")
+                for l in mergedLexemes.filter(language=l2):
+                    mIdOrigLexDict[l.meaning_id].append(l)
+
+                # init stats counter
+                numOfSwadeshMeaningsSharedCC = set()
+                numOfSwadeshMeanings = set()
+
+                for l in mergedLexemes.filter(language=l1):
+                    if l.meaning_id in mIdOrigLexDict:
+                        m = mIdOrigLexDict[l.meaning.id]
+                        for cc in l.allCognateClasses:
+                            for cc1 in m:
+                                if not l.not_swadesh_term:
+                                    if cc in cc1.allCognateClasses:
+                                        if not cc1.not_swadesh_term:
+                                            numOfSwadeshMeaningsSharedCC.add(l.meaning_id)
+                                    # counter for Swadesh only meaning sets
+                                    if not cc1.not_swadesh_term:
+                                        numOfSwadeshMeanings.add(l.meaning_id)
+
+                if len(numOfSwadeshMeanings) != 0:
+                    numOfSharedCCPerSwadeshMeanings = "%.1f" % float(
+                                                len(numOfSwadeshMeaningsSharedCC)/len(numOfSwadeshMeanings)*100)
+                else:
+                    numOfSharedCCPerSwadeshMeanings = "0"
+
+                line.append("%s" % numOfSharedCCPerSwadeshMeanings)
+                seenLgs["%s%s" % (l1.ascii_name, l2.ascii_name)] = numOfSharedCCPerSwadeshMeanings
+                seenLgs["%s%s" % (l2.ascii_name, l1.ascii_name)] = numOfSharedCCPerSwadeshMeanings
+
+            exportMatrix.append(",".join(str(x) for x in line))
+
     # timing
     seconds = int(time.time() - start_time)
     minutes = seconds // 60
     seconds %= 60
     appendExports("[ Processing time: %02d:%02d ]" % (minutes, seconds))
+
     # Return combined data:
     return {
         'exportData': "\n".join(exportData),      # Requested export
         'exportBEAUti': "\n".join(exportBEAUti),  # BEAUti specific export
         'exportTableData': "\n".join(exportTableData),  # exportTableData = matrix as CSV table
+        'exportMatrix': "\n".join(exportMatrix),
         'cladeMemberships': memberships,
         'computeCalibrations': calibrations
     }
@@ -596,7 +669,8 @@ def construct_matrix(languages,                # [Language]
                     else:
                         clds = set()
                         for l in data_mng_id[cc0]:
-                            clds.add(languageClades[l])
+                            if l in languageClades:
+                                clds.add(languageClades[l])
                         cc_sortorder["%04d_%06d_%06d" % (len(clds), lexCount, cc)] = cc0
 
                 for cc0 in sorted(cc_sortorder, reverse=True):

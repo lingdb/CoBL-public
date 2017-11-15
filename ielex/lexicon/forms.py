@@ -70,6 +70,14 @@ class ChooseNexusOutputForm(ChooseOutputBaseForm):
         label=u"Exclude languages?",
         help_text="Exclude languages marked [Not for Export]"
     )
+    calculateMatrix = forms.BooleanField(
+        required=False,
+        label=u"Calculate Matrix?",
+        help_text="""Calculate in addition the language distance matrix based on shared cognate classes. 
+        (Depending on the number of languages and meanings the calculation will take a long time!)"""
+    )
+    calculateMatrix.widget.attrs["disabled"] = "disabled"
+    calculateMatrix.widget.attrs["title"] = "not yet available - coming soon"
     description = forms.CharField(
         label="Export description",
         help_text="Please give a short description of the export.",
@@ -82,6 +90,7 @@ class ChooseNexusOutputForm(ChooseOutputBaseForm):
                    "meaning_list",
                    "excludeMarkedMeanings",
                    "dialect",
+                   "calculateMatrix",
                    "ascertainment_marker",
                    "excludeNotSwadesh",
                    "excludePllDerivation",

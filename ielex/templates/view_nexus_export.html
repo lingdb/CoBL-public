@@ -203,6 +203,14 @@
                   {% elif export.pending %}
                       [ DataTable ]
                   {% endif %}
+                  <br>
+                  {% if export.exportMatrix %}
+                    <a href="/nexus/export/{{ export.id }}?matrix">
+                      [ Matrix ]
+                    </a>
+                  {% elif export.pending %}
+                      [ Matrix ]
+                  {% endif %}
                 </td>
                 <td>
                   {% if export.description %}

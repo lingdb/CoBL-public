@@ -2129,10 +2129,12 @@ class NexusExport(AbstractTimestamped):
     includePllLoan = models.BooleanField(default=False)
     excludeMarkedMeanings = models.BooleanField(default=True)
     excludeMarkedLanguages = models.BooleanField(default=True)
+    calculateMatrix = models.BooleanField(default=False)
     # List of setting fields:
     settingFields = ['language_list_name',
                      'meaning_list_name',
                      'dialect',
+                     'calculateMatrix',
                      'label_cognate_sets',
                      'ascertainment_marker',
                      'excludeNotSwadesh',
@@ -2156,13 +2158,16 @@ class NexusExport(AbstractTimestamped):
     # Compressed data of nexus table data CSV file:
     _exportTableData = models.BinaryField(null=True)
     exportTableData = property(**compressedField('_exportTableData'))
+    # Compressed data of matrix data CSV file:
+    _exportMatrix = models.BinaryField(null=True)
+    exportMatrix = property(**compressedField('_exportMatrix'))
 
     @property
     def pending(self):
         # True if calculation for export is not finished
         return self._exportData is None
 
-    def generateResponse(self, constraints=False, beauti=False, tabledata=False):
+    def generateResponse(self, constraints=False, beauti=False, tabledata=False, matrix=False):
         """
         If constraints == True response shall carry the constraintsData
         rather than the exportData.
@@ -2179,6 +2184,8 @@ class NexusExport(AbstractTimestamped):
             name = self.beautiName
         elif tabledata:
             name = self.tabledataName
+        elif matrix:
+            name = self.matrixName
         else:
             name = self.exportName
 
@@ -2196,6 +2203,10 @@ class NexusExport(AbstractTimestamped):
             # for csv files write the UTF-8 BOM, mainly for Excel
             response.write(codecs.BOM_UTF8)
             data = self.exportTableData
+        elif matrix:
+            # for csv files write the UTF-8 BOM, mainly for Excel
+            response.write(codecs.BOM_UTF8)
+            data = self.exportMatrix
         else:
             data = self.exportData
 
@@ -2237,6 +2248,11 @@ class NexusExport(AbstractTimestamped):
     def tabledataName(self):
         # Replaces the /\.nex$/ in exportName _TableData.csv
         return self.exportName[:-4] + "_DataTable.csv"
+
+    @property
+    def matrixName(self):
+        # Replaces the /\.nex$/ in exportName _TableData.csv
+        return self.exportName[:-4] + "_Matrix.csv"
 
 
 class RomanisedSymbol(AbstractTimestamped):
