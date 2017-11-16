@@ -76,8 +76,6 @@ class ChooseNexusOutputForm(ChooseOutputBaseForm):
         help_text="""Calculate in addition the language distance matrix based on shared cognate classes. 
         (Depending on the number of languages and meanings the calculation will take a long time!)"""
     )
-    calculateMatrix.widget.attrs["disabled"] = "disabled"
-    calculateMatrix.widget.attrs["title"] = "not yet available - coming soon"
     description = forms.CharField(
         label="Export description",
         help_text="Please give a short description of the export.",

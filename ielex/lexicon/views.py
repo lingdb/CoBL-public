@@ -92,22 +92,25 @@ class NexusExportView(TemplateView):
     template_name = "nexus_list.html"
 
     def get(self, request):
-        defaults = {
-            "unique": 1,
-            "language_list": getDefaultLanguagelistId(request),
-            "meaning_list": getDefaultWordlistId(request),
-            "dialect": "NN",
-            "ascertainment_marker": 1,
-            "excludeNotSwadesh": 1,
-            "excludePllDerivation": 1,
-            "excludeIdeophonic": 1,
-            "excludeDubious": 1,
-            "excludeLoanword": 0,
-            "excludePllLoan": 1,
-            "includePllLoan": 0,
-            "excludeMarkedMeanings": 1,
-            "excludeMarkedLanguages": 1}
-        form = ChooseNexusOutputForm(defaults)
+        if len(NexusExport.objects.filter(_exportData=None).all()) > 0:
+            form = None
+        else:
+            defaults = {
+                "unique": 1,
+                "language_list": getDefaultLanguagelistId(request),
+                "meaning_list": getDefaultWordlistId(request),
+                "dialect": "NN",
+                "ascertainment_marker": 1,
+                "excludeNotSwadesh": 1,
+                "excludePllDerivation": 1,
+                "excludeIdeophonic": 1,
+                "excludeDubious": 1,
+                "excludeLoanword": 0,
+                "excludePllLoan": 1,
+                "includePllLoan": 0,
+                "excludeMarkedMeanings": 1,
+                "excludeMarkedLanguages": 1}
+            form = ChooseNexusOutputForm(defaults)
         return self.render_to_response({"form": form})
 
     def post(self, request):
@@ -447,6 +450,7 @@ def write_nexus(language_list_name,       # str
         else:
             allLgs = [l for l in language_list.languages.all()]
         seenLgs = {}
+        cclCache ={}
 
         # write header
         line = []
@@ -455,55 +459,88 @@ def write_nexus(language_list_name,       # str
         exportMatrix.append(",".join(str(x) for x in line))
 
         # calculate the distance matrix
-        relevantLexemes = Lexeme.objects.filter(meaning__meaninglist=meaning_list)
+        if kwargs.get('excludeMarkedMeanings', True):
+            relevantLexemes = Lexeme.objects.filter(meaning__meaninglist=meaning_list,
+                meaning__exclude=False
+                ).select_related("meaning", "language"
+                ).prefetch_related("cognate_class")
+        else:
+            relevantLexemes = Lexeme.objects.filter(meaning__meaninglist=meaning_list
+                ).select_related("meaning", "language"
+                ).prefetch_related("cognate_class")
+
+        if kwargs.get('excludeNotSwadesh', True):
+            relevantLexemes = relevantLexemes.filter(not_swadesh_term=False)
+
         for l1 in allLgs:
             line = []
             line.append(l1)
             for l2 in allLgs:
-                if l1.ascii_name == l2.ascii_name:
+                if l1.id == l2.id:
                     line.append("100")
                     continue
-                if "%s%s" % (l2.ascii_name, l1.ascii_name) in seenLgs:
-                    line.append(seenLgs["%s%s" % (l2.ascii_name, l1.ascii_name)])
-                    continue
-                if "%s%s" % (l1.ascii_name, l2.ascii_name) in seenLgs:
-                    line.append(seenLgs["%s%s" % (l1.ascii_name, l2.ascii_name)])
+                if "%s-%s" % (l2.id, l1.id) in seenLgs:
+                    line.append(seenLgs["%s-%s" % (l2.id, l1.id)])
                     continue
 
                 # collect data:
                 mIdOrigLexDict = defaultdict(list)  # Meaning.id -> [Lexeme]
-                # get shared lexemes
-                mergedLexemes = relevantLexemes.filter(language__in=[l1.id, l2.id]
-                    ).select_related("meaning", "language").prefetch_related("cognate_class")
-                for l in mergedLexemes.filter(language=l2):
+                for l in relevantLexemes.filter(language=l2):
                     mIdOrigLexDict[l.meaning_id].append(l)
 
                 # init stats counter
-                numOfSwadeshMeaningsSharedCC = set()
-                numOfSwadeshMeanings = set()
+                numOfMeaningsSharedCC = set()
+                numOfMeanings = set()
 
-                for l in mergedLexemes.filter(language=l1):
-                    if l.meaning_id in mIdOrigLexDict:
-                        m = mIdOrigLexDict[l.meaning.id]
-                        for cc in l.allCognateClasses:
-                            for cc1 in m:
-                                if not l.not_swadesh_term:
-                                    if cc in cc1.allCognateClasses:
-                                        if not cc1.not_swadesh_term:
-                                            numOfSwadeshMeaningsSharedCC.add(l.meaning_id)
-                                    # counter for Swadesh only meaning sets
-                                    if not cc1.not_swadesh_term:
-                                        numOfSwadeshMeanings.add(l.meaning_id)
+                for l in relevantLexemes.filter(
+                        language=l1,
+                        meaning_id__in=mIdOrigLexDict):
 
-                if len(numOfSwadeshMeanings) != 0:
-                    numOfSharedCCPerSwadeshMeanings = "%.1f" % float(
-                                                len(numOfSwadeshMeaningsSharedCC)/len(numOfSwadeshMeanings)*100)
+                    if l.id in cclCache:
+                        allcc = cclCache[l.id]
+                    else:
+                        allcc = l.allCognateClasses
+                        if kwargs.get('excludePllDerivation', True):
+                            allcc = allcc.filter(parallelDerivation=False)
+                        if kwargs.get('excludeIdeophonic', True):
+                            allcc = allcc.filter(ideophonic=False)
+                        if kwargs.get('excludeDubious', True):
+                            allcc = allcc.filter(dubiousSet=False)
+                        if kwargs.get('excludeLoanword', True):
+                            allcc = allcc.filter(loanword=False)
+                        elif kwargs.get('excludePllLoan', True):
+                            allcc = allcc.filter(parallelLoanEvent=False)
+                        cclCache[l.id] = allcc
+
+                    for cc in allcc:
+                        for cc1 in mIdOrigLexDict[l.meaning.id]:
+                            numOfMeanings.add(l.meaning_id)
+                            if cc1 in cclCache:
+                                allcc1 = cclCache[cc1]
+                            else:
+                                allcc1 = cc1.allCognateClasses
+                                if kwargs.get('excludePllDerivation', True):
+                                    allcc1 = allcc1.filter(parallelDerivation=False)
+                                if kwargs.get('excludeIdeophonic', True):
+                                    allcc1 = allcc1.filter(ideophonic=False)
+                                if kwargs.get('excludeDubious', True):
+                                    allcc1 = allcc1.filter(dubiousSet=False)
+                                if kwargs.get('excludeLoanword', True):
+                                    allcc1 = allcc1.filter(loanword=False)
+                                elif kwargs.get('excludePllLoan', True):
+                                    allcc1 = allcc1.filter(parallelLoanEvent=False)
+                                cclCache[cc1] = allcc1
+                            if cc in allcc1:
+                                numOfMeaningsSharedCC.add(l.meaning_id)
+
+                if len(numOfMeanings) != 0:
+                    numOfSharedCCPerMeanings = "%.1f" % float(
+                                                len(numOfMeaningsSharedCC)/len(numOfMeanings)*100)
                 else:
-                    numOfSharedCCPerSwadeshMeanings = "0"
+                    numOfSharedCCPerMeanings = "0"
 
-                line.append("%s" % numOfSharedCCPerSwadeshMeanings)
-                seenLgs["%s%s" % (l1.ascii_name, l2.ascii_name)] = numOfSharedCCPerSwadeshMeanings
-                seenLgs["%s%s" % (l2.ascii_name, l1.ascii_name)] = numOfSharedCCPerSwadeshMeanings
+                line.append(numOfSharedCCPerMeanings)
+                seenLgs["%s-%s" % (l1.id, l2.id)] = numOfSharedCCPerMeanings
 
             exportMatrix.append(",".join(str(x) for x in line))
 
