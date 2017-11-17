@@ -2924,37 +2924,25 @@ def view_nexus_export(request, exportId=None):
     languageListNames = set([e.language_list_name for e in exports])
     meaningListNames = set([e.meaning_list_name for e in exports])
 
-    def lCount(languageListName):
-        return LanguageListOrder.objects.filter(
-            language_list__name=languageListName, language__notInExport=False).count()
+    def num(s):
+        try:
+            return int(s)
+        except ValueError:
+            return -1
 
-    def mCount(meaningListName):
-        return MeaningListOrder.objects.filter(
-            meaning_list__name=meaningListName, meaning__exclude=False).count()
-
-    def lCountAll(languageListName):
-        return LanguageListOrder.objects.filter(
-            language_list__name=languageListName).count()
-
-    def mCountAll(meaningListName):
-        return MeaningListOrder.objects.filter(
-            meaning_list__name=meaningListName).count()
-
-    languageListCounts = {l: lCount(l) for l in languageListNames}
-    meaningListCounts = {m: mCount(m) for m in meaningListNames}
-    languageListAllCounts = {l: lCountAll(l) for l in languageListNames}
-    meaningListAllCounts = {m: mCountAll(m) for m in meaningListNames}
-
+    # get the meaning and language counts at the moment of export via saved exportName
+    # since the counts of meanings and languages can change over time
     for e in exports:
-        if e.excludeMarkedLanguages:
-            e.languageListCount = languageListCounts[e.language_list_name]
-        else:
-            e.languageListCount = languageListAllCounts[e.language_list_name]
-        if e.excludeMarkedMeanings:
-            e.meaningListCount = meaningListCounts[e.meaning_list_name]
-        else:
-            e.meaningListCount = meaningListAllCounts[e.meaning_list_name]
-        e.formattedDate = e.lastTouched.strftime("%Y/%m/%d %H:%M:%S")
+        try:
+            c = re.search('_Lgs(\d+)', e.exportName).group(1)
+        except AttributeError:
+            c = -1
+        e.languageListCount = num(c)
+        try:
+            c = re.search('_Mgs(\d+)', e.exportName).group(1)
+        except AttributeError:
+            c = -1
+        e.meaningListCount = num(c)
 
     return render_template(
         request, "view_nexus_export.html",
