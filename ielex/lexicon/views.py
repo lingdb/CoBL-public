@@ -122,6 +122,10 @@ class NexusExportView(TemplateView):
             export.setSettings(form)
             export.bump(request)
             export.save()
+            theId = export.id
+            e = NexusExport.objects.get(id=theId)
+            e.exportName = "Exp%04d_%s" % (theId, e.exportName)
+            e.save()
             return HttpResponseRedirect('/nexus/export/')
         messages.error(request,"Please provide a short description.")
         return self.render_to_response({"form": form})
@@ -135,13 +139,11 @@ class NexusExportView(TemplateView):
         if form.cleaned_data["excludeMarkedLanguages"]:
             languages = languages.exclude(notInExport=True)
 
-        return "%s_CoBL-IE_Lgs%03d_Mgs%03d_%s_%s.nex" % (
+        return "%s_CoBL-IE_Lgs%03d_Mgs%03d.nex" % (
             time.strftime("%Y-%m-%d"),
             # settings.project_short_name,
             languages.count(),
-            meanings.count(),
-            form.cleaned_data["language_list"].name,
-            form.cleaned_data["meaning_list"].name)
+            meanings.count())
 
 
 class DumpRawDataView(TemplateView):
