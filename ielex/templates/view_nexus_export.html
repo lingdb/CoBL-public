@@ -24,16 +24,49 @@
           <thead>
             <tr>
               <th>ID</th>
-              <th>Done?</th>
+              <th>
+                <div class="vertical-text" style="width:22px">
+                  <div class="vertical-text__inner">
+                    Done?
+                  </div>
+                </div>
+              </th>
               <th>Name</th>
               <th title="Additional files"
                   data-toggle="tooltip"
                   data-container="body"
                   data-placement="top">
-                Add. files
+                <center><div style="position:relative;top:0px">Add. files</div></center>
+                <table width="96px !important">
+                  <thead>
+                    <th>
+                <div class="vertical-text" style="width:24px !important">
+                  <div class="vertical-text__inner">
+                    Constraints
+                  </div>
+                </div>
+              </th><th>
+                <div class="vertical-text" style="width:24px !important">
+                  <div class="vertical-text__inner">
+                    BEAUTi
+                  </div>
+                </div>
+                </th><th>
+                <div class="vertical-text" style="width:24px !important">
+                  <div class="vertical-text__inner">
+                    DataTable
+                  </div>
+                </div>
+                </th><th>
+                <div class="vertical-text" style="width:24px !important">
+                  <div class="vertical-text__inner">
+                    Matrix
+                  </div>
+                </div>
+                </th></thead></table>
               </th>
               <th>
-                <div class="vertical-text">
+                <div class="vertical-text" style="width:18px">
                   <div class="vertical-text__inner">
                     Description
                   </div>
@@ -147,7 +180,7 @@
                   </div>
                 </div>
               </th>
-              <th>Date</th>
+              <!-- <th>Date</th> -->
               <th title="Triggered by"
                   data-toggle="tooltip"
                   data-container="body"
@@ -179,39 +212,46 @@
                     </a>
                   {% endif %}
                 </td>
-                <td class="nowrap">
+                <td>
+                  <table width="96px">
+                    <tr>
+                <td width="24px" style="padding-left:6px !important">
                   {% if export.constraintsData %}
                     <a href="/nexus/export/{{ export.id }}?constraints">
-                      [ Constraints ]
+                      C
                     </a>
                   {% elif export.pending %}
-                      [ Constraints ]
-                  {% endif %}
-                  <br>
-                  {% if export.exportBEAUti %}
-                    <a href="/nexus/export/{{ export.id }}?beauti">
-                      [ BEAUti ]
-                    </a>
-                  {% elif export.pending %}
-                      [ BEAUti ]
-                  {% endif %}
-                  <br>
-                  {% if export.exportTableData %}
-                    <a href="/nexus/export/{{ export.id }}?datatable">
-                      [ DataTable ]
-                    </a>
-                  {% elif export.pending %}
-                      [ DataTable ]
-                  {% endif %}
-                  <br>
-                  {% if export.exportMatrix %}
-                    <a href="/nexus/export/{{ export.id }}?matrix">
-                      [ Matrix ]
-                    </a>
-                  {% elif export.pending %}
-                      [ Matrix ]
+                      C
                   {% endif %}
                 </td>
+                <td width="24px" style="padding-left:6px !important">
+                  {% if export.exportBEAUti %}
+                    <a href="/nexus/export/{{ export.id }}?beauti">
+                      B
+                    </a>
+                  {% elif export.pending %}
+                      B
+                  {% endif %}
+                </td>
+                <td width="24px" style="padding-left:6px !important">
+                  {% if export.exportTableData %}
+                    <a href="/nexus/export/{{ export.id }}?datatable">
+                      D
+                    </a>
+                  {% elif export.pending %}
+                      D
+                  {% endif %}
+                </td>
+                <td width="24px" style="padding-left:6px !important">
+                  {% if export.exportMatrix %}
+                    <a href="/nexus/export/{{ export.id }}?matrix">
+                      M
+                    </a>
+                  {% elif export.pending %}
+                      M
+                  {% endif %}
+                </td>
+                </tr></table></td>
                 <td>
                   {% if export.description %}
                   <span class="glyphicon glyphicon-info-sign"
@@ -263,8 +303,8 @@
                 <td>
                   <input type="checkbox" disabled="disabled" class="form-control" {% if export.excludeMarkedLanguages %}checked="checked"{% endif %}>
                 </td>
-                <td>{{ export.formattedDate }}</td>
-                <td>{{ export.lastEditedBy }}</td>
+                <!-- <td>{{ export.lastTouched }}</td> -->
+                <td><span title="{{ export.lastEditedBy }}">{{ export.shortNameAuthor }}</span></td>
                 <td>
                   <form action="/nexus/export/{{ export.id }}/" method="post">
                     {% csrf_token %}

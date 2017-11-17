@@ -2943,6 +2943,7 @@ def view_nexus_export(request, exportId=None):
         except AttributeError:
             c = -1
         e.meaningListCount = num(c)
+        e.shortNameAuthor = re.sub('[^A-Z]', '', e.lastEditedBy)
 
     return render_template(
         request, "view_nexus_export.html",
