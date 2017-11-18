@@ -876,6 +876,8 @@ class CogClassRowForm(AbstractTimestampedForm):
         default=0,
         choices=PROPOSED_AS_COGNATE_TO_SCALE,
         validators=[])
+    webRfc = TextField(
+        'Web Reference', validators=[InputRequired()])
 
     def __str__(self):
         cogclass_form_vals = (
@@ -1074,6 +1076,7 @@ class CognateClassEditForm(AbstractTimestampedForm):
         default=0,
         choices=PROPOSED_AS_COGNATE_TO_SCALE,
         validators=[])
+    webRfc = TextField('Web Reference', validators=[InputRequired()])
 
     def handle(self, request):
         try:

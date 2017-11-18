@@ -1224,6 +1224,7 @@ class CognateClass(AbstractTimestamped):
         "self", null=True, related_name='+')
     proposedAsCognateToScale = models.IntegerField(
         default=0, choices=PROPOSED_AS_COGNATE_TO_SCALE)
+    webRfc = models.TextField(blank=True)
 
     def update_alias(self, save=True):
         """Reset alias to the first unused letter"""
@@ -1273,7 +1274,7 @@ class CognateClass(AbstractTimestamped):
                     'parallelLoanEvent', 'notProtoIndoEuropean', 'ideophonic',
                     'parallelDerivation', 'dubiousSet',
                     'revisedYet', 'revisedBy',
-                    'proposedAsCognateTo', 'proposedAsCognateToScale'])
+                    'proposedAsCognateTo', 'proposedAsCognateToScale', 'webRfc'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update cognate class: ' \
