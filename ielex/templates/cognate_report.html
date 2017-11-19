@@ -78,14 +78,6 @@
                 <label class="control-label" style="top:-5px">Loanword?</label>
                 {% form_field cognateClassForm.loanword class="pull-right" style="margin-top:12px" %}
               </div>
-              <br />
-              <label class="control-label">Web Reference</label>
-              {% if cognate_class.webRfc %}
-                <div class="pull-right" style="margin-top:6px">
-                  <a target="_new" href="{{cognate_class.webRfc}}"><span class="glyphicon glyphicon-link"></span></a>
-                </div>
-              {% endif %}
-              {% form_field cognateClassForm.webRfc class="form-control" %}
 
             </td>
             <td style="padding-left:20px;width:20%">
