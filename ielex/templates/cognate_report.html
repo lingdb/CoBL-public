@@ -10,12 +10,32 @@
 
 {% block top %}
   <h1>
-    Cognate class
+    Cognate set
     {% if cognate_class.name %}
       {{ cognate_class.name }}
     {% endif %}
     {{ cognate_class.id }}
-    {{ cognate_class.alias }}
+    {% if cognate_class.root_form %}
+      : {{ cognate_class.root_form }}
+    {% endif %}
+      :
+    [{{ cognate_class.alias }}]
+    <div class="inline"
+         style="font-size: 15px;">
+       in 
+    </div>
+    <div class="inline"
+         style="font-size: 15px; color: #006400;">
+       {{ cognate_class.get_meanings.0 }}
+    </div>
+    <a href="{% url 'meaning-report' cognate_class.get_meanings.0 %}">
+      <img src="{% static '1w.png' %}"
+           alt="Open 1 meaning all languages view for this meaning." />
+    </a>
+    <a href="/meaning/{{ cognate_class.get_meanings.0 }}/cognateclasslist/">
+      <img src="{% static '1c.png' %}"
+           alt="Open 1 meaning all cognate sets view for this meaning." />
+    </a>
   </h1>
 {% endblock %}
 
@@ -28,59 +48,61 @@
 {% block content %}
   {% include "snippets/deleteCognateClassModal.html" %}
   <div class="row">
-    <div class="pull-right">
-      {% if user.is_authenticated %}
-        <div class="inline"
-             data-toggle="tooltip"
-             data-placement="bottom"
-             title="Delete Cognate Class">
-          <button type="button"
-                  data-toggle="modal"
-                  data-target="#deleteCognateClassModal"
-                  class="btn btn-default">
-            <span class="glyphicon glyphicon-minus"></span>
-          </button>
-        </div>
-        <a class="btn btn-default"
-           href="{% url 'cognate-class-citation-create' cognate_class.id %}">
-          add citation
-        </a>
-      {% endif %}
-      {% for meaning in cognate_class.get_meanings %}
-        <a class="btn btn-default"
-           href="{% url 'meaning-report' meaning.gloss %}">
-          return to ‘{{ meaning.gloss }}’
-        </a>
-      {% endfor %}
-    </div>
     {% if user.is_authenticated %}
-      <div class="col-md-9">
+      <div class="col-md-12">
         <form class="form-horizontal" name="cognateClassEditForm" method="POST">
           {% csrf_token %}
           {% form_field cognateClassForm.id class="hide" %}
           {% form_field cognateClassForm.lastTouched class="hide" %}
           {% form_field cognateClassForm.lastEditedBy class="hide" %}
+          <div class="pull-right" style="margin-top:-40px">
+              <button type="submit"
+                      name="cognateClassEditForm"
+                      class="btn btn-danger"
+                      title="Save data for cognate class {{cognate_class.id}}">
+                Save
+              </button>
+              <div class="inline"
+                   data-toggle="tooltip"
+                   data-placement="bottom"
+                   title="Delete Cognate Class">
+                <button type="button"
+                        data-toggle="modal"
+                        data-target="#deleteCognateClassModal"
+                        class="btn btn-default">
+                  <span class="glyphicon glyphicon-minus"></span>
+                </button>
+              </div>
+              <a class="btn btn-default"
+               href="{% url 'cognate-class-citation-create' cognate_class.id %}">
+                add citation
+              </a>
+          </div>
           <table><tr valign="top">
             <td width="33%">
-              <label class="control-label">Name</label>
-              {% form_field cognateClassForm.name class="form-control" placeholder="Name" %}
-
-              <label class="control-label">Notes</label>
-              {% form_field cognateClassForm.notes class="form-control" placeholder="Notes" %}
-
               <label class="control-label">Root reference form</label>
               {% form_field cognateClassForm.root_form  class="form-control" placeholder="Root reference form" %}
 
               <label class="control-label">Root language</label>
               {% form_field cognateClassForm.root_language  class="form-control" %}
 
-              <div style="width:100px">
-                <label class="control-label" style="top:-5px">Loanword?</label>
-                {% form_field cognateClassForm.loanword class="pull-right" style="margin-top:12px" %}
-              </div>
+              <label class="control-label">Name</label>
+              {% form_field cognateClassForm.name class="form-control" placeholder="Name" %}
+
+              <label class="control-label">Notes</label>
+              <textarea  placeholder="Notes" class="form-control" cols="40" id="id_notes" name="notes" rows="4">{{cognate_class.notes}}</textarea>
 
             </td>
             <td style="padding-left:20px;width:20%">
+              <div style="width:100px">
+                {% form_field cognateClassForm.loanword style="margin-top:12px" %}
+                <label class="control-label" style="top:-5px">Loanword?</label>
+              </div>
+              <div class="">
+                {% form_field cognateClassForm.parallelLoanEvent style="margin-top:10px" %}
+                <label class="control-label">Parallel&nbsp;loan&nbsp;event</label>
+              </div>
+
               <label class="control-label">Loan source</label>
               {% form_field cognateClassForm.loan_source class="form-control" placeholder="" %}
 
@@ -103,30 +125,6 @@
                 {% form_field cognateClassForm.sourceFormInLoanLanguage class="form-control" %}
               </div>
 
-              <div>
-                <label class="control-label">Not&nbsp;Proto-Indo-European?</label>
-                {% form_field cognateClassForm.notProtoIndoEuropean class="pull-right" style="margin-top:10px" %}
-              </div>
-
-              <div class="">
-                <label class="control-label">Parallel&nbsp;loan&nbsp;event</label>
-                {% form_field cognateClassForm.parallelLoanEvent class="pull-right" style="margin-top:10px" %}
-              </div>
-
-              <div>
-                <label class="control-label">Parallel&nbsp;derivation?</label>
-                {% form_field cognateClassForm.parallelDerivation class="pull-right" style="margin-top:10px" %}
-              </div>
-
-              <div>
-                <label class="control-label">Ideophonic?</label>
-                {% form_field cognateClassForm.ideophonic class="pull-right" style="margin-top:10px" %}
-              </div>
-
-              <div>
-                <label class="control-label">Dubious set?</label>
-                {% form_field cognateClassForm.dubiousSet class="pull-right" style="margin-top:10px" %}
-              </div>
             </td>
             <td style="padding-left:20px;width:20%">
                 <label class="control-label">Proposed as cognate to (id)</label>
@@ -140,26 +138,36 @@
                 <label class="control-label">Proposed as cognate to scale</label>
                 {% form_field cognateClassForm.proposedAsCognateToScale class="form-control" %}
 
-                <br /><br /><br />
+              <div>
+                {% form_field cognateClassForm.notProtoIndoEuropean style="margin-top:10px" %}
+                <label class="control-label">Not&nbsp;Proto-Indo-European?</label>
+              </div>
 
+              <div>
+                {% form_field cognateClassForm.parallelDerivation style="margin-top:10px" %}
+                <label class="control-label">Parallel&nbsp;derivation?</label>
+              </div>
+
+              <div>
+                {% form_field cognateClassForm.ideophonic style="margin-top:10px" %}
+                <label class="control-label">Ideophonic?</label>
+              </div>
+
+              <div>
+                {% form_field cognateClassForm.dubiousSet style="margin-top:10px" %}
+                <label class="control-label">Dubious set?</label>
+              </div>
+
+              <br /><br />
+
+                <div>
+                  {% form_field cognateClassForm.revisedYet style="margin-top:10px" %}
+                  <label class="control-label">Revised yet?</label>
+                </div>
                 <label class="control-label">Revised by</label>
                 {% form_field cognateClassForm.revisedBy class="form-control" %}
-                <div>
-                  <label class="control-label">Revised yet?</label>
-                  {% form_field cognateClassForm.revisedYet class="pull-right" style="margin-top:10px" %}
-                </div>
             </td>
           </tr></table>
-          <div class="form-group pull-left" style="margin-top:-40px">
-            <div class="col-sm-offset-2 col-sm-10">
-              <button type="submit"
-                      name="cognateClassEditForm"
-                      class="btn btn-danger"
-                      title="Save data for cognate class {{cognate_class.id}}">
-                Save
-              </button>
-            </div>
-          </div>
         </form>
       </div>
     {% else %}
@@ -368,16 +376,7 @@
         </table>
       </div>
     {% endif %}
-    <div class="col-md-12" style="border-top:solid lightgray 1px">
-      {% if user.is_authenticated %}
-        <form action="" method="POST" name="cognateJudgementSplitTable">
-          {% csrf_token %}
-          <div class="form-group pull-right">
-            <a href="." class="btn btn-default">Undo</a>
-            <input type="submit" title="Cognate Judgement Split Table" name="cognateJudgementSplitTable"
-                   value="Save" class="btn btn-danger">
-          </div>
-      {% endif %}
+    <div class="col-md-12" style="border-top:solid lightgray 3px;margin-top:30px">
       <table class="table table-striped">
         <thead>
           <tr>
@@ -391,10 +390,10 @@
               </th>
             {% endif %}
             <th>Language</th>
-            <th>Lexeme</th>
-            <th>Not Swh</th>
-            <th>Phonological</th>
-            <th>Meaning</th>
+            <th>Roman(ised)</th>
+            <th>Native Script</th>
+            <th>PhoneMic</th>
+            <th>Not Tgt</th>
             <th>Notes</th>
             <th>Rating</th>
           </tr>
@@ -426,6 +425,8 @@
                 </a>
               </td>
               <td>{{ cj.object_data.lexeme.romanised }}</td>
+              <td>{{ cj.object_data.lexeme.nativeScript }}</td>
+              <td>{{ cj.object_data.lexeme.phon_form }}</td>
               <td>
                 <input type="checkbox"
                        {% if cj.object_data.lexeme.not_swadesh_term %}
@@ -433,21 +434,6 @@
                        {% endif %}
                        disabled="disabled"
                        class="form-control">
-              </td>
-              <td>{{ cj.object_data.lexeme.phon_form }}</td>
-              <td class="nowrap">
-                <div class="inline"
-                     style="font-size: 15px; color: #006400;">
-                  {{ cj.object_data.lexeme.meaning.gloss }}
-                </div>
-                <a href="{% url 'meaning-report' cj.object_data.lexeme.meaning.gloss %}">
-                  <img src="{% static '1w.png' %}"
-                       alt="Open 1 meaning all languages view for this meaning." />
-                </a>
-                <a href="/meaning/{{ cj.object_data.lexeme.meaning.gloss }}/cognateclasslist/">
-                  <img src="{% static '1c.png' %}"
-                       alt="Open 1 meaning all cognate sets view for this meaning." />
-                </a>
               </td>
               <td>{{ cj.object_data.lexeme.notes|wikilink }}</td>
               <td>
@@ -469,7 +455,16 @@
         </tbody>
       </table>
       {% if user.is_authenticated %}
+        <br />
+        <form action="" method="POST" name="cognateJudgementSplitTable">
+          {% csrf_token %}
+          <div class="form-group pull-left">
+            <a href="." class="btn btn-default">Undo</a>
+            <input type="submit" title="Cognate Judgement Split Table" name="cognateJudgementSplitTable"
+                   value="Save Split" class="btn btn-danger">
+          </div>
         </form>
+        <br /><br /><br />
       {% endif %}
     </div>
     {% if cognate_class.cognateclasscitation_set.exists %}
@@ -493,7 +488,7 @@
                 </a>
               {% endif %}
               {% if user.is_authenticated %}
-                <form action="" method="POST" name="deleteCitation" class="inline">
+                <form action="" method="POST" name="deleteCitation" class="inline pull-right">
                   {% csrf_token %}
                   <input type="text"
                          class="hide"
