@@ -618,7 +618,10 @@
                     style="color: #8B4510;
                            text-align: center;
                            border-left: 2px solid #dddddd;">
-                  {{ cc.idField.data }}
+                  <a href="{{cc.object_data.get_absolute_url}}"
+                     style="color: #8B4510;">
+                    {{ cc.idField.data }}
+                  </a>
                   {% if user.is_authenticated %}
                     {% form_field cc.idField class="hide" required="required" %}
                     {% form_field cc.lastTouched class="hide" required="required" %}
