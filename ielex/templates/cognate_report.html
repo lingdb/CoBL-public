@@ -377,6 +377,10 @@
       </div>
     {% endif %}
     <div class="col-md-12" style="border-top:solid lightgray 3px;margin-top:30px">
+    {% if user.is_authenticated %}
+      <form action="" method="POST" name="cognateJudgementSplitTable">
+        {% csrf_token %}
+    {% endif %}
       <table class="table table-striped">
         <thead>
           <tr>
@@ -456,16 +460,14 @@
       </table>
       {% if user.is_authenticated %}
         <br />
-        <form action="" method="POST" name="cognateJudgementSplitTable">
-          {% csrf_token %}
-          <div class="form-group pull-left">
-            <a href="." class="btn btn-default">Undo</a>
-            <input type="submit" title="Cognate Judgement Split Table" name="cognateJudgementSplitTable"
-                   value="Save Split" class="btn btn-danger">
-          </div>
-        </form>
+        <div class="form-group pull-left">
+          <a href="." class="btn btn-default">Undo</a>
+          <input type="submit" title="Cognate Judgement Split Table" name="cognateJudgementSplitTable"
+                 value="Save Split" class="btn btn-danger">
+        </div>
+      </form>
         <br /><br /><br />
-      {% endif %}
+    {% endif %}
     </div>
     {% if cognate_class.cognateclasscitation_set.exists %}
       {% for citation in cognate_class.cognateclasscitation_set.all %}
