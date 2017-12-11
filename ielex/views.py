@@ -21,7 +21,7 @@ from django.db.models.expressions import RawSQL
 from django.forms import ValidationError
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, \
      Http404, QueryDict
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render, render_to_response
 from django.template import RequestContext
 from django.template import Template
 from django.db.models.query_utils import DeferredAttribute
@@ -1422,7 +1422,8 @@ def submit_citations_inline_form(request, model):
                 cognate_class_id=instance.id,
                 source_id=int(entry['source_id']),
                 pages=entry['pages'],
-                comment=entry['comment'])
+                comment=entry['comment'],
+                rfcWeblink=entry[rfcWeblink])
     citationModel.objects.filter(id__in=citations.keys()).delete()
 
     return JsonResponse({
@@ -2189,6 +2190,24 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                 form = CognateClassEditForm(request.POST)
                 form.validate()
                 form.handle(request)
+            except ValidationError as e:
+                messages.error(
+                    request,
+                    'Sorry, the server had trouble understanding '
+                    'the request: %s' % e)
+                # recreate data to provide errorneous form data to the user
+                language_list = LanguageList.objects.get(
+                    name=getDefaultLanguagelist(request))
+                splitTable = CognateJudgementSplitTable()
+                ordLangs = language_list.languages.all().order_by("languagelistorder")
+                for language in ordLangs:
+                    for cj in cognate_class.cognatejudgement_set.filter(
+                            lexeme__language=language).all():
+                        cj.idField = cj.id
+                        splitTable.judgements.append_entry(cj)
+                return render(request, 'cognate_report.html', {"cognate_class": cognate_class,
+                            "cognateClassForm": form,
+                            "splitTable": splitTable})
             except Exception as e:
                 logging.exception('Problem handling CognateClassEditForm.')
                 messages.error(
@@ -2209,8 +2228,23 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
             cj.idField = cj.id
             splitTable.judgements.append_entry(cj)
 
+    # replace markups for note field (used in non-edit mode)
+    s = Source.objects.all().filter(deprecated=False)
+    notes = cognate_class.notes
+    pattern = re.compile(r'(\{ref +([^\{]+?)(:[^\{]+?)? *\})')
+    pattern2 = re.compile(r'(\{ref +[^\{]+?(:[^\{]+?)? *\})')
+    for m in re.finditer(pattern, notes):
+        foundSet = s.filter(shorthand=m.group(2))
+        if foundSet.count() == 1:
+            notes = re.sub(pattern2, lambda match: '<a href="/sources/'
+                + str(foundSet.first().id)
+                + '" title="' + foundSet.first().citation_text.replace('"', '\"')
+                + '">' + foundSet.first().shorthand + '</a>', notes, 1)
+
+
     return render_template(request, "cognate_report.html",
                            {"cognate_class": cognate_class,
+                            "notesExpandedMarkups": notes,
                             "cognateClassForm": CognateClassEditForm(
                                 obj=cognate_class),
                             "splitTable": splitTable})

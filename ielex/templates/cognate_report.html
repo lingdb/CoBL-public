@@ -90,7 +90,7 @@
               {% form_field cognateClassForm.name class="form-control" placeholder="Name" %}
 
               <label class="control-label">Notes</label>
-              <textarea  placeholder="Notes" class="form-control" cols="40" id="id_notes" name="notes" rows="4">{{cognate_class.notes}}</textarea>
+              {% form_field cognateClassForm.notes class="form-control" placeholder="Notes" %}
 
             </td>
             <td style="padding-left:20px;width:20%">
@@ -216,7 +216,7 @@
                       Notes
                     </th>
                     <td>
-                      {{ cognate_class.notes|wikilink }}
+                      {{ notesExpandedMarkups|wikilink }}
                     </td>
                   </tr>
                 </tbody>
@@ -403,7 +403,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for cj in splitTable.judgements %} {# cognate_class.cognatejudgement_set.all %} #}
+          {% for cj in splitTable.judgements|dictsort:"object_data.lexeme.language.ascii_name" %} {# cognate_class.cognatejudgement_set.all %} #}
             <tr>
               <td data-toggle="tooltip"
                   data-placement="top"
@@ -470,7 +470,7 @@
     {% endif %}
     </div>
     {% if cognate_class.cognateclasscitation_set.exists %}
-      {% for citation in cognate_class.cognateclasscitation_set.all %}
+      {% for citation in cognate_class.cognateclasscitation_set.all|dictsort:"source.shorthand" %}
         <div class="col-md-12">
           <div class="panel panel-default">
             <div class="panel-heading">
@@ -487,6 +487,11 @@
               {% if user.is_authenticated %}
                 <a href="{% url 'cognate-citation-edit' citation.id %}" title="Edit the citation">
                   <span class="glyphicon glyphicon-edit"></span>
+                </a>
+              {% endif %}
+              {% if citation.rfcWeblink %}
+                <a href="{{ citation.rfcWeblink }}" title="Open web reference in new tab." target="_new">
+                  <span class="glyphicon glyphicon-link"></span>
                 </a>
               {% endif %}
               {% if user.is_authenticated %}
@@ -511,7 +516,7 @@
               {% endif %}
             </div>
             <div class="panel-body">
-              {{ citation.comment|wikilink }}
+              {{ citation.getCommentExpandedMarkups|wikilink }}
             </div>
           </div>
         </div>

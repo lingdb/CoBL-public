@@ -7,6 +7,7 @@ from collections import defaultdict
 from string import ascii_uppercase, ascii_lowercase
 import inspect
 import codecs
+import re
 
 import reversion
 from django.db import models, transaction
@@ -1963,6 +1964,7 @@ class LexemeCitation(AbstractBaseCitation):
 class CognateClassCitation(AbstractBaseCitation):
     cognate_class = models.ForeignKey(CognateClass)
     source = models.ForeignKey(Source)
+    rfcWeblink = models.URLField(blank=True)
 
     def __str__(self):
         try:
@@ -1978,6 +1980,21 @@ class CognateClassCitation(AbstractBaseCitation):
     def get_absolute_url(self):
         return reverse("cognate-class-citation-detail",
                        kwargs={"pk": self.id})
+
+    def getCommentExpandedMarkups(self):
+        # replace markups for comment field (used in non-edit mode)
+        s = Source.objects.all().filter(deprecated=False)
+        comment = self.comment
+        pattern = re.compile(r'(\{ref +([^\{]+?)(:[^\{]+?)? *\})')
+        pattern2 = re.compile(r'(\{ref +[^\{]+?(:[^\{]+?)? *\})')
+        for m in re.finditer(pattern, comment):
+            foundSet = s.filter(shorthand=m.group(2))
+            if foundSet.count() == 1:
+                comment = re.sub(pattern2, lambda match: '<a href="/sources/'
+                    + str(foundSet.first().id)
+                    + '" title="' + foundSet.first().citation_text.replace('"', '\"')
+                    + '">' + foundSet.first().shorthand + '</a>', comment, 1)
+        return comment
 
     class Meta:
         unique_together = (("cognate_class", "source"),)

@@ -7,7 +7,10 @@ from collections import defaultdict
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect, render
+from ielex.shortcuts import render_template
 from django.views.generic import CreateView, UpdateView, TemplateView
 from ielex import settings
 from ielex.lexicon.models import CognateClass, \
@@ -19,6 +22,7 @@ from ielex.lexicon.models import CognateClass, \
     MeaningList, \
     NexusExport, \
     NEXUS_DIALECT_CHOICES, \
+    Source, \
     Clade
 from ielex.forms import EditCognateClassCitationForm
 from ielex.shortcuts import minifiedJs
@@ -38,6 +42,26 @@ class CognateClassCitationUpdateView(UpdateView):
     model = CognateClassCitation
     form_class = EditCognateClassCitationForm
     template_name = "generic_update.html"
+
+    def post(self, request, pk, **kwargs):
+        instance = CognateClassCitation.objects.get(id=pk)
+        form = EditCognateClassCitationForm(request.POST, instance=instance)
+        try:
+            # validate {ref foo ...}
+            s = Source.objects.all().filter(deprecated=False)
+            pattern = re.compile(r'(\{ref +([^\{]+?)(:[^\{]+?)? *\})')
+            for m in re.finditer(pattern, form.data['comment']):
+                foundSet = s.filter(shorthand=m.group(2))
+                if not foundSet.count() == 1:
+                    raise ValidationError('In field “Comment” source shorthand “%(name)s” is unknown.', 
+                                                params={'name': m.group(2)})
+            form.save()
+        except ValidationError as e:
+            messages.error(
+                request,
+                'Sorry, the server had problems updating the cognate citation. %s' % e)
+            return self.render_to_response({"form": form})
+        return HttpResponseRedirect(reverse('cognate-class-citation-detail', args=[pk]))
 
     def get_context_data(self, **kwargs):
         context = super(

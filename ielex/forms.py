@@ -1019,6 +1019,9 @@ class MergeCognateClassesForm(WTForm):
                             ', '.join([x.pages for x in v]) +
                             '}',
                             reliability='A',
+                            rfcWeblink='{' +
+                            ', '.join([x.rfcWeblink for x in v]) +
+                            '}',
                             comment='{' +
                             ', '.join([x.comment for x in v]) +
                             '}'))
@@ -1041,14 +1044,13 @@ class MergeCognateClassesForm(WTForm):
 class CognateClassEditForm(AbstractTimestampedForm):
     id = IntegerField('Cognate Class id', validators=[InputRequired()])
     name = StringField('Name', validators=[InputRequired()])
-    notes = TextField('Notes', validators=[InputRequired()])
+    notes = TextAreaField('Notes', validators=[InputRequired()], render_kw={"rows": 7, "cols": 20})
     root_form = StringField('Root form', validators=[InputRequired()])
     # Added for #424 4)
     root_language = StringField('Root Language', validators=[InputRequired()])
     gloss_in_root_lang = StringField('Gloss in Root Language',
                                      validators=[InputRequired()])
     loanword = BooleanField('Loanword', validators=[InputRequired()])
-    notes = TextField('Notes', validators=[InputRequired()])
     loan_source = TextField('Loan Source', validators=[InputRequired()])
     loan_notes = TextField('Loan Notes', validators=[InputRequired()])
     loanSourceCognateClass = CognateClassField(
@@ -1100,6 +1102,14 @@ class CognateClassEditForm(AbstractTimestampedForm):
                 "Sorry, cognate class %s does not exist on the server." %
                 self.data['id'])
 
+    def validate_notes(form, field):
+        s = Source.objects.all().filter(deprecated=False)
+        pattern = re.compile(r'(\{ref +([^\{]+?)(:[^\{]+?)? *\})')
+        for m in re.finditer(pattern, field.data):
+            foundSet = s.filter(shorthand=m.group(2))
+            if not foundSet.count() == 1:
+                raise ValidationError('In field “Notes” source shorthand “%(name)s” is unknown.', 
+                                            params={'name': m.group(2)})
 
 class CognateJudgementSplitRow(AbstractTimestampedForm):
     idField = IntegerField('Id', validators=[InputRequired()])
@@ -1681,6 +1691,7 @@ class EditCitationForm(forms.Form):
 class EditCognateClassCitationForm(forms.ModelForm):
     comment = forms.CharField(
         widget=forms.Textarea(attrs={'cols': 60, 'rows': 20}), required=False)
+    rfcWeblink = forms.URLField(label='Web Link', required=False)
 
     def validate_unique(self):
         """Calls the instance's validate_unique() method and updates the
@@ -1698,7 +1709,7 @@ class EditCognateClassCitationForm(forms.ModelForm):
 
     class Meta:
         model = CognateClassCitation
-        fields = ["source", "pages", "comment"]
+        fields = ["source", "pages", "comment", "rfcWeblink"]
         widgets = {
             'source': autocomplete.ModelSelect2(url='source-autocomplete')
         }
@@ -1989,7 +2000,7 @@ class CognateClassInlineForm(OrderableInlineModelForm):
 
     class Meta:
         model = CognateClassCitation
-        fields = ('cognate_class', 'root_form', 'comment')
+        fields = ('cognate_class', 'root_form', 'comment', 'rfcWeblink')
         readonly_fields = fields
 
     def __init__(self, *args, **kwargs):
