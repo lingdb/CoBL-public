@@ -1047,7 +1047,7 @@ class CognateClassEditForm(AbstractTimestampedForm):
             validators=[InputRequired()], render_kw={"rows": 4, "cols": 20})
     notes = TextAreaField('Notes', 
             validators=[InputRequired()], render_kw={"rows": 2, "cols": 20})
-    alsoUsedInOtherMeanings = TextAreaField('Also used in other meanings', 
+    alsoUsedInOtherMeanings = TextAreaField('Identical with cognate set used in other meanings', 
             validators=[InputRequired()], render_kw={"rows": 2, "cols": 20})
     root_form = StringField('Root form', validators=[InputRequired()])
     # Added for #424 4)
