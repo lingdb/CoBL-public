@@ -1043,8 +1043,10 @@ class MergeCognateClassesForm(WTForm):
 
 class CognateClassEditForm(AbstractTimestampedForm):
     id = IntegerField('Cognate Class id', validators=[InputRequired()])
-    name = StringField('Name', validators=[InputRequired()])
-    notes = TextAreaField('Notes', validators=[InputRequired()], render_kw={"rows": 7, "cols": 20})
+    justificationDiscussion = TextAreaField('Justification & Discussion', 
+            validators=[InputRequired()], render_kw={"rows": 2, "cols": 20})
+    notes = TextAreaField('Notes', 
+            validators=[InputRequired()], render_kw={"rows": 6, "cols": 20})
     root_form = StringField('Root form', validators=[InputRequired()])
     # Added for #424 4)
     root_language = StringField('Root Language', validators=[InputRequired()])
@@ -1109,6 +1111,15 @@ class CognateClassEditForm(AbstractTimestampedForm):
             foundSet = s.filter(shorthand=m.group(2))
             if not foundSet.count() == 1:
                 raise ValidationError('In field “Notes” source shorthand “%(name)s” is unknown.', 
+                                            params={'name': m.group(2)})
+
+    def validate_justificationDiscussion(form, field):
+        s = Source.objects.all().filter(deprecated=False)
+        pattern = re.compile(r'(\{ref +([^\{]+?)(:[^\{]+?)? *\})')
+        for m in re.finditer(pattern, field.data):
+            foundSet = s.filter(shorthand=m.group(2))
+            if not foundSet.count() == 1:
+                raise ValidationError('In field “Justification & Discussion” source shorthand “%(name)s” is unknown.', 
                                             params={'name': m.group(2)})
 
 class CognateJudgementSplitRow(AbstractTimestampedForm):

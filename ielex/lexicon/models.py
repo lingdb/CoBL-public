@@ -1196,9 +1196,7 @@ class CognateClass(AbstractTimestamped):
     """
     alias = models.CharField(max_length=3)
     notes = models.TextField(blank=True)
-    name = CharNullField(
-        max_length=128, blank=True, null=True,
-        unique=True, validators=[suitable_for_url])
+    justificationDiscussion = models.TextField(blank=True)
     root_form = models.TextField(blank=True)
     root_language = models.TextField(blank=True)
     # Former JSON fields:
@@ -1267,7 +1265,7 @@ class CognateClass(AbstractTimestamped):
         ordering = ["alias"]
 
     def timestampedFields(self):
-        return set(['alias', 'notes', 'name', 'root_form', 'root_language',
+        return set(['alias', 'notes', 'justificationDiscussion', 'root_form', 'root_language',
                     'gloss_in_root_lang', 'loanword', 'loan_source',
                     'loan_notes', 'loanSourceCognateClass',
                     'loanEventTimeDepthBP', 'sourceFormInLoanLanguage',

@@ -2129,13 +2129,12 @@ def redirect_lexeme_citation(request, lexeme_id):
 
 
 @logExceptions
-def cognate_report(request, cognate_id=0, meaning=None, code=None,
-                   cognate_name=None):
+def cognate_report(request, cognate_id=0, meaning=None, code=None):
 
     if cognate_id:
         cognate_class = CognateClass.objects.get(id=int(cognate_id))
-    elif cognate_name:
-        cognate_class = CognateClass.objects.get(name=cognate_name)
+    # elif cognate_name:
+    #     cognate_class = CognateClass.objects.get(name=cognate_name)
     else:
         assert meaning and code
         cognate_classes = CognateClass.objects.filter(
@@ -2240,11 +2239,24 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                 + str(foundSet.first().id)
                 + '" title="' + foundSet.first().citation_text.replace('"', '\"')
                 + '">' + foundSet.first().shorthand + '</a>', notes, 1)
+    # replace markups for justificationDiscussion field (used in non-edit mode)
+    s = Source.objects.all().filter(deprecated=False)
+    justificationDiscussion = cognate_class.justificationDiscussion
+    pattern = re.compile(r'(\{ref +([^\{]+?)(:[^\{]+?)? *\})')
+    pattern2 = re.compile(r'(\{ref +[^\{]+?(:[^\{]+?)? *\})')
+    for m in re.finditer(pattern, justificationDiscussion):
+        foundSet = s.filter(shorthand=m.group(2))
+        if foundSet.count() == 1:
+            justificationDiscussion = re.sub(pattern2, lambda match: '<a href="/sources/'
+                + str(foundSet.first().id)
+                + '" title="' + foundSet.first().citation_text.replace('"', '\"')
+                + '">' + foundSet.first().shorthand + '</a>', justificationDiscussion, 1)
 
 
     return render_template(request, "cognate_report.html",
                            {"cognate_class": cognate_class,
                             "notesExpandedMarkups": notes,
+                            "justificationDiscussionExpandedMarkups": justificationDiscussion,
                             "cognateClassForm": CognateClassEditForm(
                                 obj=cognate_class),
                             "splitTable": splitTable})

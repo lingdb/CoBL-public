@@ -301,7 +301,7 @@ urlpatterns = [
 
     # Cognate
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report, name="cognate-set"),
-    url(r'^cognate/%(COGNATE_NAME)s/$' % R, cognate_report),
+    # url(r'^cognate/%(COGNATE_NAME)s/$' % R, cognate_report),
     url(r'^meaning/%(MEANING)s/cognate/(?P<code>[A-Z]+[0-9]*)/$' % R,
         cognate_report),
     url(r'^cognateclasslist/$' % R, viewDefaultCognateClassList),
