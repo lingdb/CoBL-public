@@ -1197,6 +1197,7 @@ class CognateClass(AbstractTimestamped):
     alias = models.CharField(max_length=3)
     notes = models.TextField(blank=True)
     justificationDiscussion = models.TextField(blank=True)
+    alsoUsedInOtherMeanings = models.TextField(blank=True)
     root_form = models.TextField(blank=True)
     root_language = models.TextField(blank=True)
     # Former JSON fields:
@@ -1271,7 +1272,7 @@ class CognateClass(AbstractTimestamped):
                     'loanEventTimeDepthBP', 'sourceFormInLoanLanguage',
                     'parallelLoanEvent', 'notProtoIndoEuropean', 'ideophonic',
                     'parallelDerivation', 'dubiousSet',
-                    'revisedYet', 'revisedBy',
+                    'revisedYet', 'revisedBy', 'alsoUsedInOtherMeanings',
                     'proposedAsCognateTo', 'proposedAsCognateToScale'])
 
     def deltaReport(self, **kwargs):
