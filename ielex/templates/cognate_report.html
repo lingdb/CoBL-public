@@ -87,6 +87,8 @@
               {% form_field cognateClassForm.justificationDiscussion class="form-control" placeholder="" %}
 
               <label class="control-label">Notes</label>
+                <span title="Add the content of the field 'Notes' to field 'Justification &amp; Discussion'." class="pull-right btn btn-xs btn-default glyphicon glyphicon-arrow-up" onclick="document.getElementById('justificationDiscussion').value += document.getElementById('notes').value;"></span>
+                <span style="color:red" title="Add the content of the field 'Notes' to field 'Justification &amp; Discussion' and empty out the 'Notes' field." class="pull-right btn btn-xs btn-default glyphicon glyphicon-arrow-up" onclick="document.getElementById('justificationDiscussion').value += document.getElementById('notes').value;document.getElementById('notes').value = '';"></span>
               {% form_field cognateClassForm.notes class="form-control" placeholder="Notes" %}
 
               <label class="control-label">Identical with cognate set used in other meanings</label>
@@ -209,14 +211,14 @@
                       {{ cognate_class.gloss_in_root_lang }}
                     </td>
                   </tr>
-                  <tr>
-                    <th>
-                      Notes
-                    </th>
-                    <td>
-                      {{ notesExpandedMarkups|wikilink }}
-                    </td>
-                  </tr>
+                  {# <tr> #}
+                  {#   <th> #}
+                  {#     Notes #}
+                  {#   </th> #}
+                  {#   <td> #}
+                  {#     {{ notesExpandedMarkups|wikilink }} #}
+                  {#   </td> #}
+                  {# </tr> #}
                   <tr>
                     <th>
                       Identical with cognate set used in other meanings
