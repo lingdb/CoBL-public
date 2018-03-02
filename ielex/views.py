@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import csv
+import copy
 import datetime
 import logging
 import io
@@ -8,14 +9,14 @@ import re
 import time
 import zipfile
 import codecs
-from collections import defaultdict, deque
+from collections import defaultdict, deque, OrderedDict
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, transaction, connection
 from django.db.models import Q
 from django.db.models.expressions import RawSQL
 from django.forms import ValidationError
@@ -3435,6 +3436,18 @@ def view_cladecognatesearch(request):
          "AddCogClassTableForm": form})
 
 
+def query_to_dicts(query_string, *query_args):
+    cursor = connection.cursor()
+    cursor.execute(query_string, query_args)
+    col_names = list(map(str.upper, [desc[0] for desc in cursor.description]))
+    while True:
+        row = cursor.fetchone()
+        if row is None:
+            break
+        row_dict = OrderedDict(zip(col_names, row))
+        yield row_dict
+    return
+
 @user_passes_test(lambda u: u.is_staff)
 @logExceptions
 def view_csvExport(request):
@@ -3468,6 +3481,135 @@ def view_csvExport(request):
                   MeaningListOrder: MeaningListOrder.objects,
                   SndComp: SndComp.objects,
                   Source: Source.objects}
+    elif 'cognate' in request.GET:
+        meaningListId = getDefaultWordlistId(request)
+        languageListId = getDefaultLanguagelistId(request)
+        models_org = list(query_to_dicts("""
+SELECT *
+FROM (
+SELECT 
+0 as ID, 
+cj.cognate_class_id as COGID, 
+cc.root_form as ROOT_FORM, 
+cj.lexeme_id as LEXEME_ID, 
+m.gloss as CONCEPT, 
+l.phon_form as IPA,
+l."phoneMic" as PHONEMIC, 
+l.romanised as ROMANISED, 
+lg.ascii_name as DOCULECT,
+l.not_swadesh_term as NOT_TARGET
+FROM 
+lexicon_lexeme as l,
+lexicon_cognatejudgement as cj,
+lexicon_language as lg,
+lexicon_meaning as m,
+lexicon_cognateclass as cc
+
+WHERE 
+l.id = cj.lexeme_id AND 
+l.language_id = lg.id AND 
+l.meaning_id = m.id AND 
+cj.cognate_class_id = cc.id AND
+l.language_id in (
+select language_id from lexicon_languagelistorder where language_list_id = %d) AND
+l.meaning_id in (
+select meaning_id from lexicon_meaninglistorder where meaning_list_id = %d) 
+
+UNION
+
+SELECT 
+0 as ID, 
+0 as COGID, 
+'' as ROOT_FORM, 
+l.id as LEXEME_ID, 
+m.gloss as CONCEPT, 
+l.phon_form as IPA,
+l."phoneMic" as PHONEMIC, 
+l.romanised as ROMANISED, 
+lg.ascii_name as DOCULECT,
+l.not_swadesh_term as NOT_TARGET
+FROM 
+lexicon_lexeme as l,
+lexicon_language as lg,
+lexicon_meaning as m
+
+WHERE 
+l.id not in (
+
+SELECT 
+cj.lexeme_id
+FROM 
+lexicon_lexeme as l,
+lexicon_cognatejudgement as cj,
+lexicon_language as lg,
+lexicon_meaning as m,
+lexicon_cognateclass as cc
+
+WHERE 
+l.id = cj.lexeme_id AND 
+l.language_id = lg.id AND 
+l.meaning_id = m.id AND 
+cj.cognate_class_id = cc.id AND
+l.language_id in (
+SELECT language_id from lexicon_languagelistorder where language_list_id = %d) AND
+l.meaning_id in (
+SELECT meaning_id from lexicon_meaninglistorder where meaning_list_id = %d) 
+
+
+) AND 
+l.language_id = lg.id AND 
+l.meaning_id = m.id AND 
+l.language_id in (
+SELECT language_id from lexicon_languagelistorder where language_list_id = %d) AND
+l.meaning_id in (
+SELECT meaning_id from lexicon_meaninglistorder where meaning_list_id = %d) 
+) t
+ORDER BY (doculect, concept)
+        """ % ((languageListId,meaningListId) * 3)))
+
+        zipBuffer = io.BytesIO()
+        zipFile = zipfile.ZipFile(zipBuffer, 'w')
+
+        filename = 'CoBL_export_%s/%s.csv' % (time.strftime("%Y-%m-%d"), 'cognates_all')
+        if len(models_org) > 0:
+            models = []
+            cnt = 1
+            for i in range(len(models_org)):
+                r = copy.deepcopy(models_org[i])
+                r["ID"] = cnt
+                del r["NOT_TARGET"]
+                models.append(r)
+                cnt += 1
+            fieldnames = models[0].keys()
+            modelBuffer = io.StringIO()
+            writer = csv.DictWriter(modelBuffer, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(models)
+            zipFile.writestr(filename, modelBuffer.getvalue())
+
+            models = []
+            cnt = 1
+            for i in range(len(models_org)):
+                r = copy.deepcopy(models_org[i])
+                if not r["NOT_TARGET"]:
+                    r["ID"] = cnt
+                    del r["NOT_TARGET"]
+                    models.append(r)
+                    cnt += 1
+            filename = 'CoBL_export_%s/%s.csv' % (time.strftime("%Y-%m-%d"), 'cognates_only_target')
+            modelBuffer = io.StringIO()
+            writer = csv.DictWriter(modelBuffer, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(models)
+            zipFile.writestr(filename, modelBuffer.getvalue())
+
+        zipFile.close()
+
+        resp = HttpResponse(zipBuffer.getvalue(),
+                            content_type='application/x-zip-compressed')
+        cdHeader = "attachment; filename=%s.export.zip" % time.strftime("%Y-%m-%d")
+        resp['Content-Disposition'] = cdHeader
+        return resp
     else:
         meaningList = getDefaultWordlist(request)
         languageList = getDefaultLanguagelist(request)
@@ -3507,7 +3649,7 @@ def view_csvExport(request):
     zipBuffer = io.BytesIO()
     zipFile = zipfile.ZipFile(zipBuffer, 'w')
     for model, querySet in models.items():
-        filename = 'export/%s.csv' % model.__name__
+        filename = 'CoBL_export_%s/%s.csv' % (time.strftime("%Y-%m-%d"), model.__name__)
         fieldnames = modelToFieldnames(model)
         modelBuffer = io.StringIO()
         writer = csv.DictWriter(modelBuffer, fieldnames=fieldnames)
