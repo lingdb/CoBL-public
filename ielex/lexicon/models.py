@@ -727,6 +727,9 @@ class Language(AbstractTimestamped, AbstractDistribution):
     # author = models.ForeignKey(author, related_name="author", null=True)
     # reviewer = models.ForeignKey(author, related_name="reviewer", null=True)
 
+    #Added for #424 2
+    nativeScriptIsRtl = models.BooleanField(default=0)
+
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
 
@@ -1010,7 +1013,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
                   'earliestTimeDepthBound', 'latestTimeDepthBound',
                   'progress', 'sortRankInClade', 'entryTimeframe',
                   'historical', 'fragmentary', 'notInExport', 'exampleLanguage',
-                  'latitude', 'longitude'])
+                  'latitude', 'longitude', 'nativeScriptIsRtl'])
         return fs | AbstractDistribution.timestampedFields(self)
 
     def deltaReport(self, **kwargs):

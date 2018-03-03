@@ -453,6 +453,7 @@ class LanguageListRowForm(AbstractTimestampedForm):
         'Sort rank in clade', validators=[InputRequired()])
     historical = BooleanField('Historical', validators=[InputRequired()])
     fragmentary = BooleanField('Fragmentary', validators=[InputRequired()])
+    nativeScriptIsRtl = BooleanField('Native Script is right-to-left', validators=[InputRequired()])
     notInExport = BooleanField('Not in Export', validators=[InputRequired()])
     utf8_name = StringField('Display name', validators=[InputRequired()])
     iso_code = StringField('ISO code', validators=[InputRequired()])
@@ -586,8 +587,6 @@ class EditSingleLanguageForm(LanguageListRowForm,
         ('lastEditedBy', {'required': 'required', 'class': 'hide'}),
     ]
     fieldsWithLabel = [
-        ('historical', {'data-dependencyfor-tr': 'historical'}),
-        ('fragmentary', {'data-dependencyfor-tr': 'fragmentary'}),
         ('utf8_name', {'required': 'required', 'class': 'form-control'}),
         ('ascii_name', {'required': 'required', 'class': 'form-control'}),
         ('description', {'class': 'form-control'}),
@@ -595,6 +594,9 @@ class EditSingleLanguageForm(LanguageListRowForm,
         ('glottocode', {'class': 'form-control',
                         'pattern': r'(^$|[a-z]{4}\d{4})'}),
         ('variety', {'class': 'form-control'}),
+        ('historical', {'data-dependencyfor-tr': 'historical'}),
+        ('fragmentary', {'data-dependencyfor-tr': 'fragmentary'}),
+        ('nativeScriptIsRtl', {'data-dependencyfor-tr': 'nativeScriptIsRtl'}),
         ('foss_stat', {}),
         ('low_stat', {}),
         ('soundcompcode', {'class': 'form-control'}),
