@@ -443,7 +443,11 @@
                 </a>
               </td>
               <td>{{ cj.object_data.lexeme.romanised }}</td>
-              <td>{{ cj.object_data.lexeme.nativeScript }}</td>
+              {% if cj.object_data.lexeme.language.nativeScriptIsRtl %}
+                <td dir="rtl">{{ cj.object_data.lexeme.nativeScript }}</td>
+              {% else %}
+                <td>{{ cj.object_data.lexeme.nativeScript }}</td>
+              {% endif %}
               <td>{{ cj.object_data.lexeme.phon_form }}</td>
               <td>
                 <input type="checkbox"

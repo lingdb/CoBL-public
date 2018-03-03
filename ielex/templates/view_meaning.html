@@ -496,9 +496,17 @@
               {# nativeScript_data.html #}
               <td class="lexemeNativeScript">
                 {% if user.is_authenticated %}
-                  {% form_field lexeme.nativeScript id="nativeScript" size="8" class="form-control" %}
+                  {% if lexeme.object_data.language.nativeScriptIsRtl %}
+                    {% form_field lexeme.nativeScript id="nativeScript" size="8" class="form-control" dir="rtl" %}
+                  {% else %}
+                    {% form_field lexeme.nativeScript id="nativeScript" size="8" class="form-control" %}
+                  {% endif %}
                 {% elif lexeme.object_data.nativeScript %}
-                  {{ lexeme.object_data.nativeScript }}
+                  {% if lexeme.object_data.language.nativeScriptIsRtl %}
+                    <span dir="rtl">{{ lexeme.object_data.nativeScript }}</span>
+                  {% else %}
+                    {{ lexeme.object_data.nativeScript }}
+                  {% endif %}
                 {% endif %}
               </td>
               {# citations_data.html #}
