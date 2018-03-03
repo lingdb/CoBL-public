@@ -798,23 +798,27 @@ class Language(AbstractTimestamped, AbstractDistribution):
                         'gloss')[:20].values_list('gloss', flat=True))
                 meaningsMarkedAsNotSwadeshList += ", ..."
 
-            entryCount = len([l for l in self.lexeme_set.all()
-                              if l.meaning_id in meaningIdSet])
-            nonLexCount = len([l for l in self.lexeme_set.all()
-                               if l.meaning_id in meaningIdSet and
-                               l.not_swadesh_term])
+            lexemes = self.lexeme_set.filter(meaning__in=mergedIdSet)
+            entryCount = len(lexemes)
+            nonLexCount = len(lexemes.filter(not_swadesh_term=True))
 
             # Computing dependant counts:
             lexCount = entryCount - nonLexCount
             excessCount = lexCount - meaningCount + meaningCountNotSwadeshTerm
             # Computing blanks (#398 1)
-            blankCount = len([l.meaning_id for l
-                    in self.lexeme_set.filter(meaning__in=mergedIdSet, not_swadesh_term=False, romanised=u'')])
+            targetLexemes = lexemes.filter(not_swadesh_term=False)
+            blankCount = len(targetLexemes.filter(romanised=u''))
+            # Computing blanks (#398 2)
+            noPhoneMicCount = len(targetLexemes.filter(phoneMic=u''))
+            # Computing blanks (#398 3)
+            noPhoneTicCount = len(targetLexemes.filter(phon_form=u''))
+            # Computing blanks (#398 4)
+            dicLinkCount = int(len(targetLexemes.exclude(rfcWebLookup1=u''))/lexCount*100)
+            # Computing blanks (#398 5)
+            haveCitCount = int(len(set(l.lexeme_id for l in 
+                LexemeCitation.objects.filter(lexeme_id__in=targetLexemes)))/lexCount*100)
             # Computing unassigned count (#255):
-            unassignedCount = self.lexeme_set.filter(
-                not_swadesh_term=False,
-                meaning__in=meaningIdSet,
-                cognate_class=None).count()
+            unassignedCount = len(targetLexemes.filter(cognate_class=None))
 
             # Cognate classes to iterate:
             ccs = CognateClass.objects.filter(
@@ -855,6 +859,10 @@ class Language(AbstractTimestamped, AbstractDistribution):
                 'cogPllDerivationCount': cogPllDerivationCount,
                 'cogDubSetCount': cogDubSetCount,
                 'blankCount': blankCount,
+                'noPhoneTicCount': noPhoneTicCount,
+                'dicLinkCount': dicLinkCount,
+                'haveCitCount': haveCitCount,
+                'noPhoneMicCount': noPhoneMicCount,
                 'cogParallelLoanCount': cogParallelLoanCount}
         return self._computeCounts
 
@@ -886,6 +894,22 @@ class Language(AbstractTimestamped, AbstractDistribution):
     @property
     def blankCount(self):
         return self.computeCounts()['blankCount']
+
+    @property
+    def noPhoneMicCount(self):
+        return self.computeCounts()['noPhoneMicCount']
+
+    @property
+    def noPhoneTicCount(self):
+        return self.computeCounts()['noPhoneTicCount']
+
+    @property
+    def dicLinkCount(self):
+        return self.computeCounts()['dicLinkCount']
+
+    @property
+    def haveCitCount(self):
+        return self.computeCounts()['haveCitCount']
 
     @property
     def cogLoanCount(self):

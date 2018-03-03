@@ -308,6 +308,50 @@
                   </div>
                 </div>
               </th>
+              {# noPhoneMic_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of target lexemes having no 'PhoneMic' forms">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    No PhoneMic
+                  </div>
+                </div>
+              </th>
+              {# noPhoneTic_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of target lexemes having no 'PhoneTic' forms">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    No PhoneTic
+                  </div>
+                </div>
+              </th>
+              {# DicLink_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Percentage of target lexemes having a dictionaty link">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    % Dic Links
+                  </div>
+                </div>
+              </th>
+              {# HaveCit_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Percentage of target lexemes having at least one citation">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    % Cited
+                  </div>
+                </div>
+              </th>
               {# cogLoan_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -598,6 +642,34 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
+              {# noPhoneMic_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageNoPhoneMicCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# noPhoneTic_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageNoPhoneTicCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# DicLink_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageDicLinkCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# HaveCit_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageHaveCitCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               {# cogLoan_filter.html #}
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
@@ -882,6 +954,38 @@
                     {% else %}
                     <span class="badge">{{ language.object_data.blankCount }}</span>
                     {% endif %}
+                  </center>
+                </td>
+                {# noPhoneMic_data.html #}
+                <td class="languageNoPhoneMicCount">
+                  <center>
+                    {% if language.object_data.noPhoneMicCount > 0 %}
+                    <span class="badge" style="background-color:#FFA500">{{ language.object_data.noPhoneMicCount }}</span>
+                    {% else %}
+                    <span class="badge">{{ language.object_data.noPhoneMicCount }}</span>
+                    {% endif %}
+                  </center>
+                </td>
+                {# noPhoneTic_data.html #}
+                <td class="languageNoPhoneTicCount">
+                  <center>
+                    {% if language.object_data.noPhoneTicCount > 0 %}
+                    <span class="badge" style="background-color:#FFA500">{{ language.object_data.noPhoneTicCount }}</span>
+                    {% else %}
+                    <span class="badge">{{ language.object_data.noPhoneTicCount }}</span>
+                    {% endif %}
+                  </center>
+                </td>
+                {# DicLink_data.html #}
+                <td class="languageDicLinkCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.dicLinkCount }}</span>
+                  </center>
+                </td>
+                {# HaveCit_data.html #}
+                <td class="languageHaveCitCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.haveCitCount }}</span>
                   </center>
                 </td>
                 {# cogLoan_data.html #}
