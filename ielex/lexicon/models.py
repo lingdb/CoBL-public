@@ -807,6 +807,9 @@ class Language(AbstractTimestamped, AbstractDistribution):
             # Computing dependant counts:
             lexCount = entryCount - nonLexCount
             excessCount = lexCount - meaningCount + meaningCountNotSwadeshTerm
+            # Computing blanks (#398 1)
+            blankCount = len([l.meaning_id for l
+                    in self.lexeme_set.filter(meaning__in=mergedIdSet, not_swadesh_term=False, romanised=u'')])
             # Computing unassigned count (#255):
             unassignedCount = self.lexeme_set.filter(
                 not_swadesh_term=False,
@@ -851,6 +854,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
                 'cogIdeophonicCount': cogIdeophonicCount,
                 'cogPllDerivationCount': cogPllDerivationCount,
                 'cogDubSetCount': cogDubSetCount,
+                'blankCount': blankCount,
                 'cogParallelLoanCount': cogParallelLoanCount}
         return self._computeCounts
 
@@ -878,6 +882,10 @@ class Language(AbstractTimestamped, AbstractDistribution):
     @property
     def orphansCount(self):
         return self.computeCounts()['orphansCount']
+
+    @property
+    def blankCount(self):
+        return self.computeCounts()['blankCount']
 
     @property
     def cogLoanCount(self):

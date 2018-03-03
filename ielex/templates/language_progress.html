@@ -297,6 +297,17 @@
                   </div>
                 </div>
               </th>
+              {# blank_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of target lexemes having no 'romanised' forms">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Blank
+                  </div>
+                </div>
+              </th>
               {# cogLoan_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -580,6 +591,13 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
+              {# blank_filter.html #}
+              <td>
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageBlankCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               {# cogLoan_filter.html #}
               <td>
                 <div class="btn btn-xs btn-default sortIntText"
@@ -854,6 +872,16 @@
                 <td class="languageExcessCount">
                   <center>
                     <span class="badge">{{ language.object_data.excessCount }}</span>
+                  </center>
+                </td>
+                {# blank_data.html #}
+                <td class="languageBlankCount">
+                  <center>
+                    {% if language.object_data.blankCount > 0 %}
+                    <span class="badge" style="background-color:#FFA500">{{ language.object_data.blankCount }}</span>
+                    {% else %}
+                    <span class="badge">{{ language.object_data.blankCount }}</span>
+                    {% endif %}
                   </center>
                 </td>
                 {# cogLoan_data.html #}
