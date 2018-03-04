@@ -3372,8 +3372,11 @@ def view_cladecognatesearch(request):
 
     # Figuring out clades to search for:
     currentClades = []
+    includeMode = False
     if request.method == 'GET' and 'clades' in request.GET:
         cladeNames = [n.strip() for n in request.GET['clades'].split(',')]
+        if 'nonunique' in cladeNames:
+            includeMode = True
         currentClades = Clade.objects.filter(
             taxonsetName__in=cladeNames).all()
 
@@ -3386,7 +3389,10 @@ def view_cladecognatesearch(request):
             lexeme__meaning__in=meaningList.meanings.all()
         ).values_list('id', flat=True)
         if cognateClassIds:
-            cognateClassIds &= set(newIds)
+            if includeMode:
+                cognateClassIds.update(newIds)
+            else:
+                cognateClassIds &= set(newIds)
         else:
             cognateClassIds = set(newIds)
 
@@ -3417,16 +3423,30 @@ def view_cladecognatesearch(request):
     form = AddCogClassTableForm(cogclass=cognateClasses)
 
     # Computing cladeLinks:
-    def mkCladeLink(clade, currentTaxonsetNames):
+    def mkCladeLink(clade, currentTaxonsetNames, includeMode):
         targetSet = currentTaxonsetNames ^ set([clade.taxonsetName])
+        if includeMode:
+            targetSet.add('nonunique')
         return {'name': clade.shortName,
                 'active': clade.taxonsetName in currentTaxonsetNames,
                 'color': clade.hexColor,
                 'href': '?clades=%s' % ','.join(targetSet)}
     currentTaxonsetNames = set([c.taxonsetName for c in currentClades])
-    cladeLinks = [mkCladeLink(c, currentTaxonsetNames)
+    cladeLinks = [mkCladeLink(c, currentTaxonsetNames, includeMode)
                   for c in allClades
                   if c.shortName]
+    if includeMode:
+        cladeLinks.append({
+            'name': 'Non-Unique Mode',
+            'active': True,
+            'color': '#999999',
+            'href': '?clades=%s' % (','.join(currentTaxonsetNames))})
+    else:
+        cladeLinks.append({
+            'name': 'Non-Unique Mode',
+            'active': False,
+            'color': '#999999',
+            'href': '?clades=%s%s' % (','.join(currentTaxonsetNames), ',nonunique')})
 
     return render_template(
         request, "view_cladecognatesearch.html",

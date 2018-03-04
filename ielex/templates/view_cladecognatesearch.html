@@ -25,14 +25,27 @@
     <div class="col-md-8 col-md-offset-2" style="margin-top: 51px;">
       <h2 style="margin-top: 0px;">Filter by clades:</h2>
       {% for cladeLink in cladeLinks %}
-        <a href="{{ cladeLink.href }}"
-           class="badge"
-           style="background-color: #{{cladeLink.color}};
-                  {% if not cladeLink.active %}
-                  opacity: 0.25;
-                  {% endif %}">
-          {{ cladeLink.name }}
-        </a>
+        {% if cladeLink.name == 'Non-Unique Mode' %}
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a href="{{ cladeLink.href }}"
+             class="badge"
+             title="if active it includes cognate sets occurring also in other clades otherwise it excludes them"
+             style="background-color: #{{cladeLink.color}};
+                    {% if not cladeLink.active %}
+                    opacity: 0.25;
+                    {% endif %}">
+            {{ cladeLink.name }}
+          </a>
+        {% else %}
+          <a href="{{ cladeLink.href }}"
+             class="badge"
+             style="background-color: #{{cladeLink.color}};
+                    {% if not cladeLink.active %}
+                    opacity: 0.25;
+                    {% endif %}">
+            {{ cladeLink.name }}
+          </a>
+        {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -191,21 +204,21 @@
             {# loansource_title.html #}
             <th>Loan<br>Source Lg.</th>
             {# loanEventTimeDepthBP_title.html #}
-            <th data-toggle="tooltip"
-                data-placement="bottom"
-                data-container="body"
-                title="Loan event time depth BP">
-                Loan event time depth BP
-            </th>
-            {# sourceFormInLoanLanguage_title.html #}
-            <th data-toggle="tooltip"
-                data-placement="bottom"
-                data-container="body"
-                title="Form in loan source language">
-                Form in loan source language
-            </th>
-            {# loannotes_title.html #}
-            <th>Loan<br>Notes</th>
+            {# <th data-toggle="tooltip" #}
+            {#     data-placement="bottom" #}
+            {#     data-container="body" #}
+            {#     title="Loan event time depth BP"> #}
+            {#     Loan event time depth BP #}
+            {# </th> #}
+            {# {# sourceFormInLoanLanguage_title.html #}
+            {# <th data-toggle="tooltip" #}
+            {#     data-placement="bottom" #}
+            {#     data-container="body" #}
+            {#     title="Form in loan source language"> #}
+            {#     Form in loan source language #}
+            {# </th> #}
+            {# {# loannotes_title.html #}
+            {# <th>Loan<br>Notes</th> #}
             {# revisedYet_title.html #}
             <th style="border-left: 2px solid #dddddd;">
               <div class="vertical-text">
@@ -226,10 +239,10 @@
             <th data-toggle="tooltip"
                 data-placement="bottom"
                 data-container="body"
-                title="Checked iff all lexemes in the cognate class are marked as 'Not Swadesh'.">
+                title="Checked if all lexemes in the cognate class are marked as 'Not Target'.">
               <div class="vertical-text">
                 <div class="vertical-text__inner">
-                  Not Swh.
+                  Not Target
                 </div>
               </div>
             </th>
@@ -454,67 +467,67 @@
               {% endif %}
             </td>
             {# loanEventTimeDepthBP_filter.html #}
-            <td>
-              {% if user.is_authenticated %}
-                <input type="text"
-                       class="filterInput form-control"
-                       data-selector=".loanEventTimeDepthBP input"
-                       style="width: 3em;">
-                <div class="btn btn-xs btn-default sortInput"
-                     data-selector=".loanEventTimeDepthBP input">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% else %}
-                <input type="text"
-                       class="filterText form-control"
-                       data-selector=".loanEventTimeDepthBP"
-                       style="width: 3em;">
-                <div class="btn btn-xs btn-default sortText"
-                     data-selector=".loanEventTimeDepthBP">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% endif %}
-            </td>
-            {# sourceFormInLoanLanguage_filter.html #}
-            <td>
-              {% if user.is_authenticated %}
-                <input type="text"
-                       class="filterInput form-control"
-                       data-selector=".sourceFormInLoanLanguage input">
-                <div class="btn btn-xs btn-default sortInput"
-                     data-selector=".sourceFormInLoanLanguage input">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% else %}
-                <input type="text"
-                       class="filterText form-control"
-                       data-selector=".sourceFormInLoanLanguage">
-                <div class="btn btn-xs btn-default sortText"
-                     data-selector=".sourceFormInLoanLanguage">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% endif %}
-            </td>
-            {# loannotes_filter.html #}
-            <td>
-              {% if user.is_authenticated %}
-                <input type="text"
-                       class="filterInput form-control"
-                       data-selector=".cogLoanNotes input">
-                <div class="btn btn-xs btn-default sortInput"
-                     data-selector=".cogLoanNotes input">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% else %}
-                <input type="text"
-                       class="filterText form-control"
-                       data-selector=".cogLoanNotes">
-                <div class="btn btn-xs btn-default sortText"
-                     data-selector=".cogLoanNotes">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% endif %}
-            </td>
+            {# <td> #}
+            {#   {% if user.is_authenticated %} #}
+            {#     <input type="text" #}
+            {#            class="filterInput form-control" #}
+            {#            data-selector=".loanEventTimeDepthBP input" #}
+            {#            style="width: 3em;"> #}
+            {#     <div class="btn btn-xs btn-default sortInput" #}
+            {#          data-selector=".loanEventTimeDepthBP input"> #}
+            {#       <span class="glyphicon glyphicon-sort"></span> #}
+            {#     </div> #}
+            {#   {% else %} #}
+            {#     <input type="text" #}
+            {#            class="filterText form-control" #}
+            {#            data-selector=".loanEventTimeDepthBP" #}
+            {#            style="width: 3em;"> #}
+            {#     <div class="btn btn-xs btn-default sortText" #}
+            {#          data-selector=".loanEventTimeDepthBP"> #}
+            {#       <span class="glyphicon glyphicon-sort"></span> #}
+            {#     </div> #}
+            {#   {% endif %} #}
+            {# </td> #}
+            {# {# sourceFormInLoanLanguage_filter.html #}
+            {# <td> #}
+            {#   {% if user.is_authenticated %} #}
+            {#     <input type="text" #}
+            {#            class="filterInput form-control" #}
+            {#            data-selector=".sourceFormInLoanLanguage input"> #}
+            {#     <div class="btn btn-xs btn-default sortInput" #}
+            {#          data-selector=".sourceFormInLoanLanguage input"> #}
+            {#       <span class="glyphicon glyphicon-sort"></span> #}
+            {#     </div> #}
+            {#   {% else %} #}
+            {#     <input type="text" #}
+            {#            class="filterText form-control" #}
+            {#            data-selector=".sourceFormInLoanLanguage"> #}
+            {#     <div class="btn btn-xs btn-default sortText" #}
+            {#          data-selector=".sourceFormInLoanLanguage"> #}
+            {#       <span class="glyphicon glyphicon-sort"></span> #}
+            {#     </div> #}
+            {#   {% endif %} #}
+            {# </td> #}
+            {# {# loannotes_filter.html #}
+            {# <td> #}
+            {#   {% if user.is_authenticated %} #}
+            {#     <input type="text" #}
+            {#            class="filterInput form-control" #}
+            {#            data-selector=".cogLoanNotes input"> #}
+            {#     <div class="btn btn-xs btn-default sortInput" #}
+            {#          data-selector=".cogLoanNotes input"> #}
+            {#       <span class="glyphicon glyphicon-sort"></span> #}
+            {#     </div> #}
+            {#   {% else %} #}
+            {#     <input type="text" #}
+            {#            class="filterText form-control" #}
+            {#            data-selector=".cogLoanNotes"> #}
+            {#     <div class="btn btn-xs btn-default sortText" #}
+            {#          data-selector=".cogLoanNotes"> #}
+            {#       <span class="glyphicon glyphicon-sort"></span> #}
+            {#     </div> #}
+            {#   {% endif %} #}
+            {# </td> #}
             {# revisedYet_filter.html #}
             <td style="border-left: 2px solid #dddddd;">
               <button type="button" class="filterBool btn btn-xs btn-default"
@@ -605,7 +618,10 @@
                 style="color: #8B4510;
                        text-align: center;
                        border-left: 2px solid #dddddd;">
-              {{ cc.idField.data }}
+              <a href="{{cc.object_data.get_absolute_url}}"
+                 style="color: #8B4510;">
+                {{ cc.idField.data }}
+              </a>
               {% if user.is_authenticated %}
                 {% form_field cc.idField class="hide" required="required" %}
                 {% form_field cc.lastTouched class="hide" required="required" %}
@@ -743,29 +759,29 @@
               {% endif %}
             </td>
             {# loanEventTimeDepthBP_data.html #}
-            <td class="loanEventTimeDepthBP loanEventCell">
-              {% if user.is_authenticated %}
-                {% form_field cc.loanEventTimeDepthBP class="form-control" style="width: 5em;" data-inputdepends="loanevent" %}
-              {% elif cc.loanEventTimeDepthBP.data %}
-                {{ cc.loanEventTimeDepthBP.data }}
-              {% endif %}
-            </td>
-            {# sourceFormInLoanLanguage_data.html #}
-            <td class="sourceFormInLoanLanguage loanEventCell">
-              {% if user.is_authenticated %}
-                {% form_field cc.sourceFormInLoanLanguage class="form-control" data-inputdepends="loanevent" %}
-              {% elif cc.sourceFormInLoanLanguage.data %}
-                {{ cc.sourceFormInLoanLanguage.data }}
-              {% endif %}
-            </td>
-            {# loannotes_data.html #}
-            <td class="cogLoanNotes loanEventCell">
-              {% if user.is_authenticated %}
-                {% form_field cc.loan_notes class="form-control" data-inputdepends="loanevent" %}
-              {% elif cc.loan_notes.data %}
-                {{ cc.loan_notes.data }}
-              {% endif %}
-            </td>
+            {# <td class="loanEventTimeDepthBP loanEventCell"> #}
+            {#   {% if user.is_authenticated %} #}
+            {#     {% form_field cc.loanEventTimeDepthBP class="form-control" style="width: 5em;" data-inputdepends="loanevent" %} #}
+            {#   {% elif cc.loanEventTimeDepthBP.data %} #}
+            {#     {{ cc.loanEventTimeDepthBP.data }} #}
+            {#   {% endif %} #}
+            {# </td> #}
+            {# {# sourceFormInLoanLanguage_data.html #}
+            {# <td class="sourceFormInLoanLanguage loanEventCell"> #}
+            {#   {% if user.is_authenticated %} #}
+            {#     {% form_field cc.sourceFormInLoanLanguage class="form-control" data-inputdepends="loanevent" %} #}
+            {#   {% elif cc.sourceFormInLoanLanguage.data %} #}
+            {#     {{ cc.sourceFormInLoanLanguage.data }} #}
+            {#   {% endif %} #}
+            {# </td> #}
+            {# {# loannotes_data.html #}
+            {# <td class="cogLoanNotes loanEventCell"> #}
+            {#   {% if user.is_authenticated %} #}
+            {#     {% form_field cc.loan_notes class="form-control" data-inputdepends="loanevent" %} #}
+            {#   {% elif cc.loan_notes.data %} #}
+            {#     {{ cc.loan_notes.data }} #}
+            {#   {% endif %} #}
+            {# </td> #}
             {# revisedYet_data.html #}
             <th class="revisedYet"
                 style="border-left: 2px solid #dddddd;">
