@@ -2221,11 +2221,15 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None):
         name=getDefaultLanguagelist(request))
     splitTable = CognateJudgementSplitTable()
     # for language_id in language_list.language_id_list:
-    ordLangs = language_list.languages.all().order_by("languagelistorder")
+    ordLangs = language_list.languages.all().order_by(
+        "languageclade__clade_id", "languageclade__cladesOrder" ,"ascii_name")
     for language in ordLangs:
         for cj in cognate_class.cognatejudgement_set.filter(
                 lexeme__language=language).all():
             cj.idField = cj.id
+            cj.cladeHexColor = Clade.objects.filter(
+                languageclade__language_id=language.id,
+                languageclade__cladesOrder=3).values_list('hexColor', flat=True).first()
             splitTable.judgements.append_entry(cj)
 
     # replace markups for note field (used in non-edit mode)

@@ -398,6 +398,7 @@
       <table class="table table-striped">
         <thead>
           <tr>
+            <th width="1px"></th>
             <th>Id</th>
             {% if user.is_authenticated %}
               <th data-toggle="tooltip"
@@ -417,8 +418,9 @@
           </tr>
         </thead>
         <tbody>
-          {% for cj in splitTable.judgements|dictsort:"object_data.lexeme.language.ascii_name" %} {# cognate_class.cognatejudgement_set.all %} #}
+          {% for cj in splitTable.judgements %} {# cognate_class.cognatejudgement_set.all %} #}
             <tr>
+              <td style="background-color:#{{ cj.object_data.cladeHexColor }}"></td>
               <td data-toggle="tooltip"
                   data-placement="top"
                   data-container="body"
