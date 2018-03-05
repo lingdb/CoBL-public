@@ -815,11 +815,17 @@ class Language(AbstractTimestamped, AbstractDistribution):
             noPhoneMicCount = len(targetLexemes.filter(phoneMic=u''))
             # Computing blanks (#398 3)
             noPhoneTicCount = len(targetLexemes.filter(phon_form=u''))
-            # Computing blanks (#398 4)
-            dicLinkCount = int(len(targetLexemes.exclude(rfcWebLookup1=u''))/lexCount*100)
-            # Computing blanks (#398 5)
-            haveCitCount = int(len(set(l.lexeme_id for l in 
-                LexemeCitation.objects.filter(lexeme_id__in=targetLexemes)))/lexCount*100)
+            if lexCount == 0:
+                # Computing blanks (#398 4)
+                dicLinkCount = 0
+                # Computing blanks (#398 5)
+                haveCitCount = 0
+            else:
+                # Computing blanks (#398 4)
+                dicLinkCount = int(len(targetLexemes.exclude(rfcWebLookup1=u''))/lexCount*100)
+                # Computing blanks (#398 5)
+                haveCitCount = int(len(set(l.lexeme_id for l in 
+                    LexemeCitation.objects.filter(lexeme_id__in=targetLexemes)))/lexCount*100)
             # Computing unassigned count (#255):
             unassignedCount = len(targetLexemes.filter(cognate_class=None))
 
