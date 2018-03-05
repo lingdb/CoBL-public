@@ -6,6 +6,7 @@ import unicodedata
 from collections import defaultdict, OrderedDict
 from operator import itemgetter
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.db import transaction
 from django.db.utils import ProgrammingError
@@ -418,10 +419,13 @@ class AbstractCognateClassAssignmentForm(WTForm):
                 try:
                     ccWithSameMeaning = CognateClass.objects.filter(
                         lexeme__meaning__id=lexeme.meaning_id).distinct()
-                    if re.match(r'^\d+$', t) is not None:
-                        cc = ccWithSameMeaning.get(id=int(t))
-                    else:
-                        cc = ccWithSameMeaning.get(alias=t)
+                    try:  # for deletion an Alias ignore exception #429
+                        if re.match(r'^\d+$', t) is not None:
+                            cc = ccWithSameMeaning.get(id=int(t))
+                        else:
+                            cc = ccWithSameMeaning.get(alias=t)
+                    except ObjectDoesNotExist:
+                        continue
                 except Exception:
                     logging.exception("Problem handling token %s", t)
                     messages.error(
