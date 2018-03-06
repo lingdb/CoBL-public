@@ -1340,26 +1340,25 @@ class CognateClass(AbstractTimestamped):
             # Gather counts:
             lexemeCount = 0
             onlyNotSwh = True  # True iff all lexemes are not_swadesh_term.
-            for l in self.lexeme_set.filter(language__in=lSet).all():
+            theLexemes = self.lexeme_set.filter(language__in=lSet).all()
+            for l in theLexemes:
                 # Update onlyNotSwh iff necessary:
                 if not l.not_swadesh_term:
                     onlyNotSwh = False
                 # If we have lSet we use it to skip unwanted:
-                if lSet is not None:
-                    if l.language_id not in lSet:
-                        continue
+                # if lSet is not None: ## BIBIKO why??
+                #     if l.language_id not in lSet:
+                #         continue
                 # Major beef:
                 lexemeCount += 1
             # Computing cladeCount:
-            languageIds = self.lexeme_set.filter(
-                language_id__in=lSet,
+            languageIds = theLexemes.filter(
                 not_swadesh_term=False).exclude(
                     language__level0=0).values_list(
                         'language_id', flat=True)
             cladeCount = Clade.objects.filter(
                 languageclade__language__id__in=languageIds).exclude(
-                    hexColor='').exclude(
-                        shortName='').distinct().count()
+                    hexColor='', shortName='').distinct().count()
             # Filling memo with data:
             self._computeCounts = {
                 'lexemeCount': lexemeCount,

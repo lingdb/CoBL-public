@@ -2222,7 +2222,7 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None):
     splitTable = CognateJudgementSplitTable()
     # for language_id in language_list.language_id_list:
     ordLangs = language_list.languages.all().order_by(
-        "languageclade__clade_id", "languageclade__cladesOrder" ,"ascii_name")
+        "level0", "level1" , "level2", "sortRankInClade","ascii_name")
     for language in ordLangs:
         for cj in cognate_class.cognatejudgement_set.filter(
                 lexeme__language=language).all():
@@ -3381,16 +3381,18 @@ def view_cladecognatesearch(request):
         cladeNames = [n.strip() for n in request.GET['clades'].split(',')]
         if 'nonunique' in cladeNames:
             includeMode = True
-        currentClades = Clade.objects.filter(
+        currentClades = allClades.filter(
             taxonsetName__in=cladeNames).all()
 
     # Searching cognateClassIds by clades:
     cognateClassIds = set()
-    for clade in currentClades:
-        newIds = CognateClass.objects.filter(
-            lexeme__language__languageclade__clade=clade,
+    allCognates = CognateClass.objects.filter(
             lexeme__language__in=languageList.languages.all(),
             lexeme__meaning__in=meaningList.meanings.all()
+        )
+    for clade in currentClades:
+        newIds = allCognates.filter(
+            lexeme__language__languageclade__clade=clade,
         ).values_list('id', flat=True)
         if cognateClassIds:
             if includeMode:
