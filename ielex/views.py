@@ -3403,7 +3403,7 @@ def view_cladecognatesearch(request):
             cognateClassIds = set(newIds)
 
     # Removing unwanted entries from cognateClassIds:
-    if currentClades:
+    if currentClades and not includeMode:
         unwantedLanguages = languageList.languages.exclude(
             languageclade__clade__in=currentClades
         ).exclude(level0=0).values_list('id', flat=True)
@@ -3420,7 +3420,7 @@ def view_cladecognatesearch(request):
         id__in=cognateClassIds,
         lexeme__language__in=languageList.languages.all(),
         lexeme__meaning__in=meaningList.meanings.all()
-    ).prefetch_related(
+    ).order_by('lexeme__meaning').prefetch_related(
         'lexeme_set',
         'lexeme_set__language',
         'lexeme_set__meaning').distinct().all()

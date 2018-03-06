@@ -58,7 +58,6 @@
           {% csrf_token %}
       {% endif %}
       <div class="fixedContainer">
-        {% if user.is_authenticated %}
           <div class="form-group pull-right">
             <span class="badge important updateCounts"
                   data-countformat="countVisible initial"
@@ -68,12 +67,13 @@
                   title="Visible / Total rows">
               {{ AddCogClassTableForm.cogclass|length }}
             </span>
+        {% if user.is_authenticated and false %}
             <a href="." class="btn btn-default">undo</a>
             <input type="submit" value="Save"
                    name="AddCogClassTableForm"
                    class="btn btn-danger">
-          </div>
         {% endif %}
+          </div>
       </div>
       <table class="table table-striped table-condensed viewTableFilter">
         <thead>
@@ -220,21 +220,23 @@
             {# {# loannotes_title.html #}
             {# <th>Loan<br>Notes</th> #}
             {# revisedYet_title.html #}
-            <th style="border-left: 2px solid #dddddd;">
-              <div class="vertical-text">
-                <div class="vertical-text__inner">
-                  Revised Yet?
+            {% if user.is_authenticated %}
+              <th style="border-left: 2px solid #dddddd;">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Revised Yet?
+                  </div>
                 </div>
-              </div>
-            </th>
-            {# revisedBy_title.html #}
-            <th>
-              <div class="vertical-text">
-                <div class="vertical-text__inner">
-                  Revised By
+              </th>
+              {# revisedBy_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Revised By
+                  </div>
                 </div>
-              </div>
-            </th>
+              </th>
+            {% endif %}
             {# onlyNotSwh_title.html #}
             <th data-toggle="tooltip"
                 data-placement="bottom"
@@ -529,33 +531,35 @@
             {#   {% endif %} #}
             {# </td> #}
             {# revisedYet_filter.html #}
-            <td style="border-left: 2px solid #dddddd;">
-              <button type="button" class="filterBool btn btn-xs btn-default"
-                      data-selector=".revisedYet input">
-                <span class="glyphicon glyphicon-question-sign"></span>
-              </button>
-            </td>
-            {# revisedBy_filter.html #}
-            <td>
-              {% if user.is_authenticated %}
-                <input type="text"
-                       class="filterInput form-control"
-                       data-selector=".revisedBy input"
-                       style="width: 2em;">
-                <div class="btn btn-xs btn-default sortInput"
-                     data-selector=".revisedBy input">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% else %}
-                <input type="text"
-                       class="filterText form-control"
+            {% if user.is_authenticated %}
+              <td style="border-left: 2px solid #dddddd;">
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".revisedYet input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# revisedBy_filter.html #}
+              <td>
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".revisedBy input"
+                         style="width: 2em;">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".revisedBy input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".revisedBy">
+                  <div class="btn btn-xs btn-default sortText"
                        data-selector=".revisedBy">
-                <div class="btn btn-xs btn-default sortText"
-                     data-selector=".revisedBy">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% endif %}
-            </td>
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+            {% endif %}
             {# onlyNotSwh_filter.html #}
             <td>
               <button type="button" class="filterBool btn btn-xs btn-danger"
@@ -639,7 +643,7 @@
             </td>
             {# rootform_data.html #}
             <td class="cogRootForm">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.root_form class="form-control" style="width: 12em;" placeholder=cc.object_data.rootFormOrPlaceholder %}
               {% else %}
                 {{ cc.object_data.rootFormOrPlaceholder }}
@@ -647,7 +651,7 @@
             </td>
             {# rootlang_data.html #}
             <td class="cogRootLang">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.root_language class="form-control" style="width: 12em;" placeholder=cc.object_data.rootLanguageOrPlaceholder %}
               {% else %}
                 {{ cc.object_data.rootLanguageOrPlaceholder }}
@@ -655,7 +659,7 @@
             </td>
             {# notProtoIndoEuropean_data.html #}
             <td class="notProtoIndoEuropean">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.notProtoIndoEuropean class="form-control" %}
               {% else %}
                 {% form_field cc.notProtoIndoEuropean class="form-control" disabled="disabled" %}
@@ -663,7 +667,7 @@
             </td>
             {# glossinrootlang_data.html #}
             <td class="cogGlossInRootLang">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.gloss_in_root_lang class="form-control" data-longinput="16" %}
               {% elif cc.gloss_in_root_lang.data %}
                 {{ cc.gloss_in_root_lang.data }}
@@ -671,7 +675,7 @@
             </td>
             {# notes_data.html #}
             <td class="cogNotes">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.notes class="form-control" data-longinput="15" %}
               {% elif cc.object_data.notes %}
                 {{ cc.object_data.notes }}
@@ -679,14 +683,14 @@
             </td>
             {# proposedAs_data.html #}
             <td class="proposedAsCognateToCell">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.proposedAsCognateTo class="form-control numberField" data-dependencyfor-tr="proposedAsCognateTo" pattern="^\d*$" %}
               {% elif cc.object_data.proposedAsCognateTo_id %}
                 {{ cc.object_data.proposedAsCognateTo_id }}
               {% endif %}
             </td>
             <td class="proposedAsCognateToScale">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.proposedAsCognateToScale class="form-control" data-inputdepends="proposedAsCognateTo" %}
               {% elif cc.object_data.proposedAsCognateToScale %}
                 {{ cc.object_data.proposedAsCognateToScale }}
@@ -695,7 +699,7 @@
             {# ideophonic_data.html #}
             <td class="ideophonic"
                 style="border-left: 2px solid #dddddd;">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.ideophonic class="form-control" %}
               {% elif cc.gloss_in_root_lang.data %}
                 {% form_field cc.ideophonic class="form-control" disabled="disabled" %}
@@ -703,7 +707,7 @@
             </td>
             {# parallelDerivation_data.html #}
             <td class="parallelDerivation">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.parallelDerivation class="form-control" %}
               {% elif cc.gloss_in_root_lang.data %}
                 {% form_field cc.parallelDerivation class="form-control" disabled="disabled "%}
@@ -720,7 +724,7 @@
             {# loanword_data.html #}
             <td style="border-left: 2px solid #dddddd;"
                 class="cogLoanword loanEventCell">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.loanword class="form-control" data-dependencyfor-tr="loanevent" %}
               {% else %}
                 {% form_field cc.loanword class="form-control" disabled="disabled" %}
@@ -728,7 +732,7 @@
             </td>
             {# parallelLoanEvent_data.html #}
             <td class="parallelLoanEvent loanEventCell">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.parallelLoanEvent class="form-control" data-inputdepends="loanevent" %}
               {% else %}
                 {% form_field cc.parallelLoanEvent class="form-control" disabled="disabled" %}
@@ -736,7 +740,7 @@
             </td>
             {# loanSourceCognateClass_data.html #}
             <td class="loanSourceCognateClass nowrap loanEventCell" style="width: 5em;">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.loanSourceCognateClass class="form-control numberField inline" pattern="^[0-9]*$" style="width: 3em;" data-inputdepends="loanevent" %}
               {% endif %}
               {% if cc.loanSourceCognateClass.data %}
@@ -752,7 +756,7 @@
             </td>
             {# loansource_data.html #}
             <td class="cogLoanSource loanEventCell">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.loan_source class="form-control" data-inputdepends="loanevent" %}
               {% elif cc.loan_source.data %}
                 {{ cc.loan_source.data }}
@@ -783,22 +787,24 @@
             {#   {% endif %} #}
             {# </td> #}
             {# revisedYet_data.html #}
-            <th class="revisedYet"
-                style="border-left: 2px solid #dddddd;">
-              {% if user.is_authenticated %}
-                {% form_field cc.revisedYet class="form-control" %}
-              {% elif cc.object_data.revisedYet %}
-                {% form_field cc.revisedYet class="form-control" disabled="disabled" %}
-              {% endif %}
-            </th>
-            {# revisedBy_data.html #}
-            <th class="revisedBy">
-              {% if user.is_authenticated %}
-                {% form_field cc.revisedBy class="form-control" style="width: 2em;" pattern="^.{0,10}$" %}
-              {% elif cc.object_data.revisedBy %}
-                {{ cc.object_data.revisedBy }}
-              {% endif %}
-            </th>
+            {% if user.is_authenticated %}
+              <th class="revisedYet"
+                  style="border-left: 2px solid #dddddd;">
+                {% if user.is_authenticated and false %}
+                  {% form_field cc.revisedYet class="form-control" %}
+                {% elif cc.object_data.revisedYet %}
+                  {% form_field cc.revisedYet class="form-control" disabled="disabled" %}
+                {% endif %}
+              </th>
+              {# revisedBy_data.html #}
+              <th class="revisedBy">
+                {% if user.is_authenticated and false %}
+                  {% form_field cc.revisedBy class="form-control" style="width: 2em;" pattern="^.{0,10}$" %}
+                {% elif cc.object_data.revisedBy %}
+                  {{ cc.object_data.revisedBy }}
+                {% endif %}
+              </th>
+            {% endif %}
             {# onlyNotSwh_data.html #}
             <td class="onlyNotSwh">
               <input type="checkbox"
