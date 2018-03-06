@@ -1358,7 +1358,8 @@ class CognateClass(AbstractTimestamped):
                         'language_id', flat=True)
             cladeCount = Clade.objects.filter(
                 languageclade__language__id__in=languageIds).exclude(
-                    hexColor='', shortName='').distinct().count()
+                    hexColor='').exclude(
+                        shortName='').distinct().count()
             # Filling memo with data:
             self._computeCounts = {
                 'lexemeCount': lexemeCount,
