@@ -574,14 +574,13 @@
                 </td>
                 {# name_link.html #}
                 <td>
-                  <center>
                   {% if user.is_authenticated and user.is_staff %}
                   <a href="{% url 'view-language-wordlist' language.object_data.ascii_name wordlist %}"
                      alt="view lexeme list"
                      title="View wordlist list for {{ language.object_data.utf8_name }}">
-                     <img src="{% static '1l.png' %}" width="80%">
+                     <img src="{% static '1l.png' %}">
                   </a>
-                  <div style="font-size:50%;text-color:#eee;">ID: {{language.object_data.id}}</div>
+                  <span style="font-size:80%;text-color:#eee;">ID: {{language.object_data.id}}</span>
                   {% else %}
                   <a href="{% url 'view-language-wordlist' language.object_data.ascii_name wordlist %}"
                      alt="view lexeme list"
@@ -589,7 +588,6 @@
                      <img src="{% static '1l.png' %}">
                   </a>
                   {% endif %}
-                  </center>
                 </td>
                 {# name_data.html #}
                 <td class="languageName">
