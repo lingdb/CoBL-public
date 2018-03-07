@@ -1338,22 +1338,14 @@ class CognateClass(AbstractTimestamped):
             else:
                 lSet = set()
             # Gather counts:
-            lexemeCount = 0
-            onlyNotSwh = True  # True iff all lexemes are not_swadesh_term.
             theLexemes = self.lexeme_set.filter(language__in=lSet).all()
-            for l in theLexemes:
-                # Update onlyNotSwh iff necessary:
-                if not l.not_swadesh_term:
-                    onlyNotSwh = False
-                # If we have lSet we use it to skip unwanted:
-                # if lSet is not None: ## BIBIKO why??
-                #     if l.language_id not in lSet:
-                #         continue
-                # Major beef:
-                lexemeCount += 1
+            targetLexemes = theLexemes.filter(not_swadesh_term=False)
+
+            # True if all lexemes are not_swadesh_term.
+            onlyNotSwh = (len(targetLexemes) == 0)
+            lexemeCount = len(theLexemes)
             # Computing cladeCount:
-            languageIds = theLexemes.filter(
-                not_swadesh_term=False).exclude(
+            languageIds = targetLexemes.exclude(
                     language__level0=0).values_list(
                         'language_id', flat=True)
             cladeCount = Clade.objects.filter(
