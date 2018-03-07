@@ -68,7 +68,7 @@ class CognateClassCitationUpdateView(UpdateView):
             CognateClassCitationUpdateView, self).get_context_data(**kwargs)
         cc_id = context["object"].cognate_class.id
         context["title"] = "New cognate class citation"
-        context["heading"] = "Citation to cognate class %s" % cc_id
+        context["heading"] = "Citation %s (referring to cognate class %s)" % (context["object"].id, cc_id)
         context["cancel_dest"] = reverse(
             "cognate-set", kwargs={"cognate_id": cc_id})
         context["minifiedJs"] = minifiedJs
