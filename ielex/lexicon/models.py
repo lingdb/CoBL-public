@@ -1421,7 +1421,7 @@ class CognateClass(AbstractTimestamped):
                     language__id__in=languageIds,
                     cognate_class=cognateClass).exclude(
                         romanised='').order_by(
-                        '-language__sortRankInClade').values_list(
+                        'language__sortRankInClade').values_list(
                             'romanised', flat=True)
 
             idFinders = [lambda: findQuery.filter(
