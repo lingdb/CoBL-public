@@ -3395,10 +3395,7 @@ def view_cladecognatesearch(request):
             lexeme__language__languageclade__clade=clade,
         ).values_list('id', flat=True)
         if cognateClassIds:
-            if includeMode:
-                cognateClassIds.update(newIds)
-            else:
-                cognateClassIds &= set(newIds)
+            cognateClassIds &= set(newIds)
         else:
             cognateClassIds = set(newIds)
 
