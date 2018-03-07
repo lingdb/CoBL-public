@@ -1412,8 +1412,8 @@ class CognateClass(AbstractTimestamped):
             if self.sourceFormInLoanLanguage != '':
                 return "(%s)" % self.sourceFormInLoanLanguage
         # Branch lookup for #364:
-        affectedLanguageIds = self.lexeme_set.filter(
-            cognate_class=self).distinct().values_list('language_id', flat=True)
+        affectedLanguageIds = set(self.lexeme_set.filter(
+            cognate_class=self).values_list('language_id', flat=True))
         commonCladeIds = Clade.objects.filter(
             language__id__in=affectedLanguageIds
             ).distinct().order_by(
@@ -1421,21 +1421,21 @@ class CognateClass(AbstractTimestamped):
                 ).values_list('id', flat=True)
         if commonCladeIds:
             findQuery = Language.objects.filter(
-                id__in=affectedLanguageIds,
-                languageclade__clade__id=commonCladeIds[0])
+                languageclade__clade__id=commonCladeIds[0],
+                id__in=affectedLanguageIds)
 
             def getOrthographics(cognateClass, languageIds):
                 return Lexeme.objects.filter(
                     language__id__in=languageIds,
                     cognate_class=cognateClass).exclude(
-                        romanised='').values_list(
+                        romanised='').order_by(
+                        '-language__sortRankInClade').values_list(
                             'romanised', flat=True)
 
             idFinders = [lambda: findQuery.filter(
-                representative=True).values_list('id', flat=True),
+                            representative=True).values_list('id', flat=True),
                          lambda: findQuery.filter(
-                             exampleLanguage=True).values_list(
-                                 'id', flat=True),
+                            exampleLanguage=True).values_list('id', flat=True),
                          lambda: affectedLanguageIds]
 
             for idFinder in idFinders:
