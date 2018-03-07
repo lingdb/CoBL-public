@@ -423,15 +423,15 @@
                   {% if user.is_authenticated %}
                     {% if lexeme.object_data.sourceLg %}
                       {% if sourceLang.nativeScriptIsRtl %}
-                        asd {% form_field lexeme.nativeScript id="nativeScript" class="form-control" dir="rtl" %}
+                        {% form_field lexeme.nativeScript id="nativeScript" class="form-control" dir="rtl" %}
                       {% else %}
-                        qwe {% form_field lexeme.nativeScript id="nativeScript" class="form-control" %}
+                        {% form_field lexeme.nativeScript id="nativeScript" class="form-control" %}
                       {% endif %}
                     {% else %}
                       {% if targetLang.nativeScriptIsRtl %}
-                        qweqwe {% form_field lexeme.nativeScript id="nativeScript" class="form-control" dir="rtl" %}
+                        {% form_field lexeme.nativeScript id="nativeScript" class="form-control" dir="rtl" %}
                       {% else %}
-                        23123 {% form_field lexeme.nativeScript id="nativeScript" class="form-control" %}
+                        {% form_field lexeme.nativeScript id="nativeScript" class="form-control" %}
                       {% endif %}
                     {% endif %}
                   {% elif lexeme.object_data.nativeScript %}
