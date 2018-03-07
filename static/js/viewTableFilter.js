@@ -479,25 +479,33 @@
       mkNumberFilter :: (re :: String) -> (text :: String) -> Bool
     */
     var mkNumberPredicate = function(filterVal){
-      filterVal = filterVal.trim().replace(/[^\d.-=<>]*/g, '');
-      var match = filterVal.match(/^([<>]?=?)(\-?[\d.]+)$/);
+      filterVal = filterVal.trim().replace(/[^\d.\-=<>]*/g, '');
+      console.log(filterVal);
+      var match = filterVal.match(/^(\d+?)\-(\d+)$/);
       if(match){
-        var number = parseFloat(match[2], 10);
-        switch (match[1]) {
-          case '>':
-            return function(t){return parseFloat(t, 10) <= number;};
-          case '<':
-            return function(t){return parseFloat(t, 10) >= number;};
-          case '>=':
-            return function(t){return parseFloat(t, 10) < number;};
-          case '<=':
-            return function(t){return parseFloat(t, 10) > number;};
-          case '=':
-          /* falls through */
-          default:
-            return function(t){return parseFloat(t, 10) !== number;};
-        }
+        var number1 = parseFloat(match[1], 10);
+        var number2 = parseFloat(match[2], 10);
+        return function(t){return parseFloat(t, 10) < number1 || parseFloat(t, 10) > number2;};
       }else{
+        filterVal = filterVal.trim().replace(/\-/g, '');
+        match = filterVal.match(/^([<>]?=?)(\-?[\d.]+)$/);
+        if(match){
+          var number = parseFloat(match[2], 10);
+          switch (match[1]) {
+            case '>':
+              return function(t){return parseFloat(t, 10) <= number;};
+            case '<':
+              return function(t){return parseFloat(t, 10) >= number;};
+            case '>=':
+              return function(t){return parseFloat(t, 10) < number;};
+            case '<=':
+              return function(t){return parseFloat(t, 10) > number;};
+            case '=':
+            /* falls through */
+            default:
+              return function(t){return parseFloat(t, 10) !== number;};
+          }
+        }
         console.log('Invalid filter string:', filterVal);
         return function(){return false;};
       }
