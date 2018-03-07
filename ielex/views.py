@@ -3596,38 +3596,43 @@ ORDER BY (doculect, concept)
         zipBuffer = io.BytesIO()
         zipFile = zipfile.ZipFile(zipBuffer, 'w')
 
-        filename = 'CoBL_export_%s/%s.csv' % (time.strftime("%Y-%m-%d"), 'cognates_all')
         if len(models_org) > 0:
-            models = []
-            cnt = 1
-            for i in range(len(models_org)):
-                r = copy.deepcopy(models_org[i])
-                r["ID"] = cnt
-                del r["NOT_TARGET"]
-                models.append(r)
-                cnt += 1
-            fieldnames = models[0].keys()
-            modelBuffer = io.StringIO()
-            writer = csv.DictWriter(modelBuffer, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(models)
-            zipFile.writestr(filename, modelBuffer.getvalue())
-
-            models = []
-            cnt = 1
-            for i in range(len(models_org)):
-                r = copy.deepcopy(models_org[i])
-                if not r["NOT_TARGET"]:
+            try:
+                filename = 'CoBL_export_%s/%s.tsv' % (time.strftime("%Y-%m-%d"), 'cognates_all')
+                models = []
+                cnt = 1
+                for i in range(len(models_org)):
+                    r = copy.deepcopy(models_org[i])
                     r["ID"] = cnt
                     del r["NOT_TARGET"]
                     models.append(r)
                     cnt += 1
-            filename = 'CoBL_export_%s/%s.csv' % (time.strftime("%Y-%m-%d"), 'cognates_only_target')
-            modelBuffer = io.StringIO()
-            writer = csv.DictWriter(modelBuffer, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(models)
-            zipFile.writestr(filename, modelBuffer.getvalue())
+                fieldnames = models[0].keys()
+                modelBuffer = io.StringIO()
+                writer = csv.DictWriter(modelBuffer, fieldnames=fieldnames,
+                    dialect="excel-tab")
+                writer.writeheader()
+                writer.writerows(models)
+                zipFile.writestr(filename, modelBuffer.getvalue())
+
+                models = []
+                cnt = 1
+                for i in range(len(models_org)):
+                    r = copy.deepcopy(models_org[i])
+                    if not r["NOT_TARGET"]:
+                        r["ID"] = cnt
+                        del r["NOT_TARGET"]
+                        models.append(r)
+                        cnt += 1
+                filename = 'CoBL_export_%s/%s.tsv' % (time.strftime("%Y-%m-%d"), 'cognates_only_target')
+                modelBuffer = io.StringIO()
+                writer = csv.DictWriter(modelBuffer, fieldnames=fieldnames,
+                    dialect="excel-tab")
+                writer.writeheader()
+                writer.writerows(models)
+                zipFile.writestr(filename, modelBuffer.getvalue())
+            except BaseException as error:
+                print("TSV cognate export error {}".format(error)) 
 
         zipFile.close()
 
