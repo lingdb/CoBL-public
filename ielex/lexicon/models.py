@@ -1405,18 +1405,15 @@ class CognateClass(AbstractTimestamped):
         if self.root_form != '':
             return self.root_form
         # If single lexeme in cognate class, use romanised:
-        fDict = {'language__languagelistorder__language_list__name':
-                 LanguageList.DEFAULT}
-        lexemeSet = self.lexeme_set.filter(**fDict)
-        if lexemeSet.count() == 1:
-            return lexemeSet.get().romanised
+        if self.lexeme_set.count() == 1:
+            return self.lexeme_set.get().romanised
         # Do we have a loanword?
         if self.loanword:
             if self.sourceFormInLoanLanguage != '':
                 return "(%s)" % self.sourceFormInLoanLanguage
         # Branch lookup for #364:
-        affectedLanguageIds = set(Lexeme.objects.filter(
-            cognate_class=self).values_list('language_id', flat=True))
+        affectedLanguageIds = self.lexeme_set.filter(
+            cognate_class=self).distinct().values_list('language_id', flat=True)
         commonCladeIds = Clade.objects.filter(
             language__id__in=affectedLanguageIds
             ).distinct().order_by(
@@ -1431,8 +1428,8 @@ class CognateClass(AbstractTimestamped):
                 return Lexeme.objects.filter(
                     language__id__in=languageIds,
                     cognate_class=cognateClass).exclude(
-                        phoneMic='').values_list(
-                            'phoneMic', flat=True)
+                        romanised='').values_list(
+                            'romanised', flat=True)
 
             idFinders = [lambda: findQuery.filter(
                 representative=True).values_list('id', flat=True),
