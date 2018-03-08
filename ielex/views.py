@@ -3419,10 +3419,12 @@ def view_cladecognatesearch(request):
         lexeme__meaning__in=meaningList.meanings.all()
     ).order_by('lexeme__meaning').prefetch_related(
         'lexeme_set',
-        'lexeme_set__language',
-        'lexeme_set__meaning').distinct().all()
+        'lexeme_set__language').distinct().all()
+
+    lgsIds= set(languageList.languagelistorder_set.all().values_list(
+                        'language_id', flat=True))
     for c in cognateClasses:
-        c.computeCounts(languageList)
+        c.computeCounts(languageList, lgsIds, False)
     form = AddCogClassTableForm(cogclass=cognateClasses)
 
     # Computing cladeLinks:
@@ -3455,7 +3457,6 @@ def view_cladecognatesearch(request):
         request, "view_cladecognatesearch.html",
         {"cladeTitle": ", ".join([c.shortName for c in currentClades]),
          "cladeLinks": cladeLinks,
-         "allClades": allClades,
          "AddCogClassTableForm": form})
 
 

@@ -1324,21 +1324,22 @@ class CognateClass(AbstractTimestamped):
 
     _computeCounts = {}  # Memo for computeCounts
 
-    def computeCounts(self, languageList=None):
+    def computeCounts(self, languageList=None, 
+                        lgSet=None, isCladeCountNeeded=True, clades=None):
         """
         computeCounts calculates the lexeme* properties.
         It uses self._computeCounts for memoization.
         """
         if not self._computeCounts:
             # Use languageList to build lSet to filter lexemes:
-            lSet = None
-            if languageList is not None:
-                lSet = set(llo.language_id for llo in
-                           languageList.languagelistorder_set.all())
-            else:
-                lSet = set()
+            if lgSet is None:
+                if languageList is not None:
+                    lgSet = set(languageList.languagelistorder_set.all().values_list(
+                        'language_id', flat=True))
+                else:
+                    lgSet = set()
             # Gather counts:
-            theLexemes = self.lexeme_set.filter(language__in=lSet).all()
+            theLexemes = self.lexeme_set.filter(language__in=lgSet).all()
             targetLexemes = theLexemes.filter(not_swadesh_term=False)
 
             # True if all lexemes are not_swadesh_term.
@@ -1348,10 +1349,16 @@ class CognateClass(AbstractTimestamped):
             languageIds = targetLexemes.exclude(
                     language__level0=0).values_list(
                         'language_id', flat=True)
-            cladeCount = Clade.objects.filter(
-                languageclade__language__id__in=languageIds).exclude(
-                    hexColor='').exclude(
-                        shortName='').distinct().count()
+            cladeCount = 0
+            if isCladeCountNeeded:
+                if clades is not None:
+                    cladeCount = clades.filter(
+                        languageclade__language__id__in=languageIds).distinct().count()
+                else:
+                    cladeCount = Clade.objects.filter(
+                        languageclade__language__id__in=languageIds).exclude(
+                            hexColor='').exclude(
+                                shortName='').distinct().count()
             # Filling memo with data:
             self._computeCounts = {
                 'lexemeCount': lexemeCount,
