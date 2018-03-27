@@ -12,17 +12,31 @@
   });
 
   window.CopyAcross = function(f){
+    /* global $ */
     var f_id_arr = f.id.split('#');
     var f_id = f_id_arr[0];
     var f_src = f_id_arr[1];
     var f_trg = f_id_arr[2];
     var wanted = ['src2translit', 'src2root', 'translit2src', 'phoneMic2phoneTic', 'phoneTic2phoneMic'];
-    wanted.find(function(x){
-      if(f_id === x){
-        document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
-        return true;
-      }
-    });
+    if(f_src.startsWith('all.') && f_trg.startsWith('all.')){
+      f_src = f_src.replace(/^all\./, '');
+      f_trg = f_trg.replace(/^all\./, '');
+      wanted.find(function(x){
+        if(f_id === x){
+          $('table').find('tbody > tr:not(.hide)').each(function(){
+              $(this).find("td > input[id='"+f_trg+"']").val($(this).find("td > input[id='"+f_src+"']").val());
+          });
+          return true;
+        }
+      });
+    }else{
+      wanted.find(function(x){
+        if(f_id === x){
+          document.getElementsByName(f_trg)[0].value = document.getElementsByName(f_src)[0].value;
+          return true;
+        }
+      });
+    }
   };
 
   window.MutexCheckbox = function(f){

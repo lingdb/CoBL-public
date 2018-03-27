@@ -422,7 +422,17 @@
                 {% endif %}
               </td>
               {# weblookup_filter.html #}
-              <td></td>
+              <td>
+                {% if user.is_authenticated %}
+                  <button class="rightcheckarrow btn btn-xs"
+                          type="button"
+                          title="Copy all Romanised to Dict ID 1"
+                          id="src2root#all.romanised#all.rfcWebLookup1"
+                          onclick="confirm('Are you really sure to copy all visible “Romanised” data into “Dict ID 1”?') && CopyAcross(this)">
+                    <span class="glyphicon glyphicon-fast-forward"></span>
+                  </button>
+                {% endif %}
+              </td>
               <td>
                 {% if user.is_authenticated %}
                   <input type="text"
@@ -729,7 +739,7 @@
                 </td>
                 <td class="lexemeRfcWebLookup1">
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.rfcWebLookup1 class="form-control" %}
+                    {% form_field lexeme.rfcWebLookup1 id="rfcWebLookup1" class="form-control" %}
                   {% elif lexeme.rfcWebLookup1.data %}
                     {{ lexeme.rfcWebLookup1.data }}
                   {% endif %}
