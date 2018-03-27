@@ -482,7 +482,27 @@ def write_nexus(language_list_name,       # str
         line = []
         line.append('')
         line.extend(allLgs)
-        exportMatrix.append(",".join(str(x) for x in line))
+        # add header language URL Names
+        exportMatrix.append("\"Language URL Name\",%s" % ",".join(
+            map(lambda x : '\"%s\"' % x, language_names)))
+        # add header language Display Names
+        exportMatrix.append("\"Language Display Name\",%s" % ",".join(
+            map(lambda x : '\"%s\"' % x, [l.utf8_name for l in languages])))
+        # add header language Cl 0
+        exportMatrix.append("\"Cl 0\",%s" % ",".join(
+            map(lambda x : '%s' % x, [l.level0 for l in languages])))
+        # add header language Cl 1
+        exportMatrix.append("\"Cl 1\",%s" % ",".join(
+            map(lambda x : '%s' % x, [l.level1 for l in languages])))
+        # add header language Cl 0 hex colour
+        exportMatrix.append("\"Language clade colour hex code\",%s" % ",".join(
+            map(lambda x : '\"#%s\"' % x, [l.level0Color for l in languages])))
+        # add header Historical
+        exportMatrix.append("\"Historical\",%s" % ",".join(
+            map(lambda x : '%s' % x, [int(l.historical) for l in languages])))
+        # add header Fragmentary?
+        exportMatrix.append("\"Fragmentary?\",%s" % ",".join(
+            map(lambda x : '%s' % x, [int(l.fragmentary) for l in languages])))
 
         # calculate the distance matrix
         if kwargs.get('excludeMarkedMeanings', True):
