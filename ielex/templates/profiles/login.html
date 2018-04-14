@@ -2,13 +2,13 @@
 
 {% block top %}
   <div class="row">
-    <h1 class="col-md-2 col-md-offset-5">CoBL Editor Login</h1>
+    <h1 class="col-md-5 col-md-offset-4">CoBL Editor Login</h1>
   </div>
 {% endblock %}
 
 {% block content %}
   <div class="row">
-    <div class="col-md-2 col-md-offset-5">
+    <div class="col-md-4 col-md-offset-4">
       {% if form.errors %}
         <div class="alert alert-danger alert-dismissable fade in" role="alert">
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -20,15 +20,26 @@
       <form action="{{ app_path }}" method="post" id="login-form" class="well">
         {% csrf_token %}
         <div class="form-group">
-          <label for="username">Username:</label>
-          <input type="text" name="username" id="id_username" autofocus>
+          <table width='80%' align='center'>
+            <tr>
+              <td align='right'><label for="username">Username:&nbsp;</label></td>
+              <td><input type="text" name="username" id="id_username" autofocus></td>
+            </tr>
+            <tr><td>&nbsp;</td><td></td></tr>
+            <tr>
+              <td align='right'><label for="password">Password:&nbsp;</label></td>
+              <td><input type="password" name="password" id="id_password"></td>
+            </tr>
+            <tr><td>&nbsp;</td><td></td></tr>
+            <tr>
+              <td></td>
+              <td>
+                <button type="submit" class="btn btn-default" style='width:80px'>Log in</button>
+                <input type="hidden" name="this_is_the_login_form" value="1">
+              </td>
+            </tr>
+          </table>
         </div>
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <input type="password" name="password" id="id_password">
-        </div>
-        <button type="submit" class="btn btn-default">Log in</button>
-        <input type="hidden" name="this_is_the_login_form" value="1">
       </form>
     </div>
   </div>
