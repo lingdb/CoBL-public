@@ -491,6 +491,9 @@ class Source(models.Model):
                 pass
         obj.delete()
 
+    def timestampedFields(self):
+        return set(source_attr_lst)
+
 
 @reversion.register
 class SndComp(AbstractTimestamped):
@@ -1848,7 +1851,7 @@ class LanguageListOrder(models.Model):
 @reversion.register
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
-    DEFAULT = "Jena200"
+    DEFAULT = "Jena175"
     ALL = "all"
 
     name = models.CharField(
