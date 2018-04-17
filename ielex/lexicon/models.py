@@ -1568,6 +1568,18 @@ class Lexeme(AbstractTimestamped):
                 return c.loanword
         return None
 
+    def checkPllLoanEvent(self):
+        """
+        This method was added for #463 and shall return one of three values:
+        * In case that there is exactly one CognateClass linked to this lexeme:
+          * Return .data.get('loanword', False)
+        * Otherwise return None.
+        """
+        if self.cognate_class.count() == 1:
+            for c in self.cognate_class.all():
+                return c.parallelLoanEvent
+        return None
+
     def getCognateClassData(self):
         """
         This method was added for #90 and shall return
@@ -1649,8 +1661,16 @@ class Lexeme(AbstractTimestamped):
         return self.checkLoanEvent is not None
 
     @property
+    def show_pllloan_event(self):
+        return self.checkPllLoanEvent is not None
+
+    @property
     def loan_event(self):
         return self.checkLoanEvent()
+
+    @property
+    def pllloan_event(self):
+        return self.checkPllLoanEvent()
 
     @property
     def language_asciiname(self):

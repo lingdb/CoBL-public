@@ -77,7 +77,7 @@
             {# romanised_title.html #}
             <th>Roman(ised)</th>
             {# lexemeeditcopy_title.html #}
-            <th colspan="4"></th>
+            <th colspan="2"></th>
             {# nativeScript_title.html #}
             <th>Native Script</th>
             {# citations_title.html #}
@@ -157,7 +157,15 @@
             <th style="border-right: 2px solid #dddddd;">
               <div class="vertical-text">
                 <div class="vertical-text__inner">
-                  Loan Event
+                  Loan Evt
+                </div>
+              </div>
+            </th>
+            {# parallelloan_title.html #}
+            <th style="border-right: 2px solid #dddddd;">
+              <div class="vertical-text">
+                <div class="vertical-text__inner">
+                  Pll Loan Evt
                 </div>
               </div>
             </th>
@@ -166,9 +174,9 @@
               PhoneMic
             </th>
             {# phonecopy_title.html #}
-            <th colspan="2"></th>
+            <!-- <th colspan="2"></th> -->
             {# phonetic_title.html #}
-            <th>PhoneTic</th>
+            <!-- <th>PhoneTic</th> -->
             {# gloss_title.html #}
             <th alt="Language specific">Gloss</th>
             {# notes_title.html #}
@@ -208,7 +216,7 @@
               {% endif %}
             </td>
             {# lexemeeditcopy_filter.html #}
-            <td colspan="4"></td>
+            <td colspan="2"></td>
             {# nativeScript_filter.html #}
             <td>
               {% if user.is_authenticated %}
@@ -333,6 +341,13 @@
                 <span class="glyphicon glyphicon-question-sign"></span>
               </button>
             </td>
+            {# parallelloan_filter.html #}
+            <td style="border-right: 2px solid #dddddd;">
+              <button type="button" class="filterBool btn btn-xs btn-default"
+                      data-selector=".lexemeShowPllLoanEvent input">
+                <span class="glyphicon glyphicon-question-sign"></span>
+              </button>
+            </td>
             {# phonemic_filter.html #}
             <td>
               {% if user.is_authenticated %}
@@ -354,9 +369,9 @@
               {% endif %}
             </td>
             {# phonecopy_filter.html #}
-            <td colspan="2"></td>
+            <!-- <td colspan="2"></td> -->
             {# phonetic_filter.html #}
-            <td>
+            <!-- <td>
               {% if user.is_authenticated %}
                 <input type="text"
                        class="filterPhoneticInput form-control narrow"
@@ -374,7 +389,7 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               {% endif %}
-            </td>
+            </td> -->
             {# gloss_filter.html #}
             <td>
               {% if user.is_authenticated %}
@@ -489,7 +504,7 @@
                     </a>
                   {% endif %}
               </td>
-              <td>
+              <!-- <td>
                 {% if user.is_authenticated %}
                   <button class="leftcheckarrow btn btn-xs"
                           type="button"
@@ -508,7 +523,7 @@
                     <span class="glyphicon glyphicon-step-forward"></span>
                   </button>
                 {% endif %}
-              </td>
+              </td> -->
               {# nativeScript_data.html #}
               <td class="lexemeNativeScript">
                 {% if user.is_authenticated %}
@@ -642,6 +657,17 @@
                     class="form-control">
                 {% endif %}
               </td>
+              {# parallelloan_data.html #}
+              <td class="lexemeShowPllLoanEvent" style="border-right: 2px solid #dddddd;">
+                {% if lexeme.object_data.show_pllloan_event %}
+                  <input type="checkbox"
+                    {% if lexeme.object_data.pllloan_event %}
+                    checked="checked"
+                    {% endif %}
+                    disabled="disabled"
+                    class="form-control">
+                {% endif %}
+              </td>
               {# phonemic_data.html #}
               <td class="lexemePhoneMic">
                 {% if user.is_authenticated %}
@@ -651,7 +677,7 @@
                 {% endif %}
               </td>
               {# phonecopy_data.html #}
-              <td>
+              <!-- <td>
                 {% if user.is_authenticated %}
                   <button class="leftcheckarrow btn btn-xs"
                           type="button"
@@ -660,8 +686,8 @@
                     <span class="glyphicon glyphicon-step-backward"></span>
                   </button>
                 {% endif %}
-              </td>
-              <td>
+              </td> -->
+              <!-- <td>
                 {% if user.is_authenticated %}
                   <button class="rightcheckarrow btn btn-xs"
                           type="button"
@@ -670,15 +696,15 @@
                     <span class="glyphicon glyphicon-step-forward"></span>
                   </button>
                 {% endif %}
-              </td>
+              </td> -->
               {# phonetic_data.html #}
-              <td class="lexemePhoneTic">
+              <!-- <td class="lexemePhoneTic">
                 {% if user.is_authenticated %}
                   {% form_field lexeme.phon_form id="phoneTic" size="8" class="form-control" %}
                 {% elif lexeme.phon_form.data %}
                   {{ lexeme.phon_form.data }}
                 {% endif %}
-              </td>
+              </td> -->
               {# gloss_data.html #}
               <td class="lexemeGloss">
                 {% if user.is_authenticated %}
