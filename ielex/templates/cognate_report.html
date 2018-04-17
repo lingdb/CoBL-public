@@ -17,22 +17,24 @@
     {% endif %}
       :
     [{{ cognate_class.alias }}]
-    <div class="inline"
-         style="font-size: 15px;">
-       in 
-    </div>
-    <div class="inline"
-         style="font-size: 15px; color: #006400;">
-       {{ cognate_class.get_meanings.0 }}
-    </div>
-    <a href="{% url 'meaning-report' cognate_class.get_meanings.0|lower %}">
-      <img src="{% static '1w.png' %}"
-           alt="Open 1 meaning all languages view for this meaning." />
-    </a>
-    <a href="/meaning/{{ cognate_class.get_meanings.0|lower }}/cognateclasslist/">
-      <img src="{% static '1c.png' %}"
-           alt="Open 1 meaning all cognate sets view for this meaning." />
-    </a>
+    {% if cognate_class.get_meanings %}
+      <div class="inline"
+           style="font-size: 15px;">
+         in 
+      </div>
+      <div class="inline"
+           style="font-size: 15px; color: #006400;">
+         {{ cognate_class.get_meanings.0 }}
+      </div>
+      <a href="{% url 'meaning-report' cognate_class.get_meanings.0|lower %}">
+        <img src="{% static '1w.png' %}"
+             alt="Open 1 meaning all languages view for this meaning." />
+      </a>
+      <a href="/meaning/{{ cognate_class.get_meanings.0|lower }}/cognateclasslist/">
+        <img src="{% static '1c.png' %}"
+             alt="Open 1 meaning all cognate sets view for this meaning." />
+      </a>
+    {% endif %}
   </h1>
 {% endblock %}
 
