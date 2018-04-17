@@ -1577,32 +1577,31 @@ def view_cognateclasses(request, meaning):
     setDefaultMeaning(request, meaning)
     # Handle POST of AddCogClassTableForm:
     if request.method == 'POST':
-        if 'cogclass_form' in request.POST or 'mergeCognateClasses[]' in request.POST:
-            if 'cogclass_form' in request.POST:
-                try:
-                    cogClassTableForm = AddCogClassTableForm(request.POST)
-                    cogClassTableForm.validate()
-                    cogClassTableForm.handle(request)
-                except ValidationError as e:
-                    logging.exception(
-                        'Validation did not work in view_cognateclasses.')
-                    messages.error(request, ' '.join(e.messages))
-                except Exception as e:
-                    logging.exception('Problem updating CognateClasses '
-                                      'in view_cognateclasses.')
-                    messages.error(request, 'Sorry, the server had problems '
-                                   'updating at least one entry: %s' % e)
-            if 'mergeCognateClasses[]' in request.POST:
-                try:
-                    # Parsing and validating data:
-                    mergeCCForm = MergeCognateClassesForm(request.POST)
-                    mergeCCForm.validate()
-                    mergeCCForm.handle(request)
-                except Exception as e:
-                    logging.exception('Problem merging CognateClasses '
-                                      'in view_cognateclasses.')
-                    messages.error(request, 'Sorry, the server had problems '
-                                   'merging cognate classes: %s' % e)
+        if 'cogclass_form' in request.POST:
+            try:
+                cogClassTableForm = AddCogClassTableForm(request.POST)
+                cogClassTableForm.validate()
+                cogClassTableForm.handle(request)
+            except ValidationError as e:
+                logging.exception(
+                    'Validation did not work in view_cognateclasses.')
+                messages.error(request, ' '.join(e.messages))
+            except Exception as e:
+                logging.exception('Problem updating CognateClasses '
+                                  'in view_cognateclasses.')
+                messages.error(request, 'Sorry, the server had problems '
+                               'updating at least one entry: %s' % e)
+        elif 'mergeIds' in request.POST:
+            try:
+                # Parsing and validating data:
+                mergeCCForm = MergeCognateClassesForm(request.POST)
+                mergeCCForm.validate()
+                mergeCCForm.handle(request)
+            except Exception as e:
+                logging.exception('Problem merging CognateClasses '
+                                  'in view_cognateclasses.')
+                messages.error(request, 'Sorry, the server had problems '
+                               'merging cognate classes: %s' % e)
         else:
             logging.error('Unexpected POST request in view_cognateclasses.')
             messages.error(request, 'Sorry, the server did '

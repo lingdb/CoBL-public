@@ -962,7 +962,7 @@ class MergeCognateClassesForm(WTForm):
     def handle(self, request):
         # Extract ids from form:
         ids = set([int(i) for i in
-                   request.POST.getlist('mergeCognateClasses[]')])
+                   request.POST.get('mergeIds').split(',')])
         # Fetching classes to merge:
         ccs = CognateClass.objects.filter(
             id__in=ids).prefetch_related(
