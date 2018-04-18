@@ -16,6 +16,10 @@ body {
 
 thead .filterText,
 thead .filterInput,
+thead .filterNumber,
+thead .filterNumberInput,
+thead .filterPhoneticInput,
+thead .filterPhonetic,
 thead .filterSwadesh {
   width: 75%;
   display: inline;
@@ -23,6 +27,9 @@ thead .filterSwadesh {
 
 thead .filterText.narrow,
 thead .filterInput.narrow,
+thead .filterNumber.narrow,
+thead .filterPhoneticInput.narrow,
+thead .filterPhonetic.narrow,
 thead .filterSwadesh.narrow {
   width: 50%;
   display: inline;
