@@ -56,9 +56,17 @@
     };
     module.matches = function(input, text){
       // module.matches :: (input :: String, text :: String) -> Bool
-      var match = text.replace(/[ˈˌ]/g, '')
-                      .match(new RegExp(sanitizeInput(input), 'i'));
-      return match === null;
+      var sinput = input.trim();
+      if(sinput.startsWith('@')){ // first char @ -> case sensitive without module.replacements
+        sinput = sinput.replace('@', '');
+        var match = text.replace(/[ˈˌ]/g, '')
+                        .match(new RegExp(sinput, ''));
+        return match === null;
+      }else{
+        var match = text.replace(/[ˈˌ]/g, '')
+                        .match(new RegExp(sanitizeInput(sinput), 'i'));
+        return match === null;
+      }
     };
     return module;
   });

@@ -259,8 +259,21 @@
         if(input.val() === ''){
           delete filterPredicates[id];
         }else{
-          var re = new RegExp(input.val(), "i");
-          filterPredicates[id] = mkPredicate(selector, re);
+          var re;
+          var inval = input.val();
+          inval = inval.trim();
+          if(inval.startsWith('@')){ // first char @ -> case sensitive
+            inval = inval.replace('@', '');
+            try{
+              re = new RegExp(inval, "");
+              filterPredicates[id] = mkPredicate(selector, re);
+            }catch(e){re = null;}
+          }else{
+            try{
+              re = new RegExp(inval, "i");
+              filterPredicates[id] = mkPredicate(selector, re);
+            }catch(e){re = null;}
+          }
         }
         filter(table);
       };
