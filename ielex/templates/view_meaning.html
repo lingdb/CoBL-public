@@ -101,12 +101,14 @@
                 data-toggle="tooltip"
                 data-placement="bottom"
                 data-container="body"
-                style="width: 80px; border-left: 2px solid #dddddd;">
+                style="border-left: 2px solid #dddddd;">
+              <center>
               <div class="vertical-text">
                 <div class="vertical-text__inner">
                   nCog
                 </div>
               </div>
+              </center>
             </th>
             {# selection_title.html #}
             {% if user.is_authenticated %}
@@ -122,7 +124,13 @@
               </th>
             {% endif %}
             {# cognateclassids_title.html #}
-            <th>Cog.<br>ID</th>
+            <th>
+              <div class="vertical-text">
+                <div class="vertical-text__inner">
+                  Cog. ID
+                </div>
+              </div>
+            </th>
             {# cognateclasscitations_title.html #}
             <th>
               <div class="vertical-text">
@@ -133,7 +141,11 @@
             </th>
             {# cognateclasses_title.html #}
             <th>
-              Cog.<br>Alias
+              <div class="vertical-text">
+                <div class="vertical-text__inner">
+                  Cog. Alias
+                </div>
+              </div>
             </th>
             {# cognateclassview_title.html #}
             <th></th>
@@ -222,7 +234,8 @@
               {% if user.is_authenticated %}
                 <input type="text"
                        class="filterPhoneticInput form-control"
-                       data-selector=".lexemeNativeScript input">
+                       data-selector=".lexemeNativeScript input"
+                       style="width:70%">
                 <div class="btn btn-xs btn-default sortInput"
                      data-selector=".lexemeNativeScript input">
                   <span class="glyphicon glyphicon-sort"></span>
@@ -250,8 +263,9 @@
             </td>
             {# ncog_filter.html #}
             <td style="border-left: 2px solid #dddddd;">
-              <input type="text" class="filterNumber form-control narrow"
-                     data-selector=".lexemeNCog">
+              <input type="text" class="filterNumber form-control"
+                     data-selector=".lexemeNCog"
+                     style="width:1.5em">
               <div class="btn btn-xs btn-default sortIntText"
                    data-selector=".lexemeNCog">
                 <span class="glyphicon glyphicon-sort"></span>
@@ -283,7 +297,7 @@
                        class="filterInput form-control"
                        data-selector=".cognateClasses input"
                        size="1"
-                       style="width: 100%;">
+                       style="width:70%;">
               {% else %}
                 <input type="text"
                        class="filterText form-control"
@@ -594,7 +608,7 @@
               </td>
               {# cognateclasses_data.html #}
               <td class="selection">
-                <div class="cognateClasses nowrap" style="text-align: center; max-width: 3em;">
+                <div class="cognateClasses nowrap" style="text-align: center; width: 1.5em;">
                   {% if user.is_authenticated %}
                     {% ifequal add_cognate_judgement|asint lexeme.object_data.id %}
                       <form action="" method="post">
