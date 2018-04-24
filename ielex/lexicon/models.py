@@ -719,7 +719,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
     # Added for #401
     fragmentary = models.BooleanField(default=0)
     # Added for #300:
-    notInExport = models.BooleanField(default=0)
+    notInExport = models.BooleanField(default=1)
     # Lat/Lon:
     latitude = models.DecimalField(
         null=True, max_digits=19, decimal_places=10)
