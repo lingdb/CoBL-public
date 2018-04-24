@@ -1187,6 +1187,12 @@ class LexemeCognateClassRow(AbstractTimestampedForm):
     id = IntegerField('Cognate Class id', validators=[InputRequired()])
     root_form = StringField('Root form', validators=[InputRequired()])
     root_language = StringField('Root language', validators=[InputRequired()])
+    loanword =  BooleanField('Loanword', validators=[InputRequired()])
+    loan_source = TextField('Loan Source', validators=[InputRequired()])
+    loanSourceCognateClass = CognateClassField(
+        'Id of related cc', validators=[InputRequired()])
+    parallelLoanEvent = BooleanField(
+        'Parallel Loan Event', validators=[InputRequired()])
 
 
 class LexemeRowViewMeaningsForm(AbstractTimestampedForm,

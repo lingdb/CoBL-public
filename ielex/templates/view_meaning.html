@@ -174,10 +174,29 @@
               </div>
             </th>
             {# parallelloan_title.html #}
-            <th style="border-right: 2px solid #dddddd;">
+            <th style="border-right: 2px solid #dddddd;"
+            title="Parallel loan event">
               <div class="vertical-text">
                 <div class="vertical-text__inner">
                   Pll Loan Evt
+                </div>
+              </div>
+            </th>
+            {# loan_source_title.html #}
+            <th style="border-right: 2px solid #dddddd;"
+            title="Loan source language">
+              <div class="vertical-text">
+                <div class="vertical-text__inner">
+                  Src Lg
+                </div>
+              </div>
+            </th>
+            {# source_cog_id_title.html #}
+            <th style="border-right: 2px solid #dddddd;"
+            title="Loan source cognate class (id)">
+              <div class="vertical-text">
+                <div class="vertical-text__inner">
+                  Src Cog ID
                 </div>
               </div>
             </th>
@@ -265,11 +284,11 @@
             <td style="border-left: 2px solid #dddddd;">
               <input type="text" class="filterNumber form-control"
                      data-selector=".lexemeNCog"
-                     style="width:1.5em">
-              <div class="btn btn-xs btn-default sortIntText"
+                     style="width:1.8em">
+              <!-- <div class="btn btn-xs btn-default sortIntText"
                    data-selector=".lexemeNCog">
                 <span class="glyphicon glyphicon-sort"></span>
-              </div>
+              </div> -->
             </td>
             {# selection_filter.html #}
             {% if user.is_authenticated %}
@@ -340,7 +359,7 @@
                 </div>
               {% else %}
                 <input type="text"
-                       class="filtersText form-control narrow"
+                       class="filterText form-control narrow"
                        data-selector=".lexemeRootLanguage">
                 <div class="btn btn-xs btn-default sortText"
                      data-selector=".lexemeRootLanguage">
@@ -351,16 +370,56 @@
             {# loanevent_filter.html #}
             <td style="border-right: 2px solid #dddddd;">
               <button type="button" class="filterBool btn btn-xs btn-default"
-                      data-selector=".lexemeShowLoanEvent input">
+                      data-selector=".cogLoanword input">
                 <span class="glyphicon glyphicon-question-sign"></span>
               </button>
             </td>
             {# parallelloan_filter.html #}
             <td style="border-right: 2px solid #dddddd;">
               <button type="button" class="filterBool btn btn-xs btn-default"
-                      data-selector=".lexemeShowPllLoanEvent input">
+                      data-selector=".parallelLoanEvent input">
                 <span class="glyphicon glyphicon-question-sign"></span>
               </button>
+            </td>
+            {# loan_source_filter.html #}
+            <td style="border-right: 2px solid #dddddd;">
+              <!-- {% if user.is_authenticated %}
+                <input type="text"
+                       class="filterInput form-control narrow"
+                       data-selector=".ccSourceLg input">
+                <div class="btn btn-xs btn-default sortInput"
+                     data-selector=".ccSourceLg input">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              {% else %}
+                <input type="text"
+                       class="filterText form-control narrow"
+                       data-selector=".ccSourceLg">
+                <div class="btn btn-xs btn-default sortText"
+                     data-selector=".ccSourceLg">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              {% endif %} -->
+            </td>
+            {# source_cog_id_filter.html #}
+            <td style="border-right: 2px solid #dddddd;">
+              <!-- {% if user.is_authenticated %}
+                <input type="text"
+                       class="filterInput form-control narrow"
+                       data-selector=".ccSourceCogID input">
+                <div class="btn btn-xs btn-default sortInput"
+                     data-selector=".ccSourceCogID input">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              {% else %}
+                <input type="text"
+                       class="filterText form-control narrow"
+                       data-selector=".ccSourceCogID">
+                <div class="btn btn-xs btn-default sortText"
+                     data-selector=".ccSourceCogID">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              {% endif %} -->
             </td>
             {# phonemic_filter.html #}
             <td>
@@ -661,25 +720,43 @@
                 {% endif %}
               </td>
               {# loanevent_data.html #}
-              <td class="lexemeShowLoanEvent" style="border-right: 2px solid #dddddd;">
-                {% if lexeme.object_data.show_loan_event %}
-                  <input type="checkbox"
-                    {% if lexeme.object_data.loan_event %}
-                    checked="checked"
-                    {% endif %}
-                    disabled="disabled"
-                    class="form-control">
+              <td class="cogLoanword loanEventCell" style="border-right: 2px solid #dddddd;">
+                {% if lexeme.object_data.allCognateClasses|length == 1 %}
+                  {% if user.is_authenticated %}
+                    {% form_field lexeme.allCognateClasses.0.loanword class="form-control" data-dependencyfor-tr="loanevent" %}
+                  {% else %}
+                    {{ lexeme.object_data.allCognateClasses.0.loanword }}
+                  {% endif %}
                 {% endif %}
               </td>
               {# parallelloan_data.html #}
-              <td class="lexemeShowPllLoanEvent" style="border-right: 2px solid #dddddd;">
-                {% if lexeme.object_data.show_pllloan_event %}
-                  <input type="checkbox"
-                    {% if lexeme.object_data.pllloan_event %}
-                    checked="checked"
-                    {% endif %}
-                    disabled="disabled"
-                    class="form-control">
+              <td class="parallelLoanEvent loanEventCell" style="border-right: 2px solid #dddddd;">
+                {% if lexeme.object_data.allCognateClasses|length == 1 %}
+                  {% if user.is_authenticated %}
+                    {% form_field lexeme.allCognateClasses.0.parallelLoanEvent class="form-control" data-inputdepends="loanevent" %}
+                  {% else %}
+                    {{ lexeme.object_data.allCognateClasses.0.parallelLoanEvent }}
+                  {% endif %}
+                {% endif %}
+              </td>
+              {# loan_source_data.html #}
+              <td class="ccSourceLg loanEventCell" style="border-right: 2px solid #dddddd;">
+                {% if lexeme.object_data.allCognateClasses|length == 1 %}
+                  {% if user.is_authenticated %}
+                    {% form_field lexeme.allCognateClasses.0.loan_source class="form-control" data-inputdepends="loanevent" %}
+                  {% else %}
+                    {{ lexeme.object_data.allCognateClasses.0.loan_source }}
+                  {% endif %}
+                {% endif %}
+              </td>
+              {# source_cog_id_data.html #}
+              <td class="ccSourceCogID loanEventCell" style="border-right: 2px solid #dddddd;">
+                {% if lexeme.object_data.allCognateClasses|length == 1 %}
+                  {% if user.is_authenticated %}
+                    {% form_field lexeme.allCognateClasses.0.loanSourceCognateClass class="form-control" data-inputdepends="loanevent" %}
+                  {% else %}
+                    {{ lexeme.object_data.allCognateClasses.0.loanSourceCognateClass }}
+                  {% endif %}
                 {% endif %}
               </td>
               {# phonemic_data.html #}
