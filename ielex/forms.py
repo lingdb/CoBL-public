@@ -560,6 +560,7 @@ class EditSingleLanguageForm(LanguageListRowForm,
                              WTFormToFormgroup):
     ascii_name = StringField('URL Name', validators=[InputRequired()])
     description = TextAreaField('Description', validators=[InputRequired()])
+    notInExport = BooleanField('Not in Export', validators=[InputRequired()])
     progress = IntegerField('Progress',
                             validators=[InputRequired()])
     progress = SelectField('Progress',
@@ -598,6 +599,7 @@ class EditSingleLanguageForm(LanguageListRowForm,
         ('glottocode', {'class': 'form-control',
                         'pattern': r'(^$|[a-z]{4}\d{4})'}),
         ('variety', {'class': 'form-control'}),
+        ('notInExport', {'data-dependencyfor-tr': 'notInExport'}),
         ('historical', {'data-dependencyfor-tr': 'historical'}),
         ('fragmentary', {'data-dependencyfor-tr': 'fragmentary'}),
         ('nativeScriptIsRtl', {'data-dependencyfor-tr': 'nativeScriptIsRtl'}),
