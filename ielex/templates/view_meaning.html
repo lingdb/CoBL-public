@@ -207,7 +207,7 @@
             {# phonecopy_title.html #}
             <!-- <th colspan="2"></th> -->
             {# phonetic_title.html #}
-            <!-- <th>PhoneTic</th> -->
+            <th>PhoneTic</th>
             {# gloss_title.html #}
             <th alt="Language specific">Gloss</th>
             {# notes_title.html #}
@@ -444,7 +444,7 @@
             {# phonecopy_filter.html #}
             <!-- <td colspan="2"></td> -->
             {# phonetic_filter.html #}
-            <!-- <td>
+            <td>
               {% if user.is_authenticated %}
                 <input type="text"
                        class="filterPhoneticInput form-control narrow"
@@ -462,7 +462,7 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               {% endif %}
-            </td> -->
+            </td>
             {# gloss_filter.html #}
             <td>
               {% if user.is_authenticated %}
@@ -789,13 +789,13 @@
                 {% endif %}
               </td> -->
               {# phonetic_data.html #}
-              <!-- <td class="lexemePhoneTic">
+              <td class="lexemePhoneTic">
                 {% if user.is_authenticated %}
                   {% form_field lexeme.phon_form id="phoneTic" size="8" class="form-control" %}
                 {% elif lexeme.phon_form.data %}
                   {{ lexeme.phon_form.data }}
                 {% endif %}
-              </td> -->
+              </td>
               {# gloss_data.html #}
               <td class="lexemeGloss">
                 {% if user.is_authenticated %}
