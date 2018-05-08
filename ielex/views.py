@@ -1715,15 +1715,16 @@ def view_lexeme(request, lexeme_id):
 @login_required
 @logExceptions
 def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
-    try:
-        lexeme = Lexeme.objects.get(id=lexeme_id)
-    except Lexeme.DoesNotExist:
-        messages.info(request,
-                      "There is no lexeme with id=%s" % lexeme_id)
-        raise Http404
-    citation_id = int(citation_id)
-    cogjudge_id = int(cogjudge_id)
-    form = None
+    if not action == "deletelist":
+        try:
+            lexeme = Lexeme.objects.get(id=lexeme_id)
+        except Lexeme.DoesNotExist:
+            messages.info(request,
+                          "There is no lexeme with id=%s" % lexeme_id)
+            raise Http404
+        citation_id = int(citation_id)
+        cogjudge_id = int(cogjudge_id)
+        form = None
 
     def DELETE_CITATION_WARNING_MSG():
         messages.warning(
@@ -1899,8 +1900,41 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
 
         # first visit, preload form with previous answer
         else:
-            redirect_url = reverse('view-lexeme', args=[lexeme_id])
-            if action == "edit":
+            if not action == "deletelist":
+                redirect_url = reverse('view-lexeme', args=[lexeme_id])
+            if action == "deletelist":
+                lexeme_ids = [int(x.strip(" ")) for x in lexeme_id.split(",")]
+                not_deleted_lexemes = []
+                deleted_lexemes = []
+                for lx in lexeme_ids:
+                    try:
+                        lexeme = Lexeme.objects.get(id=lx)
+                        deleted_lexemes.append(str(lx))
+                    except Lexeme.DoesNotExist:
+                        not_deleted_lexemes.append(str(lx))
+                        continue
+                    lexeme.delete()
+                redirect_url = reverse("view-language-wordlist",
+                                       args=[getDefaultLanguage(request),
+                                               getDefaultWordlist(request)])
+                if len(not_deleted_lexemes) == 0:
+                    msg = Template(oneline("""All {{ cnt }} lexemes
+                        were deleted successfully"""))
+                    context = RequestContext(request)
+                    context["cnt"] = str(len(lexeme_ids))
+                    messages.success(
+                        request,
+                        msg.render(context))
+                else:
+                    msg = Template(oneline("""These lexemes
+                        were NOT deleted successfully: {{ ids }}"""))
+                    context = RequestContext(request)
+                    context["ids"] = ", ".join(not_deleted_lexemes)
+                    messages.error(
+                        request,
+                        msg.render(context))
+                return HttpResponseRedirect(redirect_url)
+            elif action == "edit":
                 form = EditLexemeForm(instance=lexeme)
                 # initial={"romanised":lexeme.romanised,
                 # "phon_form":lexeme.phon_form,
