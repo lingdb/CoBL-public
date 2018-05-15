@@ -580,7 +580,11 @@
                   {% endif %}
                 </td>
                 {# nativeScript_data.html #}
+                {% if language.nativeScriptIsRtl %}
+                <td class="lexemeNativeScript" dir="rtl">
+                {% else %}
                 <td class="lexemeNativeScript">
+                {% endif %}
                   {% if user.is_authenticated %}
                     {% if language.nativeScriptIsRtl %}
                       {% form_field lexeme.nativeScript id="nativeScript" class="form-control" dir="rtl"%}
@@ -588,11 +592,7 @@
                       {% form_field lexeme.nativeScript id="nativeScript" class="form-control" %}
                     {% endif %}
                   {% elif lexeme.object_data.nativeScript %}
-                    {% if language.nativeScriptIsRtl %}
-                      <span dir="rtl">{{ lexeme.object_data.nativeScript }}</span>
-                    {% else %}
                       {{ lexeme.object_data.nativeScript }}
-                    {% endif %}
                   {% endif %}
                 </td>
                 <td>
