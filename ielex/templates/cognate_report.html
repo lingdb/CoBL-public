@@ -413,6 +413,7 @@
             <th>Language</th>
             <th>Roman(ised)</th>
             <th>Native Script</th>
+            <th>PhoneTic</th>
             <th>PhoneMic</th>
             <th>Not Tgt</th>
             <th>Notes</th>
@@ -453,6 +454,7 @@
                 <td>{{ cj.object_data.lexeme.nativeScript }}</td>
               {% endif %}
               <td>{{ cj.object_data.lexeme.phon_form }}</td>
+              <td>{{ cj.object_data.lexeme.phoneMic }}</td>
               <td>
                 <input type="checkbox"
                        {% if cj.object_data.lexeme.not_swadesh_term %}
