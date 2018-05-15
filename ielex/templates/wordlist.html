@@ -15,12 +15,12 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12" style="margin-top: 51px;">
       <form action="" method="post">
         {% if user.is_authenticated and user.is_staff %}
           {% csrf_token %}
         {% endif %}
-        <div class="fixedContainer" style="height:52px">
+        <div class="fixedContainer" style="height:51px">
           {% if user.is_authenticated and user.is_staff %}
             <div class="form-group pull-right">
               <a href="." class="btn btn-default">undo</a>
@@ -47,7 +47,7 @@
           </span>
         </div>
         <table class="table table-striped viewTableFilter"
-               data-floatheadtop="51">
+               data-floatheadtop="51px">
           <thead>
             <tr>
               <th style="width:25px !important">
@@ -306,66 +306,99 @@
                 <td></td>
               {% endif %}
               <td>
+                <input type="text" class="filterNumber form-control"
+                         data-selector=".meaningPercentCoded"
+                         style="width: 1.4em;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningPercentCoded">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
               <td>
+                <input type="text" class="filterNumber form-control"
+                         data-selector=".meaningLexCount"
+                         style="width: 1.4em;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningLexCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
               <td>
+                <input type="text" class="filterNumber form-control"
+                         data-selector=".meaningCogCount"
+                         style="width: 1.4em;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
               <td>
+                <input type="text" class="filterNumber form-control"
+                         data-selector=".meaningTrueCogCount"
+                         style="width: 1.4em;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningTrueCogCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
               <td>
+                <input type="text" class="filterNumber form-control"
+                         data-selector=".meaningCogLoanCount"
+                         style="width: 1.4em;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogLoanCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
               <td>
+                <input type="text" class="filterNumber form-control"
+                         data-selector=".meaningCogParallelLoanCount"
+                         style="width: 1.4em;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogParallelLoanCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
               <td>
+                <input type="text" class="filterNumber form-control"
+                         data-selector=".meaningCogRootFormPercentage"
+                         style="width: 1.4em;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogRootFormPercentage">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
               <td>
+                <input type="text" class="filterNumber form-control"
+                         data-selector=".meaningCogRootFormCount"
+                         style="width: 1.4em;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogRootFormCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
               <td>
+                <input type="text" class="filterNumber form-control"
+                         data-selector=".meaningCogRootLanguagePercentage"
+                         style="width: 1.4em;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogRootLanguagePercentage">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
               <td>
+                <input type="text" class="filterNumber form-control"
+                         data-selector=".meaningCogRootLanguageCount"
+                         style="width: 1.4em;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogRootLanguageCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
               <td>
+                <input type="text" class="filterNumber form-control"
+                         data-selector=".meaningCogRevisedPercentage"
+                         style="width: 1.4em;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".meaningCogRevisedPercentage">
                   <span class="glyphicon glyphicon-sort"></span>
