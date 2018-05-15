@@ -1136,8 +1136,7 @@ class Meaning(AbstractTimestamped):
                 "language_id", flat=True)
             ccs = CognateClass.objects.filter(
                 lexeme__meaning_id=self.id,
-                lexeme__language_id__in=lIds).order_by(
-                    'id').distinct('id').all()
+                lexeme__language_id__in=lIds).distinct()
             # Setup to count stuff:
             cog_count = len(ccs)
             cogRootFormCount = 0
