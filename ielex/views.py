@@ -3353,14 +3353,31 @@ def view_language_distributions(request, language_list=None):
 @logExceptions
 def json_cognateClass_placeholders(request):
     if request.method == 'GET' and 'lexemeid' in request.GET:
+        # Acquiring languageList:
+        try:
+            languageList = LanguageList.objects.get(
+                name=getDefaultLanguagelist(request))
+        except LanguageList.DoesNotExist:
+            languageList = LanguageList.objects.get(
+                name=LanguageList.ALL)
         meaningIds = Lexeme.objects.filter(
             id=int(request.GET['lexemeid'])).values_list(
                 'meaning_id', flat=True)
-        cognateClasses = CognateClass.objects.filter(
-            lexeme__meaning_id__in=meaningIds).distinct()
+        # cognateClasses = CognateClass.objects.filter(
+        #     lexeme__meaning_id__in=meaningIds).distinct()
         # lexemes = [int(s) for s in request.GET['lexemes'].split(',')]
         # cognateClasses = CognateClass.objects.filter(
         # lexeme__in=lexemes).distinct()
+        cognateClasses = CognateClass.objects.filter(
+            cognatejudgement__lexeme__meaning_id__in=meaningIds
+        ).prefetch_related('lexeme_set').order_by('alias').distinct()
+        # Computing counts for ccs:
+        for cc in cognateClasses:
+            cc.computeCounts(languageList=languageList)
+        def cmpKey(x):
+            return [-x.cladeCount, -x.lexemeCount, len(x.alias)]
+        cognateClasses = sorted(cognateClasses, key=cmpKey)
+
         dump = json.dumps([{'id': c.id,
                             'alias': c.alias,
                             'placeholder':
