@@ -356,7 +356,7 @@ class AbstractCognateClassAssignmentForm(WTForm):
     def validate_combinedCognateClassAssignment(form, field):
         tokens = [t.strip() for t in field.data.split(',')]
         for t in tokens:
-            if t == 'new':
+            if t == 'new' or t == 'new l' or t == 'new p':
                 '''
                 This case is subsumed by the alias regex,
                 but listed here for clarity and in case
@@ -404,6 +404,33 @@ class AbstractCognateClassAssignmentForm(WTForm):
                     # Class to add to:
                     newC = CognateClass()
                     newC.bump(request)
+                    newC.save()
+                    # Adding to new class:
+                    CognateJudgement.objects.create(
+                        lexeme_id=lexeme.id,
+                        cognate_class_id=newC.id)
+                    # Fixing alias for new class:
+                    newC.update_alias()
+            elif t == 'new l':  # Add lexeme to a new class:
+                with transaction.atomic():
+                    # Class to add to:
+                    newC = CognateClass()
+                    newC.bump(request)
+                    newC.loanword = True
+                    newC.save()
+                    # Adding to new class:
+                    CognateJudgement.objects.create(
+                        lexeme_id=lexeme.id,
+                        cognate_class_id=newC.id)
+                    # Fixing alias for new class:
+                    newC.update_alias()
+            elif t == 'new p':  # Add lexeme to a new class:
+                with transaction.atomic():
+                    # Class to add to:
+                    newC = CognateClass()
+                    newC.bump(request)
+                    newC.loanword = True
+                    newC.parallelLoanEvent = True
                     newC.save()
                     # Adding to new class:
                     CognateJudgement.objects.create(
