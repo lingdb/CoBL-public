@@ -1163,7 +1163,7 @@ class Meaning(AbstractTimestamped):
             cogRootLanguagePercentage = cogRootLanguageCount / cog_count \
                 if cog_count > 0 else float('nan')
             cogRootLanguagePercentage *= 100
-            cog_truecount = cog_count - cogLoanCount - cogParallelLoanCount
+            cog_truecount = cog_count - cogLoanCount
             if cog_count > 0:
                 cogRevisedPercentage = cogRevised / cog_count * 100
             else:
