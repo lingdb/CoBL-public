@@ -1587,14 +1587,19 @@ class Lexeme(AbstractTimestamped):
         """
         ccs = self.cognate_class.all()
         ids = [str(cc.id) for cc in ccs]
-        rfs = [cc.root_form for cc in ccs]
-        rls = [cc.root_language for cc in ccs]
         if not ids:
             return None
-        return {
-            'id': ','.join(ids),
-            'root_form': ','.join(rfs),
-            'root_language': ','.join(rls)}
+        ccdata = {}
+        ccdata['id'] = ','.join(ids)
+        rfs = [cc.root_form for cc in ccs]
+        tmp = ','.join(rfs)
+        if len(tmp) > 0:
+            ccdata['root_form'] = tmp
+        rls = [cc.root_language for cc in ccs]
+        tmp = ','.join(rls)
+        if len(tmp) > 0:
+            ccdata['root_language'] = tmp
+        return ccdata
 
     def timestampedFields(self):
         return set(['romanised', 'phon_form', 'gloss', 'notes', 'phoneMic',
@@ -1711,15 +1716,17 @@ class Lexeme(AbstractTimestamped):
 
     @property
     def loanEventSourceTitle(self):
+        ccd = self.getCognateClassData()
+        if ccd == None:
+            return '';
         parts = []
-        for ccd in self.getCognateClassData():
-            if 'root_form' in ccd and 'root_language' in ccd:
-                parts.append('(%s) < (%s)' %
-                             (ccd['root_form'], ccd['root_language']))
-            elif 'root_form' in ccd:
-                parts.append('(%s) < (?)' % ccd['root_form'])
-            elif 'root_language' in ccd:
-                parts.append('(?) < (%s)' % ccd['root_language'])
+        if 'root_form' in ccd and 'root_language' in ccd:
+            parts.append('(%s) < (%s)' %
+                         (ccd['root_form'], ccd['root_language']))
+        elif 'root_form' in ccd:
+            parts.append('(%s) < (?)' % ccd['root_form'])
+        elif 'root_language' in ccd:
+            parts.append('(?) < (%s)' % ccd['root_language'])
         return '\n'.join(parts)
 
     @property
