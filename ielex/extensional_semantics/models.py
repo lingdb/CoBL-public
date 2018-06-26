@@ -4,7 +4,7 @@ import reversion
 from ielex.lexicon.models import AbstractBaseCitation
 
 
-@reversion.register
+# @reversion.register
 class SemanticRelation(models.Model):
     relation_code = models.CharField(max_length=64)
     long_name = models.CharField(max_length=128)
@@ -19,7 +19,7 @@ class SemanticRelation(models.Model):
         return str("%s (%s)" % (self.relation_code, self.long_name))
 
 
-@reversion.register
+# @reversion.register
 class SemanticExtension(models.Model):
     lexeme = models.ForeignKey('lexicon.Lexeme')
     relation = models.ForeignKey(SemanticRelation)
@@ -39,7 +39,7 @@ class SemanticExtension(models.Model):
         return u"%s" % (self.id)
 
 
-@reversion.register
+# @reversion.register
 class SemanticExtensionCitation(AbstractBaseCitation):
     extension = models.ForeignKey(SemanticExtension)
     source = models.ForeignKey('lexicon.Source')
@@ -55,7 +55,7 @@ class SemanticExtensionCitation(AbstractBaseCitation):
         unique_together = (("extension", "source"),)
 
 
-@reversion.register
+# @reversion.register
 class SemanticDomain(models.Model):
     """A named, ordered list of semantic relations (referred to as a 'domain'
     in the user interface) for use in display and output. A default list, named

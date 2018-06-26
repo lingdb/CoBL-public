@@ -276,7 +276,7 @@ class AbstractDistribution(models.Model):
                     'uniformUpper', 'uniformLower'])
 
 
-@reversion.register
+# @reversion.register
 class Source(models.Model):
 
     """
@@ -495,7 +495,7 @@ class Source(models.Model):
         return set(source_attr_lst)
 
 
-@reversion.register
+# @reversion.register
 class SndComp(AbstractTimestamped):
     """
     Introduced for #153.
@@ -547,7 +547,7 @@ class SndComp(AbstractTimestamped):
             (self.id, kwargs, self.lastEditedBy, self.lastTouched)
 
 
-@reversion.register
+# @reversion.register
 class Clade(AbstractTimestamped, AbstractDistribution):
     """
     This model was added for #153
@@ -673,7 +673,7 @@ def getCladeFromLanguageIds(languageIds):
     return None
 
 
-@reversion.register
+# @reversion.register
 class Language(AbstractTimestamped, AbstractDistribution):
     DEFAULT = 'AncientGreek'
 
@@ -1057,7 +1057,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
         return percentages[self.progress]
 
 
-@reversion.register
+# @reversion.register
 class LanguageClade(models.Model):
     language = models.ForeignKey(Language)
     clade = models.ForeignKey(Clade)
@@ -1068,7 +1068,7 @@ class LanguageClade(models.Model):
         ordering = ['cladesOrder']
 
 
-@reversion.register
+# @reversion.register
 class Meaning(AbstractTimestamped):
     DEFAULT = 'ash'
 
@@ -1226,7 +1226,7 @@ class Meaning(AbstractTimestamped):
         return self.computeCounts()['cogParallelLoanCount']
 
 
-@reversion.register
+# @reversion.register
 @python_2_unicode_compatible
 class CognateClass(AbstractTimestamped):
     """
@@ -1506,7 +1506,7 @@ class DyenCognateSet(models.Model):
         return "%s%s" % (self.name, qmark)
 
 
-@reversion.register
+# @reversion.register
 class Lexeme(AbstractTimestamped):
     language = models.ForeignKey(Language)
     meaning = models.ForeignKey(Meaning)
@@ -1734,7 +1734,7 @@ class Lexeme(AbstractTimestamped):
         return self.lexemecitation_set.count()
 
 
-@reversion.register
+# @reversion.register
 class CognateJudgement(AbstractTimestamped):
     lexeme = models.ForeignKey(Lexeme)
     cognate_class = models.ForeignKey(CognateClass)
@@ -1772,7 +1772,7 @@ class CognateJudgement(AbstractTimestamped):
                               self.cognate_class.alias, self.id)
 
 
-@reversion.register
+# @reversion.register
 class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A
     default list, named 'all' is (re)created on save/delete of the Language
@@ -1874,7 +1874,7 @@ class LanguageListOrder(models.Model):
                            ("language_list", "order"))
 
 
-@reversion.register
+# @reversion.register
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
     DEFAULT = "Jena175"
@@ -1989,7 +1989,7 @@ class AbstractBaseCitation(models.Model):
         abstract = True
 
 
-@reversion.register
+# @reversion.register
 class CognateJudgementCitation(AbstractBaseCitation):
     cognate_judgement = models.ForeignKey(CognateJudgement)
     source = models.ForeignKey(Source)
@@ -2005,7 +2005,7 @@ class CognateJudgementCitation(AbstractBaseCitation):
         unique_together = (("cognate_judgement", "source"),)
 
 
-@reversion.register
+# @reversion.register
 class LexemeCitation(AbstractBaseCitation):
     lexeme = models.ForeignKey(Lexeme)
     source = models.ForeignKey(Source)
@@ -2025,7 +2025,7 @@ class LexemeCitation(AbstractBaseCitation):
         unique_together = (("lexeme", "source"),)
 
 
-@reversion.register
+# @reversion.register
 class CognateClassCitation(AbstractBaseCitation):
     cognate_class = models.ForeignKey(CognateClass)
     source = models.ForeignKey(Source)
@@ -2139,7 +2139,7 @@ models.signals.post_delete.connect(
     update_meaning_percent_coded, sender=CognateJudgement)
 
 
-@reversion.register
+# @reversion.register
 class Author(AbstractTimestamped):
     surname = models.TextField(blank=True)
     firstNames = models.TextField(blank=True)
@@ -2190,7 +2190,7 @@ class Author(AbstractTimestamped):
         return ' '.join([self.firstNames, self.surname])
 
 
-@reversion.register
+# @reversion.register
 class NexusExport(AbstractTimestamped):
     # Name of .nex file:
     exportName = models.CharField(max_length=256, blank=True)
