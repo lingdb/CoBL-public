@@ -4,9 +4,9 @@ cd /srv/cobl/deployment/backups/
 t=$(date)
 name=$(date -I)
 echo "Creating backup $name…"
-pg_dump cobl > $name.sql
+pg_dump --no-owner --no-acl cobl > $name.sql
 echo "Compressing backup $name…"
-bzip2 -f $name.sql
+gzip -f $name.sql
 # Keeping only 10 latest dumps:
 # Compare https://stackoverflow.com/a/10119963/448591
-ls -tr *sql.bz2 | grep -v 'create\|dump.sql' | head -n -10 | xargs --no-run-if-empty rm
+ls -tr *sql.gz | grep -v 'create\|dump.sql' | head -n -10 | xargs --no-run-if-empty rm
