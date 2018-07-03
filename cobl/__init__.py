@@ -12,16 +12,19 @@ from django.contrib.staticfiles.handlers import StaticFilesHandler
 
 from cobl import settings
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cobl.settings")
 
-
-def main(global_settings, **kw):
-    cfg_path = pathlib.Path(global_settings['__file__'])
-
+def configure(cfg_path):
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cobl.settings")
+    settings.DEBUG = False
+    if not cfg_path:
+        return
+    cfg_path = pathlib.Path(cfg_path)
     cfg = ConfigParser(converters={'url': urlparse})
-    cfg.read_dict(dict(main=kw))
-    if cfg.has_option('main', 'sqlalchemy.url'):
-        sqlaurl = cfg.geturl('main', 'sqlalchemy.url')
+    cfg.read([str(cfg_path)])
+    section = 'app:main' if cfg.has_section('app:main') else 'app:cobl'
+
+    if cfg.has_option(section, 'sqlalchemy.url'):
+        sqlaurl = cfg.geturl(section, 'sqlalchemy.url')
         if sqlaurl.scheme.startswith('postgresql'):
             settings.DATABASES['default'] = {
                 'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -32,12 +35,15 @@ def main(global_settings, **kw):
                 'PORT': str(sqlaurl.port) if sqlaurl.port else '',
             }
 
-    settings.DEBUG = False
-    if cfg.has_option('main', 'debug'):
-        settings.DEBUG = cfg.getboolean('main', 'debug')
+    if cfg.has_option(section, 'debug'):
+        settings.DEBUG = cfg.getboolean(section, 'debug')
 
     if cfg_path.parent.joinpath('secret_key').exists():
         with cfg_path.parent.joinpath('secret_key').open() as fp:
             settings.SECRET_KEY = fp.read()
 
+
+def main(global_settings, **kw):
+    configure(global_settings['__file__'])
     return StaticFilesHandler(get_wsgi_application())
+
