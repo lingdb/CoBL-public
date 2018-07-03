@@ -39,7 +39,7 @@ ROOT_URLCONF = 'cobl.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['cobl/templates'],
+        'DIRS': [BASE_DIR + '/cobl/templates'],
         # 'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
