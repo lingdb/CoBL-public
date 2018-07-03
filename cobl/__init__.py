@@ -5,6 +5,7 @@ WSGI config for CoBL project.
 import os
 from urllib.parse import urlparse
 from configparser import ConfigParser
+import pathlib
 
 from django.core.wsgi import get_wsgi_application
 from django.contrib.staticfiles.handlers import StaticFilesHandler
@@ -14,7 +15,9 @@ from cobl import settings
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cobl.settings")
 
 
-def main(*args, **kw):
+def main(global_settings, **kw):
+    cfg_path = pathlib.Path(global_settings['__file__'])
+
     cfg = ConfigParser(converters={'url': urlparse})
     cfg.read_dict(dict(main=kw))
     if cfg.has_option('main', 'sqlalchemy.url'):
@@ -33,7 +36,8 @@ def main(*args, **kw):
     if cfg.has_option('main', 'debug'):
         settings.DEBUG = cfg.getboolean('main', 'debug')
 
-    if cfg.has_option('main', 'secret_key'):
-        settings.SECRET_KEY = cfg.get('main', 'secret_key')
+    if cfg_path.parent.joinpath('secret_key').exists():
+        with cfg_path.parent.joinpath('secret_key').open() as fp:
+            settings.SECRET_KEY = fp.read()
 
     return StaticFilesHandler(get_wsgi_application())
