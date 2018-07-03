@@ -3745,6 +3745,10 @@ ORDER BY (doculect, concept)
     return resp
 
 
+def ping(request):
+    return HttpResponse('{"status": "ok"}', content_type='application/json')
+
+
 @user_passes_test(lambda u: u.is_staff)
 @csrf_protect
 @logExceptions
