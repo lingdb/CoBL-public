@@ -15,3 +15,5 @@ _DB/
 .vim/
 .viminfo
 venv/
+.idea
+*.egg-info/

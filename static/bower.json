@@ -30,7 +30,7 @@
     "awesomplete": "https://github.com/LeaVerou/awesomplete.git#gh-pages",
     "c3": "c3js-chart#^0.4.11",
     "intercom": "^0.1.4",
-    "django-autocomplete-light": "^3.2.1",
+    "django-autocomplete-light": "3.2.1",
     "select2": "^4.0.3",
 	"django-dynamic-formset": "https://github.com/elo80ka/django-dynamic-formset.git"
   }

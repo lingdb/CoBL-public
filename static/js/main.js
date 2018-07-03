@@ -3,7 +3,7 @@
   /* global requirejs */
   requirejs.config({
     waitSeconds: 0,
-    baseUrl: '/ielex/static/',
+    baseUrl: '/static/',
     paths: {
       'jquery': 'bower_components/jquery/dist/jquery.min',
       'floatThead': 'bower_components/jquery.floatThead/dist/jquery.floatThead.min',
