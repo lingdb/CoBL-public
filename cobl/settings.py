@@ -2,8 +2,9 @@
 from __future__ import print_function
 import os
 import logging
+import pathlib
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = pathlib.Path(__file__).parent
 
 VERSION = "1.0"
 DEBUG = False
@@ -40,7 +41,7 @@ ROOT_URLCONF = 'cobl.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR + '/cobl/templates'],
+        'DIRS': [str(BASE_DIR / 'templates')],
         # 'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -106,13 +107,13 @@ LIMIT_TO = 500
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
+STATIC_ROOT = str(BASE_DIR)
 
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 )
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+STATICFILES_DIRS = [str(BASE_DIR / "static")]
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
