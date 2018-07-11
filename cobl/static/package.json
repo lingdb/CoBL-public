@@ -1,0 +1,21 @@
+{
+  "name": "CoBLstatic",
+  "version": "1.0.0",
+  "description": "Static files for CoBL maintained via npm",
+  "repository": "https://github.com/lingdb/CoBL-public",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jakob Runge <sicarius@g4t3.de>",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "bower": "1.8.4",
+    "grunt": "1.0.3",
+    "grunt-asset-version-json": "^0.1.4",
+    "grunt-cli": "1.2.0",
+    "grunt-contrib-requirejs": "1.0.0",
+    "grunt-contrib-watch": "1.0.0",
+    "grunt-eslint": "19.0.0"
+  }
+}
