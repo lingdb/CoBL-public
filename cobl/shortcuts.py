@@ -1,10 +1,19 @@
-import glob
-import os.path as path
+import hashlib
+import pathlib
 
 from django.shortcuts import render
 
+import cobl
 from cobl.lexicon.defaultModels import getDefaultDict
 from cobl.settings import DEBUG
+
+
+def md5(fname):
+    hash_md5 = hashlib.md5()
+    with fname.open("rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
 
 
 def render_template(request, template_path, extra_context={}):
@@ -12,18 +21,18 @@ def render_template(request, template_path, extra_context={}):
     c = {}
     c.update(getDefaultDict(request))
     c.update(extra_context)
-    if minifiedJs is not None and 'minifiedJs' not in c:
-        c['minifiedJs'] = minifiedJs
+    c['minifiedJs'] = minifiedJs
     return render(request, template_path, c)
 
 
 # When we're not in DEBUG mode, we search for the minified.js file:
-def minifiedJs():
+def get_minifiedJs():
     if DEBUG:
         return None
-    files = glob.glob('./static/minified.*.js')
-    for file in files:
-        return path.basename(file)
+    fname = pathlib.Path(cobl.__file__).parent / 'static' / 'minified.js'
+    if not fname.exists():
+        raise ValueError('minified.js does not exist')
+    return '{0}?hash={1}'.format(fname.name, md5(fname))
 
 
-minifiedJs = minifiedJs()
+minifiedJs = get_minifiedJs()
