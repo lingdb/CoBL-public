@@ -19,19 +19,19 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "^3.3.6",
-    "requirejs": "^2.1.22",
-    "almond": "^0.3.1",
-    "rjs": "^2.1.22",
-    "lodash": "^4.5.1",
-    "markdown-it": "^6.0.0",
-    "jquery.floatThead": "floatThead#^1.4.0",
-    "bootbox.js": "bootbox#^4.4.0",
+    "bootstrap": "3.3.7",
+    "requirejs": "2.3.5",
+    "almond": "0.3.3",
+    "rjs": "2.3.5",
+    "lodash": "4.17.10",
+    "markdown-it": "6.1.1",
+    "jquery.floatThead": "floatThead#1.4.5",
+    "bootbox.js": "bootbox#4.4.0",
     "awesomplete": "https://github.com/LeaVerou/awesomplete.git#gh-pages",
-    "c3": "c3js-chart#^0.4.11",
-    "intercom": "^0.1.4",
+    "c3": "c3js-chart#0.4.23",
+    "intercom": "0.1.4",
     "django-autocomplete-light": "3.2.1",
-    "select2": "^4.0.3",
+    "select2": "4.0.5",
 	"django-dynamic-formset": "https://github.com/elo80ka/django-dynamic-formset.git"
   }
 }
