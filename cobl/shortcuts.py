@@ -1,4 +1,3 @@
-import hashlib
 import pathlib
 
 from django.shortcuts import render
@@ -6,14 +5,6 @@ from django.shortcuts import render
 import cobl
 from cobl.lexicon.defaultModels import getDefaultDict
 from cobl.settings import DEBUG
-
-
-def md5(fname):
-    hash_md5 = hashlib.md5()
-    with fname.open("rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            hash_md5.update(chunk)
-    return hash_md5.hexdigest()
 
 
 def render_template(request, template_path, extra_context={}):
@@ -29,10 +20,10 @@ def render_template(request, template_path, extra_context={}):
 def get_minifiedJs():
     if DEBUG:
         return None
-    fname = pathlib.Path(cobl.__file__).parent / 'static' / 'minified.js'
-    if not fname.exists():
-        raise ValueError('minified.js does not exist')
-    return '{0}?hash={1}'.format(fname.name, md5(fname))
+    sdir = pathlib.Path(cobl.__file__).parent / 'static'
+    for fname in sdir.glob('minified.*.js'):
+        return fname.name
+    raise ValueError('minified.js does not exist')
 
 
 minifiedJs = get_minifiedJs()
