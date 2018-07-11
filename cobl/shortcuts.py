@@ -1,4 +1,5 @@
 import pathlib
+import json
 
 from django.shortcuts import render
 
@@ -21,9 +22,12 @@ def get_minifiedJs():
     if DEBUG:
         return None
     sdir = pathlib.Path(cobl.__file__).parent / 'static'
-    for fname in sdir.glob('minified.*.js'):
-        return fname.name
-    raise ValueError('minified.js does not exist')
+    with sdir.joinpath('assets.json') as fp:
+        assets = json.load(fp)
+    minjs = sdir / 'minified.{0}.js'.format(assets['./minified.js'])
+    if minjs.exists():
+        return minjs.name
+    raise ValueError('{0} not found'.format(minjs))
 
 
 minifiedJs = get_minifiedJs()
