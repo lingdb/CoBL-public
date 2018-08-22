@@ -151,6 +151,16 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
+                  title="Number of cognate classes marked as ideophonic">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. Ideoph.
+                  </div>
+                </div>
+              </th>
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
                   title="Percentage of cognate classes that have a root form.">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
@@ -164,7 +174,7 @@
                   title="Number of cognate classes that have a root form.">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
-                    Count
+                    Count Rt form
                   </div>
                 </div>
               </th>
@@ -184,7 +194,7 @@
                   title="Number of cognate classes that have a root language.">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
-                    Count
+                    Count Rt lg
                   </div>
                 </div>
               </th>
@@ -361,6 +371,24 @@
               </td>
               <td>
                 <input type="text" class="filterNumber form-control"
+                         data-selector=".meaningCogIdeophonic"
+                         style="width: 1.7em;"><br />
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".meaningCogIdeophonic">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              <td>
+                <input type="text" class="filterNumber form-control"
+                         data-selector=".meaningCogIdeophonic"
+                         style="width: 1.7em;"><br />
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".meaningCogIdeophonic">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              <td>
+                <input type="text" class="filterNumber form-control"
                          data-selector=".meaningCogRootFormPercentage"
                          style="width: 1.7em;"><br />
                 <div class="btn btn-xs btn-default sortIntText"
@@ -423,7 +451,7 @@
                   </div>
                 {% endif %}
               </td>
-              <td>
+              <!-- <td>
                 {% if user.is_authenticated %}
                   <input type="text" class="filterNumberInput form-control"
                          data-selector=".meaningSetMember input"
@@ -441,7 +469,7 @@
                     <span class="glyphicon glyphicon-sort"></span>
                   </div>
                 {% endif %}
-              </td>
+              </td> -->
             </tr>
           </thead>
           <tbody>
@@ -586,6 +614,11 @@
                 <td class="meaningCogParallelLoanCount">
                   <span class="badge">
                     {{ meaning.object_data.cogParallelLoanCount }}
+                  </span>
+                </td>
+                <td class="meaningCogIdeophonic">
+                  <span class="badge">
+                    {{ meaning.object_data.cogIdeophonic }}
                   </span>
                 </td>
                 <td class="meaningCogRootFormPercentage">
