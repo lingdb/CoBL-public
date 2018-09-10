@@ -20,7 +20,7 @@ setup(
         'django-tables2==1.2.6',
         'gunicorn==19.6.0',
         'jsonfield==1.0.3',
-        'psycopg2==2.6.2',
+        'psycopg2>=2.6.2',
         'python-dateutil==2.6.0',
         'requests==2.12.3',
         'six==1.10.0',
