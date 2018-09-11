@@ -3749,6 +3749,10 @@ def ping(request):
     return HttpResponse('{"status": "ok"}', content_type='application/json')
 
 
+def _raise(request):
+    raise ValueError('ok')
+
+
 @user_passes_test(lambda u: u.is_staff)
 @csrf_protect
 @logExceptions

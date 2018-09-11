@@ -35,6 +35,15 @@ def configure(cfg_path):
                 'PORT': str(sqlaurl.port) if sqlaurl.port else '',
             }
 
+    if cfg.has_option(section, 'email_host'):
+        settings.EMAIL_HOST = cfg.get(section, 'email_host')
+
+    if cfg.has_option(section, 'app_email'):
+        settings.SERVER_EMAIL = cfg.get(section, 'app_email')
+
+    if cfg.has_option(section, 'admin_email'):
+        settings.ADMINS = [(cfg.get(section, 'admin_name'), cfg.get(section, 'admin_email'))]
+
     if cfg.has_option(section, 'debug'):
         settings.DEBUG = cfg.getboolean(section, 'debug')
 

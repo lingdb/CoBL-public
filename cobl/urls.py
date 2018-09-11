@@ -67,6 +67,7 @@ from cobl.views import add_language_list, \
                         view_cladecognatesearch, \
                         view_csvExport, \
                         ping, \
+                        _raise, \
                         viewProblematicRomanised
 from cobl.viewCsvImport import viewCsvImport
 from cobl import settings
@@ -400,6 +401,7 @@ urlpatterns += [
         name="logout")]
 
 urlpatterns += [url(r'^_ping', ping, name="ping")]
+urlpatterns += [url(r'^_raise', _raise, name="raise")]
 
 urlpatterns += [
     url(r'^admin/viewCsvImport', viewCsvImport, name="viewCsvImport")]
