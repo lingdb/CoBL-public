@@ -1144,6 +1144,7 @@ class Meaning(AbstractTimestamped):
             cogLoanCount = 0
             cogParallelLoanCount = 0
             cogRevised = 0
+            cogIdeophonic = 0
             # Iterating ccs to calculate counts:
             for cc in ccs:
                 if cc.root_form != '':
@@ -1154,6 +1155,8 @@ class Meaning(AbstractTimestamped):
                     cogLoanCount += 1
                 if cc.parallelLoanEvent:
                     cogParallelLoanCount += 1
+                if cc.ideophonic:
+                    cogIdeophonic += 1
                 if cc.revisedYet:
                     cogRevised += 1
             # Computing percentages:
@@ -1178,7 +1181,8 @@ class Meaning(AbstractTimestamped):
                 'cogRootLanguageCount': cogRootLanguageCount,
                 'cogRootLanguagePercentage': cogRootLanguagePercentage,
                 'cogLoanCount': cogLoanCount,
-                'cogParallelLoanCount': cogParallelLoanCount}
+                'cogParallelLoanCount': cogParallelLoanCount,
+                'cogIdeophonic': cogIdeophonic}
         return self._computeCounts
 
     @property
@@ -1224,6 +1228,10 @@ class Meaning(AbstractTimestamped):
     @property
     def cogParallelLoanCount(self):
         return self.computeCounts()['cogParallelLoanCount']
+
+    @property
+    def cogIdeophonic(self):
+        return self.computeCounts()['cogIdeophonic']
 
 
 # @reversion.register
