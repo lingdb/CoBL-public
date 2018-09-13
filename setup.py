@@ -18,7 +18,7 @@ setup(
         'django-debug-toolbar==1.6',
         'django-reversion==2.0.8',
         'django-tables2==1.2.6',
-        'gunicorn==19.6.0',
+        'gunicorn>=19.6.0',
         'jsonfield==1.0.3',
         'psycopg2>=2.6.2',
         'python-dateutil==2.6.0',
