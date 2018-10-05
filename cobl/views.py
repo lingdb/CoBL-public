@@ -234,14 +234,14 @@ def get_canonical_language(language, request=None):
                         request,
                         "There are multiple languages matching"
                         " '%s' in the database" % language)
-                raise Http404
+                language = Language.objects.get(ascii_name=Language.DEFAULT)
             except Language.DoesNotExist:
                 if request:
                     messages.info(
                         request,
                         "There is no language named or starting"
                         " with '%s' in the database" % language)
-                raise Http404
+                language = Language.objects.get(ascii_name=Language.DEFAULT)
     return language
 
 
@@ -348,7 +348,7 @@ def get_canonical_language_list(language_list=None, request=None):
                 request,
                 "There is no language list matching"
                 " '%s' in the database" % language_list)
-        raise Http404
+        language_list = LanguageList.objects.get(name=LanguageList.DEFAULT)
     return language_list
 
 
@@ -368,7 +368,7 @@ def get_canonical_meaning_list(meaning_list=None, request=None):
                 request,
                 "There is no meaning list matching"
                 " '%s' in the database" % meaning_list)
-        raise Http404
+        meaning_list = MeaningList.objects.get(name=MeaningList.DEFAULT)
     return meaning_list
 
 
