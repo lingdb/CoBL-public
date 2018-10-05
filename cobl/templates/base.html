@@ -157,6 +157,14 @@
                        <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span> .tsv cognate (current)
                      </a>
                   </li>
+                  <li>
+                    <a onclick="CopyTable();" href="#"
+                       title="Copy table content into clipboard"
+                       data-toggle="tooltip"
+                       data-placement="bottom">
+                       <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span> Copy current table
+                     </a>
+                  </li>
                   {% endif %}
                   <li>
                     <a href="{% url 'view-profile' %}" title="View user profile" data-toggle="tooltip" data-placement="bottom">

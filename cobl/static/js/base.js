@@ -11,6 +11,33 @@
     });
   });
 
+  window.CopyTable = function(){
+    var d = '';
+    var arr = [];
+    var inps;
+    $('table').find('tbody > tr:not(.hide)').each(function(){
+      arr = [];
+      $(this).find('td:not(.hide)').each(function(){
+        inps = $(this).find("input");
+        if(inps.length > 0){
+          if(inps[0].type === 'checkbox'){
+            arr.push((inps[0].checked)?'1':'0');
+          }else{
+            arr.push(inps[0].value.trim());
+          }
+        }else{
+          arr.push($(this).text().trim());
+        }
+      });
+      d += arr.join("\t") + "\n";
+    });
+    var $temp = $("<textarea>");
+    $("body").append($temp);
+    $temp.val(d).select();
+    document.execCommand("copy");
+    $temp.remove();
+  };
+
   window.CopyAcross = function(f){
     /* global $ */
     var f_id_arr = f.id.split('#');
