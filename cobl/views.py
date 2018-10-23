@@ -2167,7 +2167,11 @@ def redirect_lexeme_citation(request, lexeme_id):
 def cognate_report(request, cognate_id=0, meaning=None, code=None):
 
     if cognate_id:
-        cognate_class = CognateClass.objects.get(id=int(cognate_id))
+        try:
+            cognate_class = CognateClass.objects.get(id=int(cognate_id))
+        except CognateClass.DoesNotExist:
+            raise Http404("Cognate '%s' does not exist" % (cognate_id))
+
     # elif cognate_name:
     #     cognate_class = CognateClass.objects.get(name=cognate_name)
     else:
