@@ -132,6 +132,7 @@ class NexusExportView(TemplateView):
                 "excludeLoanword": 0,
                 "excludePllLoan": 1,
                 "includePllLoan": 0,
+                "calculateMatrix": 1,
                 "excludeMarkedMeanings": 1,
                 "excludeMarkedLanguages": 1}
             form = ChooseNexusOutputForm(defaults)
