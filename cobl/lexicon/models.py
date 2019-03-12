@@ -1791,6 +1791,7 @@ class LanguageList(models.Model):
         ll.languages.all().order_by("languagelistorder")
     """
     DEFAULT = "Current"
+    PUBLICDEFAULT = "default"
     ALL = "all"
 
     name = models.CharField(
@@ -1886,6 +1887,7 @@ class LanguageListOrder(models.Model):
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
     DEFAULT = "Jena175"
+    PUBLICDEFAULT = "default"
     ALL = "all"
 
     name = models.CharField(

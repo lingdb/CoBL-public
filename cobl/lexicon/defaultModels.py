@@ -109,7 +109,10 @@ def getDefaultWordlist(request):
     """
     @return defaultWordlist :: str
     """
-    return request.session.get('defaultWordlist', MeaningList.DEFAULT)
+    if request.user.is_authenticated:
+        return request.session.get('defaultWordlist', MeaningList.DEFAULT)
+    else:
+        return request.session.get('defaultWordlist', MeaningList.PUBLICDEFAULT)
 
 
 def getDefaultWordlistId(request):
@@ -132,11 +135,12 @@ def setDefaultWordlist(request, wordlist):
     @param wordlist :: MeaningList | str
     @return success :: bool
     """
-    if type(wordlist) == MeaningList:
-        wordlist = wordlist.name
-    if type(wordlist) == str:
-        request.session['defaultWordlist'] = wordlist
-        return True
+    if request.user.is_authenticated:
+        if type(wordlist) == MeaningList:
+            wordlist = wordlist.name
+        if type(wordlist) == str:
+            request.session['defaultWordlist'] = wordlist
+            return True
     return False
 
 
@@ -144,7 +148,10 @@ def getDefaultLanguagelist(request):
     """
     @return defaultLanguagelist :: str
     """
-    return request.session.get('defaultLanguagelist', LanguageList.DEFAULT)
+    if request.user.is_authenticated:
+        return request.session.get('defaultLanguagelist', LanguageList.DEFAULT)
+    else:
+        return request.session.get('defaultLanguagelist', LanguageList.PUBLICDEFAULT)
 
 
 def getDefaultLanguagelistId(request):
@@ -167,11 +174,12 @@ def setDefaultLanguagelist(request, languagelist):
     @param languagelist :: LanguageList | str
     @return success :: bool
     """
-    if type(languagelist) == LanguageList:
-        languagelist = languagelist.name
-    if type(languagelist) == str:
-        request.session['defaultLanguagelist'] = languagelist
-        return True
+    if request.user.is_authenticated:
+        if type(languagelist) == LanguageList:
+            languagelist = languagelist.name
+        if type(languagelist) == str:
+            request.session['defaultLanguagelist'] = languagelist
+            return True
     return False
 
 

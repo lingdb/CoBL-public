@@ -50,6 +50,7 @@
                data-floatheadtop="51px">
           <thead>
             <tr>
+              {% if user.is_authenticated %}
               <th style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
@@ -57,6 +58,7 @@
                   </div>
                 </div>
               </th>
+              {% endif %}
               {# exclude_title.html #}
               {% if user.is_authenticated and user.is_staff %}
                 <th style="width:25px !important">
@@ -221,12 +223,14 @@
               </th>
             </tr>
             <tr class="filterBar">
+              {% if user.is_authenticated %}
               <td>
                 <button type="button" class="filterBool btn btn-xs btn-default"
                         data-selector=".doubleCheck input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </td>
+              {% endif %}
               {# exclude_filter.html #}
               {% if user.is_authenticated and user.is_staff %}
                 <td>
@@ -475,6 +479,7 @@
           <tbody>
             {% for meaning in mltf.meanings %}
               <tr>
+                {% if user.is_authenticated %}
                 <td class="doubleCheck">
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field meaning.doubleCheck class="form-control" %}
@@ -482,6 +487,7 @@
                     {% form_field meaning.doubleCheck class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
+                {% endif %}
                 {# exclude_data.html #}
                 {% if user.is_authenticated and user.is_staff %}
                   <td class="exclude">

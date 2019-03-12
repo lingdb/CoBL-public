@@ -171,12 +171,12 @@
                       <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ user.username }}
                     </a>
                   </li>
-                {% endif %}
                 <li>
                   <a href={% url 'view-changes' %} data-toggle="tooltip" data-placement="bottom" title="Recent changes">
                     <span class="glyphicon glyphicon-time"></span> Changes
                   </a>
                 </li>
+                {% endif %}
                 <li>
                   <a href="#" id="viewTableFilterReset"
                      data-toggle="tooltip"
@@ -247,11 +247,13 @@
     </div>
     {# The Footer: #}
     <nav class="navbar navbar-default navbar-bottom" id="footer">
+      {% if user.is_authenticated %}
       <div class="container-fluid navbar-left">
             Language list: <strong>{{ current_language_list_name }}</strong>
             <br>
             Wordlist: <strong>{{ current_wordlist_name }}</strong>
       </div>
+      {% endif %}
       <div class="container-fluid navbar-right">
         {% block footer %}
           <ul class="nav navbar-nav">

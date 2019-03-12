@@ -8,7 +8,9 @@
     </a>
   </li>
 {% endif %}
+{% if user.is_authenticated %}
 <li><a>&nbsp;||&nbsp;</a></li>
+{% endif %}
 <li class="navbar-text">
   <i>Rfc.:</i>
 </li>
