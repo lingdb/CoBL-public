@@ -112,7 +112,7 @@ def getDefaultWordlist(request):
     if request.user.is_authenticated:
         return request.session.get('defaultWordlist', MeaningList.DEFAULT)
     else:
-        return request.session.get('defaultWordlist', MeaningList.PUBLICDEFAULT)
+        return MeaningList.PUBLICDEFAULT
 
 
 def getDefaultWordlistId(request):
@@ -151,7 +151,7 @@ def getDefaultLanguagelist(request):
     if request.user.is_authenticated:
         return request.session.get('defaultLanguagelist', LanguageList.DEFAULT)
     else:
-        return request.session.get('defaultLanguagelist', LanguageList.PUBLICDEFAULT)
+        return LanguageList.PUBLICDEFAULT
 
 
 def getDefaultLanguagelistId(request):
