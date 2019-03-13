@@ -375,8 +375,12 @@ def get_canonical_meaning_list(meaning_list=None, request=None):
 @csrf_protect
 @logExceptions
 def view_language_list(request, language_list=None):
-    current_list = get_canonical_language_list(language_list, request)
-    setDefaultLanguagelist(request, current_list.name)
+    if request.user.is_authenticated:
+        current_list = get_canonical_language_list(language_list, request)
+        setDefaultLanguagelist(request, current_list.name)
+    else:
+        current_list = LanguageList.objects.get(name=LanguageList.PUBLICDEFAULT)
+        request.session['defaultLanguagelist'] = LanguageList.PUBLICDEFAULT
     languages = current_list.languages.all().prefetch_related(
         "lexeme_set", "lexeme_set__meaning",
         "languageclade_set", "clades")
@@ -1095,19 +1099,25 @@ def delete_language(request, language):
 
 @logExceptions
 def view_wordlists(request):
-    wordlists = MeaningList.objects.all()
-    return render_template(request, "wordlists_list.html",
-                           {"wordlists": wordlists})
+    if request.user.is_authenticated:
+        wordlists = MeaningList.objects.all()
+        return render_template(request, "wordlists_list.html",
+                               {"wordlists": wordlists})
 
 
 @csrf_protect
 @logExceptions
 def view_wordlist(request, wordlist=MeaningList.DEFAULT):
     try:
-        wordlist = MeaningList.objects.get(name=wordlist)
+        if request.user.is_authenticated:
+            wordlist = MeaningList.objects.get(name=wordlist)
+        else:
+            wordlist = MeaningList.objects.get(name=MeaningList.PUBLICDEFAULT)
+            request.session['defaultWordlist'] = MeaningList.PUBLICDEFAULT
     except MeaningList.DoesNotExist:
         raise Http404("MeaningList '%s' does not exist" % wordlist)
-    setDefaultWordlist(request, wordlist.name)
+    if request.user.is_authenticated:
+            setDefaultWordlist(request, wordlist.name)
     if request.method == 'POST':
         if 'wordlist' in request.POST:
             mltf = MeaningListTableForm(request.POST)
