@@ -682,6 +682,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
         max_length=128, unique=True, validators=[suitable_for_url])
     utf8_name = models.CharField(max_length=128, unique=True)
     description = models.TextField(blank=True, null=True)
+    loc_justification = models.TextField(blank=True, null=True)
     clades = models.ManyToManyField(Clade, through="LanguageClade", blank=True)
     earliestTimeDepthBound = models.IntegerField(null=True)  # #128
     latestTimeDepthBound = models.IntegerField(null=True)  # #128
@@ -1022,7 +1023,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
                   'earliestTimeDepthBound', 'latestTimeDepthBound',
                   'progress', 'sortRankInClade', 'entryTimeframe',
                   'historical', 'fragmentary', 'notInExport', 'exampleLanguage',
-                  'latitude', 'longitude', 'nativeScriptIsRtl'])
+                  'latitude', 'longitude', 'nativeScriptIsRtl', 'loc_justification'])
         return fs | AbstractDistribution.timestampedFields(self)
 
     def deltaReport(self, **kwargs):

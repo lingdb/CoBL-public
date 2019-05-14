@@ -587,6 +587,7 @@ class EditSingleLanguageForm(LanguageListRowForm,
                              WTFormToFormgroup):
     ascii_name = StringField('URL Name', validators=[InputRequired()])
     description = TextAreaField('Description', validators=[InputRequired()])
+    loc_justification = TextAreaField('Location Justification', validators=[InputRequired()])
     notInExport = BooleanField('Not in Export', validators=[InputRequired()])
     progress = IntegerField('Progress',
                             validators=[InputRequired()])
@@ -624,6 +625,7 @@ class EditSingleLanguageForm(LanguageListRowForm,
         ('description', {'class': 'form-control'}),
         ('latitude', {'class': 'form-control', 'pattern': r'^[\d\.\-]*'}),
         ('longitude', {'class': 'form-control', 'pattern': r'^[\d\.\-]*'}),
+        ('loc_justification', {'class': 'form-control'}),
         ('iso_code', {'class': 'form-control', 'pattern': '(^$|...)'}),
         ('glottocode', {'class': 'form-control',
                         'pattern': r'(^$|[a-z]{4}\d{4})'}),
@@ -639,6 +641,7 @@ class EditSingleLanguageForm(LanguageListRowForm,
         ('level1', {'class': 'form-control', 'pattern': r'\d*'}),
         ('level2', {'class': 'form-control', 'pattern': r'\d*'}),
         ('level3', {'class': 'form-control', 'pattern': r'\d*'}),
+        ('sortRankInClade', {'class': 'form-control', 'pattern': r'\d*'}),
         ('representative', {}),
         ('distribution', {'class': 'form-control distributionSelection',
                           'data-inputdepends': 'historical',
@@ -698,7 +701,6 @@ class EditSingleLanguageForm(LanguageListRowForm,
         ('progress', {'class': 'form-control',
                       'pattern': r'^\d$',
                       'required': 'required'}),
-        ('sortRankInClade', {'class': 'form-control', 'pattern': r'\d*'}),
     ]
 
 
