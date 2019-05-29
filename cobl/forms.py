@@ -649,27 +649,27 @@ class EditSingleLanguageForm(LanguageListRowForm,
         ('normalMean', {'class': 'form-control reflectDistribution '
                                  'datetooltip numberField',
                         'data-allowed': 'N',
-                        'pattern': '^[0-9]{0,4}$',
+                        'pattern': '^[0-9\.]{0,5}$',
                         'disabled': 'disabled'}),
         ('normalStDev', {'class': 'form-control reflectDistribution '
                                   'datetooltip numberField',
                          'data-allowed': 'N',
-                         'pattern': '^[0-9]{0,4}$',
+                         'pattern': '^[0-9\.]{0,5}$',
                          'disabled': 'disabled'}),
         ('logNormalOffset', {'class': 'form-control reflectDistribution '
                                       'datetooltip numberField',
                              'data-allowed': 'O',
-                             'pattern': '^[0-9]{0,4}$',
+                             'pattern': '^[0-9\.]{0,5}$',
                              'disabled': 'disabled'}),
         ('logNormalMean', {'class': 'form-control reflectDistribution '
                                     'numberField',
                            'data-allowed': 'OL',
-                           'pattern': '^[0-9]{0,4}$',
+                           'pattern': '^[0-9\.]{0,5}$',
                            'disabled': 'disabled'}),
         ('logNormalStDev', {'class': 'form-control reflectDistribution '
                                      'numberField',
                             'data-allowed': 'OL',
-                            'pattern': '^[0-9]{0,4}$',
+                            'pattern': '^[0-9\.]{0,5}$',
                             'disabled': 'disabled'}),
         ('uniformLower', {'class': 'form-control reflectDistribution '
                                    'numberField',

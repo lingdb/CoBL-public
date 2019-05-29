@@ -1023,7 +1023,8 @@ class Language(AbstractTimestamped, AbstractDistribution):
                   'earliestTimeDepthBound', 'latestTimeDepthBound',
                   'progress', 'sortRankInClade', 'entryTimeframe',
                   'historical', 'fragmentary', 'notInExport', 'exampleLanguage',
-                  'latitude', 'longitude', 'nativeScriptIsRtl', 'loc_justification'])
+                  'latitude', 'longitude', 'nativeScriptIsRtl', 'loc_justification',
+                  'description'])
         return fs | AbstractDistribution.timestampedFields(self)
 
     def deltaReport(self, **kwargs):
