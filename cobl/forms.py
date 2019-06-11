@@ -499,6 +499,10 @@ class LanguageListRowForm(AbstractTimestampedForm):
                               validators=[InputRequired()])
     rfcWebPath2 = StringField('This Lg lex rfc web path 2',
                               validators=[InputRequired()])
+    variety = StringField('Language variety info',
+                              validators=[InputRequired()])
+    loc_justification = StringField('Location justification',
+                              validators=[InputRequired()])
     exampleLanguage = BooleanField(
         'Example Language?', validators=[InputRequired()])
 

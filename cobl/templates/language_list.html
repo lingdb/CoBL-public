@@ -190,6 +190,15 @@
               <th></th>
               {# name_title.html #}
               <th>Display name</th>
+              {% if user.is_staff %}
+                <th>
+                  <div class="vertical-text">
+                    <div class="vertical-text__inner">
+                      Variety
+                    </div>
+                  </div>
+                </th>
+              {% endif %}
               <th></th>{# title for edit #}
               {# iso_title.html #}
               <th>ISO</th>
@@ -211,8 +220,15 @@
                   </div>
                 </div>
               </th>
-              {# author_title #}
-              <th>Author(s)</th>
+              {% if user.is_staff %}
+                <th>
+                  <div class="vertical-text">
+                    <div class="vertical-text__inner">
+                      Location justification
+                    </div>
+                  </div>
+                </th>
+              {% endif %}
               {# reference_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -263,6 +279,8 @@
                   </div>
                 </th>
               {% endif %}
+              {# author_title #}
+              <th>Author(s)</th>
             </tr>
             <tr class="filterBar">
               {# branchcolor_filter.html #}
@@ -374,6 +392,13 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
+              {% if user.is_staff %}
+                <td>
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageVariety input">
+                </td>
+              {% endif %}
               <td></td>{# filter for edit #}
               {# iso_filter.html #}
               <td>
@@ -396,16 +421,13 @@
               <td></td>
               {# longitude_filter.html #}
               <td></td>
-              {# author_filter.html #}
-              <td>
-                <input type="text"
-                       class="filterText form-control narrow"
-                       data-selector=".languageAuthor">
-                <div class="btn btn-xs btn-default sortText"
-                     data-selector=".languageAuthor">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </td>
+              {% if user.is_staff %}
+                <td>
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageLocJusticifation input">
+                </td>
+              {% endif %}
               {# reference_filter.html #}
               <td>
                 <button type="button"
@@ -446,6 +468,16 @@
                          data-selector=".languageRfcWebPath1 input">
                 </td>
               {% endif %}
+              {# author_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterText form-control narrow"
+                       data-selector=".languageAuthor">
+                <div class="btn btn-xs btn-default sortText"
+                     data-selector=".languageAuthor">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
             </tr>
           </thead>
           <tbody>
@@ -598,6 +630,11 @@
                   {% endif %}
                   {% form_field language.utf8_name class="language_name form-control" required="required" style="width: 13em;" %}
                 </td>
+                {% if user.is_staff %}
+                  <td class="languageVariety">
+                    {% form_field language.variety class="form-control" data-longinput="4" %}
+                  </td>
+                {% endif %}
                 {# edit_data.html #}
                 <td class="nowrap">
                   <a href="{% url 'language-overview' language.object_data.ascii_name %}"
@@ -670,10 +707,11 @@
                     {{ language.object_data.longitude|floatformat:-2 }}
                   {% endif %}
                 </td>
-                {# author_data #}
-                <td class="languageAuthor">
-                  {{ language.object_data.author }}
-                </td>
+                {% if user.is_staff %}
+                  <td class="languageLocJusticifation">
+                    {% form_field language.loc_justification class="form-control" data-longinput="4" %}
+                  </td>
+                {% endif %}
                 {# reference_data.html #}
                 <td class="languageRepresentative">
                   <div class="centralised_checkbox">
@@ -714,6 +752,10 @@
                     {% form_field language.rfcWebPath1 class="form-control" data-longinput="29" %}
                   </td>
                 {% endif %}
+                {# author_data #}
+                <td class="languageAuthor">
+                  {{ language.object_data.author }}
+                </td>
               </tr>
             {% endfor %}
           </tbody>
