@@ -689,7 +689,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
     progress = models.IntegerField(default=0, choices=LANGUAGE_PROGRESS)
     # Former JSON fields:
     glottocode = models.CharField(max_length=8, null=True)
-    variety = models.CharField(max_length=64, null=True)
+    variety = models.TextField(blank=True, null=True)
     soundcompcode = models.CharField(max_length=64, null=True)
     level0 = models.IntegerField(default=0, null=True)
     level1 = models.IntegerField(default=0, null=True)
