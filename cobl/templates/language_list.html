@@ -190,7 +190,7 @@
               <th></th>
               {# name_title.html #}
               <th>Display name</th>
-              {% if user.is_staff %}
+              {% if user.is_authenticated %}
                 <th>
                   <div class="vertical-text">
                     <div class="vertical-text__inner">
@@ -199,7 +199,7 @@
                   </div>
                 </th>
               {% endif %}
-              {% if user.is_staff %}
+              {% if user.is_authenticated %}
                 <th>
                   <div class="vertical-text">
                     <div class="vertical-text__inner">
@@ -229,11 +229,11 @@
                   </div>
                 </div>
               </th>
-              {% if user.is_staff %}
+              {% if user.is_authenticated %}
                 <th>
                   <div class="vertical-text">
                     <div class="vertical-text__inner">
-                      Lon/Lat note
+                      Justification
                     </div>
                   </div>
                 </th>
@@ -401,14 +401,14 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
-              {% if user.is_staff %}
+              {% if user.is_authenticated %}
                 <td>
                   <input type="text"
                          class="filterInput form-control"
                          data-selector=".languageVariety input">
                 </td>
               {% endif %}
-              {% if user.is_staff %}
+              {% if user.is_authenticated %}
                 <td>
                   <input type="text"
                          class="filterInput form-control"
@@ -437,7 +437,7 @@
               <td></td>
               {# longitude_filter.html #}
               <td></td>
-              {% if user.is_staff %}
+              {% if user.is_authenticated %}
                 <td>
                   <input type="text"
                          class="filterInput form-control"
@@ -646,12 +646,12 @@
                   {% endif %}
                   {% form_field language.utf8_name class="language_name form-control" required="required" style="width: 13em;" %}
                 </td>
-                {% if user.is_staff %}
+                {% if user.is_authenticated %}
                   <td class="languageVariety">
                     {% form_field language.variety class="form-control" data-longinput="4" %}
                   </td>
                 {% endif %}
-                {% if user.is_staff %}
+                {% if user.is_authenticated %}
                   <td class="languageDescription">
                     {% form_field language.form.description class="form-control" data-longinput="4" %}
                   </td>
@@ -728,7 +728,7 @@
                     {{ language.object_data.longitude|floatformat:-2 }}
                   {% endif %}
                 </td>
-                {% if user.is_staff %}
+                {% if user.is_authenticated %}
                   <td class="languageLocJusticifation">
                     {% form_field language.loc_justification class="form-control" data-longinput="4" %}
                   </td>
