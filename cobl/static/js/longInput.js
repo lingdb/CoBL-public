@@ -33,7 +33,9 @@
           inputType: 'textarea',
           value: $this.val(),
           callback: function(result){
+            if(result){
               $this.val(result);
+            }
           }
         });
       });
