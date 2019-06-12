@@ -681,7 +681,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
     ascii_name = models.CharField(
         max_length=128, unique=True, validators=[suitable_for_url])
     utf8_name = models.CharField(max_length=128, unique=True)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True)
     loc_justification = models.TextField(blank=True, null=True)
     clades = models.ManyToManyField(Clade, through="LanguageClade", blank=True)
     earliestTimeDepthBound = models.IntegerField(null=True)  # #128

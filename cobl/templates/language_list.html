@@ -199,6 +199,15 @@
                   </div>
                 </th>
               {% endif %}
+              {% if user.is_staff %}
+                <th>
+                  <div class="vertical-text">
+                    <div class="vertical-text__inner">
+                      Description
+                    </div>
+                  </div>
+                </th>
+              {% endif %}
               <th></th>{# title for edit #}
               {# iso_title.html #}
               <th>ISO</th>
@@ -397,6 +406,13 @@
                   <input type="text"
                          class="filterInput form-control"
                          data-selector=".languageVariety input">
+                </td>
+              {% endif %}
+              {% if user.is_staff %}
+                <td>
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".languageDescription input">
                 </td>
               {% endif %}
               <td></td>{# filter for edit #}
@@ -633,6 +649,11 @@
                 {% if user.is_staff %}
                   <td class="languageVariety">
                     {% form_field language.variety class="form-control" data-longinput="4" %}
+                  </td>
+                {% endif %}
+                {% if user.is_staff %}
+                  <td class="languageDescription">
+                    {% form_field language.form.description class="form-control" data-longinput="4" %}
                   </td>
                 {% endif %}
                 {# edit_data.html #}

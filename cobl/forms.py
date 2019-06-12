@@ -503,6 +503,8 @@ class LanguageListRowForm(AbstractTimestampedForm):
                               validators=[InputRequired()])
     loc_justification = StringField('Location justification',
                               validators=[InputRequired()])
+    description = StringField('Language description',
+                              validators=[InputRequired()])
     exampleLanguage = BooleanField(
         'Example Language?', validators=[InputRequired()])
 
