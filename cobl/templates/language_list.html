@@ -717,7 +717,7 @@
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.latitude class="form-control" style="max-width: 5em;" %}
                   {% else %}
-                    {{ language.object_data.latitude|floatformat:-2 }}
+                    {{ language.object_data.latitude|floatformat:-3 }}
                   {% endif %}
                 </td>
                 {# longitude_data.html #}
@@ -725,7 +725,7 @@
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.longitude class="form-control" style="max-width: 5em;" %}
                   {% else %}
-                    {{ language.object_data.longitude|floatformat:-2 }}
+                    {{ language.object_data.longitude|floatformat:-3 }}
                   {% endif %}
                 </td>
                 {% if user.is_authenticated %}
