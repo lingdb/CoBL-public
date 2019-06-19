@@ -128,11 +128,13 @@
               <ul class="dropdown-menu">
                 {% if user.is_authenticated %}
                   {% if user.is_staff %}
+                  {% if user.is_superuser %}
                   <li>
                     <a href="/admin/" title="Go to the admin site" data-toggle="tooltip" data-placement="bottom">
                       <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Admin
                     </a>
                   </li>
+                  {% endif %}
                   <li>
                     <a href="/csvExport/?full"
                        title="Download .csv files exported from database."

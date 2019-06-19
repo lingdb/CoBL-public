@@ -6,6 +6,7 @@
 {% block title %}{{ title }} | {{ project_short_name }} site admin' {% endblock %}
 
 {% block branding %}
+{% if user.is_superuser %}
 <h1 id="site-name">{{ project_short_name }} administration</h1> 
 <table>
 <tr>
@@ -24,6 +25,7 @@
   </td>
 </tr>
 </table>
+{% endif %}
 {% endblock %}
 
 {% block nav-global %}
