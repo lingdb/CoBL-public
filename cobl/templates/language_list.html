@@ -646,12 +646,12 @@
                   {% endif %}
                   {% form_field language.utf8_name class="language_name form-control" required="required" style="width: 13em;" %}
                 </td>
-                {% if user.is_authenticated %}
+                {% if user.is_authenticated and user.is_superuser %}
                   <td class="languageVariety">
                     {% form_field language.variety class="form-control" data-longinput="4" %}
                   </td>
                 {% endif %}
-                {% if user.is_authenticated %}
+                {% if user.is_authenticated and user.is_superuser %}
                   <td class="languageDescription">
                     {% form_field language.form.description class="form-control" data-longinput="4" %}
                   </td>
@@ -696,7 +696,7 @@
                       {{ language.object_data.iso_code }}
                     </a>
                     {% form_field language.iso_code class="hide" %}
-                  {% elif user.is_authenticated and user.is_staff %}
+                  {% elif user.is_authenticated and user.is_superuser %}
                     {% form_field language.iso_code maxlength="3" class="form-control" style="width: 2.5em;margin-left:-5px" %}
                   {% endif %}
                 </td>
@@ -708,13 +708,13 @@
                       {{ language.object_data.glottocode }}
                     </a>
                     {% form_field language.glottocode class="hide" %}
-                  {% elif user.is_authenticated and user.is_staff %}
+                  {% elif user.is_authenticated and user.is_superuser %}
                     {% form_field language.glottocode maxlength="8" size="8" class="form-control" %}
                   {% endif %}
                 </td>
                 {# latitude_data.html #}
                 <td>
-                  {% if user.is_authenticated and user.is_staff %}
+                  {% if user.is_authenticated and user.is_superuser %}
                     {% form_field language.latitude class="form-control" style="max-width: 5em;" %}
                   {% else %}
                     {{ language.object_data.latitude|floatformat:-3 }}
@@ -722,13 +722,13 @@
                 </td>
                 {# longitude_data.html #}
                 <td>
-                  {% if user.is_authenticated and user.is_staff %}
+                  {% if user.is_authenticated and user.is_superuser %}
                     {% form_field language.longitude class="form-control" style="max-width: 5em;" %}
                   {% else %}
                     {{ language.object_data.longitude|floatformat:-3 }}
                   {% endif %}
                 </td>
-                {% if user.is_authenticated %}
+                {% if user.is_authenticated and user.is_superuser %}
                   <td class="languageLocJusticifation">
                     {% form_field language.loc_justification class="form-control" data-longinput="4" %}
                   </td>
