@@ -489,8 +489,8 @@ class LanguageListRowForm(AbstractTimestampedForm):
     utf8_name = StringField('Display name', validators=[InputRequired()])
     iso_code = StringField('ISO code', validators=[InputRequired()])
     glottocode = StringField('Glottocode', validators=[InputRequired()])
-    latitude = DecimalField('Latitude', validators=[InputRequired()])
-    longitude = DecimalField('Longitude', validators=[InputRequired()])
+    latitude = DecimalField('Latitude', places=3, validators=[InputRequired()])
+    longitude = DecimalField('Longitude', places=3, validators=[InputRequired()])
     representative = BooleanField('Representative',
                                   validators=[InputRequired()])
     foss_stat = BooleanField('Fossilised Status', validators=[InputRequired()])
@@ -613,8 +613,8 @@ class EditSingleLanguageForm(LanguageListRowForm,
                                  validators=[InputRequired()])
     originalAsciiName = StringField("Original database name",
                                     validators=[InputRequired()])
-    latitude = DecimalField('Latitude', validators=[InputRequired()])
-    longitude = DecimalField('Longitude', validators=[InputRequired()])
+    latitude = DecimalField('Latitude', places=3, validators=[InputRequired()])
+    longitude = DecimalField('Longitude', places=3, validators=[InputRequired()])
     earliestTimeDepthBound = IntegerField('Earliest Time-Depth Bound',
                                           validators=[InputRequired()])
     latestTimeDepthBound = IntegerField('Latest Time-Depth Bound',
