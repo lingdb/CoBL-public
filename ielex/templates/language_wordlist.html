@@ -91,7 +91,7 @@
         {% endif %}
         {% include "snippets/prev_next_language.html" %}
       </div>
-        <table class="table table-condensed viewTableFilter"
+        <table class="table table-condensed viewTableFilter markNewMeaning"
                id="viewLanguageMeanings"
                {% if user.is_authenticated %}
                   data-floatheadtop="51"
@@ -100,11 +100,22 @@
                {% endif %}>
           <thead>
             <tr>
+              {# delete_lexeme_title.html #}
+              {% if user.is_authenticated and user.is_superuser %}
+              <th></th>
+              {% endif %}
               {# id_title.html #}
               <th class="hide"></th>
               {# FIXME warning label for Dbl check ones #}
               {# warnings_title.html #}
               <th></th>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    <span style="color:#aaa;font-size:80%">Elic. Ix.</span>
+                  </div>
+                </div>
+              </th>
               {# meaning_title.html #}
               <th colspan="2">Meaning</th>
               {# romanised_title.html #}
@@ -113,11 +124,12 @@
               <th colspan="3"></th>
               {# nativeScript_title.html #}
               <th>Native Script</th>
+              <th style="width:6px"></th>
               {# notswadesh_title.html #}
               <th>
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
-                    Not Swh
+                    Not Target
                   </div>
                 </div>
               </th>
@@ -198,10 +210,25 @@
               </th>
             </tr>
             <tr class="filterBar">
+              {# delete_lexeme_filter.html#}
+              {% if user.is_authenticated and user.is_superuser %}
+              <td></td>
+              {% endif %}
               {# id_filter.html #}
               <td class="hide"></td>
               {# warnings_filter.html #}
               <td></td>
+              {# Elic Ix #}
+              <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".lexemeIxElicitation"
+                       style="width: 2em;">
+                  <div class="btn btn-xs btn-default sortIntText"
+                       data-selector=".lexemeIxElicitation">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+              </td>
               {# meaning_filter.html #}
               <td colspan="2">
                 <input type="text" class="filterText form-control narrow"
@@ -253,6 +280,7 @@
                   </div>
                 {% endif %}
               </td>
+              <td></td>
               {# notswadesh_filter.html #}
               <td>
                 <button type="button" class="filterBool btn btn-xs btn-danger"
@@ -394,7 +422,17 @@
                 {% endif %}
               </td>
               {# weblookup_filter.html #}
-              <td></td>
+              <td>
+                {% if user.is_authenticated %}
+                  <button class="rightcheckarrow btn btn-xs"
+                          type="button"
+                          title="Copy all Romanised to Dict ID 1"
+                          id="src2root#all.romanised#all.rfcWebLookup1"
+                          onclick="confirm('Are you really sure to copy all visible “Romanised” data into “Dict ID 1”?') && CopyAcross(this)">
+                    <span class="glyphicon glyphicon-fast-forward"></span>
+                  </button>
+                {% endif %}
+              </td>
               <td>
                 {% if user.is_authenticated %}
                   <input type="text"
@@ -431,8 +469,19 @@
           </thead>
           <tbody>
             {% for lexeme in lex_ed_form.lexemes %}
-              <tr class="content_row"
-                  data-meaningid="{{ lexeme.data.meaning_id }}">
+              <tr class="content_row" data-meaningid="{{ lexeme.data.meaning_id }}">
+                {# delete_lexeme_data.html #}
+                {% if user.is_authenticated and user.is_superuser %}
+                <td>
+                  <!-- <a href="{% url 'view-lexeme' lexeme.id.data %}" title="View detailed information on lexeme">
+                    <span class="glyphicon glyphicon-remove-sign"></span>
+                  </a> -->
+                  <div class="btn btn-xs btn-danger" title="" 
+                    data-toggle="tooltip" data-placement="bottom" data-original-title="Delete lexeme" onclick="return confirm('Are you really sure to delete lexeme {{ lexeme.data.meaning }} for language {{ language.utf8_name }}? Please think twice before you press the OK button!!')">
+                    <a style="text-decoration:none;color:#FFFFFF;" href="{% url 'view-lexeme' lexeme.id.data %}delete/"><span class="glyphicon glyphicon-remove-sign"></span></a>
+                  </div>
+                </td>
+                {% endif %}
                 {# id_data.html #}
                 <td class="hide">
                   {{ lexeme.id }}
@@ -468,6 +517,9 @@
                     eg
                   </span>
                   {% endif %}
+                </td>
+                <td class="lexemeIxElicitation" align="right">
+                  <span style="color:#aaa;font-size:60%;">{{ lexeme.object_data.meaning.ixElicitation }}</span>
                 </td>
                 <td class="lexemeMeaning">
                   {% if lexeme.object_data.language.rfcWebPath1 and lexeme.object_data.rfcWebLookup1 %}
@@ -528,11 +580,25 @@
                   {% endif %}
                 </td>
                 {# nativeScript_data.html #}
+                {% if language.nativeScriptIsRtl %}
+                <td class="lexemeNativeScript" dir="rtl">
+                {% else %}
                 <td class="lexemeNativeScript">
+                {% endif %}
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.nativeScript id="nativeScript" class="form-control" %}
+                    {% if language.nativeScriptIsRtl %}
+                      {% form_field lexeme.nativeScript id="nativeScript" class="form-control" dir="rtl"%}
+                    {% else %}
+                      {% form_field lexeme.nativeScript id="nativeScript" class="form-control" %}
+                    {% endif %}
                   {% elif lexeme.object_data.nativeScript %}
-                    {{ lexeme.object_data.nativeScript }}
+                      {{ lexeme.object_data.nativeScript }}
+                  {% endif %}
+                </td>
+                <td>
+                  {% if lexeme.object_data.notTargetCountPerMeaning %}
+                    <span class="glyphicon glyphicon-plus-sign pull-right" style="margin-top:4px"
+                          title="The meaning '{{lexeme.data.meaning}}' has {{lexeme.object_data.notTargetCountPerMeaning}} further not target lexeme(s)."></span>
                   {% endif %}
                 </td>
                 {# notswadesh_data.html #}
@@ -673,7 +739,7 @@
                 </td>
                 <td class="lexemeRfcWebLookup1">
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.rfcWebLookup1 class="form-control" %}
+                    {% form_field lexeme.rfcWebLookup1 id="rfcWebLookup1" class="form-control" %}
                   {% elif lexeme.rfcWebLookup1.data %}
                     {{ lexeme.rfcWebLookup1.data }}
                   {% endif %}

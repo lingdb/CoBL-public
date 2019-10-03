@@ -26,7 +26,8 @@ def viewCsvImport(request):
     report = []
     if request.method == 'POST' and 'CsvImportForm' in request.POST:
         importMethod = request.POST['tableType']
-        fileDicts = list(dsv.reader(request.FILES['csvFile'], dicts=True))
+        fileDicts = list(dsv.reader(request.FILES['csvFile'].read().decode('utf8').splitlines(),
+        dicts=True))
         handlerFunctions = {'ms*l': handleMeaningsLanguageImport}
         if importMethod in handlerFunctions:
             report = handlerFunctions[importMethod](fileDicts, request)

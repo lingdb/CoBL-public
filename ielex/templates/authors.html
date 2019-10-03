@@ -56,12 +56,17 @@
         {% endif %}
       </div>
           <table class="table table-condensed viewTableFilter"
-                 data-floatheadtop="51">
+            {% if user.is_authenticated and user.is_staff %}
+                 data-floatheadtop="51"
+            {% else %}
+                 data-floatheadtop="2"
+            {% endif %}
+          >
             <thead>
               <tr>
                 <th>Avatar</th>
                 <th>Initials</th>
-                <th>{# authorLink #}</th>
+                <th>{# authorLink (numOfLgs) #}</th>
                 <th>Surname</th>
                 <th>First names</th>
                 <th>Email</th>
@@ -94,9 +99,17 @@
                   </td>
                   <td class="authorLink">
                     {% if author.object_data.initials %}
-                    <a href="{% url 'viewAuthor' author.object_data.initials %}">
-                      <span class="glyphicon glyphicon-user"></span>
-                    </a>
+                      {% if author.object_data.nolgs %}
+                        <span title="works on {{author.object_data.nolgs}}">
+                        <a href="{% url 'viewAuthor' author.object_data.initials %}">
+                          <span class="glyphicon glyphicon-user"></span>
+                        </a> ({{ author.object_data.nol }})
+                        </span>
+                      {% else %}
+                        <a href="{% url 'viewAuthor' author.object_data.initials %}">
+                          <span class="glyphicon glyphicon-user"></span>
+                        </a>
+                      {% endif %}
                     {% endif %}
                   </td>
                   <td class="surname">

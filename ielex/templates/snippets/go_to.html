@@ -8,12 +8,13 @@
     </a>
   </li>
 {% endif %}
+<li><a>&nbsp;||&nbsp;</a></li>
 <li class="navbar-text">
-  Rfc.:
+  <i>Rfc.:</i>
 </li>
 <li>
   <a href="/clades/"
-     title="View list of clades"
+     title="&nbsp;&nbsp;View&nbsp;&nbsp; Clades&nbsp;Rfc"
      data-toggle="tooltip"
      data-placement="bottom">
     <span class="glyphicon glyphicon-tree-conifer"></span>
@@ -21,7 +22,7 @@
 </li>
 <li>
   <a href="/sndComp/"
-     title="View list of SndComp language sets"
+     title="&nbsp;&nbsp;View&nbsp;&nbsp; SndComp Lgs&nbsp;Sets"
      data-toggle="tooltip"
      data-placement="bottom">
     <span class="glyphicon glyphicon-headphones"></span>
@@ -29,17 +30,26 @@
 </li>
 <li>
   <a href="/cladecognatesearch/"
-     title="Search for cognate sets by clade membership."
+     title="Search for Cognate Sets by Clade&nbsp;Membership"
      data-toggle="tooltip"
      data-placement="bottom"
      data-container="body">
     <span class="glyphicon glyphicon-search"></span>
   </a>
 </li>
+<li><a>&nbsp;&nbsp;|&nbsp;&nbsp;</a></li>
+<li>
+  <a href={% url 'view-language-list' current_language_list_name %}
+     title="&nbsp;&nbsp;View&nbsp;&nbsp; Lgs&nbsp;Rfc: Overview"
+     data-toggle="tooltip"
+     data-placement="bottom">
+    Languages
+  </a>
+</li>
 {% if user.is_authenticated %}
   <li>
     <a href={% url 'view-language-progress' current_language_list_name %}
-       title="View database progress"
+       title="&nbsp;&nbsp;View&nbsp;&nbsp; Lgs&nbsp;Rfc: Stats"
        data-toggle="tooltip"
        data-placement="bottom">
       <span class="glyphicon glyphicon-scale"></span>
@@ -47,24 +57,17 @@
   </li>
   <li>
     <a href={% url 'view-language-distributions' current_language_list_name %}
-       title="View language distributions"
+       title="&nbsp;&nbsp;View&nbsp;&nbsp; Lgs&nbsp;Rfc: Dating"
        data-toggle="tooltip"
        data-placement="bottom">
       <span class="glyphicon glyphicon-stats"></span>
     </a>
   </li>
 {% endif %}
-<li>
-  <a href={% url 'view-language-list' current_language_list_name %}
-     title="View list of languages"
-     data-toggle="tooltip"
-     data-placement="bottom">
-    Languages
-  </a>
-</li>
+<li><a>&nbsp;&nbsp;|&nbsp;&nbsp;</a></li>
 <li>
   <a href={% url 'view-wordlist' current_wordlist_name %}
-     title="View list of meanings"
+     title="&nbsp;&nbsp;View&nbsp;&nbsp; Mgs&nbsp;Rfc: Overview"
      data-toggle="tooltip"
      data-placement="bottom">
     Meanings
@@ -75,12 +78,14 @@
     <a href={% url 'view-domains' %}>View domains</a>
   </li>
 {% endif %}
+<li><a>&nbsp;&nbsp;|&nbsp;&nbsp;</a></li>
 <li>
   <a href={% url 'view-sources' %}
-     title="View list of sources"
+     title="&nbsp;&nbsp;View&nbsp;&nbsp; Sources"
      data-toggle="tooltip"
      data-placement="bottom">
     Sources
   </a>
 </li>
+<li><a>&nbsp;&nbsp;|&nbsp;&nbsp;</a></li>
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

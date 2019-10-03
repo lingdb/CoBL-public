@@ -4,7 +4,7 @@
 {% load wtforms %}
 
 {% block title %}
-  Language list: {{ current_language_list_name }}
+  Lgs Rfc: Stats [{{ current_language_list_name }}]
 {% endblock %}
 
 {% block top %}
@@ -95,9 +95,9 @@
             <a href="{% url 'view-language-progress' current_list.name %}" class="btn btn-default"> undo</a>
             <input type="submit" value="Save" name="progress_form" class="btn btn-danger">
           </div>
-          <h1 class="inline">
-            Language list: {{ current_language_list_name }}
-          </h1>
+          <h2 class="inline">
+            Languages Reference: Statistics
+          </h2>
           {% endif %}
           {% include "snippets/cladeFilter.html" %}
         </div>{# .fixedContainer #}
@@ -125,7 +125,8 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Clade level 0 abbreviation">
+                  title="Clade level 0 abbreviation"
+                  style="width:5em">
                 Cl 0 abbr.
               </th>
               {% if user.is_staff %}
@@ -138,7 +139,8 @@
                 <th data-toggle="tooltip"
                     data-placement="bottom"
                     data-container="body"
-                    title="Clade level 1 abbreviation">
+                    title="Clade level 1 abbreviation"
+                    style="width:5em">
                   Cl 1 abbr.
                 </th>
                 <th data-toggle="tooltip"
@@ -150,7 +152,8 @@
                 <th data-toggle="tooltip"
                     data-placement="bottom"
                     data-container="body"
-                    title="Clade level 2 abbreviation">
+                    title="Clade level 2 abbreviation"
+                    style="width:5em">
                   Cl 2 abbr.
                 </th>
                 <th data-toggle="tooltip"
@@ -164,7 +167,8 @@
                     data-placement="bottom"
                     data-container="body"
                     title="Clade level 3 abbreviation"
-                    class="hide">
+                    class="hide"
+                    style="width:5em">
                   Cl 3 abbr.
                 </th>
                 {# sortRankInClade_title.html #}
@@ -180,15 +184,23 @@
                 </th>
               {% endif %}
               {# historical_title.html #}
-              <th>
+              <th style="width:35px">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Historical
                   </div>
                 </div>
               </th>
+              {# fragmentary_title.html #}
+              <th style="width:25px !important">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Fragmentary
+                  </div>
+                </div>
+              </th>
               {# notInExport_title.html #}
-              <th>
+              <th style="width:35px">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Not in Exp.
@@ -202,7 +214,7 @@
               {# author_title.html #}
               <th>Author</th>
               {# entryTimeframe_title.html #}
-              {% if user.is_authenticated and user.is_staff %}
+              <!-- {% if user.is_authenticated and user.is_staff %}
               <th>
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
@@ -214,7 +226,7 @@
               {# reviewer_title.html #}
               <th>
                 Reviewer
-              </th>
+              </th> -->
               {# progress_title.html #}
               <th colspan="2">
                 Progress
@@ -227,6 +239,17 @@
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Meanings{# Number of meanings per language #}
+                  </div>
+                </div>
+              </th>
+              {# orphans_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="The number of meanings and the meanings as tooltip for which that language does have one or more lexemes, but ALL of those lexemes are marked as 'Not Swadesh'.">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Orphan Mgs
                   </div>
                 </div>
               </th>
@@ -274,7 +297,117 @@
                   </div>
                 </div>
               </th>
-              {# unassigned_title.html #}
+              {# blank_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of target lexemes having no 'romanised' forms">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Blank
+                  </div>
+                </div>
+              </th>
+              {# noPhoneMic_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of target lexemes having no 'PhoneMic' forms">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    No PhoneMic
+                  </div>
+                </div>
+              </th>
+              {# noPhoneTic_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of target lexemes having no 'PhoneTic' forms">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    No PhoneTic
+                  </div>
+                </div>
+              </th>
+              {# DicLink_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Percentage of target lexemes having a dictionaty link">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    % Dic Links
+                  </div>
+                </div>
+              </th>
+              {# HaveCit_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Percentage of target lexemes having at least one citation">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    % Cited
+                  </div>
+                </div>
+              </th>
+              {# cogLoan_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of cognate classes marked as loanword per language">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. Loan/Lg
+                  </div>
+                </div>
+              </th>
+              {# cogLoanPll_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of cognate classes marked as parallel loan event per language">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. Pll/Lg
+                  </div>
+                </div>
+              </th>
+              {# cogIdeophonic_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of cognate classes marked as being ideophonic">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. Ideoph/Lg
+                  </div>
+                </div>
+              </th>
+              {# cogPllDerv_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of cognate classes marked as being a parallel derivation">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. PllDrv/Lg
+                  </div>
+                </div>
+              </th>
+              {# cogDub_title.html #}
+              <th data-toggle="tooltip"
+                  data-placement="bottom"
+                  data-container="body"
+                  title="Number of cognate classes marked as being a dubious set">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Cog. Dub/Lg
+                  </div>
+                </div>
+              </th>
+             {# unassigned_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
@@ -317,12 +450,12 @@
                   <input type="text"
                          class="filterNumberInput form-control"
                          data-selector=".languageLevel0 input"
-                         style="width: 1.5em;">
+                         style="width: 1.7em;">
                 {% else %}
                   <input type="text"
                          class="filterNumber form-control"
                          data-selector=".languageLevel0"
-                         style="width: 1.5em;">
+                         style="width: 1.7em;">
                 {% endif %}
               </td>
               <td>
@@ -336,7 +469,7 @@
                   <input type="text"
                          class="filterNumberInput form-control"
                          data-selector=".languageLevel1 input"
-                         style="width: 1.5em;">
+                         style="width: 1.7em;">
                 </td>
                 <td>
                   <input type="text"
@@ -348,7 +481,7 @@
                   <input type="text"
                          class="filterNumberInput form-control"
                          data-selector=".languageLevel2 input"
-                         style="width: 1.5em;">
+                         style="width: 1.7em;">
                 </td>
                 <td>
                   <input type="text"
@@ -360,7 +493,7 @@
                     <input type="text"
                            class="filterNumberInput form-control"
                            data-selector=".languageLevel3 input"
-                           style="width: 1.5em;">
+                           style="width: 1.7em;">
                 </td>
                 <td class="hide">
                   <input type="text"
@@ -373,7 +506,7 @@
                   <input type="text"
                          class="filterInput form-control"
                          data-selector=".sortRankInClade input"
-                         style="width: 1.5em;">
+                         style="width: 1.7em;">
                 </td>
               {% endif %}
               {# historical_filter.html #}
@@ -381,6 +514,14 @@
                 <button type="button"
                         class="filterBool btn btn-xs btn-default"
                         data-selector=".languageHistorical input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# fragmentary_filter.html #}
+              <td>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".languageFragmentary input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </td>
@@ -409,21 +550,21 @@
                   <input type="text"
                          class="filterInput form-control"
                          data-selector=".languageAuthor input"
-                         style="width: 100%;">
+                         style="width:8em;">
                 {% else %}
                   <input type="text"
                          class="filterText form-control"
                          data-selector=".languageAuthor"
-                         style="width: 100%;">
+                         style="width:8em%;">
                 {% endif %}
               </td>
-              {# entryTimeframe_filter.html #}
+              <!-- {# entryTimeframe_filter.html #}
               {% if user.is_authenticated and user.is_staff %}
               <td>
                 <input type="text"
                        class="filterInput form-control"
                        data-selector=".entryTimeframe input"
-                       style="max-width: 5em;">
+                       style="width:5em;">
               </td>
               {% endif %}
               {# reviewer_filter.html #}
@@ -439,14 +580,14 @@
                          data-selector=".languageReviewer"
                          style="width: 100%;">
                 {% endif %}
-              </td>
+              </td> -->
               {# progress_filter.html #}
               <td class="nowrap"
                   colspan="2">
                 <input type="text"
                        class="filterInput form-control"
                        data-selector=".progressData input"
-                       style="width: 1.5em;">
+                       style="width: 1.7em;"><br />
                 <div class="btn btn-xs btn-default sortInput"
                      data-selector=".progressData input">
                   <span class="glyphicon glyphicon-sort"></span>
@@ -454,13 +595,32 @@
               </td>
               {# mgs_filter.html #}
               <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageMgsCount"
+                       style="width: 1.7em;"><br />
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".languageMgsCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
+              {# orphans_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageOrphansCount"
+                       style="width: 1.7em;"><br />
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageOrphansCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               {# entd_filter.html #}
               <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageEntdCount"
+                       style="width: 1.7em;"><br />
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".languageEntdCount">
                   <span class="glyphicon glyphicon-sort"></span>
@@ -468,6 +628,10 @@
               </td>
               {# lex_filter.html #}
               <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageLexCount"
+                       style="width: 1.7em;"><br />
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".languageLexCount">
                   <span class="glyphicon glyphicon-sort"></span>
@@ -475,6 +639,10 @@
               </td>
               {# notSwh_filter.html #}
               <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageNotSwhCount"
+                       style="width: 1.7em;"><br />
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".languageNotSwhCount">
                   <span class="glyphicon glyphicon-sort"></span>
@@ -482,13 +650,131 @@
               </td>
               {# toomany_filter.html #}
               <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageExcessCount"
+                       style="width: 1.7em;"><br />
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".languageExcessCount">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
+              {# blank_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageBlankCount"
+                       style="width: 1.7em;"><br />
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageBlankCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# noPhoneMic_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageNoPhoneMicCount"
+                       style="width: 1.7em;"><br />
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageNoPhoneMicCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# noPhoneTic_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageNoPhoneTicCount"
+                       style="width: 1.7em;"><br />
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageNoPhoneTicCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# DicLink_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageDicLinkCount"
+                       style="width: 1.7em;"><br />
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageDicLinkCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# HaveCit_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageHaveCitCount"
+                       style="width: 1.7em;"><br />
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageHaveCitCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# cogLoan_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageCogLoanCount"
+                       style="width: 1.7em;"><br />
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageCogLoanCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# cogLoanPll_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageCogParallelLoanCount"
+                       style="width: 1.7em;"><br />
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageCogParallelLoanCount">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# cogIdeophonic_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageCogIdeophonic"
+                       style="width: 1.7em;"><br />
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageCogIdeophonic">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# cogPllDerv_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageCogPllDerv"
+                       style="width: 1.7em;"><br />
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageCogPllDerv">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              {# cogDub__filter.html #}
+              <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageCogDub"
+                       style="width: 1.7em;"><br />
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".languageCogDub">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               {# unassigned_title.html #}
               <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".languageUnassignedCount"
+                       style="width: 1.7em;"><br />
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".languageUnassignedCount">
                   <span class="glyphicon glyphicon-sort"></span>
@@ -526,7 +812,7 @@
                   >
                   <center>
                     {% if user.is_authenticated and user.is_staff %}
-                      {% form_field language.level0 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level0 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 2em;" pattern="^[0-9]{1,2}$" %}
                     {% elif language.level0.data %}
                       {{ language.level0.data }}
                     {% endif %}
@@ -549,7 +835,7 @@
                     {% endif %}
                     >
                     <center>
-                      {% form_field language.level1 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level1 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 2em;" pattern="^[0-9]{1,2}$" %}
                     </center>
                   </td>
                   <td class="languageLevel1Abbr">
@@ -568,7 +854,7 @@
                     {% endif %}
                     >
                     <center>
-                      {% form_field language.level2 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level2 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 2em;" pattern="^[0-9]{1,2}$" %}
                     </center>
                   </td>
                   <td class="languageLevel2Abbr">
@@ -587,7 +873,7 @@
                     {% endif %}
                     >
                     <center>
-                      {% form_field language.level3 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level3 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 2em;" pattern="^[0-9]{1,2}$" %}
                     </center>
                   </td>
                   <td class="languageLevel3Abbr hide">
@@ -610,6 +896,14 @@
                          {% if language.object_data.historical %}
                          checked="checked"
                          {% endif %}>
+                </td>
+                {# fragmentary_data.html #}
+                <td class="languageFragmentary">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.fragmentary class="form-control" data-dependencyfor-tr="fragmentary" %}
+                  {% else %}
+                    {% form_field language.fragmentary class="form-control" disabled="disabled" %}
+                  {% endif %}
                 </td>
                 {# notInExport_data.html #}
                 <td class="notInExport">
@@ -639,15 +933,15 @@
                 {# author_data.html #}
                 <td class="languageAuthor">
                   {% if user.is_authenticated and user.is_staff %}
-                    {% form_field language.author class="form-control" style="min-width: 30em;" data-longinput="25" %}
+                    {% form_field language.author class="form-control" style="width:8em" data-longinput="25" %}
                   {% else %}
                     {{ language.author.data }}
                   {% endif %}
                 </td>
-                {# entryTimeframe_data.html #}
+                <!-- {# entryTimeframe_data.html #}
                 {% if user.is_authenticated and user.is_staff %}
                 <td class="entryTimeframe">
-                  {% form_field language.entryTimeframe class="form-control" style="max-width: 5em;" %}
+                  {% form_field language.entryTimeframe class="form-control" style="width:5em" %}
                 </td>
                 {% endif %}
                 {# reviewer_data.html #}
@@ -657,7 +951,7 @@
                   {% elif language.reviewer.data %}
                     {{ language.reviewer.data }}
                   {% endif %}
-                </td>
+                </td> -->
                 {# progress_data.html #}
                 <td class="progressData">
                   {% if user.is_authenticated and user.is_staff %}
@@ -686,7 +980,17 @@
                     <span class="badge">{{ language.object_data.meaningCount }}</span>
                   </center>
                 </td>
-                {# entd_data.html #}
+                {# orphans_data.html #}
+                <td class="languageOrphansCount">
+                  <center>
+                    {% if language.object_data.orphansCount > 0 %}
+                    <span title="{{ language.object_data.orphansList }}" class="badge" style="background-color:#FFA500">{{ language.object_data.orphansCount }}</span>
+                    {% else %}
+                    <span title="{{ language.object_data.orphansList }}" class="badge">{{ language.object_data.orphansCount }}</span>
+                    {% endif %}
+                  </center>
+                </td>
+               {# entd_data.html #}
                 <td class="languageEntdCount">
                   <center>
                     <span class="badge">{{ language.object_data.entryCount }}</span>
@@ -708,6 +1012,78 @@
                 <td class="languageExcessCount">
                   <center>
                     <span class="badge">{{ language.object_data.excessCount }}</span>
+                  </center>
+                </td>
+                {# blank_data.html #}
+                <td class="languageBlankCount">
+                  <center>
+                    {% if language.object_data.blankCount > 0 %}
+                    <span class="badge" style="background-color:#FFA500">{{ language.object_data.blankCount }}</span>
+                    {% else %}
+                    <span class="badge">{{ language.object_data.blankCount }}</span>
+                    {% endif %}
+                  </center>
+                </td>
+                {# noPhoneMic_data.html #}
+                <td class="languageNoPhoneMicCount">
+                  <center>
+                    {% if language.object_data.noPhoneMicCount > 0 %}
+                    <span class="badge" style="background-color:#FFA500">{{ language.object_data.noPhoneMicCount }}</span>
+                    {% else %}
+                    <span class="badge">{{ language.object_data.noPhoneMicCount }}</span>
+                    {% endif %}
+                  </center>
+                </td>
+                {# noPhoneTic_data.html #}
+                <td class="languageNoPhoneTicCount">
+                  <center>
+                    {% if language.object_data.noPhoneTicCount > 0 %}
+                    <span class="badge" style="background-color:#FFA500">{{ language.object_data.noPhoneTicCount }}</span>
+                    {% else %}
+                    <span class="badge">{{ language.object_data.noPhoneTicCount }}</span>
+                    {% endif %}
+                  </center>
+                </td>
+                {# DicLink_data.html #}
+                <td class="languageDicLinkCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.dicLinkCount }}</span>
+                  </center>
+                </td>
+                {# HaveCit_data.html #}
+                <td class="languageHaveCitCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.haveCitCount }}</span>
+                  </center>
+                </td>
+                {# cogLoan_data.html #}
+                <td class="languageCogLoanCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.cogLoanCount }}</span>
+                  </center>
+                </td>
+                {# cogLoanPll_data.html #}
+                <td class="languageCogParallelLoanCount">
+                  <center>
+                    <span class="badge">{{ language.object_data.cogParallelLoanCount }}</span>
+                  </center>
+                </td>
+                {# cogIdeophonic_data.html #}
+                <td class="languageCogIdeophonic">
+                  <center>
+                    <span class="badge">{{ language.object_data.cogIdeophonicCount }}</span>
+                  </center>
+                </td>
+                {# cogPllDerv_data.html #}
+                <td class="languageCogPllDerv">
+                  <center>
+                    <span class="badge">{{ language.object_data.cogPllDerivationCount }}</span>
+                  </center>
+                </td>
+                {# cogDub_data.html #}
+                <td class="languageCogDub">
+                  <center>
+                    <span class="badge">{{ language.object_data.cogDubSetCount }}</span>
                   </center>
                 </td>
                 {# unassigned_data.html #}

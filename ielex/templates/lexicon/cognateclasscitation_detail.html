@@ -3,9 +3,9 @@
 {% block title %}Cognate class citation{% endblock %}
 
 {% block top %}
-  <h1>
-    View citation: {{ citation.cognate_class.id }}
-  </h1>
+  <h2>
+    Citation {{ citation.id }} (referring to cognate class <a href="{% url 'cognate-set' citation.cognate_class.id %}">{{ citation.cognate_class.id }})</span>
+  </h2>
 {% endblock %}
 
 {% block content %}
@@ -17,7 +17,7 @@
     {% endwith %}
   </p>
   <a href="{% url 'cognate-set' citation.cognate_class.id %}" class="btn btn-default">
-    back to cognate class
+    back to cognate class {{ citation.cognate_class.id }}
   </a>
   <a href="{% url 'cognate-class-citation-edit' citation.cognate_class.id citation.id %}" class="btn btn-default">
     edit this citation

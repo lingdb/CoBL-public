@@ -8,6 +8,7 @@ from django.views.generic import DetailView, \
         ListView, RedirectView
 from django.views.static import serve as serveStatic
 from ielex.views import add_language_list, \
+                        add_meaning_list, \
                         changeDefaults, \
                         cognate_report, \
                         delete_language, \
@@ -15,6 +16,7 @@ from ielex.views import add_language_list, \
                         delete_meaning, \
                         edit_language, \
                         edit_language_list, \
+                        edit_meaning_list, \
                         edit_meaning, \
                         edit_wordlist, \
                         overview_language, \
@@ -26,6 +28,7 @@ from ielex.views import add_language_list, \
                         meaning_add_new, \
                         redirect_lexeme_citation, \
                         reorder_language_list, \
+                        reorder_meaning_list, \
                         reorder_wordlist, \
                         revert_version, \
                         source_edit, \
@@ -91,7 +94,9 @@ R = {
     "DOMAIN": r"(?P<domain>[{0}]+)".format(url_char),
     "LANGUAGE": r"(?P<language>[{0}]+)".format(url_char),
     "LANGUAGELIST": r"(?P<language_list>[{0}]+)".format(url_char),
+    "MEANINGLIST": r"(?P<meaning_list>[{0}]+)".format(url_char),
     "LEXEME_ID": r"(?P<lexeme_id>\d+)",
+    "LEXEME_IDS": r"(?P<lexeme_id>[0-9,]+)",
     "MEANING_ID": r"(?P<meaning_id>\d+)",
     "MEANING": r"(?P<meaning>[{0}]+)".format(url_char),
     "RELATION": r"(?P<relation>[{0}]+)".format(url_char),
@@ -131,7 +136,7 @@ urlpatterns = [
         name="view-language-lists"),
 
     # Language progress (#311):
-    url(r'^languageprogress/%(LANGUAGELIST)s/$' % R, view_language_progress,
+    url(r'^languageprogress/%(LANGUAGELIST)s/(onlyexport|onlynotexport)?$' % R, view_language_progress,
         name="view-language-progress"),
 
     # Language distributions:
@@ -173,6 +178,15 @@ urlpatterns = [
     url(r'^cladecognatesearch/$' % R, view_cladecognatesearch),
 
     # Meanings (aka wordlist)
+    url(r'^meaninglist/add-new/$', add_meaning_list,
+        name="add-meaning-list"),
+    url(r'^meaninglist/edit/$', edit_meaning_list,
+        name="edit-meaning-list"),
+    url(r'^meaninglist/%(MEANINGLIST)s/edit/$' % R, edit_meaning_list,
+        name="edit-meaning-list"),
+    url(r'^meaninglist/%(MEANINGLIST)s/reorder/$' % R, reorder_meaning_list,
+        name="reorder-meaning-list"),
+
     url(r'^wordlists/$', view_wordlists, name="view-wordlists"),
     url(r'^wordlist/%(WORDLIST)s/$' % R, view_wordlist, name="view-wordlist"),
     url(r'^wordlist/%(WORDLIST)s/edit/$' % R, edit_wordlist,
@@ -246,6 +260,8 @@ urlpatterns = [
         name="lexeme-add-new-cognate"),
     url(r'^lexeme/%(LEXEME_ID)s/delete/$' % R,
         lexeme_edit, {"action": "delete"}),
+    url(r'^lexeme/%(LEXEME_IDS)s/deletelist/$' % R,
+        lexeme_edit, {"action": "deletelist"}),
     # url(r'^lexeme/(?P<lexeme_id>\d+)/citation/(?P<pk>\d+)/$',
     #         DetailView.as_view(model=LexemeCitation,
     #                 context_object_name="citation"),
@@ -288,7 +304,7 @@ urlpatterns = [
 
     # Cognate
     url(r'^cognate/(?P<cognate_id>\d+)/$', cognate_report, name="cognate-set"),
-    url(r'^cognate/%(COGNATE_NAME)s/$' % R, cognate_report),
+    # url(r'^cognate/%(COGNATE_NAME)s/$' % R, cognate_report),
     url(r'^meaning/%(MEANING)s/cognate/(?P<code>[A-Z]+[0-9]*)/$' % R,
         cognate_report),
     url(r'^cognateclasslist/$' % R, viewDefaultCognateClassList),

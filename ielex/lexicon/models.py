@@ -6,6 +6,8 @@ import datetime
 from collections import defaultdict
 from string import ascii_uppercase, ascii_lowercase
 import inspect
+import codecs
+import re
 
 import reversion
 from django.db import models, transaction
@@ -24,7 +26,6 @@ from bibtexparser.bibdatabase import BibDatabase
 
 from ielex.utilities import two_by_two, compressedField
 from ielex.lexicon.validators import suitable_for_url, standard_reserved_names
-
 
 def disable_for_loaddata(signal_handler):
     """The signals to update denormalized data should not be called
@@ -275,7 +276,7 @@ class AbstractDistribution(models.Model):
                     'uniformUpper', 'uniformLower'])
 
 
-@reversion.register
+# @reversion.register
 class Source(models.Model):
 
     """
@@ -490,8 +491,11 @@ class Source(models.Model):
                 pass
         obj.delete()
 
+    def timestampedFields(self):
+        return set(source_attr_lst)
 
-@reversion.register
+
+# @reversion.register
 class SndComp(AbstractTimestamped):
     """
     Introduced for #153.
@@ -543,7 +547,7 @@ class SndComp(AbstractTimestamped):
             (self.id, kwargs, self.lastEditedBy, self.lastTouched)
 
 
-@reversion.register
+# @reversion.register
 class Clade(AbstractTimestamped, AbstractDistribution):
     """
     This model was added for #153
@@ -669,7 +673,7 @@ def getCladeFromLanguageIds(languageIds):
     return None
 
 
-@reversion.register
+# @reversion.register
 class Language(AbstractTimestamped, AbstractDistribution):
     DEFAULT = 'AncientGreek'
 
@@ -712,8 +716,10 @@ class Language(AbstractTimestamped, AbstractDistribution):
     originalAsciiName = models.CharField(
         max_length=128, validators=[suitable_for_url])
     historical = models.BooleanField(default=0)
+    # Added for #401
+    fragmentary = models.BooleanField(default=0)
     # Added for #300:
-    notInExport = models.BooleanField(default=0)
+    notInExport = models.BooleanField(default=1)
     # Lat/Lon:
     latitude = models.DecimalField(
         null=True, max_digits=19, decimal_places=10)
@@ -723,6 +729,9 @@ class Language(AbstractTimestamped, AbstractDistribution):
     exampleLanguage = models.BooleanField(default=0)
     # author = models.ForeignKey(author, related_name="author", null=True)
     # reviewer = models.ForeignKey(author, related_name="reviewer", null=True)
+
+    #Added for #424 2
+    nativeScriptIsRtl = models.BooleanField(default=0)
 
     def get_absolute_url(self):
         return "/language/%s/" % self.ascii_name
@@ -751,7 +760,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
 
     _computeCounts = {}  # Memo for computeCounts
 
-    def computeCounts(self, meaningList=None):
+    def computeCounts(self, meaningList=None, exportMethod=''):
         """
         computeCounts calculates some of the properties of this model.
         It uses self._computeCounts for memoization.
@@ -760,30 +769,93 @@ class Language(AbstractTimestamped, AbstractDistribution):
             # Making sure we've got a meaningList:
             if meaningList is None:
                 meaningList = MeaningList.objects.get(name=MeaningList.ALL)
-            # Setting up sets to aid computations:
-            meaningIdSet = getattr(meaningList,
-                                   '_language__computeCounts',
-                                   None)
-            if meaningIdSet is None:
+
+            if exportMethod=='onlyexport':
+                meaningIdSet = set([m.id for m in meaningList.meanings.filter(exclude=False)])
+            elif exportMethod=='onlynotexport':
+                meaningIdSet = set([m.id for m in meaningList.meanings.filter(exclude=True)])
+            else:
                 meaningIdSet = set([m.id for m in meaningList.meanings.all()])
-                setattr(meaningList, '_language__computeCounts', meaningIdSet)
+
+            setattr(meaningList, '_language__computeCounts', meaningIdSet)
+
             lexemeMeaningIdSet = set([l.meaning_id for l
                                       in self.lexeme_set.all()])
+            lexemeMeaningIdSetOnlySwadesh = set([l.meaning_id for l
+                                      in self.lexeme_set.filter(not_swadesh_term=False)])
             # Computing base counts:
-            meaningCount = len(meaningIdSet & lexemeMeaningIdSet)
-            entryCount = len([l for l in self.lexeme_set.all()
-                              if l.meaning_id in meaningIdSet])
-            nonLexCount = len([l for l in self.lexeme_set.all()
-                               if l.meaning_id in meaningIdSet and
-                               l.not_swadesh_term])
+            mergedIdSet = meaningIdSet & lexemeMeaningIdSet
+            meaningCount = len(mergedIdSet)
+            mergedIdOnlySwadeshSet = meaningIdSet & lexemeMeaningIdSetOnlySwadesh
+            meaningCountNotSwadeshTerm = meaningCount-len(mergedIdSet & mergedIdOnlySwadeshSet)
+
+            meaningsMarkedAsNotSwadeshList = ''
+
+            if meaningCountNotSwadeshTerm == 1:
+                meaningsMarkedAsNotSwadeshList = Meaning.objects.get(
+                    id=list(mergedIdSet ^ mergedIdOnlySwadeshSet)[0]).gloss
+            elif meaningCountNotSwadeshTerm > 1 and meaningCountNotSwadeshTerm < 21:
+                meaningsMarkedAsNotSwadeshList = ", ".join(Meaning.objects.filter(
+                    id__in=tuple(mergedIdSet ^ mergedIdOnlySwadeshSet)).order_by(
+                        'gloss').values_list('gloss', flat=True))
+            elif meaningCountNotSwadeshTerm > 20:
+                meaningsMarkedAsNotSwadeshList = ", ".join(Meaning.objects.filter(
+                    id__in=tuple(mergedIdSet ^ mergedIdOnlySwadeshSet)).order_by(
+                        'gloss')[:20].values_list('gloss', flat=True))
+                meaningsMarkedAsNotSwadeshList += ", ..."
+
+            lexemes = self.lexeme_set.filter(meaning__in=mergedIdSet)
+            entryCount = len(lexemes)
+            nonLexCount = len(lexemes.filter(not_swadesh_term=True))
+
             # Computing dependant counts:
             lexCount = entryCount - nonLexCount
-            excessCount = lexCount - meaningCount
+            excessCount = lexCount - meaningCount + meaningCountNotSwadeshTerm
+            # Computing blanks (#398 1)
+            targetLexemes = lexemes.filter(not_swadesh_term=False)
+            blankCount = len(targetLexemes.filter(romanised=u''))
+            # Computing blanks (#398 2)
+            noPhoneMicCount = len(targetLexemes.filter(phoneMic=u''))
+            # Computing blanks (#398 3)
+            noPhoneTicCount = len(targetLexemes.filter(phon_form=u''))
+            if lexCount == 0:
+                # Computing blanks (#398 4)
+                dicLinkCount = 0
+                # Computing blanks (#398 5)
+                haveCitCount = 0
+            else:
+                # Computing blanks (#398 4)
+                dicLinkCount = int(len(targetLexemes.exclude(rfcWebLookup1=u''))/lexCount*100)
+                # Computing blanks (#398 5)
+                haveCitCount = int(len(set(l.lexeme_id for l in 
+                    LexemeCitation.objects.filter(lexeme_id__in=targetLexemes)))/lexCount*100)
             # Computing unassigned count (#255):
-            unassignedCount = self.lexeme_set.filter(
-                not_swadesh_term=False,
-                meaning__in=meaningIdSet,
-                cognate_class=None).count()
+            unassignedCount = len(targetLexemes.filter(cognate_class=None))
+
+            # Cognate classes to iterate:
+            ccs = CognateClass.objects.filter(
+                lexeme__language_id=self.id,
+                lexeme__meaning_id__in=meaningIdSet).order_by(
+                    'id').distinct('id').all()
+            # Setup to count stuff:
+            cogLoanCount = 0
+            cogParallelLoanCount = 0
+            cogIdeophonicCount = 0
+            cogPllDerivationCount = 0
+            cogDubSetCount = 0
+            # Iterating ccs to calculate counts:
+            for cc in ccs:
+                if cc.loanword:
+                    cogLoanCount += 1
+                if cc.parallelLoanEvent:
+                    cogParallelLoanCount += 1
+                if cc.ideophonic:
+                    cogIdeophonicCount += 1
+                if cc.parallelDerivation:
+                    cogPllDerivationCount += 1
+                if cc.dubiousSet:
+                    cogDubSetCount += 1
+
             # Setting counts:
             self._computeCounts = {
                 'meaningCount': meaningCount,
@@ -791,7 +863,19 @@ class Language(AbstractTimestamped, AbstractDistribution):
                 'nonLexCount': nonLexCount,
                 'lexCount': lexCount,
                 'excessCount': excessCount,
-                'unassignedCount': unassignedCount}
+                'unassignedCount': unassignedCount,
+                'orphansCount': meaningCountNotSwadeshTerm,
+                'orphansList': meaningsMarkedAsNotSwadeshList,
+                'cogLoanCount': cogLoanCount,
+                'cogIdeophonicCount': cogIdeophonicCount,
+                'cogPllDerivationCount': cogPllDerivationCount,
+                'cogDubSetCount': cogDubSetCount,
+                'blankCount': blankCount,
+                'noPhoneTicCount': noPhoneTicCount,
+                'dicLinkCount': dicLinkCount,
+                'haveCitCount': haveCitCount,
+                'noPhoneMicCount': noPhoneMicCount,
+                'cogParallelLoanCount': cogParallelLoanCount}
         return self._computeCounts
 
     def cladeByOrder(self, order):
@@ -814,6 +898,54 @@ class Language(AbstractTimestamped, AbstractDistribution):
     @property
     def meaningCount(self):
         return self.computeCounts()['meaningCount']
+
+    @property
+    def orphansCount(self):
+        return self.computeCounts()['orphansCount']
+
+    @property
+    def blankCount(self):
+        return self.computeCounts()['blankCount']
+
+    @property
+    def noPhoneMicCount(self):
+        return self.computeCounts()['noPhoneMicCount']
+
+    @property
+    def noPhoneTicCount(self):
+        return self.computeCounts()['noPhoneTicCount']
+
+    @property
+    def dicLinkCount(self):
+        return self.computeCounts()['dicLinkCount']
+
+    @property
+    def haveCitCount(self):
+        return self.computeCounts()['haveCitCount']
+
+    @property
+    def cogLoanCount(self):
+        return self.computeCounts()['cogLoanCount']
+
+    @property
+    def cogParallelLoanCount(self):
+        return self.computeCounts()['cogParallelLoanCount']
+
+    @property
+    def cogIdeophonicCount(self):
+        return self.computeCounts()['cogIdeophonicCount']
+
+    @property
+    def cogPllDerivationCount(self):
+        return self.computeCounts()['cogPllDerivationCount']
+
+    @property
+    def cogDubSetCount(self):
+        return self.computeCounts()['cogDubSetCount']
+
+    @property
+    def orphansList(self):
+        return self.computeCounts()['orphansList']
 
     @property
     def entryCount(self):
@@ -889,7 +1021,8 @@ class Language(AbstractTimestamped, AbstractDistribution):
                   'rfcWebPath1', 'rfcWebPath2', 'author', 'reviewer',
                   'earliestTimeDepthBound', 'latestTimeDepthBound',
                   'progress', 'sortRankInClade', 'entryTimeframe',
-                  'historical', 'notInExport', 'exampleLanguage'])
+                  'historical', 'fragmentary', 'notInExport', 'exampleLanguage',
+                  'latitude', 'longitude', 'nativeScriptIsRtl'])
         return fs | AbstractDistribution.timestampedFields(self)
 
     def deltaReport(self, **kwargs):
@@ -924,7 +1057,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
         return percentages[self.progress]
 
 
-@reversion.register
+# @reversion.register
 class LanguageClade(models.Model):
     language = models.ForeignKey(Language)
     clade = models.ForeignKey(Clade)
@@ -935,7 +1068,7 @@ class LanguageClade(models.Model):
         ordering = ['cladesOrder']
 
 
-@reversion.register
+# @reversion.register
 class Meaning(AbstractTimestamped):
     DEFAULT = 'ash'
 
@@ -951,6 +1084,7 @@ class Meaning(AbstractTimestamped):
     meaningSetIx = models.IntegerField(default=0, null=False)
     exampleContext = models.CharField(max_length=128, blank=True)
     ixElicitation = models.IntegerField(default=0, null=False)
+    concepticon_id = models.IntegerField(default=0, null=False)
 
     def get_absolute_url(self):
         return "/meaning/%s/" % self.gloss
@@ -978,7 +1112,7 @@ class Meaning(AbstractTimestamped):
                     'notes', 'doubleCheck',
                     'exclude', 'tooltip',
                     'meaningSetMember', 'meaningSetIx',
-                    'exampleContext', 'ixElicitation'])
+                    'exampleContext', 'ixElicitation', 'concepticon_id'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update meaning: ' \
@@ -1002,14 +1136,15 @@ class Meaning(AbstractTimestamped):
                 "language_id", flat=True)
             ccs = CognateClass.objects.filter(
                 lexeme__meaning_id=self.id,
-                lexeme__language_id__in=lIds).order_by(
-                    'id').distinct('id').all()
+                lexeme__language_id__in=lIds).distinct()
             # Setup to count stuff:
             cog_count = len(ccs)
             cogRootFormCount = 0
             cogRootLanguageCount = 0
             cogLoanCount = 0
             cogParallelLoanCount = 0
+            cogRevised = 0
+            cogIdeophonic = 0
             # Iterating ccs to calculate counts:
             for cc in ccs:
                 if cc.root_form != '':
@@ -1020,6 +1155,10 @@ class Meaning(AbstractTimestamped):
                     cogLoanCount += 1
                 if cc.parallelLoanEvent:
                     cogParallelLoanCount += 1
+                if cc.ideophonic:
+                    cogIdeophonic += 1
+                if cc.revisedYet:
+                    cogRevised += 1
             # Computing percentages:
             cogRootFormPercentage = cogRootFormCount / cog_count \
                 if cog_count > 0 else float('nan')
@@ -1027,15 +1166,23 @@ class Meaning(AbstractTimestamped):
             cogRootLanguagePercentage = cogRootLanguageCount / cog_count \
                 if cog_count > 0 else float('nan')
             cogRootLanguagePercentage *= 100
+            cog_truecount = cog_count - cogLoanCount
+            if cog_count > 0:
+                cogRevisedPercentage = cogRevised / cog_count * 100
+            else:
+                cogRevisedPercentage = 0
             # Filling memo with data:
             self._computeCounts = {
                 'cog_count': cog_count,
+                'cog_truecount': cog_truecount,
+                'cogRevisedPercentage': cogRevisedPercentage,
                 'cogRootFormCount': cogRootFormCount,
                 'cogRootFormPercentage': cogRootFormPercentage,
                 'cogRootLanguageCount': cogRootLanguageCount,
                 'cogRootLanguagePercentage': cogRootLanguagePercentage,
                 'cogLoanCount': cogLoanCount,
-                'cogParallelLoanCount': cogParallelLoanCount}
+                'cogParallelLoanCount': cogParallelLoanCount,
+                'cogIdeophonic': cogIdeophonic}
         return self._computeCounts
 
     @property
@@ -1049,6 +1196,14 @@ class Meaning(AbstractTimestamped):
     @property
     def cog_count(self):
         return self.computeCounts()['cog_count']
+
+    @property
+    def cog_truecount(self):
+        return self.computeCounts()['cog_truecount']
+
+    @property
+    def cogRevisedPercentage(self):
+        return self.computeCounts()['cogRevisedPercentage']
 
     @property
     def cogRootFormCount(self):
@@ -1074,8 +1229,12 @@ class Meaning(AbstractTimestamped):
     def cogParallelLoanCount(self):
         return self.computeCounts()['cogParallelLoanCount']
 
+    @property
+    def cogIdeophonic(self):
+        return self.computeCounts()['cogIdeophonic']
 
-@reversion.register
+
+# @reversion.register
 @python_2_unicode_compatible
 class CognateClass(AbstractTimestamped):
     """
@@ -1088,9 +1247,8 @@ class CognateClass(AbstractTimestamped):
     """
     alias = models.CharField(max_length=3)
     notes = models.TextField(blank=True)
-    name = CharNullField(
-        max_length=128, blank=True, null=True,
-        unique=True, validators=[suitable_for_url])
+    justificationDiscussion = models.TextField(blank=True)
+    alsoUsedInOtherMeanings = models.TextField(blank=True)
     root_form = models.TextField(blank=True)
     root_language = models.TextField(blank=True)
     # Former JSON fields:
@@ -1159,13 +1317,13 @@ class CognateClass(AbstractTimestamped):
         ordering = ["alias"]
 
     def timestampedFields(self):
-        return set(['alias', 'notes', 'name', 'root_form', 'root_language',
+        return set(['alias', 'notes', 'justificationDiscussion', 'root_form', 'root_language',
                     'gloss_in_root_lang', 'loanword', 'loan_source',
                     'loan_notes', 'loanSourceCognateClass',
                     'loanEventTimeDepthBP', 'sourceFormInLoanLanguage',
                     'parallelLoanEvent', 'notProtoIndoEuropean', 'ideophonic',
                     'parallelDerivation', 'dubiousSet',
-                    'revisedYet', 'revisedBy',
+                    'revisedYet', 'revisedBy', 'alsoUsedInOtherMeanings',
                     'proposedAsCognateTo', 'proposedAsCognateToScale'])
 
     def deltaReport(self, **kwargs):
@@ -1176,42 +1334,41 @@ class CognateClass(AbstractTimestamped):
 
     _computeCounts = {}  # Memo for computeCounts
 
-    def computeCounts(self, languageList=None):
+    def computeCounts(self, languageList=None, 
+                        lgSet=None, isCladeCountNeeded=True, clades=None):
         """
         computeCounts calculates the lexeme* properties.
         It uses self._computeCounts for memoization.
         """
         if not self._computeCounts:
             # Use languageList to build lSet to filter lexemes:
-            lSet = None
-            if languageList is not None:
-                lSet = set(llo.language_id for llo in
-                           languageList.languagelistorder_set.all())
-            else:
-                lSet = set()
+            if lgSet is None:
+                if languageList is not None:
+                    lgSet = set(languageList.languagelistorder_set.all().values_list(
+                        'language_id', flat=True))
+                else:
+                    lgSet = set()
             # Gather counts:
-            lexemeCount = 0
-            onlyNotSwh = True  # True iff all lexemes are not_swadesh_term.
-            for l in self.lexeme_set.filter(language__in=lSet).all():
-                # Update onlyNotSwh iff necessary:
-                if not l.not_swadesh_term:
-                    onlyNotSwh = False
-                # If we have lSet we use it to skip unwanted:
-                if lSet is not None:
-                    if l.language_id not in lSet:
-                        continue
-                # Major beef:
-                lexemeCount += 1
+            theLexemes = self.lexeme_set.filter(language__in=lgSet).all()
+            targetLexemes = theLexemes.filter(not_swadesh_term=False)
+
+            # True if all lexemes are not_swadesh_term.
+            onlyNotSwh = (len(targetLexemes) == 0)
+            lexemeCount = len(theLexemes)
             # Computing cladeCount:
-            languageIds = self.lexeme_set.filter(
-                language_id__in=lSet,
-                not_swadesh_term=False).exclude(
+            languageIds = targetLexemes.exclude(
                     language__level0=0).values_list(
                         'language_id', flat=True)
-            cladeCount = Clade.objects.filter(
-                languageclade__language__id__in=languageIds).exclude(
-                    hexColor='').exclude(
-                        shortName='').distinct().count()
+            cladeCount = 0
+            if isCladeCountNeeded:
+                if clades is not None:
+                    cladeCount = clades.filter(
+                        languageclade__language__id__in=languageIds).distinct().count()
+                else:
+                    cladeCount = Clade.objects.filter(
+                        languageclade__language__id__in=languageIds).exclude(
+                            hexColor='').exclude(
+                                shortName='').distinct().count()
             # Filling memo with data:
             self._computeCounts = {
                 'lexemeCount': lexemeCount,
@@ -1257,17 +1414,14 @@ class CognateClass(AbstractTimestamped):
         if self.root_form != '':
             return self.root_form
         # If single lexeme in cognate class, use romanised:
-        fDict = {'language__languagelistorder__language_list__name':
-                 LanguageList.DEFAULT}
-        lexemeSet = self.lexeme_set.filter(**fDict)
-        if lexemeSet.count() == 1:
-            return lexemeSet.get().romanised
+        if self.lexeme_set.count() == 1:
+            return self.lexeme_set.get().romanised
         # Do we have a loanword?
         if self.loanword:
             if self.sourceFormInLoanLanguage != '':
                 return "(%s)" % self.sourceFormInLoanLanguage
         # Branch lookup for #364:
-        affectedLanguageIds = set(Lexeme.objects.filter(
+        affectedLanguageIds = set(self.lexeme_set.filter(
             cognate_class=self).values_list('language_id', flat=True))
         commonCladeIds = Clade.objects.filter(
             language__id__in=affectedLanguageIds
@@ -1276,21 +1430,21 @@ class CognateClass(AbstractTimestamped):
                 ).values_list('id', flat=True)
         if commonCladeIds:
             findQuery = Language.objects.filter(
-                id__in=affectedLanguageIds,
-                languageclade__clade__id=commonCladeIds[0])
+                languageclade__clade__id=commonCladeIds[0],
+                id__in=affectedLanguageIds)
 
             def getOrthographics(cognateClass, languageIds):
                 return Lexeme.objects.filter(
                     language__id__in=languageIds,
                     cognate_class=cognateClass).exclude(
-                        phoneMic='').values_list(
-                            'phoneMic', flat=True)
+                        romanised='').order_by(
+                        'language__sortRankInClade').values_list(
+                            'romanised', flat=True)
 
             idFinders = [lambda: findQuery.filter(
-                representative=True).values_list('id', flat=True),
+                            representative=True).values_list('id', flat=True),
                          lambda: findQuery.filter(
-                             exampleLanguage=True).values_list(
-                                 'id', flat=True),
+                            exampleLanguage=True).values_list('id', flat=True),
                          lambda: affectedLanguageIds]
 
             for idFinder in idFinders:
@@ -1360,7 +1514,7 @@ class DyenCognateSet(models.Model):
         return "%s%s" % (self.name, qmark)
 
 
-@reversion.register
+# @reversion.register
 class Lexeme(AbstractTimestamped):
     language = models.ForeignKey(Language)
     meaning = models.ForeignKey(Meaning)
@@ -1421,6 +1575,18 @@ class Lexeme(AbstractTimestamped):
                 return c.loanword
         return None
 
+    def checkPllLoanEvent(self):
+        """
+        This method was added for #463 and shall return one of three values:
+        * In case that there is exactly one CognateClass linked to this lexeme:
+          * Return .data.get('loanword', False)
+        * Otherwise return None.
+        """
+        if self.cognate_class.count() == 1:
+            for c in self.cognate_class.all():
+                return c.parallelLoanEvent
+        return None
+
     def getCognateClassData(self):
         """
         This method was added for #90 and shall return
@@ -1429,14 +1595,19 @@ class Lexeme(AbstractTimestamped):
         """
         ccs = self.cognate_class.all()
         ids = [str(cc.id) for cc in ccs]
-        rfs = [cc.root_form for cc in ccs]
-        rls = [cc.root_language for cc in ccs]
         if not ids:
             return None
-        return {
-            'id': ','.join(ids),
-            'root_form': ','.join(rfs),
-            'root_language': ','.join(rls)}
+        ccdata = {}
+        ccdata['id'] = ','.join(ids)
+        rfs = [cc.root_form for cc in ccs]
+        tmp = ','.join(rfs)
+        if len(tmp) > 0:
+            ccdata['root_form'] = tmp
+        rls = [cc.root_language for cc in ccs]
+        tmp = ','.join(rls)
+        if len(tmp) > 0:
+            ccdata['root_language'] = tmp
+        return ccdata
 
     def timestampedFields(self):
         return set(['romanised', 'phon_form', 'gloss', 'notes', 'phoneMic',
@@ -1502,8 +1673,16 @@ class Lexeme(AbstractTimestamped):
         return self.checkLoanEvent is not None
 
     @property
+    def show_pllloan_event(self):
+        return self.checkPllLoanEvent is not None
+
+    @property
     def loan_event(self):
         return self.checkLoanEvent()
+
+    @property
+    def pllloan_event(self):
+        return self.checkPllLoanEvent()
 
     @property
     def language_asciiname(self):
@@ -1545,15 +1724,17 @@ class Lexeme(AbstractTimestamped):
 
     @property
     def loanEventSourceTitle(self):
+        ccd = self.getCognateClassData()
+        if ccd == None:
+            return '';
         parts = []
-        for ccd in self.getCognateClassData():
-            if 'root_form' in ccd and 'root_language' in ccd:
-                parts.append('(%s) < (%s)' %
-                             (ccd['root_form'], ccd['root_language']))
-            elif 'root_form' in ccd:
-                parts.append('(%s) < (?)' % ccd['root_form'])
-            elif 'root_language' in ccd:
-                parts.append('(?) < (%s)' % ccd['root_language'])
+        if 'root_form' in ccd and 'root_language' in ccd:
+            parts.append('(%s) < (%s)' %
+                         (ccd['root_form'], ccd['root_language']))
+        elif 'root_form' in ccd:
+            parts.append('(%s) < (?)' % ccd['root_form'])
+        elif 'root_language' in ccd:
+            parts.append('(?) < (%s)' % ccd['root_language'])
         return '\n'.join(parts)
 
     @property
@@ -1561,7 +1742,7 @@ class Lexeme(AbstractTimestamped):
         return self.lexemecitation_set.count()
 
 
-@reversion.register
+# @reversion.register
 class CognateJudgement(AbstractTimestamped):
     lexeme = models.ForeignKey(Lexeme)
     cognate_class = models.ForeignKey(CognateClass)
@@ -1599,7 +1780,7 @@ class CognateJudgement(AbstractTimestamped):
                               self.cognate_class.alias, self.id)
 
 
-@reversion.register
+# @reversion.register
 class LanguageList(models.Model):
     """A named, ordered list of languages for use in display and output. A
     default list, named 'all' is (re)created on save/delete of the Language
@@ -1621,7 +1802,7 @@ class LanguageList(models.Model):
 
     def append(self, language):
         """Add another language to the end of a LanguageList ordering"""
-        N = self.languagelistorder_set.aggregate(Max("order")).values()[0]
+        N = list(self.languagelistorder_set.aggregate(Max("order")).values())[0]
         try:
             N += 1
         except TypeError:
@@ -1701,10 +1882,10 @@ class LanguageListOrder(models.Model):
                            ("language_list", "order"))
 
 
-@reversion.register
+# @reversion.register
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
-    DEFAULT = "Jena200"
+    DEFAULT = "Jena175"
     ALL = "all"
 
     name = models.CharField(
@@ -1716,7 +1897,7 @@ class MeaningList(models.Model):
 
     def append(self, meaning):
         """Add another meaning to the end of a MeaningList ordering"""
-        N = self.meaninglistorder_set.aggregate(Max("order")).values()[0]
+        N = list(self.meaninglistorder_set.aggregate(Max("order")).values())[0]
         try:
             N += 1
         except TypeError:
@@ -1816,7 +1997,7 @@ class AbstractBaseCitation(models.Model):
         abstract = True
 
 
-@reversion.register
+# @reversion.register
 class CognateJudgementCitation(AbstractBaseCitation):
     cognate_judgement = models.ForeignKey(CognateJudgement)
     source = models.ForeignKey(Source)
@@ -1832,7 +2013,7 @@ class CognateJudgementCitation(AbstractBaseCitation):
         unique_together = (("cognate_judgement", "source"),)
 
 
-@reversion.register
+# @reversion.register
 class LexemeCitation(AbstractBaseCitation):
     lexeme = models.ForeignKey(Lexeme)
     source = models.ForeignKey(Source)
@@ -1852,10 +2033,11 @@ class LexemeCitation(AbstractBaseCitation):
         unique_together = (("lexeme", "source"),)
 
 
-@reversion.register
+# @reversion.register
 class CognateClassCitation(AbstractBaseCitation):
     cognate_class = models.ForeignKey(CognateClass)
     source = models.ForeignKey(Source)
+    rfcWeblink = models.URLField(blank=True)
 
     def __str__(self):
         try:
@@ -1871,6 +2053,21 @@ class CognateClassCitation(AbstractBaseCitation):
     def get_absolute_url(self):
         return reverse("cognate-class-citation-detail",
                        kwargs={"pk": self.id})
+
+    def getCommentExpandedMarkups(self):
+        # replace markups for comment field (used in non-edit mode)
+        s = Source.objects.all().filter(deprecated=False)
+        comment = self.comment
+        pattern = re.compile(r'(\{ref +([^\{]+?)(:[^\{]+?)? *\})')
+        pattern2 = re.compile(r'(\{ref +[^\{]+?(:[^\{]+?)? *\})')
+        for m in re.finditer(pattern, comment):
+            foundSet = s.filter(shorthand=m.group(2))
+            if foundSet.count() == 1:
+                comment = re.sub(pattern2, lambda match: '<a href="/sources/'
+                    + str(foundSet.first().id)
+                    + '" title="' + foundSet.first().citation_text.replace('"', '\"')
+                    + '">' + foundSet.first().shorthand + '</a>', comment, 1)
+        return comment
 
     class Meta:
         unique_together = (("cognate_class", "source"),)
@@ -1950,7 +2147,7 @@ models.signals.post_delete.connect(
     update_meaning_percent_coded, sender=CognateJudgement)
 
 
-@reversion.register
+# @reversion.register
 class Author(AbstractTimestamped):
     surname = models.TextField(blank=True)
     firstNames = models.TextField(blank=True)
@@ -2001,7 +2198,7 @@ class Author(AbstractTimestamped):
         return ' '.join([self.firstNames, self.surname])
 
 
-@reversion.register
+# @reversion.register
 class NexusExport(AbstractTimestamped):
     # Name of .nex file:
     exportName = models.CharField(max_length=256, blank=True)
@@ -2022,10 +2219,12 @@ class NexusExport(AbstractTimestamped):
     includePllLoan = models.BooleanField(default=False)
     excludeMarkedMeanings = models.BooleanField(default=True)
     excludeMarkedLanguages = models.BooleanField(default=True)
+    calculateMatrix = models.BooleanField(default=False)
     # List of setting fields:
     settingFields = ['language_list_name',
                      'meaning_list_name',
                      'dialect',
+                     'calculateMatrix',
                      'label_cognate_sets',
                      'ascertainment_marker',
                      'excludeNotSwadesh',
@@ -2046,13 +2245,19 @@ class NexusExport(AbstractTimestamped):
     # Compressed data of constraints file:
     _constraintsData = models.BinaryField(null=True)
     constraintsData = property(**compressedField('_constraintsData'))
+    # Compressed data of nexus table data CSV file:
+    _exportTableData = models.BinaryField(null=True)
+    exportTableData = property(**compressedField('_exportTableData'))
+    # Compressed data of matrix data CSV file:
+    _exportMatrix = models.BinaryField(null=True)
+    exportMatrix = property(**compressedField('_exportMatrix'))
 
     @property
     def pending(self):
         # True if calculation for export is not finished
         return self._exportData is None
 
-    def generateResponse(self, constraints=False, beauti=False):
+    def generateResponse(self, constraints=False, beauti=False, tabledata=False, matrix=False):
         """
         If constraints == True response shall carry the constraintsData
         rather than the exportData.
@@ -2061,24 +2266,40 @@ class NexusExport(AbstractTimestamped):
         """
         assert not self.pending, "NexusExport.generateResponse " \
                                  "impossible for pending exports."
+
         # name for the export file:
         if constraints:
             name = self.constraintsName
         elif beauti:
             name = self.beautiName
+        elif tabledata:
+            name = self.tabledataName
+        elif matrix:
+            name = self.matrixName
         else:
             name = self.exportName
+
+        # The response itself:
+        response = HttpResponse(content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=%s' % \
+            name.replace(" ", "_")
+
         # data for the export file:
         if constraints:
             data = self.constraintsData
         elif beauti:
             data = self.exportBEAUti
+        elif tabledata:
+            # for csv files write the UTF-8 BOM, mainly for Excel
+            response.write(codecs.BOM_UTF8)
+            data = self.exportTableData
+        elif matrix:
+            # for csv files write the UTF-8 BOM, mainly for Excel
+            response.write(codecs.BOM_UTF8)
+            data = self.exportMatrix
         else:
             data = self.exportData
-        # The response itself:
-        response = HttpResponse(content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename=%s' % \
-            name.replace(" ", "_")
+
         response.write(data)
         return response
 
@@ -2113,10 +2334,24 @@ class NexusExport(AbstractTimestamped):
         # Replaces the /\.nex$/ in exportName with _BEAUti.nex
         return self.exportName[:-4] + "_BEAUti.nex"
 
+    @property
+    def tabledataName(self):
+        # Replaces the /\.nex$/ in exportName _TableData.csv
+        return self.exportName[:-4] + "_DataTable.csv"
+
+    @property
+    def matrixName(self):
+        # Replaces the /\.nex$/ in exportName _TableData.csv
+        return self.exportName[:-4] + "_Matrix.csv"
+
 
 class RomanisedSymbol(AbstractTimestamped):
     # Contains allowed symbols for Lexeme.romanised entries.
     symbol = models.CharField(max_length=8, blank=False)
+
+    @property
+    def formattedLastTouchedDate(self):
+        return self.lastTouched.strftime("%Y/%m/%d %H:%M:%S")
 
     @property
     def escapedSymbol(self):

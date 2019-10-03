@@ -6,6 +6,7 @@ import unicodedata
 from collections import defaultdict, OrderedDict
 from operator import itemgetter
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.db import transaction
 from django.db.utils import ProgrammingError
@@ -72,6 +73,12 @@ class ChooseLanguageField(forms.ModelChoiceField):
         return obj.utf8_name or obj.ascii_name
 
 
+class ChooseMeaningField(forms.ModelChoiceField):
+
+    def label_from_instance(self, obj):
+        return obj.gloss
+
+
 class ChooseLanguagesField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
@@ -97,6 +104,14 @@ class ChooseIncludedLanguagesField(ChooseLanguageField):
 
 
 class ChooseExcludedLanguagesField(ChooseLanguageField):
+    pass
+
+
+class ChooseIncludedMeaningsField(ChooseMeaningField):
+    pass
+
+
+class ChooseExcludedMeaningsField(ChooseMeaningField):
     pass
 
 
@@ -196,6 +211,20 @@ class AddLanguageForm(forms.ModelForm):
         }
 
 
+class AddMeaningListForm(forms.ModelForm):
+    help_text = "<i><small>The new meaning list will start as a clone of this one</small></i>"
+    meaning_list = ChooseMeaningListField(
+        queryset=MeaningList.objects.all(),
+        empty_label='new empty list',
+        required=False,
+        widget=forms.Select(),
+        help_text=help_text)
+
+    class Meta:
+        model = MeaningList
+        exclude = ["meanings"]
+
+
 class EditMeaningForm(forms.ModelForm):
 
     def clean_gloss(self):
@@ -247,6 +276,16 @@ class EditLanguageListForm(forms.ModelForm):
         exclude = ["languages"]
 
 
+class EditMeaningListForm(forms.ModelForm):
+
+    def clean_name(self):
+        return clean_value_for_url(self, "name")
+
+    class Meta:
+        model = MeaningList
+        exclude = ["meanings"]
+
+
 class EditLanguageListMembersForm(forms.Form):
     included_languages = ChooseIncludedLanguagesField(
         required=False, empty_label=None,
@@ -256,6 +295,19 @@ class EditLanguageListMembersForm(forms.Form):
     excluded_languages = ChooseExcludedLanguagesField(
         required=False, empty_label=None,
         queryset=Language.objects.all(),
+        widget=forms.Select(
+            attrs={"size": 20, "onchange": "this.form.submit()"}))
+
+
+class EditMeaningListMembersForm(forms.Form):
+    included_meanings = ChooseIncludedMeaningsField(
+        required=False, empty_label=None,
+        queryset=Meaning.objects.none(),
+        widget=forms.Select(
+            attrs={"size": 20, "onchange": "this.form.submit()"}))
+    excluded_meanings = ChooseExcludedMeaningsField(
+        required=False, empty_label=None,
+        queryset=Meaning.objects.all(),
         widget=forms.Select(
             attrs={"size": 20, "onchange": "this.form.submit()"}))
 
@@ -304,7 +356,7 @@ class AbstractCognateClassAssignmentForm(WTForm):
     def validate_combinedCognateClassAssignment(form, field):
         tokens = [t.strip() for t in field.data.split(',')]
         for t in tokens:
-            if t == 'new':
+            if t == 'new' or t == 'new l' or t == 'new p':
                 '''
                 This case is subsumed by the alias regex,
                 but listed here for clarity and in case
@@ -359,6 +411,33 @@ class AbstractCognateClassAssignmentForm(WTForm):
                         cognate_class_id=newC.id)
                     # Fixing alias for new class:
                     newC.update_alias()
+            elif t == 'new l':  # Add lexeme to a new class:
+                with transaction.atomic():
+                    # Class to add to:
+                    newC = CognateClass()
+                    newC.bump(request)
+                    newC.loanword = True
+                    newC.save()
+                    # Adding to new class:
+                    CognateJudgement.objects.create(
+                        lexeme_id=lexeme.id,
+                        cognate_class_id=newC.id)
+                    # Fixing alias for new class:
+                    newC.update_alias()
+            elif t == 'new p':  # Add lexeme to a new class:
+                with transaction.atomic():
+                    # Class to add to:
+                    newC = CognateClass()
+                    newC.bump(request)
+                    newC.loanword = True
+                    newC.parallelLoanEvent = True
+                    newC.save()
+                    # Adding to new class:
+                    CognateJudgement.objects.create(
+                        lexeme_id=lexeme.id,
+                        cognate_class_id=newC.id)
+                    # Fixing alias for new class:
+                    newC.update_alias()
             elif t in currentCCs:  # Is this one satisfied?
                 keep = currentCCs[t]
                 keepCCs[keep.id] = keep
@@ -367,10 +446,13 @@ class AbstractCognateClassAssignmentForm(WTForm):
                 try:
                     ccWithSameMeaning = CognateClass.objects.filter(
                         lexeme__meaning__id=lexeme.meaning_id).distinct()
-                    if re.match(r'^\d+$', t) is not None:
-                        cc = ccWithSameMeaning.get(id=int(t))
-                    else:
-                        cc = ccWithSameMeaning.get(alias=t)
+                    try:  # for deletion an Alias ignore exception #429
+                        if re.match(r'^\d+$', t) is not None:
+                            cc = ccWithSameMeaning.get(id=int(t))
+                        else:
+                            cc = ccWithSameMeaning.get(alias=t)
+                    except ObjectDoesNotExist:
+                        continue
                 except Exception:
                     logging.exception("Problem handling token %s", t)
                     messages.error(
@@ -401,6 +483,8 @@ class LanguageListRowForm(AbstractTimestampedForm):
     sortRankInClade = IntegerField(
         'Sort rank in clade', validators=[InputRequired()])
     historical = BooleanField('Historical', validators=[InputRequired()])
+    fragmentary = BooleanField('Fragmentary', validators=[InputRequired()])
+    nativeScriptIsRtl = BooleanField('Native Script is right-to-left', validators=[InputRequired()])
     notInExport = BooleanField('Not in Export', validators=[InputRequired()])
     utf8_name = StringField('Display name', validators=[InputRequired()])
     iso_code = StringField('ISO code', validators=[InputRequired()])
@@ -457,6 +541,8 @@ class LanguageDistributionRowForm(AbstractTimestampedForm,
     sortRankInClade = IntegerField(
         'Sort rank in clade', validators=[InputRequired()])
     historical = BooleanField('Historical', validators=[InputRequired()])
+    fragmentary = BooleanField('Fragmentary', validators=[InputRequired()])
+    notInExport = BooleanField('Not in Export', validators=[InputRequired()])
     utf8_name = StringField('Display name', validators=[InputRequired()])
     earliestTimeDepthBound = IntegerField('Earliest Time-Depth Bound',
                                           validators=[InputRequired()])
@@ -501,6 +587,7 @@ class EditSingleLanguageForm(LanguageListRowForm,
                              WTFormToFormgroup):
     ascii_name = StringField('URL Name', validators=[InputRequired()])
     description = TextAreaField('Description', validators=[InputRequired()])
+    notInExport = BooleanField('Not in Export', validators=[InputRequired()])
     progress = IntegerField('Progress',
                             validators=[InputRequired()])
     progress = SelectField('Progress',
@@ -532,7 +619,6 @@ class EditSingleLanguageForm(LanguageListRowForm,
         ('lastEditedBy', {'required': 'required', 'class': 'hide'}),
     ]
     fieldsWithLabel = [
-        ('historical', {'data-dependencyfor-tr': 'historical'}),
         ('utf8_name', {'required': 'required', 'class': 'form-control'}),
         ('ascii_name', {'required': 'required', 'class': 'form-control'}),
         ('description', {'class': 'form-control'}),
@@ -540,6 +626,10 @@ class EditSingleLanguageForm(LanguageListRowForm,
         ('glottocode', {'class': 'form-control',
                         'pattern': r'(^$|[a-z]{4}\d{4})'}),
         ('variety', {'class': 'form-control'}),
+        ('notInExport', {'data-dependencyfor-tr': 'notInExport'}),
+        ('historical', {'data-dependencyfor-tr': 'historical'}),
+        ('fragmentary', {'data-dependencyfor-tr': 'fragmentary'}),
+        ('nativeScriptIsRtl', {'data-dependencyfor-tr': 'nativeScriptIsRtl'}),
         ('foss_stat', {}),
         ('low_stat', {}),
         ('soundcompcode', {'class': 'form-control'}),
@@ -619,6 +709,7 @@ class LanguageListProgressRowForm(AbstractTimestampedForm):
     sortRankInClade = IntegerField(
         'Sort rank in clade', validators=[InputRequired()])
     notInExport = BooleanField('Not in Export', validators=[InputRequired()])
+    fragmentary = BooleanField('Fragmentary', validators=[InputRequired()])
     utf8_name = StringField('Display name', validators=[InputRequired()])
     author = StringField('Author', validators=[InputRequired()])
     entryTimeframe = StringField('Entry timeframe',
@@ -897,21 +988,17 @@ class AddCogClassTableForm(WTForm):
 
 
 class MergeCognateClassesForm(WTForm):
-    mergeIds = StringField('merge ids', validators=[InputRequired()])
-
     def handle(self, request):
         # Extract ids from form:
         ids = set([int(i) for i in
-                   self.data['mergeIds'].split(',')])
+                   request.POST.get('mergeIds').split(',')])
         # Fetching classes to merge:
         ccs = CognateClass.objects.filter(
             id__in=ids).prefetch_related(
                 "cognatejudgement_set",
                 "cognateclasscitation_set").all()
         # Checking ccs length:
-        if len(ccs) <= 1:
-            logging.warning('Not enough cognateclasses to merge.',
-                            extra=ccs)
+        if ccs is None or len(ccs) <= 1:
             messages.error(request, 'Sorry, the server needs '
                            '2 or more cognateclasses to merge.')
         else:
@@ -924,7 +1011,8 @@ class MergeCognateClassesForm(WTForm):
                            'root_language': set(),
                            'gloss_in_root_lang': set(),
                            'loan_source': set(),
-                           'loan_notes': set()}
+                           'loan_notes': set(),
+                           'justificationDiscussion': set()}
                 for cc in ccs:
                     for k, v in cc.toDict().items():
                         if k in setDict:
@@ -967,6 +1055,9 @@ class MergeCognateClassesForm(WTForm):
                             ', '.join([x.pages for x in v]) +
                             '}',
                             reliability='A',
+                            rfcWeblink='{' +
+                            ', '.join([x.rfcWeblink for x in v]) +
+                            '}',
                             comment='{' +
                             ', '.join([x.comment for x in v]) +
                             '}'))
@@ -988,9 +1079,43 @@ class MergeCognateClassesForm(WTForm):
 
 class CognateClassEditForm(AbstractTimestampedForm):
     id = IntegerField('Cognate Class id', validators=[InputRequired()])
-    name = StringField('Name', validators=[InputRequired()])
-    notes = TextField('Notes', validators=[InputRequired()])
+    justificationDiscussion = TextAreaField('Justification & Discussion', 
+            validators=[InputRequired()], render_kw={"rows": 4, "cols": 20})
+    notes = TextAreaField('Notes', 
+            validators=[InputRequired()], render_kw={"rows": 2, "cols": 20})
+    alsoUsedInOtherMeanings = TextAreaField('Identical with cognate set used in other meanings', 
+            validators=[InputRequired()], render_kw={"rows": 2, "cols": 20})
     root_form = StringField('Root form', validators=[InputRequired()])
+    # Added for #424 4)
+    root_language = StringField('Root Language', validators=[InputRequired()])
+    gloss_in_root_lang = StringField('Gloss in Root Language',
+                                     validators=[InputRequired()])
+    loanword = BooleanField('Loanword', validators=[InputRequired()])
+    loan_source = TextField('Loan Source', validators=[InputRequired()])
+    loan_notes = TextField('Loan Notes', validators=[InputRequired()])
+    loanSourceCognateClass = CognateClassField(
+        'Id of related cc', validators=[InputRequired()])
+    loanEventTimeDepthBP = StringField(
+        'Time depth of loan event', validators=[InputRequired()])
+    sourceFormInLoanLanguage = TextField(
+        'Source form in loan language', validators=[InputRequired()])
+    parallelLoanEvent = BooleanField(
+        'Parallel Loan Event', validators=[InputRequired()])
+    notProtoIndoEuropean = BooleanField(
+        'Not Proto-Indo-European?', validators=[InputRequired()])
+    ideophonic = BooleanField('Idiophonic', validators=[InputRequired()])
+    parallelDerivation = BooleanField('Parallel Derivation',
+                                      validators=[InputRequired()])
+    dubiousSet = BooleanField('Dubious set', validators=[InputRequired()])
+    revisedYet = BooleanField('Revised Yet?', validators=[InputRequired()])
+    revisedBy = TextField('Revised by', validators=[InputRequired()])
+    proposedAsCognateTo = CognateClassField(
+        'Proposed as cognate to:', validators=[])
+    proposedAsCognateToScale = SelectField(
+        'Proposed as cognate to:',
+        default=0,
+        choices=PROPOSED_AS_COGNATE_TO_SCALE,
+        validators=[])
 
     def handle(self, request):
         try:
@@ -1017,6 +1142,23 @@ class CognateClassEditForm(AbstractTimestampedForm):
                 "Sorry, cognate class %s does not exist on the server." %
                 self.data['id'])
 
+    def validate_notes(form, field):
+        s = Source.objects.all().filter(deprecated=False)
+        pattern = re.compile(r'(\{ref +([^\{]+?)(:[^\{]+?)? *\})')
+        for m in re.finditer(pattern, field.data):
+            foundSet = s.filter(shorthand=m.group(2))
+            if not foundSet.count() == 1:
+                raise ValidationError('In field “Notes” source shorthand “%(name)s” is unknown.', 
+                                            params={'name': m.group(2)})
+
+    def validate_justificationDiscussion(form, field):
+        s = Source.objects.all().filter(deprecated=False)
+        pattern = re.compile(r'(\{ref +([^\{]+?)(:[^\{]+?)? *\})')
+        for m in re.finditer(pattern, field.data):
+            foundSet = s.filter(shorthand=m.group(2))
+            if not foundSet.count() == 1:
+                raise ValidationError('In field “Justification & Discussion” source shorthand “%(name)s” is unknown.', 
+                                            params={'name': m.group(2)})
 
 class CognateJudgementSplitRow(AbstractTimestampedForm):
     idField = IntegerField('Id', validators=[InputRequired()])
@@ -1074,6 +1216,12 @@ class LexemeCognateClassRow(AbstractTimestampedForm):
     id = IntegerField('Cognate Class id', validators=[InputRequired()])
     root_form = StringField('Root form', validators=[InputRequired()])
     root_language = StringField('Root language', validators=[InputRequired()])
+    loanword =  BooleanField('Loanword', validators=[InputRequired()])
+    loan_source = TextField('Loan Source', validators=[InputRequired()])
+    loanSourceCognateClass = CognateClassField(
+        'Id of related cc', validators=[InputRequired()])
+    parallelLoanEvent = BooleanField(
+        'Parallel Loan Event', validators=[InputRequired()])
 
 
 class LexemeRowViewMeaningsForm(AbstractTimestampedForm,
@@ -1544,6 +1692,8 @@ class MeaningListRowForm(AbstractTimestampedForm):
         'Example Context', validators=[InputRequired()])
     ixElicitation = IntegerField(
         'Ix Elicitation', validators=[InputRequired()])
+    concepticon_id = IntegerField('Concepticon ID',
+                          validators=[InputRequired()])
 
 
 class MeaningListTableForm(WTForm):
@@ -1596,6 +1746,7 @@ class EditCitationForm(forms.Form):
 class EditCognateClassCitationForm(forms.ModelForm):
     comment = forms.CharField(
         widget=forms.Textarea(attrs={'cols': 60, 'rows': 20}), required=False)
+    rfcWeblink = forms.URLField(label='Web Link', required=False)
 
     def validate_unique(self):
         """Calls the instance's validate_unique() method and updates the
@@ -1613,7 +1764,7 @@ class EditCognateClassCitationForm(forms.ModelForm):
 
     class Meta:
         model = CognateClassCitation
-        fields = ["source", "pages", "comment"]
+        fields = ["source", "pages", "comment", "rfcWeblink"]
         widgets = {
             'source': autocomplete.ModelSelect2(url='source-autocomplete')
         }
@@ -1796,10 +1947,10 @@ class SourceDetailsForm(forms.ModelForm):
         self.fields['bibtex'].initial = instance.bibtex
         for field in self.fields:
             self.fields[field].widget.attrs['readonly'] = True
-            if instance:
-                value = getattr(instance, field)
-                if value in ['', None]:
-                    del self.fields[field]
+            # if instance:
+            #     value = getattr(instance, field)
+            #     if value in ['', None]:
+            #         del self.fields[field]
 
 
 class SourceEditForm(forms.ModelForm):
@@ -1823,6 +1974,10 @@ class SourceEditForm(forms.ModelForm):
                              'part', 'volume', 'ENTRYTYPE']:
                 self.fields[field].widget = forms.Textarea(
                     attrs={'cols': 22, 'rows': 1})
+        self.fields['citation_text'].label = 'Citation Text (required)'
+        self.fields['citation_text'].required = True
+        self.fields['shorthand'].label = 'Shorthand (required)'
+        self.fields['shorthand'].required = True
 
 
 class UploadBiBTeXFileForm(forms.Form):
@@ -1900,7 +2055,7 @@ class CognateClassInlineForm(OrderableInlineModelForm):
 
     class Meta:
         model = CognateClassCitation
-        fields = ('cognate_class', 'root_form', 'comment')
+        fields = ('cognate_class', 'root_form', 'comment', 'rfcWeblink')
         readonly_fields = fields
 
     def __init__(self, *args, **kwargs):

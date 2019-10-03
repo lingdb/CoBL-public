@@ -10,27 +10,35 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-7">
       {% if user.is_authenticated and user.is_staff %}
-        <div class="well">
-          Download a NEXUS file from a predefined language list. Specify the list of
-          languages, the list of meanings, and the level of coding reliability.
-        </div>
-        <form action="" method="POST" class="form-horizontal">
-          {% csrf_token %}
-            <legend>Export data</legend>
-            {% for field in form %}
-            <div class="form-group">
-              <label class="col-sm-6 control-label">
-                {{ field.label }}
-              </label>
-              <div class="col-sm-6" style="padding-top: 7px;">
-                {{ field }}<br>{{ field.help_text }}
+        {% if form %}
+          <div class="well">
+            Download a NEXUS file from a predefined language list. Specify the list of
+            languages, the list of meanings, and the level of coding reliability.
+          </div>
+          <form action="" method="POST" class="form-horizontal">
+            {% csrf_token %}
+              <legend>Export data</legend>
+              {% for field in form %}
+              <div class="form-group">
+                <label class="col-sm-6 control-label">
+                  {{ field.label }}
+                </label>
+                <div class="col-sm-6" style="padding-top: 7px;">
+                  {{ field }}<br>{{ field.help_text }}
+                </div>
               </div>
-            </div>
-            {% endfor %}
-            <input type="submit" name="submit" value="Submit" class="btn btn-primary">
-        </form>
+              {% endfor %}
+              <br />
+              <input type="submit" name="submit" value="Submit" class="btn btn-primary">
+              <br /><br />
+          </form>
+        {% else %}
+          <div class="well">
+            Sorry, the server is still computing an export. Please try again later by reloading this page.
+          </div>
+        {% endif %}
       {% else %}
         <div class="well">
           Sorry, nothing to see here.

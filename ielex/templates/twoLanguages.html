@@ -18,21 +18,18 @@
 {% block content %}
   {% include "snippets/lexemeHandlingModal.html" %}
   <div class="row">
-    <div class="col-md-12"
-         {% if user.is_authenticated %}
-            style="margin-top: 86px;"
-         {% else %}
-            style="margin-top: 43px;"
-         {% endif %}>
+    <div class="col-md-12">
       {% if user.is_authenticated %}
-      <form action="" method="POST" name="lex_ed_form" id="lex_ed_form_copyacross">
+        <form action="" method="POST" name="lex_ed_form" id="lex_ed_form_copyacross">
         {% csrf_token %}
       {% endif %}
       <div class="fixedContainer">
         {% if user.is_authenticated %}
           <div class="form-group pull-right">
-            <span class="badge important">{{ lex_ed_form.lexemes|length }}</span>
-            Dup. mgs:
+            <span title="Proportion of meanings in which these two languages have lexemes that are cognate." 
+                class="badge important">{{ numOfSharedCCPerSwadeshMeanings }} {{ numOfSwadeshMeaningsSharedCC }}/{{ numOfSwadeshMeanings }}</span>
+            <span title="Duplicate meanings" 
+                class="badge important">{{ lex_ed_form.lexemes|length }}</span>
             <button type="button"
                     class="filterDistinct btn btn-default"
                     data-attr="meaningid"
@@ -51,15 +48,18 @@
         {% endif %}
         {% include "snippets/prev_next_twoLanguages.html" %}
       </div>
-        <table class="table table-condensed viewTableFilter"
-               id="viewTwoLanguages"
-               {% if user.is_authenticated %}
-                  data-floatheadtop="86"
-               {% else %}
-                  data-floatheadtop="43"
-               {% endif %}>
+      <div>
+        <table class="table table-condensed viewTableFilter markNewMeaning"
+               id="viewTwoLanguages" data-floatheadtop="54" style="margin-top:38px">
           <thead>
             <tr>
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    <span style="color:#aaa;font-size:80%">Elic. Ix.</span>
+                  </div>
+                </div>
+              </th>
               {# id_title.html #}
               <th class="hide"></th>
               {# warnings_title.html #}
@@ -74,11 +74,12 @@
               <th></th>
               {# nativeScript_title.html #}
               <th>Native Script</th>
+              <th style="width:6px"></th>
               {# notswadesh_title.html #}
               <th>
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
-                    Not Swh
+                    Not Target
                   </div>
                 </div>
               </th>
@@ -95,13 +96,15 @@
                 </div>
               </th>
               {# cognateclassids_title.html #}
-              <th style="width: 45px;">
+              <th style="text-align: center;">
                 Cog.<br>IDs
               </th>
+              {# ccSwdKind_title.html #}
+              <th class="hide"></th>
               {# cognateclassview_title.html #}
-              <th></th>
+              <th style="width: 50px;"></th>
               {# cognateclasses_title.html #}
-              <th>Cog.<br>Alias</th>
+              <th style="width: 45px;">Cog.<br>Alias</th>
               {# rootform_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
@@ -135,7 +138,19 @@
               {# notes_title.html #}
               <th>Notes</th>
             </tr>
+
             <tr class="filterBar">
+              {# Elic Ix #}
+              <td>
+                <input type="text"
+                       class="filterNumber form-control"
+                       data-selector=".lexemeIxElicitation"
+                       style="width: 2em;">
+                  <div class="btn btn-xs btn-default sortIntText"
+                       data-selector=".lexemeIxElicitation">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+              </td>
               {# id_filter.html #}
               <td class="hide"></td>
               {# warnings_filter.html #}
@@ -151,13 +166,6 @@
               </td>
               {# copyCognateClass_filter.html #}
               <td></td>
-              {# cognateclassids_filter.html #}
-              <td style="width: 45px;" colspan="2">
-                <div class="btn btn-xs btn-default sortIntText"
-                     data-selector=".cognateClassId">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              </td>
               {# romanised_filter.html #}
               <td>
                 {% if user.is_authenticated %}
@@ -200,6 +208,7 @@
                   </div>
                 {% endif %}
               </td>
+              <td></td>
               {# notswadesh_filter.html #}
               <td>
                 <button type="button" class="filterBool btn btn-xs btn-danger"
@@ -216,6 +225,21 @@
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
+              {# cognateclassids_filter.html #}
+              <td style="text-align: center;">
+                <div class="btn btn-xs btn-default sortIntText" style="width:30px"
+                     data-selector=".cognateClassId">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+                {# ccSwdKind_filter.html #}
+                <button title="Filter cognate sets according shared sets (Swadesh only)" type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".lexemeCcSwdKind input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# ccSwdKind_filter.html #}
+              <td class="hide"></td>
+              <td></td>
               {# cognateclasses_filter.html #}
               <td>
                 {% if user.is_authenticated %}
@@ -282,29 +306,34 @@
                 {% if user.is_authenticated %}
                   <input type="text" class="filterInput form-control"
                          data-selector=".lexemeNotes input">
-                  </div>
                 {% else %}
                   <input type="text" class="filterText form-control"
                          data-selector=".lexemeNotes">
-                  </div>
                 {% endif %}
               </td>
             </tr>
           </thead>
+
           <tbody>
             {% for lexeme in lex_ed_form.lexemes %}
               <tr class="content_row"
-                  data-meaningid="{{ lexeme.object_data.meaning_id }}">
+                  data-meaningid="{{ lexeme.object_data.meaning_id }}" data-issourcelg="{{ lexeme.object_data.sourceLg }}">
                 {# id_data.html #}
+                <td class="lexemeIxElicitation" align="right">
+                  <span style="color:#aaa;font-size:60%;">{{ lexeme.object_data.meaning.ixElicitation }}</span>
+                </td>
                 <td class="hide">
                   {{ lexeme.id }}
                   {{ lexeme.lastTouched }}
                   {{ lexeme.lastEditedBy }}
                 </td>
                 {# warnings_data.html #}
-                <td>
+                <td 
+                  {% if lexeme.object_data.sourceLg %}
+                    style="background-color:#E0E0E0;"
+                  {% endif %}>
                   {% if lexeme.object_data.meaning.doubleCheck %}
-                  <div style="color: #ff0000;"
+                  <div style="color: #ff0000;width:16px !important"
                        data-toggle="tooltip"
                        data-placement="top"
                        data-container="body"
@@ -314,7 +343,12 @@
                   {% endif %}
                 </td>
                 {# meaning_data.html #}
-                <td>
+                <td 
+                {% if lexeme.object_data.sourceLg %}
+                  style="background-color:#E0E0E0;width:16px !important"
+                {% else %}
+                  style="width:16px !important"
+                {% endif %}>
                   <a href="https://github.com/lingdb/CoBL-public/wiki/{{ lexeme.object_data.meaning.gloss }}"
                      title="View wiki page."
                      target="_blank"
@@ -322,7 +356,10 @@
                     <span class="glyphicon glyphicon-info-sign"></span>
                   </a>
                 </td>
-                <td class="lexemeMeaning">
+                <td class="lexemeMeaning"
+                  {% if lexeme.object_data.sourceLg %}
+                style="background-color:#E0E0E0;"
+                {% endif %}>
                   <a href="{% url 'meaning-report' lexeme.object_data.meaning_id %}"
                      style="font-size: 15px; color: #006400;"
                      {% if lexeme.object_data.meaning.tooltip %}
@@ -350,37 +387,68 @@
                 </td>
                 {# copyCognateClass_data.html #}
                 <td>
-                  {% if lexeme.object_data.original %}
-                    <a class="btn btn-default btn-xs pull-right"
-                       data-toggle="tooltip"
-                       data-placement="bottom"
-                       title="Copy over cognate set assignment from the reference language selected here (in grey)."
-                       data-assigncognatesfromlexeme="{{ lexeme.object_data.original.id }}"
-                       data-assigncognatestolexeme="{{ lexeme.object_data.id }}">
-                      <span class="glyphicon glyphicon-share-alt"></span>
-                    </a>
+                  {% if user.is_authenticated %}
+                    {% if not lexeme.object_data.sourceLg %}
+                      {% for lexId in lexeme.object_data.originalIds %}
+                        <a class="btn btn-default btn-xs pull-right"
+                           data-toggle="tooltip"
+                           data-placement="top"
+                           title="Copy over cognate set assignment from the reference language selected: Lexeme '{{lexId.romanised}}'."
+                           data-assigncognatesfromlexeme="{{ lexId.id }}"
+                           data-assigncognatestolexeme="{{ lexeme.object_data.id }}">
+                          <span class="glyphicon glyphicon-share-alt"></span>
+                        </a>
+                      {% endfor %}
+                    {% endif %}
                   {% endif %}
                 </td>
                 {# romanised_data.html #}
                 <td class="lexemeRomanised">
                   {% if user.is_authenticated %}
                     {% form_field lexeme.romanised id="romanised" class="form-control" style="font-size: 15px;" %}
-                  {% elif lexeme.object_data.romanised %}
+                  {% else %}
                     {{ lexeme.object_data.romanised }}
                   {% endif %}
                 </td>
                 {# viewcopy_data.html #}
                 <td>
+                  {% if not lexeme.object_data.sourceLg %}
                   <a href="{% url 'view-lexeme' lexeme.object_data.id %}" title="View detailed information on lexeme">
                     <span class="glyphicon glyphicon-search"></span>
                   </a>
+                  {% endif %}
                 </td>
                 {# nativeScript_data.html #}
                 <td class="lexemeNativeScript">
                   {% if user.is_authenticated %}
-                    {% form_field lexeme.nativeScript id="nativeScript" class="form-control" %}
+                    {% if lexeme.object_data.sourceLg %}
+                      {% if sourceLang.nativeScriptIsRtl %}
+                        {% form_field lexeme.nativeScript id="nativeScript" class="form-control" dir="rtl" %}
+                      {% else %}
+                        {% form_field lexeme.nativeScript id="nativeScript" class="form-control" %}
+                      {% endif %}
+                    {% else %}
+                      {% if targetLang.nativeScriptIsRtl %}
+                        {% form_field lexeme.nativeScript id="nativeScript" class="form-control" dir="rtl" %}
+                      {% else %}
+                        {% form_field lexeme.nativeScript id="nativeScript" class="form-control" %}
+                      {% endif %}
+                    {% endif %}
                   {% elif lexeme.object_data.nativeScript %}
                     {{ lexeme.object_data.nativeScript }}
+                  {% endif %}
+                </td>
+                <td>
+                  {% if lexeme.object_data.hasNotTargets %}
+                    <span class="glyphicon glyphicon-plus-sign" 
+                      {% if lexeme.object_data.notTargetCC %}
+                        style="color:#ff1a1a;margin-top:8px" 
+                        title="The meaning has further not target lexeme(s) and at least one is cognate to this lexeme."
+                      {% else %}
+                        style="margin-top:8px" 
+                        title="The meaning has further not target lexeme(s)."
+                      {% endif %}
+                      ></span>
                   {% endif %}
                 </td>
                 {# notswadesh_data.html #}
@@ -401,7 +469,8 @@
                   </center>
                 </td>
                 {# cognateclassids_data.html #}
-                <td class="cognateClassId" style="text-align: center; width: 45px;">
+                <td class="cognateClassId" 
+                    style="text-align: center;background-color:{{lexeme.object_data.ccBackgroundColor}};">
                   {% for c in lexeme.object_data.allCognateClasses %}
                     <a href="/cognate/{{ c.id }}/"
                        target="_blank"
@@ -410,14 +479,21 @@
                     </a>
                   {% endfor %}
                 </td>
+                {# ccSwdKind_data.html #}
+                <td class="hide lexemeCcSwdKind">
+                  <input {% if lexeme.object_data.ccSwdKind %}checked{% endif %}
+                    class="ccSwdKind_checkbox form-control" 
+                    disabled="disabled" id="lexemes-1-ccSwdKind" 
+                    name="lexemes-1-ccSwdKind" type="checkbox" value="y">
+                </td>
                 {# cognateclassview_data.html #}
-                <td style="padding-left: 4px; padding-right: 4px;">
-                  <a href="/meaning/{{ lexeme.object_data.meaning.gloss }}/cognateclasslist/">
+                <td>
+                  <a href="/meaning/{{ lexeme.object_data.meaning.gloss }}/cognateclasslist/" target="_blank">
                     <img src="{% static '1c.png' %}">
                   </a>
                 </td>
                 {# cognateclasses_data.html #}
-                <td style="text-align: center; color: #8B4510;">
+                <td style="text-align: left; color: #8B4510;">
                   <div class="cognateClasses">
                     {% if user.is_authenticated %}
                       {% form_field lexeme.combinedCognateClassAssignment class="form-control" %}
@@ -466,129 +542,10 @@
                   {% endif %}
                 </td>
               </tr>
-              {% if lexeme.object_data.original %}
-                <tr class="original_row"
-                    id="original_row_lexeme{{ lexeme.object_data.original.id }}"
-                    style="background-color: #E0E0E0;">
-                  {# id_original.html #}
-                  <td class="hide"></td>
-                  {# warnings_original.html #}
-                  <td></td>
-                  {# meaning_original.html #}
-                  <td>
-                    <a href="https://github.com/lingdb/CoBL-public/wiki/{{ lexeme.object_data.original.meaning.gloss }}"
-                       title="View wiki page."
-                       target="_blank"
-                       style="color: #006400;">
-                      <span class="glyphicon glyphicon-info-sign"></span>
-                    </a>
-                  </td>
-                  <td class="lexemeMeaning">
-                    <a href="/meaning/{{ lexeme.object_data.original.meaning.id }}/"
-                       style="font-size: 15px; color: #006400;"
-                       {% if lexeme.object_data.meaning.tooltip %}
-                         data-toggle="tooltip"
-                         data-placement="top"
-                         data-container="body"
-                         title="{{ lexeme.object_data.meaning.tooltip }}"
-                       {% endif %}>
-                      {{ lexeme.object_data.original.meaning }}
-                    </a>
-                  </td>
-                  {# copyCognateClass_original.html #}
-                  <td></td>
-                  {# romanised_original.html #}
-                  <td class="lexemeRomanised">
-                    {{ lexeme.object_data.original.romanised }}
-                  </td>
-                  {# viewcopy_original.html #}
-                  <td></td>
-                  {# nativeScript_original.html #}
-                  <td class="lexemeNativeScript">
-                    {{ lexeme.object_data.original.nativeScript }}
-                  </td>
-                  {# notswadesh_original.html #}
-                  <td class="lexemeNotSwadeshTerm">
-                    <input type="checkbox"
-                           {% if lexeme.object_data.original.not_swadesh_term %}
-                             checked="checked"
-                           {% endif %}
-                           class="form-control"
-                           disabled="disabled">
-                  </td>
-                  {# ncog_original.html #}
-                  <td class="lexemeNumCogCoded"
-                      style="width: 50px; border-left: 2px solid #dddddd;">
-                    <center>
-                      <span class="badge">
-                        {{ lexeme.object_data.original.number_cognate_coded }}
-                      </span>
-                    </center>
-                  </td>
-                  {# cognateclassids_original.html #}
-                  <td class="cognateClassId" style="text-align: center; width: 45px;">
-                    {% for c in lexeme.object_data.original.allCognateClasses %}
-                      <a href="/cognate/{{ c.id }}/"
-                         target="_blank"
-                         style="color: #8B4510;">
-                        {{ c.id }}
-                      </a>
-                    {% endfor %}
-                  </td>
-                  {# cognateclassview_original.html #}
-                  <td style="padding-left: 4px; padding-right: 4px;">
-                    <a href="/meaning/{{ lexeme.object_data.original.meaning.gloss }}/cognateclasslist/">
-                      <img src="{% static '1c.png' %}">
-                    </a>
-                  </td>
-                  {# cognateclasses_original.html #}
-                  <td style="text-align: center; color: #8B4510;">
-                    <div class="cognateClasses">
-                    {% for c in lexeme.object_data.original.allCognateClasses %}
-                      <a href="/cognate/{{ c.id }}/"
-                         target="_blank"
-                         style="color: #8B4510;">
-                        {{ c.alias }}
-                      </a>
-                    {% endfor %}
-                    </div>
-                  </td>
-                  {# rootform_original.html #}
-                  <td class="lexemeRootForm" style="color: #8B4510;">
-                    {% if lexeme.object_data.original.allCognateClasses|length == 1 %}
-                      {{ lexeme.object_data.original.allCognateClasses.0.rootFormOrPlaceholder }}
-                    {% endif %}
-                  </td>
-                  {# rootlanguage_original.html #}
-                  <td class="lexemeRootLanguage nowrap" style="color: #8B4510; width: 155px;">
-                    {% if lexeme.object_data.original.allCognateClasses|length == 1 %}
-                      {{ lexeme.object_data.original.allCognateClasses.0.rootLanguageOrPlaceholder }}
-                    {% endif %}
-                  </td>
-                  {# loanevent_original.html #}
-                  <td class="lexemeLoanEvent" style="border-right: 2px solid #dddddd;">
-                    {% if lexeme.object_data.original.show_loan_event %}
-                      <input type="checkbox"
-                        {% if lexeme.object_data.original.loan_event %}
-                          checked="checked"
-                        {% endif %}
-                        class="form-control"
-                        disabled="disabled">
-                    {% endif %}
-                  </td>
-                  {# gloss_original.html #}
-                  <td class="lexemeGloss">
-                    {{ lexeme.object_data.original.gloss }}
-                  </td>
-                  {# notes_original.html #}
-                  <td class="lexemeNotes">
-                    {{ lexeme.object_data.original.notes }}
-                  </td>
-                </tr>
-              {% endif %}
             {% endfor %}
           </tbody>
         </table>
+      </div>
       {% if user.is_authenticated %}
         </form>
       {% endif %}

@@ -193,7 +193,7 @@
                 </div>
               </th>
               {# dubiousSet_title.html #}
-              <th data-toggle="tooltip"
+              <!-- <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
                   title="Some member lexemes may not actually be cognates but just lookalikes.">
@@ -202,7 +202,7 @@
                     Dubious set
                   </div>
                 </div>
-              </th>
+              </th> -->
               {# loanword_title.html #}
               <th style="border-left: 2px solid #dddddd;">
                 <div class="vertical-text">
@@ -430,12 +430,12 @@
                 </button>
               </td>
               {# dubiousSet_filter.html #}
-              <td>
+              <!-- <td>
                 <button type="button" class="filterBool btn btn-xs btn-default"
                         data-selector=".dubiousSet input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
-              </td>
+              </td> -->
               {# loanword_filter.html #}
               <td style="border-left: 2px solid #dddddd;">
                 <button type="button" class="filterBool btn btn-xs btn-default"
@@ -477,7 +477,8 @@
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
-                         data-selector=".cogLoanSource input">
+                         data-selector=".cogLoanSource input"
+                         style="width: 2em;">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".cogLoanSource input">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -485,7 +486,8 @@
                 {% else %}
                   <input type="text"
                          class="filterText form-control"
-                         data-selector=".cogLoanSource">
+                         data-selector=".cogLoanSource"
+                         style="width: 2em;">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".cogLoanSource">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -498,7 +500,7 @@
                   <input type="text"
                          class="filterInput form-control"
                          data-selector=".loanEventTimeDepthBP input"
-                         style="width: 3em;">
+                         style="width: 2.5em;">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".loanEventTimeDepthBP input">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -507,7 +509,7 @@
                   <input type="text"
                          class="filterText form-control"
                          data-selector=".loanEventTimeDepthBP"
-                         style="width: 3em;">
+                         style="width: 2.5em;">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".loanEventTimeDepthBP">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -519,7 +521,8 @@
                 {% if user.is_authenticated %}
                   <input type="text"
                          class="filterInput form-control"
-                         data-selector=".sourceFormInLoanLanguage input">
+                         data-selector=".sourceFormInLoanLanguage input"
+                         style="width: 2.5em;">
                   <div class="btn btn-xs btn-default sortInput"
                        data-selector=".sourceFormInLoanLanguage input">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -527,7 +530,8 @@
                 {% else %}
                   <input type="text"
                          class="filterText form-control"
-                         data-selector=".sourceFormInLoanLanguage">
+                         data-selector=".sourceFormInLoanLanguage"
+                         style="width: 2.5em;">
                   <div class="btn btn-xs btn-default sortText"
                        data-selector=".sourceFormInLoanLanguage">
                     <span class="glyphicon glyphicon-sort"></span>
@@ -618,7 +622,10 @@
                     style="color: #8B4510;
                            text-align: center;
                            border-left: 2px solid #dddddd;">
-                  {{ cc.idField.data }}
+                  <a href="{{cc.object_data.get_absolute_url}}"
+                     style="color: #8B4510;">
+                    {{ cc.idField.data }}
+                  </a>
                   {% if user.is_authenticated %}
                     {% form_field cc.idField class="hide" required="required" %}
                     {% form_field cc.lastTouched class="hide" required="required" %}
@@ -643,7 +650,7 @@
                 </td>
                 {# merge_data.html #}
                 <td>
-                  <input type="checkbox"
+                  <input type="checkbox" name="mergeCognateClasses"
                          class="mergeCognateClasses form-control"
                          value="{{ cc.idField.data }}">
                 </td>
@@ -720,13 +727,13 @@
                   {% endif %}
                 </td>
                 {# dubiousSet_datahtml #}
-                <td class="dubiousSet">
+                <!-- <td class="dubiousSet">
                   {% if user.is_authenticated %}
                     {% form_field cc.dubiousSet class="form-control" %}
                   {% elif cc.gloss_in_root_lang.data %}
                     {% form_field cc.dubiousSet class="form-control" disabled="disabled" %}
                   {% endif %}
-                </td>
+                </td> -->
                 {# loanword_data.html #}
                 <td style="border-left: 2px solid #dddddd;"
                     class="cogLoanword loanEventCell">

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Meaning list {{ defaultWordlist }}{% endblock %}
+
+{% block top %}<h1>Meaning list {{ defaultWordlist }}</h1>{% endblock %}
+
+{% block content %}
+  <form action="" method="POST">{% csrf_token %}
+    <div class="pull-left" style="margin-right:100px !important">
+    <h3>Edit meta data of the meaning list</h3>
+    <table style="margin:10px;">
+      {{ name_form.as_table }}
+      <tr>
+        <td></td>
+        <td>
+          <input type="submit" name="name_form" value="Submit">
+          <input type="submit" name="cancel" value="Cancel">
+        </td>
+      </tr>
+    </table>
+    <br /><br /><br />
+    <div>
+        <label>Delete the meaning list {{ defaultWordlist }}</label><br />
+        <input class="btn" style="background-color:red;color:white" type="submit" name="delete" value="Delete" onclick="return confirm('Are you sure to delete {{ defaultWordlist }}?')">
+    </div>
+    <br /><br />
+    </div>
+    <div class="pull-left">
+    <h3>Manage meanings of the meaning list<br /><i><small>by clicking on items &mdash; <font color='red'>changes will be stored immediately</font></small></i></h3>
+    <table style="margin:10px;">
+      <tr>
+        <th>Excluded ({{ n_excluded }})</th>
+        <th></th>
+        <th>Included ({{ n_included }})</th>
+      </tr>
+      <tr>
+        <td>{{ list_form.excluded_meanings }}</td>
+        <td><span class="glyphicon glyphicon-resize-horizontal"></td>
+        <td>{{ list_form.included_meanings }}</td>
+        <td style="vertical-align:bottom;padding:0px 50px;"><input type="submit" name="cancel" value="Finish"></td>
+      </tr>
+      <!-- <tr>
+        <td><input type="submit" name="cancel" value="Cancel"></td>
+        <td>
+          <a class="button" href="{% url 'reorder-meaning-list' current_wordlist_name %}">
+            <input type="button" name="sort" value="Change Sort Order">
+          </a>
+        </td>
+      </tr> -->
+      <!-- <tr>
+        <td>
+          <input type="submit" name="cancel" value="Finish">
+        </td>
+      </tr> -->
+    </table>
+    </div>
+  </form>
+  <br />
+{% endblock %}
+
+{% block controls %}
+  {% include "snippets/defaultSelections.html" %}
+  {% include "snippets/go_to.html" %}
+  <!-- <li>
+    <a href="{% url 'reorder-meaning-list' current_wordlist_name %}">
+      edit sort order ‘{{ current_meaning_list_name }}’
+    </a>
+  </li> -->
+{% endblock %}
+{# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

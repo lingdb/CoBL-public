@@ -1,17 +1,31 @@
 {% extends "admin/base.html" %}
+{% load static from staticfiles %}
+
 {% load i18n %}
 
 {% block title %}{{ title }} | {{ project_short_name }} site admin' {% endblock %}
 
 {% block branding %}
-<h1 id="site-name">{{ project_short_name }} administration</h1>
+<h1 id="site-name">{{ project_short_name }} administration</h1> 
+<table>
+<tr>
+  <td>
+    <ul>
+      Database
+      <li><a href="/admin/viewCsvImport/">Import CSV files</a></li>
+    </ul>
+  </td>
+  <td>
+    <ul>
+      Manage Meaning Lists
+      <li><a href="/meaninglist/add-new/">Add a new meaning list</a></li>
+      <li><a href="/meaninglist/edit/">Edit meaning lists</a></li>
+    </ul>
+  </td>
+</tr>
+</table>
 {% endblock %}
 
 {% block nav-global %}
-<div style="padding: 13.2px 0px;">
-  <a href="/admin/viewCsvImport/">
-    Import .csv files
-  </a>
-</div>
 {% endblock %}
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

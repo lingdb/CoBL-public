@@ -25,14 +25,27 @@
     <div class="col-md-8 col-md-offset-2" style="margin-top: 51px;">
       <h2 style="margin-top: 0px;">Filter by clades:</h2>
       {% for cladeLink in cladeLinks %}
-        <a href="{{ cladeLink.href }}"
-           class="badge"
-           style="background-color: #{{cladeLink.color}};
-                  {% if not cladeLink.active %}
-                  opacity: 0.25;
-                  {% endif %}">
-          {{ cladeLink.name }}
-        </a>
+        {% if cladeLink.name == 'Non-Unique Mode' %}
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a href="{{ cladeLink.href }}"
+             class="badge"
+             title="if active it includes cognate sets occurring also in other selected clades otherwise it excludes them"
+             style="background-color: #{{cladeLink.color}};
+                    {% if not cladeLink.active %}
+                    opacity: 0.25;
+                    {% endif %}">
+            {{ cladeLink.name }}
+          </a>
+        {% else %}
+          <a href="{{ cladeLink.href }}"
+             class="badge"
+             style="background-color: #{{cladeLink.color}};
+                    {% if not cladeLink.active %}
+                    opacity: 0.25;
+                    {% endif %}">
+            {{ cladeLink.name }}
+          </a>
+        {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -45,7 +58,6 @@
           {% csrf_token %}
       {% endif %}
       <div class="fixedContainer">
-        {% if user.is_authenticated %}
           <div class="form-group pull-right">
             <span class="badge important updateCounts"
                   data-countformat="countVisible initial"
@@ -55,12 +67,13 @@
                   title="Visible / Total rows">
               {{ AddCogClassTableForm.cogclass|length }}
             </span>
+        {% if user.is_authenticated and false %}
             <a href="." class="btn btn-default">undo</a>
             <input type="submit" value="Save"
                    name="AddCogClassTableForm"
                    class="btn btn-danger">
-          </div>
         {% endif %}
+          </div>
       </div>
       <table class="table table-striped table-condensed viewTableFilter">
         <thead>
@@ -151,7 +164,7 @@
               </div>
             </th>
             {# dubiousSet_title.html #}
-            <th data-toggle="tooltip"
+            <!-- <th data-toggle="tooltip"
                 data-placement="bottom"
                 data-container="body"
                 title="Some member lexemes may not actually be cognates but just lookalikes.">
@@ -160,7 +173,7 @@
                   Dubious set
                 </div>
               </div>
-            </th>
+            </th> -->
             {# loanword_title.html #}
             <th style="border-left: 2px solid #dddddd;">
               <div class="vertical-text">
@@ -191,45 +204,47 @@
             {# loansource_title.html #}
             <th>Loan<br>Source Lg.</th>
             {# loanEventTimeDepthBP_title.html #}
-            <th data-toggle="tooltip"
-                data-placement="bottom"
-                data-container="body"
-                title="Loan event time depth BP">
-                Loan event time depth BP
-            </th>
-            {# sourceFormInLoanLanguage_title.html #}
-            <th data-toggle="tooltip"
-                data-placement="bottom"
-                data-container="body"
-                title="Form in loan source language">
-                Form in loan source language
-            </th>
-            {# loannotes_title.html #}
-            <th>Loan<br>Notes</th>
+            {# <th data-toggle="tooltip" #}
+            {#     data-placement="bottom" #}
+            {#     data-container="body" #}
+            {#     title="Loan event time depth BP"> #}
+            {#     Loan event time depth BP #}
+            {# </th> #}
+            {# {# sourceFormInLoanLanguage_title.html #}
+            {# <th data-toggle="tooltip" #}
+            {#     data-placement="bottom" #}
+            {#     data-container="body" #}
+            {#     title="Form in loan source language"> #}
+            {#     Form in loan source language #}
+            {# </th> #}
+            {# {# loannotes_title.html #}
+            {# <th>Loan<br>Notes</th> #}
             {# revisedYet_title.html #}
-            <th style="border-left: 2px solid #dddddd;">
-              <div class="vertical-text">
-                <div class="vertical-text__inner">
-                  Revised Yet?
+            {% if user.is_authenticated %}
+              <th style="border-left: 2px solid #dddddd;">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Revised Yet?
+                  </div>
                 </div>
-              </div>
-            </th>
-            {# revisedBy_title.html #}
-            <th>
-              <div class="vertical-text">
-                <div class="vertical-text__inner">
-                  Revised By
+              </th>
+              {# revisedBy_title.html #}
+              <th>
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Revised By
+                  </div>
                 </div>
-              </div>
-            </th>
+              </th>
+            {% endif %}
             {# onlyNotSwh_title.html #}
             <th data-toggle="tooltip"
                 data-placement="bottom"
                 data-container="body"
-                title="Checked iff all lexemes in the cognate class are marked as 'Not Swadesh'.">
+                title="Checked if all lexemes in the cognate class are marked as 'Not Target'.">
               <div class="vertical-text">
                 <div class="vertical-text__inner">
-                  Not Swh.
+                  Not Target
                 </div>
               </div>
             </th>
@@ -391,12 +406,12 @@
               </button>
             </td>
             {# dubiousSet_filter.html #}
-            <td>
+            <!-- <td>
               <button type="button" class="filterBool btn btn-xs btn-default"
                       data-selector=".dubiousSet input">
                 <span class="glyphicon glyphicon-question-sign"></span>
               </button>
-            </td>
+            </td> -->
             {# loanword_filter.html #}
             <td style="border-left: 2px solid #dddddd;">
               <button type="button" class="filterBool btn btn-xs btn-default"
@@ -454,95 +469,97 @@
               {% endif %}
             </td>
             {# loanEventTimeDepthBP_filter.html #}
-            <td>
-              {% if user.is_authenticated %}
-                <input type="text"
-                       class="filterInput form-control"
-                       data-selector=".loanEventTimeDepthBP input"
-                       style="width: 3em;">
-                <div class="btn btn-xs btn-default sortInput"
-                     data-selector=".loanEventTimeDepthBP input">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% else %}
-                <input type="text"
-                       class="filterText form-control"
-                       data-selector=".loanEventTimeDepthBP"
-                       style="width: 3em;">
-                <div class="btn btn-xs btn-default sortText"
-                     data-selector=".loanEventTimeDepthBP">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% endif %}
-            </td>
-            {# sourceFormInLoanLanguage_filter.html #}
-            <td>
-              {% if user.is_authenticated %}
-                <input type="text"
-                       class="filterInput form-control"
-                       data-selector=".sourceFormInLoanLanguage input">
-                <div class="btn btn-xs btn-default sortInput"
-                     data-selector=".sourceFormInLoanLanguage input">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% else %}
-                <input type="text"
-                       class="filterText form-control"
-                       data-selector=".sourceFormInLoanLanguage">
-                <div class="btn btn-xs btn-default sortText"
-                     data-selector=".sourceFormInLoanLanguage">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% endif %}
-            </td>
-            {# loannotes_filter.html #}
-            <td>
-              {% if user.is_authenticated %}
-                <input type="text"
-                       class="filterInput form-control"
-                       data-selector=".cogLoanNotes input">
-                <div class="btn btn-xs btn-default sortInput"
-                     data-selector=".cogLoanNotes input">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% else %}
-                <input type="text"
-                       class="filterText form-control"
-                       data-selector=".cogLoanNotes">
-                <div class="btn btn-xs btn-default sortText"
-                     data-selector=".cogLoanNotes">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% endif %}
-            </td>
+            {# <td> #}
+            {#   {% if user.is_authenticated %} #}
+            {#     <input type="text" #}
+            {#            class="filterInput form-control" #}
+            {#            data-selector=".loanEventTimeDepthBP input" #}
+            {#            style="width: 3em;"> #}
+            {#     <div class="btn btn-xs btn-default sortInput" #}
+            {#          data-selector=".loanEventTimeDepthBP input"> #}
+            {#       <span class="glyphicon glyphicon-sort"></span> #}
+            {#     </div> #}
+            {#   {% else %} #}
+            {#     <input type="text" #}
+            {#            class="filterText form-control" #}
+            {#            data-selector=".loanEventTimeDepthBP" #}
+            {#            style="width: 3em;"> #}
+            {#     <div class="btn btn-xs btn-default sortText" #}
+            {#          data-selector=".loanEventTimeDepthBP"> #}
+            {#       <span class="glyphicon glyphicon-sort"></span> #}
+            {#     </div> #}
+            {#   {% endif %} #}
+            {# </td> #}
+            {# {# sourceFormInLoanLanguage_filter.html #}
+            {# <td> #}
+            {#   {% if user.is_authenticated %} #}
+            {#     <input type="text" #}
+            {#            class="filterInput form-control" #}
+            {#            data-selector=".sourceFormInLoanLanguage input"> #}
+            {#     <div class="btn btn-xs btn-default sortInput" #}
+            {#          data-selector=".sourceFormInLoanLanguage input"> #}
+            {#       <span class="glyphicon glyphicon-sort"></span> #}
+            {#     </div> #}
+            {#   {% else %} #}
+            {#     <input type="text" #}
+            {#            class="filterText form-control" #}
+            {#            data-selector=".sourceFormInLoanLanguage"> #}
+            {#     <div class="btn btn-xs btn-default sortText" #}
+            {#          data-selector=".sourceFormInLoanLanguage"> #}
+            {#       <span class="glyphicon glyphicon-sort"></span> #}
+            {#     </div> #}
+            {#   {% endif %} #}
+            {# </td> #}
+            {# {# loannotes_filter.html #}
+            {# <td> #}
+            {#   {% if user.is_authenticated %} #}
+            {#     <input type="text" #}
+            {#            class="filterInput form-control" #}
+            {#            data-selector=".cogLoanNotes input"> #}
+            {#     <div class="btn btn-xs btn-default sortInput" #}
+            {#          data-selector=".cogLoanNotes input"> #}
+            {#       <span class="glyphicon glyphicon-sort"></span> #}
+            {#     </div> #}
+            {#   {% else %} #}
+            {#     <input type="text" #}
+            {#            class="filterText form-control" #}
+            {#            data-selector=".cogLoanNotes"> #}
+            {#     <div class="btn btn-xs btn-default sortText" #}
+            {#          data-selector=".cogLoanNotes"> #}
+            {#       <span class="glyphicon glyphicon-sort"></span> #}
+            {#     </div> #}
+            {#   {% endif %} #}
+            {# </td> #}
             {# revisedYet_filter.html #}
-            <td style="border-left: 2px solid #dddddd;">
-              <button type="button" class="filterBool btn btn-xs btn-default"
-                      data-selector=".revisedYet input">
-                <span class="glyphicon glyphicon-question-sign"></span>
-              </button>
-            </td>
-            {# revisedBy_filter.html #}
-            <td>
-              {% if user.is_authenticated %}
-                <input type="text"
-                       class="filterInput form-control"
-                       data-selector=".revisedBy input"
-                       style="width: 2em;">
-                <div class="btn btn-xs btn-default sortInput"
-                     data-selector=".revisedBy input">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% else %}
-                <input type="text"
-                       class="filterText form-control"
+            {% if user.is_authenticated %}
+              <td style="border-left: 2px solid #dddddd;">
+                <button type="button" class="filterBool btn btn-xs btn-default"
+                        data-selector=".revisedYet input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# revisedBy_filter.html #}
+              <td>
+                {% if user.is_authenticated %}
+                  <input type="text"
+                         class="filterInput form-control"
+                         data-selector=".revisedBy input"
+                         style="width: 2em;">
+                  <div class="btn btn-xs btn-default sortInput"
+                       data-selector=".revisedBy input">
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% else %}
+                  <input type="text"
+                         class="filterText form-control"
+                         data-selector=".revisedBy">
+                  <div class="btn btn-xs btn-default sortText"
                        data-selector=".revisedBy">
-                <div class="btn btn-xs btn-default sortText"
-                     data-selector=".revisedBy">
-                  <span class="glyphicon glyphicon-sort"></span>
-                </div>
-              {% endif %}
-            </td>
+                    <span class="glyphicon glyphicon-sort"></span>
+                  </div>
+                {% endif %}
+              </td>
+            {% endif %}
             {# onlyNotSwh_filter.html #}
             <td>
               <button type="button" class="filterBool btn btn-xs btn-danger"
@@ -605,7 +622,10 @@
                 style="color: #8B4510;
                        text-align: center;
                        border-left: 2px solid #dddddd;">
-              {{ cc.idField.data }}
+              <a href="{{cc.object_data.get_absolute_url}}"
+                 style="color: #8B4510;">
+                {{ cc.idField.data }}
+              </a>
               {% if user.is_authenticated %}
                 {% form_field cc.idField class="hide" required="required" %}
                 {% form_field cc.lastTouched class="hide" required="required" %}
@@ -623,7 +643,7 @@
             </td>
             {# rootform_data.html #}
             <td class="cogRootForm">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.root_form class="form-control" style="width: 12em;" placeholder=cc.object_data.rootFormOrPlaceholder %}
               {% else %}
                 {{ cc.object_data.rootFormOrPlaceholder }}
@@ -631,7 +651,7 @@
             </td>
             {# rootlang_data.html #}
             <td class="cogRootLang">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.root_language class="form-control" style="width: 12em;" placeholder=cc.object_data.rootLanguageOrPlaceholder %}
               {% else %}
                 {{ cc.object_data.rootLanguageOrPlaceholder }}
@@ -639,7 +659,7 @@
             </td>
             {# notProtoIndoEuropean_data.html #}
             <td class="notProtoIndoEuropean">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.notProtoIndoEuropean class="form-control" %}
               {% else %}
                 {% form_field cc.notProtoIndoEuropean class="form-control" disabled="disabled" %}
@@ -647,7 +667,7 @@
             </td>
             {# glossinrootlang_data.html #}
             <td class="cogGlossInRootLang">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.gloss_in_root_lang class="form-control" data-longinput="16" %}
               {% elif cc.gloss_in_root_lang.data %}
                 {{ cc.gloss_in_root_lang.data }}
@@ -655,7 +675,7 @@
             </td>
             {# notes_data.html #}
             <td class="cogNotes">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.notes class="form-control" data-longinput="15" %}
               {% elif cc.object_data.notes %}
                 {{ cc.object_data.notes }}
@@ -663,14 +683,14 @@
             </td>
             {# proposedAs_data.html #}
             <td class="proposedAsCognateToCell">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.proposedAsCognateTo class="form-control numberField" data-dependencyfor-tr="proposedAsCognateTo" pattern="^\d*$" %}
               {% elif cc.object_data.proposedAsCognateTo_id %}
                 {{ cc.object_data.proposedAsCognateTo_id }}
               {% endif %}
             </td>
             <td class="proposedAsCognateToScale">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.proposedAsCognateToScale class="form-control" data-inputdepends="proposedAsCognateTo" %}
               {% elif cc.object_data.proposedAsCognateToScale %}
                 {{ cc.object_data.proposedAsCognateToScale }}
@@ -679,7 +699,7 @@
             {# ideophonic_data.html #}
             <td class="ideophonic"
                 style="border-left: 2px solid #dddddd;">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.ideophonic class="form-control" %}
               {% elif cc.gloss_in_root_lang.data %}
                 {% form_field cc.ideophonic class="form-control" disabled="disabled" %}
@@ -687,24 +707,24 @@
             </td>
             {# parallelDerivation_data.html #}
             <td class="parallelDerivation">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.parallelDerivation class="form-control" %}
               {% elif cc.gloss_in_root_lang.data %}
                 {% form_field cc.parallelDerivation class="form-control" disabled="disabled "%}
               {% endif %}
             </td>
             {# dubiousSet_data.html #}
-            <td class="dubiousSet">
+            <!-- <td class="dubiousSet">
               {% if user.is_authenticated %}
                 {% form_field cc.dubiousSet class="form-control" %}
               {% elif cc.gloss_in_root_lang.data %}
                 {% form_field cc.dubiousSet class="form-control" disabled="disabled" %}
               {% endif %}
-            </td>
+            </td> -->
             {# loanword_data.html #}
             <td style="border-left: 2px solid #dddddd;"
                 class="cogLoanword loanEventCell">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.loanword class="form-control" data-dependencyfor-tr="loanevent" %}
               {% else %}
                 {% form_field cc.loanword class="form-control" disabled="disabled" %}
@@ -712,7 +732,7 @@
             </td>
             {# parallelLoanEvent_data.html #}
             <td class="parallelLoanEvent loanEventCell">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.parallelLoanEvent class="form-control" data-inputdepends="loanevent" %}
               {% else %}
                 {% form_field cc.parallelLoanEvent class="form-control" disabled="disabled" %}
@@ -720,7 +740,7 @@
             </td>
             {# loanSourceCognateClass_data.html #}
             <td class="loanSourceCognateClass nowrap loanEventCell" style="width: 5em;">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.loanSourceCognateClass class="form-control numberField inline" pattern="^[0-9]*$" style="width: 3em;" data-inputdepends="loanevent" %}
               {% endif %}
               {% if cc.loanSourceCognateClass.data %}
@@ -736,53 +756,55 @@
             </td>
             {# loansource_data.html #}
             <td class="cogLoanSource loanEventCell">
-              {% if user.is_authenticated %}
+              {% if user.is_authenticated and false %}
                 {% form_field cc.loan_source class="form-control" data-inputdepends="loanevent" %}
               {% elif cc.loan_source.data %}
                 {{ cc.loan_source.data }}
               {% endif %}
             </td>
             {# loanEventTimeDepthBP_data.html #}
-            <td class="loanEventTimeDepthBP loanEventCell">
-              {% if user.is_authenticated %}
-                {% form_field cc.loanEventTimeDepthBP class="form-control" style="width: 5em;" data-inputdepends="loanevent" %}
-              {% elif cc.loanEventTimeDepthBP.data %}
-                {{ cc.loanEventTimeDepthBP.data }}
-              {% endif %}
-            </td>
-            {# sourceFormInLoanLanguage_data.html #}
-            <td class="sourceFormInLoanLanguage loanEventCell">
-              {% if user.is_authenticated %}
-                {% form_field cc.sourceFormInLoanLanguage class="form-control" data-inputdepends="loanevent" %}
-              {% elif cc.sourceFormInLoanLanguage.data %}
-                {{ cc.sourceFormInLoanLanguage.data }}
-              {% endif %}
-            </td>
-            {# loannotes_data.html #}
-            <td class="cogLoanNotes loanEventCell">
-              {% if user.is_authenticated %}
-                {% form_field cc.loan_notes class="form-control" data-inputdepends="loanevent" %}
-              {% elif cc.loan_notes.data %}
-                {{ cc.loan_notes.data }}
-              {% endif %}
-            </td>
+            {# <td class="loanEventTimeDepthBP loanEventCell"> #}
+            {#   {% if user.is_authenticated %} #}
+            {#     {% form_field cc.loanEventTimeDepthBP class="form-control" style="width: 5em;" data-inputdepends="loanevent" %} #}
+            {#   {% elif cc.loanEventTimeDepthBP.data %} #}
+            {#     {{ cc.loanEventTimeDepthBP.data }} #}
+            {#   {% endif %} #}
+            {# </td> #}
+            {# {# sourceFormInLoanLanguage_data.html #}
+            {# <td class="sourceFormInLoanLanguage loanEventCell"> #}
+            {#   {% if user.is_authenticated %} #}
+            {#     {% form_field cc.sourceFormInLoanLanguage class="form-control" data-inputdepends="loanevent" %} #}
+            {#   {% elif cc.sourceFormInLoanLanguage.data %} #}
+            {#     {{ cc.sourceFormInLoanLanguage.data }} #}
+            {#   {% endif %} #}
+            {# </td> #}
+            {# {# loannotes_data.html #}
+            {# <td class="cogLoanNotes loanEventCell"> #}
+            {#   {% if user.is_authenticated %} #}
+            {#     {% form_field cc.loan_notes class="form-control" data-inputdepends="loanevent" %} #}
+            {#   {% elif cc.loan_notes.data %} #}
+            {#     {{ cc.loan_notes.data }} #}
+            {#   {% endif %} #}
+            {# </td> #}
             {# revisedYet_data.html #}
-            <th class="revisedYet"
-                style="border-left: 2px solid #dddddd;">
-              {% if user.is_authenticated %}
-                {% form_field cc.revisedYet class="form-control" %}
-              {% elif cc.object_data.revisedYet %}
-                {% form_field cc.revisedYet class="form-control" disabled="disabled" %}
-              {% endif %}
-            </th>
-            {# revisedBy_data.html #}
-            <th class="revisedBy">
-              {% if user.is_authenticated %}
-                {% form_field cc.revisedBy class="form-control" style="width: 2em;" pattern="^.{0,10}$" %}
-              {% elif cc.object_data.revisedBy %}
-                {{ cc.object_data.revisedBy }}
-              {% endif %}
-            </th>
+            {% if user.is_authenticated %}
+              <th class="revisedYet"
+                  style="border-left: 2px solid #dddddd;">
+                {% if user.is_authenticated and false %}
+                  {% form_field cc.revisedYet class="form-control" %}
+                {% elif cc.object_data.revisedYet %}
+                  {% form_field cc.revisedYet class="form-control" disabled="disabled" %}
+                {% endif %}
+              </th>
+              {# revisedBy_data.html #}
+              <th class="revisedBy">
+                {% if user.is_authenticated and false %}
+                  {% form_field cc.revisedBy class="form-control" style="width: 2em;" pattern="^.{0,10}$" %}
+                {% elif cc.object_data.revisedBy %}
+                  {{ cc.object_data.revisedBy }}
+                {% endif %}
+              </th>
+            {% endif %}
             {# onlyNotSwh_data.html #}
             <td class="onlyNotSwh">
               <input type="checkbox"

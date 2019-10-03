@@ -16,6 +16,10 @@ body {
 
 thead .filterText,
 thead .filterInput,
+thead .filterNumber,
+thead .filterNumberInput,
+thead .filterPhoneticInput,
+thead .filterPhonetic,
 thead .filterSwadesh {
   width: 75%;
   display: inline;
@@ -23,6 +27,9 @@ thead .filterSwadesh {
 
 thead .filterText.narrow,
 thead .filterInput.narrow,
+thead .filterNumber.narrow,
+thead .filterPhoneticInput.narrow,
+thead .filterPhonetic.narrow,
 thead .filterSwadesh.narrow {
   width: 50%;
   display: inline;
@@ -34,7 +41,7 @@ table .form-control {
 }
 
 .badge.important {
-  font-size: 25px;
+  font-size: 20px;
 }
 
 .space-right {
@@ -161,7 +168,7 @@ table.floatThead-table {
 
 #editCognateClassContent {
   position: fixed;
-  top: 60px;
+  top: 100px;
   bottom: 0px;
   right: 0px;
   width: 400px;
@@ -181,4 +188,7 @@ table input[type="checkbox"],
 button.filterBool {
   margin-left: auto;
   margin-right: auto;
+}
+.startNewMeaning {
+  border-top:3pt solid #444444 !important;
 }

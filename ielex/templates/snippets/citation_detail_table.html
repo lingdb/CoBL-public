@@ -1,9 +1,11 @@
 {# Used by the various xxxcitation_detail.html templates #}
 {% load lexicon_utils %}
-
+<br />
+<br />
+<br />
 <table>
   <tr>
-    <th>Source:</th>
+    <th width="130px">Source:</th>
     <td><a href="{{ citation.source.get_absolute_url }}">{{ citation.source.shorthand }}</a></td>
   </tr>
   <tr>
@@ -16,7 +18,16 @@
   </tr>
   <tr>
     <th>Comment:</th>
-    <td>{{ citation.comment|wikilink }} </td>
+      <td>{{ citation.getCommentExpandedMarkups|wikilink }} </td>
   </tr>
+  {% if citation.rfcWeblink %}
+  <tr>
+    <th>Web Reference:</th>
+    <td><a href="{{ citation.rfcWeblink }}" target="_new">{{ citation.rfcWeblink }}</td>
+    {% else %}
+    <td>{{ citation.rfcWeblink }} </td>
+  </tr>
+  {% endif %}
 </table>
+<br />
 {# vim: set ft=htmldjango nowrap shiftwidth=2 expandtab: #}

@@ -4,7 +4,7 @@
 {% load wtforms %}
 
 {% block title %}
-  Language list: {{ current_language_list_name }}
+  Lgs Rfc: Overview [{{ current_language_list_name }}]
 {% endblock %}
 
 {% block top %}
@@ -77,10 +77,10 @@
             <a href="{% url 'view-language-list' current_list.name %}" class="btn btn-default"> undo</a>
             <input type="submit" value="Save" name="langlist_form" class="btn btn-danger">
           </div>
-          <h1 class="inline">
-            Language list: {{ current_language_list_name }}
-          </h1>
           {% endif %}
+          <h1 class="inline">
+            Languages Reference: Overview
+          </h1>
           {% include "snippets/cladeFilter.html" %}
         </div>{# .fixedContainer #}
         <table class="table table-striped viewTableFilter
@@ -163,15 +163,23 @@
                 </th>
               {% endif %}
               {# historical_title.html #}
-              <th>
+              <th style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Historical
                   </div>
                 </div>
               </th>
+              {# fragmentary_title.html #}
+              <th style="width:25px !important">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Fragmentary
+                  </div>
+                </div>
+              </th>
               {# notInExport_title.html #}
-              <th>
+              <th style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Not in Exp.
@@ -203,11 +211,14 @@
                   </div>
                 </div>
               </th>
+              {# author_title #}
+              <th>Author(s)</th>
               {# reference_title.html #}
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Reference">
+                  title="Reference"
+                  style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Ref. Lg.
@@ -218,7 +229,8 @@
               <th data-toggle="tooltip"
                   data-placement="bottom"
                   data-container="body"
-                  title="Example Language?">
+                  title="Example Language?"
+                  style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Ex. Lg?
@@ -226,7 +238,7 @@
                 </div>
               </th>
               {# fossstat_title.html #}
-              <th>
+              <th style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Foss. Stat.
@@ -234,7 +246,7 @@
                 </div>
               </th>
               {# lowstat_title.html #}
-              <th>
+              <th style="width:25px !important">
                 <div class="vertical-text">
                   <div class="vertical-text__inner">
                     Low. Stat.
@@ -257,7 +269,7 @@
               <td colspan="2"></td>
               {# entryno_filter.html #}
               <td>
-                <div class="btn btn-xs btn-default sortIntText"
+                <div class="btn btn-xs btn-default sortIntText pull-right"
                      data-selector=".entryNo">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
@@ -266,14 +278,14 @@
               <td>
                 {% if user.is_authenticated and user.is_staff %}
                   <input type="text"
-                         class="filterNumberInput form-control"
+                         class="filterNumberInput form-control pull-right"
                          data-selector=".languageLevel0 input"
-                         style="width: 1.5em;">
+                         style="width: 1.7em;">
                 {% else %}
                   <input type="text"
                          class="filterNumber form-control"
                          data-selector=".languageLevel0"
-                         style="width: 1.5em;">
+                         style="width: 1.7em;">
                 {% endif %}
               </td>
               <td>
@@ -285,7 +297,7 @@
               {% if user.is_staff %}
                 <td>
                   <input type="text"
-                         class="filterNumberInput form-control"
+                         class="filterNumberInput form-control pull-right"
                          data-selector=".languageLevel1 input"
                          style="width: 1.5em;">
                 </td>
@@ -297,7 +309,7 @@
                 </td>
                 <td>
                   <input type="text"
-                         class="filterNumberInput form-control"
+                         class="filterNumberInput form-control pull-right"
                          data-selector=".languageLevel2 input"
                          style="width: 1.5em;">
                 </td>
@@ -309,7 +321,7 @@
                 </td>
                 <td class="hide">
                     <input type="text"
-                           class="filterNumberInput form-control"
+                           class="filterNumberInput form-control pull-right"
                            data-selector=".languageLevel3 input"
                            style="width: 1.5em;">
                 </td>
@@ -332,6 +344,14 @@
                 <button type="button"
                         class="filterBool btn btn-xs btn-default"
                         data-selector=".languageHistorical input">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </button>
+              </td>
+              {# fragmentary_filter.html #}
+              <td>
+                <button type="button"
+                        class="filterBool btn btn-xs btn-default"
+                        data-selector=".languageFragmentary input">
                   <span class="glyphicon glyphicon-question-sign"></span>
                 </button>
               </td>
@@ -360,7 +380,7 @@
                 <input type="text"
                        class="filterText form-control"
                        data-selector=".languageIsoCode"
-                       style="width: 2em;">
+                       style="width: 2em;padding-left: 0.5em;">
               </td>
               {# glotto_filter.html #}
               <td>
@@ -376,6 +396,16 @@
               <td></td>
               {# longitude_filter.html #}
               <td></td>
+              {# author_filter.html #}
+              <td>
+                <input type="text"
+                       class="filterText form-control narrow"
+                       data-selector=".languageAuthor">
+                <div class="btn btn-xs btn-default sortText"
+                     data-selector=".languageAuthor">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
               {# reference_filter.html #}
               <td>
                 <button type="button"
@@ -442,7 +472,7 @@
                   >
                   <center>
                     {% if user.is_authenticated and user.is_staff %}
-                      {% form_field language.level0 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level0 class="languageBranch form-control numberField pull-right" maxlength="2" size="2" style="width: 1.7em" pattern="^[0-9]{1,2}$" %}
                     {% elif language.level0.data %}
                       {{ language.level0.data }}
                     {% endif %}
@@ -465,7 +495,7 @@
                     {% endif %}
                     >
                     <center>
-                      {% form_field language.level1 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level1 class="languageBranch form-control numberField pull-right" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
                     </center>
                   </td>
                   <td class="languageLevel1Abbr">
@@ -484,7 +514,7 @@
                     {% endif %}
                     >
                     <center>
-                      {% form_field language.level2 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level2 class="languageBranch form-control numberField pull-right" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
                     </center>
                   </td>
                   <td class="languageLevel2Abbr">
@@ -503,7 +533,7 @@
                     {% endif %}
                     >
                     <center>
-                      {% form_field language.level3 class="languageBranch form-control numberField" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
+                      {% form_field language.level3 class="languageBranch form-control numberField pull-right" maxlength="2" size="1" style="width: 1.5em;" pattern="^[0-9]{1,2}$" %}
                     </center>
                   </td>
                   <td class="languageLevel3Abbr hide">
@@ -526,6 +556,14 @@
                     {% form_field language.historical class="form-control" disabled="disabled" %}
                   {% endif %}
                 </td>
+                {# fragmentary_data.html #}
+                <td class="languageFragmentary">
+                  {% if user.is_authenticated and user.is_staff %}
+                    {% form_field language.fragmentary class="form-control" data-dependencyfor-tr="fragmentary" %}
+                  {% else %}
+                    {% form_field language.fragmentary class="form-control" disabled="disabled" %}
+                  {% endif %}
+                </td>
                 {# notInExport_data.html #}
                 <td class="notInExport">
                   {% if user.is_authenticated and user.is_staff %}
@@ -536,11 +574,20 @@
                 </td>
                 {# name_link.html #}
                 <td>
+                  {% if user.is_authenticated and user.is_staff %}
                   <a href="{% url 'view-language-wordlist' language.object_data.ascii_name wordlist %}"
                      alt="view lexeme list"
                      title="View wordlist list for {{ language.object_data.utf8_name }}">
                      <img src="{% static '1l.png' %}">
                   </a>
+                  <span style="font-size:80%;text-color:#eee;">ID: {{language.object_data.id}}</span>
+                  {% else %}
+                  <a href="{% url 'view-language-wordlist' language.object_data.ascii_name wordlist %}"
+                     alt="view lexeme list"
+                     title="View wordlist list for {{ language.object_data.utf8_name }}">
+                     <img src="{% static '1l.png' %}">
+                  </a>
+                  {% endif %}
                 </td>
                 {# name_data.html #}
                 <td class="languageName">
@@ -554,7 +601,7 @@
                 {# edit_data.html #}
                 <td class="nowrap">
                   <a href="{% url 'language-overview' language.object_data.ascii_name %}"
-                     title="View {{ language.object_data.utf8_name }} details"
+                     title="View {{ language.object_data.utf8_name }} details (ID: {{ language.object_data.id }})"
                      data-toggle="tooltip"
                      data-placement="top"
                      class="inline">
@@ -592,7 +639,7 @@
                     </a>
                     {% form_field language.iso_code class="hide" %}
                   {% elif user.is_authenticated and user.is_staff %}
-                    {% form_field language.iso_code maxlength="3" class="form-control" style="width: 2.5em;" %}
+                    {% form_field language.iso_code maxlength="3" class="form-control" style="width: 2.5em;margin-left:-5px" %}
                   {% endif %}
                 </td>
                 {# glotto_data.html #}
@@ -612,7 +659,7 @@
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.latitude class="form-control" style="max-width: 5em;" %}
                   {% else %}
-                    {{ language.object_data.latitude }}
+                    {{ language.object_data.latitude|floatformat:-2 }}
                   {% endif %}
                 </td>
                 {# longitude_data.html #}
@@ -620,8 +667,12 @@
                   {% if user.is_authenticated and user.is_staff %}
                     {% form_field language.longitude class="form-control" style="max-width: 5em;" %}
                   {% else %}
-                    {{ language.object_data.longitude }}
+                    {{ language.object_data.longitude|floatformat:-2 }}
                   {% endif %}
+                </td>
+                {# author_data #}
+                <td class="languageAuthor">
+                  {{ language.object_data.author }}
                 </td>
                 {# reference_data.html #}
                 <td class="languageRepresentative">

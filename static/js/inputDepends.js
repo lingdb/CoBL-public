@@ -17,8 +17,15 @@
         dependants.each(function(){
           if(enable){
             $(this).removeAttr('disabled');
+            if($(this).prop('type') === 'select-one'){
+              $(this).css('visibility','');
+            }
           }else{
             $(this).attr('disabled','disabled');
+            if($(this).prop('type') === 'select-one'){
+              $(this).css('visibility','hidden');
+              $(this).val("0").change();
+            }
           }
         });
       };

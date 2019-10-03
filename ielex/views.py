@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import csv
+import copy
 import datetime
 import logging
 import io
@@ -7,19 +8,21 @@ import json
 import re
 import time
 import zipfile
-from collections import defaultdict, deque
+import codecs
+from collections import defaultdict, deque, OrderedDict
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, transaction, connection
 from django.db.models import Q
+from django.db.models.expressions import RawSQL
 from django.forms import ValidationError
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, \
      Http404, QueryDict
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render, render_to_response
 from django.template import RequestContext
 from django.template import Template
 from django.db.models.query_utils import DeferredAttribute
@@ -33,6 +36,7 @@ from ielex.forms import AddCitationForm, \
     AddCogClassTableForm, \
     AddLanguageListForm, \
     AddLanguageListTableForm, \
+    AddMeaningListForm, \
     AddLexemeForm, \
     AuthorCreationForm, \
     AuthorDeletionForm, \
@@ -51,6 +55,7 @@ from ielex.forms import AddCitationForm, \
     EditLexemeForm, \
     EditMeaningForm, \
     EditMeaningListForm, \
+    EditMeaningListMembersForm, \
     EditSourceForm, \
     LanguageListProgressForm, \
     EditSingleLanguageForm, \
@@ -286,8 +291,6 @@ def get_prev_and_next_meanings(request, current_meaning, meaning_list=None):
         current_idx = ids.index(current_meaning.id)
     except ValueError:
         current_idx = 0
-    if meanings:
-        return (current_meaning, current_meaning)
     try:
         prev_meaning = meanings[current_idx - 1]
     except IndexError:
@@ -349,6 +352,26 @@ def get_canonical_language_list(language_list=None, request=None):
     return language_list
 
 
+@logExceptions
+def get_canonical_meaning_list(meaning_list=None, request=None):
+    """Returns a MeaningList object"""
+    try:
+        if meaning_list is None:
+            meaning_list = MeaningList.objects.get(name=MeaningList.DEFAULT)
+        elif meaning_list.isdigit():
+            meaning_list = MeaningList.objects.get(id=meaning_list)
+        else:
+            meaning_list = MeaningList.objects.get(name=meaning_list)
+    except MeaningList.DoesNotExist:
+        if request:
+            messages.info(
+                request,
+                "There is no meaning list matching"
+                " '%s' in the database" % meaning_list)
+        raise Http404
+    return meaning_list
+
+
 @csrf_protect
 @logExceptions
 def view_language_list(request, language_list=None):
@@ -399,9 +422,15 @@ def view_language_list(request, language_list=None):
 
     meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
     languages_editabletable_form = AddLanguageListTableForm()
+    exportMethod = ''
+    if request.method == 'GET':
+        if 'onlyexport' in request.path.split('/'):
+            exportMethod = 'onlyexport'
+        elif 'onlynotexport' in request.path.split('/'):
+            exportMethod = 'onlynotexport'
     for lang in languages:
         lang.idField = lang.id
-        lang.computeCounts(meaningList)
+        lang.computeCounts(meaningList, exportMethod)
         languages_editabletable_form.langlist.append_entry(lang)
 
     otherLanguageLists = LanguageList.objects.exclude(name=current_list).all()
@@ -627,6 +656,43 @@ def reorder_language_list(request, language_list):
 
 
 @logExceptions
+def reorder_meaning_list(request, meaning_list):
+    meaning_id = getDefaultLanguageId(request)
+    meaning_list = MeaningList.objects.get(name=meaning_list)
+    meanings = meaning_list.meanings.all().order_by("meaninglistorder")
+    ReorderForm = make_reorder_meaninglist_form(meanings)
+    if request.method == "POST":
+        form = ReorderForm(request.POST, initial={"meaning": meaning_id})
+        if form.is_valid():
+            meaning_id = int(form.cleaned_data["meaning"])
+            setDefaultMeaningId(request, meaning_id)
+            meaning = Meaning.objects.get(id=meaning_id)
+            if form.data["submit"] == "Finish":
+                meaning_list.sequentialize()
+                return HttpResponseRedirect(
+                    reverse("view-wordlist", args=[meaning_list.name]))
+            else:
+                if form.data["submit"] == "Move up":
+                    move_meaning(meaning, meaning_list, -1)
+                elif form.data["submit"] == "Move down":
+                    move_meaning(meaning, meaning_list, 1)
+                else:
+                    assert False, "This shouldn't be able to happen"
+                return HttpResponseRedirect(
+                    reverse("reorder-meaning-list",
+                            args=[meaning_list.name]))
+        else:  # pressed Finish without submitting changes
+            return HttpResponseRedirect(
+                reverse("view-wordlist",
+                        args=[meaning_list.name]))
+    else:  # first visit
+        form = ReorderForm(initial={"meaning": meaning_id})
+    return render_template(
+        request, "reorder_meaning_list.html",
+        {"meaning_list": meaning_list, "form": form})
+
+
+@logExceptions
 def move_language(language, language_list, direction):
     assert direction in (-1, 1)
     languages = list(language_list.languages.order_by("languagelistorder"))
@@ -640,6 +706,22 @@ def move_language(language, language_list, direction):
             language_list.swap(language, neighbour)
         except IndexError:
             language_list.insert(0, language)
+
+
+@logExceptions
+def move_meaning(meaning, meaning_list, direction):
+    assert direction in (-1, 1)
+    meanings = list(meaning_list.meanings.order_by("meaninglistorder"))
+    index = meanings.index(meaning)
+    if index == 0 and direction == -1:
+        meaning_list.remove(meaning)
+        meaning_list.append(meaning)
+    else:
+        try:
+            neighbour = meanings[index + direction]
+            meaning_list.swap(meaning, neighbour)
+        except IndexError:
+            meaning_list.insert(0, meaning)
 
 
 @csrf_protect
@@ -722,8 +804,20 @@ def view_language_wordlist(request, language, wordlist):
     # Used for #219:
     cIdCognateClassMap = {}  # :: CognateClass.id -> CognateClass
 
+    notTargetCountPerMeaning = {}
+    for lex in lexemes:
+        if lex.meaning in notTargetCountPerMeaning:
+            if lex.not_swadesh_term:
+                notTargetCountPerMeaning[lex.meaning] += 1
+        else:
+            if lex.not_swadesh_term:
+                notTargetCountPerMeaning[lex.meaning] = 1
+            else:
+                notTargetCountPerMeaning[lex.meaning] = 0
+
     lexemes_editabletable_form = LexemeTableLanguageWordlistForm()
     for lex in lexemes:
+        lex.notTargetCountPerMeaning = notTargetCountPerMeaning[lex.meaning]
         lexemes_editabletable_form.lexemes.append_entry(lex)
         ccs = lex.cognate_class.all()
         for cc in ccs:
@@ -754,6 +848,7 @@ def view_language_wordlist(request, language, wordlist):
                             "otherMeaningLists": otherMeaningLists,
                             "lex_ed_form": lexemes_editabletable_form,
                             "cognateClasses": cognateClasses,
+                            "notTargetCountPerMeaning": notTargetCountPerMeaning,
                             "typeahead": typeahead})
 
 
@@ -901,7 +996,7 @@ def language_add_new(request, language_list):
                     language_list.append(language)
                 except IntegrityError:
                     pass  # automatically inserted into LanguageList.DEFAULT
-            return HttpResponseRedirect(reverse("language-report",
+            return HttpResponseRedirect(reverse("language-edit",
                                                 args=[language.ascii_name]))
     else:  # first visit
         form = AddLanguageForm()
@@ -955,11 +1050,31 @@ def overview_language(request, language):
         return HttpResponseRedirect(reverse("language-overview",
                                             args=[language.ascii_name]))
 
+    fileName = "Language-Chapter:-%s.md" % (language.ascii_name)
+    admin_notes = ''
+    if request.user.is_authenticated:
+        admin_notes = """
+  _For contributors copy the beneath mentioned first template text and follow the link to [create a new page](https://github.com/lingdb/CoBL/wiki/%s)_
+```
+#### Notes on Orthography
+To be written soon.
+
+#### Notes on Transliteration (if appropriate)
+To be written soon.
+
+#### Problematic Meanings
+To be written soon.
+```
+  _and follow this link to [create a new public page](https://github.com/lingdb/CoBL-public/wiki/Language-Chapter:-%s) with the following template:_
+
+```
+Content comming soon. This article is currently worked on in [private](https://github.com/lingdb/CoBL/wiki/Language-Chapter:-%s).
+```
+    """ % (fileName, fileName, fileName)
+
     return render_template(
         request, "language_overview.html",
-        {"language": language,
-         "content": fetchMarkdown(
-             "Language-Chapter:-%s.md" % (language.ascii_name))})
+        {"language": language, "content": fetchMarkdown(fileName, admin_notes)})
 
 
 @login_required
@@ -1092,6 +1207,118 @@ def move_meaning(meaning, wordlist, direction):
 
 @login_required
 @logExceptions
+def add_meaning_list(request):
+    """Start a new meaning list by cloning an old one if desired"""
+    if request.method == "POST":
+        form = AddMeaningListForm(request.POST)
+        if "cancel" in form.data:  # has to be tested before data is cleaned
+            return HttpResponseRedirect(reverse("view-all-meanings"))
+        if form.is_valid():
+            form.save()
+            new_list = MeaningList.objects.get(name=form.cleaned_data["name"])
+            """check if user wants a clone"""
+            try:
+                other_list = MeaningList.objects.get(
+                    name=form.cleaned_data["meaning_list"])
+                otherMeanings = other_list.meanings.all().order_by(
+                    "meaninglistorder")
+                for m in otherMeanings:
+                    new_list.append(m)
+            except ObjectDoesNotExist:
+                """create only a new empty meaning list"""
+                pass
+            setDefaultWordlist(request, form.cleaned_data["name"])
+            return HttpResponseRedirect(reverse(
+                "edit-meaning-list", args=[form.cleaned_data["name"]]))
+    else:
+        form = AddMeaningListForm()
+    return render_template(request, "add_meaning_list.html",
+                           {"form": form})
+
+
+@login_required
+@logExceptions
+def edit_meaning_list(request, meaning_list=None):
+    if meaning_list == None:
+        meaning_list = getDefaultWordlist(request)
+    meaning_list = get_canonical_meaning_list(
+        meaning_list, request)  # a meaning list object
+    meaning_list_all = MeaningList.objects.get(name=MeaningList.ALL)
+    included_meanings = meaning_list.meanings.all().order_by(
+        "meaninglistorder")
+    excluded_meanings = meaning_list_all.meanings.exclude(
+        id__in=meaning_list.meanings.values_list(
+            "id", flat=True)).order_by("meaninglistorder")
+    if request.method == "POST":
+        name_form = EditMeaningListForm(request.POST, instance=meaning_list)
+        if "cancel" in name_form.data:
+            # has to be tested before data is cleaned
+            return HttpResponseRedirect(
+                reverse('view-wordlist', args=[meaning_list.name]))
+        if "delete" in name_form.data:
+            mname = meaning_list.name
+            try:
+                ml = MeaningListOrder.objects.filter(
+                    meaning_list_id=meaning_list.id)
+                ml.delete()
+            except:
+                setDefaultWordlist(request, MeaningList.DEFAULT)
+                messages.error(request, 'Error while deleting "' + mname +
+                    '": meanings in meaninglistorder could not be deleted!')
+                return HttpResponseRedirect(
+                    reverse('view-frontpage'))
+            try:
+                ml = MeaningList.objects.filter(
+                    name=mname)
+                ml.delete()
+            except:
+                setDefaultWordlist(request, MeaningList.DEFAULT)
+                messages.error(request, 'Error while deleting "'+ mname +
+                    '": meaninglist "' + mname + '" does not exist!')
+                return HttpResponseRedirect(
+                    reverse('view-frontpage'))
+            setDefaultWordlist(request, MeaningList.DEFAULT)
+            messages.success(request, 'The meaning list "' + mname +
+                '" was successfully deleted.')
+            return HttpResponseRedirect(
+                reverse('edit-meaning-list', args=[MeaningList.DEFAULT]))
+        list_form = EditMeaningListMembersForm(request.POST)
+        list_form.fields["included_meanings"].queryset = included_meanings
+        list_form.fields["excluded_meanings"].queryset = excluded_meanings
+        if name_form.is_valid() and list_form.is_valid():
+            changed_members = False
+            exclude = list_form.cleaned_data["excluded_meanings"]
+            include = list_form.cleaned_data["included_meanings"]
+            if include:
+                meaning_list.remove(include)
+                changed_members = True
+            if exclude:
+                meaning_list.append(exclude)
+                changed_members = True
+            if changed_members:
+                meaning_list.save()
+                name_form.save()
+                return HttpResponseRedirect(
+                    reverse('edit-meaning-list', args=[meaning_list.name]))
+            # changed name
+            name_form.save()
+            return HttpResponseRedirect(
+                reverse('view-wordlist',
+                        args=[name_form.cleaned_data["name"]]))
+    else:
+        name_form = EditMeaningListForm(instance=meaning_list)
+        list_form = EditMeaningListMembersForm()
+        list_form.fields["included_meanings"].queryset = included_meanings
+        list_form.fields["excluded_meanings"].queryset = excluded_meanings
+    return render_template(request, "edit_meaning_list.html",
+                           {"name_form": name_form,
+                            "list_form": list_form,
+                            "n_included": included_meanings.count(),
+                            "n_excluded": excluded_meanings.count()})
+
+
+@login_required
+@logExceptions
 def meaning_add_new(request):
     if request.method == 'POST':
         form = EditMeaningForm(request.POST)
@@ -1196,7 +1423,8 @@ def submit_citations_inline_form(request, model):
                 cognate_class_id=instance.id,
                 source_id=int(entry['source_id']),
                 pages=entry['pages'],
-                comment=entry['comment'])
+                comment=entry['comment'],
+                rfcWeblink=entry[rfcWeblink])
     citationModel.objects.filter(id__in=citations.keys()).delete()
 
     return JsonResponse({
@@ -1363,7 +1591,7 @@ def view_cognateclasses(request, meaning):
                                   'in view_cognateclasses.')
                 messages.error(request, 'Sorry, the server had problems '
                                'updating at least one entry: %s' % e)
-        elif 'mergeCognateClasses' in request.POST:
+        elif 'mergeIds' in request.POST:
             try:
                 # Parsing and validating data:
                 mergeCCForm = MergeCognateClassesForm(request.POST)
@@ -1487,15 +1715,16 @@ def view_lexeme(request, lexeme_id):
 @login_required
 @logExceptions
 def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
-    try:
-        lexeme = Lexeme.objects.get(id=lexeme_id)
-    except Lexeme.DoesNotExist:
-        messages.info(request,
-                      "There is no lexeme with id=%s" % lexeme_id)
-        raise Http404
-    citation_id = int(citation_id)
-    cogjudge_id = int(cogjudge_id)
-    form = None
+    if not action == "deletelist":
+        try:
+            lexeme = Lexeme.objects.get(id=lexeme_id)
+        except Lexeme.DoesNotExist:
+            messages.info(request,
+                          "There is no lexeme with id=%s" % lexeme_id)
+            raise Http404
+        citation_id = int(citation_id)
+        cogjudge_id = int(cogjudge_id)
+        form = None
 
     def DELETE_CITATION_WARNING_MSG():
         messages.warning(
@@ -1671,8 +1900,41 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
 
         # first visit, preload form with previous answer
         else:
-            redirect_url = reverse('view-lexeme', args=[lexeme_id])
-            if action == "edit":
+            if not action == "deletelist":
+                redirect_url = reverse('view-lexeme', args=[lexeme_id])
+            if action == "deletelist":
+                lexeme_ids = [int(x.strip(" ")) for x in lexeme_id.split(",")]
+                not_deleted_lexemes = []
+                deleted_lexemes = []
+                for lx in lexeme_ids:
+                    try:
+                        lexeme = Lexeme.objects.get(id=lx)
+                        deleted_lexemes.append(str(lx))
+                    except Lexeme.DoesNotExist:
+                        not_deleted_lexemes.append(str(lx))
+                        continue
+                    lexeme.delete()
+                redirect_url = reverse("view-language-wordlist",
+                                       args=[getDefaultLanguage(request),
+                                               getDefaultWordlist(request)])
+                if len(not_deleted_lexemes) == 0:
+                    msg = Template(oneline("""All {{ cnt }} lexemes
+                        were deleted successfully"""))
+                    context = RequestContext(request)
+                    context["cnt"] = str(len(lexeme_ids))
+                    messages.success(
+                        request,
+                        msg.render(context))
+                else:
+                    msg = Template(oneline("""These lexemes
+                        were NOT deleted successfully: {{ ids }}"""))
+                    context = RequestContext(request)
+                    context["ids"] = ", ".join(not_deleted_lexemes)
+                    messages.error(
+                        request,
+                        msg.render(context))
+                return HttpResponseRedirect(redirect_url)
+            elif action == "edit":
                 form = EditLexemeForm(instance=lexeme)
                 # initial={"romanised":lexeme.romanised,
                 # "phon_form":lexeme.phon_form,
@@ -1762,8 +2024,9 @@ def lexeme_edit(request, lexeme_id, action="", citation_id=0, cogjudge_id=0):
                     reverse('lexeme-add-cognate-citation',
                             args=[lexeme_id, cj.id])))
             elif action == "delete":
-                redirect_url = reverse("meaning-report",
-                                       args=[lexeme.meaning.gloss])
+                redirect_url = reverse("view-language-wordlist",
+                                       args=[lexeme.language.ascii_name,
+                                               getDefaultWordlist(request)])
                 lexeme.delete()
                 return HttpResponseRedirect(redirect_url)
             else:
@@ -1901,13 +2164,12 @@ def redirect_lexeme_citation(request, lexeme_id):
 
 
 @logExceptions
-def cognate_report(request, cognate_id=0, meaning=None, code=None,
-                   cognate_name=None):
+def cognate_report(request, cognate_id=0, meaning=None, code=None):
 
     if cognate_id:
         cognate_class = CognateClass.objects.get(id=int(cognate_id))
-    elif cognate_name:
-        cognate_class = CognateClass.objects.get(name=cognate_name)
+    # elif cognate_name:
+    #     cognate_class = CognateClass.objects.get(name=cognate_name)
     else:
         assert meaning and code
         cognate_classes = CognateClass.objects.filter(
@@ -1962,6 +2224,24 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
                 form = CognateClassEditForm(request.POST)
                 form.validate()
                 form.handle(request)
+            except ValidationError as e:
+                messages.error(
+                    request,
+                    'Sorry, the server had trouble understanding '
+                    'the request: %s' % e)
+                # recreate data to provide errorneous form data to the user
+                language_list = LanguageList.objects.get(
+                    name=getDefaultLanguagelist(request))
+                splitTable = CognateJudgementSplitTable()
+                ordLangs = language_list.languages.all().order_by("languagelistorder")
+                for language in ordLangs:
+                    for cj in cognate_class.cognatejudgement_set.filter(
+                            lexeme__language=language).all():
+                        cj.idField = cj.id
+                        splitTable.judgements.append_entry(cj)
+                return render(request, 'cognate_report.html', {"cognate_class": cognate_class,
+                            "cognateClassForm": form,
+                            "splitTable": splitTable})
             except Exception as e:
                 logging.exception('Problem handling CognateClassEditForm.')
                 messages.error(
@@ -1975,15 +2255,47 @@ def cognate_report(request, cognate_id=0, meaning=None, code=None,
         name=getDefaultLanguagelist(request))
     splitTable = CognateJudgementSplitTable()
     # for language_id in language_list.language_id_list:
-    ordLangs = language_list.languages.all().order_by("languagelistorder")
+    ordLangs = language_list.languages.all().order_by(
+        "level0", "level1" , "level2", "sortRankInClade","ascii_name")
     for language in ordLangs:
         for cj in cognate_class.cognatejudgement_set.filter(
                 lexeme__language=language).all():
             cj.idField = cj.id
+            cj.cladeHexColor = Clade.objects.filter(
+                languageclade__language_id=language.id,
+                languageclade__cladesOrder=3).values_list('hexColor', flat=True).first()
             splitTable.judgements.append_entry(cj)
+
+    # replace markups for note field (used in non-edit mode)
+    s = Source.objects.all().filter(deprecated=False)
+    notes = cognate_class.notes
+    pattern = re.compile(r'(\{ref +([^\{]+?)(:[^\{]+?)? *\})')
+    pattern2 = re.compile(r'(\{ref +[^\{]+?(:[^\{]+?)? *\})')
+    for m in re.finditer(pattern, notes):
+        foundSet = s.filter(shorthand=m.group(2))
+        if foundSet.count() == 1:
+            notes = re.sub(pattern2, lambda match: '<a href="/sources/'
+                + str(foundSet.first().id)
+                + '" title="' + foundSet.first().citation_text.replace('"', '\"')
+                + '">' + foundSet.first().shorthand + '</a>', notes, 1)
+    # replace markups for justificationDiscussion field (used in non-edit mode)
+    s = Source.objects.all().filter(deprecated=False)
+    justificationDiscussion = cognate_class.justificationDiscussion
+    pattern = re.compile(r'(\{ref +([^\{]+?)(:[^\{]+?)? *\})')
+    pattern2 = re.compile(r'(\{ref +[^\{]+?(:[^\{]+?)? *\})')
+    for m in re.finditer(pattern, justificationDiscussion):
+        foundSet = s.filter(shorthand=m.group(2))
+        if foundSet.count() == 1:
+            justificationDiscussion = re.sub(pattern2, lambda match: '<a href="/sources/'
+                + str(foundSet.first().id)
+                + '" title="' + foundSet.first().citation_text.replace('"', '\"')
+                + '">' + foundSet.first().shorthand + '</a>', justificationDiscussion, 1)
+
 
     return render_template(request, "cognate_report.html",
                            {"cognate_class": cognate_class,
+                            "notesExpandedMarkups": notes,
+                            "justificationDiscussionExpandedMarkups": justificationDiscussion,
                             "cognateClassForm": CognateClassEditForm(
                                 obj=cognate_class),
                             "splitTable": splitTable})
@@ -2279,13 +2591,17 @@ class source_import(FormView):
                 if update_sources_dict_lst:
                     update_sources_table = SourcesUpdateTable(
                         update_sources_dict_lst)
+                    RequestConfig(
+                        request,
+                        paginate={'per_page': 1000}
+                    ).configure(update_sources_table)
                 if new_sources_dict_lst:
                     new_sources_table = SourcesUpdateTable(
                         new_sources_dict_lst)
-                RequestConfig(
-                    request,
-                    paginate={'per_page': 1000}
-                ).configure(update_sources_table)
+                    RequestConfig(
+                        request,
+                        paginate={'per_page': 1000}
+                    ).configure(new_sources_table)
                 return render_template(request, self.template_name, {
                     'form': self.form_class(),
                     'update_sources_table': update_sources_table,
@@ -2298,7 +2614,7 @@ class source_import(FormView):
 
         parser = BibTexParser()
         parser.ignore_nonstandard_types = False
-        bib_database = bibtexparser.loads(f.read(), parser)
+        bib_database = bibtexparser.loads(f.read().decode('utf-8'), parser)
         update_sources_dict_lst = []
         new_sources_dict_lst = []
         for entry in bib_database.entries:
@@ -2560,12 +2876,25 @@ def viewAuthors(request):
         return HttpResponseRedirect(
             reverse("viewAuthors", args=[]))
 
+    languageList = LanguageList.objects.get(
+        name=getDefaultLanguagelist(request))
+    languageData = languageList.languages.values_list(
+        'utf8_name', 'author')
+
     authors = Author.objects.all()
     form = AuthorTableForm()
     for author in authors:
 
         author.idField = author.id
         form.elements.append_entry(author)
+        authored = 0
+        namesOfLanguages = []
+        for aName, aString in languageData:
+            if author.fullName in set(aString.split(' and ')):
+                authored += 1
+                namesOfLanguages.append(aName)
+        author.nol = str(authored)
+        author.nolgs = ', '.join(namesOfLanguages)
 
     currentAuthorForm = None
     if request.user.is_authenticated:
@@ -2660,7 +2989,9 @@ def view_nexus_export(request, exportId=None):
                 if not export.pending:
                     return export.generateResponse(
                         constraints='constraints' in request.GET,
-                        beauti='beauti' in request.GET)
+                        beauti='beauti' in request.GET,
+                        tabledata='datatable' in request.GET,
+                        matrix='matrix' in request.GET)
                 # Message if pending:
                 messages.info(request,
                               "Sorry, the server is still "
@@ -2678,19 +3009,26 @@ def view_nexus_export(request, exportId=None):
     languageListNames = set([e.language_list_name for e in exports])
     meaningListNames = set([e.meaning_list_name for e in exports])
 
-    def lCount(languageListName):
-        return LanguageListOrder.objects.filter(
-            language_list__name=languageListName).count()
+    def num(s):
+        try:
+            return int(s)
+        except ValueError:
+            return -1
 
-    def mCount(meaningListName):
-        return MeaningListOrder.objects.filter(
-            meaning_list__name=meaningListName).count()
-
-    languageListCounts = {l: lCount(l) for l in languageListNames}
-    meaningListCounts = {m: mCount(m) for m in meaningListNames}
+    # get the meaning and language counts at the moment of export via saved exportName
+    # since the counts of meanings and languages can change over time
     for e in exports:
-        e.languageListCount = languageListCounts[e.language_list_name]
-        e.meaningListCount = meaningListCounts[e.meaning_list_name]
+        try:
+            c = re.search('_Lgs(\d+)', e.exportName).group(1)
+        except AttributeError:
+            c = -1
+        e.languageListCount = num(c)
+        try:
+            c = re.search('_Mgs(\d+)', e.exportName).group(1)
+        except AttributeError:
+            c = -1
+        e.meaningListCount = num(c)
+        e.shortNameAuthor = re.sub('[^A-Z]', '', e.lastEditedBy)
 
     return render_template(
         request, "view_nexus_export.html",
@@ -2762,32 +3100,85 @@ def view_two_languages_wordlist(request,
                               sourceLang.ascii_name if sourceLang else None,
                               wordlist.name]))
 
-    def getLexemes(lang):
+    def getLexemesForBothLanguages(targetLang, sourceLang):
         # Helper function to fetch lexemes
+        # sourceLang will marked via column sourceLg by 1 for sorting and identifying
         return Lexeme.objects.filter(
-            language=lang,
+            language__in=[targetLang, sourceLang],
             meaning__meaninglist=wordlist
+        ).annotate(sourceLg=RawSQL("select (CASE WHEN language_id = %s THEN 1 ELSE 0 END)", (sourceLang,))
         ).select_related("meaning", "language").prefetch_related(
             "cognatejudgement_set",
             "cognatejudgement_set__cognatejudgementcitation_set",
             "cognate_class",
-            "lexemecitation_set").order_by("meaning__gloss")
+            "lexemecitation_set").order_by("meaning__gloss", "sourceLg", "romanised")
 
     # collect data:
-    mIdOrigLexDict = defaultdict(deque)  # Meaning.id -> [Lexeme]
+    mIdOrigLexDict = defaultdict(list)  # Meaning.id -> [Lexeme]
     if sourceLang:
-        for l in getLexemes(sourceLang):
-            mIdOrigLexDict[l.meaning.id].append(l)
+        mergedLexemes = getLexemesForBothLanguages(targetLang.id, sourceLang.id)
+        for l in mergedLexemes.filter(language=sourceLang):
+            mIdOrigLexDict[l.meaning_id].append(l)
+    else:
+        mergedLexemes = getLexemesForBothLanguages(targetLang, -1)
 
-    lexemes = getLexemes(targetLang)
-    for l in lexemes:
-        if l.meaning.id in mIdOrigLexDict:
-            try:
-                l.original = mIdOrigLexDict[l.meaning.id].popleft()
-            except IndexError:
-                pass
+    # define colours for highlighting shared cognate sets
+    # colours will be rotated
+    ccColors = deque(['#FFCCCB','#FFCC00'])
 
-    lexemeTable = TwoLanguageWordlistTableForm(lexemes=lexemes)
+    # init some stats counter helpers
+    numOfSwadeshMeaningsSharedCC = set()
+    numOfSwadeshMeaningsNotTargetSharedCC = set()
+    numOfSwadeshMeanings = set()
+    hasNotTargets = set()
+
+    # - highlight same cognate classes per meaning
+    # - calculating some stats
+    matchedCC = False
+    matchedSwadeshCC = False
+    for l in mergedLexemes:
+        # find shared cognate classes
+        l.ccBackgroundColor = "#FFFFFF" # default background color for cognate set
+        if l.meaning_id in mIdOrigLexDict:
+            if l.not_swadesh_term:
+                hasNotTargets.add(l.meaning_id)
+            if l.sourceLg:
+                # since targetLang will be detected first
+                # check via matchedCC (set of lexeme ids) whether there's a possible match
+                if matchedCC and matchedCC in l.allCognateClasses:
+                    l.ccBackgroundColor = ccColors[0]
+                    ccColors.rotate(1)
+            else:
+                m = mIdOrigLexDict[l.meaning.id]
+                # store source info for merging
+                l.originalIds = [{'id':s.id, 'romanised':s.romanised} for s in m]
+                # iterate through all lexemes of both languages for given meaning
+                for cc in l.allCognateClasses:
+                    for cc1 in m:
+                        if cc in cc1.allCognateClasses:
+                            l.ccBackgroundColor = ccColors[0]
+                            matchedCC = cc
+                            # counter for shared Swadesh only cognate classes
+                            if not cc1.not_swadesh_term and not l.not_swadesh_term:
+                                numOfSwadeshMeaningsSharedCC.add(l.meaning_id)
+                            else:
+                                numOfSwadeshMeaningsNotTargetSharedCC.add(l.meaning_id)
+                        # counter for Swadesh only meaning sets
+                        if not cc1.not_swadesh_term and not l.not_swadesh_term:
+                            numOfSwadeshMeanings.add(l.meaning_id)
+
+    # add new boolean data for filtering shared cognate classes
+    # column will be hidden in HTML
+    for l in mergedLexemes:
+        l.ccSwdKind = (l.meaning_id in numOfSwadeshMeaningsSharedCC)
+        if l.meaning_id in numOfSwadeshMeaningsNotTargetSharedCC and l.meaning_id in numOfSwadeshMeanings and l.ccBackgroundColor != "#FFFFFF":
+            l.notTargetCC = True
+            l.ccBackgroundColor = "#FFFFFF"
+        else:
+            l.notTargetCC = False
+        l.hasNotTargets = (l.meaning_id in hasNotTargets)
+
+    lexemeTable = TwoLanguageWordlistTableForm(lexemes=mergedLexemes)
 
     otherMeaningLists = MeaningList.objects.exclude(id=wordlist.id).all()
 
@@ -2806,12 +3197,21 @@ def view_two_languages_wordlist(request,
             args=[targetLang.ascii_name, l.ascii_name, wordlist.name])
         for l in languageList.languages.all()})
 
+    if len(numOfSwadeshMeanings) != 0:
+        numOfSharedCCPerSwadeshMeanings = "%.1f%%" % float(
+                                    len(numOfSwadeshMeaningsSharedCC)/len(numOfSwadeshMeanings)*100)
+    else:
+        numOfSharedCCPerSwadeshMeanings = ""
+
     return render_template(request, "twoLanguages.html",
                            {"targetLang": targetLang,
                             "sourceLang": sourceLang,
                             "wordlist": wordlist,
                             "otherMeaningLists": otherMeaningLists,
                             "lex_ed_form": lexemeTable,
+                            "numOfSwadeshMeaningsSharedCC": len(numOfSwadeshMeaningsSharedCC),
+                            "numOfSwadeshMeanings": len(numOfSwadeshMeanings),
+                            "numOfSharedCCPerSwadeshMeanings": numOfSharedCCPerSwadeshMeanings,
                             "typeahead1": typeahead1,
                             "typeahead2": typeahead2})
 
@@ -2839,26 +3239,63 @@ def view_language_progress(request, language_list=None):
         if updateClades:
             updateLanguageCladeRelations(languages=updateClades)
         # Redirecting so that UA makes a GET.
+        exportMethod = ''
+        if 'onlyexport' in request.path.split('/'):
+            exportMethod = 'onlyexport'
+        elif 'onlynotexport' in request.path.split('/'):
+            exportMethod = 'onlynotexport'
         return HttpResponseRedirect(
-            reverse("view-language-progress", args=[current_list.name]))
+            reverse("view-language-progress", args=[current_list.name,exportMethod]))
 
     languages = current_list.languages.all().prefetch_related(
         "lexeme_set", "lexeme_set__meaning",
         "languageclade_set", "clades")
     meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
     form = LanguageListProgressForm()
+    exportMethod = ''
+    if request.method == 'GET':
+        if 'onlyexport' in request.path.split('/'):
+            exportMethod = 'onlyexport'
+        elif 'onlynotexport' in request.path.split('/'):
+            exportMethod = 'onlynotexport'
     for lang in languages:
         lang.idField = lang.id
-        lang.computeCounts(meaningList)
+        lang.computeCounts(meaningList, exportMethod)
         form.langlist.append_entry(lang)
 
     otherLanguageLists = LanguageList.objects.exclude(name=current_list).all()
+
+    noexportbutton = {}
+
+    if request.method == 'GET':
+        if 'onlyexport' in request.path.split('/'):
+            noexportbutton = {
+                "note": "based on only those meanings marked for 'export'",
+                "url": "/".join(request.path.split('/')[0:-1]) + "/onlynotexport", 
+                "tooltip": "Show statistics based on all meanings which are marked only for 'not export'", 
+                "state": "btn-success", 
+                "icon": "glyphicon glyphicon-ok"}
+        elif 'onlynotexport' in request.path.split('/'):
+            noexportbutton = {
+                "note": "based on only those meanings marked for 'not for export'",
+                "url": "/".join(request.path.split('/')[0:-1]), 
+                "tooltip": "Show statistics based on all meanings including those which are marked for 'not export'", 
+                "state": "btn-danger", 
+                "icon": "glyphicon glyphicon-remove"}
+        else:
+            noexportbutton = {
+                "note": "based on all meanings including those marked for 'not for export'",
+                "url": request.path + "onlyexport", 
+                "tooltip": "Show statistics based on only those meanings which are marked for 'export'", 
+                "state": "btn-default", 
+                "icon": "glyphicon-question-sign"}
 
     return render_template(request, "language_progress.html",
                            {"languages": languages,
                             'form': form,
                             "current_list": current_list,
                             "otherLanguageLists": otherLanguageLists,
+                            "noexportbutton": noexportbutton,
                             "wordlist": getDefaultWordlist(request),
                             "clades": Clade.objects.all()})
 
@@ -2891,9 +3328,15 @@ def view_language_distributions(request, language_list=None):
 
     meaningList = MeaningList.objects.get(name=getDefaultWordlist(request))
     languages_editabletable_form = LanguageDistributionTableForm()
+    exportMethod = ''
+    if request.method == 'GET':
+        if 'onlyexport' in request.path.split('/'):
+            exportMethod = 'onlyexport'
+        elif 'onlynotexport' in request.path.split('/'):
+            exportMethod = 'onlynotexport'
     for lang in languages:
         lang.idField = lang.id
-        lang.computeCounts(meaningList)
+        lang.computeCounts(meaningList, exportMethod)
         languages_editabletable_form.langlist.append_entry(lang)
 
     otherLanguageLists = LanguageList.objects.exclude(name=current_list).all()
@@ -2910,14 +3353,31 @@ def view_language_distributions(request, language_list=None):
 @logExceptions
 def json_cognateClass_placeholders(request):
     if request.method == 'GET' and 'lexemeid' in request.GET:
+        # Acquiring languageList:
+        try:
+            languageList = LanguageList.objects.get(
+                name=getDefaultLanguagelist(request))
+        except LanguageList.DoesNotExist:
+            languageList = LanguageList.objects.get(
+                name=LanguageList.ALL)
         meaningIds = Lexeme.objects.filter(
             id=int(request.GET['lexemeid'])).values_list(
                 'meaning_id', flat=True)
-        cognateClasses = CognateClass.objects.filter(
-            lexeme__meaning_id__in=meaningIds).distinct()
+        # cognateClasses = CognateClass.objects.filter(
+        #     lexeme__meaning_id__in=meaningIds).distinct()
         # lexemes = [int(s) for s in request.GET['lexemes'].split(',')]
         # cognateClasses = CognateClass.objects.filter(
         # lexeme__in=lexemes).distinct()
+        cognateClasses = CognateClass.objects.filter(
+            cognatejudgement__lexeme__meaning_id__in=meaningIds
+        ).prefetch_related('lexeme_set').order_by('alias').distinct()
+        # Computing counts for ccs:
+        for cc in cognateClasses:
+            cc.computeCounts(languageList=languageList)
+        def cmpKey(x):
+            return [-x.cladeCount, -x.lexemeCount, len(x.alias)]
+        cognateClasses = sorted(cognateClasses, key=cmpKey)
+
         dump = json.dumps([{'id': c.id,
                             'alias': c.alias,
                             'placeholder':
@@ -2967,26 +3427,31 @@ def view_cladecognatesearch(request):
 
     # Figuring out clades to search for:
     currentClades = []
+    includeMode = False
     if request.method == 'GET' and 'clades' in request.GET:
         cladeNames = [n.strip() for n in request.GET['clades'].split(',')]
-        currentClades = Clade.objects.filter(
+        if 'nonunique' in cladeNames:
+            includeMode = True
+        currentClades = allClades.filter(
             taxonsetName__in=cladeNames).all()
 
     # Searching cognateClassIds by clades:
     cognateClassIds = set()
-    for clade in currentClades:
-        newIds = CognateClass.objects.filter(
-            lexeme__language__languageclade__clade=clade,
+    allCognates = CognateClass.objects.filter(
             lexeme__language__in=languageList.languages.all(),
             lexeme__meaning__in=meaningList.meanings.all()
+        )
+    for clade in currentClades:
+        newIds = allCognates.filter(
+            lexeme__language__languageclade__clade=clade,
         ).values_list('id', flat=True)
         if cognateClassIds:
-            cognateClassIds = set(newIds)
-        else:
             cognateClassIds &= set(newIds)
+        else:
+            cognateClassIds = set(newIds)
 
     # Removing unwanted entries from cognateClassIds:
-    if currentClades:
+    if currentClades and not includeMode:
         unwantedLanguages = languageList.languages.exclude(
             languageclade__clade__in=currentClades
         ).exclude(level0=0).values_list('id', flat=True)
@@ -3003,33 +3468,60 @@ def view_cladecognatesearch(request):
         id__in=cognateClassIds,
         lexeme__language__in=languageList.languages.all(),
         lexeme__meaning__in=meaningList.meanings.all()
-    ).prefetch_related(
+    ).order_by('lexeme__meaning').prefetch_related(
         'lexeme_set',
-        'lexeme_set__language',
-        'lexeme_set__meaning').distinct().all()
+        'lexeme_set__language').distinct().all()
+
+    lgsIds= set(languageList.languagelistorder_set.all().values_list(
+                        'language_id', flat=True))
     for c in cognateClasses:
-        c.computeCounts(languageList)
+        c.computeCounts(languageList, lgsIds, False)
     form = AddCogClassTableForm(cogclass=cognateClasses)
 
     # Computing cladeLinks:
-    def mkCladeLink(clade, currentTaxonsetNames):
+    def mkCladeLink(clade, currentTaxonsetNames, includeMode):
         targetSet = currentTaxonsetNames ^ set([clade.taxonsetName])
+        if includeMode:
+            targetSet.add('nonunique')
         return {'name': clade.shortName,
                 'active': clade.taxonsetName in currentTaxonsetNames,
                 'color': clade.hexColor,
                 'href': '?clades=%s' % ','.join(targetSet)}
     currentTaxonsetNames = set([c.taxonsetName for c in currentClades])
-    cladeLinks = [mkCladeLink(c, currentTaxonsetNames)
+    cladeLinks = [mkCladeLink(c, currentTaxonsetNames, includeMode)
                   for c in allClades
                   if c.shortName]
+    if includeMode:
+        cladeLinks.append({
+            'name': 'Non-Unique Mode',
+            'active': True,
+            'color': '#999999',
+            'href': '?clades=%s' % (','.join(currentTaxonsetNames))})
+    else:
+        cladeLinks.append({
+            'name': 'Non-Unique Mode',
+            'active': False,
+            'color': '#999999',
+            'href': '?clades=%s%s' % (','.join(currentTaxonsetNames), ',nonunique')})
 
     return render_template(
         request, "view_cladecognatesearch.html",
         {"cladeTitle": ", ".join([c.shortName for c in currentClades]),
          "cladeLinks": cladeLinks,
-         "allClades": allClades,
          "AddCogClassTableForm": form})
 
+
+def query_to_dicts(query_string, *query_args):
+    cursor = connection.cursor()
+    cursor.execute(query_string, query_args)
+    col_names = list(map(str.upper, [desc[0] for desc in cursor.description]))
+    while True:
+        row = cursor.fetchone()
+        if row is None:
+            break
+        row_dict = OrderedDict(zip(col_names, row))
+        yield row_dict
+    return
 
 @user_passes_test(lambda u: u.is_staff)
 @logExceptions
@@ -3064,6 +3556,140 @@ def view_csvExport(request):
                   MeaningListOrder: MeaningListOrder.objects,
                   SndComp: SndComp.objects,
                   Source: Source.objects}
+    elif 'cognate' in request.GET:
+        meaningListId = getDefaultWordlistId(request)
+        languageListId = getDefaultLanguagelistId(request)
+        models_org = list(query_to_dicts("""
+SELECT *
+FROM (
+SELECT 
+0 as ID, 
+cj.cognate_class_id as COGID, 
+cc.root_form as ROOT_FORM, 
+cj.lexeme_id as LEXEME_ID, 
+m.gloss as CONCEPT, 
+l.phon_form as IPA,
+l."phoneMic" as PHONEMIC, 
+l.romanised as ROMANISED, 
+lg.ascii_name as DOCULECT,
+l.not_swadesh_term as NOT_TARGET
+FROM 
+lexicon_lexeme as l,
+lexicon_cognatejudgement as cj,
+lexicon_language as lg,
+lexicon_meaning as m,
+lexicon_cognateclass as cc
+
+WHERE 
+l.id = cj.lexeme_id AND 
+l.language_id = lg.id AND 
+l.meaning_id = m.id AND 
+cj.cognate_class_id = cc.id AND
+l.language_id in (
+select language_id from lexicon_languagelistorder where language_list_id = %d) AND
+l.meaning_id in (
+select meaning_id from lexicon_meaninglistorder where meaning_list_id = %d) 
+
+UNION
+
+SELECT 
+0 as ID, 
+0 as COGID, 
+'' as ROOT_FORM, 
+l.id as LEXEME_ID, 
+m.gloss as CONCEPT, 
+l.phon_form as IPA,
+l."phoneMic" as PHONEMIC, 
+l.romanised as ROMANISED, 
+lg.ascii_name as DOCULECT,
+l.not_swadesh_term as NOT_TARGET
+FROM 
+lexicon_lexeme as l,
+lexicon_language as lg,
+lexicon_meaning as m
+
+WHERE 
+l.id not in (
+
+SELECT 
+cj.lexeme_id
+FROM 
+lexicon_lexeme as l,
+lexicon_cognatejudgement as cj,
+lexicon_language as lg,
+lexicon_meaning as m,
+lexicon_cognateclass as cc
+
+WHERE 
+l.id = cj.lexeme_id AND 
+l.language_id = lg.id AND 
+l.meaning_id = m.id AND 
+cj.cognate_class_id = cc.id AND
+l.language_id in (
+SELECT language_id from lexicon_languagelistorder where language_list_id = %d) AND
+l.meaning_id in (
+SELECT meaning_id from lexicon_meaninglistorder where meaning_list_id = %d) 
+
+
+) AND 
+l.language_id = lg.id AND 
+l.meaning_id = m.id AND 
+l.language_id in (
+SELECT language_id from lexicon_languagelistorder where language_list_id = %d) AND
+l.meaning_id in (
+SELECT meaning_id from lexicon_meaninglistorder where meaning_list_id = %d) 
+) t
+ORDER BY (doculect, concept)
+        """ % ((languageListId,meaningListId) * 3)))
+
+        zipBuffer = io.BytesIO()
+        zipFile = zipfile.ZipFile(zipBuffer, 'w')
+
+        if len(models_org) > 0:
+            try:
+                filename = 'CoBL_export_%s/%s.tsv' % (time.strftime("%Y-%m-%d"), 'cognates_all')
+                models = []
+                cnt = 1
+                for i in range(len(models_org)):
+                    r = copy.deepcopy(models_org[i])
+                    r["ID"] = cnt
+                    del r["NOT_TARGET"]
+                    models.append(r)
+                    cnt += 1
+                fieldnames = models[0].keys()
+                modelBuffer = io.StringIO()
+                writer = csv.DictWriter(modelBuffer, fieldnames=fieldnames,
+                    dialect="excel-tab")
+                writer.writeheader()
+                writer.writerows(models)
+                zipFile.writestr(filename, modelBuffer.getvalue())
+
+                models = []
+                cnt = 1
+                for i in range(len(models_org)):
+                    r = copy.deepcopy(models_org[i])
+                    if not r["NOT_TARGET"]:
+                        r["ID"] = cnt
+                        del r["NOT_TARGET"]
+                        models.append(r)
+                        cnt += 1
+                filename = 'CoBL_export_%s/%s.tsv' % (time.strftime("%Y-%m-%d"), 'cognates_only_target')
+                modelBuffer = io.StringIO()
+                writer = csv.DictWriter(modelBuffer, fieldnames=fieldnames,
+                    dialect="excel-tab")
+                writer.writeheader()
+                writer.writerows(models)
+                zipFile.writestr(filename, modelBuffer.getvalue())
+            except BaseException as error:
+                print("TSV cognate export error {}".format(error)) 
+
+        zipFile.close()
+
+        resp = HttpResponse(zipBuffer.getvalue(),
+                            content_type='application/x-zip-compressed')
+        cdHeader = "attachment; filename=%s.export.zip" % time.strftime("%Y-%m-%d")
+        resp['Content-Disposition'] = cdHeader
+        return resp
     else:
         meaningList = getDefaultWordlist(request)
         languageList = getDefaultLanguagelist(request)
@@ -3103,7 +3729,7 @@ def view_csvExport(request):
     zipBuffer = io.BytesIO()
     zipFile = zipfile.ZipFile(zipBuffer, 'w')
     for model, querySet in models.items():
-        filename = 'export/%s.csv' % model.__name__
+        filename = 'CoBL_export_%s/%s.csv' % (time.strftime("%Y-%m-%d"), model.__name__)
         fieldnames = modelToFieldnames(model)
         modelBuffer = io.StringIO()
         writer = csv.DictWriter(modelBuffer, fieldnames=fieldnames)

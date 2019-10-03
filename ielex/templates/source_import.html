@@ -69,7 +69,7 @@
 {% endblock %}
 
 {% block content %}
-{% if not update_sources_table %}
+{% if not update_sources_table and not new_sources_table %}
 	<!-- Upload form. Note enctype attribute! -->
 	<form action="{% url 'import-sources' %}" method="post" enctype="multipart/form-data">
 		{% csrf_token %}

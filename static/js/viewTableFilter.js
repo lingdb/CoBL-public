@@ -46,6 +46,12 @@
       //Actual init work:
       el.each(function(){
         var table = $(this);
+        // try to place thead fixed based on wrapped element
+        table.floatThead({
+            scrollContainer: function(table){
+                return table.closest('.wrapper');
+            }
+        });
         //Fix overflow for #356:
         table.find('td').each(function(){
           if(this.offsetWidth < this.scrollWidth){
@@ -69,16 +75,22 @@
               $input.keyup(function(){
                 module[inputClass]($input, table);
                 settings.storeKeyupInput($input, inputClass);
+                markNewMeanings();
               });
             });
-            $('button.'+inputClass).each(function(){
+            var btnClasses = $('button.'+inputClass);
+            var numOfClasses = btnClasses.length;
+            var cnt = 0;
+            btnClasses.each(function(){
               var $button = $(this);
+              cnt += 1;
               $button.click(function(){
                 module[inputClass]($button, table);
                 settings.storeButtonInput($button, inputClass);
+                markNewMeanings();
               });
-              //Initial filtering for buttons:
-              module[inputClass]($button, table, true);
+              //Initial filtering for the last element of a given class:
+              module[inputClass]($button, table, true, (cnt == numOfClasses));
             });
           }else{
             console.log('inputClass not implemented:', inputClass);
@@ -92,6 +104,7 @@
               $btn.click(function(){
                 module[btnClass]($btn, table);
                 settings.storeSortInput($btn, btnClass);
+                markNewMeanings();
               });
             });
           }else{
@@ -106,6 +119,8 @@
           filterPredicates.cladeFilter = cladeFilter;
           λ();
         }
+        //Mark group of meanings if desired via class 'markNewMeanings'
+        markNewMeanings();
       });
       //Load previous settings:
       settings.restoreKeyupInputs();
@@ -244,8 +259,21 @@
         if(input.val() === ''){
           delete filterPredicates[id];
         }else{
-          var re = new RegExp(input.val(), "i");
-          filterPredicates[id] = mkPredicate(selector, re);
+          var re;
+          var inval = input.val();
+          inval = inval.trim();
+          if(inval.startsWith('@')){ // first char @ -> case sensitive
+            inval = inval.replace('@', '');
+            try{
+              re = new RegExp(inval, "");
+              filterPredicates[id] = mkPredicate(selector, re);
+            }catch(e){re = null;}
+          }else{
+            try{
+              re = new RegExp(inval, "i");
+              filterPredicates[id] = mkPredicate(selector, re);
+            }catch(e){re = null;}
+          }
         }
         filter(table);
       };
@@ -336,12 +364,35 @@
       return wanted;
     };
     /**
+      markNewMeanings
+      If table has class 'markNewMeaning' the change from one meaning to
+      a new one will be marked via adding class 'startNewMeaning'
+    */
+    var markNewMeanings = function(){
+      var table = $('.markNewMeaning');
+      var markNewMeanings = true;
+      if(typeof table === "undefined"){markNewMeanings = false;}
+      if(markNewMeanings){
+        var curKey = "";
+        table.find('tbody > tr').each(function(){
+          $(this).removeClass('startNewMeaning');
+          if(!$(this).hasClass('hide')){
+            var cText = $(this).data('meaningid');
+            if(cText !== curKey){
+              $(this).addClass('startNewMeaning');
+              curKey = cText;
+            }
+          }
+        });
+      }
+    };
+    /**
       @param input :: $ ∧ button.filterBool
       @param table :: $ ∧ table
       @param initial :: Bool
       If initial is set filterBool shall not change the buttons content.
     */
-    module.filterBool = function(btn, table, initial){
+    module.filterBool = function(btn, table, initial, last){
       //Find wanted kind of filter:
       var wanted = filterBoolButtton(btn, initial);
       //Un-/Registering filter function:
@@ -355,8 +406,11 @@
           return checked !== wanted;
         };
       }
-      //Filtering
-      filter(table);
+      //Filtering - while initializing only for last element
+      //   of a given inputClass to avoid multiple filtering
+      if(!initial || (initial && last)){
+        filter(table);
+      }
     };
     /**
       @param input :: $ ∧ button.filterBool
@@ -374,27 +428,62 @@
         delete filterPredicates[id];
       }else{
         var idCountMap = {};
+        var idCountMapTargetLg = {};
+        var idCountMapSourceLg = {};
         var getRowId = function(row){return row.data(dataAttr);};
-        table.find('tbody > tr').each(function(){
-          var row = $(this);
-          if(row.is(':visible')){
-            var rId = getRowId(row);
-            if(rId in idCountMap){
-              idCountMap[rId] += 1;
-            }else{
-              idCountMap[rId] = 1;
+        if(table.attr('id') === 'viewTwoLanguages'){
+          table.find('tbody > tr').each(function(){
+            var row = $(this);
+            if(!row.hasClass('hide')){
+              var rId = getRowId(row);
+              if(row.data('issourcelg')){
+                if(rId in idCountMapTargetLg){
+                  idCountMap[rId] = 1;
+                }else{
+                  idCountMapSourceLg[rId] = 1;
+                }
+              }else{
+                if(rId in idCountMapSourceLg){
+                  idCountMap[rId] = 1;
+                }else{
+                  idCountMapTargetLg[rId] = 1;
+                }
+              }
             }
-          }
-        });
-        /*
-          We implement wanted as:
-          true -> Only display lexemes where the same meaning was found twice.
-          false -> Only display lexemes where the meaning was found just once.
-        */
-        filterPredicates[id] = function(row){
-          var rId = getRowId(row);
-          return ((idCountMap[rId] > 1) !== wanted);
-        };
+          });
+          /*
+            We implement wanted as:
+            true -> Only display lexemes where the same meaning was found twice.
+            false -> Only display lexemes where the meaning was found just once.
+          */
+          filterPredicates[id] = function(row){
+            var rId = getRowId(row);
+            return ((idCountMap[rId]==1) !== wanted);
+          };
+        }else{
+          idCountMap = {};
+          getRowId = function(row){return row.data(dataAttr);};
+          table.find('tbody > tr').each(function(){
+            var row = $(this);
+            if(row.is(':visible')){
+              var rId = getRowId(row);
+              if(rId in idCountMap){
+                idCountMap[rId] += 1;
+              }else{
+                idCountMap[rId] = 1;
+              }
+            }
+          });
+          /*
+            We implement wanted as:
+            true -> Only display lexemes where the same meaning was found twice.
+            false -> Only display lexemes where the meaning was found just once.
+          */
+          filterPredicates[id] = function(row){
+            var rId = getRowId(row);
+            return ((idCountMap[rId] > 1) !== wanted);
+          };
+        }
       }
       //Filtering
       filter(table);
@@ -403,25 +492,33 @@
       mkNumberFilter :: (re :: String) -> (text :: String) -> Bool
     */
     var mkNumberPredicate = function(filterVal){
-      filterVal = filterVal.trim().replace(/[^\d.-=<>]*/g, '');
-      var match = filterVal.match(/^([<>]?=?)(\-?[\d.]+)$/);
+      filterVal = filterVal.trim().replace(/[^\d.\-=<>]*/g, '');
+      console.log(filterVal);
+      var match = filterVal.match(/^(\d+?)\-(\d+)$/);
       if(match){
-        var number = parseFloat(match[2], 10);
-        switch (match[1]) {
-          case '>':
-            return function(t){return parseFloat(t, 10) <= number;};
-          case '<':
-            return function(t){return parseFloat(t, 10) >= number;};
-          case '>=':
-            return function(t){return parseFloat(t, 10) < number;};
-          case '<=':
-            return function(t){return parseFloat(t, 10) > number;};
-          case '=':
-          /* falls through */
-          default:
-            return function(t){return parseFloat(t, 10) !== number;};
-        }
+        var number1 = parseFloat(match[1], 10);
+        var number2 = parseFloat(match[2], 10);
+        return function(t){return parseFloat(t, 10) < number1 || parseFloat(t, 10) > number2;};
       }else{
+        filterVal = filterVal.trim().replace(/\-/g, '');
+        match = filterVal.match(/^([<>]?=?)(\-?[\d.]+)$/);
+        if(match){
+          var number = parseFloat(match[2], 10);
+          switch (match[1]) {
+            case '>':
+              return function(t){return parseFloat(t, 10) <= number;};
+            case '<':
+              return function(t){return parseFloat(t, 10) >= number;};
+            case '>=':
+              return function(t){return parseFloat(t, 10) < number;};
+            case '<=':
+              return function(t){return parseFloat(t, 10) > number;};
+            case '=':
+            /* falls through */
+            default:
+              return function(t){return parseFloat(t, 10) !== number;};
+          }
+        }
         console.log('Invalid filter string:', filterVal);
         return function(){return false;};
       }
