@@ -244,6 +244,7 @@ def write_nexus(language_list_name,       # str
         languages = language_list.languages.exclude(notInExport=True).all()
     else:
         languages = language_list.languages.all()
+
     language_names = [language.ascii_name for language in languages]
 
     meaning_list = MeaningList.objects.get(name=meaning_list_name)
@@ -338,55 +339,55 @@ def write_nexus(language_list_name,       # str
 
     # write CSV header
     # add header Excess Synonyms
-    exportTableData.append("\"Excess Synonyms\",,%s" % ",".join(
+    exportTableData.append("\"Excess Synonyms\",,,%s" % ",".join(
         map(lambda x : '%s' % x, [langStats[l.id]['excessCount'] for l in languages])))
     # add header Orphan Meanings
-    exportTableData.append("\"Orphan Meanings\",,%s" % ",".join(
+    exportTableData.append("\"Orphan Meanings\",,,%s" % ",".join(
         map(lambda x : '%s' % x, [langStats[l.id]['orphansCount'] for l in languages])))
     # add header Loan Events
-    exportTableData.append("\"Loan Events\",,%s" % ",".join(
+    exportTableData.append("\"Loan Events\",,,%s" % ",".join(
         map(lambda x : '%s' % x, [langStats[l.id]['cogLoanCount'] for l in languages])))
     # add header Parallel Loans
-    exportTableData.append("\"Parallel Loans\",,%s" % ",".join(
+    exportTableData.append("\"Parallel Loans\",,,%s" % ",".join(
         map(lambda x : '%s' % x, [langStats[l.id]['cogParallelLoanCount'] for l in languages])))
     # add header Ideophonic
-    exportTableData.append("\"Ideophonic\",,%s" % ",".join(
+    exportTableData.append("\"Ideophonic\",,,%s" % ",".join(
         map(lambda x : '%s' % x, [langStats[l.id]['cogIdeophonicCount'] for l in languages])))
     # add header Parallel Derivation
-    exportTableData.append("\"Parallel Derivation\",,%s" % ",".join(
+    exportTableData.append("\"Parallel Derivation\",,,%s" % ",".join(
         map(lambda x : '%s' % x, [langStats[l.id]['cogPllDerivationCount'] for l in languages])))
     # add header Dubious
-    exportTableData.append("\"Dubious\",,%s" % ",".join(
+    exportTableData.append("\"Dubious\",,,%s" % ",".join(
         map(lambda x : '%s' % x, [langStats[l.id]['cogDubSetCount'] for l in languages])))
     # add header language URL Names
-    exportTableData.append("\"Language URL Name\",,%s" % ",".join(
+    exportTableData.append("\"Language URL Name\",,,%s" % ",".join(
         map(lambda x : '\"%s\"' % x, language_names)))
     # add header language Display Names
-    exportTableData.append("\"Language Display Name\",,%s" % ",".join(
+    exportTableData.append("\"Language Display Name\",,,%s" % ",".join(
         map(lambda x : '\"%s\"' % x, [l.utf8_name for l in languages])))
     # add header language Cl 0
-    exportTableData.append("\"Cl 0\",,%s" % ",".join(
+    exportTableData.append("\"Cl 0\",,,%s" % ",".join(
         map(lambda x : '%s' % x, [l.level0 for l in languages])))
     # add header language Cl 1
-    exportTableData.append("\"Cl 1\",,%s" % ",".join(
+    exportTableData.append("\"Cl 1\",,,%s" % ",".join(
         map(lambda x : '%s' % x, [l.level1 for l in languages])))
     # add header language Cl 0 hex colour
-    exportTableData.append("\"Language clade colour hex code\",,%s" % ",".join(
+    exportTableData.append("\"Language clade colour hex code\",,,%s" % ",".join(
         map(lambda x : '\"#%s\"' % x, [l.level0Color for l in languages])))
     # add header Historical
-    exportTableData.append("\"Historical\",,%s" % ",".join(
+    exportTableData.append("\"Historical\",,,%s" % ",".join(
         map(lambda x : '%s' % x, [int(l.historical) for l in languages])))
     # add header Fragmentary? - empty @TODO 
-    exportTableData.append("\"Fragmentary?\",,%s" % ",".join(
+    exportTableData.append("\"Fragmentary?\",,,%s" % ",".join(
         map(lambda x : '%s' % x, [int(l.fragmentary) for l in languages])))
 
-    if kwargs['label_cognate_sets']:
-        row = [" " * 9] + [
-            str(i).ljust(10) for i in
-            range(len(cognate_class_names))[10::10]]
-        appendExports("   %s[ %s ]" % (" " * max_len, "".join(row)))
-        row = ".".join([" " * 9] * (int((len(cognate_class_names) + 9) / 10)))
-        appendExports("   %s[ %s ]" % (" " * max_len, row))
+    # if kwargs['label_cognate_sets']:
+    #     row = [" " * 9] + [
+    #         str(i).ljust(10) for i in
+    #         range(len(cognate_class_names))[10::10]]
+    #     appendExports("   %s[ %s ]" % (" " * max_len, "".join(row)))
+    #     row = ".".join([" " * 9] * (int((len(cognate_class_names) + 9) / 10)))
+    #     appendExports("   %s[ %s ]" % (" " * max_len, row))
 
     # matrix comments requested in #314:
     matrixComments = getMatrixCommentsFromCognateNames(
@@ -397,7 +398,7 @@ def write_nexus(language_list_name,       # str
     current_m = ""
     empty_line = "," * (len(language_names)+1)
     for row in sorted(dataTable):
-        m, cc_cnt, cc = row.split("___")
+        m, cc_cnt, cc, lexid = (row.split("___") + [''] * 4)[:4]
         if current_m != m:
             exportTableData.append(empty_line)
             exportTableData.append(empty_line)
@@ -405,7 +406,7 @@ def write_nexus(language_list_name,       # str
             exportTableData.append(empty_line)
             exportTableData.append(empty_line)
             exportTableData.append(empty_line)
-        exportTableData.append("%s,%s,%s" % (m, str(cc), ",".join(map(lambda x : '%s' % x, dataTable[row]))))
+        exportTableData.append("%s,%s,%s,%s" % (m, re.sub(r'[A-Z]', '', str(cc)), lexid, ",".join(map(lambda x : '%s' % x, dataTable[row]))))
         current_m = m
 
     # write matrix
@@ -668,6 +669,7 @@ def construct_matrix(languages,                # [Language]
         '''
     data = dict()
     pllloan_lexemes = []
+    lex_order_due_lgs = [x.id for x in languages]
     for meaning in meanings: #@TODO speed optimation
         cj_for_current_meaning = CognateJudgement.objects.filter(lexeme__meaning_id=meaning.id)
         plls = []
@@ -681,13 +683,17 @@ def construct_matrix(languages,                # [Language]
                 if includePllLoan:
                     r_cc = CognateClass.objects.get(id=cc)
                     if r_cc.parallelLoanEvent:
-                        l_cnt = 25
+                        cjs = []
                         for cj in cj_for_current_meaning.filter(cognate_class=cc):
                             if cj.lexeme.language in languages and cj.lexeme.id not in exclude_lexemes:
-                                pllloan_lexemes.append(cj.lexeme.id)
-                                data[meaning.id].setdefault(
-                                    ("Z", "%s%s" % (cc, ascii_uppercase[l_cnt]), cj.lexeme.id) , list()).append(cj.lexeme.language.id)
-                                l_cnt -= 1
+                                cjs.append((cj.lexeme.language.id, cj))
+                        l_cnt = 25
+                        # sort lexemes according language list order
+                        for cj in sorted(cjs, key = lambda x: lex_order_due_lgs.index(x[0])):
+                            pllloan_lexemes.append(cj[1].lexeme.id)
+                            data[meaning.id].setdefault(
+                                ("Z", "%s%s" % (cc, ascii_uppercase[l_cnt]), cj[1].lexeme.id) , list()).append(cj[1].lexeme.language.id)
+                            l_cnt -= 1
 
     # adds a cc code for all singletons
     # (lexemes which are not registered as
@@ -721,7 +727,7 @@ def construct_matrix(languages,                # [Language]
             if len(cc) == 2:
                 return "%s___%s" % (str(cnt).zfill(3), str(cc[1]))
             elif len(cc) == 3:
-                return "%s___%s" % (str(cnt).zfill(3), str(cc[1]))
+                return "%s___%s___%s" % (str(cnt).zfill(3), str(cc[1]), str(cc[2]))
         return "000___0"
 
     # make matrix
@@ -765,16 +771,16 @@ def construct_matrix(languages,                # [Language]
                 for cc0 in data_mng_id.keys():
                     cc = cc0
                     if isinstance(cc0, (list, tuple)):
-                        cc = cc0[1]
+                        cc = str(cc0[1]).zfill(6)
                     lexCount = len(data_mng_id[cc0])
                     if lexCount == 1 :
-                        cc_sortorder["%04d_%06d_%s" % (1, 1, str(cc).zfill(6))] = cc0
+                        cc_sortorder["%04d_%06d_%s" % (1, 1, cc)] = cc0
                     else:
                         clds = set()
                         for l in data_mng_id[cc0]:
                             if l in languageClades:
                                 clds.add(languageClades[l])
-                        cc_sortorder["%04d_%06d_%s" % (len(clds), lexCount, str(cc).zfill(6))] = cc0
+                        cc_sortorder["%04d_%06d_%s" % (len(clds), lexCount, cc)] = cc0
 
                 for cc0 in sorted(cc_sortorder, reverse=True):
                     cc = cc_sortorder[cc0]
@@ -1080,6 +1086,14 @@ def getMatrixCommentsFromCognateNames(cognate_class_names, padding=0):
 
     def addComment(c):
         commentRows.append(" " * (padding - 1) + "[ %s ]" % c)
+
+    # add nexus set ids on top of the comment
+    nex_ccs = []
+    max_len = len(str(len(cognate_class_names)))
+    for n in range(1, len(cognate_class_names) + 1):
+        nex_ccs.append(str(n).rjust(max_len, '-'))
+    for r in [''.join(row) for row in zip(*nex_ccs)]:
+        addComment(r)
 
     addComment(''.join(meaningRow))
     commentRows.append("")
