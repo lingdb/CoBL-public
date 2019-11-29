@@ -1,5 +1,6 @@
 from __future__ import print_function
 from textwrap import dedent
+from string import ascii_uppercase
 import re
 import sys
 import time
@@ -404,7 +405,7 @@ def write_nexus(language_list_name,       # str
             exportTableData.append(empty_line)
             exportTableData.append(empty_line)
             exportTableData.append(empty_line)
-        exportTableData.append("%s,%i,%s" % (m, int(cc), ",".join(map(lambda x : '%s' % x, dataTable[row]))))
+        exportTableData.append("%s,%s,%s" % (m, str(cc), ",".join(map(lambda x : '%s' % x, dataTable[row]))))
         current_m = m
 
     # write matrix
@@ -644,7 +645,7 @@ def construct_matrix(languages,                # [Language]
         wantedCJs = wantedCJs.exclude(
             cognate_class__parallelLoanEvent=True)
     elif includePllLoan:  # not excludeLoanword and includePllLoan
-        raise ValueError('Case not implemented.')  # FIXME IMPLEMENT
+        pass
     # synonymous cognate classes (i.e. cognate reflexes representing
     # a single Swadesh meaning)
     cognate_classes = defaultdict(list)
@@ -666,8 +667,10 @@ def construct_matrix(languages,                # [Language]
         data :: meaning.gloss -> cognate_classes[meaning.id] -> [language]
         '''
     data = dict()
+    pllloan_lexemes = []
     for meaning in meanings: #@TODO speed optimation
         cj_for_current_meaning = CognateJudgement.objects.filter(lexeme__meaning_id=meaning.id)
+        plls = []
         for cc in cognate_classes[meaning.id]:
             matches = [
                 cj.lexeme.language.id for cj in
@@ -675,6 +678,16 @@ def construct_matrix(languages,                # [Language]
                 languages and cj.lexeme.id not in exclude_lexemes]
             if matches:
                 data.setdefault(meaning.id, dict())[cc] = matches
+                if includePllLoan:
+                    r_cc = CognateClass.objects.get(id=cc)
+                    if r_cc.parallelLoanEvent:
+                        l_cnt = 25
+                        for cj in cj_for_current_meaning.filter(cognate_class=cc):
+                            if cj.lexeme.language in languages and cj.lexeme.id not in exclude_lexemes:
+                                pllloan_lexemes.append(cj.lexeme.id)
+                                data[meaning.id].setdefault(
+                                    ("Z", "%s%s" % (cc, ascii_uppercase[l_cnt]), cj.lexeme.id) , list()).append(cj.lexeme.language.id)
+                                l_cnt -= 1
 
     # adds a cc code for all singletons
     # (lexemes which are not registered as
@@ -683,7 +696,7 @@ def construct_matrix(languages,                # [Language]
             language__in=languages,
             meaning__in=meanings,
             cognate_class__isnull=True):
-        if lexeme.id not in exclude_lexemes:
+        if lexeme.id not in exclude_lexemes and lexeme.id not in pllloan_lexemes:
             cc = ("U", lexeme.id)  # use tuple for sorting
             data[lexeme.meaning.id].setdefault(
                 cc, list()).append(lexeme.language.id)
@@ -693,7 +706,10 @@ def construct_matrix(languages,                # [Language]
         if isinstance(cc, int):
             return "%s_cognate_%s" % (gloss, cc)
         if isinstance(cc, (list, tuple)):
-            return "%s_lexeme_%s" % (gloss, cc[1])
+            if len(cc) == 2:
+                return "%s_lexeme_%s" % (gloss, cc[1])
+            elif len(cc) == 3:
+                return "%s_cognate_%s_pllloanlexeme_%s" % (gloss, cc[1], cc[2])
         return "%s_ERROR_%s" % (gloss, str(cc))
 
     def get_cognate_class_id_for_dataTable(cnt, cc):
@@ -702,7 +718,10 @@ def construct_matrix(languages,                # [Language]
         if isinstance(cc, int):
             return "%s___%s" % (str(cnt).zfill(3), str(cc))
         if isinstance(cc, (list, tuple)):
-            return "%s___%s" % (str(cnt).zfill(3), str(cc[1]))
+            if len(cc) == 2:
+                return "%s___%s" % (str(cnt).zfill(3), str(cc[1]))
+            elif len(cc) == 3:
+                return "%s___%s" % (str(cnt).zfill(3), str(cc[1]))
         return "000___0"
 
     # make matrix
@@ -746,16 +765,16 @@ def construct_matrix(languages,                # [Language]
                 for cc0 in data_mng_id.keys():
                     cc = cc0
                     if isinstance(cc0, (list, tuple)):
-                        cc = int(cc0[1])
+                        cc = cc0[1]
                     lexCount = len(data_mng_id[cc0])
                     if lexCount == 1 :
-                        cc_sortorder["%04d_%06d_%06d" % (1, 1, cc)] = cc0
+                        cc_sortorder["%04d_%06d_%s" % (1, 1, str(cc).zfill(6))] = cc0
                     else:
                         clds = set()
                         for l in data_mng_id[cc0]:
                             if l in languageClades:
                                 clds.add(languageClades[l])
-                        cc_sortorder["%04d_%06d_%06d" % (len(clds), lexCount, cc)] = cc0
+                        cc_sortorder["%04d_%06d_%s" % (len(clds), lexCount, str(cc).zfill(6))] = cc0
 
                 for cc0 in sorted(cc_sortorder, reverse=True):
                     cc = cc_sortorder[cc0]
@@ -782,7 +801,7 @@ def construct_matrix(languages,                # [Language]
         matrix.append(row)
         make_header = False
 
-    return matrix, cognate_class_names, assumptions, dataTableDict
+    return matrix, list(map(lambda x: re.sub(r'[A-Z]', '', x), cognate_class_names)), assumptions, dataTableDict
 
 
 def dump_cognate_data(
@@ -1015,25 +1034,32 @@ def getMatrixCommentsFromCognateNames(cognate_class_names, padding=0):
     groupRegex = r'^(.+)_group$'
     lexemeRegex = r'^(.+)_lexeme_(.+)$'
     cognateRegex = r'^(.+)_cognate_(.+)$'
+    pllloanRegex = r'^(.+)_cognate_(.+?)_pllloanlexeme_(.+)$'
 
     for name in cognate_class_names:
         groupMatch = re.match(groupRegex, name)
         if groupMatch:
             meaning, meaningLength = nextMeaning(groupMatch.group(1))
             flagRow += ' '
-            idBucket.append('')
+            idBucket.append('|')
+            continue
+        pllloanMatch = re.match(pllloanRegex, name)
+        if pllloanMatch:
+            meaning, meaningLength = nextMeaning(pllloanMatch.group(1))
+            flagRow += 'P'
+            idBucket.append("%s|%s" % (pllloanMatch.group(2), pllloanMatch.group(3)))
             continue
         lexemeMatch = re.match(lexemeRegex, name)
         if lexemeMatch:
             meaning, meaningLength = nextMeaning(lexemeMatch.group(1))
             flagRow += 'L'
-            idBucket.append(lexemeMatch.group(2))
+            idBucket.append("%s|" % (lexemeMatch.group(2)))
             continue
         cognateMatch = re.match(cognateRegex, name)
         if cognateMatch:
             meaning, meaningLength = nextMeaning(cognateMatch.group(1))
             flagRow += 'C'
-            idBucket.append(cognateMatch.group(2))
+            idBucket.append("%s|" % (cognateMatch.group(2)))
             continue
         # Nothing matches:
         meaning, meaningLength = nextMeaning('')
@@ -1042,8 +1068,12 @@ def getMatrixCommentsFromCognateNames(cognate_class_names, padding=0):
     nextMeaning('')  # Append last meaning to meaningRow
 
     # Create idRows by padding and transposing ids:
-    idMaxLen = max(*[len(i) for i in idBucket])
-    idRows = [[x for x in id.rjust(idMaxLen, '-')] for id in idBucket]
+    idMaxLenCC = max(*[len(i.split('|')[0]) for i in idBucket])
+    idMaxLenLEX = max(*[len(i.split('|')[1]) for i in idBucket])
+    idRows = []
+    for id in idBucket:
+        (ccid, lexid) = id.split('|')
+        idRows.append([x for x in "%s|%s" % (ccid.rjust(idMaxLenCC, '-'), lexid.ljust(idMaxLenLEX, '-'))])
     idRows = [''.join(row) for row in zip(*idRows)]
 
     commentRows = []
