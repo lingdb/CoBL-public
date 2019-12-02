@@ -1146,7 +1146,9 @@ class Meaning(AbstractTimestamped):
             cogLoanCount = 0
             cogParallelLoanCount = 0
             cogRevised = 0
-            cogIdeophonic = 0
+            cogIdeophonicCount = 0
+            cogDubSetCount = 0
+            cogPllDerivationCount = 0
             # Iterating ccs to calculate counts:
             for cc in ccs:
                 if cc.root_form != '':
@@ -1158,7 +1160,11 @@ class Meaning(AbstractTimestamped):
                 if cc.parallelLoanEvent:
                     cogParallelLoanCount += 1
                 if cc.ideophonic:
-                    cogIdeophonic += 1
+                    cogIdeophonicCount += 1
+                if cc.parallelDerivation:
+                    cogPllDerivationCount += 1
+                if cc.dubiousSet:
+                    cogDubSetCount += 1
                 if cc.revisedYet:
                     cogRevised += 1
             # Computing percentages:
@@ -1184,7 +1190,10 @@ class Meaning(AbstractTimestamped):
                 'cogRootLanguagePercentage': cogRootLanguagePercentage,
                 'cogLoanCount': cogLoanCount,
                 'cogParallelLoanCount': cogParallelLoanCount,
-                'cogIdeophonic': cogIdeophonic}
+                'cogIdeophonicCount': cogIdeophonicCount,
+                'cogDubSetCount': cogDubSetCount,
+                'cogPllDerivationCount': cogPllDerivationCount,
+            }
         return self._computeCounts
 
     @property
@@ -1232,8 +1241,16 @@ class Meaning(AbstractTimestamped):
         return self.computeCounts()['cogParallelLoanCount']
 
     @property
-    def cogIdeophonic(self):
-        return self.computeCounts()['cogIdeophonic']
+    def cogIdeophonicCount(self):
+        return self.computeCounts()['cogIdeophonicCount']
+
+    @property
+    def cogPllDerivationCount(self):
+        return self.computeCounts()['cogPllDerivationCount']
+
+    @property
+    def cogDubSetCount(self):
+        return self.computeCounts()['cogDubSetCount']
 
 
 # @reversion.register
