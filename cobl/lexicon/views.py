@@ -165,7 +165,7 @@ class NexusExportView(TemplateView):
         if form.cleaned_data["excludeMarkedLanguages"]:
             languages = languages.exclude(notInExport=True)
 
-        return "%s_CoBL-IE_Lgs%03d_Mgs%03d.nex" % (
+        return "%s_IE-CoR_Lgs%03d_Mgs%03d.nex" % (
             time.strftime("%Y-%m-%d"),
             # settings.project_short_name,
             languages.count(),
@@ -663,12 +663,22 @@ def construct_matrix(languages,                # [Language]
         exclude_lexemes |= set(Lexeme.objects.filter(
             not_swadesh_term=True).values_list("id", flat=True))
 
+    # get for all languages the clade ids for sorting cognate classes
+    allInvolvedClades = Clade.objects.filter(
+                languageclade__language__id__in=languages).exclude(
+                hexColor='').exclude(shortName='').values_list('id', 'languageclade__language__id')
+    languageClades = {}
+    for clade_id, lg_id in allInvolvedClades:
+        languageClades[lg_id]=clade_id
+
     # languages having a reflex for a cognate set
     '''
         data :: meaning.gloss -> cognate_classes[meaning.id] -> [language]
         '''
     data = dict()
     pllloan_lexemes = []
+    pllloan_cnt_clades = {}
+    pllloan_cnt_lexemes = {}
     lex_order_due_lgs = [x.id for x in languages]
     for meaning in meanings: #@TODO speed optimation
         cj_for_current_meaning = CognateJudgement.objects.filter(lexeme__meaning_id=meaning.id)
@@ -679,8 +689,12 @@ def construct_matrix(languages,                # [Language]
                 cj_for_current_meaning.filter(cognate_class=cc) if cj.lexeme.language in
                 languages and cj.lexeme.id not in exclude_lexemes]
             if matches:
-                data.setdefault(meaning.id, dict())[cc] = matches
                 if includePllLoan:
+                    pllloan_clds = set()
+                    for l in matches:
+                        if l in languageClades:
+                            pllloan_clds.add(languageClades[l])
+                    pllloan_cnt_clades[str(cc)] = len(pllloan_clds)
                     r_cc = CognateClass.objects.get(id=cc)
                     if r_cc.parallelLoanEvent:
                         cjs = []
@@ -688,12 +702,22 @@ def construct_matrix(languages,                # [Language]
                             if cj.lexeme.language in languages and cj.lexeme.id not in exclude_lexemes:
                                 cjs.append((cj.lexeme.language.id, cj))
                         l_cnt = 25
+                        if meaning.id not in data:
+                            data.setdefault(meaning.id, dict())
                         # sort lexemes according language list order
+                        lex_cnt = 0
                         for cj in sorted(cjs, key = lambda x: lex_order_due_lgs.index(x[0])):
                             pllloan_lexemes.append(cj[1].lexeme.id)
                             data[meaning.id].setdefault(
-                                ("Z", "%s%s" % (cc, ascii_uppercase[l_cnt]), cj[1].lexeme.id) , list()).append(cj[1].lexeme.language.id)
+                                ("Z", "%s%s" % (cc, ascii_uppercase[l_cnt]), cj[1].lexeme.id), list())\
+                                    .append(cj[1].lexeme.language.id)
                             l_cnt -= 1
+                            lex_cnt += 1
+                        pllloan_cnt_lexemes[str(cc)] = lex_cnt
+                    else:
+                        data.setdefault(meaning.id, dict())[cc] = matches
+                else:
+                    data.setdefault(meaning.id, dict())[cc] = matches
 
     # adds a cc code for all singletons
     # (lexemes which are not registered as
@@ -715,7 +739,7 @@ def construct_matrix(languages,                # [Language]
             if len(cc) == 2:
                 return "%s_lexeme_%s" % (gloss, cc[1])
             elif len(cc) == 3:
-                return "%s_cognate_%s_pllloanlexeme_%s" % (gloss, cc[1], cc[2])
+                return "%s_cognate_%s_pllloanlexeme_%s" % (gloss, re.sub(r'[A-Z]', '', cc[1]), cc[2])
         return "%s_ERROR_%s" % (gloss, str(cc))
 
     def get_cognate_class_id_for_dataTable(cnt, cc):
@@ -735,14 +759,6 @@ def construct_matrix(languages,                # [Language]
     make_header = True
     col_num = 0
     dataTableDict = defaultdict(list)
-
-    # get for all languages the clade ids for sorting cognate classes
-    allInvolvedClades = Clade.objects.filter(
-                languageclade__language__id__in=languages).exclude(
-                hexColor='').exclude(shortName='').values_list('id', 'languageclade__language__id')
-    languageClades = {}
-    for clade_id, lg_id in allInvolvedClades:
-        languageClades[lg_id]=clade_id
 
     for language in languages:
         row = [language.ascii_name]
@@ -769,18 +785,30 @@ def construct_matrix(languages,                # [Language]
                 # generate sort order for cognate class ids = order by (cladeCount, lexCount)
                 cc_sortorder = {}
                 for cc0 in data_mng_id.keys():
-                    cc = cc0
+                    cc_m = '0'
                     if isinstance(cc0, (list, tuple)):
-                        cc = str(cc0[1]).zfill(6)
+                        cc = str(cc0[1])
+                        if len(cc0) == 3:
+                            cc_m = '!'
+                    else:
+                        cc = str(cc0).zfill(6)
                     lexCount = len(data_mng_id[cc0])
-                    if lexCount == 1 :
-                        cc_sortorder["%04d_%06d_%s" % (1, 1, cc)] = cc0
+                    if lexCount == 1:
+                        cc_ = re.sub(r'[A-Z]', '', cc)
+                        if cc_m == '!' and cc_ in pllloan_cnt_clades:
+                            cc_sortorder["!%04d_%06d_%s" % (pllloan_cnt_clades[cc_], pllloan_cnt_lexemes[cc_], cc.zfill(6))] = cc0
+                        else:
+                            cc_sortorder["%s%04d_%06d_%s" % (cc_m, 1, 1, cc.zfill(6))] = cc0
                     else:
                         clds = set()
-                        for l in data_mng_id[cc0]:
-                            if l in languageClades:
-                                clds.add(languageClades[l])
-                        cc_sortorder["%04d_%06d_%s" % (len(clds), lexCount, cc)] = cc0
+                        cc_ = re.sub(r'[A-Z]', '', cc)
+                        if cc_m == '!' and cc_ in pllloan_cnt_clades:
+                            cc_sortorder["!%04d_%06d_%s" % (pllloan_cnt_clades[cc_], 1, cc.zfill(6))] = cc0
+                        else:
+                            for l in data_mng_id[cc0]:
+                                if l in languageClades:
+                                    clds.add(languageClades[l])
+                            cc_sortorder["%04d_%06d_%s" % (len(clds), lexCount, cc.zfill(6))] = cc0
 
                 for cc0 in sorted(cc_sortorder, reverse=True):
                     cc = cc_sortorder[cc0]
@@ -807,7 +835,7 @@ def construct_matrix(languages,                # [Language]
         matrix.append(row)
         make_header = False
 
-    return matrix, list(map(lambda x: re.sub(r'[A-Z]', '', x), cognate_class_names)), assumptions, dataTableDict
+    return matrix, cognate_class_names, assumptions, dataTableDict
 
 
 def dump_cognate_data(
