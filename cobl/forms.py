@@ -921,6 +921,8 @@ class CogClassRowForm(AbstractTimestampedForm):
         default=0,
         choices=PROPOSED_AS_COGNATE_TO_SCALE,
         validators=[])
+    lateParallelDerivationWithCognate = CognateClassField(
+        'Parallel derivation from same root as cognate set:', validators=[])
 
     def __str__(self):
         cogclass_form_vals = (
@@ -1126,6 +1128,8 @@ class CognateClassEditForm(AbstractTimestampedForm):
         default=0,
         choices=PROPOSED_AS_COGNATE_TO_SCALE,
         validators=[])
+    lateParallelDerivationWithCognate = CognateClassField(
+        'Parallel derivation from same root as cognate set:', validators=[])
 
     def handle(self, request):
         try:

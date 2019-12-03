@@ -151,6 +151,13 @@
                 {% form_field cognateClassForm.parallelDerivation style="margin-top:10px" %}
                 <label class="control-label">Parallel&nbsp;derivation?</label>
               </div>
+                <label class="control-label">Parallel derivation from same root as cognate set (id)</label>
+                {% if cognate_class.lateParallelDerivationWithCognate %}
+                  <div class="pull-right" style="margin-top:6px">
+                    <a target="_new" href="/cognate/{{cognate_class.lateParallelDerivationWithCognate_id}}/"><span class="glyphicon glyphicon-link"></span></a>
+                  </div>
+                {% endif %}
+                {% form_field cognateClassForm.lateParallelDerivationWithCognate class="form-control" %}
 
               <div>
                 {% form_field cognateClassForm.ideophonic style="margin-top:10px" %}

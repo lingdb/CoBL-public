@@ -1294,6 +1294,8 @@ class CognateClass(AbstractTimestamped):
         "self", null=True, related_name='+')
     proposedAsCognateToScale = models.IntegerField(
         default=0, choices=PROPOSED_AS_COGNATE_TO_SCALE)
+    lateParallelDerivationWithCognate = models.ForeignKey(
+        "self", null=True, related_name='+')
 
     def update_alias(self, save=True):
         """Reset alias to the first unused letter"""
@@ -1343,7 +1345,8 @@ class CognateClass(AbstractTimestamped):
                     'parallelLoanEvent', 'notProtoIndoEuropean', 'ideophonic',
                     'parallelDerivation', 'dubiousSet',
                     'revisedYet', 'revisedBy', 'alsoUsedInOtherMeanings',
-                    'proposedAsCognateTo', 'proposedAsCognateToScale'])
+                    'proposedAsCognateTo', 'proposedAsCognateToScale',
+                    'lateParallelDerivationWithCognate'])
 
     def deltaReport(self, **kwargs):
         return 'Could not update cognate class: ' \
