@@ -3,7 +3,7 @@
   return define(["jquery", "lodash", "js/csrfToken", "bootstrap"], function($, _, csrfToken){
     var active = window.location.pathname.match(/^\/(sources)\//);
     if(active){
-      var permitted = $('.permissionDiv').data('permitted') || false;
+      var permitted = ($('.permissionDiv').data('permitted') === "True");
       $(document).ready(function() {
         /* Enable tooltips */
         $('[data-toggle="tooltip"]').tooltip();
