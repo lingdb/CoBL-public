@@ -351,7 +351,8 @@ class AbstractCognateClassAssignmentForm(WTForm):
     # Added for #219
     combinedCognateClassAssignment = StringField(
         'Assignment string for cognate classes',
-        validators=[InputRequired()])
+        validators=[InputRequired()],
+        render_kw={'autocomplete': 'off'})
 
     def validate_combinedCognateClassAssignment(form, field):
         tokens = [t.strip() for t in field.data.split(',')]
