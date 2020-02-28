@@ -2904,6 +2904,9 @@ def viewAuthors(request):
         authored = 0
         namesOfLanguages = []
         for aName, aString in languageData:
+            aString = re.sub(r'\s*,\s*and\s*',' and ', aString)
+            aString = re.sub(r'\s*,\s*',' and ', aString)
+            aString = re.sub(r'\s*&\s*',' and ', aString)
             if author.fullName in set(aString.split(' and ')):
                 authored += 1
                 namesOfLanguages.append(aName)
