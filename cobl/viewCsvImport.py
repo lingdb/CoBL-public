@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import user_passes_test
 from django.utils import timezone
 
-import clldutils.dsv as dsv
+from csvw.dsv import reader
 
 from cobl.lexicon.models import Lexeme
 from cobl.shortcuts import render_template
@@ -26,7 +26,7 @@ def viewCsvImport(request):
     report = []
     if request.method == 'POST' and 'CsvImportForm' in request.POST:
         importMethod = request.POST['tableType']
-        fileDicts = list(dsv.reader(request.FILES['csvFile'].read().decode('utf8').splitlines(),
+        fileDicts = list(reader(request.FILES['csvFile'].read().decode('utf8').splitlines(),
         dicts=True))
         handlerFunctions = {'ms*l': handleMeaningsLanguageImport}
         if importMethod in handlerFunctions:

@@ -40,9 +40,8 @@
 
     grunt.loadNpmTasks('grunt-eslint');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
-    grunt.loadNpmTasks('grunt-asset-version-json');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['eslint', 'requirejs', 'asset_version_json']);
+    grunt.registerTask('default', ['eslint', 'requirejs']);
   };
 })();
