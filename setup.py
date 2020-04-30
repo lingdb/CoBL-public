@@ -11,7 +11,7 @@ setup(
         'pastedeploy',
         'waitress',
         'bibtexparser==0.6.2',
-        'clldutils',
+        'csvw',
         'configparser==3.5.0',
         'Django==1.10.4',
         'django-autocomplete-light==3.2.1',
