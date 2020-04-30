@@ -24,7 +24,7 @@ def get_minifiedJs():
     sdir = pathlib.Path(cobl.__file__).parent / 'static'
     with sdir.joinpath('assets.json').open() as fp:
         assets = json.load(fp)
-    minjs = sdir / 'minified.{0}.js'.format(assets['./minified.js'])
+    minjs = sdir / 'minified.js'
     if minjs.exists():
         return minjs.name
     raise ValueError('{0} not found'.format(minjs))
