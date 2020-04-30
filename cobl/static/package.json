@@ -12,7 +12,6 @@
   "dependencies": {
     "bower": "1.8.8",
     "grunt": "1.1.0",
-    "grunt-asset-version-json": "^0.1.4",
     "grunt-cli": "1.2.0",
     "grunt-contrib-requirejs": "1.0.0",
     "grunt-contrib-watch": "1.1.0",
