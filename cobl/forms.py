@@ -924,6 +924,8 @@ class CogClassRowForm(AbstractTimestampedForm):
         validators=[])
     lateParallelDerivationWithCognate = CognateClassField(
         'Parallel derivation from same root as cognate set:', validators=[])
+    supersetid = TextField(
+        'Superset ID', validators=[InputRequired()])
 
     def __str__(self):
         cogclass_form_vals = (
@@ -976,29 +978,52 @@ class CogClassRowForm(AbstractTimestampedForm):
 class AddCogClassTableForm(WTForm):
     cogclass = FieldList(FormField(CogClassRowForm))
 
-    def handle(self, request):
+    def handle(self, request, update_fields=None):
         # Iterate entries that may be changed:
-        for entry in self.cogclass:
-            data = entry.data
-            cogclass = CognateClass.objects.get(
-                id=int(data['idField']))
-            # Check if entry changed and try to update:
-            if cogclass.isChanged(**data):
-                try:
-                    with transaction.atomic():
-                        problem = cogclass.setDelta(request, **data)
-                        if problem is None:
-                            cogclass.save()
-                        else:
-                            messages.error(
-                                request, cogclass.deltaReport(**problem))
-                except Exception:
-                    logging.exception('Problem saving CognateClass '
-                                      'in view_cognateclasses.')
-                    messages.error(
-                        request,
-                        'Problem while saving entry: %s' % data)
-
+        if update_fields is None:
+            for entry in self.cogclass:
+                data = entry.data
+                cogclass = CognateClass.objects.get(
+                    id=int(data['idField']))
+                # Check if entry changed and try to update:
+                if cogclass.isChanged(**data):
+                    try:
+                        with transaction.atomic():
+                            problem = cogclass.setDelta(request, **data)
+                            if problem is None:
+                                cogclass.save()
+                            else:
+                                messages.error(
+                                    request, cogclass.deltaReport(**problem))
+                    except Exception:
+                        logging.exception('Problem saving CognateClass '
+                                          'in view_cognateclasses.')
+                        messages.error(
+                            request,
+                            'Problem while saving entry: %s' % data)
+        else:
+            for entry in self.cogclass:
+                data = entry.data
+                cogclass = CognateClass.objects.get(
+                    id=int(data['idField']))
+                # Check if entry changed and try to update:
+                isChanged = False
+                bump_fields = ['lastEditedBy', 'lastTouched']
+                for f in update_fields:
+                    if getattr(cogclass, f) != data[f]:
+                        isChanged = True
+                        setattr(cogclass, f, data[f])
+                if isChanged:
+                    try:
+                        with transaction.atomic():
+                            cogclass.bump(request)
+                            cogclass.save(update_fields=[f, *bump_fields])
+                    except Exception:
+                        logging.exception('Problem saving CognateClass '
+                                          'in view_all_cognateclasses.')
+                        messages.error(
+                            request,
+                            'Problem while saving entry: %s' % data)
 
 class MergeCognateClassesForm(WTForm):
     def handle(self, request):
@@ -1090,6 +1115,44 @@ class MergeCognateClassesForm(WTForm):
                 newC.update_alias()
 
 
+class MergeCognateClassesToSupersetForm(WTForm):
+    def handle(self, request):
+        # Extract ids from form:
+        ids = set([int(i) for i in
+                   request.POST.get('mergeIds').split(',')])
+        supersetids = set([
+                    s for s in CognateClass.objects.values_list('supersetid', flat=True) if s])
+        # get unused superset id as int
+        ssids = []
+        for s in supersetids:
+            try:
+                a = int(s)
+            except ValueError:
+                continue
+            ssids.append(a)
+        if len(ssids):
+            try:
+                new_ssid = min(set(ssids)^set(range(1, max(ssids)+1)))
+            except ValueError:
+                new_ssid = max(ssids) + 1
+        else:
+            new_ssid = 1
+        # Fetching classes to merge:
+        ccs = CognateClass.objects.filter(
+            id__in=ids).all()
+        # Checking ccs length:
+        if ccs is None or len(ccs) <= 1:
+            messages.error(request, 'Sorry, the server needs '
+                           '2 or more cognateclasses to merge them to a superset.')
+        else:
+        # Merging:
+            with transaction.atomic():
+                for cc in ccs:
+                    cc.supersetid = new_ssid
+                    cc.bump(request)
+                    cc.save(update_fields=['supersetid', 'lastEditedBy', 'lastTouched'])
+
+
 class CognateClassEditForm(AbstractTimestampedForm):
     id = IntegerField('Cognate Class id', validators=[InputRequired()])
     justificationDiscussion = TextAreaField('Justification & Discussion', 
@@ -1131,6 +1194,8 @@ class CognateClassEditForm(AbstractTimestampedForm):
         validators=[])
     lateParallelDerivationWithCognate = CognateClassField(
         'Parallel derivation from same root as cognate set:', validators=[])
+    supersetid = TextField(
+        'Super set ID:', validators=[])
 
     def handle(self, request):
         try:

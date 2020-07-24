@@ -64,6 +64,7 @@ from cobl.forms import AddCitationForm, \
     LexemeTableViewMeaningsForm, \
     MeaningListTableForm, \
     MergeCognateClassesForm, \
+    MergeCognateClassesToSupersetForm, \
     SearchLexemeForm, \
     SndCompCreationForm, \
     SndCompDeletionForm, \
@@ -1683,6 +1684,98 @@ def view_cognateclasses(request, meaning):
                             "cogclass_editable_form":
                                 cogclass_editabletable_form,
                             "typeahead": typeahead})
+
+##################################################################
+
+
+@csrf_protect
+@logExceptions
+def view_all_cognateclasses(request, root_ref_lang='Proto-Indo-European'):
+    # Handle POST of AddCogClassTableForm: for merging cognate classes to superset
+    if request.method == 'POST':
+        if 'cogclass_form' in request.POST:
+            try:
+                cogClassTableForm = AddCogClassTableForm(request.POST)
+                cogClassTableForm.validate()
+                cogClassTableForm.handle(request)
+            except ValidationError as e:
+                logging.exception(
+                    'Validation did not work in view_cognateclasses.')
+                messages.error(request, ' '.join(e.messages))
+            except Exception as e:
+                logging.exception('Problem updating CognateClasses '
+                                  'in view_cognateclasses.')
+                messages.error(request, 'Sorry, the server had problems '
+                               'updating at least one entry: %s' % e)
+        elif 'cogclass_form_all' in request.POST:
+            try:
+                cogClassTableForm = AddCogClassTableForm(request.POST)
+                cogClassTableForm.validate()
+                cogClassTableForm.handle(request, update_fields=['supersetid'])
+            except ValidationError as e:
+                logging.exception(
+                    'Validation did not work in view_all_cognateclasses.')
+                messages.error(request, ' '.join(e.messages))
+            except Exception as e:
+                logging.exception('Problem updating CognateClasses '
+                                  'in view_all_cognateclasses.')
+                messages.error(request, 'Sorry, the server had problems '
+                               'updating at least one entry: %s' % e)
+        elif 'mergeIds' in request.POST:
+            try:
+                # Parsing and validating data:
+                mergeCCForm = MergeCognateClassesToSupersetForm(request.POST)
+                mergeCCForm.validate()
+                mergeCCForm.handle(request)
+            except Exception as e:
+                logging.exception('Problem merging CognateClasses to a superset'
+                                  'in view_all_cognateclasses.')
+                messages.error(request, 'Sorry, the server had problems '
+                               'merging cognate classes to a superset: %s' % e)
+        else:
+            logging.error('Unexpected POST request in view_all_cognateclasses.')
+            messages.error(request, 'Sorry, the server did '
+                           'not understand your request.')
+        return HttpResponseRedirect(reverse("edit-cogclasses_all",
+                                            args=[root_ref_lang]))
+    # Acquiring languageList:
+    try:
+        languageList = LanguageList.objects.get(
+            name=getDefaultLanguagelist(request))
+    except LanguageList.DoesNotExist:
+        languageList = LanguageList.objects.get(
+            name=LanguageList.ALL)
+    # languageIds implicated:
+    languageIds = languageList.languagelistorder_set.exclude(
+        language__level0=0).values_list(
+            'language_id', flat=True)
+    # Cognate classes to use:
+    ml = MeaningList.objects.prefetch_related("meanings").get(
+        name=getDefaultWordlist(request))
+    ccl_ordered = CognateClass.objects.filter(
+        cognatejudgement__lexeme__language_id__in=languageIds,
+        cognatejudgement__lexeme__not_swadesh_term=False,
+        cognatejudgement__lexeme__meaning__exclude=False,
+        cognatejudgement__lexeme__meaning__gloss__in=[m.gloss for m in ml.meanings.all()]
+    ).prefetch_related('lexeme_set').distinct()
+    if not root_ref_lang:
+        root_ref_lang = 'Proto-Indo-European'
+    elif root_ref_lang == '*':
+        root_ref_lang = ''
+    r_root_ref_lang = r".*%s.*" % (root_ref_lang.replace('-', '\-'))
+    ccl_ordered = [c for c in ccl_ordered\
+            if re.match(r_root_ref_lang, c.rootLanguageOrPlaceholder) is not None]
+    ccl_ordered = sorted(ccl_ordered, key=lambda x: x.rootFormOrPlaceholder)
+    for c in ccl_ordered:
+        c.meanings = ", ".join([str(cc) for cc in c.get_meanings()])
+    # Filling cogclass_editabletable_form:
+    cogclass_editabletable_form = AddCogClassTableForm(cogclass=ccl_ordered)
+
+    return render_template(request, "view_cognateclass_editable_all.html",
+                           {"cogclass_editable_form":
+                                cogclass_editabletable_form,
+                            "root_ref_lang": root_ref_lang
+                            })
 
 ##################################################################
 

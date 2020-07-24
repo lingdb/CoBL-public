@@ -1,6 +1,7 @@
 (function(){
   "use strict";
   /* eslint-disable no-console */
+  /*eslint max-depth: ["error", 8]*/
   return define(['jquery','lodash',
                  'js/cladeFilter',
                  'js/viewTableFilter/settings',
@@ -53,63 +54,56 @@
             }
         });
         //Fix overflow for #356:
-        table.find('td').each(function(){
-          if(this.offsetWidth < this.scrollWidth){
+        if(this.offsetWidth < this.scrollWidth){
+          var ttd = table.find('td');
+          for(var i=0; i<ttd.length; i+=1){
+            var e = ttd[i];
             //https://stackoverflow.com/a/10017343/448591
-            var $td = $(this);
-            $td.tooltip({
-              title: $td.text(),
+            e.tooltip({
+              title: e.text(),
               placement: 'top',
               container: 'body',
               trigger: 'hover'
             });
           }
-        });
+        }
         //Restoring buttons before initial filtering.
         settings.restoreButtonInputs();
         //Attaching inputClasses:
         _.each(module.inputClasses, function(inputClass){
-          if(inputClass in module){
-            $('input.'+inputClass).each(function(){
-              var $input = $(this);
-              $input.keyup(function(){
-                module[inputClass]($input, table);
-                settings.storeKeyupInput($input, inputClass);
-                markNewMeanings();
-              });
+          $('input.'+inputClass).each(function(){
+            var $input = $(this);
+            $input.keyup(function(){
+              module[inputClass]($input, table);
+              settings.storeKeyupInput($input, inputClass);
+              markNewMeanings();
             });
-            var btnClasses = $('button.'+inputClass);
-            var numOfClasses = btnClasses.length;
-            var cnt = 0;
-            btnClasses.each(function(){
-              var $button = $(this);
-              cnt += 1;
-              $button.click(function(){
-                module[inputClass]($button, table);
-                settings.storeButtonInput($button, inputClass);
-                markNewMeanings();
-              });
-              //Initial filtering for the last element of a given class:
-              module[inputClass]($button, table, true, (cnt == numOfClasses));
+          });
+          var btnClasses = $('button.'+inputClass);
+          var numOfClasses = btnClasses.length;
+          var cnt = 0;
+          btnClasses.each(function(){
+            var $button = $(this);
+            cnt += 1;
+            $button.click(function(){
+              module[inputClass]($button, table);
+              settings.storeButtonInput($button, inputClass);
+              markNewMeanings();
             });
-          }else{
-            console.log('inputClass not implemented:', inputClass);
-          }
+            //Initial filtering for the last element of a given class:
+            module[inputClass]($button, table, true, (cnt == numOfClasses));
+          });
         });
         //Attaching btnClasses:
         _.each(module.btnClasses, function(btnClass){
-          if(btnClass in module){
-            table.find('.btn.'+btnClass).each(function(){
-              var $btn = $(this);
-              $btn.click(function(){
-                module[btnClass]($btn, table);
-                settings.storeSortInput($btn, btnClass);
-                markNewMeanings();
-              });
+          table.find('.btn.'+btnClass).each(function(){
+            var $btn = $(this);
+            $btn.click(function(){
+              module[btnClass]($btn, table);
+              settings.storeSortInput($btn, btnClass);
+              markNewMeanings();
             });
-          }else{
-            console.log('btnClass not implemented:', btnClass);
-          }
+          });
         });
         settings.restoreSortInput(module);
         //cladeFilter:
@@ -374,16 +368,18 @@
       if(typeof table === "undefined"){markNewMeanings = false;}
       if(markNewMeanings){
         var curKey = "";
-        table.find('tbody > tr').each(function(){
-          $(this).removeClass('startNewMeaning');
-          if(!$(this).hasClass('hide')){
-            var cText = $(this).data('meaningid');
+        var ttr = table.find('tbody > tr');
+        for(var i=0; i<ttr.length; i+=1){
+          var e = $(ttr[i]);
+          e.removeClass('startNewMeaning');
+          if(!e.hasClass('hide')){
+            var cText = e.data('meaningid');
             if(cText !== curKey){
-              $(this).addClass('startNewMeaning');
+              e.addClass('startNewMeaning');
               curKey = cText;
             }
           }
-        });
+        }
       }
     };
     /**
@@ -463,8 +459,9 @@
         }else{
           idCountMap = {};
           getRowId = function(row){return row.data(dataAttr);};
-          table.find('tbody > tr').each(function(){
-            var row = $(this);
+          var ttr = table.find('tbody > tr');
+          for(var k=0; k<ttr.length; k+=1){
+            var row = $(ttr[k]);
             if(row.is(':visible')){
               var rId = getRowId(row);
               if(rId in idCountMap){
@@ -473,7 +470,7 @@
                 idCountMap[rId] = 1;
               }
             }
-          });
+          }
           /*
             We implement wanted as:
             true -> Only display lexemes where the same meaning was found twice.

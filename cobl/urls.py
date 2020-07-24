@@ -46,6 +46,7 @@ from cobl.views import add_language_list, \
                         view_changes, \
                         view_clades, \
                         view_cognateclasses, \
+                        view_all_cognateclasses, \
                         viewDefaultCognateClassList, \
                         viewDefaultLanguage, \
                         viewDefaultMeaning, \
@@ -104,6 +105,7 @@ R = {
     "RELATION": r"(?P<relation>[{0}]+)".format(url_char),
     "WORDLIST": r"(?P<wordlist>[{0}]+)".format(url_char),
     "USERNAME": r"(?P<username>[a-zA-Z0-9@.+_-]+)",
+    "ROOTREFLANG": r"(?P<root_ref_lang>.+)",
     "identifier": r"[a-zA-Z_][a-zA-Z0-9_]*",
     }
 
@@ -309,6 +311,10 @@ urlpatterns = [
     # url(r'^cognate/%(COGNATE_NAME)s/$' % R, cognate_report),
     url(r'^meaning/%(MEANING)s/cognate/(?P<code>[A-Z]+[0-9]*)/$' % R,
         cognate_report),
+    url(r'^cognateclasslistall/$',
+        view_all_cognateclasses, name="edit-cogclasses_all"),
+    url(r'^cognateclasslistall/%(ROOTREFLANG)s$' % R,
+        view_all_cognateclasses, name="edit-cogclasses_all"),
     url(r'^cognateclasslist/$' % R, viewDefaultCognateClassList),
     url(r'^meaning/%(MEANING)s/cognateclasslist/$' % R,
         view_cognateclasses, name="edit-cogclasses"),

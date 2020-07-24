@@ -192,3 +192,18 @@ button.filterBool {
 .startNewMeaning {
   border-top:3pt solid #444444 !important;
 }
+.borderleft2 {
+  border-left: 2px solid #dddddd;
+}
+.width25em {
+  width: 2.5em !important;
+}
+.cogIdClassStyle {
+  color: #8B4510;
+  text-align: center;
+  border-left: 2px solid #dddddd;
+}
+.cogAliasClassStyle {
+  text-align: center;
+  width: 40px;
+}

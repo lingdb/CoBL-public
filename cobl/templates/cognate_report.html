@@ -169,14 +169,17 @@
                 <label class="control-label">Dubious set?</label>
               </div>
 
-              <br /><br />
+              <div>
+                <label class="control-label">Superset ID:</label>
+                {% form_field cognateClassForm.supersetid style="margin-top:10px" %}
+              </div>
 
-                <div>
-                  {% form_field cognateClassForm.revisedYet style="margin-top:10px" %}
-                  <label class="control-label">Revised yet?</label>
-                </div>
-                <label class="control-label">Revised by</label>
-                {% form_field cognateClassForm.revisedBy class="form-control" %}
+              <div>
+                {% form_field cognateClassForm.revisedYet style="margin-top:10px" %}
+                <label class="control-label">Revised yet?</label>
+              </div>
+              <label class="control-label">Revised by</label>
+              {% form_field cognateClassForm.revisedBy class="form-control" %}
             </td>
           </tr></table>
         </form>

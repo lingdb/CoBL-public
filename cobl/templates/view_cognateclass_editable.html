@@ -112,6 +112,13 @@
                   </div>
                 </div>
               </th>
+              <th style="border-left: 2px solid #dddddd;">
+                <div class="vertical-text">
+                  <div class="vertical-text__inner">
+                    Superset ID
+                  </div>
+                </div>
+              </th>
               {# alias_title.html #}
               <th style="width: 40px;">
                 <div class="vertical-text">
@@ -299,6 +306,12 @@
               <td style="border-left: 2px solid #dddddd;">
                 <div class="btn btn-xs btn-default sortIntText"
                      data-selector=".cogClassId">
+                  <span class="glyphicon glyphicon-sort"></span>
+                </div>
+              </td>
+              <td style="border-left: 2px solid #dddddd;">
+                <div class="btn btn-xs btn-default sortIntText"
+                     data-selector=".supersetid">
                   <span class="glyphicon glyphicon-sort"></span>
                 </div>
               </td>
@@ -630,7 +643,17 @@
                     {% form_field cc.idField class="hide" required="required" %}
                     {% form_field cc.lastTouched class="hide" required="required" %}
                     {% form_field cc.lastEditedBy class="hide" required="required" %}
+                    {% form_field cc.dubiousSet class="hide" %}
+                    {% form_field cc.lateParallelDerivationWithCognate class="hide" %}
                   {% endif %}
+                </td>
+                <td class="supersetid text-right"
+                    style="color: #8B4510;
+                           text-align: center;
+                           border-left: 2px solid #dddddd;">
+                    {% if cc.supersetid.data%}
+                    {{ cc.supersetid.data }}
+                    {% endif %}
                 </td>
                 {# alias_data.html #}
                 <td class="cogClassAlias"
@@ -641,12 +664,12 @@
                     {{ cc.alias.data }}
                   </a>
                 </td>
-        				{# citations_data.html #}
+                {# citations_data.html #}
                 <td class="cogClassCit"
-                    style="text-align: center; width: 40px;">
-        				  <span class="badge openModal" data-model="CognateClass" data-id="{{ cc.idField.data }}">
-        					{{ cc.object_data.citCount }}
-        				  </span>
+                  style="text-align: center; width: 40px;">
+                  <span class="badge openModal" data-model="CognateClass" data-id="{{ cc.idField.data }}">
+                    {{ cc.object_data.citCount }}
+                  </span>
                 </td>
                 {# merge_data.html #}
                 <td>
@@ -726,14 +749,6 @@
                     {% form_field cc.parallelDerivation class="form-control" disabled="disabled "%}
                   {% endif %}
                 </td>
-                {# dubiousSet_datahtml #}
-                <!-- <td class="dubiousSet">
-                  {% if user.is_authenticated %}
-                    {% form_field cc.dubiousSet class="form-control" %}
-                  {% elif cc.gloss_in_root_lang.data %}
-                    {% form_field cc.dubiousSet class="form-control" disabled="disabled" %}
-                  {% endif %}
-                </td> -->
                 {# loanword_data.html #}
                 <td style="border-left: 2px solid #dddddd;"
                     class="cogLoanword loanEventCell">
