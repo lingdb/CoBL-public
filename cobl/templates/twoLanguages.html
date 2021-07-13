@@ -412,11 +412,9 @@
                 </td>
                 {# viewcopy_data.html #}
                 <td>
-                  {% if not lexeme.object_data.sourceLg %}
                   <a href="{% url 'view-lexeme' lexeme.object_data.id %}" title="View detailed information on lexeme">
                     <span class="glyphicon glyphicon-search"></span>
                   </a>
-                  {% endif %}
                 </td>
                 {# nativeScript_data.html #}
                 <td class="lexemeNativeScript">

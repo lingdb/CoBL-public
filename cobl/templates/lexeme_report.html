@@ -3,7 +3,7 @@
 {% load staticfiles %}
 {% load lexicon_utils %}
 {% block title %}
-  Lexeme report
+  Lexeme report - {{ lexeme.romanised }}
 {% endblock %}
 
 {% block top %}
@@ -71,7 +71,11 @@
             <td>{{ lexeme.romanised }}</td>
           </tr>
           <tr>
-            <th>Phonological form:</th>
+            <th>PhoneMic transcription:</th>
+            <td>{{ lexeme.phoneMic }}</td>
+          </tr>
+          <tr>
+            <th>PhoneTic transcription:</th>
             <td>{{ lexeme.phon_form }}</td>
           </tr>
           <tr>
