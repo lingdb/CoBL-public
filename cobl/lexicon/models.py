@@ -835,6 +835,7 @@ class Language(AbstractTimestamped, AbstractDistribution):
 
             # Cognate classes to iterate:
             ccs = CognateClass.objects.filter(
+                lexeme__not_swadesh_term=False,
                 lexeme__language_id=self.id,
                 lexeme__meaning_id__in=meaningIdSet).order_by(
                     'id').distinct('id').all()
@@ -1137,6 +1138,7 @@ class Meaning(AbstractTimestamped):
             lIds = languageList.languagelistorder_set.values_list(
                 "language_id", flat=True)
             ccs = CognateClass.objects.filter(
+                lexeme__not_swadesh_term=False,
                 lexeme__meaning_id=self.id,
                 lexeme__language_id__in=lIds).distinct()
             # Setup to count stuff:
