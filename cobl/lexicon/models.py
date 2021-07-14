@@ -1911,7 +1911,7 @@ class LanguageListOrder(models.Model):
 # @reversion.register
 class MeaningList(models.Model):
     """Named lists of meanings, e.g. 'All' and 'Swadesh_100'"""
-    DEFAULT = "Jena175"
+    DEFAULT = "JenaFinal170"
     PUBLICDEFAULT = "default"
     ALL = "all"
 
